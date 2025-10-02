@@ -1,33 +1,31 @@
-package cn.nukkit.block;
+package cn.nukkit.block.copper.bulb;
 
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockProperties;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWaxedCopperBulb extends BlockCopperBulbBase {
-    public static final BlockProperties PROPERTIES = new BlockProperties(WAXED_COPPER_BULB, CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
+public class BlockCopperBulb extends BlockCopperBulbBase {
+    public static final BlockProperties PROPERTIES = new BlockProperties(BlockID.COPPER_BULB, CommonBlockProperties.LIT, CommonBlockProperties.POWERED_BIT);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockWaxedCopperBulb() {
+    public BlockCopperBulb() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWaxedCopperBulb(BlockState blockstate) {
+    public BlockCopperBulb(BlockState blockstate) {
         super(blockstate);
     }
 
     @Override
     public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
-    }
-
-    @Override
-    public boolean isWaxed() {
-        return true;
     }
 
     @Override

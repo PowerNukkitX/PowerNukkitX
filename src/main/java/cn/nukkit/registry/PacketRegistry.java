@@ -256,6 +256,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.CLIENTBOUND_CLOSE_FORM_PACKET, ClientboundCloseFormPacket.class);
         this.register0(ProtocolInfo.SERVERBOUND_LOADING_SCREEN_PACKET, ServerboundLoadingScreenPacket.class);
         this.register0(ProtocolInfo.SERVERBOUND_DIAGNOSTICS_PACKET, ServerboundDiagnosticsPacket.class);
+        this.register0(ProtocolInfo.SERVERBOUND_PACK_SETTING_CHANGE_PACKET, ServerboundPackSettingChangePacket.class);
         this.register0(ProtocolInfo.CAMERA_AIM_ASSIST_PRESETS_PACKET, CameraAimAssistPresetsPacket.class);
         this.register0(ProtocolInfo.CLIENT_CAMERA_AIM_ASSIST_PACKET, ClientCameraAimAssistPacket.class);
         this.register0(ProtocolInfo.CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET, ClientMovementPredictionSyncPacket.class);

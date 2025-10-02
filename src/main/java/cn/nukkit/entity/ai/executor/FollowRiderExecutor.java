@@ -39,6 +39,6 @@ public class FollowRiderExecutor implements IBehaviorExecutor, EntityControl {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
     }
 }

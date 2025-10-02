@@ -5,6 +5,12 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.PacketHandler;
+import cn.nukkit.network.protocol.PacketViolationWarningPacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class BedrockSessionPacketHandler implements PacketHandler {
     protected final Player player;
@@ -21,5 +27,18 @@ public class BedrockSessionPacketHandler implements PacketHandler {
         if (player != null) {
             player.close(pk.message);
         }
+    }
+
+    public void handle(PacketViolationWarningPacket pk) {
+        Optional<String> packetName = Arrays.stream(ProtocolInfo.class.getDeclaredFields())
+                .filter(field -> field.getType() == Byte.TYPE)
+                .filter(field -> {
+                    try {
+                        return field.getByte(null) == pk.packetId;
+                    } catch (IllegalAccessException e) {
+                        return false;
+                    }
+                }).map(Field::getName).findFirst();
+        System.out.println("Violation warning from " + player.getName() + ": " + packetName.map(name -> " for packet " + name).orElse("") + ": " + pk);
     }
 }

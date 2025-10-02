@@ -534,6 +534,9 @@ public enum LevelSoundEvent {
     UNSADDLE(560),
     EQUIP_COPPER(561),
     RECORD_LAVA_CHICKEN(562),
+    PLACE_ITEM(563),
+    SINGLE_ITEM_SWAP(564),
+    MULTI_ITEM_SWAP(565)
     ;
 
     private final int id;

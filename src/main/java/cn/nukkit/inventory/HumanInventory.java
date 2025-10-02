@@ -18,12 +18,15 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.PlayerArmorDamagePacket;
+import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
+import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
@@ -506,10 +509,11 @@ public class HumanInventory extends BaseInventory {
                 for (int i = 0; i < 4; ++i) {
                     Item item = armor[i];
                     if (item.isNull()) {
-                        pk2.damage[i] = 0;
+                        pk2.getArmorSlotAndDamagePairs().add(
+                                new ArmorSlotAndDamagePair(ArmorSlot.from(i), (short) 0)
+                        );
                     } else {
-                        pk2.flags.add(PlayerArmorDamagePacket.PlayerArmorDamageFlag.values()[i]);
-                        pk2.damage[i] = item.getDamage();
+                        pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(ArmorSlot.from(i), (short) item.getDamage()));
                     }
                 }
                 player.dataPacket(pk2);
@@ -592,10 +596,13 @@ public class HumanInventory extends BaseInventory {
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 Item item = armor[index];
                 if (item.isNull()) {
-                    pk2.damage[index] = 0;
+                    pk2.getArmorSlotAndDamagePairs().add(
+                            new ArmorSlotAndDamagePair(ArmorSlot.from(index), (short) 0)
+                    );
                 } else {
-                    pk2.flags.add(PlayerArmorDamagePacket.PlayerArmorDamageFlag.values()[index]);
-                    pk2.damage[index] = item.getDamage();
+                    pk2.getArmorSlotAndDamagePairs().add(
+                            new ArmorSlotAndDamagePair(ArmorSlot.from(index), (short) item.getDamage())
+                    );
                 }
                 player.dataPacket(pk2);
             } else {

@@ -1054,4 +1054,20 @@ public interface ItemID {
     String HARNESS_RED = "minecraft:red_harness";
     String HARNESS_BLACK = "minecraft:black_harness";
 
+    /**
+     * @since 1.21.110
+     */
+
+    String COPPER_BOOTS = "minecraft:copper_boots";
+    String COPPER_CHESTPLATE = "minecraft:copper_chestplate";
+    String COPPER_HELMET = "minecraft:copper_helmet";
+    String COPPER_LEGGINGS = "minecraft:copper_leggings";
+    String COPPER_HORSE_ARMOR = "minecraft:copper_horse_armor";
+    String COPPER_GOLEM_SPAWN_EGG = "minecraft:copper_golem_spawn_egg";
+    String COPPER_NUGGET = "minecraft:copper_nugget";
+    String COPPER_AXE = "minecraft:copper_axe";
+    String COPPER_HOE = "minecraft:copper_hoe";
+    String COPPER_PICKAXE = "minecraft:copper_pickaxe";
+    String COPPER_SHOVEL = "minecraft:copper_shovel";
+    String COPPER_SWORD = "minecraft:copper_sword";
 }

@@ -58,7 +58,7 @@ public class PiglinTradeExecutor implements EntityControl, IBehaviorExecutor {
         if(entity instanceof EntityMob mob) {
             clearOffhand(mob, mob.getItemInOffhand());
         }
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.setEnablePitch(false);
         entity.setDataFlag(EntityFlag.ADMIRING, false);
     }

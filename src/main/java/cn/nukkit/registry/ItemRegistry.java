@@ -2,8 +2,10 @@ package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
+import cn.nukkit.item.armor.copper.*;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
+import cn.nukkit.item.tools.copper.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
@@ -577,6 +579,23 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(HARNESS_RED, ItemHarnessRed.class);
             register(HARNESS_WHITE, ItemHarnessWhite.class);
             register(HARNESS_YELLOW, ItemHarnessYellow.class);
+
+            /**
+             * @since 1.21.110
+             */
+            register(COPPER_BOOTS, ItemCopperBoots.class);
+            register(COPPER_CHESTPLATE, ItemCopperChestplate.class);
+            register(COPPER_HELMET, ItemCopperHelmet.class);
+            register(COPPER_LEGGINGS, ItemCopperLeggings.class);
+            register(COPPER_HORSE_ARMOR, ItemCopperHorseArmor.class);
+            register(COPPER_GOLEM_SPAWN_EGG, ItemCopperGolemSpawnEgg.class);
+            register(COPPER_NUGGET, ItemNuggetCopper.class);
+            register(COPPER_AXE, ItemCopperAxe.class);
+            register(COPPER_HOE, ItemCopperHoe.class);
+            register(COPPER_PICKAXE, ItemCopperPickaxe.class);
+            register(COPPER_SHOVEL, ItemCopperShovel.class);
+            register(COPPER_SWORD, ItemCopperSword.class);
+
             registerBlockItem();
         } catch (RegisterException e) {
             throw new RuntimeException(e);
@@ -613,7 +632,13 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         try {
             FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
             if (fastConstructor == null) return null;
-            return (Item) fastConstructor.invoke();
+            Item item = (Item) fastConstructor.invoke();
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(key);
+            }
+
+            return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -624,6 +649,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -636,6 +666,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setCount(count);
             item.setDamage(meta);
             return item;
@@ -649,8 +684,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
             item.setCount(count);
             item.setCompoundTag(tags);
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -663,10 +704,16 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -716,34 +763,56 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
-
     public void registerCustomItem(Plugin plugin, Class<? extends Item> value) throws RegisterException {
         try {
-            if (CustomItem.class.isAssignableFrom(value)) {
-                FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-                FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
-                CustomItem customItem = (CustomItem) c.invoke((Object) null);
-                String key = customItem.getDefinition().identifier();
-                if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
-                    CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
-                    Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, customItem.getDefinition().getRuntimeId(), true));
-                    CompoundTag nbt = customItem.getDefinition().nbt();
-                    if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
-                        Item ci = (Item) customItem;
-                        ci.setNetId(null);
-                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
-                        Registries.CREATIVE.addCreativeItem(ci, groupIndex);
-                    }
-                } else {
-                    throw new RegisterException("This item has already been registered with the identifier: " + key);
-                }
-            } else {
+            if (!CustomItem.class.isAssignableFrom(value)) {
                 throw new RegisterException("This class does not implement the CustomItem interface and cannot be registered as a custom item!");
+            }
+
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
+
+            CustomItem customItem = (CustomItem) c.invoke((Object) null);
+            CustomItemDefinition def = customItem.getDefinition();
+            String key = def.identifier();
+
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
+                throw new RegisterException("This item has already been registered with the identifier: " + key);
+            }
+
+            CUSTOM_ITEM_DEFINITIONS.put(key, def);
+            Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
+
+            CompoundTag nbt = def.nbt();
+            if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+                Item ci = (Item) customItem;
+                ci.setNetId(null);
+                int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
+                Registries.CREATIVE.addCreativeItem(ci, groupIndex);
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void registerSpawnEgg(String eggId) throws RegisterException {
+        register(eggId, ItemCustomEntitySpawnEgg.class);
+        CustomItemDefinition def = ItemCustomEntitySpawnEgg.buildEggDefinition(eggId);
+
+        CUSTOM_ITEM_DEFINITIONS.put(eggId, def);
+        int rid = CustomItemDefinition.ensureRuntimeIdAllocated(eggId);
+        Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(eggId, rid, false));
+
+        CompoundTag nbt = def.nbt();
+        if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+            Item ci = this.get(eggId, 0);
+            if (ci != null) {
+                ci.setNetId(null);
+                int groupIndex = Registries.CREATIVE.resolveGroupIndexForSpawnEgg(eggId);
+                Registries.CREATIVE.addCreativeItem(ci, groupIndex);
+            }
         }
     }
 

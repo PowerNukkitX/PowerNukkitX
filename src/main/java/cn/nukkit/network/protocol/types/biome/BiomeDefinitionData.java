@@ -10,10 +10,7 @@ public class BiomeDefinitionData implements IBiomeDefinitionListObject {
     public short id = -1; //Only used for custom biomes
     public float temperature;
     public float downfall;
-    public float redSporeDensity;
-    public float blueSporeDensity;
-    public float ashDensity;
-    public float whiteAshDensity;
+    public float foliageSnow = 0;
     public float depth;
     public float scale;
     public int mapWaterColor;
@@ -26,10 +23,7 @@ public class BiomeDefinitionData implements IBiomeDefinitionListObject {
         byteBuf.writeShort(id);
         byteBuf.writeFloatLE(temperature);
         byteBuf.writeFloatLE(downfall);
-        byteBuf.writeFloatLE(redSporeDensity);
-        byteBuf.writeFloatLE(blueSporeDensity);
-        byteBuf.writeFloatLE(ashDensity);
-        byteBuf.writeFloatLE(whiteAshDensity);
+        byteBuf.writeFloatLE(foliageSnow);
         byteBuf.writeFloatLE(depth);
         byteBuf.writeFloatLE(scale);
         byteBuf.writeIntLE(mapWaterColor);
@@ -43,10 +37,6 @@ public class BiomeDefinitionData implements IBiomeDefinitionListObject {
         id = tag.getShort("id");
         temperature = tag.getFloat("temperature");
         downfall = tag.getFloat("downfall");
-        redSporeDensity = tag.getFloat("redSporeDensity");
-        blueSporeDensity = tag.getFloat("blueSporeDensity");
-        ashDensity = tag.getFloat("ashSporeDensity");
-        whiteAshDensity = tag.getFloat("whiteAshSporeDensity");
         depth = tag.getFloat("depth");
         scale = tag.getFloat("scale");
         mapWaterColor = tag.getInt("mapWaterColorARGB");

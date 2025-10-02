@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 @Slf4j
 public abstract class Block extends Position implements Metadatable, AxisAlignedBB, BlockID {
     public static final Block[] EMPTY_ARRAY = new Block[0];
-    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+    public static final double DEFAULT_FRICTION_FACTOR = 0.4;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
     public static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     protected BlockState blockstate;

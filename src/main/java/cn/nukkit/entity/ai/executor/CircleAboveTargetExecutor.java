@@ -93,7 +93,7 @@ public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, true);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)

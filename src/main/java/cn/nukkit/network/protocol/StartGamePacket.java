@@ -209,7 +209,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeVarInt(this.difficulty);
         byteBuf.writeBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
         byteBuf.writeBoolean(this.hasAchievementsDisabled);
-        byteBuf.writeBoolean(this.worldEditor);
+        byteBuf.writeVarInt(0);
         byteBuf.writeBoolean(this.createdInEditor);
         byteBuf.writeBoolean(this.exportedFromEditor);
         byteBuf.writeVarInt(this.dayCycleStopTime);
@@ -225,7 +225,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeVarInt(this.platformBroadcastIntent);
         byteBuf.writeBoolean(this.commandsEnabled);
         byteBuf.writeBoolean(this.isTexturePacksRequired);
-        byteBuf.writeGameRules(this.gameRules);
+        byteBuf.writeGameRulesStartGame(this.gameRules);
 
         byteBuf.writeIntLE(experiments.size()); // Experiment count
         byteBuf.writeExperiments(experiments); // Write experiments

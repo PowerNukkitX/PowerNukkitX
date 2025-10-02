@@ -312,6 +312,11 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.NETHER_STAR)};
     }

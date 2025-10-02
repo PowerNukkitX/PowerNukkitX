@@ -121,9 +121,15 @@ public enum EntityFlag {
     BODY_ROTATION_BLOCKED(118),
     ROTATION_AXIS_ALIGNED(120),
     COLLIDABLE(121),
+    WASD_FREE_CAMERA_CONTROLLED(122),
+    /**
+     * @deprecated Renamed to {@link #WASD_FREE_CAMERA_CONTROLLED} in R21U11
+     */
+    @Deprecated(since = "843", forRemoval = true)
     WASD_AIR_CONTROLLED(122),
     DOES_SERVER_AUTH_ONLY_DISMOUNT(123),
-    BODY_ROTATION_ALWAYS_FOLLOWS_HEAD(124);
+    BODY_ROTATION_ALWAYS_FOLLOWS_HEAD(124),
+    CAN_USE_VERTICAL_MOVEMENT_ACTION(125);
 
     private final int value;
 

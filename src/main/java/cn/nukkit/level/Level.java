@@ -128,6 +128,7 @@ import java.util.stream.Stream;
 
 import static cn.nukkit.level.biome.BiomeID.*;
 import static cn.nukkit.utils.Utils.dynamic;
+import static cn.nukkit.utils.Utils.random;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -240,6 +241,24 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.DOUBLE_CUT_COPPER_SLAB);
         randomTickBlocks.add(BlockID.EXPOSED_DOUBLE_CUT_COPPER_SLAB);
         randomTickBlocks.add(BlockID.WEATHERED_DOUBLE_CUT_COPPER_SLAB);
+        randomTickBlocks.add(BlockID.COPPER_BARS);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_BARS);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_BARS);
+        randomTickBlocks.add(BlockID.COPPER_CHAIN);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_CHAIN);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_CHAIN);
+        randomTickBlocks.add(BlockID.COPPER_CHEST);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_CHEST);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_CHEST);
+        randomTickBlocks.add(BlockID.COPPER_GOLEM_STATUE);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_GOLEM_STATUE);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_GOLEM_STATUE);
+        randomTickBlocks.add(BlockID.COPPER_LANTERN);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_LANTERN);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_LANTERN);
+        randomTickBlocks.add(BlockID.LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.EXPOSED_LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.WEATHERED_LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.BUDDING_AMETHYST);
         randomTickBlocks.add(BlockID.POINTED_DRIPSTONE);
         randomTickBlocks.add(BlockID.CAVE_VINES);
@@ -2569,7 +2588,8 @@ public class Level implements Metadatable {
                 Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
                         .putShort("Health", 5)
                         .putCompound("Item", NBTIO.putItemHelper(item))
-                        .putShort("PickupDelay", delay));
+                        .putShort("PickupDelay", delay)
+                        .putBoolean("ShouldDespawn", item.shouldDespawn()));
 
         if (itemEntity != null) {
             itemEntity.spawnToAll();

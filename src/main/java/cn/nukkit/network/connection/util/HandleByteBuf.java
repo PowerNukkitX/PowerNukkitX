@@ -15,6 +15,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
+import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
@@ -1435,6 +1437,18 @@ public class HandleByteBuf extends ByteBuf {
         });
     }
 
+    public void writeGameRulesStartGame(GameRules gameRules) {
+        // LinkedHashMap gives mutability and is faster in iteration
+        val rules = new LinkedHashMap<>(gameRules.getGameRules());
+        rules.keySet().removeIf(GameRule::isDeprecated);
+
+        this.writeUnsignedVarInt(rules.size());
+        rules.forEach((gameRule, value) -> {
+            this.writeString(gameRule.getName().toLowerCase(Locale.ENGLISH));
+            value.writeStartGame(this);
+        });
+    }
+
     /**
      * Reads and returns an EntityUniqueID
      *
@@ -1894,5 +1908,16 @@ public class HandleByteBuf extends ByteBuf {
             this.writeString(experiment.name());
             this.writeBoolean(experiment.enabled());
         }
+    }
+
+    public void writeArmorDamagePair(ArmorSlotAndDamagePair pair) {
+        writeByte(pair.getSlot().getId());
+        writeShortLE(pair.getDamage());
+    }
+
+    public ArmorSlotAndDamagePair readArmorDamagePair(HandleByteBuf buffer) {
+        final ArmorSlot slot = ArmorSlot.from(buffer.readUnsignedByte());
+        final short damage = buffer.readShortLE();
+        return new ArmorSlotAndDamagePair(slot, damage);
     }
 }

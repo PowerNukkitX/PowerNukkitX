@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
+import cn.nukkit.entity.custom.CustomEntityComponents;
+import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
@@ -34,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
@@ -60,7 +64,26 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     protected double getStepHeight() {
-        return 0.5;
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).base();
+        }
+        return 0.5625;
+    }
+
+    @Override
+    protected double getStepHeightControlled() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).controlled();
+        }
+        return 0.5625;
+    }
+
+    @Override
+    protected double getStepHeightJumpPrevented() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).jumpPrevented();
+        }
+        return 0.5625;
     }
 
     @Override
@@ -117,7 +140,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void collidingWith(Entity ent) { // can override (IronGolem|Bats)
         ent.applyEntityCollision(this);
     }
-
 
     @Override
     public boolean attack(EntityDamageEvent source) {
@@ -184,6 +206,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void knockBack(Entity attacker, double damage, double x, double z, double base) {
         double f = Math.sqrt(x * x + z * z);
         if (f <= 0) {
+            return;
+        }
+
+        float resist = this.getKnockbackResistance();
+        base *= (1.0 - resist);
+        if (base <= 0) {
             return;
         }
 
@@ -404,19 +432,62 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return null;
     }
 
+    /** Returns the default movement speed of the entity */
+    public float getDefaultSpeed() {
+        if (isCustomEntity()) {
+            return meta().getMovement(CustomEntityComponents.MOVEMENT).moveSpeed();
+        }
+        return EntityLiving.DEFAULT_SPEED;
+    }
+
+    /** Returns the current movement speed of the entity */
     public float getMovementSpeed() {
         return this.movementSpeed;
     }
 
+    /** Returns the default movement multiplier of the entity */
+    public float getSpeedMultiplier() {
+        if (isCustomEntity()) {
+            return meta().getMovement(CustomEntityComponents.MOVEMENT).multiplier();
+        }
+        return 1.0f;
+    }
+
+    /** The radius of the area of blocks the entity will attempt to stay within around a target. */
+    public int getFollowRadius() {
+        if (isCustomEntity()) {
+            return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).radius();
+        }
+        return 0;
+    }
+
+    /** The maximum distance the mob will go from a target. */
+    public int getFollowMax() {
+        if (isCustomEntity()) {
+            return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).max();
+        }
+        return 0;
+    }
+
     /**
-     * 设置该有生命实体的移动速度
-     * <p>
      * Set the movement speed of this Entity.
      *
-     * @param speed 速度大小<br>Speed value
+     * @param speed Speed value
      */
     public void setMovementSpeed(float speed) {
         this.movementSpeed = (float) NukkitMath.round(speed, 2);
+    }
+
+    /** Gets the attack power of the entity. */
+    public int getAttackPower() {
+        if (isCustomEntity()) {
+            Meta.Attack atk = meta().getAttack(CustomEntityComponents.ATTACK);
+            int min = atk.min();
+            int max = atk.max();
+            if (max > min) return ThreadLocalRandom.current().nextInt(min, max + 1);
+            return max;
+        }
+        return 1;
     }
 
     public int getAirTicks() {
@@ -492,12 +563,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
     }
 
+    @Override
     public boolean isPersistent() {
-        return namedTag.containsByte("Persistent") && namedTag.getBoolean("Persistent");
-    }
-
-    public void setPersistent(boolean persistent) {
-        namedTag.putBoolean("Persistent", persistent);
+        return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
+            || (this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent"));
     }
 
     public void preAttack(Player player) {

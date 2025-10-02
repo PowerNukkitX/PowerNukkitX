@@ -64,6 +64,17 @@
     "minecraft:charcoal",
     "minecraft:coal"
   ],
+  "minecraft:copper_tier": [
+    "minecraft:copper_axe",
+    "minecraft:copper_boots",
+    "minecraft:copper_chestplate",
+    "minecraft:copper_helmet",
+    "minecraft:copper_hoe",
+    "minecraft:copper_leggings",
+    "minecraft:copper_pickaxe",
+    "minecraft:copper_shovel",
+    "minecraft:copper_sword"
+  ],
   "minecraft:crimson_stems": [
     "minecraft:crimson_hyphae",
     "minecraft:crimson_stem",
@@ -109,6 +120,10 @@
     "minecraft:mace"
   ],
   "minecraft:digger": [
+    "minecraft:copper_axe",
+    "minecraft:copper_hoe",
+    "minecraft:copper_pickaxe",
+    "minecraft:copper_shovel",
     "minecraft:diamond_axe",
     "minecraft:diamond_hoe",
     "minecraft:diamond_pickaxe",
@@ -209,6 +224,7 @@
     "minecraft:yellow_harness"
   ],
   "minecraft:horse_armor": [
+    "minecraft:copper_horse_armor",
     "minecraft:diamond_horse_armor",
     "minecraft:golden_horse_armor",
     "minecraft:iron_horse_armor",
@@ -230,6 +246,10 @@
     "minecraft:chainmail_chestplate",
     "minecraft:chainmail_helmet",
     "minecraft:chainmail_leggings",
+    "minecraft:copper_boots",
+    "minecraft:copper_chestplate",
+    "minecraft:copper_helmet",
+    "minecraft:copper_leggings",
     "minecraft:diamond_boots",
     "minecraft:diamond_chestplate",
     "minecraft:diamond_helmet",
@@ -254,6 +274,7 @@
     "minecraft:turtle_helmet"
   ],
   "minecraft:is_axe": [
+    "minecraft:copper_axe",
     "minecraft:diamond_axe",
     "minecraft:golden_axe",
     "minecraft:iron_axe",
@@ -288,28 +309,40 @@
     "minecraft:bread",
     "minecraft:carrot",
     "minecraft:chicken",
+    "minecraft:chorus_fruit",
+    "minecraft:cod",
     "minecraft:cooked_beef",
     "minecraft:cooked_chicken",
+    "minecraft:cooked_cod",
     "minecraft:cooked_mutton",
     "minecraft:cooked_porkchop",
     "minecraft:cooked_rabbit",
+    "minecraft:cooked_salmon",
     "minecraft:cookie",
     "minecraft:dried_kelp",
     "minecraft:enchanted_golden_apple",
     "minecraft:golden_apple",
     "minecraft:golden_carrot",
+    "minecraft:honey_bottle",
     "minecraft:melon_slice",
     "minecraft:mushroom_stew",
     "minecraft:mutton",
+    "minecraft:poisonous_potato",
     "minecraft:porkchop",
     "minecraft:potato",
+    "minecraft:pufferfish",
     "minecraft:pumpkin_pie",
     "minecraft:rabbit",
     "minecraft:rabbit_stew",
     "minecraft:rotten_flesh",
-    "minecraft:sweet_berries"
+    "minecraft:salmon",
+    "minecraft:spider_eye",
+    "minecraft:suspicious_stew",
+    "minecraft:sweet_berries",
+    "minecraft:tropical_fish"
   ],
   "minecraft:is_hoe": [
+    "minecraft:copper_hoe",
     "minecraft:diamond_hoe",
     "minecraft:golden_hoe",
     "minecraft:iron_hoe",
@@ -339,6 +372,7 @@
     "minecraft:tnt_minecart"
   ],
   "minecraft:is_pickaxe": [
+    "minecraft:copper_pickaxe",
     "minecraft:diamond_pickaxe",
     "minecraft:golden_pickaxe",
     "minecraft:iron_pickaxe",
@@ -350,6 +384,7 @@
     "minecraft:shears"
   ],
   "minecraft:is_shovel": [
+    "minecraft:copper_shovel",
     "minecraft:diamond_shovel",
     "minecraft:golden_shovel",
     "minecraft:iron_shovel",
@@ -358,6 +393,7 @@
     "minecraft:wooden_shovel"
   ],
   "minecraft:is_sword": [
+    "minecraft:copper_sword",
     "minecraft:diamond_sword",
     "minecraft:golden_sword",
     "minecraft:iron_sword",
@@ -367,6 +403,11 @@
     "minecraft:wooden_sword"
   ],
   "minecraft:is_tool": [
+    "minecraft:copper_axe",
+    "minecraft:copper_hoe",
+    "minecraft:copper_pickaxe",
+    "minecraft:copper_shovel",
+    "minecraft:copper_sword",
     "minecraft:diamond_axe",
     "minecraft:diamond_hoe",
     "minecraft:diamond_pickaxe",
@@ -597,6 +638,7 @@
     "minecraft:cave_spider_spawn_egg",
     "minecraft:chicken_spawn_egg",
     "minecraft:cod_spawn_egg",
+    "minecraft:copper_golem_spawn_egg",
     "minecraft:cow_spawn_egg",
     "minecraft:creaking_spawn_egg",
     "minecraft:creeper_spawn_egg",
@@ -746,6 +788,10 @@
     "minecraft:chainmail_chestplate",
     "minecraft:chainmail_helmet",
     "minecraft:chainmail_leggings",
+    "minecraft:copper_boots",
+    "minecraft:copper_chestplate",
+    "minecraft:copper_helmet",
+    "minecraft:copper_leggings",
     "minecraft:diamond_boots",
     "minecraft:diamond_chestplate",
     "minecraft:diamond_helmet",

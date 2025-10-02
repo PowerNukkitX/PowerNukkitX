@@ -33,14 +33,14 @@ public class BreezeJumpExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.setEnablePitch(false);
         stopSequence(entity);
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.setEnablePitch(false);
         stopSequence(entity);
     }
