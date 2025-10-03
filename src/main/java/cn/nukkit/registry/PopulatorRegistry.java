@@ -71,6 +71,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(PillagerOutpostPopulator.NAME, PillagerOutpostPopulator.class);
             this.register(ShipwreckPopulator.NAME, ShipwreckPopulator.class);
             this.register(StrongholdPopulator.NAME, StrongholdPopulator.class);
+            this.register(SwampHutPopulator.NAME, SwampHutPopulator.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

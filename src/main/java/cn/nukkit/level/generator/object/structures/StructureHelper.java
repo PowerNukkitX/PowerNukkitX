@@ -95,6 +95,14 @@ public class StructureHelper extends BlockManager {
         }
     }
 
+    public void setBlockDownward(BlockVector3 pos, BlockState state) {
+        int y = pos.y;
+        while (getBlockAt(pos.getX(), y, pos.getZ()).canBeReplaced() && y > 1) {
+            setBlockStateAt(pos.getX(), y, pos.getZ(), state);
+            y--;
+        }
+    }
+
     @Override
     public Block getBlockAt(int x, int y, int z) {
         return super.getBlockAt(x + origen.x, y + origen.y, z + origen.z);

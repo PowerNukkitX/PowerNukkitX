@@ -35,7 +35,7 @@ public class ShipwreckPopulator extends Populator {
     protected static final PNXStructure WITH_MAST = (PNXStructure) Registries.STRUCTURE.get("shipwreck/with_mast");
     protected static final PNXStructure UPSIDEDOWN_FULL = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_full");
     protected static final PNXStructure UPSIDEDOWN_FRONTHALF = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_fronthalf");
-    protected static final PNXStructure UPSIDEDOWN_BACKHALF = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_bachhalf");
+    protected static final PNXStructure UPSIDEDOWN_BACKHALF = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_backhalf");
     protected static final PNXStructure SIDEWAYS_FULL = (PNXStructure) Registries.STRUCTURE.get("shipwreck/sideways_full");
     protected static final PNXStructure SIDEWAYS_FRONTHALF = (PNXStructure) Registries.STRUCTURE.get("shipwreck/sideways_fronthalf");
     protected static final PNXStructure SIDEWAYS_BACKHALF = (PNXStructure) Registries.STRUCTURE.get("shipwreck/sideways_backhalf");
@@ -45,7 +45,7 @@ public class ShipwreckPopulator extends Populator {
     protected static final PNXStructure WITH_MAST_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/with_mast_degraded");
     protected static final PNXStructure UPSIDEDOWN_FULL_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_full_degraded");
     protected static final PNXStructure UPSIDEDOWN_FRONTHALF_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_fronthalf_degraded");
-    protected static final PNXStructure UPSIDEDOWN_BACKHALF_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_bachhalf_degraded");
+    protected static final PNXStructure UPSIDEDOWN_BACKHALF_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_backhalf_degraded");
     protected static final PNXStructure SIDEWAYS_FULL_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/sideways_full_degraded");
     protected static final PNXStructure SIDEWAYS_FRONTHALF_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/sideways_fronthalf_degraded");
     protected static final PNXStructure SIDEWAYS_BACKHALF_DEGRADED = (PNXStructure) Registries.STRUCTURE.get("shipwreck/sideways_backhalf_degraded");

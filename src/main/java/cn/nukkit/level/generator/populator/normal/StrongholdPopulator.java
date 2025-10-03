@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
@@ -11,7 +10,6 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.level.generator.object.structures.utils.StructureStart;
 import cn.nukkit.level.generator.populator.Populator;
-import cn.nukkit.tags.BiomeTags;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -21,10 +19,8 @@ public class StrongholdPopulator extends Populator {
 
     public static final String NAME = "normal_stronghold";
 
-
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 3;
-
 
     private final List<StrongholdStart> discoveredStarts = Lists.newArrayList();
 
