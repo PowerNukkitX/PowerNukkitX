@@ -809,4 +809,9 @@ public class BedrockSession {
         }
         throw new IllegalStateException("BedrockPacketCodec not found in channel pipeline");
     }
+
+    public void nudgePacer() {
+        if (!this.pacingEnabled) return;
+        this.scheduler.tryPump(this.peer, this.subClientId, this);
+    }
 }
