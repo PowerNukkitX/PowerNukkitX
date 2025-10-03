@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-100-bedrock-changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.100%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/the-copper-age---minecraft--bedrock-edition-1-21-111-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.111%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Protocol" src="https://img.shields.io/badge/protocol-827-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-844-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
@@ -58,30 +58,18 @@
 - 🪴 **Terra Generator**
 - ✏️ **Full Vanilla Command Support**
 - 🗃️ **Full Item, Block and Container Support**
+- 💖 **Most vanilla like third party server software**
 - 🗿 **More features to discover...**
 
 ## Install
 
 1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
-2. Download the [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip)
-3. Unzip `PowerNukkitX-Run.zip` to the directory you want.
-4. Set Java environment variables or unzip JDK to the same directory as the previous step.
+2. Download the [`powernukkitx.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx.jar)
+3. Start the server
 
-You want to use PowerNukkitX without the CLI?
-
-1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
-2. Download the [`powernukkitx-shaded.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-shaded.jar)
-
-## Usage
-
-Start PowerNukkitX when using the CLI
+Starting PowerNukkitX
 ```sh
-java -jar cli.jar
-```
-
-Starting PowerNukkitX when using the shaded jar (Without CLI)
-```sh
-java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-shaded.jar
+java -Dfile.encoding=UTF-8 -Djansi.passthrough=true -Dterminal.ansi=true -XX:+UseZGC -XX:+ZGenerational -XX:+UseStringDeduplication --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED -jar .\powernukkitx-shaded.jar
 ```
 
 ## Community & Support
