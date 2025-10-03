@@ -22,7 +22,7 @@ public abstract class RandomizableContainer {
 
     public void create(Inventory inventory, RandomSourceProvider random) {
         this.pools.forEach((pool, roll) -> {
-            for (int i = roll.getMin() == -1 ? roll.getMax() : random.nextInt(roll.getMin(), roll.getMax()); i > 0; --i) {
+            for (int i = roll.getMin() == -1 ? roll.getMax() : NukkitMath.randomRange(random, roll.getMin(), roll.getMax()); i > 0; --i) {
                 int result = random.nextBoundedInt(roll.getTotalWeight());
                 for (ItemEntry entry : pool) {
                     result -= entry.getWeight();

@@ -56,15 +56,15 @@ public class ObjectMonsterRoom extends RuledObjectGenerator {
             if(faceOptional.isPresent()) {
                 BlockFace face = faceOptional.get();
                 helper.setBlockStateAt(x, 0, z, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.valueOf(face.getName().toUpperCase()))));
-                object.getLevel().getScheduler().scheduleTask(() -> {
+                object.getLevel().getScheduler().scheduleDelayedTask(() -> {
                     CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) helper.getBlockAt(x, 0, z)).getOrCreateBlockEntity().getInventory(), random);
-                });
+                }, 10);
             }
         }
         helper.setBlockStateAt(0, 0, 0, MOB_SPAWNER);
-        object.getLevel().getScheduler().scheduleTask(() -> {
+        object.getLevel().getScheduler().scheduleDelayedTask(() -> {
             ((BlockEntityHolder<BlockEntityMobSpawner>) helper.getBlockAt(0, 0, 0)).getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(MOBS[random.nextInt(MOBS.length)]));
-        });
+        }, 10);
         object.merge(helper);
         return true;
     }

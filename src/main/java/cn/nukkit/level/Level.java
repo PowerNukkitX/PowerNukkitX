@@ -126,9 +126,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static cn.nukkit.level.biome.BiomeID.*;
 import static cn.nukkit.utils.Utils.dynamic;
-import static cn.nukkit.utils.Utils.random;
 
 /**
  * @author MagicDroidX (Nukkit Project)

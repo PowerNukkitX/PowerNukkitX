@@ -5,6 +5,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public abstract class StructureStart {
         this.level = level;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-        this.random = new NukkitRandom(level.getSeed());
+        this.random = new Xoroshiro128(level.getSeed());
         this.random.setSeed((long) chunkX * this.random.nextInt() ^ (long) chunkZ * this.random.nextInt() ^ level.getSeed());
         this.boundingBox = BoundingBox.getUnknownBox();
     }

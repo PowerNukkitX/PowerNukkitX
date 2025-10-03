@@ -1,13 +1,11 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockChest;
-import cn.nukkit.block.BlockMagma;
 import cn.nukkit.block.BlockStructureBlock;
 import cn.nukkit.block.BlockWater;
-import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
@@ -17,27 +15,22 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class ShipwreckPopulator extends Populator {
 
     public static final String NAME = "normal_shipwreck";
+
+    private static final MapChestPopulator MAP = new MapChestPopulator();
+    private static final SupplyChestPopulator SUPPLY = new SupplyChestPopulator();
+    private static final TreasureChestPopulator TREASURE = new TreasureChestPopulator();
 
     protected static final PNXStructure WITH_MAST = (PNXStructure) Registries.STRUCTURE.get("shipwreck/with_mast");
     protected static final PNXStructure UPSIDEDOWN_FULL = (PNXStructure) Registries.STRUCTURE.get("shipwreck/upsidedown_full");
@@ -113,9 +106,9 @@ public class ShipwreckPopulator extends Populator {
             PNXStructure template;
             boolean beach = definition.getTags().contains(BiomeTags.BEACH);
             if (beach) {
-                template = STRUCTURE_LOCATION_BEACHED[random.nextBoundedInt(STRUCTURE_LOCATION_BEACHED.length)];
+                template = STRUCTURE_LOCATION_BEACHED[random.nextInt(STRUCTURE_LOCATION_BEACHED.length)];
             } else {
-                template = STRUCTURE_LOCATION_OCEAN[random.nextBoundedInt(STRUCTURE_LOCATION_OCEAN.length)];
+                template = STRUCTURE_LOCATION_OCEAN[random.nextInt(STRUCTURE_LOCATION_OCEAN.length)];
             }
 
             BlockVector3 size = new BlockVector3(template.getSizeX(), template.getSizeY(), template.getSizeZ());
@@ -163,6 +156,16 @@ public class ShipwreckPopulator extends Populator {
             for(Block block : manager.getBlocks()) {
                 if(block instanceof BlockAir) manager.unsetBlockStateAt(block);
                 if(block instanceof BlockStructureBlock) manager.unsetBlockStateAt(block);
+                if(block instanceof BlockChest chest) {
+                    RandomizableContainer container = switch (random.nextInt(6)) {
+                        case 0 -> MAP;
+                        case 1, 2 -> TREASURE;
+                        default -> SUPPLY;
+                    };
+                    level.getScheduler().scheduleTask(() -> {
+                        container.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                    });
+                }
                 if(block.getFloorY() <= SEA_LEVEL) {
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }
@@ -176,6 +179,63 @@ public class ShipwreckPopulator extends Populator {
         template.preparePlace(vec, manager);
     }
 
+    protected static class MapChestPopulator extends RandomizableContainer {
+        public MapChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.EMPTY_MAP, 1)); // 395 exploration_map
+            this.pools.put(pool1.build(), new RollEntry(1, pool1.getTotalWeight()));
+
+            PoolBuilder pool2 = new PoolBuilder()
+                    .register(new ItemEntry(Item.COMPASS, 1))
+                    .register(new ItemEntry(Item.EMPTY_MAP, 1)) // 395
+                    .register(new ItemEntry(Item.CLOCK, 1))
+                    .register(new ItemEntry(Item.PAPER, 0, 10, 20))
+                    .register(new ItemEntry(Item.FEATHER, 0, 5, 10))
+                    .register(new ItemEntry(Item.BOOK, 0, 5, 5));
+            this.pools.put(pool2.build(), new RollEntry(3, pool2.getTotalWeight()));
+        }
+    }
+
+    protected static class SupplyChestPopulator extends RandomizableContainer {
+        public SupplyChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.PAPER, 0, 12, 8))
+                    .register(new ItemEntry(Item.POTATO, 0, 6, 2, 7))
+                    .register(new ItemEntry(Item.POISONOUS_POTATO, 0, 6, 2, 7))
+                    .register(new ItemEntry(Item.CARROT, 0, 8, 4, 7))
+                    .register(new ItemEntry(Block.WHEAT, 0, 21, 8, 7))
+                    .register(new ItemEntry(Item.COAL, 0, 8, 2, 6))
+                    .register(new ItemEntry(Item.ROTTEN_FLESH, 0, 24, 5, 5))
+                    .register(new ItemEntry(Block.REEDS, 0, 3, 2))
+                    .register(new ItemEntry(Block.PUMPKIN, 0, 3, 2))
+                    .register(new ItemEntry(Item.GUNPOWDER, 0, 5, 3))
+                    .register(new ItemEntry(Block.TNT, 0, 2, 1))
+                    .register(new ItemEntry(Item.LEATHER_HELMET, 1, 1, 1,3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_CHESTPLATE, 1, 1, 1,3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_LEGGINGS, 1, 1, 1, 3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_BOOTS, 1, 1, 1, 3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.SUSPICIOUS_STEW, 10));
+            this.pools.put(pool1.build(), new RollEntry(10, 3, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class TreasureChestPopulator extends RandomizableContainer {
+        public TreasureChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 5, 90))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 5, 10))
+                    .register(new ItemEntry(Item.EMERALD, 0, 5, 40))
+                    .register(new ItemEntry(Item.DIAMOND, 5))
+                    .register(new ItemEntry(Item.EXPERIENCE_BOTTLE, 5));
+            this.pools.put(pool1.build(), new RollEntry(6, 3, pool1.getTotalWeight()));
+
+            PoolBuilder pool2 = new PoolBuilder()
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 10, 50))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 10, 10))
+                    .register(new ItemEntry(Item.DYE, 4, 10, 20));
+            this.pools.put(pool2.build(), new RollEntry(5, 2, pool2.getTotalWeight()));
+        }
+    }
 
     @Override
     public String name() {

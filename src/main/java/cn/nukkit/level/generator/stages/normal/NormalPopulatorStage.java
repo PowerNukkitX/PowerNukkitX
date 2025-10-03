@@ -18,7 +18,8 @@ public class NormalPopulatorStage extends PopulatorStage {
             OceanMonumentPopulator.NAME,
             OceanRuinPopulator.NAME,
             PillagerOutpostPopulator.NAME,
-            ShipwreckPopulator.NAME
+            ShipwreckPopulator.NAME,
+            StrongholdPopulator.NAME
     });
 
     @Override
