@@ -1,11 +1,21 @@
 import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.StandardCopyOption
+// Explicit Gradle API imports to fix Kotlin DSL unresolved references
+import org.gradle.external.javadoc.CoreJavadocOptions
+import org.gradle.api.tasks.AbstractCopyTask
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Copy
+import org.gradle.api.publish.maven.MavenPublication
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.testing.jacoco.tasks.JacocoReport
 
 plugins {
     `java-library`
     `maven-publish`
+    java
     idea
     jacoco
     id("io.github.goooler.shadow") version "8.1.7"
@@ -17,15 +27,8 @@ group = "org.powernukkitx"
 version = "2.0.0-SNAPSHOT"
 description = "PNX Server"
 java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven("https://repo.maven.apache.org/maven2/")
-    maven("https://jitpack.io")
-    maven("https://repo.opencollab.dev/maven-releases/")
-    maven("https://repo.opencollab.dev/maven-snapshots/")
-}
 
 dependencies {
     api(libs.bundles.netty)
@@ -127,7 +130,7 @@ tasks.register<DefaultTask>("buildForGithubAction") {
 }
 
 tasks.build {
-    dependsOn(tasks.shadowJar)
+    dependsOn("shadowJar")
     group = "alpha build"
 }
 
@@ -147,16 +150,16 @@ tasks.test {
     useJUnitPlatform()
     jvmArgs(listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED"))
     jvmArgs(listOf("--add-opens", "java.base/java.io=ALL-UNNAMED"))
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+    finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
 
-tasks.jacocoTestReport {
+tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
         csv.required = false
         xml.required = true
         html.required = false
     }
-    dependsOn(tasks.test) // tests are required to run before generating the report
+    dependsOn("test") // tests are required to run before generating the report
 }
 
 tasks.withType<AbstractCopyTask>() {
@@ -164,19 +167,21 @@ tasks.withType<AbstractCopyTask>() {
 }
 
 tasks.named<AbstractArchiveTask>("sourcesJar") {
-    destinationDirectory = layout.buildDirectory
+    destinationDirectory.set(layout.buildDirectory)
 }
 
-tasks.jar {
-    destinationDirectory = layout.buildDirectory
-    doLast {//execution phase
-        val f: RegularFile = archiveFile.get()
-        val tf: RegularFile = layout.buildDirectory.file("${project.description}.jar").get()
-        Files.copy(Path.of(f.asFile.absolutePath), Path.of(tf.asFile.absolutePath), StandardCopyOption.REPLACE_EXISTING)
-    }
+// Improve build reproducibility for better caching
+tasks.withType<AbstractArchiveTask> {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
 }
 
-tasks.shadowJar {
+tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
+    destinationDirectory.set(layout.buildDirectory)
+    archiveFileName.set("${project.description}.jar")
+}
+
+tasks.named<ShadowJar>("shadowJar") {
     dependsOn("copyDependencies")
     manifest {
         attributes(
@@ -186,7 +191,7 @@ tasks.shadowJar {
 
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java) //required to fix shadowJar log4j2 issue
 
-    destinationDirectory = layout.buildDirectory
+    destinationDirectory.set(layout.buildDirectory)
 }
 
 tasks.register<Copy>("copyDependencies") {
