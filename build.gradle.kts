@@ -236,6 +236,7 @@ publishing {
 
     repositories {
         maven {
+            name = "pnx"
             url = uri("https://repo.powernukkitx.org/releases")
             credentials {
                 username = findProperty("pnxUsername") as String? ?: System.getenv("PNX_REPO_USERNAME")
