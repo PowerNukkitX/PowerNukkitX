@@ -215,21 +215,23 @@ tasks.javadoc {
 }
 
 publishing {
-    publications.create<MavenPublication>("maven") {
-        from(components["java"])
-        artifactId = "server"
-        pom {
-            url.set("https://github.com/PowerNukkitX/PowerNukkitX")
-            licenses {
-                license {
-                    name.set("MIT License")
-                    url.set("https://opensource.org/licenses/MIT")
-                }
-            }
-            scm {
-                connection.set("scm:git:git://github.com/PowerNukkitX/PowerNukkitX.git")
-                developerConnection.set("scm:git:ssh://github.com/PowerNukkitX/PowerNukkitX.git")
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+            artifactId = "server"
+            pom {
                 url.set("https://github.com/PowerNukkitX/PowerNukkitX")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/PowerNukkitX/PowerNukkitX.git")
+                    developerConnection.set("scm:git:ssh://github.com/PowerNukkitX/PowerNukkitX.git")
+                    url.set("https://github.com/PowerNukkitX/PowerNukkitX")
+                }
             }
         }
     }
@@ -239,12 +241,15 @@ publishing {
             name = "pnx"
             url = uri("https://repo.powernukkitx.org/releases")
             credentials {
-                username = findProperty("pnxUsername") as String? ?: System.getenv("PNX_REPO_USERNAME")
-                password = findProperty("pnxPassword") as String? ?: System.getenv("PNX_REPO_PASSWORD")
+                username = (findProperty("pnxUsername") as String?)
+                    ?: System.getenv("PNX_REPO_USERNAME")
+                password = (findProperty("pnxPassword") as String?)
+                    ?: System.getenv("PNX_REPO_PASSWORD")
             }
         }
     }
 }
+
 
 
 tasks.withType<JavaCompile> {
