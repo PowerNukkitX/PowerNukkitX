@@ -241,10 +241,12 @@ publishing {
             name = "pnx"
             url = uri("https://repo.powernukkitx.org/releases")
             credentials {
-                username = (findProperty("pnxUsername") as String?)
-                    ?: System.getenv("PNX_REPO_USERNAME")
-                password = (findProperty("pnxPassword") as String?)
-                    ?: System.getenv("PNX_REPO_PASSWORD")
+                username = providers.gradleProperty("pnxUsername")
+                    .orElse(providers.environmentVariable("PNX_REPO_USERNAME"))
+                    .orNull
+                password = providers.gradleProperty("pnxPassword")
+                    .orElse(providers.environmentVariable("PNX_REPO_PASSWORD"))
+                    .orNull
             }
         }
     }
