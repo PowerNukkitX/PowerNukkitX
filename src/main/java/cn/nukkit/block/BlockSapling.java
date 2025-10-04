@@ -72,12 +72,16 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
+            if (!BlockFlower.isSupportValid(down())) {
+                return false;
+            }
+
             if (player != null && !player.isCreative()) {
                 item.count--;
             }
 
             this.level.addParticle(new BoneMealParticle(this));
-            if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
+            if (ThreadLocalRandom.current().nextFloat() >= 0.45f) {
                 return true;
             }
 
