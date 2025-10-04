@@ -84,6 +84,7 @@ public class NBTIO {
             int ver = tag.getInt("version");
             if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
                 tag = ItemUpdaters.updateItem(tag, BLOCK_STATE_VERSION_NO_REVISION);
+                name = tag.getString("Name");
             }
         }
 

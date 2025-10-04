@@ -198,6 +198,8 @@ public interface CommonBlockProperties {
 
     BooleanPropertyType POWERED_BIT = BooleanPropertyType.of("powered_bit", false);
 
+    IntPropertyType POWERED_SHELF_TYPE = IntPropertyType.of("powered_shelf_type", 0, 3, 0);
+
     EnumPropertyType<PrismarineBlockType> PRISMARINE_BLOCK_TYPE = EnumPropertyType.of("prismarine_block_type", PrismarineBlockType.class, PrismarineBlockType.values()[0]);
 
     IntPropertyType PROPAGULE_STAGE = IntPropertyType.of("propagule_stage", 0, 4, 0);

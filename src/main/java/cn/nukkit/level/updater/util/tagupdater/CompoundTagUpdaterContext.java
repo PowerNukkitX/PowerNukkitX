@@ -24,7 +24,9 @@ public class CompoundTagUpdaterContext {
     }
 
     public static int makeVersion(int major, int minor, int patch) {
-        return (patch << 8) | (minor << 16) | (major << 24);
+        return (major << 24) | //major
+                (minor << 16) | //minor
+                (patch << 8); //patch
     }
 
     public CompoundTagUpdater.Builder addUpdater(int major, int minor, int patch) {

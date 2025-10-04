@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.copper.chain.AbstractBlockCopperChain;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -35,10 +36,13 @@ public class BlockLantern extends BlockFlowable {
     private boolean isBlockAboveValid() {
         Block support = up();
         switch (support.getId()) {
-            case CHAIN, IRON_BARS, HOPPER -> {
+            case IRON_CHAIN, IRON_BARS, HOPPER -> {
                 return true;
             }
             default -> {
+                if (support instanceof AbstractBlockCopperChain) {
+                    return true;
+                }
                 if (support instanceof BlockWallBase || support instanceof BlockFence) {
                     return true;
                 }

@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
@@ -10,26 +9,25 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-
-public class BlockChain extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHAIN, CommonBlockProperties.PILLAR_AXIS);
+public class BlockIronChain extends BlockTransparent {
+    public static final BlockProperties PROPERTIES = new BlockProperties(IRON_CHAIN, CommonBlockProperties.PILLAR_AXIS);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockChain() {
+    public BlockIronChain() {
         super(PROPERTIES.getDefaultState());
     }
 
-    public BlockChain(BlockState blockState) {
+    public BlockIronChain(BlockState blockState) {
         super(blockState);
     }
 
     @Override
     public String getName() {
-        return "Chain";
+        return "Iron Chain";
     }
 
     public BlockFace.Axis getPillarAxis() {

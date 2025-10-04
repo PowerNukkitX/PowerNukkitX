@@ -58,7 +58,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("item", new CommandParameter[]{
                 CommandParameter.newEnum("item", new String[]{"item"}),
-                CommandParameter.newEnum("values", new String[]{"nbt", "bundle", "meta"})
+                CommandParameter.newEnum("values", new String[]{"nbt", "bundle", "meta", "data"})
         });
         this.commandParameters.put("str", new CommandParameter[]{
                 CommandParameter.newEnum("str", new String[]{"str"}),
@@ -225,6 +225,12 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     case "meta" -> {
                         Item item = player.getInventory().getItemInHand();
                         player.sendMessage(item.getId() + "#" + item.getDamage());
+                        return 0;
+                    }
+                    case "data" -> {
+                        Item item = player.getInventory().getItemInHand();
+                        CompoundTag nbt = NBTIO.putItemHelper(item);
+                        player.sendMessage(nbt.toSNBT(2));
                         return 0;
                     }
                 }

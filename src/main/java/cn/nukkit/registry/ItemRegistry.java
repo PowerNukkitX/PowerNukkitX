@@ -2,8 +2,10 @@ package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
+import cn.nukkit.item.armor.copper.*;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
+import cn.nukkit.item.tools.copper.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
@@ -577,6 +579,23 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(HARNESS_RED, ItemHarnessRed.class);
             register(HARNESS_WHITE, ItemHarnessWhite.class);
             register(HARNESS_YELLOW, ItemHarnessYellow.class);
+
+            /**
+             * @since 1.21.110
+             */
+            register(COPPER_BOOTS, ItemCopperBoots.class);
+            register(COPPER_CHESTPLATE, ItemCopperChestplate.class);
+            register(COPPER_HELMET, ItemCopperHelmet.class);
+            register(COPPER_LEGGINGS, ItemCopperLeggings.class);
+            register(COPPER_HORSE_ARMOR, ItemCopperHorseArmor.class);
+            register(COPPER_GOLEM_SPAWN_EGG, ItemCopperGolemSpawnEgg.class);
+            register(COPPER_NUGGET, ItemNuggetCopper.class);
+            register(COPPER_AXE, ItemCopperAxe.class);
+            register(COPPER_HOE, ItemCopperHoe.class);
+            register(COPPER_PICKAXE, ItemCopperPickaxe.class);
+            register(COPPER_SHOVEL, ItemCopperShovel.class);
+            register(COPPER_SWORD, ItemCopperSword.class);
+
             registerBlockItem();
         } catch (RegisterException e) {
             throw new RuntimeException(e);

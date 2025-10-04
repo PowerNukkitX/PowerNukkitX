@@ -326,7 +326,7 @@ public interface BlockID {
 
     String CAVE_VINES_HEAD_WITH_BERRIES = "minecraft:cave_vines_head_with_berries";
 
-    String CHAIN = "minecraft:chain";
+    String IRON_CHAIN = "minecraft:iron_chain";
 
     String CHAIN_COMMAND_BLOCK = "minecraft:chain_command_block";
 
@@ -1397,8 +1397,6 @@ public interface BlockID {
     String LIGHT_GRAY_WOOL = "minecraft:light_gray_wool";
 
     String LIGHT_WEIGHTED_PRESSURE_PLATE = "minecraft:light_weighted_pressure_plate";
-
-    String LIGHTNING_ROD = "minecraft:lightning_rod";
 
     String LILAC = "minecraft:lilac";
 
@@ -2529,4 +2527,77 @@ public interface BlockID {
     String ZOMBIE_HEAD = "minecraft:zombie_head";
 
     String DRIED_GHAST = "minecraft:dried_ghast";
+
+    /**
+     * @since 1.21.110
+     */
+
+    String COPPER_BARS = "minecraft:copper_bars";
+    String EXPOSED_COPPER_BARS = "minecraft:exposed_copper_bars";
+    String WEATHERED_COPPER_BARS = "minecraft:weathered_copper_bars";
+    String OXIDIZED_COPPER_BARS = "minecraft:oxidized_copper_bars";
+    String WAXED_COPPER_BARS = "minecraft:waxed_copper_bars";
+    String WAXED_EXPOSED_COPPER_BARS = "minecraft:waxed_exposed_copper_bars";
+    String WAXED_WEATHERED_COPPER_BARS = "minecraft:waxed_weathered_copper_bars";
+    String WAXED_OXIDIZED_COPPER_BARS = "minecraft:waxed_oxidized_copper_bars";
+    
+    String COPPER_CHAIN = "minecraft:copper_chain";
+    String EXPOSED_COPPER_CHAIN = "minecraft:exposed_copper_chain";
+    String WEATHERED_COPPER_CHAIN = "minecraft:weathered_copper_chain";
+    String OXIDIZED_COPPER_CHAIN = "minecraft:oxidized_copper_chain";
+    String WAXED_COPPER_CHAIN = "minecraft:waxed_copper_chain";
+    String WAXED_EXPOSED_COPPER_CHAIN = "minecraft:waxed_exposed_copper_chain";
+    String WAXED_WEATHERED_COPPER_CHAIN = "minecraft:waxed_weathered_copper_chain";
+    String WAXED_OXIDIZED_COPPER_CHAIN = "minecraft:waxed_oxidized_copper_chain";
+
+    String COPPER_CHEST = "minecraft:copper_chest";
+    String EXPOSED_COPPER_CHEST = "minecraft:exposed_copper_chest";
+    String WEATHERED_COPPER_CHEST = "minecraft:weathered_copper_chest";
+    String OXIDIZED_COPPER_CHEST = "minecraft:oxidized_copper_chest";
+    String WAXED_COPPER_CHEST = "minecraft:waxed_copper_chest";
+    String WAXED_EXPOSED_COPPER_CHEST = "minecraft:waxed_exposed_copper_chest";
+    String WAXED_WEATHERED_COPPER_CHEST = "minecraft:waxed_weathered_copper_chest";
+    String WAXED_OXIDIZED_COPPER_CHEST = "minecraft:waxed_oxidized_copper_chest";
+
+    String COPPER_GOLEM_STATUE = "minecraft:copper_golem_statue";
+    String EXPOSED_COPPER_GOLEM_STATUE = "minecraft:exposed_copper_golem_statue";
+    String WEATHERED_COPPER_GOLEM_STATUE = "minecraft:weathered_copper_golem_statue";
+    String OXIDIZED_COPPER_GOLEM_STATUE = "minecraft:oxidized_copper_golem_statue";
+    String WAXED_COPPER_GOLEM_STATUE = "minecraft:waxed_copper_golem_statue";
+    String WAXED_EXPOSED_COPPER_GOLEM_STATUE = "minecraft:waxed_exposed_copper_golem_statue";
+    String WAXED_WEATHERED_COPPER_GOLEM_STATUE = "minecraft:waxed_weathered_copper_golem_statue";
+    String WAXED_OXIDIZED_COPPER_GOLEM_STATUE = "minecraft:waxed_oxidized_copper_golem_statue";
+
+    String COPPER_LANTERN = "minecraft:copper_lantern";
+    String EXPOSED_COPPER_LANTERN = "minecraft:exposed_copper_lantern";
+    String WEATHERED_COPPER_LANTERN = "minecraft:weathered_copper_lantern";
+    String OXIDIZED_COPPER_LANTERN = "minecraft:oxidized_copper_lantern";
+    String WAXED_COPPER_LANTERN = "minecraft:waxed_copper_lantern";
+    String WAXED_EXPOSED_COPPER_LANTERN = "minecraft:waxed_exposed_copper_lantern";
+    String WAXED_WEATHERED_COPPER_LANTERN = "minecraft:waxed_weathered_copper_lantern";
+    String WAXED_OXIDIZED_COPPER_LANTERN = "minecraft:waxed_oxidized_copper_lantern";
+
+    String COPPER_TORCH = "minecraft:copper_torch";
+
+    String LIGHTNING_ROD = "minecraft:lightning_rod";
+    String EXPOSED_LIGHTNING_ROD = "minecraft:exposed_lightning_rod";
+    String WEATHERED_LIGHTNING_ROD = "minecraft:weathered_lightning_rod";
+    String OXIDIZED_LIGHTNING_ROD = "minecraft:oxidized_lightning_rod";
+    String WAXED_LIGHTNING_ROD = "minecraft:waxed_lightning_rod";
+    String WAXED_EXPOSED_LIGHTNING_ROD = "minecraft:waxed_exposed_lightning_rod";
+    String WAXED_WEATHERED_LIGHTNING_ROD = "minecraft:waxed_weathered_lightning_rod";
+    String WAXED_OXIDIZED_LIGHTNING_ROD = "minecraft:waxed_oxidized_lightning_rod";
+
+    String OAK_SHELF = "minecraft:oak_shelf";
+    String SPRUCE_SHELF = "minecraft:spruce_shelf";
+    String BIRCH_SHELF = "minecraft:birch_shelf";
+    String JUNGLE_SHELF = "minecraft:jungle_shelf";
+    String ACACIA_SHELF = "minecraft:acacia_shelf";
+    String DARK_OAK_SHELF = "minecraft:dark_oak_shelf";
+    String MANGROVE_SHELF = "minecraft:mangrove_shelf";
+    String CHERRY_SHELF = "minecraft:cherry_shelf";
+    String PALE_OAK_SHELF = "minecraft:pale_oak_shelf";
+    String BAMBOO_SHELF = "minecraft:bamboo_shelf";
+    String CRIMSON_SHELF = "minecraft:crimson_shelf";
+    String WARPED_SHELF = "minecraft:warped_shelf";
 }

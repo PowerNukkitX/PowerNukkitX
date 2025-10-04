@@ -9,8 +9,6 @@ import java.util.function.Function;
 public class ItemUpdater_1_21_0 implements Updater {
     public static final Updater INSTANCE = new ItemUpdater_1_21_0();
 
-
-
     @Override
     public void registerUpdaters(CompoundTagUpdaterContext ctx) {
         ctx.addUpdater(1, 21, 0)
