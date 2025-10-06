@@ -9,6 +9,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.EntityDataTypes;
+import java.util.EnumSet;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -111,6 +114,16 @@ public class Binary {
             stream.putUnsignedVarInt(key.getValue());
             Function<Object, Object> transformer = key.getTransformer();
             Object applyData = transformer.apply(data);
+
+            if (key == EntityDataTypes.FLAGS && data instanceof EnumSet) {
+                @SuppressWarnings("unchecked")
+                EnumSet<EntityFlag> set = (EnumSet<EntityFlag>) data;
+                applyData = packEntityFlags(set, 0);
+            } else if (key == EntityDataTypes.FLAGS_2 && data instanceof EnumSet) {
+                @SuppressWarnings("unchecked")
+                EnumSet<EntityFlag> set = (EnumSet<EntityFlag>) data;
+                applyData = packEntityFlags(set, 64);
+            }
 
             EntityDataFormat format = EntityDataFormat.from(applyData.getClass());
             stream.putUnsignedVarInt(format.ordinal());
@@ -479,4 +492,15 @@ public class Binary {
         return appendedBytes;
     }
 
+    private static long packEntityFlags(EnumSet<EntityFlag> set, int base) {
+        long bits = 0L;
+        if (set == null || set.isEmpty()) return bits;
+        for (EntityFlag f : set) {
+            int id = f.getValue();
+            if (id >= base && id < base + 64) {
+                bits |= (1L << (id - base));
+            }
+        }
+        return bits;
+    }
 }
