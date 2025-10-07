@@ -10,6 +10,7 @@ import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class EntityHumanType extends EntityCreature implements IHuman {
+public abstract class EntityHumanType extends EntityCreature implements IHuman, InventoryHolder {
 
     protected HumanInventory inventory;
     protected HumanEnderChestInventory enderChestInventory;

@@ -19,7 +19,10 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
@@ -543,7 +546,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean isBlocking() {
-        return this.getDataFlag(EntityFlag.BLOCKING);
+        if(this.getDataFlag(EntityFlag.BLOCKING)) {
+            if(this instanceof InventoryHolder holder) {
+                if(holder.getInventory() instanceof HumanInventory inventory) {
+                    return inventory.getItemInHand() instanceof ItemShield;
+                }
+            }
+        }
+        return false;
     }
 
     public void setBlocking(boolean value) {
