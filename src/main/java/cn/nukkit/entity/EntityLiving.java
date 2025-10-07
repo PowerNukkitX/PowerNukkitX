@@ -19,7 +19,10 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
@@ -543,24 +546,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean isBlocking() {
-        return this.getDataFlag(EntityFlag.BLOCKING);
+        if(this.getDataFlag(EntityFlag.BLOCKING)) {
+            if(this instanceof InventoryHolder holder) {
+                if(holder.getInventory() instanceof HumanInventory inventory) {
+                    return inventory.getItemInHand() instanceof ItemShield;
+                }
+            }
+        }
+        return false;
     }
 
     public void setBlocking(boolean value) {
-        EnumSet<EntityFlag> ext = this.getEntityDataMap().getOrCreateFlags2();
-        if (value) {
-            ext.add(EntityFlag.BLOCKING);
-        } else {
-            ext.remove(EntityFlag.BLOCKING);
-        }
-        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, ext);
-
-        EnumSet<EntityFlag> wire = EnumSet.copyOf(ext);
-        wire.add(EntityFlag.TRANSITION_BLOCKING);
-
-        EntityDataMap delta = new EntityDataMap();
-        delta.put(EntityDataTypes.FLAGS_2, wire);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
+        this.setDataFlagExtend(EntityFlag.BLOCKING, value, false);
+        this.setDataFlagExtend(EntityFlag.TRANSITION_BLOCKING, value, true);
     }
 
     @Override

@@ -21,20 +21,13 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     public EnumSet<EntityFlag> getOrCreateFlags() {
         EnumSet<EntityFlag> flags = get(FLAGS);
         if (flags == null) {
-            flags = EnumSet.noneOf(EntityFlag.class);
-            this.map.put(FLAGS, flags);
+            flags = get(FLAGS_2);
+            if (flags == null) {
+                flags = EnumSet.noneOf(EntityFlag.class);
+            }
+            this.putFlags(flags);
         }
         return flags;
-    }
-
-    @NonNull
-    public EnumSet<EntityFlag> getOrCreateFlags2() {
-        EnumSet<EntityFlag> flags2 = get(FLAGS_2);
-        if (flags2 == null) {
-            flags2 = EnumSet.noneOf(EntityFlag.class);
-            this.map.put(FLAGS_2, flags2);
-        }
-        return flags2;
     }
 
     public EnumSet<EntityFlag> getFlags() {
@@ -43,21 +36,26 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
 
     public EntityFlag setFlag(EntityFlag flag, boolean value) {
         Objects.requireNonNull(flag, "flag");
-        EnumSet<EntityFlag> target = (flag.getValue() >= 64) ? this.getOrCreateFlags2() : this.getOrCreateFlags();
+        EnumSet<EntityFlag> flags = this.getOrCreateFlags();
         if (value) {
-            target.add(flag);
+            flags.add(flag);
         } else {
-            target.remove(flag);
+            flags.remove(flag);
         }
         return flag;
     }
 
     public boolean existFlag(EntityFlag flag) {
         Objects.requireNonNull(flag, "flag");
-        EnumSet<EntityFlag> f1 = this.getOrCreateFlags();
-        if (f1.contains(flag)) return true;
-        EnumSet<EntityFlag> f2 = this.getOrCreateFlags2();
-        return f2.contains(flag);
+        EnumSet<EntityFlag> flags = this.getOrCreateFlags();
+        return flags.contains(flag);
+    }
+
+    public EnumSet<EntityFlag> putFlags(EnumSet<EntityFlag> flags) {
+        Objects.requireNonNull(flags, "flags");
+        this.map.put(FLAGS, flags);
+        this.map.put(FLAGS_2, flags);
+        return flags;
     }
 
     @SuppressWarnings("unchecked")
@@ -112,11 +110,8 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
         checkNotNull(key, "type");
         checkNotNull(value, "value was null for %s", key);
 
-        if (key == FLAGS) {
-            return this.map.put(FLAGS, (EnumSet<EntityFlag>) value);
-        }
-        if (key == FLAGS_2) {
-            return this.map.put(FLAGS_2, (EnumSet<EntityFlag>) value);
+        if (key == FLAGS || key == FLAGS_2) {
+            return this.putFlags((EnumSet<EntityFlag>) value);
         }
 
         if (Number.class.isAssignableFrom(value.getClass())) {
