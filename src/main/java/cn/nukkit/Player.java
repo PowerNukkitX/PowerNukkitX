@@ -602,16 +602,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.needDimensionChangeACK = true;
     }
 
-    private void updateBlockingFlag() {
-        boolean shouldBlock = this.isItemCoolDownEnd("shield")
-                && (this.isSneaking() || getRiding() != null)
-                && (this.getInventory().getItemInHand() instanceof ItemShield || this.getOffhandInventory().getItem(0) instanceof ItemShield);
-
-        if (isBlocking() != shouldBlock) {
-            this.setBlocking(shouldBlock);
-        }
-    }
-
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -2801,8 +2791,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned && !this.dummyBossBars.isEmpty() && currentTick % 100 == 0) {
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
         }
-
-        updateBlockingFlag();
 
         PlayerFood foodData = getFoodData();
         if (this.ticksLived % 40 == 0 && foodData != null) {
