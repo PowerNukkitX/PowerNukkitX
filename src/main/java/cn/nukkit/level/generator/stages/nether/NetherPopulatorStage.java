@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.stages.nether;
 
+import cn.nukkit.level.generator.populator.generic.PopulatorRuinedPortal;
 import cn.nukkit.level.generator.populator.nether.*;
 import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaLavaPopulator;
 import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaMagmaPopulator;
@@ -39,7 +40,8 @@ public class NetherPopulatorStage extends PopulatorStage {
             WarpedTwistingVinesPopulator.NAME,
             NetherBlackstonePopulator.NAME,
             NetherGravelPopulator.NAME,
-            NetherFortressPopulator.NAME
+            NetherFortressPopulator.NAME,
+            PopulatorRuinedPortal.NAME
     });
 
     @Override

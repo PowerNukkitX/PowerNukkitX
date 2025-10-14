@@ -1,8 +1,6 @@
 package cn.nukkit.math;
 
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
-
 import java.math.BigInteger;
 
 /**
@@ -13,7 +11,6 @@ public class NukkitMath {
     private static final Integer ZERO_INTEGER = 0;
     private static final Short ZERO_SHORT = 0;
     private static final Long ZERO_LONG = 0L;
-
 
     public static boolean isZero(Number storage) {
         return ZERO_BYTE.equals(storage)

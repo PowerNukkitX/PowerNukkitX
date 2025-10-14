@@ -38,7 +38,7 @@ public class SwampHutPopulator extends Populator {
         }
     }
 
-    protected boolean canGenerate(RandomSourceProvider random, IChunk chunk) {
+    public boolean canGenerate(RandomSourceProvider random, IChunk chunk) {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         return ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ) && isBiomeValid(chunk);

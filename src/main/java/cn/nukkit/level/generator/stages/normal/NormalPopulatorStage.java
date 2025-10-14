@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.stages.normal;
 
+import cn.nukkit.level.generator.populator.generic.PopulatorRuinedPortal;
 import cn.nukkit.level.generator.populator.normal.*;
 import cn.nukkit.level.generator.stages.PopulatorStage;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -20,7 +21,8 @@ public class NormalPopulatorStage extends PopulatorStage {
             PillagerOutpostPopulator.NAME,
             ShipwreckPopulator.NAME,
             StrongholdPopulator.NAME,
-            SwampHutPopulator.NAME
+            SwampHutPopulator.NAME,
+            PopulatorRuinedPortal.NAME
     });
 
     @Override

@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -37,6 +38,10 @@ public class PNXStructure extends AbstractStructure {
         this.sizeZ = sizeZ;
         this.palette = palette;
         this.blocks = blocks;
+    }
+
+    public BlockVector3 getBounds() {
+        return new BlockVector3(sizeX, sizeY, sizeZ);
     }
 
     public static PNXStructure fromNbt(CompoundTag nbt) {

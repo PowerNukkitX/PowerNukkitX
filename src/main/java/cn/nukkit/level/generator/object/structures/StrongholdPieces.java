@@ -693,12 +693,12 @@ public class StrongholdPieces {
                 this.hasPlacedChest = true;
 
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
-
-                BlockVector3 vec = new BlockVector3(this.getWorldX(3, 3), this.getWorldY(2), this.getWorldZ(3, 3));
-                if (boundingBox.isInside(vec)) {
+                BlockManager chest = new BlockManager(level.getLevel());
+                this.placeBlock(chest, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
+                level.merge(chest);
+                for(Block block : chest.getBlocks()) {
                     level.getLevel().getScheduler().scheduleTask(() -> {
-                        CORRIDOR.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
+                        CORRIDOR.create(((BlockEntityHolder<BlockEntityChest>) block).getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
             }

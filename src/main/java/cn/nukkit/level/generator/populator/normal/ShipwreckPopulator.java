@@ -162,9 +162,9 @@ public class ShipwreckPopulator extends Populator {
                         case 1, 2 -> TREASURE;
                         default -> SUPPLY;
                     };
-                    level.getScheduler().scheduleTask(() -> {
+                    level.getScheduler().scheduleDelayedTask(() -> {
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                    });
+                    }, 10);
                 }
                 if(block.getFloorY() <= SEA_LEVEL) {
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());

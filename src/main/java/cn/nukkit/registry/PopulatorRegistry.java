@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.level.generator.populator.generic.PopulatorRuinedPortal;
 import cn.nukkit.level.generator.populator.normal.*;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.nether.*;
@@ -72,6 +73,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
             this.register(ShipwreckPopulator.NAME, ShipwreckPopulator.class);
             this.register(StrongholdPopulator.NAME, StrongholdPopulator.class);
             this.register(SwampHutPopulator.NAME, SwampHutPopulator.class);
+            this.register(PopulatorRuinedPortal.NAME, PopulatorRuinedPortal.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
