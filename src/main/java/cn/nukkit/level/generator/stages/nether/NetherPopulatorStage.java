@@ -8,6 +8,7 @@ import cn.nukkit.level.generator.populator.nether.basalt_delta.BasaltDeltaPillar
 import cn.nukkit.level.generator.populator.nether.crimson.CrimsonFungiTreePopulator;
 import cn.nukkit.level.generator.populator.nether.crimson.CrimsonGrassesPopulator;
 import cn.nukkit.level.generator.populator.nether.crimson.CrimsonWeepingVinesPopulator;
+import cn.nukkit.level.generator.populator.nether.soulsand_valley.NetherFossilPopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedFungiTreePopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedTwistingVinesPopulator;
@@ -41,7 +42,8 @@ public class NetherPopulatorStage extends PopulatorStage {
             NetherBlackstonePopulator.NAME,
             NetherGravelPopulator.NAME,
             NetherFortressPopulator.NAME,
-            PopulatorRuinedPortal.NAME
+            PopulatorRuinedPortal.NAME,
+            NetherFossilPopulator.NAME
     });
 
     @Override
