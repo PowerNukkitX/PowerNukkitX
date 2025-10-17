@@ -127,42 +127,6 @@ public final class MolangVariableMap {
         return vars.size();
     }
 
-    public String toJsonBKP() {
-        if (vars.isEmpty()) return "[]";
-        StringBuilder sb = new StringBuilder(vars.size() * 48).append('[');
-        boolean first = true;
-        for (Entry e : vars.values()) {
-            if (!first) sb.append(',');
-            first = false;
-
-            final String nameOut = normalizeName(e.name);
-
-            sb.append('{')
-              .append("\"name\":\"").append(escape(nameOut)).append("\",")
-              .append("\"value\":{")
-              .append("\"type\":\"").append(e.type).append("\",")
-              .append("\"value\":");
-
-            switch (e.type) {
-                case "float":
-                case "int":
-                    sb.append(e.value.toString());
-                    break;
-                case "bool":
-                    sb.append(((Boolean) e.value).booleanValue() ? "true" : "false");
-                    break;
-                case "string":
-                    sb.append('"').append(escape((String) e.value)).append('"');
-                    break;
-                default:
-                    sb.append('"').append(escape(String.valueOf(e.value))).append('"');
-            }
-
-            sb.append("}}");
-        }
-        return sb.append(']').toString();
-    }
-
     public String toJson() {
         if (vars.isEmpty()) return "[]";
         StringBuilder sb = new StringBuilder(vars.size() * 48).append('[');
