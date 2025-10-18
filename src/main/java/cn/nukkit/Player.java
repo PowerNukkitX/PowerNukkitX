@@ -4929,18 +4929,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (isSprinting() != value) {
             super.setSprinting(value);
-
-            float base = DEFAULT_SPEED;
-            int speedLvl = 0;
-            if (this.hasEffect(EffectType.SPEED)) {
-                speedLvl = this.getEffect(EffectType.SPEED).getLevel();
-            }
-            float effectMul = 1.0f + 0.2f * speedLvl;
-            float sprintMul = value ? 1.3f : 1.0f;
-
-            float finalSpeed = base * effectMul * sprintMul;
-
-            this.setMovementSpeed(finalSpeed, true);
+            this.recalcMovementSpeedFromEffects();
         }
     }
 
