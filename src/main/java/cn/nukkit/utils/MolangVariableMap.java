@@ -1,8 +1,12 @@
 package cn.nukkit.utils;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import cn.nukkit.math.Vector3;
 
 /**
  * MoLang variable map compatible with Bedrock's SpawnParticleEffectPacket payload.
@@ -41,29 +45,73 @@ public final class MolangVariableMap {
         }
     }
 
-    public MolangVariableMap setFloat(String name, float value) {
-        put(name, "float", Float.valueOf(value));
+    /** Set a float variable */
+    public MolangVariableMap setFloat(String varName, float value) {
+        put(varName, "float", Float.valueOf(value));
         return this;
     }
 
-    public MolangVariableMap setInt(String name, int value) {
-        put(name, "int", Integer.valueOf(value));
+    /** Set a int variable */
+    public MolangVariableMap setInt(String varName, int value) {
+        put(varName, "int", Integer.valueOf(value));
         return this;
     }
 
-    public MolangVariableMap setBool(String name, boolean value) {
-        put(name, "bool", Boolean.valueOf(value));
+    /** Set a boolean variable */
+    public MolangVariableMap setBool(String varName, boolean value) {
+        put(varName, "bool", Boolean.valueOf(value));
         return this;
     }
 
-    public MolangVariableMap setString(String name, String value) {
+    /** Set a string variable */
+    public MolangVariableMap setString(String varName, String value) {
         Objects.requireNonNull(value, "value");
-        put(name, "string", value);
+        put(varName, "string", value);
         return this;
     }
 
-    public boolean remove(String name) {
-        return vars.remove(name) != null;
+    /** Set a Vec3 location */
+    public MolangVariableMap setVec3(String varName, float x, float y, float z) {
+        ArrayList<Entry> children = new ArrayList<>(3);
+        children.add(new Entry(".x", "float", Float.valueOf(x)));
+        children.add(new Entry(".y", "float", Float.valueOf(y)));
+        children.add(new Entry(".z", "float", Float.valueOf(z)));
+        put(varName, "member_array", children);
+        return this;
+    }
+
+    /** RGB Colors set as value [0-1] */
+    public MolangVariableMap setColorRGB(String varName, float r, float g, float b) {
+        ArrayList<Entry> children = new ArrayList<>(3);
+        children.add(new Entry(".r", "float", Float.valueOf(r)));
+        children.add(new Entry(".g", "float", Float.valueOf(g)));
+        children.add(new Entry(".b", "float", Float.valueOf(b)));
+        put(varName, "member_array", children);
+        return this;
+    }
+
+    /** RGBA Colors set as value [0-1] */
+    public MolangVariableMap setColorRGBA(String varName, float r, float g, float b, float a) {
+        java.util.ArrayList<Entry> children = new java.util.ArrayList<>(4);
+        children.add(new Entry(".r", "float", Float.valueOf(r)));
+        children.add(new Entry(".g", "float", Float.valueOf(g)));
+        children.add(new Entry(".b", "float", Float.valueOf(b)));
+        children.add(new Entry(".a", "float", Float.valueOf(a)));
+        put(varName, "member_array", children);
+        return this;
+    }
+
+    /** Set speed and direction animation */
+    public MolangVariableMap setSpeedAndDirection(String varName, float speed, Vector3 direction) {
+        setFloat(varName + ".speed",        speed);
+        setFloat(varName + ".direction_x",  (float) direction.x);
+        setFloat(varName + ".direction_y",  (float) direction.y);
+        setFloat(varName + ".direction_z",  (float) direction.z);
+        return this;
+    }
+
+    public boolean remove(String varName) {
+        return vars.remove(varName) != null;
     }
 
     public MolangVariableMap clear() {
@@ -90,10 +138,10 @@ public final class MolangVariableMap {
             final String nameOut = normalizeName(e.name);
 
             sb.append('{')
-              .append("\"name\":\"").append(escape(nameOut)).append("\",")
-              .append("\"value\":{")
-              .append("\"type\":\"").append(e.type).append("\",")
-              .append("\"value\":");
+            .append("\"name\":\"").append(escape(nameOut)).append("\",")
+            .append("\"value\":{")
+            .append("\"type\":\"").append(e.type).append("\",")
+            .append("\"value\":");
 
             switch (e.type) {
                 case "float":
@@ -101,11 +149,36 @@ public final class MolangVariableMap {
                     sb.append(e.value.toString());
                     break;
                 case "bool":
-                    sb.append(((Boolean) e.value).booleanValue() ? "true" : "false");
+                    sb.append(((Boolean) e.value) ? "true" : "false");
                     break;
                 case "string":
                     sb.append('"').append(escape((String) e.value)).append('"');
                     break;
+                case "member_array": {
+                    @SuppressWarnings("unchecked")
+                    List<Entry> children = (List<Entry>) e.value;
+                    sb.append('[');
+                    boolean firstChild = true;
+                    for (Entry c : children) {
+                        if (!firstChild) sb.append(',');
+                        firstChild = false;
+                        sb.append('{')
+                        .append("\"name\":\"").append(escape(c.name)).append("\",")
+                        .append("\"value\":{")
+                        .append("\"type\":\"").append(c.type).append("\",")
+                        .append("\"value\":");
+                        switch (c.type) {
+                            case "float":
+                            case "int": sb.append(c.value.toString()); break;
+                            case "bool": sb.append(((Boolean)c.value) ? "true" : "false"); break;
+                            case "string": sb.append('"').append(escape((String)c.value)).append('"'); break;
+                            default: sb.append('"').append(escape(String.valueOf(c.value))).append('"');
+                        }
+                        sb.append("}}");
+                    }
+                    sb.append(']');
+                    break;
+                }
                 default:
                     sb.append('"').append(escape(String.valueOf(e.value))).append('"');
             }
