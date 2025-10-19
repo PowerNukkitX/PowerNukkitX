@@ -134,6 +134,8 @@ public class EntityItem extends Entity {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
+        if (this.isDisplayOnly()) return false;
+
         if (item != null && item.isLavaResistant() && (
                 source.getCause() == DamageCause.LAVA ||
                         source.getCause() == DamageCause.FIRE ||
@@ -285,6 +287,7 @@ public class EntityItem extends Entity {
 
     @Override
     public void setOnFire(int seconds) {
+        if (this.isDisplayOnly()) return;
         if (item != null && item.isLavaResistant()) {
             return;
         }
