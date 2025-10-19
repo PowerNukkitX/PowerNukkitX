@@ -864,6 +864,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             effects.remove(type);
 
             this.recalculateEffectColor();
+            if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
         }
     }
 
@@ -917,6 +918,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         effects.put(effect.getType(), effect);
 
         this.recalculateEffectColor();
+        if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
     }
 
     public void recalculateBoundingBox() {
