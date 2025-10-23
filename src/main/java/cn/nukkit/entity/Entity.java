@@ -864,6 +864,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             effects.remove(type);
 
             this.recalculateEffectColor();
+            this.setDataProperty(EntityDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
             if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
         }
     }
@@ -918,6 +919,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         effects.put(effect.getType(), effect);
 
         this.recalculateEffectColor();
+        this.setDataProperty(EntityDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
         if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
     }
 
@@ -984,6 +986,34 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     EFFECT_AMBIENCE, 0
             ));
         }
+    }
+
+    private long computeVisibleMobEffects() {
+        if (effects == null || effects.isEmpty()) return 0L;
+
+        ArrayList<Effect> list = new ArrayList<>(effects.values());
+        list.sort((a, b) -> Integer.compare(
+                a.getType() != null && a.getType().id() != null ? a.getType().id() : -1,
+                b.getType() != null && b.getType().id() != null ? b.getType().id() : -1
+        ));
+
+        long data = 0L;
+        int packed = 0;
+
+        for (Effect e : list) {
+            if (packed >= 8) break;
+            if (e == null || e.getType() == null || e.getType().id() == null) continue;
+            if (!e.isVisible()) continue;
+
+            int id = e.getType().id();
+            if (id < 0 || id > 63) continue;
+
+            int ambient = e.isAmbient() ? 1 : 0;
+            int slotByte = (id & 0x3F) | (ambient << 6);
+            data |= ((long)(slotByte & 0xFF)) << (packed * 8);
+            packed++;
+        }
+        return data;
     }
 
     public void saveNBT() {
