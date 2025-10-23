@@ -57,6 +57,24 @@ public class Materials implements NBTData {
         return this;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod      Set tintint method for the block
@@ -105,6 +123,32 @@ public class Materials implements NBTData {
         this.process("down", true, new PackedBools(true, false, false), renderMethod, texture, null);
         return this;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
@@ -156,6 +200,22 @@ public class Materials implements NBTData {
         return this;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod         Set tintint method for the block
@@ -205,6 +265,36 @@ public class Materials implements NBTData {
         return this;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod         Set tintint method for the block
@@ -253,6 +343,29 @@ public class Materials implements NBTData {
         this.process("east", true, new PackedBools(true, false, false), renderMethod, texture, null);
         return this;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
@@ -304,6 +417,39 @@ public class Materials implements NBTData {
         return this;
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod         Set tintint method for the block
@@ -352,6 +498,34 @@ public class Materials implements NBTData {
         this.process("*", true, new PackedBools(true, false, false), renderMethod, texture, null);
         return this;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
@@ -482,6 +656,224 @@ public class Materials implements NBTData {
         EVERGREEN_FOLIAGE,
         DRY_FOLIAGE,
         GRASS,
-        WATER
+        WATER;
+
+        public static @Nullable TintMethod fromString(String s) {
+            if (s == null || s.isBlank()) return null;
+            String key = s.trim()
+                          .toUpperCase(Locale.ENGLISH)
+                          .replaceAll("[\\s-]+", "_");
+            switch (key) {
+                case "NONE": return NONE;
+                case "DEFAULT_FOLIAGE": return DEFAULT_FOLIAGE;
+                case "BIRCH_FOLIAGE": return BIRCH_FOLIAGE;
+                case "EVERGREEN_FOLIAGE": return EVERGREEN_FOLIAGE;
+                case "DRY_FOLIAGE": return DRY_FOLIAGE;
+                case "GRASS": return GRASS;
+                case "WATER": return WATER;
+                default: return NONE;
+            }
+        }
+    }
+
+
+
+    // Deprecated methods.
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials up(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("up", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials up(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("up", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials down(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("down", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials down(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("down", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials north(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("north", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials north(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("north", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials south(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("south", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials south(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("south", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials east(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("east", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials east(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("east", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials west(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("west", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials west(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("west", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     */
+    @Deprecated
+    public Materials any(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
+        this.process("*", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> {@code faceDimming} is deprecated, use {@link PackedBools} instead.
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials any(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture, String tintMethod) {
+        this.process("*", ambientOcclusion, new PackedBools(faceDimming, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials up(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("up", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials down(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("down", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials north(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("north", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials south(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("south", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials east(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("east", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials west(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("west", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
+    }
+
+    /**
+     * <p><b>Deprecated:</b> String {@code tintMethod} is deprecated, use {@link TintMethod} enums instead.
+     */
+    @Deprecated
+    public Materials any(RenderMethod renderMethod, String texture, String tintMethod) {
+        this.process("*", true, new PackedBools(true, false, false), renderMethod, texture, TintMethod.fromString(tintMethod));
+        return this;
     }
 }
