@@ -57,24 +57,6 @@ public class Materials implements NBTData {
         return this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod      Set tintint method for the block
@@ -123,32 +105,6 @@ public class Materials implements NBTData {
         this.process("down", true, new PackedBools(true, false, false), renderMethod, texture, null);
         return this;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
@@ -200,22 +156,6 @@ public class Materials implements NBTData {
         return this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod         Set tintint method for the block
@@ -265,36 +205,6 @@ public class Materials implements NBTData {
         return this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod         Set tintint method for the block
@@ -343,29 +253,6 @@ public class Materials implements NBTData {
         this.process("east", true, new PackedBools(true, false, false), renderMethod, texture, null);
         return this;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
@@ -417,39 +304,6 @@ public class Materials implements NBTData {
         return this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
      * @see TintMethod         Set tintint method for the block
@@ -498,34 +352,6 @@ public class Materials implements NBTData {
         this.process("*", true, new PackedBools(true, false, false), renderMethod, texture, null);
         return this;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
