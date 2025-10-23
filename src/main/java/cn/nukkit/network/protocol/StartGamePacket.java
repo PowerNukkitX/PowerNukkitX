@@ -86,6 +86,7 @@ public class StartGamePacket extends DataPacket {
     public boolean isTrial = false;
     public boolean isMovementServerAuthoritative;
     public Integer serverAuthoritativeMovement;
+    public Integer rewindHistorySize = 0;
     public boolean isInventoryServerAuthoritative;
     public long currentTick;
     public int enchantmentSeed;
@@ -161,10 +162,10 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(this.worldName);
         byteBuf.writeString(this.premiumWorldTemplateId);
         byteBuf.writeBoolean(this.isTrial);
-        byteBuf.writeVarInt(0); // RewindHistorySize
+        byteBuf.writeVarInt(this.rewindHistorySize);
         if (this.serverAuthoritativeMovement != null) {
-            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
-        } else {//兼容nkx旧插件
+            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking 
+        } else { //兼容nkx旧插件
             byteBuf.writeBoolean(this.isMovementServerAuthoritative); // isServerAuthoritativeBlockBreaking
         }
         byteBuf.writeLongLE(this.currentTick);
