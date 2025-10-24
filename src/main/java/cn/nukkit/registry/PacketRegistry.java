@@ -106,6 +106,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
         this.register0(ProtocolInfo.CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
         this.register0(ProtocolInfo.CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
+        this.register0(ProtocolInfo.CORRECT_PLAYER_MOVE_PREDICTION_PACKET, CorrectPlayerMovePredictionPacket.class);
         this.register0(ProtocolInfo.CONTAINER_SET_DATA_PACKET, ContainerSetDataPacket.class);
         this.register0(ProtocolInfo.CRAFTING_DATA_PACKET, CraftingDataPacket.class);
         this.register0(ProtocolInfo.CRAFTING_EVENT_PACKET, CraftingEventPacket.class);
