@@ -3,6 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.PredictionType;
 import lombok.*;
 
 @Getter
@@ -12,10 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class CorrectPlayerMovePredictionPacket extends DataPacket {
 
-    public static final int PREDICTION_TYPE_PLAYER = 0;
-    public static final int PREDICTION_TYPE_VEHICLE = 1;
-
-    private int predictionType;
+    private PredictionType predictionType;
     private Vector3f position;
     private Vector3f delta;
     private Vector2f rotation;
@@ -25,12 +23,12 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.predictionType = byteBuf.readUnsignedByte();
+        this.predictionType = PredictionType.values()[byteBuf.readUnsignedByte()];
         this.position = byteBuf.readVector3f();
         this.delta = byteBuf.readVector3f();
-        this.rotation = new Vector2f(byteBuf.readFloatLE(), byteBuf.readFloatLE());
+        this.rotation = byteBuf.readVector2f();
 
-        if (this.predictionType == PREDICTION_TYPE_VEHICLE) {
+        if (this.predictionType == PredictionType.VEHICLE) {
             this.vehicleAngularVelocity = byteBuf.readFloatLE();
         } else {
             this.vehicleAngularVelocity = null;
@@ -42,13 +40,12 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeByte((byte) (this.predictionType & 0xFF));
+        byteBuf.writeByte(this.predictionType.ordinal());
         byteBuf.writeVector3f(this.position);
         byteBuf.writeVector3f(this.delta);
-        byteBuf.writeFloatLE(this.rotation.getX());
-        byteBuf.writeFloatLE(this.rotation.getY());
+        byteBuf.writeVector2f(this.rotation);
 
-        if (this.predictionType == PREDICTION_TYPE_VEHICLE && this.vehicleAngularVelocity != null) {
+        if (this.predictionType == PredictionType.VEHICLE && this.vehicleAngularVelocity != null) {
             byteBuf.writeFloatLE(this.vehicleAngularVelocity);
         }
 
