@@ -3,7 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-
 import lombok.*;
 
 @Getter
@@ -31,8 +30,7 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
         this.delta = byteBuf.readVector3f();
         this.rotation = new Vector2f(byteBuf.readFloatLE(), byteBuf.readFloatLE());
 
-        boolean hasVehicleAngularVelocity = byteBuf.readBoolean();
-        if (hasVehicleAngularVelocity) {
+        if (this.predictionType == PREDICTION_TYPE_VEHICLE) {
             this.vehicleAngularVelocity = byteBuf.readFloatLE();
         } else {
             this.vehicleAngularVelocity = null;
@@ -47,12 +45,10 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
         byteBuf.writeByte((byte) (this.predictionType & 0xFF));
         byteBuf.writeVector3f(this.position);
         byteBuf.writeVector3f(this.delta);
-
         byteBuf.writeFloatLE(this.rotation.getX());
         byteBuf.writeFloatLE(this.rotation.getY());
 
-        byteBuf.writeBoolean(this.vehicleAngularVelocity != null);
-        if (this.vehicleAngularVelocity != null) {
+        if (this.predictionType == PREDICTION_TYPE_VEHICLE && this.vehicleAngularVelocity != null) {
             byteBuf.writeFloatLE(this.vehicleAngularVelocity);
         }
 
