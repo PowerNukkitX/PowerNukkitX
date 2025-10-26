@@ -125,10 +125,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean hasLineOfSight(Entity target) {
+        return hasLineOfSight(target, 0.0);
+    }
+
+    public boolean hasLineOfSight(Entity target, double thickness) {
         if (this.level != target.level) return false;
 
         final boolean includeLiquidBlocks = false;
         final boolean includePassableBlocks = false;
+        final double step = 0.25;
 
         final Vector3 selfPos = this.getPosition();
         final double selfEye = this.getEyeHeight();
@@ -150,12 +155,43 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             tBase.add(0, Math.max(tEye, 0.9),      0),
         };
 
+        boolean useCorridor = thickness > 0.0;
+
         for (Vector3 from : fromPoints) {
             for (Vector3 to : toPoints) {
-                List<Block> visited = this.level.raycastBlocks(from, to, true, false, 0.25, false, false, true);
-                boolean blocked = !visited.isEmpty() &&
-                    this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
-                if (!blocked) return true;
+                Vector3 dir = to.subtract(from);
+                if (dir.lengthSquared() < 1e-6) continue;
+
+                if (!useCorridor) {
+                    List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                    if (!blocked) return true;
+                    continue;
+                }
+
+                Vector3 right = new Vector3(-dir.z, 0, dir.x);
+                if (right.lengthSquared() < 1e-6) right = new Vector3(1, 0, 0);
+                right = right.normalize().multiply(thickness);
+
+                Vector3 up = new Vector3(0, thickness, 0);
+
+                Vector3[] offsets = new Vector3[] {
+                    right, right.multiply(-1),
+                    up,    up.multiply(-1),
+                };
+
+                boolean allClear = true;
+                for (Vector3 o : offsets) {
+                    Vector3 f = from.add(o.x, o.y, o.z);
+                    Vector3 t = to.add(o.x, o.y, o.z);
+
+                    List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+
+                    if (blocked) { allClear = false; break; }
+                }
+
+                if (allClear) return true;
             }
         }
         return false;
