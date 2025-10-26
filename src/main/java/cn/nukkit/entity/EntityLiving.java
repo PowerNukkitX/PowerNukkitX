@@ -127,16 +127,36 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public boolean hasLineOfSight(Entity target) {
         if (this.level != target.level) return false;
 
+        final boolean includeLiquidBlocks = false;
+        final boolean includePassableBlocks = false;
+
+        final Vector3 selfPos = this.getPosition();
+        final double selfEye = this.getEyeHeight();
+        final double selfChest = this.getHeight() * 0.60;
+
         Vector3[] fromPoints = new Vector3[] {
-            this.getPosition().add(0, this.getEyeHeight(), 0),    // eye level
-            this.getPosition().add(0, this.getHeight() * 0.6, 0)  // upper chest
+            selfPos.add(0, selfEye + 0.001, 0),
+            selfPos.add(0, selfChest + 0.001, 0),
         };
-        Vector3 to = target.getPosition().add(0, target.getHeight() * 0.6, 0); // target chest
+
+        final double tH = Math.max(0.0, target.getHeight());
+        final double tEye = Math.max(0.0, target.getEyeHeight());
+        final Vector3 tBase = target.getPosition();
+
+        Vector3[] toPoints = new Vector3[] {
+            tBase.add(0, Math.max(0.2 * tH, 0.25), 0),
+            tBase.add(0, Math.max(0.5 * tH, 0.5),  0),
+            tBase.add(0, Math.max(0.8 * tH, 0.75), 0),
+            tBase.add(0, Math.max(tEye, 0.9),      0),
+        };
 
         for (Vector3 from : fromPoints) {
-            List<Block> blocks = this.level.raycastBlocks(from, to, true, false, 0.25);
-            boolean blocked = blocks.stream().anyMatch(b -> !b.isTransparent() && b.getBoundingBox() != null);
-            if (!blocked) return true;
+            for (Vector3 to : toPoints) {
+                List<Block> visited = this.level.raycastBlocks(from, to, true, false, 0.25, false, false, true);
+                boolean blocked = !visited.isEmpty() &&
+                    this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                if (!blocked) return true;
+            }
         }
         return false;
     }
