@@ -7,8 +7,6 @@ import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
-import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
@@ -38,7 +36,6 @@ import cn.nukkit.utils.TickCachedBlockIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
