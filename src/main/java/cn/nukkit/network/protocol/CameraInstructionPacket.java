@@ -70,6 +70,10 @@ public class CameraInstructionPacket extends DataPacket {
             byteBuf.writeByte(target.getEaseType().ordinal());
             byteBuf.writeBoolean(target.isClear());
         });
+
+        byteBuf.writeBoolean(false);
+        byteBuf.writeBoolean(false);
+        byteBuf.writeBoolean(false);
     }
 
     public void setInstruction(CameraInstruction instruction) {

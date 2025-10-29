@@ -39,6 +39,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         byteBuf.writeOptional(overworldGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(multinoiseGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(legacyWorldGenRules, v -> v.encode(byteBuf));
+        byteBuf.writeBoolean(false);
     }
 
     @Override
