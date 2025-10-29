@@ -52,6 +52,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         pk.eid = player.getId();
         pk.action = animationEvent.getAnimationType();
         pk.rowingTime = animationEvent.getRowingTime();
+        pk.data = animationEvent.getData();
         Server.broadcastPacket(player.getViewers().values(), pk);
     }
 

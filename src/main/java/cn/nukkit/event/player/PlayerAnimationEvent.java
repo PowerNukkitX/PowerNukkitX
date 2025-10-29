@@ -13,11 +13,13 @@ public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
     }
 
     private final AnimatePacket.Action animationType;
+    private final float data;
     private final float rowingTime;
 
     public PlayerAnimationEvent(Player player, AnimatePacket animatePacket) {
         this.player = player;
         animationType = animatePacket.action;
+        data = animatePacket.data;
         rowingTime = animatePacket.rowingTime;
     }
 
@@ -29,10 +31,15 @@ public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
         this.player = player;
         this.animationType = animation;
         rowingTime = 0;
+        data = 0;
     }
 
     public AnimatePacket.Action getAnimationType() {
         return this.animationType;
+    }
+
+    public float getData() {
+        return data;
     }
 
     public float getRowingTime() {
