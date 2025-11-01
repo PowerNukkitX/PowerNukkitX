@@ -21,25 +21,27 @@ public abstract class RandomizableContainer {
     }
 
     public void create(Inventory inventory, RandomSourceProvider random) {
-        this.pools.forEach((pool, roll) -> {
-            for (int i = roll.getMin() == -1 ? roll.getMax() : NukkitMath.randomRange(random, roll.getMin(), roll.getMax()); i > 0; --i) {
-                int result = random.nextBoundedInt(roll.getTotalWeight());
-                for (ItemEntry entry : pool) {
-                    result -= entry.getWeight();
-                    if (result < 0) {
-                        int index = random.nextBoundedInt(inventory.getSize());
-                        Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
-                        if(entry.enchantments.length != 0) {
-                            Enchantment enchantment = Enchantment.getEnchantment(entry.enchantments[random.nextInt(entry.enchantments.length)].id);
-                            enchantment.setLevel(random.nextInt(enchantment.getMaxLevel()) + 1);
-                            item.addEnchantment(enchantment);
+        try {
+            this.pools.forEach((pool, roll) -> {
+                for (int i = roll.getMin() == -1 ? roll.getMax() : NukkitMath.randomRange(random, roll.getMin(), roll.getMax()); i > 0; --i) {
+                    int result = random.nextBoundedInt(roll.getTotalWeight());
+                    for (ItemEntry entry : pool) {
+                        result -= entry.getWeight();
+                        if (result < 0) {
+                            int index = random.nextBoundedInt(inventory.getSize());
+                            Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
+                            if(entry.enchantments.length != 0) {
+                                Enchantment enchantment = Enchantment.getEnchantment(entry.enchantments[random.nextInt(entry.enchantments.length)].id);
+                                enchantment.setLevel(random.nextInt(enchantment.getMaxLevel()) + 1);
+                                item.addEnchantment(enchantment);
+                            }
+                            inventory.setItem(index, item);
+                            break;
                         }
-                        inventory.setItem(index, item);
-                        break;
                     }
                 }
-            }
-        });
+            });
+        } catch (Exception ignored) {}
     }
 
     protected static class RollEntry {
