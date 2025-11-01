@@ -1,8 +1,6 @@
 package cn.nukkit.level.structure;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockVector3;
@@ -10,7 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.registry.Registries;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -126,12 +124,12 @@ public class PNXStructure extends AbstractStructure {
     }
 
     @Override
-    public PNXStructure rotate(StructureRotation rotation) {
+    public PNXStructure rotate(Rotation rotation) {
         // Rotation support could also be done lazily, but here we materialize.
-        if (rotation == StructureRotation.NONE) return this;
+        if (rotation == Rotation.NONE) return this;
 
-        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
-        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
+        int newSizeX = (rotation == Rotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
 
         byte[] rotatedBlocks = new byte[blocks.length];
 

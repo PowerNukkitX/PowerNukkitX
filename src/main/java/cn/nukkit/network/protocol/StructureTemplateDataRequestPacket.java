@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.*;
@@ -49,7 +48,7 @@ public class StructureTemplateDataRequestPacket extends DataPacket {
         var integritySeed = byteBuf.readIntLE();
         var pivot = byteBuf.readVector3f();
         return new StructureSettings(paletteName, isIgnoringEntities, isIgnoringBlocks, isNonTickingPlayersAndTickingAreasEnabled, size, offset,
-                lastEditedByEntityId, StructureRotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
+                lastEditedByEntityId, Rotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
                 animationSeconds, integrityValue, integritySeed, pivot
         );
     }

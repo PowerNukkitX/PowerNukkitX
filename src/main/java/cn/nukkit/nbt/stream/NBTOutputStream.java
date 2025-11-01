@@ -231,7 +231,7 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
                     }
                 }
                 default -> {
-                    throw new IllegalArgumentException("Cannot write Tag of Class " + tag.getClass().getSimpleName());
+                    throw new IllegalArgumentException("Cannot write Tag of Class " + tag.getClass().getSimpleName() + " type: " + type);
                 }
             }
         }

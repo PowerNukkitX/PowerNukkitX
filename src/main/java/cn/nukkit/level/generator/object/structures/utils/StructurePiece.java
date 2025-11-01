@@ -1,9 +1,7 @@
 package cn.nukkit.level.generator.object.structures.utils;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAcaciaDoor;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockDarkOakLog;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
@@ -13,6 +11,7 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 import javax.annotation.Nullable;
@@ -174,9 +173,9 @@ public abstract class StructurePiece {
             if (this.rotation != Rotation.NONE) {
                 switch (block.getIdentifier()) {
                     case Block.TORCH:
-                        if (this.rotation == Rotation.CLOCKWISE_90) {
+                        if (this.rotation == Rotation.ROTATE_90) {
                             block = Rotation.clockwise90(block);
-                        } else if (this.rotation == Rotation.CLOCKWISE_180) {
+                        } else if (this.rotation == Rotation.ROTATE_180) {
                             switch (block.getPropertyValue(TORCH_FACING_DIRECTION)) {
                                 case TorchFacingDirection.EAST:
                                 case TorchFacingDirection.WEST:
@@ -186,7 +185,7 @@ public abstract class StructurePiece {
                                     block = Rotation.clockwise180(block);
                                     break;
                             }
-                        } else if (this.rotation == Rotation.COUNTERCLOCKWISE_90) {
+                        } else if (this.rotation == Rotation.ROTATE_270) {
                             switch (block.getPropertyValue(TORCH_FACING_DIRECTION)) {
                                 case TorchFacingDirection.EAST:
                                 case TorchFacingDirection.WEST:
@@ -200,9 +199,9 @@ public abstract class StructurePiece {
                         }
                         break;
                     case Block.LADDER:
-                        if (this.rotation == Rotation.CLOCKWISE_90) {
+                        if (this.rotation == Rotation.ROTATE_90) {
                             block = Rotation.clockwise90(block);
-                        } else if (this.rotation == Rotation.CLOCKWISE_180) {
+                        } else if (this.rotation == Rotation.ROTATE_180) {
                             switch (block.getPropertyValue(FACING_DIRECTION)) {
                                 case 5:
                                 case 4:
@@ -212,7 +211,7 @@ public abstract class StructurePiece {
                                     block = Rotation.clockwise90(block);
                                     break;
                             }
-                        } else if (this.rotation == Rotation.COUNTERCLOCKWISE_90) {
+                        } else if (this.rotation == Rotation.ROTATE_270) {
                             switch (block.getPropertyValue(FACING_DIRECTION)) {
                                 case 5:
                                 case 4:
@@ -230,9 +229,9 @@ public abstract class StructurePiece {
                     case Block.ACACIA_STAIRS:
                     case Block.STONE_STAIRS:
                     case Block.SANDSTONE_STAIRS:
-                        if (this.rotation == Rotation.CLOCKWISE_90) {
+                        if (this.rotation == Rotation.ROTATE_90) {
                             block = Rotation.clockwise90(block);
-                        } else if (this.rotation == Rotation.CLOCKWISE_180) {
+                        } else if (this.rotation == Rotation.ROTATE_180) {
                             switch (block.getPropertyValue(WEIRDO_DIRECTION)) {
                                 case 0:
                                 case 1:
@@ -242,7 +241,7 @@ public abstract class StructurePiece {
                                     block = Rotation.clockwise90(block);
                                     break;
                             }
-                        } else if (this.rotation == Rotation.COUNTERCLOCKWISE_90) {
+                        } else if (this.rotation == Rotation.ROTATE_270) {
                             switch (block.getPropertyValue(WEIRDO_DIRECTION)) {
                                 case 5:
                                 case 4:
@@ -257,9 +256,9 @@ public abstract class StructurePiece {
                         break;
                     default:
                         switch (this.rotation) {
-                            case CLOCKWISE_90 -> block = Rotation.clockwise90(block);
-                            case CLOCKWISE_180 -> block = Rotation.clockwise180(block);
-                            case COUNTERCLOCKWISE_90 -> block = Rotation.counterclockwise90(block);
+                            case ROTATE_90 -> block = Rotation.clockwise90(block);
+                            case ROTATE_180 -> block = Rotation.clockwise180(block);
+                            case ROTATE_270 -> block = Rotation.counterclockwise90(block);
                         }
                         break;
                 }
@@ -420,13 +419,13 @@ public abstract class StructurePiece {
         } else {
             switch (orientation) {
                 case SOUTH:
-                    this.rotation = Rotation.CLOCKWISE_180;
+                    this.rotation = Rotation.ROTATE_180;
                     break;
                 case WEST:
-                    this.rotation = Rotation.COUNTERCLOCKWISE_90;
+                    this.rotation = Rotation.ROTATE_270;
                     break;
                 case EAST:
-                    this.rotation = Rotation.CLOCKWISE_90;
+                    this.rotation = Rotation.ROTATE_90;
                     break;
                 case NORTH:
                 default:

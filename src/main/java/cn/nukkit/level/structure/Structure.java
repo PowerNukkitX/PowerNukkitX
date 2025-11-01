@@ -1,6 +1,5 @@
 package cn.nukkit.level.structure;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.blockentity.BlockEntity;
@@ -14,7 +13,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
@@ -439,13 +438,13 @@ public class Structure extends AbstractStructure {
      * @param rotation the rotation to apply
      * @return a new rotated Structure instance
      */
-    public Structure rotate(StructureRotation rotation) {
-        if (rotation == StructureRotation.NONE) {
+    public Structure rotate(Rotation rotation) {
+        if (rotation == Rotation.NONE) {
             return this;
         }
 
-        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
-        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
+        int newSizeX = (rotation == Rotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
 
         BlockState[][][][] rotatedStates = new BlockState[2][newSizeX][sizeY][newSizeZ];
         Map<Vector3, CompoundTag> rotatedBlockEntities = new HashMap<>();

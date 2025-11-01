@@ -1,7 +1,6 @@
-package cn.nukkit.level.generator.object.structures.utils;
+package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
@@ -9,6 +8,9 @@ import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.math.BlockFace;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.HUGE_MUSHROOM_BITS;
+import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
+import static cn.nukkit.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
 import static cn.nukkit.block.property.enums.TorchFacingDirection.EAST;
 import static cn.nukkit.block.property.enums.TorchFacingDirection.NORTH;
 import static cn.nukkit.block.property.enums.TorchFacingDirection.SOUTH;
@@ -17,9 +19,15 @@ import static cn.nukkit.block.property.enums.TorchFacingDirection.WEST;
 
 public enum Rotation {
     NONE,
-    CLOCKWISE_90,
-    CLOCKWISE_180,
-    COUNTERCLOCKWISE_90;
+    ROTATE_90,
+    ROTATE_180,
+    ROTATE_270;
+
+    private static final Rotation[] VALUES = Rotation.values();
+
+    public static Rotation from(int id) {
+        return VALUES[id];
+    }
 
     public static BlockState clockwise90(BlockState state) {
         Block block = state.toBlock();
@@ -184,4 +192,5 @@ public enum Rotation {
         for(int i = 0; i < 2; i++) result = clockwise90(result);
         return result;
     }
+
 }

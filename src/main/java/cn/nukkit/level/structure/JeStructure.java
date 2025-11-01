@@ -1,6 +1,5 @@
 package cn.nukkit.level.structure;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -9,7 +8,7 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.registry.mappings.MappingRegistries;
 import lombok.Getter;
@@ -134,11 +133,11 @@ public class JeStructure extends AbstractStructure {
         blockManager.applySubChunkUpdate();
     }
 
-    public JeStructure rotate(StructureRotation rotation) {
-        if (rotation == StructureRotation.NONE) return this;
+    public JeStructure rotate(Rotation rotation) {
+        if (rotation == Rotation.NONE) return this;
 
-        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
-        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
+        int newSizeX = (rotation == Rotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
 
         List<StructureBlockInstance> rotated = new ArrayList<>(blockInstances.size());
         for (StructureBlockInstance b : blockInstances) {
