@@ -18,12 +18,14 @@ import lombok.*;
 public class AnimatePacket extends DataPacket {
     public long eid;
     public Action action;
+    public float data;
     public float rowingTime;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.action = Action.fromId(byteBuf.readVarInt());
         this.eid = byteBuf.readEntityRuntimeId();
+        this.data = byteBuf.readFloatLE();
         if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
             this.rowingTime = byteBuf.readFloatLE();
         }
@@ -33,6 +35,7 @@ public class AnimatePacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeVarInt(this.action.getId());
         byteBuf.writeEntityRuntimeId(this.eid);
+        byteBuf.writeFloatLE(this.data);
         if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
             byteBuf.writeFloatLE(this.rowingTime);
         }

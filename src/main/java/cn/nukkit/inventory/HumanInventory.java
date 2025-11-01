@@ -26,7 +26,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
@@ -37,11 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 0-8 物品栏<br>
- * 9-35 背包<br>
- * 36-39 盔甲栏<br>
- * 想获取副手库存请用{@link HumanOffHandInventory}<br>
- * <p>
  * 0-8 hotbar<br>
  * 9-35 inventory<br>
  * 36-39 Armor Inventory<br>
@@ -249,17 +243,17 @@ public class HumanInventory extends BaseInventory {
             }
         }
 
-        //使用FastUtils的IntArrayList提高性能
+        // Improve performance using IntArrayList of FastUtils
         IntList emptySlots = new IntArrayList(this.getSize());
 
         for (int i = 0; i < ARMORS_INDEX; ++i) {
-            //获取未克隆Item对象
+            // Get the uncloned Item object
             Item item = this.getUnclonedItem(i);
             if (item.isNull() || item.getCount() <= 0) {
                 emptySlots.add(i);
             }
 
-            //使用迭代器而不是新建一个ArrayList
+            // Use iterators instead of creating a new ArrayList
             for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
                 Item slot = iterator.next();
                 if (slot.equals(item)) {
@@ -268,7 +262,7 @@ public class HumanInventory extends BaseInventory {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
                         if (amount > 0) {
-                            //在需要clone时再clone
+                            // Clone when needed
                             item = item.clone();
                             slot.setCount(slot.getCount() - amount);
                             item.setCount(item.getCount() + amount);
@@ -508,13 +502,8 @@ public class HumanInventory extends BaseInventory {
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 for (int i = 0; i < 4; ++i) {
                     Item item = armor[i];
-                    if (item.isNull()) {
-                        pk2.getArmorSlotAndDamagePairs().add(
-                                new ArmorSlotAndDamagePair(ArmorSlot.from(i), (short) 0)
-                        );
-                    } else {
-                        pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(ArmorSlot.from(i), (short) item.getDamage()));
-                    }
+                    short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
+                    pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(i), dmg));
                 }
                 player.dataPacket(pk2);
             } else {
@@ -595,15 +584,8 @@ public class HumanInventory extends BaseInventory {
 
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 Item item = armor[index];
-                if (item.isNull()) {
-                    pk2.getArmorSlotAndDamagePairs().add(
-                            new ArmorSlotAndDamagePair(ArmorSlot.from(index), (short) 0)
-                    );
-                } else {
-                    pk2.getArmorSlotAndDamagePairs().add(
-                            new ArmorSlotAndDamagePair(ArmorSlot.from(index), (short) item.getDamage())
-                    );
-                }
+                short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
+                pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(index), dmg));
                 player.dataPacket(pk2);
             } else {
                 player.dataPacket(pk);
@@ -717,5 +699,9 @@ public class HumanInventory extends BaseInventory {
         if (who != holder) {
             super.onClose(who);
         }
+    }
+
+    private static ArmorSlot armorSlotOfIndex(int index) {
+        return ArmorSlot.from(index * 2);
     }
 }

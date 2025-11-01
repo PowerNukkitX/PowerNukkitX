@@ -10,6 +10,7 @@ import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
@@ -19,7 +20,10 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
@@ -543,24 +547,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean isBlocking() {
-        return this.getDataFlag(EntityFlag.BLOCKING);
+        if(this.getDataFlag(EntityFlag.BLOCKING)) {
+            if(this instanceof InventoryHolder holder) {
+                if(holder.getInventory() instanceof HumanInventory inventory) {
+                    return inventory.getItemInHand() instanceof ItemShield;
+                }
+            }
+        }
+        return false;
     }
 
     public void setBlocking(boolean value) {
-        EnumSet<EntityFlag> ext = this.getEntityDataMap().getOrCreateFlags2();
-        if (value) {
-            ext.add(EntityFlag.BLOCKING);
-        } else {
-            ext.remove(EntityFlag.BLOCKING);
-        }
-        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, ext);
-
-        EnumSet<EntityFlag> wire = EnumSet.copyOf(ext);
-        wire.add(EntityFlag.TRANSITION_BLOCKING);
-
-        EntityDataMap delta = new EntityDataMap();
-        delta.put(EntityDataTypes.FLAGS_2, wire);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
+        this.setDataFlagExtend(EntityFlag.BLOCKING, value, false);
+        this.setDataFlagExtend(EntityFlag.TRANSITION_BLOCKING, value, true);
     }
 
     @Override
@@ -592,5 +591,36 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public int getAttackTimeBefore() {
         return attackTimeBefore;
+    }
+
+    public void recalcMovementSpeedFromEffects() {
+        float base = this.getDefaultSpeed() * this.getSpeedMultiplier();
+        float mul = 1.0f;
+
+        Effect speed = this.getEffect(EffectType.SPEED);
+        int speedLvl = (speed != null) ? (Math.max(0, speed.getAmplifier()) + 1) : 0;
+
+        Effect slow = this.getEffect(EffectType.SLOWNESS);
+        int slowLvl = (slow != null) ? (Math.max(0, slow.getAmplifier()) + 1) : 0;
+
+        if (slowLvl >= 7) {
+            mul = 0.0f;
+        } else {
+            if (speedLvl > 0) {
+                mul *= (1.0f + 0.20f * speedLvl);
+            }
+            if (slowLvl > 0) {
+                mul *= Math.max(0.0f, 1.0f - 0.15f * slowLvl);
+            }
+        }
+
+        if (this instanceof Player p && p.isSprinting()) mul *= 1.3f;
+        float newSpeed = base * mul;
+
+        if (this instanceof Player) {
+            ((Player) this).setMovementSpeed(newSpeed, true);
+        } else {
+            this.setMovementSpeed(newSpeed);
+        }
     }
 }

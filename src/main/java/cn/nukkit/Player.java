@@ -602,16 +602,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.needDimensionChangeACK = true;
     }
 
-    private void updateBlockingFlag() {
-        boolean shouldBlock = this.isItemCoolDownEnd("shield")
-                && (this.isSneaking() || getRiding() != null)
-                && (this.getInventory().getItemInHand() instanceof ItemShield || this.getOffhandInventory().getItem(0) instanceof ItemShield);
-
-        if (isBlocking() != shouldBlock) {
-            this.setBlocking(shouldBlock);
-        }
-    }
-
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -2801,8 +2791,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
         }
 
-        updateBlockingFlag();
-
         PlayerFood foodData = getFoodData();
         if (this.ticksLived % 40 == 0 && foodData != null) {
             foodData.sendFood();
@@ -4940,18 +4928,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (isSprinting() != value) {
             super.setSprinting(value);
-
-            float base = DEFAULT_SPEED;
-            int speedLvl = 0;
-            if (this.hasEffect(EffectType.SPEED)) {
-                speedLvl = this.getEffect(EffectType.SPEED).getLevel();
-            }
-            float effectMul = 1.0f + 0.2f * speedLvl;
-            float sprintMul = value ? 1.3f : 1.0f;
-
-            float finalSpeed = base * effectMul * sprintMul;
-
-            this.setMovementSpeed(finalSpeed, true);
+            this.recalcMovementSpeedFromEffects();
         }
     }
 
