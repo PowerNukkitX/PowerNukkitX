@@ -25,7 +25,7 @@ public class ChunkSettings extends OkaeriConfig {
     @Comment("pnx.settings.chunk.clearticklist")
     boolean clearTickList = false;
     @Comment("pnx.settings.chunk.generationqueuesize")
-    int generationQueueSize = 128;
+    int generationQueueSize = 8;
     @Comment("pnx.settings.chunk.convertBDSChunks")
     boolean convertBDSChunks = false;
 }

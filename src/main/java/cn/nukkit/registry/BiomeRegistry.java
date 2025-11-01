@@ -114,4 +114,9 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
             throw new RegisterException("This biome " + value.getName() + " has already been registered with the id: " + key);
         }
     }
+
+    public int registerToBiomeStringList(String value) {
+        BIOME_STRING_LIST.add(value);
+        return BIOME_STRING_LIST.size()-1;
+    }
 }

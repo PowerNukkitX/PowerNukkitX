@@ -31,6 +31,10 @@ public class BiomeDefinition implements IBiomeDefinitionListObject {
         return Arrays.stream(data.tags.orElse(new Short[0])).map(Registries.BIOME::getFromBiomeStringList).collect(Collectors.toSet());
     }
 
+    public int getId() {
+        return Registries.BIOME.getBiomeId(this.getName());
+    }
+
     @Override
     public void parse(CompoundTag tag) {
         stringIndex = tag.getShort("index");

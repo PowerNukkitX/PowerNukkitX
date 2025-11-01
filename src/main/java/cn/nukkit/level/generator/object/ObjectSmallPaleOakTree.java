@@ -63,7 +63,7 @@ public class ObjectSmallPaleOakTree extends TreeGenerator {
                     for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
                         if (j >= level.getMinHeight() && j < level.getMaxHeight()) {
                             pos2.setComponents(l, j, i1);
-                            if (!this.canGrowInto(level.getBlockIdAt(pos2.x, pos2.y, pos2.z))) {
+                            if (!this.canGrowInto(level.getBlockIdIfCachedOrLoaded(pos2.x, pos2.y, pos2.z))) {
                                 flag = false;
                             }
                         } else {
@@ -77,7 +77,7 @@ public class ObjectSmallPaleOakTree extends TreeGenerator {
                 return false;
             } else {
                 BlockVector3 down = position.down();
-                String block = level.getBlockIdAt(down.x, down.y, down.z);
+                String block = level.getBlockIdIfCachedOrLoaded(down.x, down.y, down.z);
 
                 if ((block.equals(Block.GRASS_BLOCK) || block.equals(Block.DIRT) || block.equals(Block.FARMLAND)) && position.getY() < level.getMaxHeight() - i - 1) {
                     this.setDirtAt(level, down);
@@ -95,7 +95,7 @@ public class ObjectSmallPaleOakTree extends TreeGenerator {
 
                                 if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextInt(2) != 0 && i4 != 0) {
                                     BlockVector3 blockpos = new BlockVector3(k1, i3, i2);
-                                    Block id = level.getBlockAt(blockpos.x, blockpos.y, blockpos.z);
+                                    Block id = level.getBlockIfCachedOrLoaded(blockpos.x, blockpos.y, blockpos.z);
 
                                     if (id.getId().equals(Block.AIR) || id instanceof BlockLeaves || id.getId().equals(Block.PALE_HANGING_MOSS)) {
                                         level.setBlockStateAt(blockpos, metaLeaves);
@@ -104,7 +104,7 @@ public class ObjectSmallPaleOakTree extends TreeGenerator {
                                             int depth = random.nextInt(1, 6);
                                             for(int j = 1; j < depth; i++) {
                                                 Vector3 pos = new Vector3(blockpos.x, blockpos.y-i, blockpos.z);
-                                                if(level.getBlockAt(pos).isAir()) {
+                                                if(level.getBlockIfCachedOrLoaded(pos).isAir()) {
                                                     if(i==depth-1){
                                                         level.setBlockStateAt(pos, BlockPaleHangingMoss.PROPERTIES.getBlockState(CommonBlockProperties.TIP, true));
                                                     } else level.setBlockStateAt(pos, BlockPaleHangingMoss.PROPERTIES.getBlockState(CommonBlockProperties.TIP, false));

@@ -1926,6 +1926,7 @@ public abstract class Item implements Cloneable, ItemID {
         return 0f;
     }
 
+
     public int getUsingTicks() {
         return Math.max(0, (int) Math.ceil(getUseDuration() * 20f));
     }
@@ -2085,6 +2086,16 @@ public abstract class Item implements Cloneable, ItemID {
     @Deprecated
     public boolean isRequiresHunger() {
         return true;
+    }
+
+
+    public int getEatingTicks() {
+        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        if (c != null) {
+            float seconds = c.getFloat("use_duration");
+            return Math.max(0, Math.round(seconds * 20f));
+        }
+        return 0;
     }
 
     /*

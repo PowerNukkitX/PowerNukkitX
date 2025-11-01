@@ -13,9 +13,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import com.google.common.base.Preconditions;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Getter
-@EqualsAndHashCode
 @ToString
 public class Structure extends AbstractStructure {
     private static final int FORMAT_VERSION = 1;
@@ -210,6 +208,7 @@ public class Structure extends AbstractStructure {
      *
      * @param pos the position to place the structure at (level cannot be null)
      */
+    @Override
     public void preparePlace(Position pos, BlockManager blockManager) {
         Preconditions.checkArgument(pos.getLevel() != null, "position level cannot be null");
 
@@ -220,16 +219,13 @@ public class Structure extends AbstractStructure {
         for (int lx = 0; lx < sizeX; lx++) {
             for (int ly = 0; ly < sizeY; ly++) {
                 for (int lz = 0; lz < sizeZ; lz++) {
-                    if (!blockStates[0][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, blockStates[0][lx][ly][lz]);
-                    } else {
-                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, STATE_AIR);
-                    }
-                    if (!blockStates[1][lx][ly][lz].equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, blockStates[1][lx][ly][lz]);
-                    } else if (blockManager.getBlockAt(x + lx, y + ly, z + lz).isWaterLogged()) {
-                        blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, STATE_AIR);
-                    }
+                    BlockState l0 = blockStates[0][lx][ly][lz];
+                    BlockState l1 = blockStates[1][lx][ly][lz];
+                    if (l0.equals(STRUCTURE_VOID_DEFAULT_STATE)) l0 = STATE_AIR;
+                    if (l1.equals(STRUCTURE_VOID_DEFAULT_STATE)) l1 = STATE_AIR;
+                    if(l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
+                    if(l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
+
                 }
             }
         }
@@ -237,7 +233,7 @@ public class Structure extends AbstractStructure {
 
     public void place(Position pos, boolean includeEntities, BlockManager blockManager) {
         preparePlace(pos, blockManager);
-        blockManager.applySubChunkUpdate(blockManager.getBlocks());
+        blockManager.applySubChunkUpdate();
 
         for (var entry : blockEntities.entrySet()) {
             BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z));
@@ -442,13 +438,13 @@ public class Structure extends AbstractStructure {
      * @param rotation the rotation to apply
      * @return a new rotated Structure instance
      */
-    public Structure rotate(StructureRotation rotation) {
-        if (rotation == StructureRotation.NONE) {
+    public Structure rotate(Rotation rotation) {
+        if (rotation == Rotation.NONE) {
             return this;
         }
 
-        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
-        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
+        int newSizeX = (rotation == Rotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
 
         BlockState[][][][] rotatedStates = new BlockState[2][newSizeX][sizeY][newSizeZ];
         Map<Vector3, CompoundTag> rotatedBlockEntities = new HashMap<>();

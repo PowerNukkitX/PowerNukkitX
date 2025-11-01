@@ -17,7 +17,7 @@ public class StructureSettings {
     BlockVector3 size;
     BlockVector3 offset;
     long lastEditedByEntityId;
-    StructureRotation rotation;
+    Rotation rotation;
     StructureMirror mirror;
     StructureAnimationMode animationMode;
     float animationSeconds;

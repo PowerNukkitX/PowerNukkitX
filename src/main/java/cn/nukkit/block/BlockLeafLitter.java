@@ -45,6 +45,11 @@ public class BlockLeafLitter extends BlockFlowable {
     }
 
     @Override
+    public boolean canBeReplaced() {
+        return true;
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (!isSupportValid(block.down())) {
             return false;

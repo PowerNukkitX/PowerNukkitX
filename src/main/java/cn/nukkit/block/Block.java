@@ -714,7 +714,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public boolean isAir() {
-        return this.blockstate == BlockAir.PROPERTIES.getDefaultState();
+        return this.blockstate == BlockAir.STATE;
     }
 
     public BlockState getBlockState() {

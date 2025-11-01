@@ -54,7 +54,7 @@ public final class LevelDBStorage {
         try (WriteBatch writeBatch = this.db.createWriteBatch()) {
             LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
             WriteOptions writeOptions = new WriteOptions();
-            writeOptions.sync(true);
+            writeOptions.sync(false);
             this.db.write(writeBatch, writeOptions);
         }
     }

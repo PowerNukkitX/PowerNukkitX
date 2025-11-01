@@ -54,7 +54,19 @@ public abstract class LegacyTreeGenerator {
                  BlockID.OAK_SAPLING,
                  BlockID.JUNGLE_SAPLING,
                  BlockID.DARK_OAK_SAPLING,
-                 BlockID.BIRCH_SAPLING -> true;
+                 BlockID.LEAF_LITTER,
+                 BlockID.WILDFLOWERS,
+                 BlockID.PINK_PETALS,
+                 BlockID.TALL_GRASS,
+                 BlockID.BIRCH_SAPLING,
+                 BlockID.SHORT_GRASS,
+                 BlockID.DANDELION,
+                 BlockID.LILY_OF_THE_VALLEY,
+                 BlockID.LILAC,
+                 BlockID.PEONY,
+                 BlockID.ROSE_BUSH,
+                 BlockID.LARGE_FERN,
+                 BlockID.FERN -> true;
             default -> false;
         };
     }
@@ -75,7 +87,7 @@ public abstract class LegacyTreeGenerator {
             }
             for (int xx = -radiusToCheck; xx < (radiusToCheck + 1); ++xx) {
                 for (int zz = -radiusToCheck; zz < (radiusToCheck + 1); ++zz) {
-                    if (!this.overridable(level.getBlockAt(x + xx, y + yy, z + zz))) {
+                    if (!this.overridable(level.getBlockIfCachedOrLoaded(x + xx, y + yy, z + zz))) {
                         return false;
                     }
                 }
@@ -99,7 +111,7 @@ public abstract class LegacyTreeGenerator {
                     if (xOff == mid && zOff == mid && (yOff == 0 || random.nextInt(2) == 0)) {
                         continue;
                     }
-                    Block blockAt = level.getBlockAt(xx, yy, zz);
+                    Block blockAt = level.getBlockIfCachedOrLoaded(xx, yy, zz);
                     if (!blockAt.isSolid()) {
                         level.setBlockStateAt(xx, yy, zz, getLeafBlockState());
                     }
@@ -113,7 +125,7 @@ public abstract class LegacyTreeGenerator {
         level.setBlockStateAt(x, y - 1, z, Block.DIRT);
 
         for (int yy = 0; yy < trunkHeight; ++yy) {
-            Block b = level.getBlockAt(x, y + yy, z);
+            Block b = level.getBlockIfCachedOrLoaded(x, y + yy, z);
             if (this.overridable(b)) {
                 level.setBlockStateAt(x, y + yy, z, getTrunkBlockState());
             }

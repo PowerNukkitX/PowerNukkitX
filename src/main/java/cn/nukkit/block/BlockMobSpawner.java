@@ -14,7 +14,7 @@ import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockMobSpawner extends BlockSolid {
+public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<BlockEntityMobSpawner> {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
 
     @Override
@@ -131,5 +131,15 @@ public class BlockMobSpawner extends BlockSolid {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public @NotNull Class<? extends BlockEntityMobSpawner> getBlockEntityClass() {
+        return BlockEntityMobSpawner.class;
+    }
+
+    @Override
+    public @NotNull String getBlockEntityType() {
+        return BlockEntity.MOB_SPAWNER;
     }
 }

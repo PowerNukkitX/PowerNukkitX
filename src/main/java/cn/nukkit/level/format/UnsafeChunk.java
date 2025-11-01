@@ -100,14 +100,12 @@ public class UnsafeChunk {
      * @param sectionY the section y range -4 ~ 19
      * @return the or create section
      */
-    private ChunkSection getOrCreateSection(int sectionY) {
+    public ChunkSection getOrCreateSection(int sectionY) {
         int minSectionY = getDimensionData().getMinSectionY();
         int offsetY = sectionY - minSectionY;
         if(offsetY < 0) return null;
-        for (int i = 0; i <= offsetY; i++) {
-            if (chunk.sections[i] == null) {
-                chunk.sections[i] = new ChunkSection((byte) (i + minSectionY));
-            }
+        if(chunk.sections[offsetY] == null) {
+            chunk.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY));
         }
         return chunk.sections[offsetY];
     }
@@ -172,7 +170,7 @@ public class UnsafeChunk {
      */
     public int getHighestBlockAt(int x, int z) {
         for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); --y) {
-            if (getBlockState(x, y, z) != BlockAir.PROPERTIES.getBlockState()) {
+            if (getBlockState(x, y, z) != BlockAir.STATE) {
                 this.setHeightMap(x, z, y);
                 return y;
             }

@@ -7,11 +7,12 @@ package cn.nukkit.level.format;
  */
 public enum ChunkState {
     NEW,
+    STARTED,
     GENERATED,
     POPULATED,
     FINISHED;
 
     public boolean canSend() {
-        return this.ordinal() >= 2;
+        return this.ordinal() >= 3;
     }
 }

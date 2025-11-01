@@ -150,6 +150,8 @@ public abstract class Enchantment implements Cloneable {
     public static final String NAME_SOUL_SPEED = "soul_speed";
     public static final int ID_SWIFT_SNEAK = 37;
     public static final String NAME_SWIFT_SNEAK = "swift_sneak";
+    public static final int ID_WIND_BURST = 38;
+    public static final String NAME_WIND_BURST = "wind_burst";
     public static final int ID_DENSITY = 39;
     public static final String NAME_DENSITY = "density";
     public static final int ID_BREACH = 40;

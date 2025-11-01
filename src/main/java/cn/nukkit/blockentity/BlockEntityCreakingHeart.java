@@ -37,7 +37,11 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
-        return this.getBlock().getId().equals(Block.CREAKING_HEART);
+        try {
+            return this.getBlock().getId().equals(Block.CREAKING_HEART);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -61,6 +65,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if(!getBlock().isValid()) return false;
         if(getLevel().getTick() % 40 == 0 && isBlockEntityValid() && getHeart().isActive()) {
             getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_AMBIENT);
         }
@@ -83,6 +88,8 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
                     break;
                 }
             }
+
+            if(!pos.getLevelBlock().isAir()) return true;
 
             Entity ent = Entity.createEntity(Entity.CREAKING, pos);
             if(ent != null) {

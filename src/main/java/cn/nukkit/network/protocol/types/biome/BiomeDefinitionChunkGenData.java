@@ -4,6 +4,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.OptionalValue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static cn.nukkit.network.protocol.types.biome.IBiomeDefinitionListObject.parseFrom;
 
 public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
@@ -57,5 +61,15 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         if(tag.containsCompound("overworldGenRules")) overworldGenRules = OptionalValue.of(parseFrom(tag.getCompound("overworldGenRules"), new BiomeOverworldGenRulesData()));
         if(tag.containsCompound("multinoiseGenRules")) multinoiseGenRules = OptionalValue.of(parseFrom(tag.getCompound("multinoiseGenRules"), new BiomeMultinoiseGenRulesData()));
         if(tag.containsCompound("legacyWorldGenRules")) legacyWorldGenRules = OptionalValue.of(parseFrom(tag.getCompound("legacyWorldGenRules"), new BiomeLegacyWorldGenRulesData()));
+    }
+
+
+    public void addFeature(BiomeConsolidatedFeatureData data) {
+        List<BiomeConsolidatedFeatureData> temp = new ArrayList<>();
+        temp.add(data);
+        if(consolidatedFeatures.isPresent()) {
+            temp.addAll(Arrays.asList(consolidatedFeatures.get()));
+        }
+        consolidatedFeatures = OptionalValue.of(temp.toArray(BiomeConsolidatedFeatureData[]::new));
     }
 }

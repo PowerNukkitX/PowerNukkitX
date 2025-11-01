@@ -62,7 +62,6 @@ public interface BlockEntityHolder<E extends BlockEntity> {
                 args);
 
         Class<? extends E> entityClass = getBlockEntityClass();
-
         if (!entityClass.isInstance(created)) {
             String error = "Failed to create the block entity " + typeName + " of class " + entityClass + " at " + getLocation() + ", " +
                     "the created type is not an instance of the requested class. Created: " + created;

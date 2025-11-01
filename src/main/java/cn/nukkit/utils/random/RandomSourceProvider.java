@@ -30,6 +30,8 @@ public interface RandomSourceProvider {
      */
     int nextInt(int min, int max);
 
+    int nextBoundedInt(int max);
+
     /**
      * Generate random long between {@link Long#MIN_VALUE} and {@link Long#MIN_VALUE}
      */
@@ -54,4 +56,12 @@ public interface RandomSourceProvider {
      * Next double -1~1 for Gaussian distribution
      */
     double nextGaussian();
+
+    /**
+     * Sets a new seed
+     */
+    RandomSourceProvider setSeed(long seed);
+
+    long getSeed();
+
 }

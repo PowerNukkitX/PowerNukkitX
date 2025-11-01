@@ -426,6 +426,9 @@ public class Server {
             Registries.FUEL.init();
             Registries.GENERATOR.init();
             Registries.GENERATE_STAGE.init();
+            Registries.POPULATOR.init();
+            Registries.GENERATE_FEATURE.init();
+            Registries.STRUCTURE.init();
             Registries.EFFECT.init();
             Registries.RECIPE.init();
             Profession.init();
@@ -499,7 +502,9 @@ public class Server {
             Registries.BIOME.trim();
             Registries.FUEL.trim();
             Registries.GENERATOR.trim();
+            Registries.POPULATOR.trim();
             Registries.GENERATE_STAGE.trim();
+            Registries.STRUCTURE.trim();
             Registries.EFFECT.trim();
             Registries.RECIPE.trim();
         }
@@ -607,7 +612,10 @@ public class Server {
                 //default world not exist
                 //generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", LevelConfig.GeneratorConfig.randomSeed(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                long seed = LevelConfig.GeneratorConfig.randomSeed();
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
@@ -670,6 +678,9 @@ public class Server {
             Registries.FUEL.reload();
             Registries.GENERATOR.reload();
             Registries.GENERATE_STAGE.reload();
+            Registries.POPULATOR.reload();
+            Registries.GENERATE_FEATURE.reload();
+            Registries.STRUCTURE.reload();
             Registries.EFFECT.reload();
             Registries.RECIPE.reload();
             Enchantment.reload();
@@ -1473,11 +1484,6 @@ public class Server {
      * @param players    指定接受数据包的玩家
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
-        // In some circumstances, the game sends confidential data in this string,
-        // so under no circumstances should it be sent to all players on the server.
-        // @Zwuiix
-        skin.setSkinId("");
-
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId, color)};
@@ -1488,10 +1494,6 @@ public class Server {
      * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Collection<Player> players) {
-        // In some circumstances, the game sends confidential data in this string,
-        // so under no circumstances should it be sent to all players on the server.
-        // @Zwuiix
-        skin.setSkinId("");
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 
