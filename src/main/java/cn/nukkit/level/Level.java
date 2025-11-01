@@ -132,7 +132,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static cn.nukkit.utils.Utils.dynamic;
-import static cn.nukkit.utils.Utils.random;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -1797,20 +1796,64 @@ public class Level implements Metadatable {
     }
 
     public List<Block> raycastBlocks(Vector3 start, Vector3 end) {
-        return raycastBlocks(start, end, true, false, 1);
+        return raycastBlocks(start, end, true, false, 1, false,false, false);
     }
 
     public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load, double space) {
-        List<Block> result = new ArrayList<>();
-        Vector3 direction = end.subtract(start).normalize();
-        Vector3 currentPos = start.clone();
+        return raycastBlocks(start, end, ignoreAir, load, space, false, false, false);
+    }
 
-        for (double i = 0; i < start.distance(end); i += space) {
-            Block block = this.getBlock(currentPos.floor(), load);
-            currentPos = currentPos.add(direction);
-            if(!block.isAir() || !ignoreAir) result.add(block);
+    public List<Block> raycastBlocks(Vector3 start, Vector3 end, boolean ignoreAir, boolean load, double space, boolean includeLiquidBlocks, boolean includePassableBlocks, boolean stopAtFirstBlocking) {
+        List<Block> result = new ArrayList<>();
+        if (space <= 0) space = 0.25;
+
+        Vector3 dir = end.subtract(start);
+        double length = dir.length();
+        if (length == 0) return Collections.unmodifiableList(result);
+
+        Vector3 step = dir.normalize().multiply(space);
+        Vector3 cur = start.clone().add(step);
+        double traveled = space;
+        double stopBefore = Math.max(0, length - space * 0.5);
+
+        int lastBx = Integer.MIN_VALUE, lastBy = Integer.MIN_VALUE, lastBz = Integer.MIN_VALUE;
+
+        while (traveled < stopBefore) {
+            int bx = (int) Math.floor(cur.x);
+            int by = (int) Math.floor(cur.y);
+            int bz = (int) Math.floor(cur.z);
+
+            if (bx != lastBx || by != lastBy || bz != lastBz) {
+                Block block = this.getBlock(bx, by, bz, load);
+
+                if (!ignoreAir || (block != null && !block.isAir())) {
+                    result.add(block);
+                }
+
+                if (blocksBlockSight(block, includeLiquidBlocks, includePassableBlocks)) {
+                    if (stopAtFirstBlocking) return Collections.unmodifiableList(result);
+                }
+
+                lastBx = bx; lastBy = by; lastBz = bz;
+            }
+
+            cur = cur.add(step);
+            traveled += space;
         }
         return Collections.unmodifiableList(result);
+    }
+
+    public boolean blocksBlockSight(Block b, boolean includeLiquids, boolean includePassables) {
+        if (b == null) return false;
+        if (b.isAir()) return false;
+
+        if (b instanceof BlockLiquid) {
+            return includeLiquids;
+        }
+        if (b.canPassThrough()) {
+            return includePassables;
+        }
+        return true;
     }
 
     public Block[] getCollisionBlocks(AxisAlignedBB bb) {

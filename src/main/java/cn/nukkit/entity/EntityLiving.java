@@ -7,8 +7,6 @@ import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
-import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
@@ -38,7 +36,6 @@ import cn.nukkit.utils.TickCachedBlockIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -125,18 +122,74 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean hasLineOfSight(Entity target) {
+        return hasLineOfSight(target, 0.0);
+    }
+
+    public boolean hasLineOfSight(Entity target, double thickness) {
         if (this.level != target.level) return false;
 
+        final boolean includeLiquidBlocks = false;
+        final boolean includePassableBlocks = false;
+        final double step = 0.25;
+
+        final Vector3 selfPos = this.getPosition();
+        final double selfEye = this.getEyeHeight();
+        final double selfChest = this.getHeight() * 0.60;
+
         Vector3[] fromPoints = new Vector3[] {
-            this.getPosition().add(0, this.getEyeHeight(), 0),    // eye level
-            this.getPosition().add(0, this.getHeight() * 0.6, 0)  // upper chest
+            selfPos.add(0, selfEye + 0.001, 0),
+            selfPos.add(0, selfChest + 0.001, 0),
         };
-        Vector3 to = target.getPosition().add(0, target.getHeight() * 0.6, 0); // target chest
+
+        final double tH = Math.max(0.0, target.getHeight());
+        final double tEye = Math.max(0.0, target.getEyeHeight());
+        final Vector3 tBase = target.getPosition();
+
+        Vector3[] toPoints = new Vector3[] {
+            tBase.add(0, Math.max(0.2 * tH, 0.25), 0),
+            tBase.add(0, Math.max(0.5 * tH, 0.5),  0),
+            tBase.add(0, Math.max(0.8 * tH, 0.75), 0),
+            tBase.add(0, Math.max(tEye, 0.9),      0),
+        };
+
+        boolean useCorridor = thickness > 0.0;
 
         for (Vector3 from : fromPoints) {
-            List<Block> blocks = this.level.raycastBlocks(from, to, true, false, 0.25);
-            boolean blocked = blocks.stream().anyMatch(b -> !b.isTransparent() && b.getBoundingBox() != null);
-            if (!blocked) return true;
+            for (Vector3 to : toPoints) {
+                Vector3 dir = to.subtract(from);
+                if (dir.lengthSquared() < 1e-6) continue;
+
+                if (!useCorridor) {
+                    List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                    if (!blocked) return true;
+                    continue;
+                }
+
+                Vector3 right = new Vector3(-dir.z, 0, dir.x);
+                if (right.lengthSquared() < 1e-6) right = new Vector3(1, 0, 0);
+                right = right.normalize().multiply(thickness);
+
+                Vector3 up = new Vector3(0, thickness, 0);
+
+                Vector3[] offsets = new Vector3[] {
+                    right, right.multiply(-1),
+                    up,    up.multiply(-1),
+                };
+
+                boolean allClear = true;
+                for (Vector3 o : offsets) {
+                    Vector3 f = from.add(o.x, o.y, o.z);
+                    Vector3 t = to.add(o.x, o.y, o.z);
+
+                    List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+
+                    if (blocked) { allClear = false; break; }
+                }
+
+                if (allClear) return true;
+            }
         }
         return false;
     }
