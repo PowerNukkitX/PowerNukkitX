@@ -95,8 +95,9 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             }
 
             // Setting up  default material instances
-            CompoundTag defaultMaterial = createDefaultMaterialInstance(null);
-            components.putCompound("minecraft:material_instances", defaultMaterial);
+            getOrCreateMaterialInstances(components);
+            //CompoundTag defaultMaterial = getOrCreateMaterialInstances(components); << TO REMOVE???
+            //components.putCompound("minecraft:material_instances", defaultMaterial); << TO REMOVE???
 
             // Sets the default geometry
             components.putCompound("minecraft:geometry", createDefaultGeometry(null));
@@ -210,17 +211,73 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         /**
-         * Set the texture of the block.
+         * Set the texture of the block, use only if you are setting simple texture, all the sides of the block will have this same texture.
          */
         public Builder texture(String texture) {
-            CompoundTag material = createDefaultMaterialInstance(texture);
-            this.nbt.getCompound("components").putCompound("minecraft:material_instances", material);
+            String tex = (texture != null && !texture.isBlank()) ? texture : "missing_texture";
+
+            CompoundTag components = this.nbt.getCompound("components");
+            CompoundTag mi = getOrCreateMaterialInstances(components);
+            CompoundTag mats = mi.getCompound("materials");
+            if (mats == null || mats.isEmpty()) {
+                mats = new CompoundTag(new LinkedHashMap<>());
+                mi.putCompound("materials", mats);
+            }
+
+            CompoundTag star = mats.contains("*") ? mats.getCompound("*") : new CompoundTag();
+            star.putString("texture", tex);
+            mats.putCompound("*", star);
+
+            for (Map.Entry<String, Tag> entry : mats.getTags().entrySet()) {
+                String face = entry.getKey();
+                if ("*".equals(face)) continue;
+                Tag tag = entry.getValue();
+                if (tag instanceof CompoundTag faceTag) {
+                    faceTag.putString("texture", tex);
+                    mats.putCompound(face, faceTag);
+                }
+            }
+
+            mi.putCompound("materials", mats);
+            components.putCompound("minecraft:material_instances", mi);
             return this;
         }
 
+        /**
+         * Sets material instances
+         *
+         * <pre>
+         * builder.materials(
+         *     Materials.builder()
+         *         .any(
+         *             Materials.RenderMethod.OPAQUE,
+         *             true,
+         *             new Materials.PackedBools(true, false, true), // faceDimming, randomizedUV, textureVariation
+         *             "my_texture"
+         *         )
+         *         .up(
+         *             Materials.RenderMethod.OPAQUE,
+         *             true,
+         *             new Materials.PackedBools(true, true, true),
+         *             "blue_concrete_00",
+         *             Materials.TintMethod.GRASS
+         *         )
+         *         // down, north, south, east and west.
+         * );
+         * </pre>
+         *
+         * @param materials materials to set to block's material instances
+         * @return this builder
+         */
         public Builder materials(Materials materials) {
-            CompoundTag base = createDefaultMaterialInstance(null);
-            CompoundTag baseMaterials = base.getCompound("materials");
+            CompoundTag components = this.nbt.getCompound("components");
+            CompoundTag mi = getOrCreateMaterialInstances(components);
+
+            CompoundTag baseMaterials = mi.getCompound("materials");
+            if (baseMaterials == null || baseMaterials.isEmpty()) {
+                baseMaterials = new CompoundTag(new LinkedHashMap<>());
+            }
+
             CompoundTag customMaterials = materials.toCompoundTag();
 
             for (Map.Entry<String, Tag> customEntry : customMaterials.getTags().entrySet()) {
@@ -237,7 +294,8 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 baseMaterials.putCompound(key, baseMat);
             }
 
-            this.nbt.getCompound("components").putCompound("minecraft:material_instances", base);
+            mi.putCompound("materials", baseMaterials);
+            components.putCompound("minecraft:material_instances", mi);
             return this;
         }
 
@@ -353,7 +411,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             var components = this.nbt.getCompound("components");
             CompoundTag base = createDefaultGeometry(null);
             CompoundTag custom = geometry.toCompoundTag();
-            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : custom.getTags().entrySet()) {
+            for (Map.Entry<String, Tag> entry : custom.getTags().entrySet()) {
                 base.put(entry.getKey(), entry.getValue());
             }
             components.putCompound("minecraft:geometry", base);
@@ -552,23 +610,27 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     }
 
     // Creates default materials instance
-    public static CompoundTag createDefaultMaterialInstance(String textureOverride) {
+    private static CompoundTag getOrCreateMaterialInstances(CompoundTag components) {
+        CompoundTag material = components.getCompound("minecraft:material_instances");
+        if (material != null && !material.isEmpty()) return material;
+
+        // create once
         CompoundTag materials = new CompoundTag(new LinkedHashMap<>());
-        CompoundTag main = new CompoundTag(new LinkedHashMap<>());
-        main.putFloat("ambient_occlusion", 1.0f);
-        main.putByte("face_dimming", (byte) 1);
-        main.putByte("isotropic", (byte) 0);
-        main.putString("render_method", "opaque");
-        main.putString("texture", textureOverride != null ? textureOverride : "missing_texture");
-        main.putString("tint_method", "none");
+        CompoundTag star = new CompoundTag(new LinkedHashMap<>());
+        star.putFloat("ambient_occlusion", 1.0f);
+        star.putByte("packed_bools", (byte) 0x1);
+        star.putByte("isotropic", (byte) 0);
+        star.putString("render_method", "opaque");
+        star.putString("texture", "missing_texture");
+        star.putString("tint_method", "none");
+        materials.putCompound("*", star);
 
-        materials.putCompound("*", main);
+        material = new CompoundTag(new LinkedHashMap<>());
+        material.putCompound("mappings", new CompoundTag());
+        material.putCompound("materials", materials);
 
-        CompoundTag materialInstances = new CompoundTag(new LinkedHashMap<>());
-        materialInstances.putCompound("mappings", new CompoundTag());
-        materialInstances.putCompound("materials", materials);
-
-        return materialInstances;
+        components.putCompound("minecraft:material_instances", material);
+        return material;
     }
 
     // Creates default category
