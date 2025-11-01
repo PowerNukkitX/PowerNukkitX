@@ -122,6 +122,7 @@ public class PopulatorRuinedPortal extends Populator {
                     }
                 }
             }
+            manager.generateChunks();
             queueObject(chunk, manager);
         }
     }

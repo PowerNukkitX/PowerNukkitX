@@ -29,6 +29,7 @@ public class JungleTemplePopulator extends Populator {
         if(JUNGLE_TEMPLE.canGenerateAt(new Location(x, y, z, level))) {
             BlockManager manager = new BlockManager(level);
             JUNGLE_TEMPLE.generate(manager, random, new Vector3(x, y, z));
+            manager.generateChunks();
             queueObject(chunk, manager);
         }
     }

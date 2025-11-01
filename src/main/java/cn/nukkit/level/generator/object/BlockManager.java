@@ -210,6 +210,14 @@ public class BlockManager {
         }
     }
 
+    public void generateChunks() {
+        for(Block block : this.getBlocks()) {
+            if(!block.getChunk().isGenerated()) {
+                block.getLevel().syncGenerateChunk(block.getChunkX(), block.getChunkZ());
+            }
+        }
+    }
+
     public void applySubChunkUpdate() {
         this.applySubChunkUpdate(new ArrayList<>(this.places.values()), null);
     }

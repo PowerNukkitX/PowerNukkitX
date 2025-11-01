@@ -49,6 +49,7 @@ public class NetherFortressPopulator extends Populator {
                         start.postProcess(manager, rand, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
                     }
                 }
+                manager.generateChunks();
                 queueObject(chunk, manager);
             }
         }

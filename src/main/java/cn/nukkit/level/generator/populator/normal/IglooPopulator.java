@@ -136,6 +136,7 @@ public class IglooPopulator extends Populator {
                     pot.setFlower(Item.get(Block.CACTUS));
                 }
             }
+            object.generateChunks();
             queueObject(chunk, object);
         }
     }

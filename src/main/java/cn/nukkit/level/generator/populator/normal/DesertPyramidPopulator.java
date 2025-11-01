@@ -29,6 +29,7 @@ public class DesertPyramidPopulator extends Populator {
         if(PYRAMID.canGenerateAt(new Location(x, y, z, level))) {
             BlockManager manager = new BlockManager(level);
             PYRAMID.generate(manager, null, new Vector3(x, y, z));
+            manager.generateChunks();
             queueObject(chunk, manager);
         }
     }
