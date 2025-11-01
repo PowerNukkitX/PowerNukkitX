@@ -65,6 +65,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if(!getBlock().isValid()) return false;
         if(getLevel().getTick() % 40 == 0 && isBlockEntityValid() && getHeart().isActive()) {
             getLevel().addSound(this, Sound.BLOCK_CREAKING_HEART_AMBIENT);
         }

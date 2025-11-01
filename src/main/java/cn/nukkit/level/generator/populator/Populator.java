@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.populator;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
