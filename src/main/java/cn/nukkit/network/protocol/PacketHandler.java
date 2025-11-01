@@ -130,6 +130,9 @@ public interface PacketHandler {
     default void handle(ContainerRegistryCleanupPacket pk) {
     }
 
+    default void handle(CorrectPlayerMovePredictionPacket pk) {
+    }
+
     default void handle(ContainerSetDataPacket pk) {
     }
 
