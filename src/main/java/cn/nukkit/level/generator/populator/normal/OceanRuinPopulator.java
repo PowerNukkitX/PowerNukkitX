@@ -174,6 +174,7 @@ public class OceanRuinPopulator extends Populator {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     }, 10);
                 }
+                //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                 manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
             }
             queueObject(chunk, manager);

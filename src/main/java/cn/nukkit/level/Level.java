@@ -2573,8 +2573,8 @@ public class Level implements Metadatable {
 
                 motion = new Vector3(-MathHelper.sin(f1) * f, 0.20000000298023224, MathHelper.cos(f1) * f);
             } else {
-                motion = new Vector3(new Random().nextDouble() * 0.2 - 0.1, 0.2,
-                        new Random().nextDouble() * 0.2 - 0.1);
+                motion = new Vector3(ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1, 0.2,
+                        ThreadLocalRandom.current().nextDouble() * 0.2 - 0.1);
             }
         }
 

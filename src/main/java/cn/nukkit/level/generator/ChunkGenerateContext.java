@@ -2,10 +2,7 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import lombok.Getter;
-
-import java.util.HashMap;
 
 @Getter
 public final class ChunkGenerateContext {

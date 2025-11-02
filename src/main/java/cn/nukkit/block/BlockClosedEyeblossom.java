@@ -23,12 +23,7 @@ public class BlockClosedEyeblossom extends BlockFlower {
     @Override
     public int onUpdate(int type) {
         if(type == Level.BLOCK_UPDATE_RANDOM || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            boolean changed = false;
-            if(getId().equals(CLOSED_EYEBLOSSOM)) {
-                if(level.isNight()) changed = true;
-            } else if(getId().equals(OPEN_EYEBLOSSOM)) {
-                if(level.isDay()) changed = true;
-            }
+            boolean changed = getId().equals(CLOSED_EYEBLOSSOM) && level.isNight() || getId().equals(OPEN_EYEBLOSSOM) && level.isDay();
             if(changed) {
                 changeState();
                 for(int x = -3; x <= 3; x++) {

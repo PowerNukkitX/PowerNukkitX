@@ -42,8 +42,8 @@ public final class PlayerChunkManager {
             int dx2 = chunkX2 - loaderChunkX;
             int dz2 = chunkZ2 - loaderChunkZ;
 
-            int dist1 = dx1 * dx1 + dz1 * dz1;
-            int dist2 = dx2 * dx2 + dz2 * dz2;
+            double dist1 = Math.hypot(dx1, dz1);
+            double dist2 = Math.hypot(dx2, dz2);
 
             boolean inFov1 = isInPlayerFov(dx1, dz1);
             boolean inFov2 = isInPlayerFov(dx2, dz2);
@@ -51,7 +51,7 @@ public final class PlayerChunkManager {
             if (inFov1 && !inFov2) return -1;
             if (!inFov1 && inFov2) return 1;
 
-            return Integer.compare(dist1, dist2);
+            return Double.compare(dist1, dist2);
         }
 
         private boolean isInPlayerFov(int dx, int dz) {
