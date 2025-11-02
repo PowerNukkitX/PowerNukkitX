@@ -1224,7 +1224,7 @@ public class StrongholdPieces {
             if (boundingBox.isInside(vec)) {
                 level.getLevel().getScheduler().scheduleDelayedTask(() -> {
                     LIBRARY.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                }, 10);
+                }, 20);
             }
 
             if (this.isTall) {
@@ -1235,7 +1235,7 @@ public class StrongholdPieces {
                 if (boundingBox.isInside(vec)) {
                     level.getLevel().getScheduler().scheduleDelayedTask(() -> {
                         LIBRARY.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                    }, 10);
+                    }, 20);
                 }
             }
 
