@@ -27,9 +27,7 @@ public class SimplexF extends PerlinF {
     protected static float G44;
     protected final float offsetW;
 
-    public SimplexF(NukkitRandom random, float octaves, float persistence) {
-        super(random, octaves, persistence);
-        this.offsetW = random.nextFloat() * 256;
+    static {
         SQRT_3 = (float) Math.sqrt(3);
         SQRT_5 = (float) Math.sqrt(5);
         F2 = 0.5f * (SQRT_3 - 1f);
@@ -44,21 +42,14 @@ public class SimplexF extends PerlinF {
         G44 = G4 * 4.0f - 1.0f;
     }
 
+    public SimplexF(NukkitRandom random, float octaves, float persistence) {
+        super(random, octaves, persistence);
+        this.offsetW = random.nextFloat() * 256;
+    }
+
     public SimplexF(NukkitRandom random, float octaves, float persistence, float expansion) {
         super(random, octaves, persistence, expansion);
         this.offsetW = random.nextFloat() * 256;
-        SQRT_3 = (float) Math.sqrt(3);
-        SQRT_5 = (float) Math.sqrt(5);
-        F2 = 0.5f * (SQRT_3 - 1f);
-        G2 = (3f - SQRT_3) / 6f;
-        G22 = G2 * 2.0f - 1f;
-        F3 = 1.0f / 3.0f;
-        G3 = 1.0f / 6.0f;
-        F4 = (SQRT_5 - 1.0f) / 4.0f;
-        G4 = (5.0f - SQRT_5) / 20.0f;
-        G42 = G4 * 2.0f;
-        G43 = G4 * 3.0f;
-        G44 = G4 * 4.0f - 1.0f;
     }
 
 

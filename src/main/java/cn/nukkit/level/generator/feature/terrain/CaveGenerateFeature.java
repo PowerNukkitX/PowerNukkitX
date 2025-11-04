@@ -15,14 +15,12 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
-import cn.nukkit.utils.random.Xoroshiro128;
 
 public class CaveGenerateFeature extends GenerateFeature {
 
     public static final String NAME = "minecraft:overworld_cave";
 
     protected final NukkitRandom random = new NukkitRandom();
-
 
     public static int caveRarity = 7;//7
     public static int caveFrequency = 40;//40
