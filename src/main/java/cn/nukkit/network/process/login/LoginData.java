@@ -43,9 +43,6 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
             throw new SecurityException("Invalid clientData JWT", e);
         }
         JsonObject clientData = parseClientData(clientClaims, xuid);
-        if (!verifyJwt(clientClaims, identityPublicKey) && strict) {
-            xboxAuth = false;
-        }
         String displayName = identityData.displayName;
 
         return new LoginData(identityPublicKey, identityClaims.identityPublicKey, clientData, xuid, uuid, displayName, xboxAuth,
@@ -55,28 +52,6 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
     public static JsonObject parseClientData(JwtClaims claims, String xuid) throws Exception {
         JsonObject clientData = (JsonObject) JsonParser.parseString(claims.toJson());
         return clientData;
-    }
-
-    public static boolean verifyJwt(JwtClaims claims, ECPublicKey key) throws JoseException {
-        try {
-            String compactJwt = (String) claims.getRawJson();
-            if (compactJwt == null) {
-                throw new IllegalArgumentException("JwtClaims does not include the raw JWT string (_rawJwt)");
-            }
-
-            JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-                    .setVerificationKey(key)
-                    .setJwsAlgorithmConstraints(new AlgorithmConstraints(
-                            AlgorithmConstraints.ConstraintType.WHITELIST,
-                            AlgorithmIdentifiers.ECDSA_USING_P384_CURVE_AND_SHA384))
-                    .build();
-
-            // If verification fails, an exception is thrown
-            jwtConsumer.processToClaims(compactJwt);
-            return true;
-        } catch (InvalidJwtException e) {
-            return false;
-        }
     }
 
     public Skin skin() {
