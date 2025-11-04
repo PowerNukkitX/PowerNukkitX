@@ -27,13 +27,15 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
         boolean xboxAuth = result.signed();
         ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
         ChainValidationResult.IdentityData identityData = identityClaims.extraData;
-
         ECPublicKey identityPublicKey = (ECPublicKey) identityClaims.parsedIdentityPublicKey();
         String xuid = identityData.xuid;
         UUID uuid = UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8));
 
         JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-                .setSkipSignatureVerification()  // or setVerificationKey(...) to verify
+                .setVerificationKey(identityPublicKey)
+                .setJwsAlgorithmConstraints(new AlgorithmConstraints(
+                        AlgorithmConstraints.ConstraintType.WHITELIST,
+                        AlgorithmIdentifiers.ECDSA_USING_P384_CURVE_AND_SHA384))
                 .build();
 
         JwtClaims clientClaims;

@@ -2,6 +2,7 @@ package cn.nukkit.network.connection.util;
 
 import lombok.ToString;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.jose4j.json.JsonUtil;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.JwtContext;
@@ -126,6 +127,7 @@ public final class ChainValidationResult {
          * @deprecated v818: Use {@link #minecraftId} instead.
          */
         @Nullable
+        @Deprecated
         public final UUID identity;
         public final String xuid;
         public final @Nullable String titleId;
@@ -136,7 +138,7 @@ public final class ChainValidationResult {
         @Nullable
         public final String minecraftId;
 
-        private IdentityData(String displayName, UUID identity, String xuid, @Nullable String titleId, @Nullable String minecraftId) {
+        private IdentityData(String displayName, UUID identity, @NotNull String xuid, @Nullable String titleId, @Nullable String minecraftId) {
             this.displayName = displayName;
             this.identity = identity;
             this.xuid = xuid;
