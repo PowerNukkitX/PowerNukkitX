@@ -39,6 +39,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 
+/**
+ * Took from CloudburstMC Protocol.
+ * https://github.com/CloudburstMC/Protocol/blob/3.0/bedrock-connection/src/main/java/org/cloudburstmc/protocol/bedrock/util/EncryptionUtils.java
+ */
+
 @UtilityClass
 public class EncryptionUtils {
     private static final ECPublicKey MOJANG_PUBLIC_KEY;
