@@ -200,7 +200,7 @@ public class LevelDBChunkSerializer {
                                 section = new ChunkSection((byte) ySection);
                             } else {
                                 BlockPalette[] palettes = new BlockPalette[layers];
-                                Arrays.fill(palettes, new BlockPalette(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2));
+                                Arrays.fill(palettes, new BlockPalette(BlockAir.STATE, new ReferenceArrayList<>(16), BitArrayVersion.V2));
                                 section = new ChunkSection((byte) ySection, palettes);
                             }
                             for (int layer = 0; layer < layers; layer++) {

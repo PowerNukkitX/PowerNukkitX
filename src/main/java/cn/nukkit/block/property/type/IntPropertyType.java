@@ -43,6 +43,14 @@ public final class IntPropertyType extends BaseBlockPropertyType<Integer> {
         return cachedValues[value - min];
     }
 
+    public IntPropertyValue createMin() {
+        return this.createValue(getMin());
+    }
+
+    public IntPropertyValue createMax() {
+        return this.createValue(getMax());
+    }
+
     @Override
     public IntPropertyValue tryCreateValue(Object value) {
         if (value instanceof Number number) {

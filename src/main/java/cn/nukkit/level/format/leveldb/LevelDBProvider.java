@@ -571,7 +571,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public IChunk getChunk(int chunkX, int chunkZ, boolean create) {
-        var tmp = getThreadLastChunk();
+        var tmp = getLoadedChunk(chunkX, chunkZ);
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }

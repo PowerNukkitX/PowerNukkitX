@@ -224,9 +224,14 @@ public class EntityCreaking extends EntityMob {
     @Override
     public void updateMovement() {
         super.updateMovement();
-        if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
-            creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
-        } else kill();
+        try {
+            if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
+                creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
+            } else kill();
+        } catch (Exception e) {
+            //can happen when you regenerate a chunk with debug command.
+            kill();
+        }
     }
 
     private class NearestPlayerCreakingSensor extends NearestPlayerSensor {

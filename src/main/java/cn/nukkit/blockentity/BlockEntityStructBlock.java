@@ -15,7 +15,7 @@ import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
 import cn.nukkit.network.protocol.types.StructureAnimationMode;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private StructureMirror mirror;
     private StructureRedstoneSaveMode redstoneSaveMode;
     private boolean removeBlocks;
-    private StructureRotation rotation;
+    private Rotation rotation;
     private long seed;
     private boolean showBoundingBox;
     private String structureName;
@@ -106,9 +106,9 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
             this.removeBlocks = false;
         }
         if (this.namedTag.contains(TAG_ROTATION)) {
-            this.rotation = StructureRotation.from(this.namedTag.getByte(TAG_ROTATION));
+            this.rotation = Rotation.from(this.namedTag.getByte(TAG_ROTATION));
         } else {
-            this.rotation = StructureRotation.from(0);
+            this.rotation = Rotation.from(0);
         }
         if (this.namedTag.contains(TAG_SEED)) {
             this.seed = this.namedTag.getLong(TAG_SEED);
@@ -263,7 +263,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
         if (structure == null) return;
 
-        if(rotation != StructureRotation.NONE)
+        if(rotation != Rotation.NONE)
             structure = structure.rotate(rotation);
 
         if(mirror != StructureMirror.NONE)

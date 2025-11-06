@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object.legacytree;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -30,7 +31,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
         int radius = random.nextInt(2);
         int maxR = 1;
         int minR = 0;
-
+        level.setBlockStateAt(x, y-1, z, BlockDirt.PROPERTIES.getDefaultState());
         for (int yy = 0; yy <= topSize; ++yy) {
             int yyy = y + this.treeHeight - yy;
 
@@ -41,7 +42,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
                     if (xOff == radius && zOff == radius && radius > 0) {
                         continue;
                     }
-                    Block blockAt = level.getBlockAt(xx, yyy, zz);
+                    Block blockAt = level.getBlockIfCachedOrLoaded(xx, yyy, zz);
                     if (!blockAt.isSolid()) {
                         level.setBlockStateAt(xx, yyy, zz, getLeafBlockState());
                     }

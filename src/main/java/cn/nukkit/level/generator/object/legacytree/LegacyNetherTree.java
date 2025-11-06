@@ -54,7 +54,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
                     if (xOff == mid && zOff == mid && random.nextInt(2) == 0) {
                         continue;
                     }
-                    Block block = level.getBlockAt(xx, yy, zz);
+                    Block block = level.getBlockIfCachedOrLoaded(xx, yy, zz);
                     if (!block.isSolid()) {
                         if (random.nextInt(20) == 0) level.setBlockStateAt(xx, yy, zz, Block.SHROOMLIGHT);
                         else level.setBlockStateAt(xx, yy, zz, this.getLeafBlockState());
@@ -69,7 +69,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
                     if (xOff == mid && zOff == mid && (random.nextInt(2) == 0)) {
                         continue;
                     }
-                    Block block = level.getBlockAt(xx, yy, zz);
+                    Block block = level.getBlockIfCachedOrLoaded(xx, yy, zz);
                     if (!block.isSolid()) {
                         if (random.nextInt(20) == 0) level.setBlockStateAt(xx, yy, zz, Block.SHROOMLIGHT);
                         else level.setBlockStateAt(xx, yy, zz, this.getLeafBlockState());
@@ -85,11 +85,11 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
 
             for (int xx = x - mid; xx <= x + mid; xx++) {
                 for (int zz = z - mid; zz <= z + mid; zz += mid * 2) {
-                    Block block = level.getBlockAt(xx, yy, zz);
+                    Block block = level.getBlockIfCachedOrLoaded(xx, yy, zz);
                     if (!block.isSolid()) {
                         if (random.nextInt(3) == 0) {
                             for (int i = 0; i < random.nextInt(5); i++) {
-                                Block block2 = level.getBlockAt(xx, yy - i, zz);
+                                Block block2 = level.getBlockIfCachedOrLoaded(xx, yy - i, zz);
                                 if (!block2.isSolid())
                                     level.setBlockStateAt(xx, yy - i, zz, getLeafBlockState());
                             }
@@ -100,11 +100,11 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
 
             for (int zz = z - mid; zz <= z + mid; zz++) {
                 for (int xx = x - mid; xx <= x + mid; xx += mid * 2) {
-                    Block block = level.getBlockAt(xx, yy, zz);
+                    Block block = level.getBlockIfCachedOrLoaded(xx, yy, zz);
                     if (!block.isSolid()) {
                         if (random.nextInt(3) == 0) {
                             for (int i = 0; i < random.nextInt(4); i++) {
-                                Block block2 = level.getBlockAt(xx, yy - i, zz);
+                                Block block2 = level.getBlockIfCachedOrLoaded(xx, yy - i, zz);
                                 if (!block2.isSolid())
                                     level.setBlockStateAt(xx, yy - i, zz, getLeafBlockState());
                             }
@@ -116,7 +116,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
 
         for (int xCanopy = x - mid + 1; xCanopy <= x + mid - 1; xCanopy++) {
             for (int zCanopy = z - mid + 1; zCanopy <= z + mid - 1; zCanopy++) {
-                Block block = level.getBlockAt(xCanopy, y + treeHeight, zCanopy);
+                Block block = level.getBlockIfCachedOrLoaded(xCanopy, y + treeHeight, zCanopy);
                 if (!block.isSolid())
                     level.setBlockStateAt(xCanopy, y + treeHeight, zCanopy, getLeafBlockState());
             }
@@ -130,7 +130,7 @@ public abstract class LegacyNetherTree extends LegacyTreeGenerator {
             if (checkY(level, y + yy)) { // 防止长出下界顶部基岩层
                 continue;
             }
-            Block b = level.getBlockAt(x, y + yy, z);
+            Block b = level.getBlockIfCachedOrLoaded(x, y + yy, z);
             if (this.overridable(b)) {
                 level.setBlockStateAt(x, y + yy, z, this.getTrunkBlockState());
             }

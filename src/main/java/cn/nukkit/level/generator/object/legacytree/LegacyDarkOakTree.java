@@ -46,7 +46,7 @@ public class LegacyDarkOakTree extends LegacyTreeGenerator {
         for (int yy = 0; yy < trunkHeight; ++yy) {
             for (int xx = 0; xx < radius; xx++) {
                 for (int zz = 0; zz < radius; zz++) {
-                    Block b = level.getBlockAt(x, y + yy, z);
+                    Block b = level.getBlockIfCachedOrLoaded(x, y + yy, z);
                     if (this.overridable(b)) {
                         level.setBlockStateAt(x + xx, y + yy, z + zz, getTrunkBlockState());
                     }
@@ -70,7 +70,7 @@ public class LegacyDarkOakTree extends LegacyTreeGenerator {
                     if (xOff == radius && zOff == radius && radius > 0) {
                         continue;
                     }
-                    boolean solid = level.getBlockAt(xx, yyy, zz).isSolid();
+                    boolean solid = level.getBlockIfCachedOrLoaded(xx, yyy, zz).isSolid();
                     if (!solid) {
                         level.setBlockStateAt(xx, yyy, zz, getLeafBlockState());
                     }

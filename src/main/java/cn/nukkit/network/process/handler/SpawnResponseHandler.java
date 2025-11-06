@@ -152,7 +152,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(RequestChunkRadiusPacket pk) {
-        player.setViewDistance(Math.max(2, Math.min(pk.radius, player.getViewDistance())));
+        player.setViewDistance(Math.max(2, player.getViewDistance()));
     }
 
     @Override

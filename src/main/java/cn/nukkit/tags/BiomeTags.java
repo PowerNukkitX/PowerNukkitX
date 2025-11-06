@@ -58,6 +58,7 @@ public final class BiomeTags {
     public static final String OCEAN = "ocean";
     public static final String OVERWORLD = "overworld";
     public static final String OVERWORLD_GENERATION = "overworld_generation";
+    public static final String PALE_GARDEN = "pale_garden";
     public static final String PLAINS = "plains";
     public static final String PLATEAU = "plateau";
     public static final String RARE = "rare";

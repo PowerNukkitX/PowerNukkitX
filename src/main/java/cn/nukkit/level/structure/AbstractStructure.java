@@ -2,18 +2,18 @@ package cn.nukkit.level.structure;
 
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRotation;
-
-import java.util.concurrent.CompletableFuture;
+import cn.nukkit.network.protocol.types.Rotation;
 
 public abstract class AbstractStructure {
-    protected static final BlockState STATE_AIR = BlockAir.PROPERTIES.getDefaultState();
+    protected static final BlockState STATE_AIR = BlockAir.STATE;
     protected static final BlockState STATE_UNKNOWN = BlockUnknown.PROPERTIES.getDefaultState();
+    protected static final BlockState STATE_STRUCTURE_VOID = BlockStructureVoid.PROPERTIES.getDefaultState();
     protected String name;
 
     public static AbstractStructure fromNbt(CompoundTag tag) {
@@ -34,7 +34,7 @@ public abstract class AbstractStructure {
     public abstract CompoundTag toNBT();
     public abstract void place(Position pos, boolean includeEntities, BlockManager blockManager);
     public abstract void preparePlace(Position pos, BlockManager blockManager);
-    public abstract AbstractStructure rotate(StructureRotation rotation);
+    public abstract AbstractStructure rotate(Rotation rotation);
     public abstract AbstractStructure mirror(StructureMirror mirror);
 
     public void place(Position pos) {

@@ -3,6 +3,7 @@ package cn.nukkit.level.generator;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +51,11 @@ public abstract class Generator implements BlockID {
     }
 
     public final IChunk syncGenerate(IChunk chunk) {
+        chunk.setChunkState(ChunkState.STARTED);
         return this.syncGenerate(chunk, end.name());
     }
 
-    public final IChunk syncGenerate(IChunk chunk, String to) {
+    private IChunk syncGenerate(IChunk chunk, String to) {
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
             start.apply(context);
@@ -83,12 +85,16 @@ public abstract class Generator implements BlockID {
     public final void asyncGenerate(IChunk chunk, String to, Consumer<ChunkGenerateContext> callback) {
         Preconditions.checkNotNull(to);
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
+        chunk.setChunkState(ChunkState.STARTED);
         asyncGenerate0(context, start, to, () -> callback.accept(context));
     }
 
 
     private void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, String to, final Runnable callback) {
-        if (start == null || to == null) return;
+        if (start == null || to == null) {
+            callback.run();
+            return;
+        }
         if (to.equals(start.name())) {
             start.getExecutor().execute(() -> {
                 start.apply(context);
@@ -100,5 +106,6 @@ public abstract class Generator implements BlockID {
             start.apply(context);
             asyncGenerate0(context, start.getNextStage(), to, callback);
         });
+
     }
 }

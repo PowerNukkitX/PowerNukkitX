@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;
@@ -40,8 +41,8 @@ public record ChunkSection(byte y,
 
     public ChunkSection(byte sectionY) {
         this(sectionY,
-                new BlockPalette[]{new BlockPalette(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2),
-                        new BlockPalette(BlockAir.PROPERTIES.getDefaultState(), new ReferenceArrayList<>(16), BitArrayVersion.V2)},
+                new BlockPalette[]{new BlockPalette(BlockAir.STATE, new ReferenceArrayList<>(16), BitArrayVersion.V2),
+                        new BlockPalette(BlockAir.STATE, new ReferenceArrayList<>(16), BitArrayVersion.V2)},
                 new Palette<>(BiomeID.PLAINS),
                 new NibbleArray(SIZE),
                 new NibbleArray(SIZE),
@@ -124,7 +125,7 @@ public record ChunkSection(byte y,
     }
 
     public boolean isEmpty() {
-        return blockLayer[0].isEmpty() && blockLayer[0].get(0) == BlockAir.PROPERTIES.getDefaultState();
+        return blockLayer[0].isEmpty() && blockLayer[0].get(0) == BlockAir.STATE;
     }
 
     public void setNeedReObfuscate() {
