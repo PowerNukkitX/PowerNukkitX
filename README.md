@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/38783390143885-Minecraft-1-21-101-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.101%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft--bedrock-edition-1-21-120">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.120%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Protocol" src="https://img.shields.io/badge/protocol-827-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-859-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
@@ -63,26 +63,16 @@
 ## Install
 
 1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
-2. Download the [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip)
-3. Unzip `PowerNukkitX-Run.zip` to the directory you want.
-4. Set Java environment variables or unzip JDK to the same directory as the previous step.
-
-You want to use PowerNukkitX without the CLI?
-
-1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
 2. Download the [`powernukkitx-shaded.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-shaded.jar)
+3. Get your start script [here](https://github.com/PowerNukkitX/scripts/tree/master)
 
 ## Usage
 
-Start PowerNukkitX when using the CLI
-```sh
-java -jar cli.jar
-```
-
-Starting PowerNukkitX when using the shaded jar (Without CLI)
+Starting PowerNukkitX
 ```sh
 java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-shaded.jar
 ```
+If you use a newer java version (greater than 21) you have to use one of the [startup scripts.](https://github.com/PowerNukkitX/scripts/tree/master)
 
 ## Community & Support
 Join our [Discord](https://discord.gg/apwd7uauZg) server to chat with other users and developers.
