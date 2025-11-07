@@ -2,21 +2,26 @@ package cn.nukkit.block.copper.golem;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.*;
-import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.OxidizationLevel;
+import cn.nukkit.blockentity.BlockEntityCopperGolem;
+import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
+import static cn.nukkit.blockentity.BlockEntityCopperGolem.CopperPose;
 
 /**
  * @author keksdev
  * @since 1.21.110
  */
-public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent implements Oxidizable, Waxable {
+public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent implements Oxidizable, Waxable, Faceable, BlockEntityHolder<BlockEntityCopperGolem> {
     public AbstractBlockCopperGolemStatue(BlockState blockState) {
         super(blockState);
     }
@@ -33,8 +38,21 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
+        if(player != null && player.getInventory().getItemInHand().isNull()) {
+            BlockEntityCopperGolem blockEntity = this.getOrCreateBlockEntity();
+            CopperPose[] poses = CopperPose.values();
+            blockEntity.setPose(poses[(blockEntity.getPose().ordinal()+1)%poses.length]);
+            blockEntity.spawnToAll();
+            return true;
+        } else return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                 || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
+        this.getLevel().setBlock(this, this, true);
+        return true;
     }
 
     @Override
@@ -88,5 +106,25 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
             case WEATHERED -> waxed ? WAXED_WEATHERED_COPPER_GOLEM_STATUE : WEATHERED_COPPER_GOLEM_STATUE;
             case OXIDIZED -> waxed ? WAXED_OXIDIZED_COPPER_GOLEM_STATUE : OXIDIZED_COPPER_GOLEM_STATUE;
         };
+    }
+
+    @Override
+    public void setBlockFace(BlockFace face) {
+        this.setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, CommonPropertyMap.CARDINAL_BLOCKFACE.inverse().get(face));
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(MINECRAFT_CARDINAL_DIRECTION));
+    }
+
+    @Override
+    public @NotNull Class<? extends BlockEntityCopperGolem> getBlockEntityClass() {
+        return BlockEntityCopperGolem.class;
+    }
+
+    @Override
+    public @NotNull String getBlockEntityType() {
+        return BlockEntityID.COPPER_GOLEM;
     }
 }
