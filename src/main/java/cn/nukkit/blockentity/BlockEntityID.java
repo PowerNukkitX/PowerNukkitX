@@ -37,6 +37,8 @@ public interface BlockEntityID {
 
     String CONDUIT = "Conduit";
 
+    String COPPER_GOLEM = "CopperGolem";
+
     String CRAFTER = "Crafter";
 
     String CREAKING_HEART = "CreakingHeart";
