@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.OxidizationLevel;
-import cn.nukkit.blockentity.BlockEntityCopperGolem;
+import cn.nukkit.blockentity.BlockEntityCopperGolemStatue;
 import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -15,13 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
-import static cn.nukkit.blockentity.BlockEntityCopperGolem.CopperPose;
+import static cn.nukkit.blockentity.BlockEntityCopperGolemStatue.CopperPose;
 
 /**
  * @author keksdev
  * @since 1.21.110
  */
-public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent implements Oxidizable, Waxable, Faceable, BlockEntityHolder<BlockEntityCopperGolem> {
+public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent implements Oxidizable, Waxable, Faceable, BlockEntityHolder<BlockEntityCopperGolemStatue> {
     public AbstractBlockCopperGolemStatue(BlockState blockState) {
         super(blockState);
     }
@@ -39,7 +39,7 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(player != null && player.getInventory().getItemInHand().isNull()) {
-            BlockEntityCopperGolem blockEntity = this.getOrCreateBlockEntity();
+            BlockEntityCopperGolemStatue blockEntity = this.getOrCreateBlockEntity();
             CopperPose[] poses = CopperPose.values();
             blockEntity.setPose(poses[(blockEntity.getPose().ordinal()+1)%poses.length]);
             blockEntity.spawnToAll();
@@ -119,12 +119,12 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
     }
 
     @Override
-    public @NotNull Class<? extends BlockEntityCopperGolem> getBlockEntityClass() {
-        return BlockEntityCopperGolem.class;
+    public @NotNull Class<? extends BlockEntityCopperGolemStatue> getBlockEntityClass() {
+        return BlockEntityCopperGolemStatue.class;
     }
 
     @Override
     public @NotNull String getBlockEntityType() {
-        return BlockEntityID.COPPER_GOLEM;
+        return BlockEntityID.COPPER_GOLEM_STATUE;
     }
 }

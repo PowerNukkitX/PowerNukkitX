@@ -8,9 +8,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Buddelbubi
  * @see <a href="https://github.com/GeyserMC/Geyser/blob/master/core/src/main/java/org/geysermc/geyser/translator/level/block/entity/CopperBlockEntityTranslator.java#L35">NBT Info</a>
  */
-public class BlockEntityCopperGolem extends BlockEntitySpawnable {
+public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
 
-    public BlockEntityCopperGolem(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityCopperGolemStatue(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
