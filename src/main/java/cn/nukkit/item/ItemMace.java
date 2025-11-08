@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.NukkitMath;
@@ -31,29 +32,30 @@ public class ItemMace extends ItemTool {
         entity.resetFallDistance();
 
         if (damage >= 7) {
+            Level entityLevel = entity.getLevel();
             Vector3 pos = entity.getPosition();
 
-            int x = NukkitMath.floorDouble(pos.x);
-            int y = NukkitMath.floorDouble(pos.y) - 1;
-            int z = NukkitMath.floorDouble(pos.z);
+            int x = pos.getFloorX();
+            int y = pos.getFloorY() - 1;
+            int z = pos.getFloorZ();
 
-            Block underBlock = entity.getLevel().getBlock(x, y, z);
-            while (underBlock.getId().equals(Block.AIR)) {
+            Block underBlock = entityLevel.getBlock(x, y, z);
+            while (underBlock.isAir()) {
                 y--;
-                underBlock = entity.getLevel().getBlock(x, y, z);
+                underBlock = entityLevel.getBlock(x, y, z);
             }
 
             for (int ox = -1; ox <= 1; ox++) {
                 for (int oz = -1; oz <= 1; oz++) {
                     Vector3 particlePos = pos.add(0.5 + ox, 0.1, 0.5 + oz);
-                    entity.getLevel().addParticle(new DestroyBlockParticle(particlePos, underBlock));
+                    entityLevel.addParticle(new DestroyBlockParticle(particlePos, underBlock));
                 }
             }
 
             if (damage >= 16) {
-                entity.getLevel().addSound(pos, Sound.MACE_HEAVY_SMASH_GROUND);
+                entityLevel.addSound(pos, Sound.MACE_HEAVY_SMASH_GROUND);
             } else {
-                entity.getLevel().addSound(pos, Sound.MACE_SMASH_GROUND);
+                entityLevel.addSound(pos, Sound.MACE_SMASH_GROUND);
             }
         }
         return damage;
