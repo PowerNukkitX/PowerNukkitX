@@ -4,6 +4,7 @@ import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.PredictionType;
+import cn.nukkit.utils.OptionalValue;
 import lombok.*;
 
 @Getter
@@ -22,35 +23,25 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
     private long tick;
 
     @Override
-    public void decode(HandleByteBuf byteBuf) {
-        this.predictionType = PredictionType.values()[byteBuf.readUnsignedByte()];
-        this.position = byteBuf.readVector3f();
-        this.delta = byteBuf.readVector3f();
-        this.rotation = byteBuf.readVector2f();
-
-        if (this.predictionType == PredictionType.VEHICLE) {
-            this.vehicleAngularVelocity = byteBuf.readFloatLE();
-        } else {
-            this.vehicleAngularVelocity = null;
-        }
-
-        this.onGround = byteBuf.readBoolean();
-        this.tick = byteBuf.readVarLong();
+    public void decode(HandleByteBuf buf) {
+        this.predictionType = PredictionType.values()[buf.readUnsignedByte()];
+        this.position = buf.readVector3f();
+        this.delta = buf.readVector3f();
+        this.rotation = buf.readVector2f();
+        this.vehicleAngularVelocity = buf.readOptional(null, buf::readFloatLE);
+        this.onGround = buf.readBoolean();
+        this.tick = buf.readVarLong();
     }
 
     @Override
-    public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeByte(this.predictionType.ordinal());
-        byteBuf.writeVector3f(this.position);
-        byteBuf.writeVector3f(this.delta);
-        byteBuf.writeVector2f(this.rotation);
-
-        if (this.predictionType == PredictionType.VEHICLE && this.vehicleAngularVelocity != null) {
-            byteBuf.writeFloatLE(this.vehicleAngularVelocity);
-        }
-
-        byteBuf.writeBoolean(this.onGround);
-        byteBuf.writeVarLong(this.tick);
+    public void encode(HandleByteBuf buf) {
+        buf.writeByte(this.predictionType.ordinal());
+        buf.writeVector3f(this.position);
+        buf.writeVector3f(this.delta);
+        buf.writeVector2f(this.rotation);
+        buf.writeOptional(OptionalValue.ofNullable(this.vehicleAngularVelocity), buf::writeFloatLE);
+        buf.writeBoolean(this.onGround);
+        buf.writeVarLong(this.tick);
     }
 
     @Override
