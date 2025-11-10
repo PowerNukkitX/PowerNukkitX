@@ -84,8 +84,8 @@ public class ItemBoat extends Item {
                 this.identifier = new Identifier(ItemID.CHERRY_BOAT);
             case 9:
                 name = "Pale Oak Boat";
-                this.id = ItemID.CHERRY_BOAT;
-                this.identifier = new Identifier(ItemID.CHERRY_BOAT);
+                this.id = ItemID.PALE_OAK_BOAT;
+                this.identifier = new Identifier(ItemID.PALE_OAK_BOAT);
         }
         this.meta = 0;
     }
