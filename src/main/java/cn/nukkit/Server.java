@@ -1809,6 +1809,7 @@ public class Server {
 
     private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
         try {
+            cleanupOfflinePlayerData(tag);
             byte[] bytes = NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN);
             ByteBuffer buffer = ByteBuffer.allocate(16);
             buffer.putLong(uuid.getMostSignificantBits());
@@ -1817,6 +1818,12 @@ public class Server {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void cleanupOfflinePlayerData(CompoundTag tag) {
+        tag.remove("Colors");
+        tag.remove("PieceTintColors");
+        tag.remove("Skin");
     }
 
     /**
