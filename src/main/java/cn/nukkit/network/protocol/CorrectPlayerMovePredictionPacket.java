@@ -17,7 +17,7 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
     private PredictionType predictionType;
     private Vector3f position;
     private Vector3f delta;
-    private Vector2f vehicleRotation;
+    private Vector2f rotation;
     private Float vehicleAngularVelocity;
     private boolean onGround;
     private long tick;
@@ -27,7 +27,7 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
         this.predictionType = PredictionType.values()[buf.readUnsignedByte()];
         this.position = buf.readVector3f();
         this.delta = buf.readVector3f();
-        this.vehicleRotation = buf.readVector2f();
+        this.rotation = buf.readVector2f();
         this.vehicleAngularVelocity = buf.readOptional(null, buf::readFloatLE);
         this.onGround = buf.readBoolean();
         this.tick = buf.readVarLong();
@@ -38,7 +38,7 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
         buf.writeByte(this.predictionType.ordinal());
         buf.writeVector3f(this.position);
         buf.writeVector3f(this.delta);
-        buf.writeVector2f(this.vehicleRotation);
+        buf.writeVector2f(this.rotation);
         buf.writeOptional(OptionalValue.ofNullable(this.vehicleAngularVelocity), buf::writeFloatLE);
         buf.writeBoolean(this.onGround);
         buf.writeVarLong(this.tick);
