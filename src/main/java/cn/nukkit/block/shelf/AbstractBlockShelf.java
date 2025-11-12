@@ -59,36 +59,34 @@ public abstract class AbstractBlockShelf extends BlockTransparent implements Fac
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(player != null && !player.isSneaking() && fy > 0.25f && fy < 0.75f) {
-            if(blockFace == getBlockFace()) {
-                if(!isGettingPower()) {
-                    Vector3 faceValues = blockFace.rotateYCCW().getUnitVector();
-                    double distance = (fx * faceValues.x) + (fz * faceValues.z);
-                    if(distance < 0) distance++;
-                    int slot = distance < (1/3f) ? 0 : distance < (2/3f) ? 1 : 2;
-                    BlockEntityShelf blockEntity = this.getOrCreateBlockEntity();
-                    Inventory inventory = blockEntity.getInventory();
-                    if (player != null && !player.isCreative()) {
-                        player.getInventory().setItemInHand(inventory.getItem(slot)); //Overwrites the players item. So no need to remove it.
-                    }
-                    inventory.setItem(slot, item);
-                    blockEntity.setDirty();
-                } else {
-                    List<AbstractBlockShelf> shelves = getConnectedBlocks();
-                    for(int i = 0; i < shelves.size(); i++) {
-                        BlockEntityShelf shelf = shelves.get(i).getOrCreateBlockEntity();
-                        for(int j = 0; j < shelf.getSize(); j++) {
-                            Item shelfItem = shelf.getItem(j);
-                            int playerSlot = (i * shelf.getSize()) + j;
-                            Item playerItem = player.getInventory().getItem(playerSlot);
-                            shelf.getInventory().setItem(j, playerItem);
-                            player.getInventory().setItem(playerSlot, shelfItem);
-                        }
-                        shelf.setDirty();
-                    }
+        if(player != null && !player.isSneaking() && blockFace == getBlockFace() && fy > 0.25f && fy < 0.75f) {
+            if(!isGettingPower()) {
+                Vector3 faceValues = blockFace.rotateYCCW().getUnitVector();
+                double distance = (fx * faceValues.x) + (fz * faceValues.z);
+                if(distance < 0) distance++;
+                int slot = distance < (1/3f) ? 0 : distance < (2/3f) ? 1 : 2;
+                BlockEntityShelf blockEntity = this.getOrCreateBlockEntity();
+                Inventory inventory = blockEntity.getInventory();
+                if (!player.isCreative()) {
+                    player.getInventory().setItemInHand(inventory.getItem(slot)); //Overwrites the players item. So no need to remove it.
                 }
-                return true;
+                inventory.setItem(slot, item);
+                blockEntity.setDirty();
+            } else {
+                List<AbstractBlockShelf> shelves = getConnectedBlocks();
+                for(int i = 0; i < shelves.size(); i++) {
+                    BlockEntityShelf shelf = shelves.get(i).getOrCreateBlockEntity();
+                    for(int j = 0; j < shelf.getSize(); j++) {
+                        Item shelfItem = shelf.getItem(j);
+                        int playerSlot = (i * shelf.getSize()) + j;
+                        Item playerItem = player.getInventory().getItem(playerSlot);
+                        shelf.getInventory().setItem(j, playerItem);
+                        player.getInventory().setItem(playerSlot, shelfItem);
+                    }
+                    shelf.setDirty();
+                }
             }
+            return true;
         }
         return false;
     }
