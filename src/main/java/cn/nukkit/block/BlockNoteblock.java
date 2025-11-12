@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.shelf.AbstractBlockShelf;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMusic;
 import cn.nukkit.event.player.PlayerInteractEvent;
@@ -155,6 +156,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case BlockEmeraldBlock ignored -> Instrument.BIT;
             case BlockHayBlock ignored -> Instrument.BANJO;
             case BlockGlowstone ignored -> Instrument.PLING;
+            case AbstractBlockShelf ignored -> Instrument.BASS;
             default -> {
                 if (this.up() instanceof BlockHead skull) {
                     int meta = 0;
