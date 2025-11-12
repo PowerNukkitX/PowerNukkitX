@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.shelf.AbstractBlockShelf;
 import cn.nukkit.inventory.ContainerInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.ShelfInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
@@ -13,7 +12,7 @@ import cn.nukkit.nbt.tag.Tag;
 
 /**
  * @author Buddelbubi
- * @since 07.11.2025
+ * @since 2025/11/07
  */
 public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
