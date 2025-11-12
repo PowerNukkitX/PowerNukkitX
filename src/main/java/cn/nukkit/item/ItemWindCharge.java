@@ -1,5 +1,9 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.projectile.EntityWindCharge;
+
 import static cn.nukkit.entity.EntityID.WIND_CHARGE_PROJECTILE;
 
 public class ItemWindCharge extends ProjectileItem {
@@ -29,5 +33,18 @@ public class ItemWindCharge extends ProjectileItem {
     @Override
     public float getThrowForce() {
         return 1.5f;
+    }
+
+    @Override
+    protected Entity correctProjectile(Player player, Entity projectile) {
+        if (projectile instanceof EntityWindCharge) {
+            if (!player.isItemCoolDownEnd(this.getIdentifier())) {
+                projectile.kill();
+                return null;
+            }
+            player.setItemCoolDown(10, this.getIdentifier());
+            return projectile;
+        }
+        return null;
     }
 }
