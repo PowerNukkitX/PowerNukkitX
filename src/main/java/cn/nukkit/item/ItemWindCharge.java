@@ -42,7 +42,7 @@ public class ItemWindCharge extends ProjectileItem {
                 projectile.kill();
                 return null;
             }
-            player.setItemCoolDown(20, this.getIdentifier());
+            player.setItemCoolDown(10, this.getIdentifier());
             return projectile;
         }
         return null;
