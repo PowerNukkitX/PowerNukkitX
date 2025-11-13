@@ -119,7 +119,13 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Ent
 
         if(item instanceof ItemShears shears) {
             if(!armorInventory.getBody().isNull()) {
-                player.getInventory().addItem(armorInventory.getBody());
+                Item body = armorInventory.getBody();
+                body.setCount(1);
+                if (player.getInventory().canAddItem(body)) {
+                    player.getInventory().addItem(body);
+                } else {
+                    this.getLevel().dropItem(clickedPos, body);
+                }
                 armorInventory.setBody(Item.AIR);
                 armorInventory.sendContents(player);
             }
