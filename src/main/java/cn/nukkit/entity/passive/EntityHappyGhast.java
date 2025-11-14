@@ -3,21 +3,16 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.*;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 
 import java.util.Set;
@@ -110,6 +105,9 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Ent
 
         if (item instanceof ItemHarness armor) {
             if (armorInventory.getBody().isNull()) {
+                if (armor.getCount() > 1){
+                    armor.setCount(1);
+                }
                 armorInventory.setBody(armor);
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 armorInventory.sendContents(player);
@@ -117,9 +115,14 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Ent
             return true;
         }
 
-        if(item instanceof ItemShears shears) {
+        if(item instanceof ItemShears) {
             if(!armorInventory.getBody().isNull()) {
-                player.getInventory().addItem(armorInventory.getBody());
+                Item body = armorInventory.getBody();
+                if (player.getInventory().canAddItem(body)) {
+                    player.getInventory().addItem(body);
+                } else {
+                    this.getLevel().dropItem(clickedPos, body);
+                }
                 armorInventory.setBody(Item.AIR);
                 armorInventory.sendContents(player);
             }
