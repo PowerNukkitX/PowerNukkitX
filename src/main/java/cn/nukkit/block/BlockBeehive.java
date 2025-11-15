@@ -96,13 +96,12 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             return false;
         }
 
-        // Vanilla-ish behavior: hives with ShouldSpawnBees shouldn't dump all bees at once.
-        // Instead, we stagger their exit by giving each occupant a different ticksLeftToStay
+        // Stagger their exit by giving each occupant a different ticksLeftToStay
         // and let BlockEntityBeehive.onUpdate() handle spawning them over time.
         if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
             BlockEntityBeehive.Occupant[] occupants = beehive.getOccupants();
-            int delayPerBee = 40; // 40 ticks ≈ 2 seconds at 20 TPS
-            int baseDelay = 20;   // small initial delay so they don't pop instantly on place
+            int delayPerBee = 40; // 40 ticks
+            int baseDelay = 20;   // small initial delay so they dont pop instantly on place
 
             int index = 0;
             for (BlockEntityBeehive.Occupant occupant : occupants) {
