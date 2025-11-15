@@ -21,7 +21,7 @@ import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
+import cn.nukkit.entity.ai.sensor.BeeMemorizedBlockSensor;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
@@ -61,11 +61,9 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     private int lastTargetY = Integer.MIN_VALUE;
     private int lastTargetZ = Integer.MIN_VALUE;
 
-    // Pollination tracking
+
     private int pollinationTicks = 0;
-    private int pollinationFlowerX = Integer.MIN_VALUE;
-    private int pollinationFlowerY = Integer.MIN_VALUE;
-    private int pollinationFlowerZ = Integer.MIN_VALUE;
+    private boolean pollinating = false;
 
     public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -90,9 +88,12 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         if (!hasHomeHive() || this.level == null) return null;
         Block block = this.level.getBlock(homeHiveX, homeHiveY, homeHiveZ);
         if (!(block instanceof BlockBeehive)) {
-            return null;
         }
         return block;
+    }
+
+    public boolean isPollinating() {
+        return pollinating;
     }
 
     @Override
@@ -118,13 +119,13 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                         ),
                         new Behavior(
                                 new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10),
-                                (entity -> true),
+                                (entity -> true && !this.isPollinating()), 
                                 1,
                                 1
                         )
                 ),
                 Set.of(
-                        new MemorizedBlockSensor(32, 6, 20)
+                        new BeeMemorizedBlockSensor(32, 6, 20)
                 ),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
                 new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
@@ -242,7 +243,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                     stuckTicksOnTarget = 0;
                 }
 
-                int timeoutTicks = blockClass.isAssignableFrom(BlockFlower.class) ? 200 : 400;
+                int timeoutTicks = blockClass.isAssignableFrom(BlockFlower.class) ? 120 : 400;
                 if (stuckTicksOnTarget > timeoutTicks) {
                     this.getMemoryStorage().clear(CoreMemoryTypes.NEAREST_BLOCK);
                     stuckTicksOnTarget = 0;
@@ -266,33 +267,24 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
                 if (flower instanceof BlockWitherRose) {
                     pollinationTicks = 0;
-                    pollinationFlowerX = pollinationFlowerY = pollinationFlowerZ = Integer.MIN_VALUE;
+                    pollinating = false;
                     this.kill();
                 } else if (flower != null) {
-                    int fx = flower.getFloorX();
-                    int fy = flower.getFloorY();
-                    int fz = flower.getFloorZ();
-
-                    if (fx == pollinationFlowerX && fy == pollinationFlowerY && fz == pollinationFlowerZ) {
+                    pollinating = true;
+                    if (!this.hasNectar()) {
                         pollinationTicks += 20;
-                    } else {
-                        pollinationFlowerX = fx;
-                        pollinationFlowerY = fy;
-                        pollinationFlowerZ = fz;
-                        pollinationTicks = 20;
-                    }
-
-                    if (!this.hasNectar() && pollinationTicks >= POLLINATION_REQUIRED_TICKS) {
-                        this.setNectar(true);
-                        this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
-                        pollinationTicks = 0;
-                        pollinationFlowerX = pollinationFlowerY = pollinationFlowerZ = Integer.MIN_VALUE;
+                        if (pollinationTicks >= POLLINATION_REQUIRED_TICKS) {
+                            this.setNectar(true);
+                            this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
+                            pollinationTicks = 0;
+                        }
                     }
                 } else {
+                    pollinating = false;
                     pollinationTicks = 0;
-                    pollinationFlowerX = pollinationFlowerY = pollinationFlowerZ = Integer.MIN_VALUE;
                 }
             } else if (blockClass.isAssignableFrom(BlockBeehive.class)) {
+                pollinating = false;
                 Arrays.stream(level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5), false, true))
                         .filter(block -> {
                             if (block instanceof BlockBeehive hive) {
