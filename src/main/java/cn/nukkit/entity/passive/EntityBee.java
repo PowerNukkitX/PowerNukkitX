@@ -41,13 +41,12 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         new BooleanEntityProperty("minecraft:has_nectar", false, true)
     };
     private static final String PROPERTY_HAS_NECTAR = "minecraft:has_nectar";
+    private static final int POLLINATION_REQUIRED_TICKS = 400;
 
     @Override
     @NotNull public String getIdentifier() {
         return BEE;
     }
-
-    private boolean stayAtFlower = false;
 
     public int dieInTicks = -1;
 
@@ -61,6 +60,12 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     private int lastTargetX = Integer.MIN_VALUE;
     private int lastTargetY = Integer.MIN_VALUE;
     private int lastTargetZ = Integer.MIN_VALUE;
+
+    // Pollination tracking
+    private int pollinationTicks = 0;
+    private int pollinationFlowerX = Integer.MIN_VALUE;
+    private int pollinationFlowerY = Integer.MIN_VALUE;
+    private int pollinationFlowerZ = Integer.MIN_VALUE;
 
     public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -106,7 +111,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                                 1
                         ),
                         new Behavior(
-                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.22f, true),
+                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.32f, true),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
                                 4,
                                 1
@@ -119,7 +124,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                         )
                 ),
                 Set.of(
-                        new MemorizedBlockSensor(22, 6, 20)
+                        new MemorizedBlockSensor(32, 6, 20)
                 ),
                 Set.of(new SpaceMoveController(), new LookController(true, true), new LiftController()),
                 new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this),
@@ -253,17 +258,40 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
             }
 
             if (blockClass.isAssignableFrom(BlockFlower.class)) {
-                Arrays.stream(level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5), false, true))
+                Block[] collisions = level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5), false, true);
+                BlockFlower flower = (BlockFlower) Arrays.stream(collisions)
                         .filter(block -> block instanceof BlockFlower)
-                        .findAny().ifPresent(flower -> {
-                            if (flower instanceof BlockWitherRose) {
-                                this.kill();
-                            } else if (stayAtFlower) {
-                                this.setNectar(true);
-                                this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
-                            }
-                            stayAtFlower = !stayAtFlower;
-                        });
+                        .findAny()
+                        .orElse(null);
+
+                if (flower instanceof BlockWitherRose) {
+                    pollinationTicks = 0;
+                    pollinationFlowerX = pollinationFlowerY = pollinationFlowerZ = Integer.MIN_VALUE;
+                    this.kill();
+                } else if (flower != null) {
+                    int fx = flower.getFloorX();
+                    int fy = flower.getFloorY();
+                    int fz = flower.getFloorZ();
+
+                    if (fx == pollinationFlowerX && fy == pollinationFlowerY && fz == pollinationFlowerZ) {
+                        pollinationTicks += 20;
+                    } else {
+                        pollinationFlowerX = fx;
+                        pollinationFlowerY = fy;
+                        pollinationFlowerZ = fz;
+                        pollinationTicks = 20;
+                    }
+
+                    if (!this.hasNectar() && pollinationTicks >= POLLINATION_REQUIRED_TICKS) {
+                        this.setNectar(true);
+                        this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
+                        pollinationTicks = 0;
+                        pollinationFlowerX = pollinationFlowerY = pollinationFlowerZ = Integer.MIN_VALUE;
+                    }
+                } else {
+                    pollinationTicks = 0;
+                    pollinationFlowerX = pollinationFlowerY = pollinationFlowerZ = Integer.MIN_VALUE;
+                }
             } else if (blockClass.isAssignableFrom(BlockBeehive.class)) {
                 Arrays.stream(level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5), false, true))
                         .filter(block -> {
