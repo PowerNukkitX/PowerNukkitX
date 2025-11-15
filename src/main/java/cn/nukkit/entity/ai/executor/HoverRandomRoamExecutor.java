@@ -128,7 +128,7 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
             double centerY = feetY + height * 0.5;
 
             // World Y bounds
-            if (centerY < 1 || centerY >= level.getMaxHeight() - 2) {
+            if (feetY < level.getMinHeight() || centerY >= level.getMaxHeight() - 2) {
                 continue;
             }
 
