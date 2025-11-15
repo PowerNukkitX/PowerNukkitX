@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    // Instruct the actuator to retrieve the target location from which memory?
     protected MemoryType<? extends Vector3> memory;
     protected float speed;
     protected Vector3 oldTarget;
@@ -52,7 +52,7 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) {
             return false;
         }
-        //获取目标位置（这个clone很重要）
+        // Get the target location (this clone is very important)
         Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memory).clone();
 
         if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
@@ -69,9 +69,9 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
             }
         }
 
-        //更新寻路target
+        // Update pathfinding target
         setRouteTarget(entity, target);
-        //更新视线target
+        // Update the target
         setLookTarget(entity, target);
 
         if (updateRouteImmediatelyWhenTargetChange) {
@@ -91,10 +91,10 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        //目标丢失
+        // Target lost
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // Reset speed
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
@@ -103,10 +103,10 @@ public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        //目标丢失
+        // Target lost
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // Reset speed
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
