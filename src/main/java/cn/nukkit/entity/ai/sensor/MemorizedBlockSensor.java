@@ -6,16 +6,12 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.level.Location;
 import lombok.Getter;
 
-//存储最近的玩家的Memory
 
-
+// Store the memory of the most recent player
 @Getter
 public class MemorizedBlockSensor implements ISensor {
-
     protected int range;
-
     protected int lookY;
-
     protected int period;
 
     public MemorizedBlockSensor(int range, int lookY) {
