@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.sensor;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.passive.EntityBee;
 import cn.nukkit.level.Location;
 import lombok.Getter;
 
@@ -30,6 +31,11 @@ public class BeeMemorizedBlockSensor implements ISensor {
 
     @Override
     public void sense(EntityIntelligent entity) {
+        if (entity instanceof EntityBee bee && bee.isPollinating()) {
+            entity.getMemoryStorage().clear(CoreMemoryTypes.NEAREST_BLOCK);
+            return;
+        }
+
         Class<? extends Block> blockClass = entity.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
         if (blockClass == null) {
             return;

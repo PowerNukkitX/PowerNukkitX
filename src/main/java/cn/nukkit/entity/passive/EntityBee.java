@@ -29,6 +29,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,6 +66,11 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     private int pollinationTicks = 0;
     private boolean pollinating = false;
 
+    private int currentFlowerTicks = 0;
+    private int currentFlowerX = Integer.MIN_VALUE;
+    private int currentFlowerY = Integer.MIN_VALUE;
+    private int currentFlowerZ = Integer.MIN_VALUE;
+
     public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -86,8 +92,10 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     public Block getHomeHiveBlock() {
         if (!hasHomeHive() || this.level == null) return null;
+
         Block block = this.level.getBlock(homeHiveX, homeHiveY, homeHiveZ);
         if (!(block instanceof BlockBeehive)) {
+            return null;
         }
         return block;
     }
@@ -119,7 +127,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                         ),
                         new Behavior(
                                 new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10),
-                                (entity -> true && !this.isPollinating()), 
+                                (entity -> !(entity instanceof EntityBee bee) || !bee.isPollinating()),
                                 1,
                                 1
                         )
@@ -268,20 +276,56 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                 if (flower instanceof BlockWitherRose) {
                     pollinationTicks = 0;
                     pollinating = false;
+                    currentFlowerTicks = 0;
+                    currentFlowerX = currentFlowerY = currentFlowerZ = Integer.MIN_VALUE;
                     this.kill();
                 } else if (flower != null) {
-                    pollinating = true;
-                    if (!this.hasNectar()) {
-                        pollinationTicks += 20;
-                        if (pollinationTicks >= POLLINATION_REQUIRED_TICKS) {
-                            this.setNectar(true);
-                            this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
-                            pollinationTicks = 0;
+                    int fx = flower.getFloorX();
+                    int fy = flower.getFloorY();
+                    int fz = flower.getFloorZ();
+
+                    // Track how long to stay on flower
+                    if (fx == currentFlowerX && fy == currentFlowerY && fz == currentFlowerZ) {
+                        currentFlowerTicks += 20;
+                    } else {
+                        currentFlowerX = fx;
+                        currentFlowerY = fy;
+                        currentFlowerZ = fz;
+                        currentFlowerTicks = 20;
+                    }
+
+                    boolean stillPollinatingHere = !this.hasNectar() && currentFlowerTicks <= 120; // 6s on same flower
+                    if (stillPollinatingHere) {
+                        pollinating = true;
+
+                        // Park above the flower
+                        double px = fx + 0.5;
+                        double py = fy + 0.8;
+                        double pz = fz + 0.5;
+                        this.setLookTarget(new Vector3(px, py, pz));
+                        this.setMoveTarget(new Vector3(px, py, pz));
+
+                        if (!this.hasNectar()) {
+                            pollinationTicks += 20;
+                            if (pollinationTicks >= POLLINATION_REQUIRED_TICKS) {
+                                this.setNectar(true);
+                                this.getLevel().addSound(this, Sound.MOB_BEE_POLLINATE);
+                                pollinationTicks = 0;
+                            }
                         }
+                    } else {
+                        // Time on this flower exceeded and still no nectar pick a new flower
+                        pollinating = false;
+                        this.getMemoryStorage().clear(CoreMemoryTypes.NEAREST_BLOCK);
+                        currentFlowerTicks = 0;
+                        currentFlowerX = currentFlowerY = currentFlowerZ = Integer.MIN_VALUE;
                     }
                 } else {
+                    // No flower under bee
                     pollinating = false;
-                    pollinationTicks = 0;
+                    if (this.hasNectar()) pollinationTicks = 0;
+                    currentFlowerTicks = 0;
+                    currentFlowerX = currentFlowerY = currentFlowerZ = Integer.MIN_VALUE;
                 }
             } else if (blockClass.isAssignableFrom(BlockBeehive.class)) {
                 pollinating = false;
