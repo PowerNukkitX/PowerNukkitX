@@ -34,7 +34,7 @@ public class LoginPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         protocol = byteBuf.readInt();
 
-        ByteBuf jwt = byteBuf.readSlice(VarInts.readUnsignedInt(byteBuf)); // Get the JWT.
+        ByteBuf jwt = byteBuf.readSlice(ByteBufVarInt.readUnsignedInt(byteBuf)); // Get the JWT.
         String authJwtR = (String) jwt.readCharSequence(jwt.readIntLE(), StandardCharsets.UTF_8);
 
         authPayload = readAuthJwt(authJwtR);
