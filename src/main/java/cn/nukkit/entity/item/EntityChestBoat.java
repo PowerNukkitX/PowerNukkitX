@@ -55,7 +55,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             return false;
         }
 
-        if (this.passengers.size() >= 1 || getWaterLevel() < -SINKING_DEPTH) {
+        if (!this.passengers.isEmpty() || getWaterLevel() < -SINKING_DEPTH) {
             return false;
         }
 
