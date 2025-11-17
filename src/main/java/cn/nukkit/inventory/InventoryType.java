@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -17,8 +16,8 @@ public enum InventoryType {
     DROPPER(7),
     HOPPER(8),
     CAULDRON(9),
-    MINECART_CHEST(10),
-    MINECART_HOPPER(11),
+    MINECART_CHEST(10, CONTAINER),
+    MINECART_HOPPER(11, HOPPER),
     HORSE(12),
     BEACON(13),
     STRUCTURE_EDITOR(14),
@@ -41,7 +40,7 @@ public enum InventoryType {
     HUD(31),
     JIGSAW_EDITOR(32),
     SMITHING_TABLE(33),
-    CHEST_BOAT(34),
+    CHEST_BOAT(34, CONTAINER),
     /**
      * @since v630
      */
@@ -64,9 +63,18 @@ public enum InventoryType {
     }
 
     private final int id;
+    private final int networkType;
+
+    InventoryType(int id) {
+        this(id, id);
+    }
+
+    InventoryType(int id, InventoryType inheritor) {
+        this(id, inheritor.getNetworkType());
+    }
 
     public int getNetworkType() {
-        return id;
+        return networkType;
     }
 
     public static InventoryType from(int id) {
