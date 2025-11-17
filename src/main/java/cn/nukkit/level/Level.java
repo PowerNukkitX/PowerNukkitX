@@ -3108,7 +3108,7 @@ public class Level implements Metadatable {
     }
 
     public boolean isInSpawnRadius(Vector3 vector3) {
-        int distance = this.server.getSpawnRadius();
+        int distance = this.server.getSettings().gameplaySettings().spawnProtection();
         if (distance > -1) {
             Vector2 t = new Vector2(vector3.x, vector3.z);
             Vector2 s = new Vector2(this.getSpawnLocation().x, this.getSpawnLocation().z);
