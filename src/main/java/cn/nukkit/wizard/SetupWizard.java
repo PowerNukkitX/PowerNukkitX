@@ -48,7 +48,7 @@ public class SetupWizard {
                 logger.info(line);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Failed to read language list", e);
         }
         while (this.chosenLanguage == null) {
             String lang;
