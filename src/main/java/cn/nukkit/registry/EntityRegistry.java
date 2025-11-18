@@ -187,6 +187,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
         registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);
         registerInternal(new EntityDefinition(HAPPY_GHAST, "", 147, true, true), EntityHappyGhast.class);
+        registerInternal(new EntityDefinition(COPPER_GOLEM, "", 148, true, true), EntityCopperGolem.class);
 
         registerSpawner(new SpawnRuleArmadillo());
         registerSpawner(new SpawnRuleAxolotl());
