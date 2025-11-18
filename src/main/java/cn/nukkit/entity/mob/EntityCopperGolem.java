@@ -313,7 +313,6 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     public static void checkAndSpawnGolem(Block block) {
         if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
             if(block instanceof BlockPumpkin pumpkin) {
-                faces:
                 for(BlockFace blockFace : BlockFace.values()) {
                     if(pumpkin.getSide(blockFace) instanceof BlockCopperBlock copperBlock) {
                         block.level.setBlock(copperBlock, Block.get(copperBlock.getId().replace("_block", "") + "_chest"));
