@@ -95,7 +95,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     protected NukkitRandom random = new NukkitRandom();
     protected int weatherTick = -1;
-    @Getter
+    @Getter(onMethod_ = {@Override})
     private EntityEquipmentInventory inventory;
 
 
@@ -306,6 +306,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
         return 0.49f;
     }
 
+    @Override
     public Item[] getDrops() {
         return new Item[]{Item.get(Item.COPPER_INGOT, 0, Utils.rand(1, 3)), getInventory().getItemInHand()};
     }
