@@ -28,8 +28,8 @@ public class DistanceEvaluator implements IBehaviorEvaluator {
             return false;
         } else {
             Vector3 location = entity.getMemoryStorage().get(type);
-            if(location instanceof Block) location.add(0.5f, 0, 0.5f);
             if(location == null) return false;
+            if(location instanceof Block) location.add(0.5f, 0, 0.5f);
             double distance = entity.distance(location);
             return distance <= maxDistance && distance >= minDistance;
         }
