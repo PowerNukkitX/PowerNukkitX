@@ -67,7 +67,7 @@ public class SetupWizard {
                     predefinedLanguage = null;
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException("Failed to read language list", e);
             }
         }
 
