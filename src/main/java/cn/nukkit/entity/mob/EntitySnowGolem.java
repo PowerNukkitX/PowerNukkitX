@@ -146,6 +146,12 @@ public class EntitySnowGolem extends EntityGolem {
         return super.onUpdate(currentTick);
     }
 
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(source.getCause() == EntityDamageEvent.DamageCause.FALL) return false;
+        return super.attack(source);
+    }
+
     public static void checkAndSpawnGolem(Block block) {
         if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
             if(block instanceof BlockPumpkin) {

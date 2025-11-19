@@ -6,8 +6,12 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.blockentity.BlockEntityCopperGolemStatue;
 import cn.nukkit.blockentity.BlockEntityID;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.mob.EntityCopperGolem;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +42,16 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if(item.isAxe() && !isWaxed()) {
+            OxidizationLevel oxidizationLevel = getOxidizationLevel();
+            if (OxidizationLevel.UNAFFECTED.equals(oxidizationLevel)) {
+                CompoundTag nbt = Entity.getDefaultNBT(this.add(0.5, 0, 0.5f));
+                EntityCopperGolem copperGolem = (EntityCopperGolem) Entity.createEntity(EntityID.COPPER_GOLEM, this.level.getChunk(this.getChunkX(), this.getChunkZ()), nbt);
+                copperGolem.spawnToAll();
+                this.level.setBlock(this, BlockAir.STATE.toBlock());
+                return true;
+            }
+        }
         if(player != null && player.getInventory().getItemInHand().isNull()) {
             BlockEntityCopperGolemStatue blockEntity = this.getOrCreateBlockEntity();
             CopperPose[] poses = CopperPose.values();
