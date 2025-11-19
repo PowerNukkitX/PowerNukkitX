@@ -18,6 +18,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.recipe.MultiRecipe;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -168,7 +169,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
         }
 
         Recipe recipe = getBlockEntity().getInventory().getRecipe();
-        if(recipe == null) return false;
+        if(recipe == null || recipe instanceof MultiRecipe) return false;
 
         CraftItemEvent event = new CraftItemEvent(blockEntity, getBlockEntity().getInventory().getInput().getFlatItems(), recipe, 1);
         getLevel().getServer().getPluginManager().callEvent(event);
