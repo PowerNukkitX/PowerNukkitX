@@ -27,11 +27,11 @@ public class DecoratedPotRecipe extends MultiRecipe {
     @Override
     public List<ItemDescriptor> getIngredients() {
         ItemTagDescriptor descriptor = new ItemTagDescriptor("minecraft:decorated_pot_sherds", 1);
-        return new ArrayList<>(Set.of(descriptor));
+        return List.of(descriptor);
     }
 
     @Override
     public List<Item> getResults() {
-        return new ArrayList<>(Set.of(Item.get(Block.DECORATED_POT)));
+        return List.of(Item.get(Block.DECORATED_POT));
     }
 }
