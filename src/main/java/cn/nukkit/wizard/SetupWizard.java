@@ -67,7 +67,7 @@ public class SetupWizard {
                     predefinedLanguage = null;
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException("Failed to read language list", e);
             }
         }
 
@@ -98,7 +98,7 @@ public class SetupWizard {
             logger.info("{}Your PowerNukkitX server is ready to start.", TextFormat.AQUA);
             logger.info("{}Your external IP is {}. Ensure that port forwarding is configured to your local IP: {}.", TextFormat.AQUA, externalIP, localIP);
         } catch (Exception e){
-            throw new RuntimeException(e);
+            logger.error("Could not retrieve IP information.");
         }
     }
 
