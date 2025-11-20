@@ -25,7 +25,7 @@ public class AmethystGeodeFeature extends GenerateFeature {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         Level level = chunk.getLevel();
-        this.random.setSeed(level.getSeed() ^ ((chunk.getX() << 8) ^ chunk.getZ()));
+        this.random.setSeed(level.getSeed() ^ (((long) chunk.getX() << 8) ^ chunk.getZ()));
         BlockManager object = new BlockManager(level);
         if (random.nextBoundedInt(100) > 4) {
             return;
