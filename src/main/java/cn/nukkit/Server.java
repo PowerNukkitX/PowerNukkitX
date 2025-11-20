@@ -251,7 +251,7 @@ public class Server {
     private List<ExperimentEntry> experiments;
     ///
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, boolean isSetupSkipped) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
@@ -290,22 +290,35 @@ public class Server {
         String motd;
         int port, gamemode;
 
-        if (!config.exists()) {
-            SetupWizard wizard = new SetupWizard(log, predefinedLanguage, console);
-            wizard.run();
-            while(!wizard.isEnded());
+        String defaultLanguage = "eng";
+        String defaultMotd = "PowerNukkitX Server";
+        int defaultPort = 19132;
+        int defaultGamemode = 0;
 
-            chooseLanguage = wizard.getChosenLanguage();
-            motd = wizard.getMotd();
-            port = wizard.getPort();
-            gamemode = wizard.getGamemode();
+        if (!config.exists()) {
+            if (isSetupSkipped){
+                log.warn("Skipped setup, continuing with default settings");
+                chooseLanguage = defaultLanguage;
+                motd = defaultMotd;
+                port = defaultPort;
+                gamemode = defaultGamemode;
+            } else {
+                SetupWizard wizard = new SetupWizard(log, predefinedLanguage, console);
+                wizard.run();
+                while (!wizard.isEnded());
+
+                chooseLanguage = wizard.getChosenLanguage();
+                motd = wizard.getMotd();
+                port = wizard.getPort();
+                gamemode = wizard.getGamemode();
+            }
         } else {
             Config configInstance = new Config(config);
 
-            chooseLanguage = configInstance.getString("settings.language", "eng");
-            motd = configInstance.getString("settings.motd", "PowerNukkitX Server");
-            port = configInstance.getInt("settings.port", 19132);
-            gamemode = configInstance.getInt("gameplay-settings.gamemode", 0);
+            chooseLanguage = configInstance.getString("settings.language", defaultLanguage);
+            motd = configInstance.getString("settings.motd", defaultMotd);
+            port = configInstance.getInt("settings.port", defaultPort);
+            gamemode = configInstance.getInt("gameplay-settings.gamemode", defaultGamemode);
         }
 
         this.baseLang = new BaseLang(chooseLanguage);
