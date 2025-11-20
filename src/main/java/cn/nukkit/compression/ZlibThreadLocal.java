@@ -17,7 +17,17 @@ public final class ZlibThreadLocal implements ZlibProvider {
 
     @Override
     public byte[] deflate(byte[] data, int level, boolean raw) throws IOException {
-        Deflater deflater = raw ? DEFLATER_RAW.get() : DEFLATER.get();
+        Deflater deflater;
+        if (raw) {
+            deflater = DEFLATER_RAW.get();
+        } else {
+            deflater = DEFLATER.get();
+        }
+
+        // Validate compression level. Allowed values: -1 (DEFAULT), 0..9
+        if (level < Deflater.DEFAULT_COMPRESSION || level > Deflater.BEST_COMPRESSION) {
+            level = Deflater.DEFAULT_COMPRESSION;
+        }
         FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
         try {
             deflater.reset();
@@ -39,11 +49,15 @@ public final class ZlibThreadLocal implements ZlibProvider {
 
     @Override
     public byte[] inflate(byte[] data, int maxSize, boolean raw) throws IOException {
-        Inflater inflater = raw ? INFLATER_RAW.get() : INFLATER.get();
+        Inflater inflater;
+        if (raw) {
+            inflater = INFLATER_RAW.get();
+        } else {
+            inflater = INFLATER.get();
+        }
         try {
             inflater.reset();
             inflater.setInput(data);
-            inflater.finished();
             FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
             bos.reset();
 
@@ -51,12 +65,20 @@ public final class ZlibThreadLocal implements ZlibProvider {
             try {
                 int length = 0;
                 while (!inflater.finished()) {
-                    int i = inflater.inflate(buffer);
-                    length += i;
+                    int read = inflater.inflate(buffer);
+                    if (read == 0) {
+                        // If no data was produced, check if inflater needs more input or is stuck
+                        if (inflater.needsInput()) {
+                            break; // nothing more to read
+                        }
+                        // No progress but not finished -> malformed stream
+                        throw new IOException("Unable to inflate zlib stream: no progress made");
+                    }
+                    length += read;
                     if (maxSize > 0 && length > maxSize) {
                         throw new IOException("Inflated data exceeds maximum size");
                     }
-                    bos.write(buffer, 0, i);
+                    bos.write(buffer, 0, read);
                 }
                 return bos.toByteArray();
             } catch (DataFormatException e) {
