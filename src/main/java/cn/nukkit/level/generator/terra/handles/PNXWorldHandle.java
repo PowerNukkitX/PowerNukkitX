@@ -95,7 +95,7 @@ public class PNXWorldHandle implements WorldHandle {
             bedrockBlockState = MappingRegistries.BLOCKS.getPNXBlock(jeBlockState);
         }
         if (bedrockBlockState == null) {
-            log.error("[Terra] Can't find block mapping for" + jeBlockState);
+            log.error("[Terra] Can't find block mapping for{}", jeBlockState);
             return AIR;
         }
         return PNXAdapter.adapt(bedrockBlockState);

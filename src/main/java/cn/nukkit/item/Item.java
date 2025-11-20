@@ -100,9 +100,7 @@ public abstract class Item implements Cloneable, ItemID {
     public static final int WEARABLE_TIER_OTHER = dynamic(1000);
 
     private String idConvertToName() {
-        if (this.name != null) {
-            return this.name;
-        } else {
+        if (this.name == null) {
             var path = this.id.split(":")[1];
             StringBuilder result = new StringBuilder();
             String[] parts = path.split("_");
@@ -112,8 +110,8 @@ public abstract class Item implements Cloneable, ItemID {
                 }
             }
             this.name = result.toString().trim().intern();
-            return name;
         }
+        return this.name;
     }
 
     public Item(@NotNull String id) {
@@ -1312,8 +1310,8 @@ public abstract class Item implements Cloneable, ItemID {
         if (netId != null) {
             if (netId < 0)
                 throw new IllegalArgumentException("stack network id cannot be negative");
-            this.netId = netId;
-        } else this.netId = netId;
+        }
+        this.netId = netId;
     }
 
     @ApiStatus.Internal

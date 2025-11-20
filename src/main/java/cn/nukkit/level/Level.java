@@ -453,7 +453,7 @@ public class Level implements Metadatable {
         };
         subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
-                .onStop(() -> log.debug(levelName + " SubTick is closed!"))
+                .onStop(() -> log.debug("{} SubTick is closed!", levelName))
                 .loopCountPerSec(20)
                 .build();
         this.subTickThread = new Thread() {
@@ -4297,7 +4297,7 @@ public class Level implements Metadatable {
                         Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
                         count++;
                         if(count > 10000) {
-                            log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
+                            log.debug("cannot find a safe spawn around {}. Too many attempts!", spawn.asBlockVector3());
                             if(checkHighest)
                                 return getSafeSpawn(spawn.setY(getHighestBlockAt((int) spawn.getX(), (int) spawn.getZ())), horizontalMaxOffset, allowWaterUnder, false);
                             else
@@ -4309,7 +4309,7 @@ public class Level implements Metadatable {
             }
         }
 
-        log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
+        log.debug("cannot find a safe spawn around {}!", spawn.asBlockVector3());
         return Position.fromObject(spawn, this);
     }
 

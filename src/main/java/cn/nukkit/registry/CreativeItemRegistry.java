@@ -359,11 +359,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                             if (idx != null) {
                                 return idx;
                             }
-                            return tailIndexForCategory(category);
                         } else {
                             CreativeItemRegistry.ITEM_GROUP_MAP.remove(identifier);
-                            return tailIndexForCategory(category);
                         }
+                        return tailIndexForCategory(category);
                     } catch (Exception e) {
                         log.warn("Invalid creative category/group in item definition NBT for '{}': {}", identifier, e.getMessage());
                     }

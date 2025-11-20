@@ -860,7 +860,7 @@ public class Server {
                     long levelTime = System.currentTimeMillis();
                     //Ensures that the server won't try to tick a level without providers.
                     if (level.getProvider().getLevel() == null) {
-                        log.warn("Tried to tick Level " + level.getName() + " without a provider!");
+                        log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
                     }
                     level.doTick(currentTick);
@@ -1943,12 +1943,12 @@ public class Server {
                 playerDataDB.delete(uuidBytes);  // Delete from player data DB
                 playerDataDB.delete(nameBytes);   // Delete name-to-UUID mapping
 
-                log.info(name + " player data deleted (UUID: " + uuidStr + ")");
+                log.info("{} player data deleted (UUID: {})", name, uuidStr);
             } else {
-                log.warn(name + " player not found or invalid UUID data");
+                log.warn("{} player not found or invalid UUID data", name);
             }
         } catch (Exception e) {
-            log.error("Error deleting player data for " + name, e);
+            log.error("Error deleting player data for {}", name, e);
         }
     }
 
@@ -1978,13 +1978,13 @@ public class Server {
                     if (Arrays.equals(value, uuidBytes)) {
                         playerDataDB.delete(key);
                         String playerName = new String(key, StandardCharsets.UTF_8);
-                        log.info("Deleted name mapping for " + playerName);
+                        log.info("Deleted name mapping for {}", playerName);
                         break;
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("Error deleting player data for UUID " + uuid, e);
+            log.error("Error deleting player data for UUID {}", uuid, e);
         }
     }
 
