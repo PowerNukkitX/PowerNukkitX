@@ -5577,6 +5577,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Returns the flight status of player
      */
     public boolean isFlying() {
-        return this.getAdventureSettings().get(PlayerAbility.FLYING);
+        return this.getAdventureSettings().get(Type.FLYING);
+    }
+
+    /**
+     * Sets the flight status of player. If you want to work it properly you need {@link #getAllowFlight}
+     *
+     * @param value Status value
+     */
+    public void setFlying(boolean value) {
+        boolean isFlying = this.isFlying();
+
+        if (value != isFlying){
+            this.resetFallDistance();
+
+            this.getAdventureSettings().set(Type.FLYING, value);
+            this.getAdventureSettings().update();
+        }
     }
 }
