@@ -5581,7 +5581,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sets the flight status of player. If you want to work it properly you need to use {@link #setAllowFlight}
+     * Sets the flight status of player. If you want to work it properly, you need to use {@link #setAllowFlight}
      *
      * @param value Status value
      */
