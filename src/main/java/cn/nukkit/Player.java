@@ -5572,4 +5572,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public String getXUID() {
         return this.loginChainData.getXUID();
     }
+
+    /**
+     * Returns the flight status of player
+     */
+    public boolean isFlying() {
+        return this.getAdventureSettings().get(PlayerAbility.FLYING);
+    }
 }
