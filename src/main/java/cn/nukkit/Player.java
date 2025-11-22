@@ -990,24 +990,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
         if (!invalidMotion) {
-            //处理饱食度更新
             if (this.getFoodData().isEnabled() && this.getServer().getDifficulty() > 0) {
-                //UpdateFoodExpLevel
-                if (distance >= 0.05) {
-                    double jump = 0;
-                    double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
-                    double distance2 = distance;
-                    if (swimming != 0) distance2 = 0;
-                    if (this.isSprinting()) {  //Running
-                        if (this.inAirTicks == 3 && swimming == 0) {
-                            jump = 0.2;
+                boolean isFlyingOrGliding = this.isGliding() || (this.adventureSettings != null && this.adventureSettings.get(Type.FLYING));
+                if (!isFlyingOrGliding) {
+                    if (distance >= 0.05) {
+                        double jump = 0;
+                        double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
+                        double distance2 = distance;
+                        if (swimming != 0) distance2 = 0;
+                        if (this.isSprinting()) {  //Running
+                            if (this.inAirTicks == 3 && swimming == 0) {
+                                jump = 0.2;
+                            }
+                            this.getFoodData().exhaust(0.1 * distance2 + jump + swimming);
+                        } else {
+                            if (this.inAirTicks == 3 && swimming == 0) {
+                                jump = 0.05;
+                            }
+                            this.getFoodData().exhaust(jump + swimming);
                         }
-                        this.getFoodData().exhaust(0.1 * distance2 + jump + swimming);
-                    } else {
-                        if (this.inAirTicks == 3 && swimming == 0) {
-                            jump = 0.05;
-                        }
-                        this.getFoodData().exhaust(jump + swimming);
                     }
                 }
             }
