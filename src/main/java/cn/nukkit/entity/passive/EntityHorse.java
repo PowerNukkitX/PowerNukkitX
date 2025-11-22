@@ -70,7 +70,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @NotNull public String getIdentifier() {
         return HORSE;
     }
-    
+
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
@@ -80,8 +80,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     public float getWidth() {
@@ -115,10 +113,13 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         super.initEntity();
 
         this.horseInventory = new HorseInventory(this);
+
         ListTag<CompoundTag> inventoryTag;
         if (this.namedTag.containsList("Inventory")) {
             inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
             Item item0 = NBTIO.getItemHelper(inventoryTag.get(0));
+            Item item1 = NBTIO.getItemHelper(inventoryTag.get(1));
+
             if (item0.isNull()) {
                 this.setDataFlag(EntityFlag.SADDLED, false);
                 this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -126,7 +127,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             } else {
                 this.getInventory().setItem(0, item0);
             }
-            this.getInventory().setItem(1, NBTIO.getItemHelper(inventoryTag.get(1)));
+
+            if (!item1.isNull()){
+                this.getInventory().setItem(1, item1);
+            }
         } else {
             this.setDataFlag(EntityFlag.SADDLED, false);
             this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -545,4 +549,5 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);
     }
+
 }
