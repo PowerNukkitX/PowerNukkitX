@@ -344,10 +344,10 @@ public class BlockVine extends BlockTransparent {
 
     public static int getMetaFromFace(BlockFace face) {
         return switch (face) {
-            default -> 0x01;
             case WEST -> 0x02;
             case NORTH -> 0x04;
             case EAST -> 0x08;
+            default -> 0x01;
         };
     }
 

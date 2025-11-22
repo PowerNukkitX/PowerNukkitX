@@ -558,7 +558,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 if (Objects.equals(clone.getId(), handItem.getId()) || handItem.isNull()) {
                     inventory.setItemInHand(handItem, false);
                 } else {
-                    log.debug("Tried to set item " + handItem.getId() + " but " + this.getName() + " had item " + clone.getId() + " in their hand slot");
+                    log.debug("Tried to set item {} but {} had item {} in their hand slot", handItem.getId(), this.getName(), clone.getId());
                 }
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)

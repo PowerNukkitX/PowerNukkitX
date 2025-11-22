@@ -102,7 +102,7 @@ public record BlockStateImpl(String identifier,
             }
         }
 
-        log.debug("Property " + p + " is not supported by this block " + this.identifier);
+        log.debug("Property {} is not supported by this block {}", p, this.identifier);
         return null;
     }
 
