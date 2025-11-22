@@ -88,6 +88,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.wizard.SetupWizard;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import eu.okaeri.configs.ConfigManager;
@@ -109,7 +110,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -251,7 +251,7 @@ public class Server {
     private List<ExperimentEntry> experiments;
     ///
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, boolean isSetupSkipped) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
@@ -286,48 +286,44 @@ public class Server {
         while(convertLegacyConfiguration());
 
         File config = new File(this.dataPath + "pnx.yml");
-        String chooseLanguage = null;
+        String chooseLanguage;
+        String motd;
+        int port, gamemode;
+
+        String defaultLanguage = "eng";
+        String defaultMotd = "PowerNukkitX Server";
+        int defaultPort = 19132;
+        int defaultGamemode = 0;
+
         if (!config.exists()) {
-            log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
-            try {
-                InputStream languageList = this.getClass().getModule().getResourceAsStream("language/language.list");
-                if (languageList == null) {
-                    throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
-                }
-                String[] lines = Utils.readFile(languageList).split("\n");
-                for (String line : lines) {
-                    log.info(line);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            if (isSetupSkipped){
+                log.warn("Skipped setup, continuing with default settings");
+                chooseLanguage = defaultLanguage;
+                motd = defaultMotd;
+                port = defaultPort;
+                gamemode = defaultGamemode;
+            } else {
+                SetupWizard wizard = new SetupWizard(log, predefinedLanguage, console);
+                wizard.run();
+                while (!wizard.isEnded());
 
-            while (chooseLanguage == null) {
-                String lang;
-                if (predefinedLanguage != null) {
-                    log.info("Trying to load language from predefined language: {}", predefinedLanguage);
-                    lang = predefinedLanguage;
-                } else {
-                    lang = this.console.readLine();
-                }
-
-                try (InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
-                    if (conf != null) {
-                        chooseLanguage = lang;
-                    } else if (predefinedLanguage != null) {
-                        log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
-                        predefinedLanguage = null;
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                chooseLanguage = wizard.getChosenLanguage();
+                motd = wizard.getMotd();
+                port = wizard.getPort();
+                gamemode = wizard.getGamemode();
             }
         } else {
             Config configInstance = new Config(config);
-            chooseLanguage = configInstance.getString("settings.language", "eng");
+
+            chooseLanguage = configInstance.getString("settings.language", defaultLanguage);
+            motd = configInstance.getString("settings.motd", defaultMotd);
+            port = configInstance.getInt("settings.port", defaultPort);
+            gamemode = configInstance.getInt("gameplay-settings.gamemode", defaultGamemode);
         }
+
         this.baseLang = new BaseLang(chooseLanguage);
         this.baseLangCode = mapInternalLang(chooseLanguage);
+
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
             log.info("Loading {}...", TextFormat.GREEN + "pnx.yml" + TextFormat.RESET);
             it.withConfigurer(new YamlSnakeYamlConfigurer());
@@ -336,7 +332,12 @@ public class Server {
             it.saveDefaults();
             it.load(true);
         });
+
         this.settings.baseSettings().language(chooseLanguage);
+        this.settings.baseSettings().motd(motd);
+        this.settings.baseSettings().port(port);
+        this.settings.gameplaySettings().gamemode(gamemode);
+        this.settings.save();
 
         while(updateConfiguration());
 
@@ -529,8 +530,6 @@ public class Server {
         this.autoSaveTicks = settings.baseSettings().autosaveDelay();
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
-
-
         EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
 
