@@ -33,6 +33,11 @@ public class BlockNetherSprouts extends BlockHanging {
     }
 
     @Override
+    public boolean canBeReplaced() {
+        return true;
+    }
+
+    @Override
     public int getBurnChance() {
         return 5;
     }
