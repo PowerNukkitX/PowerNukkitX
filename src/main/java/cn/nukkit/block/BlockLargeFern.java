@@ -22,6 +22,11 @@ public class BlockLargeFern extends BlockDoublePlant {
     }
 
     @Override
+    public boolean canBeReplaced() {
+        return true;
+    }
+
+    @Override
     public @NotNull DoublePlantType getDoublePlantType() {
         return DoublePlantType.FERN;
     }

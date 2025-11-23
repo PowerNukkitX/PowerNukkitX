@@ -72,6 +72,11 @@ public class BlockTallGrass extends BlockDoublePlant {
     }
 
     @Override
+    public boolean canBeReplaced() {
+        return true;
+    }
+
+    @Override
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
     }

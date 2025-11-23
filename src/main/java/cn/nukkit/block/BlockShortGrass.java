@@ -52,7 +52,7 @@ public class BlockShortGrass extends BlockFlowable {
         if (this.getLevel().getBlock(this).getId().equals(BlockID.SHORT_GRASS))
             return false;
 
-        if (BlockSweetBerryBush.isSupportValid(down())) {
+        if (BlockDeadbush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
