@@ -5,6 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.event.EventDispatcher;
 import cn.nukkit.event.scoreboard.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
@@ -35,7 +36,7 @@ public class ScoreboardManager implements IScoreboardManager{
     @Override
     public boolean addScoreboard(IScoreboard scoreboard) {
         var event = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.ADD);
-        Server.getInstance().getPluginManager().callEvent(event);
+        EventDispatcher.call(event);
         if (event.isCancelled()) {
             return false;
         }
@@ -54,7 +55,7 @@ public class ScoreboardManager implements IScoreboardManager{
         var removed = scoreboards.get(objectiveName);
         if (removed == null) return false;
         var event = new ScoreboardObjectiveChangeEvent(removed, ScoreboardObjectiveChangeEvent.ActionType.REMOVE);
-        Server.getInstance().getPluginManager().callEvent(event);
+        EventDispatcher.call(event);
         if (event.isCancelled()) {
             return false;
         }

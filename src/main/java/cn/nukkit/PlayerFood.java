@@ -4,6 +4,7 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
+import cn.nukkit.event.EventDispatcher;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFood;
@@ -48,7 +49,7 @@ public class PlayerFood {
         }
 
         PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(this.player, food, saturation);
-        Server.getInstance().getPluginManager().callEvent(event);
+        EventDispatcher.call(event);
 
         if (event.isCancelled()) {
             this.sendFood(this.food);
@@ -73,7 +74,7 @@ public class PlayerFood {
         saturation = Math.max(0, Math.min(saturation, food));
 
         PlayerFoodLevelChangeEvent event = new PlayerFoodLevelChangeEvent(player, food, saturation);
-        Server.getInstance().getPluginManager().callEvent(event);
+        EventDispatcher.call(event);
 
         if (!event.isCancelled()) {
             this.saturation = event.getFoodSaturationLevel();

@@ -1,6 +1,7 @@
 package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
+import cn.nukkit.event.EventDispatcher;
 import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
@@ -87,7 +88,7 @@ public class Scoreboard implements IScoreboard{
     public boolean addLine(IScoreboardLine line) {
         if (shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(this, line, line.getScore(), line.getScore(), ScoreboardLineChangeEvent.ActionType.ADD_LINE);
-            Server.getInstance().getPluginManager().callEvent(event);
+            EventDispatcher.call(event);
             if (event.isCancelled()) return false;
             line = event.getLine();
         }
@@ -113,7 +114,7 @@ public class Scoreboard implements IScoreboard{
         if (removed == null) return false;
         if (shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(this, removed, removed.getScore(), removed.getScore(), ScoreboardLineChangeEvent.ActionType.REMOVE_LINE);
-            Server.getInstance().getPluginManager().callEvent(event);
+            EventDispatcher.call(event);
             if (event.isCancelled()) return false;
         }
         this.lines.remove(scorer);
@@ -126,7 +127,7 @@ public class Scoreboard implements IScoreboard{
         if (lines.isEmpty()) return false;
         if (shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(this, null, 0, 0, ScoreboardLineChangeEvent.ActionType.REMOVE_ALL_LINES);
-            Server.getInstance().getPluginManager().callEvent(event);
+            EventDispatcher.call(event);
             if (event.isCancelled()) return false;
         }
         if (send) {

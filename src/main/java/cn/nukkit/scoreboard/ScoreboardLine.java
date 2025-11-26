@@ -1,6 +1,7 @@
 package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
+import cn.nukkit.event.EventDispatcher;
 import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class ScoreboardLine implements IScoreboardLine{
     public boolean setScore(int score) {
         if (scoreboard.shouldCallEvent()) {
             var event = new ScoreboardLineChangeEvent(scoreboard, this, score, this.score, ScoreboardLineChangeEvent.ActionType.SCORE_CHANGE);
-            Server.getInstance().getPluginManager().callEvent(event);
+            EventDispatcher.call(event);
             if (event.isCancelled()) {
                 return false;
             }

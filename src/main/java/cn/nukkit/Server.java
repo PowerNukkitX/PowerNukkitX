@@ -18,6 +18,7 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.event.EventDispatcher;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -709,7 +710,7 @@ public class Server {
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
-        getPluginManager().callEvent(serverStartedEvent);
+        EventDispatcher.call(serverStartedEvent);
     }
 
     /**
@@ -737,7 +738,7 @@ public class Server {
             this.hasStopped = true;
 
             ServerStopEvent serverStopEvent = new ServerStopEvent();
-            getPluginManager().callEvent(serverStopEvent);
+            EventDispatcher.call(serverStopEvent);
 
             for (Player player : new ArrayList<>(this.players.values())) {
                 player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
@@ -803,7 +804,7 @@ public class Server {
         log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
-        getPluginManager().callEvent(serverStartedEvent);
+        EventDispatcher.call(serverStartedEvent);
         this.tickProcessor();
         this.forceShutdown();
     }
@@ -946,7 +947,7 @@ public class Server {
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
-                    this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
+                    EventDispatcher.call(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
                 } catch (Exception e) {
                     log.error("", e);
                 }
@@ -1405,7 +1406,7 @@ public class Server {
 
     public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
         PlayerLoginEvent ev;
-        this.getPluginManager().callEvent(ev = new PlayerLoginEvent(player, "Plugin reason"));
+        EventDispatcher.call(ev = new PlayerLoginEvent(player, "Plugin reason"));
         if (ev.isCancelled()) {
             player.close(player.getLeaveMessage(), ev.getKickMessage());
             return;
@@ -1451,7 +1452,7 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
@@ -2274,7 +2275,7 @@ public class Server {
             }
             this.levels.put(level.getId(), level);
             level.initLevel();
-            this.getPluginManager().callEvent(new LevelLoadEvent(level));
+            EventDispatcher.call(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
         if (tickCounter != 0) {//update world enum when load  
@@ -2334,8 +2335,8 @@ public class Server {
                 this.getLevels().put(level.getId(), level);
                 level.initLevel();
                 level.setTickRate(getSettings().levelSettings().baseTickRate());
-                this.getPluginManager().callEvent(new LevelInitEvent(level));
-                this.getPluginManager().callEvent(new LevelLoadEvent(level));
+                EventDispatcher.call(new LevelInitEvent(level));
+                EventDispatcher.call(new LevelLoadEvent(level));
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
                 return false;
