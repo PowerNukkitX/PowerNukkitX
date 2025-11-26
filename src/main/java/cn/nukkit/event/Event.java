@@ -1,6 +1,11 @@
 package cn.nukkit.event;
 
+import cn.nukkit.Server;
+import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.EventException;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 描述服务器中可能发生的事情的类。<br>
@@ -46,5 +51,29 @@ public abstract class Event {
             throw new EventException("Event is not Cancellable");
         }
         isCancelled = value;
+    }
+
+    public void call() {
+        Server server = Server.getInstance();
+        if (server == null) {
+            throw new EventException("Server instance is null while calling event " + getEventName());
+        }
+
+        PluginManager pluginManager = server.getPluginManager();
+        if (pluginManager == null) {
+            throw new EventException("PluginManager is null while calling event " + getEventName());
+        }
+
+        try {
+            pluginManager.callEvent(this);
+        } catch (Throwable t) {
+            try {
+                Objects.requireNonNull(server.getLogger()).error("Exception while calling event " + getEventName(), t);
+            } catch (Throwable ignored) {
+                // Fallback to java.util.logging instead of printStackTrace for better control and testability
+                Logger.getLogger(Event.class.getName()).log(Level.SEVERE, "Exception while calling event " + getEventName(), t);
+            }
+            throw new EventException(t, "Exception while calling event " + getEventName());
+        }
     }
 }
