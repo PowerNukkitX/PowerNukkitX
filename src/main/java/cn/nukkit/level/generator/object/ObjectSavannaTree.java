@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAcaciaLeaves;
+import cn.nukkit.block.BlockAcaciaLog;
 import cn.nukkit.block.BlockAcaciaWood;
 import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockState;
@@ -14,7 +15,7 @@ public class ObjectSavannaTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState TRUNK = BlockAcaciaWood.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
+    private final BlockState TRUNK = BlockAcaciaLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y);
 
     /**
      * The metadata value of the leaves to use in tree generation.

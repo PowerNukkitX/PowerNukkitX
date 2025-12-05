@@ -1,8 +1,12 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockJungleLeaves;
+import cn.nukkit.block.BlockJungleLog;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockVine;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.Vector3;
@@ -13,8 +17,13 @@ import java.util.Objects;
 import static cn.nukkit.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
 
 public class ObjectJungleBigTree extends HugeTreesGenerator {
-    public ObjectJungleBigTree(int baseHeightIn, int extraRandomHeight, BlockState woodMetadata, BlockState leavesMetadata) {
-        super(baseHeightIn, extraRandomHeight, woodMetadata, leavesMetadata);
+    public ObjectJungleBigTree(int baseHeightIn, int extraRandomHeight) {
+        super(
+                baseHeightIn,
+                extraRandomHeight,
+                BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
+                BlockJungleLeaves.PROPERTIES.getDefaultState()
+        );
     }
 
     @Override
