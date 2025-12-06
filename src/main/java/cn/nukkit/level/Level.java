@@ -10,6 +10,7 @@ import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -1472,7 +1473,7 @@ public class Level implements Metadatable {
         for (Vector3 block : blocks) {
             if (block != null) size++;
         }
-        var packets = new ArrayList<UpdateBlockPacket>(size);
+        var packets = new ArrayList<DataPacket>(size);
         LongSet chunks = null;
         if (optimizeRebuilds) {
             chunks = new LongOpenHashSet();
@@ -1500,6 +1501,9 @@ public class Level implements Metadatable {
             int runtimeId;
             if (b instanceof Block block) {
                 runtimeId = block.getRuntimeId();
+                if(block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntitySpawnable spawnable) {
+                    packets.add(spawnable.getSpawnPacket());
+                }
             } else if (b instanceof Vector3WithRuntimeId vRid) {
                 if (dataLayer == 0) {
                     runtimeId = vRid.getRuntimeIdLayer0();
