@@ -88,7 +88,7 @@ public class JeStructure extends AbstractStructure {
 
                 BlockState state = blockCache.computeIfAbsent(fullIdentifier, id -> {
                     BlockState b = MappingRegistries.BLOCKS.getPNXBlock(new JeBlockState(id));
-                    if(b == null) log.warn("Unknown block state in structure palette: " + id);
+                    if(b == null) log.warn("Unknown block state in structure palette: {}", id);
                     return new StructureBlocks(b != null ? b : STATE_UNKNOWN);
                 }).state;
                 palette.add(state);

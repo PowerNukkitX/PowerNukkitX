@@ -453,7 +453,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                 }
             } catch (NoSuchFieldException ignored) {
             } catch (IllegalAccessException e) {
-                log.error("Failed to access PROPERTIES for custom entity: " + id, e);
+                log.error("Failed to access PROPERTIES for custom entity: {}", id, e);
             }
 
             if (def.hasSpawnEgg()) {
@@ -530,7 +530,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         } catch (RegisterException e) {
             log.error("{}", e.getCause().getMessage());
         } catch (IllegalAccessException e) {
-            log.error("Failed to access PROPERTIES for: " + key.id(), e);
+            log.error("Failed to access PROPERTIES for: {}", key.id(), e);
         }
     }
 

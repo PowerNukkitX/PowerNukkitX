@@ -68,7 +68,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                 }
             }
             if (consumeActions.size() < consumeActionCountNeeded) {
-                log.warn("Mismatched consume action count! Expected: " + consumeActionCountNeeded + ", Actual: " + consumeActions.size());
+                log.warn("Mismatched consume action count! Expected: {}, Actual: {}", consumeActionCountNeeded, consumeActions.size());
                 return context.error();
             }
             if (recipe.getResults().size() == 1) {

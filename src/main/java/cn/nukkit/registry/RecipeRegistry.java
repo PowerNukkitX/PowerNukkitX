@@ -1066,12 +1066,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             char ingredientChar = ingredientEntry.getKey().charAt(0);
             var ingredient = ingredientEntry.getValue();
             ItemDescriptor itemDescriptor = parseRecipeItem(ingredient);
-            if (itemDescriptor == null) return null;
             ingredients.put(ingredientChar, itemDescriptor);
         }
 
         RecipeUnlockingRequirement recipeUnlockingRequirement = null;
-        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, recipeUnlockingRequirement);
+        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, null);
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {

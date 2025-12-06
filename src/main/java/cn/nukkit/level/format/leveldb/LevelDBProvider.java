@@ -577,13 +577,11 @@ public class LevelDBProvider implements LevelProvider {
         }
         long index = Level.chunkHash(chunkX, chunkZ);
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
-        if (tmp != null) {
-            return tmp;
-        } else {
+        if (tmp == null) {
             tmp = this.loadChunk(index, chunkX, chunkZ, create);
             lastChunk.set(new WeakReference<>(tmp));
-            return tmp;
         }
+        return tmp;
     }
 
     @Override
