@@ -42,7 +42,7 @@ eu-okaeri-core = "c995d17b6e"
 disruptor = "4.0.0"
 
 [libraries]
-libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" }
+libdeflate = { module = "cn.powernukkitx:libdeflate-java", version.ref = "cn-powernukkitx-libdeflate-java" } # repo ?
 terra = { module = "com.github.PowerNukkitX:Terra-Binary", version.ref = "cn-powernukkitx-terra-binary" }
 fastreflection = { module = "com.github.AllayMC:fast-reflection", version.ref = "fastreflection" }
 oshi = { module = "com.github.oshi:oshi-core", version.ref = "com-github-oshi-oshi-core" }
