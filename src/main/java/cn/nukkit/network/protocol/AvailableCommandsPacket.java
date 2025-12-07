@@ -197,28 +197,12 @@ public class AvailableCommandsPacket extends DataPacket {
     }
 
     private void writeEnums(HandleByteBuf byteBuf, List<String> values, List<CommandEnum> enums) {
-        // Determine width of enum index
-        ObjIntConsumer<HandleByteBuf> indexWriter;
-        int valuesSize = values.size();
-        if (valuesSize < 0x100) {//256
-            indexWriter = WRITE_BYTE;
-        } else if (valuesSize < 0x10000) {//65536
-            indexWriter = WRITE_SHORT;
-        } else {
-            indexWriter = WRITE_INT;
-        }
-        // Write enums
-        byteBuf.writeUnsignedVarInt(enums.size());
-        for (CommandEnum commandEnum : enums) {
-            byteBuf.writeString(commandEnum.getName());
-
-            byteBuf.writeUnsignedVarInt(commandEnum.getValues().size());
-            for (String value : commandEnum.getValues()) {
-                int index = values.indexOf(value);
-                Preconditions.checkArgument(index > -1, "Invalid enum value detected: " + value);
-                indexWriter.accept(byteBuf, index);
-            }
-        }
+        byteBuf.writeArray(enums, (byteBuf1, commandEnum) -> {
+            byteBuf1.writeString(commandEnum.getName());
+            byteBuf1.writeArray(commandEnum.getValues(), (byteBuf2, string) -> {
+                byteBuf2.writeIntLE(values.indexOf(string));
+            });
+        });
     }
 
     private void writeCommand(HandleByteBuf byteBuf, Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes, List<ChainedSubCommandData> subCommands) {
@@ -230,7 +214,7 @@ public class AvailableCommandsPacket extends DataPacket {
             flags |= flag.bit;
         }
         byteBuf.writeShortLE(flags);
-        byteBuf.writeByte((byte) commandData.permission);
+        byteBuf.writeString(commandData.permission.getName());
 
         byteBuf.writeIntLE(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
 

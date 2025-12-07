@@ -28,6 +28,10 @@ public class MobEffectPacket extends DataPacket {
      * @since v662
      */
     public long tick;
+    /**
+     * @since v897
+     */
+    private boolean ambient;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -43,6 +47,7 @@ public class MobEffectPacket extends DataPacket {
         byteBuf.writeBoolean(this.particles);
         byteBuf.writeVarInt(this.duration);
         byteBuf.writeUnsignedVarLong(this.tick);
+        byteBuf.writeBoolean(ambient);
     }
 
     @Override

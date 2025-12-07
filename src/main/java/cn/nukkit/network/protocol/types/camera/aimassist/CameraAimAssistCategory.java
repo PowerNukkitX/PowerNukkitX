@@ -6,4 +6,6 @@ import lombok.Data;
 public class CameraAimAssistCategory {
     public String name;
     public CameraAimAssistCategoryPriorities priorities;
+    public Integer entityDefaultPriorities;
+    public Integer blockDefaultPriorities;
 }

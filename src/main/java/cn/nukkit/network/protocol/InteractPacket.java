@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.OptionalValue;
 import lombok.*;
 
 /**
@@ -19,17 +21,20 @@ public class InteractPacket extends DataPacket {
 
     public int action;
     public long target;
+    private Vector3f mousePosition;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.action = byteBuf.readByte();
         this.target = byteBuf.readEntityRuntimeId();
+        this.mousePosition = byteBuf.readOptional(null, byteBuf::readVector3f);
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeByte((byte) this.action);
         byteBuf.writeEntityRuntimeId(this.target);
+        byteBuf.writeOptional(OptionalValue.of(this.mousePosition), byteBuf::writeVector3f);
     }
 
     @Override

@@ -11,8 +11,9 @@ import java.util.Map;
 @Data
 public class CameraAimAssistPreset {
     public String identifier;
-    public String categories;
-    public final List<String> exclusionList = new ObjectArrayList<>();
+    public final List<String> blockExclusionList = new ObjectArrayList<>();
+    public final List<String> entityExclusionList = new ObjectArrayList<>();
+    public final List<String> blockTagExclusionList = new ObjectArrayList<>();
     public final List<String> liquidTargetingList = new ObjectArrayList<>();
     public final Map<String, String> itemSettings = new Object2ObjectArrayMap<>();
     public OptionalValue<String> defaultItemSettings;

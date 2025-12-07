@@ -1,5 +1,7 @@
 package cn.nukkit.command.data;
 
+import cn.nukkit.network.protocol.types.PermissionLevel;
+
 import java.util.*;
 
 public class CommandData implements Cloneable {
@@ -8,7 +10,7 @@ public class CommandData implements Cloneable {
     public CommandEnum aliases = null;
     public Map<String, CommandOverload> overloads = new HashMap<>();
     public EnumSet<Flag> flags = EnumSet.of(Flag.NOT_CHEAT);
-    public int permission;
+    public PermissionLevel permission = PermissionLevel.ANY;
 
 
     public List<ChainedSubCommandData> subcommands = new ArrayList<>();

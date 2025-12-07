@@ -194,7 +194,6 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeUUID(new UUID(0, 0)); // worldTemplateId
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
-        byteBuf.writeBoolean(this.tickDeathSystemsEnabled);
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
     }
 

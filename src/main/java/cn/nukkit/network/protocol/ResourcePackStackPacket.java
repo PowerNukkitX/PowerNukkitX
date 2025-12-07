@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ResourcePackStackPacket extends DataPacket {
     public boolean mustAccept = false;
-    public ResourcePack[] behaviourPackStack = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackStack = ResourcePack.EMPTY_ARRAY;
     public final List<ExperimentData> experiments = new ObjectArrayList<>();
     public String gameVersion = "*";
@@ -29,12 +28,6 @@ public class ResourcePackStackPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeBoolean(this.mustAccept);
 
-        byteBuf.writeUnsignedVarInt(this.behaviourPackStack.length);
-        for (ResourcePack entry : this.behaviourPackStack) {
-            byteBuf.writeString(entry.getPackId().toString());
-            byteBuf.writeString(entry.getPackVersion());
-            byteBuf.writeString(""); //TODO: subpack name
-        }
 
         byteBuf.writeUnsignedVarInt(this.resourcePackStack.length);
         for (ResourcePack entry : this.resourcePackStack) {

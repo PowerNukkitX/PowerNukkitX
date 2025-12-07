@@ -45,11 +45,14 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
     private void writeCategory(HandleByteBuf byteBuf, CameraAimAssistCategory category) {
         byteBuf.writeString(category.getName());
         writePriorities(byteBuf, category.getPriorities());
+        byteBuf.writeNotNull(category.entityDefaultPriorities, byteBuf::writeIntLE);
+        byteBuf.writeNotNull(category.blockDefaultPriorities, byteBuf::writeIntLE);
     }
 
     private void writePriorities(HandleByteBuf byteBuf, CameraAimAssistCategoryPriorities priorities) {
         byteBuf.writeArray(priorities.entities.entrySet(), this::writePriority);
         byteBuf.writeArray(priorities.blocks.entrySet(), this::writePriority);
+        byteBuf.writeArray(priorities.blocktags.entrySet(), this::writePriority);
     }
 
     private void writePriority(HandleByteBuf byteBuf, Map.Entry<String, Integer> priority) {
@@ -59,8 +62,9 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
 
     private void writeCameraAimAssist(HandleByteBuf byteBuf, CameraAimAssistPreset preset) {
         byteBuf.writeString(preset.getIdentifier());
-        byteBuf.writeString(preset.getCategories());
-        byteBuf.writeArray(preset.getExclusionList(), byteBuf::writeString);
+        byteBuf.writeArray(preset.getBlockExclusionList(), byteBuf::writeString);
+        byteBuf.writeArray(preset.getEntityExclusionList(), byteBuf::writeString);
+        byteBuf.writeArray(preset.getBlockTagExclusionList(), byteBuf::writeString);
         byteBuf.writeArray(preset.getLiquidTargetingList(), byteBuf::writeString);
         byteBuf.writeArray(preset.getItemSettings().entrySet(), this::writeItemSetting);
         byteBuf.writeOptional(preset.getDefaultItemSettings(), byteBuf::writeString);
@@ -87,6 +91,8 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
         CameraAimAssistCategory category = new CameraAimAssistCategory();
         category.setName(byteBuf.readString());
         category.setPriorities(readPriorities(byteBuf));
+        category.entityDefaultPriorities = byteBuf.readOptional(null, byteBuf::readIntLE);
+        category.blockDefaultPriorities = byteBuf.readOptional(null, byteBuf::readIntLE);
         return category;
     }
 
@@ -102,6 +108,11 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
             Map.Entry<String, Integer> entry = readPriority(byteBuf);
             priorities.getBlocks().put(entry.getKey(), entry.getValue());
         }
+        int blockTagPriorityLength = byteBuf.readUnsignedVarInt();
+        for(int i = 0; i < blockTagPriorityLength; i++) {
+            Map.Entry<String, Integer> entry = readPriority(byteBuf);
+            priorities.getBlocktags().put(entry.getKey(), entry.getValue());
+        }
         return priorities;
     }
 
@@ -112,8 +123,9 @@ public class CameraAimAssistPresetsPacket extends DataPacket {
     private CameraAimAssistPreset readPreset(HandleByteBuf byteBuf) {
         CameraAimAssistPreset preset = new CameraAimAssistPreset();
         preset.setIdentifier(byteBuf.readString());
-        preset.setCategories(byteBuf.readString());
-        preset.getExclusionList().addAll(List.of(byteBuf.readArray(String.class, HandleByteBuf::readString)));
+        preset.getBlockExclusionList().addAll(List.of(byteBuf.readArray(String.class, HandleByteBuf::readString)));
+        preset.getEntityExclusionList().addAll(List.of(byteBuf.readArray(String.class, HandleByteBuf::readString)));
+        preset.getBlockTagExclusionList().addAll(List.of(byteBuf.readArray(String.class, HandleByteBuf::readString)));
         preset.getLiquidTargetingList().addAll(List.of(byteBuf.readArray(String.class, HandleByteBuf::readString)));
         int itemSettingsLength = byteBuf.readUnsignedVarInt();
         for(int i = 0; i < itemSettingsLength; i++) {
