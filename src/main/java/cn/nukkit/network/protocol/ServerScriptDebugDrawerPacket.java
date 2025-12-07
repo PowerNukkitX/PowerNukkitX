@@ -52,12 +52,29 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
             buf.writeOptional(OptionalValue.ofNullable(shape.rotation), buf::writeVector3f);
             buf.writeOptional(OptionalValue.ofNullable(shape.totalTimeLeft), buf::writeFloat);
             buf.writeOptional(OptionalValue.ofNullable(shape.color), buf::writeColor);
-            buf.writeOptional(OptionalValue.ofNullable(shape.text), buf::writeString);
-            buf.writeOptional(OptionalValue.ofNullable(shape.boxBound), buf::writeVector3f);
-            buf.writeOptional(OptionalValue.ofNullable(shape.lineEndLocation), buf::writeVector3f);
-            buf.writeOptional(OptionalValue.ofNullable(shape.arrowHeadLength), buf::writeFloat);
-            buf.writeOptional(OptionalValue.ofNullable(shape.arrowHeadRadius), buf::writeFloat);
-            buf.writeOptional(OptionalValue.ofNullable(shape.numSegments), buf::writeInt);
+            buf.writeVarInt(shape.dimension);
+            buf.writeUnsignedVarInt(shape.getShapeType().payloadType);
+            switch (shape.getShapeType()) {
+                case ARROW -> {
+                    buf.writeOptional(OptionalValue.ofNullable(shape.lineEndLocation), buf::writeVector3f);
+                    buf.writeOptional(OptionalValue.ofNullable(shape.arrowHeadLength), buf::writeFloatLE);
+                    buf.writeOptional(OptionalValue.ofNullable(shape.arrowHeadRadius), buf::writeFloatLE);
+                    buf.writeOptional(OptionalValue.ofNullable(shape.numSegments), buf::writeByte);
+                }
+                case BOX -> {
+                    buf.writeVector3f(shape.boxBound);
+                }
+                case CIRCLE,
+                     SPHERE-> {
+                    buf.writeByte(shape.numSegments);
+                }
+                case LINE -> {
+                    buf.writeVector3f(shape.lineEndLocation);
+                }
+                case TEXT -> {
+                    buf.writeString(shape.text);
+                }
+            }
         }
     }
 

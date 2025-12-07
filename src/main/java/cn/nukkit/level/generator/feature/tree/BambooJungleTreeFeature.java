@@ -20,9 +20,7 @@ public class BambooJungleTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return new ObjectJungleBigTree(10, 20,
-                BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
-                BlockJungleLeaves.PROPERTIES.getDefaultState());
+        return new ObjectJungleBigTree(10, 20);
     }
 
     @Override

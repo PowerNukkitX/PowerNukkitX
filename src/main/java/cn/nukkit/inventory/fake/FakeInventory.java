@@ -2,6 +2,7 @@ package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.InputInventory;
@@ -109,7 +110,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             packet.windowId = player.getWindowId(this);
             packet.type = this.getType().getNetworkType();
 
-            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().findFirst();
+            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().filter(v -> !(v instanceof BlockEntity)).findAny();
             if (first.isPresent()) {
                 Vector3 position = first.get();
                 packet.x = position.getFloorX();

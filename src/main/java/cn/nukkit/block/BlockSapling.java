@@ -121,10 +121,7 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 Vector2 vector2;
                 if ((vector2 = this.findSaplings(WoodType.JUNGLE)) != null) {
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
-                    generator = new ObjectJungleBigTree(10, 20,
-                            BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
-                            BlockJungleLeaves.PROPERTIES.getDefaultState()
-                    );
+                    generator = new ObjectJungleBigTree(10, 20);
                     bigTree = true;
                 }
 

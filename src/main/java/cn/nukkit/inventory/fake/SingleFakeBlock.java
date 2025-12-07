@@ -2,11 +2,22 @@ package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockChest;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityChest;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.network.protocol.types.Rotation;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.Faceable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import java.util.HashMap;
@@ -41,7 +52,21 @@ public class SingleFakeBlock implements FakeBlock {
     @Override
     public void create(Player player, String titleName) {
         createAndGetLastPositions(player).addAll(this.getPlacePositions(player));
-        lastPositions.get(player).forEach(position -> {
+        HashSet<Vector3> lastPositions = this.lastPositions.get(player);
+        HashSet<Vector3> additional = new HashSet<>();
+        lastPositions.forEach(position -> {
+
+            if(this.block instanceof BlockChest && lastPositions.size() == 1) {
+                if(player.getLevel().getBlock(position) instanceof BlockChest chest) {
+                    BlockEntityChest blockEntity = chest.getOrCreateBlockEntity();
+                    if(blockEntity.isBlockEntityValid() && blockEntity.isPaired()) {
+                        Vector3 pair = blockEntity.getPair();
+                        player.getLevel().sendBlocks(new Player[]{player}, new Vector3[]{BlockAir.STATE.toBlock(Position.fromObject(pair))}, UpdateBlockPacket.FLAG_NETWORK, 0);
+                        additional.add(pair);
+                    }
+                }
+            }
+
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.blockRuntimeId = block.getRuntimeId();
             updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
@@ -58,19 +83,13 @@ public class SingleFakeBlock implements FakeBlock {
 
             player.dataPacket(blockEntityDataPacket);
         });
+        lastPositions.addAll(additional);
     }
 
     @Override
     public void remove(Player player) {
-        getLastPositions(player).forEach(position -> {
-            UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
-            packet.flags = UpdateBlockPacket.FLAG_NETWORK;
-            packet.x = position.getFloorX();
-            packet.y = position.getFloorY();
-            packet.z = position.getFloorZ();
-            player.dataPacket(packet);
-        });
+        Level level = player.getLevel();
+        level.sendBlocks(new Player[]{player}, getLastPositions(player).stream().map(level::getBlock).toArray(Block[]::new), UpdateBlockPacket.FLAG_NETWORK, 0);
         lastPositions.remove(player);
     }
 
