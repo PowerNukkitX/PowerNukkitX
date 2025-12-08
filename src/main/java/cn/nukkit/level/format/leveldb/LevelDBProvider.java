@@ -252,11 +252,8 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public IChunk getOrPutChunk(long index, IChunk chunk) {
-        if(this.chunks.containsKey(index)) {
-            return this.chunks.get(index);
-        }
-        this.putChunk(index, chunk);
-        return chunk;
+        IChunk existing = this.chunks.putIfAbsent(index, chunk);
+        return existing != null ? existing : chunk; 
     }
 
     public void putChunk(long index, IChunk chunk) {
