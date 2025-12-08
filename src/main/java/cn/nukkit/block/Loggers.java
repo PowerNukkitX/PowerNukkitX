@@ -28,5 +28,5 @@ import org.apache.logging.log4j.Logger;
 final class Loggers {
     private Loggers(){ throw new UnsupportedOperationException(); }
 
-    static final Logger logBlocKEntityHolder = LogManager.getLogger(BlockEntityHolder.class);
+    static final Logger logBlocKEntityHolder = LogManager.getLogger(Loggers.class);
 }

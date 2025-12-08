@@ -87,7 +87,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                         }
                     }
                 } else {
-                    log.warn("No chunkGenData for biome " + definition.getName());
+                    log.warn("No chunkGenData for biome {}", definition.getName());
                 }
             }
         }

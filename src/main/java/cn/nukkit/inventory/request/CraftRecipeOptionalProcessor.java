@@ -51,7 +51,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             String[] filterStrings = itemStackRequest.getFilterStrings();
             filterString = filterStrings[filteredStringIndex];
             if (filterString.isBlank() || filterString.length() > 64) {
-                log.debug(player.getName() + ": FilterTextPacket with too long text");
+                log.debug("{}: FilterTextPacket with too long text", player.getName());
                 return context.error();
             }
         }

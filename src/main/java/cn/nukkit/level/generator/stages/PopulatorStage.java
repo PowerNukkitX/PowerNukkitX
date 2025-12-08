@@ -18,7 +18,7 @@ public abstract class PopulatorStage extends GenerateStage {
                 Populator populator = Registries.POPULATOR.get(name);
                 populator.apply(context);
             } catch (Exception e) {
-                log.error("Error while applying populator " + name, e);
+                log.error("Error while applying populator {}", name, e);
             }
         }
         context.getChunk().setChunkState(ChunkState.POPULATED);

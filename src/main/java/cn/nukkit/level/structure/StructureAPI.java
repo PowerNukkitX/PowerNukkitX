@@ -48,7 +48,7 @@ public class StructureAPI {
 
             return structure;
         } catch (Exception e) {
-            log.debug("Cannot load structure " + name, e);
+            log.debug("Cannot load structure {}", name, e);
             return null;
         }
     }
@@ -64,7 +64,7 @@ public class StructureAPI {
                 structureCache.put(name, structure);
             }
         } catch (Exception e) {
-            log.error("Cannot save structure " + name, e);
+            log.error("Cannot save structure {}", name, e);
         }
     }
 

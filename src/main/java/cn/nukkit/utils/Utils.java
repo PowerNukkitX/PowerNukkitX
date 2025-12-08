@@ -238,7 +238,7 @@ public class Utils {
 
     public static long toABGR(int argb) {
         long result = argb & 0xFF00FF00L;
-        result |= (argb << 16) & 0x00FF0000L; // B to R
+        result |= ((long) argb << 16) & 0x00FF0000L; // B to R
         result |= (argb >>> 16) & 0xFFL; // R to B
         return result & 0xFFFFFFFFL;
     }

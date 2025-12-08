@@ -105,7 +105,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
             case 1 -> switch (continentalLevel) {
                 case CONTINENT_COAST -> switch (erosionLevel) {
                     case 0, 1, 2 -> STONE_BEACH;
-                    case 5 -> weird && temperatureLevel < 5 && temperatureLevel > 1 && humidityLevel < 4 ? SAVANNA_MUTATED : (weird ? getMiddleBiome(temperatureLevel, humidityLevel, true) : getBeachBiome(temperatureLevel));
+                    case 5 -> weird && temperatureLevel < 5 && temperatureLevel > 1 && humidityLevel < 4 ? SAVANNA_MUTATED : (weird ? getMiddleBiome(temperatureLevel, humidityLevel, weird) : getBeachBiome(temperatureLevel));
                     default -> getBeachBiome(temperatureLevel);
                 };
                 case CONTINENT_NEAR_INLAND -> switch (erosionLevel) {
@@ -140,7 +140,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                 case CONTINENT_COAST -> switch (erosionLevel) {
                     case 0, 1, 2 -> STONE_BEACH;
                     case 3 -> getMiddleBiome(temperatureLevel, humidityLevel, weird);
-                    case 5 -> weird ? temperatureLevel < 5 && temperatureLevel > 1 && humidityLevel < 4 ? SAVANNA_MUTATED : getMiddleBiome(temperatureLevel, humidityLevel, weird) : getBeachBiome(temperatureLevel);
+                    case 5 -> weird ? temperatureLevel < 5 && temperatureLevel > 1 && humidityLevel < 4 ? SAVANNA_MUTATED : getMiddleBiome(temperatureLevel, humidityLevel, true) : getBeachBiome(temperatureLevel);
                     default -> weird ? getMiddleBiome(temperatureLevel, humidityLevel, weird) : getBeachBiome(temperatureLevel);
                 };
                 case CONTINENT_NEAR_INLAND -> switch (erosionLevel) {
