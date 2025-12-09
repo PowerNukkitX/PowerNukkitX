@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MovementEffectType {
     INVALID(-1),
-    GLIDE_BOOST(0);
+    GLIDE_BOOST(0),
+    DOLPHIN_BOOST(1);
 
     private final int id;
 

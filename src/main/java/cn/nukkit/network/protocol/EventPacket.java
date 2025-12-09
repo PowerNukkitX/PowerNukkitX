@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class EventPacket extends DataPacket {
     public long eid;
-    public byte usePlayerId;
+    public boolean usePlayerId;
     public EventData eventData;
 
     @Override
@@ -23,7 +23,8 @@ public class EventPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeVarLong(this.eid);
         byteBuf.writeVarInt(this.eventData.getType().ordinal());
-        byteBuf.writeByte(this.usePlayerId);
+        byteBuf.writeBoolean(this.usePlayerId);
+        byteBuf.writeUnsignedVarInt(eventData.getType().ordinal());
         eventData.write(byteBuf);
     }
 

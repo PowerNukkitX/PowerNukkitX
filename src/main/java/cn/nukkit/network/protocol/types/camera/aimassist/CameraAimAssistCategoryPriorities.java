@@ -9,4 +9,5 @@ import java.util.Map;
 public class CameraAimAssistCategoryPriorities {
     public Map<String, Integer> entities = new Object2IntArrayMap<>();
     public Map<String, Integer> blocks = new Object2IntArrayMap<>();
+    public Map<String, Integer> blocktags = new Object2IntArrayMap<>();
 }
