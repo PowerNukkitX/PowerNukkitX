@@ -73,6 +73,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.network.protocol.types.SwingSource;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
@@ -3374,10 +3375,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(players, pk);
     }
 
-    public void playActionAnimation(AnimatePacket.Action action, float rowingTime) {
+    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
-        playActionAnimation(action, rowingTime, viewers);
+        playActionAnimation(action, swingSource, viewers);
     }
 
     /**
@@ -3386,14 +3387,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * 向指定玩家群体播放此实体的action动画
      *
      * @param action     the action
-     * @param rowingTime the rowing time
+     * @param swingSource the swing source
      * @param players    可视玩家 Visible Player
      */
-    public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
+    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
         pk.action = action;
-        pk.rowingTime = rowingTime;
         pk.eid = this.getId();
+        pk.setSwingSource(swingSource);
         Server.broadcastPacket(players, pk);
     }
 
