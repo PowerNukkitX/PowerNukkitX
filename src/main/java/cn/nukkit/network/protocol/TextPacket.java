@@ -66,9 +66,10 @@ public class TextPacket extends DataPacket {
                     byteBuf.readString();
                 }
                 this.type = (byte) byteBuf.readUnsignedByte();
-                String text = byteBuf.readString();
+                this.message = byteBuf.readString();
                 this.parameters = byteBuf.readArray(String.class, HandleByteBuf::readString);
-            }        }
+            }
+        }
         this.xboxUserId = byteBuf.readString();
         this.platformChatId = byteBuf.readString();
         this.filteredMessage = byteBuf.readOptional("", byteBuf::readString);
