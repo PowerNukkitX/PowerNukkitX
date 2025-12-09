@@ -2941,8 +2941,7 @@ public class Level implements Metadatable {
 
         // TriggerType == SIMULATION_TICK when a player spam-uses bone meal on a fertilizable block
         // therefore isPlayerInput check has to be overriden when bone meal is used
-        boolean allowFertilizerOverride = item.isFertilizer();
-        boolean isValidTrigger = !isPlayerInput || allowFertilizerOverride;
+        boolean isValidTrigger = !isPlayerInput || item.isFertilizer();
 
         if (player != null && isValidTrigger) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
