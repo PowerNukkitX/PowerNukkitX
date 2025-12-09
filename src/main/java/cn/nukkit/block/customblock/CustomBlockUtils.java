@@ -9,7 +9,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,47 +19,89 @@ public final class CustomBlockUtils {
 
     public static @Nullable AxisAlignedBB getBoundingBox(CustomBlockDefinition def, Block block) {
         CompoundTag components = def.getComponents();
-        if (!components.contains("minecraft:collision_box")) {
-            return null;
-        }
-
-        float[] origin = readVector(components, "origin");
-        float[] size = readVector(components, "size");
-        if (origin == null || size == null) return null;
-
-        // Bedrock origin/size is in pixels converted to block coordinates (0-1)
-        float[] normOrigin = new float[3];
-        float[] normSize = new float[3];
-        for (int i = 0; i < 3; i++) {
-            normOrigin[i] = origin[i] / 16f;
-            normSize[i] = size[i] / 16f;
-        }
+        if (!components.contains("minecraft:collision_box")) return null;
+        CompoundTag collision = components.getCompound("minecraft:collision_box");
+        if (!collision.contains("boxes")) return null;
+        ListTag<CompoundTag> boxes = collision.getList("boxes", CompoundTag.class);
+        if (boxes.size() == 0) return null;
 
         RotationResult rotation = getRotation(block);
-        Vector3f[] corners = buildAndRotateBoxCorners(normOrigin, normSize, rotation.rotX, rotation.rotY, rotation.isVerticalRotated);
-        float[] bounds = calculateBounds(corners);
 
-        // Clamp bounds to [0, 1]
+        float[] mergedBounds = null;
+        for (int i = 0; i < boxes.size(); i++) {
+            CompoundTag boxTag = boxes.get(i);
+
+            float minXpx = boxTag.getFloat("minX");
+            float minYpx = boxTag.getFloat("minY");
+            float minZpx = boxTag.getFloat("minZ");
+            float maxXpx = boxTag.getFloat("maxX");
+            float maxYpx = boxTag.getFloat("maxY");
+            float maxZpx = boxTag.getFloat("maxZ");
+
+            // Normalize to block space
+            float minX = minXpx / 16f;
+            float minY = minYpx / 16f;
+            float minZ = minZpx / 16f;
+            float maxX = maxXpx / 16f;
+            float maxY = maxYpx / 16f;
+            float maxZ = maxZpx / 16f;
+
+            float[] normOrigin = new float[]{ minX, minY, minZ };
+            float[] normSize   = new float[]{ maxX - minX, maxY - minY, maxZ - minZ };
+
+            Vector3f[] corners = buildAndRotateBoxCorners(
+                    normOrigin,
+                    normSize,
+                    rotation.rotX,
+                    rotation.rotY,
+                    rotation.isVerticalRotated
+            );
+            float[] bounds = calculateBounds(corners);
+
+            if (mergedBounds == null) {
+                mergedBounds = bounds;
+            } else {
+                mergedBounds[0] = Math.min(mergedBounds[0], bounds[0]); // minX
+                mergedBounds[1] = Math.min(mergedBounds[1], bounds[1]); // minY
+                mergedBounds[2] = Math.min(mergedBounds[2], bounds[2]); // minZ
+                mergedBounds[3] = Math.max(mergedBounds[3], bounds[3]); // maxX
+                mergedBounds[4] = Math.max(mergedBounds[4], bounds[4]); // maxY
+                mergedBounds[5] = Math.max(mergedBounds[5], bounds[5]); // maxZ
+            }
+        }
+
+        if (mergedBounds == null) return null;
+
+        // Clamp X/Z to [0, 1], Y to [0, 1.5] (24px)
         for (int i = 0; i < 3; i++) {
-            if (bounds[i] < 0f) {
-                float delta = -bounds[i];
-                bounds[i] = 0f;
-                bounds[i + 3] += delta;
+            float low = 0f;
+            float high = (i == 1) ? 1.5f : 1f;
+
+            float min = mergedBounds[i];
+            float max = mergedBounds[i + 3];
+
+            if (min < low) {
+                float delta = low - min;
+                min = low;
+                max += delta;
             }
-            if (bounds[i + 3] > 1f) {
-                float delta = bounds[i + 3] - 1f;
-                bounds[i + 3] = 1f;
-                bounds[i] -= delta;
+            if (max > high) {
+                float delta = max - high;
+                max = high;
+                min -= delta;
             }
+
+            mergedBounds[i] = min;
+            mergedBounds[i + 3] = max;
         }
 
         double x = block.x, y = block.y, z = block.z;
-        double x1 = x + bounds[0];
-        double y1 = y + bounds[1];
-        double z1 = z + bounds[2];
-        double x2 = x + bounds[3];
-        double y2 = y + bounds[4];
-        double z2 = z + bounds[5];
+        double x1 = x + mergedBounds[0];
+        double y1 = y + mergedBounds[1];
+        double z1 = z + mergedBounds[2];
+        double x2 = x + mergedBounds[3];
+        double y2 = y + mergedBounds[4];
+        double z2 = z + mergedBounds[5];
 
         return new SimpleAxisAlignedBB(x1, y1, z1, x2, y2, z2);
     }
@@ -70,13 +111,6 @@ public final class CustomBlockUtils {
         if (box == null) return true;
         double height = box.getMaxY() - box.getMinY();
         return height >= 0.99;
-    }
-
-    private static float[] readVector(CompoundTag components, String key) {
-        CompoundTag collision = components.getCompound("minecraft:collision_box");
-        ListTag<FloatTag> tagList = collision.getList(key, FloatTag.class);
-        if (tagList.size() < 3) return null;
-        return new float[]{ tagList.get(0).data, tagList.get(1).data, tagList.get(2).data };
     }
 
     private static RotationResult getRotation(Block block) {
