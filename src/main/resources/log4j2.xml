@@ -18,18 +18,11 @@
                 <RegexFilter regex=".*Reading file /sys/class/net/.*" onMatch="DENY" onMismatch="ACCEPT"/>
             </Filters>
         </RollingRandomAccessFile>
-        <Sentry name="Sentry"
-                dsn="https://2178d5db8ba6018776c15585eb511c0c@o4506530477965312.ingest.sentry.io/4506530494283776">
-            <Filters>
-                <RegexFilter regex=".*Reading file /sys/class/net/.*" onMatch="DENY" onMismatch="ACCEPT"/>
-            </Filters>
-        </Sentry>
     </Appenders>
     <Loggers>
         <AsyncRoot level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
-            <AppenderRef ref="Sentry"/>
         </AsyncRoot>
         <!--    disable useless debug log foreign library    -->
         <Logger name="oshi.hardware" level="info"/>
