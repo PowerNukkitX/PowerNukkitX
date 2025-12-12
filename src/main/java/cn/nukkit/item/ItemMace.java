@@ -7,6 +7,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.item.enchantment.EnchantmentWindBurst;
 
 public class ItemMace extends ItemTool {
     public ItemMace() {
@@ -21,6 +22,7 @@ public class ItemMace extends ItemTool {
     @Override
     public int getAttackDamage(Entity entity) {
         int height = NukkitMath.floorDouble(entity.highestPosition - entity.y);
+        EnchantmentWindBurst.rememberFall(entity, height);
         if(height < 1.5f) return 6;
         int damage = 0;
         for(int i = 0; i <= height; i++) {
