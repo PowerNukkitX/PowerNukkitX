@@ -21,6 +21,7 @@ public class ItemMace extends ItemTool {
     @Override
     public int getAttackDamage(Entity entity) {
         int height = NukkitMath.floorDouble(entity.highestPosition - entity.y);
+        entity.updateFallDistance();
         if(height < 1.5f) return 6;
         int damage = 0;
         for(int i = 0; i <= height; i++) {
