@@ -23,6 +23,8 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -38,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
@@ -300,14 +301,32 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.server.getPluginManager().callEvent(ev);
 
         var manager = this.server.getScoreboardManager();
-        //测试环境中此项会null，所以说需要判空下
+        // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
 
-        if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            for (cn.nukkit.item.Item item : ev.getDrops()) {
-                this.getLevel().dropItem(this, item);
+        if (!this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) return;
+
+        Player killer = (this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity && byEntity.getDamager() instanceof Player p) ? p : null;
+
+        if (killer != null && !killer.onGround) {
+            Item weapon = killer.getInventory().getItemInHand();
+            if (weapon.hasEnchantment(Enchantment.ID_LOOTING)) {
+                EnchantmentLootWeapon ench = (EnchantmentLootWeapon) weapon.getEnchantment(Enchantment.ID_LOOTING);
+
+                int level = ench.getLevel();
+                boolean isIgnored = ench.isIgnored(this);
+
+                for (Item item : ev.getDrops()) {
+                    if (!isIgnored) item.setCount(item.getCount() + level);
+                    this.getLevel().dropItem(this, item);
+                }
+                this.getLevel().dropExpOrb(this, getExperienceDrops() * (isIgnored ? 1 : level));
+            } else {
+                for (Item drop : ev.getDrops()) {
+                    this.getLevel().dropItem(this, drop);
+                }
+                this.getLevel().dropExpOrb(this, getExperienceDrops());
             }
-            this.getLevel().dropExpOrb(this, getExperienceDrops());
         }
     }
 
