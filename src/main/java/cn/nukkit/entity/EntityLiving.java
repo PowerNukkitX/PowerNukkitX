@@ -18,6 +18,8 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.inventory.EntityHandItem;
+import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
@@ -35,6 +37,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.TickCachedBlockIterator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -297,37 +300,24 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
         super.kill();
-        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops());
+        Item weapon = Item.AIR;
+        if(this.getLastDamageCause() instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            if(entityDamageByEntityEvent.getDamager() instanceof EntityHandItem entityHandItem) {
+                weapon = entityHandItem.getItemInHand();
+            }
+        }
+        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
 
         var manager = this.server.getScoreboardManager();
         // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
-
-        if (!this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) return;
-
-        Player killer = (this.getLastDamageCause() instanceof EntityDamageByEntityEvent byEntity && byEntity.getDamager() instanceof Player p) ? p : null;
-
-        if (killer != null && !killer.onGround) {
-            Item weapon = killer.getInventory().getItemInHand();
-            if (weapon.hasEnchantment(Enchantment.ID_LOOTING)) {
-                EnchantmentLootWeapon ench = (EnchantmentLootWeapon) weapon.getEnchantment(Enchantment.ID_LOOTING);
-
-                int level = ench.getLevel();
-                boolean isIgnored = ench.isIgnored(this);
-
-                for (Item item : ev.getDrops()) {
-                    if (!isIgnored) item.setCount(item.getCount() + level);
-                    this.getLevel().dropItem(this, item);
-                }
-                this.getLevel().dropExpOrb(this, getExperienceDrops() * (isIgnored ? 1 : level));
-            } else {
-                for (Item drop : ev.getDrops()) {
-                    this.getLevel().dropItem(this, drop);
-                }
-                this.getLevel().dropExpOrb(this, getExperienceDrops());
+        if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+            for (cn.nukkit.item.Item item : ev.getDrops()) {
+                this.getLevel().dropItem(this, item);
             }
         }
+        this.getLevel().dropExpOrb(this, getExperienceDrops());
     }
 
     @Override
@@ -431,12 +421,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     /**
-     * Defines the drops after the entity's death
+     * Defines the drops after the entity's death without looting
+     * @deprecated Use getDrops(weapon: Item)
      */
+    @Deprecated
     public Item[] getDrops() {
         return Item.EMPTY_ARRAY;
     }
 
+    /**
+     * Defines the drops of the entity adjusted with the enchantments of the item
+     * @param weapon - The weapon that was used to kill the entity.
+     * @since 12/12/2025
+     */
+    public Item[] getDrops(@NotNull Item weapon) {
+        return this.getDrops();
+    }
     public Integer getExperienceDrops() {
         return 0;
     }
