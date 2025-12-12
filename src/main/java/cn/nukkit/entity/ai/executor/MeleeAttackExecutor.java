@@ -136,7 +136,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
 
-            float knockBack = 0.3f;
+            float knockBack = 0.5f;
             if (item.applyEnchantments()) {
                 Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
                 if (knockBackEnchantment != null) {

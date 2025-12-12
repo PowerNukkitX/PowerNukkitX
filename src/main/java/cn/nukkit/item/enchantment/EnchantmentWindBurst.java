@@ -10,35 +10,10 @@ import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 
 public class EnchantmentWindBurst extends Enchantment {
-    private static final Long2DoubleOpenHashMap lastFalls = new Long2DoubleOpenHashMap();
 
     protected EnchantmentWindBurst() {
         super(ID_WIND_BURST, NAME_WIND_BURST, Rarity.RARE, EnchantmentType.MACE);
         this.setObtainableFromEnchantingTable(false);
-    }
-
-    public static void rememberFall(Entity entity, double fallDistance) {
-        if (entity != null) {
-            lastFalls.put(entity.getId(), Math.max(fallDistance, 0));
-        }
-    }
-
-    public static void forgetFall(Entity entity) {
-        if (entity != null) {
-            lastFalls.remove(entity.getId());
-        }
-    }
-
-    private static double pullRememberedFall(Entity entity) {
-        if (entity == null) {
-            return 0;
-        }
-        long id = entity.getId();
-        double stored = lastFalls.get(id);
-        if (stored > 0) {
-            lastFalls.remove(id);
-        }
-        return stored;
     }
 
     @Override
@@ -59,11 +34,8 @@ public class EnchantmentWindBurst extends Enchantment {
     @Override
     public void doAttack(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if (damager == null) {
-            return;
-        }
 
-        double fallDistance = Math.max(pullRememberedFall(damager), Math.max(damager.fallDistance, damager.highestPosition - damager.y));
+        double fallDistance = Math.max(damager.fallDistance, damager.highestPosition - damager.y);
         if (fallDistance < 1.5d && damager.motionY < -0.08d) {
             fallDistance = Math.max(fallDistance, Math.min(2.5d, -damager.motionY * 4d));
         }

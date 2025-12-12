@@ -2080,10 +2080,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
+    public void updateFallDistance() {
+        this.fallDistance = (float) (this.highestPosition - this.y);
+    }
+
     protected void updateFallState(boolean onGround) {
         if (onGround) {
-            fallDistance = (float) (this.highestPosition - this.y);
-
+            this.updateFallDistance();
             if (fallDistance > 0) {
                 // check if we fell into at least 1 block of water
                 var lb = this.getLevelBlock();
@@ -3037,8 +3040,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!this.closed) {
             this.closed = true;
             
-           EnchantmentWindBurst.forgetFall(this);
-
             if (despawn) {
                 try {
                     EntityDespawnEvent event = new EntityDespawnEvent(this);
