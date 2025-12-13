@@ -42,4 +42,9 @@ public class ItemNetheriteHelmet extends ItemArmor {
     public boolean isLavaResistant() {
         return true;
     }
+
+    @Override
+    public float getKnockbackResistance() {
+        return 0.1f;
+    }
 }

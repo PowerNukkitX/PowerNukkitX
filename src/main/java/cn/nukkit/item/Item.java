@@ -2307,6 +2307,15 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
+    /**
+     * Retrieves armor knockback resistance of an item
+     *
+     * @return armor knockback resistance
+     */
+    public float getKnockbackResistance() {
+        return 0.0f;
+    }
+
 
     /////////////////////////////
     // Item Tools/Weapons Methods
@@ -2319,7 +2328,7 @@ public abstract class Item implements Cloneable, ItemID {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) {
         return isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears();
-        };
+        }
         return false;
     }
 
@@ -2536,8 +2545,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean isCustomItem() {
-        if (this instanceof CustomItem) return true;
-        return false;
+        return this instanceof CustomItem;
     }
 
     private CompoundTag customComponents() {

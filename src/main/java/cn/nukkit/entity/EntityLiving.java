@@ -20,6 +20,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
@@ -264,6 +265,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         double f = Math.sqrt(x * x + z * z);
         if (f <= 0) {
             return;
+        }
+
+        if(this instanceof Player player) {
+            float totalReduction = 0.0f;
+
+            InventorySlice armorInventory = player.getInventory().getArmorInventory();
+
+            for (Item item : armorInventory.getContents().values()){
+                if(!item.isNull()){
+                    totalReduction += item.getKnockbackResistance();
+                }
+            }
+
+            base *= (1.0 - totalReduction);
         }
 
         float resist = this.getKnockbackResistance();
