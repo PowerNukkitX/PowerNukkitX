@@ -2,6 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -27,10 +28,12 @@ import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -170,11 +173,27 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
     @Override
     public Item[] getDrops() {
-        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            return new Item[]{Item.get(Item.GUNPOWDER, 0, ThreadLocalRandom.current().nextInt(2) + 1)};
+        if (!(this.lastDamageCause instanceof EntityDamageByEntityEvent event)) {
+            return Item.EMPTY_ARRAY;
         }
-        return Item.EMPTY_ARRAY;
+
+        int looting = 0;
+
+        if (event.getDamager() instanceof EntityHuman human) {
+            Item weapon = human.getInventory().getItemInHand();
+            looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        }
+
+        int gunpowder = Utils.rand(0, 2 + looting);
+        if (gunpowder <= 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{
+                Item.get(Item.GUNPOWDER, 0, gunpowder)
+        };
     }
+
 
     @Override
     public boolean isPreventingSleep(Player player) {

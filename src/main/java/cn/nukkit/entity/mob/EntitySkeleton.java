@@ -20,11 +20,15 @@ import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,9 +76,23 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE), Item.get(Item.ARROW)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        int bones = Utils.rand(0, 2 + looting);
+        if (bones > 0) {
+            drops.add(Item.get(Item.BONE, 0, bones));
+        }
+
+        int arrows = Utils.rand(0, 2 + looting);
+        if (arrows > 0) {
+            drops.add(Item.get(Item.ARROW, 0, arrows));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
+
 
     @Override
     public boolean isUndead() {

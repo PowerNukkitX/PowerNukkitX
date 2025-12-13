@@ -18,6 +18,7 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.passive.EntityFrog;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
@@ -115,19 +116,25 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
     }
 
     @Override
-    public Item[] getDrops() {
-        if(getVariant() == SIZE_SMALL) {
-            if(getLastDamageCause() != null) {
-                if(lastDamageCause instanceof EntityDamageByEntityEvent event) {
-                    if(event.getDamager() instanceof EntityFrog frog) {
-                        return new Item[]{Item.get(Item.SLIME_BALL)};
-                    }
-                }
-            }
-            return new Item[] {Item.get(Item.SLIME_BALL, Utils.rand(0,3))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (getVariant() != SIZE_SMALL) {
+            return Item.EMPTY_ARRAY;
         }
-        return Item.EMPTY_ARRAY;
+
+        if (getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
+            if (event.getDamager() instanceof EntityFrog) {
+                return new Item[]{Item.get(Item.SLIME_BALL, 0, 1)};
+            }
+        }
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(1, 2) + looting;
+
+        return new Item[]{
+                Item.get(Item.SLIME_BALL, 0, amount)
+        };
     }
+
 
     @Override
     public Integer getExperienceDrops() {
