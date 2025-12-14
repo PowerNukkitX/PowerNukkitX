@@ -7,12 +7,13 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
+import cn.nukkit.lang.TranslationContainer;
 
 import java.util.Map;
 
 /**
- * @author xtypr
- * @since 2015/11/12
+ * @author Ayrz
+ * @since update 2025/12/14
  */
 public class PluginsCommand extends Command implements CoreCommand {
 
@@ -30,13 +31,14 @@ public class PluginsCommand extends Command implements CoreCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        this.sendPluginList(sender, log);
+        this.sendPluginList(sender);
         return 1;
     }
 
-    private void sendPluginList(CommandSender sender, CommandLogger log) {
+    private void sendPluginList(CommandSender sender) {
         StringBuilder list = new StringBuilder();
         Map<String, Plugin> plugins = sender.getServer().getPluginManager().getPlugins();
+        
         for (Plugin plugin : plugins.values()) {
             if (list.length() > 0) {
                 list.append(TextFormat.WHITE + ", ");
@@ -44,6 +46,10 @@ public class PluginsCommand extends Command implements CoreCommand {
             list.append(plugin.isEnabled() ? TextFormat.GREEN : TextFormat.RED);
             list.append(plugin.getDescription().getFullName());
         }
-        log.addMessage("nukkit.command.plugins.success", String.valueOf(plugins.size()), list.toString()).output();
+
+        sender.sendMessage(new TranslationContainer("nukkit.command.plugins.success", new String[]{
+            String.valueOf(plugins.size()), 
+            list.toString()
+        }));
     }
 }
