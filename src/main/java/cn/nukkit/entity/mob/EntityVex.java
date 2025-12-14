@@ -144,14 +144,14 @@ public class EntityVex extends EntityMob implements EntityFlyable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         if(getItemInHand() instanceof ItemTool tool) {
             tool.setDamage(ThreadLocalRandom.current().nextInt(tool.getMaxDurability()));
             return new Item[] {
                 tool
             };
         }
-        return super.getDrops();
+        return super.getDrops(weapon);
     }
 
     @Override

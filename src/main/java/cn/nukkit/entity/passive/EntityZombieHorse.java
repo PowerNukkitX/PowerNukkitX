@@ -3,11 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -43,9 +45,15 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.ROTTEN_FLESH, 1, 1)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(2, 3 + looting);
+
+        return new Item[]{
+                Item.get(Item.ROTTEN_FLESH, 0, amount)
+        };
     }
+
 
     @Override
     public boolean isUndead() {

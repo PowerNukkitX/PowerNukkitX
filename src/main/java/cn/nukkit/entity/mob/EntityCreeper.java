@@ -2,7 +2,6 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -172,17 +171,12 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
-    public Item[] getDrops() {
-        if (!(this.lastDamageCause instanceof EntityDamageByEntityEvent event)) {
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (!(this.lastDamageCause instanceof EntityDamageByEntityEvent)) {
             return Item.EMPTY_ARRAY;
         }
 
-        int looting = 0;
-
-        if (event.getDamager() instanceof EntityHuman human) {
-            Item weapon = human.getInventory().getItemInHand();
-            looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-        }
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
         int gunpowder = Utils.rand(0, 2 + looting);
         if (gunpowder <= 0) {

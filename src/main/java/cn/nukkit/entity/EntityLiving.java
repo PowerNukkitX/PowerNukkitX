@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
@@ -19,14 +20,11 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.inventory.EntityHandItem;
-import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
-import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -422,7 +420,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     /**
      * Defines the drops after the entity's death without looting
-     * @deprecated Use getDrops(weapon: Item)
+     * @deprecated Use {@link #getDrops(Item)}
      */
     @Deprecated
     public Item[] getDrops() {

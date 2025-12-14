@@ -28,6 +28,7 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -35,6 +36,7 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -193,10 +195,21 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
-    public Item[] getDrops() {
-        Item woolItem = sheared ? Item.AIR : this.getWoolItem();
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_MUTTON : Item.MUTTON)), woolItem};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int muttonAmount = Utils.rand(1, 2 + looting);
+        Item mutton = Item.get(
+                this.isOnFire() ? Item.COOKED_MUTTON : Item.MUTTON,
+                0,
+                muttonAmount
+        );
+
+        Item woolItem = this.sheared ? Item.AIR : this.getWoolItem();
+
+        return new Item[]{mutton, woolItem};
     }
+
 
     public int getColor() {
         return namedTag.getByte("Color");

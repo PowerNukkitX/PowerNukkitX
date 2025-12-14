@@ -25,12 +25,15 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -111,11 +114,29 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
-    public Item[] getDrops() {
-        if (!this.isBaby()) {
-            return new Item[]{Item.get(Item.LEATHER, 0, Utils.rand(0, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_BEEF : Item.BEEF), 0, Utils.rand(1, 3))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (this.isBaby()) {
+            return Item.EMPTY_ARRAY;
         }
-        return Item.EMPTY_ARRAY;
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        int beefAmount = Utils.rand(1, 3 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_BEEF : Item.BEEF,
+                0,
+                beefAmount
+        ));
+
+        if (Utils.rand(0f, 1f) < (2f / 3f)) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

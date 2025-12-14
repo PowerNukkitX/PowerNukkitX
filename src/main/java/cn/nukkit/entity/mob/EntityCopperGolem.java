@@ -41,6 +41,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemHoneycomb;
 import cn.nukkit.item.ItemShears;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.entity.condition.Condition;
@@ -307,8 +308,14 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.COPPER_INGOT, 0, Utils.rand(1, 3)), getInventory().getItemInHand()};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(1, 3 + looting);
+
+        return new Item[]{
+                Item.get(Item.COPPER_INGOT, 0, amount),
+                getInventory().getItemInHand()
+        };
     }
 
     public static void checkAndSpawnGolem(Block block) {

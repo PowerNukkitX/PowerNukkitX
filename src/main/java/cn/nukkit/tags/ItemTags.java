@@ -17,8 +17,7 @@ import java.util.Set;
 
 
 public final class ItemTags {
-    ItemTags() {
-    }
+    ItemTags() {}
 
     public final static String ARROW = "minecraft:arrow";
     public final static String BANNER = "minecraft:banner";

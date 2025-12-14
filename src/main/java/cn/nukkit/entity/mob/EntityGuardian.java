@@ -126,7 +126,7 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         int secondLoot = ThreadLocalRandom.current().nextInt(6);
         return new Item[]{
                 Item.get(Item.PRISMARINE_SHARD, 0, Utils.rand(0, 2)),

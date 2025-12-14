@@ -36,6 +36,7 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -43,6 +44,7 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -186,9 +188,27 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.PORKCHOP)), isSaddled() ? Item.get(Item.SADDLE) : Item.AIR};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int amount = Utils.rand(1, 3 + looting);
+
+        Item porkchop = Item.get(
+                this.isOnFire() ? Item.COOKED_PORKCHOP : Item.PORKCHOP,
+                0,
+                amount
+        );
+
+        if (isSaddled()) {
+            return new Item[]{
+                    porkchop,
+                    Item.get(Item.SADDLE)
+            };
+        }
+
+        return new Item[]{porkchop};
     }
+
 
     @Override
     public boolean isBreedingItem(Item item) {
@@ -196,16 +216,14 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
         return Objects.equals(id, Item.CARROT) || Objects.equals(id, Item.POTATO) || Objects.equals(id, BlockID.BEETROOT);
     }
 
-    protected class RiderEvaluator implements IBehaviorEvaluator {
+    protected static class RiderEvaluator implements IBehaviorEvaluator {
 
         @Override
         public boolean evaluate(EntityIntelligent entity) {
             Entity rider = entity.getPassenger();
             if(rider == null) return false;
             if(rider instanceof Player player) {
-                if(player.getInventory().getItemInHand().getId().equals(Item.CARROT_ON_A_STICK)) {
-                    return true;
-                }
+                return player.getInventory().getItemInHand().getId().equals(Item.CARROT_ON_A_STICK);
             }
             return false;
         }

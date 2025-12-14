@@ -60,7 +60,7 @@ public class EntitySalmon extends EntityFish {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         int rand = Utils.rand(0, 3);
         if (this.isLarge()) {
             //只有25%获得骨头 来自wiki https://zh.minecraft.wiki/w/%E9%B2%91%E9%B1%BC

@@ -36,6 +36,7 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -46,6 +47,8 @@ import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -170,9 +173,28 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.PORKCHOP), 0, Utils.rand(1, 3))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int porkAmount = Utils.rand(2, 4 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_PORKCHOP : Item.PORKCHOP,
+                0,
+                porkAmount
+        ));
+
+        if (Utils.rand(0, 1) == 1) {
+            int leatherAmount = Utils.rand(0, 1 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
+
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {

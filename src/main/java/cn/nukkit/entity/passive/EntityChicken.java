@@ -25,11 +25,15 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -147,8 +151,24 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_CHICKEN : Item.CHICKEN)), Item.get(Item.FEATHER)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        List<Item> drops = new ArrayList<>();
+
+        int chickenAmount = Utils.rand(1, 1 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_CHICKEN : Item.CHICKEN,
+                0,
+                chickenAmount
+        ));
+
+        int featherAmount = Utils.rand(0, 2 + looting);
+        if (featherAmount > 0) {
+            drops.add(Item.get(Item.FEATHER, 0, featherAmount));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
