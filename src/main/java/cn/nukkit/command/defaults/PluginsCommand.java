@@ -12,8 +12,8 @@ import cn.nukkit.lang.TranslationContainer;
 import java.util.Map;
 
 /**
- * @author Ayrz
- * @since update 2025/12/14
+ * @author xtypr
+ * @since 2015/11/12
  */
 public class PluginsCommand extends Command implements CoreCommand {
 
