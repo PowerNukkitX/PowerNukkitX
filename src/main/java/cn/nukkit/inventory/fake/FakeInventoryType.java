@@ -14,7 +14,8 @@ public enum FakeInventoryType {
     DROPPER(InventoryType.DROPPER, new SingleFakeBlock(BlockID.DROPPER, BlockEntity.DROPPER), 9),
     HOPPER(InventoryType.HOPPER, new SingleFakeBlock(BlockID.HOPPER, BlockEntity.HOPPER), 5),
     SHULKER_BOX(InventoryType.CONTAINER, new SingleFakeBlock(BlockID.UNDYED_SHULKER_BOX, BlockEntity.SHULKER_BOX), 27),
-    WORKBENCH(InventoryType.WORKBENCH, new SingleFakeBlock(BlockID.CRAFTING_TABLE, "default"), 9);
+    WORKBENCH(InventoryType.WORKBENCH, new SingleFakeBlock(BlockID.CRAFTING_TABLE, "default"), 9),
+    ENTITY(InventoryType.CONTAINER, null, -1);
 
     final InventoryType inventoryType;
     final FakeBlock fakeBlock;
