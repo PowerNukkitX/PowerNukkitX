@@ -62,17 +62,12 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         this.fakeBlock = fakeInventoryType.fakeBlock;
         this.defaultItemHandler = (a, b, c, d, e) -> {};
 
-        if (fakeInventoryType == FakeInventoryType.ENTITY) {
-            Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-            for (int i = 0; i < getSize(); i++) {
-                map.put(i, ContainerSlotType.LEVEL_ENTITY);
-            }
-            return;
-        }
-
         switch (fakeInventoryType) {
             case ENTITY -> {
-                // ENTITY is handled above; nothing to do here. Empty to satisfy compiler.
+                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                for (int i = 0; i < getSize(); i++) {
+                    map.put(i, ContainerSlotType.LEVEL_ENTITY);
+                }
             }
             case CHEST, DOUBLE_CHEST, HOPPER, DISPENSER, DROPPER, ENDER_CHEST -> {
                 Map<Integer, ContainerSlotType> map = super.slotTypeMap();
@@ -145,17 +140,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
                 fake.spawnTo(player);
             }
 
-            ContainerOpenPacket packet = new ContainerOpenPacket();
-            packet.windowId = player.getWindowId(this);
-            packet.type = this.getType().getNetworkType();
-            packet.entityId = this.fakeEntity.getId();
-
-            packet.x = this.fakeEntity.getFloorX();
-            packet.y = this.fakeEntity.getFloorY();
-            packet.z = this.fakeEntity.getFloorZ();
-
-            player.dataPacket(packet);
-
+            sendOpenContainerPacket(player, this.fakeEntity.getFloorX(), this.fakeEntity.getFloorY(), this.fakeEntity.getFloorZ(), this.fakeEntity.getId());
             super.onOpen(player);
             this.sendContents(player);
             return;
@@ -163,27 +148,30 @@ public class FakeInventory extends BaseInventory implements InputInventory {
 
         this.fakeBlock.create(player, this.getTitle());
         player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            ContainerOpenPacket packet = new ContainerOpenPacket();
-            packet.windowId = player.getWindowId(this);
-            packet.type = this.getType().getNetworkType();
-
             Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream()
                     .filter(v -> !(v instanceof BlockEntity))
                     .findAny();
 
             if (first.isPresent()) {
                 Vector3 position = first.get();
-                packet.x = position.getFloorX();
-                packet.y = position.getFloorY();
-                packet.z = position.getFloorZ();
-                player.dataPacket(packet);
-
+                sendOpenContainerPacket(player, position.getFloorX(), position.getFloorY(), position.getFloorZ(), 0);
                 super.onOpen(player);
                 this.sendContents(player);
             } else {
                 this.fakeBlock.remove(player);
             }
         }, 5);
+    }
+
+    private void sendOpenContainerPacket(Player player, int x, int y, int z, long entityId) {
+        ContainerOpenPacket packet = new ContainerOpenPacket();
+        packet.windowId = player.getWindowId(this);
+        packet.type = this.getType().getNetworkType();
+        packet.x = x;
+        packet.y = y;
+        packet.z = z;
+        if (entityId != 0) packet.entityId = entityId;
+        player.dataPacket(packet);
     }
 
     @Override
