@@ -3113,7 +3113,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void sendTranslation(String message, String[] parameters) {
         TextPacket pk = new TextPacket();
-        if (this.server.getSettings().baseSettings().forceServerTranslate()) {
+        boolean forceTranslate = this.server.getSettings().baseSettings().forceServerTranslate()
+                || parameters.length > 4;
+        if (forceTranslate) {
             pk.type = TextPacket.TYPE_RAW;
             pk.message = this.server.getLanguage().tr(message, parameters);
         } else {
