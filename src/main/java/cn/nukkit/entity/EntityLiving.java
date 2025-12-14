@@ -162,7 +162,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                 if (!useCorridor) {
                     List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
-                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
                     if (!blocked) return true;
                     continue;
                 }
@@ -184,7 +184,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     Vector3 t = to.add(o.x, o.y, o.z);
 
                     List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
-                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
 
                     if (blocked) { allClear = false; break; }
                 }
@@ -298,11 +298,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
         super.kill();
         Item weapon = Item.AIR;
-        if(this.getLastDamageCause() instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            if(entityDamageByEntityEvent.getDamager() instanceof EntityHandItem entityHandItem) {
-                weapon = entityHandItem.getItemInHand();
-            }
+        if (this.getLastDamageCause() instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof EntityHandItem handItem) {
+            weapon = handItem.getItemInHand();
         }
+
         EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
 
@@ -310,7 +310,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            for (cn.nukkit.item.Item item : ev.getDrops()) {
+            for (Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
         }
@@ -464,7 +464,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             blocks.add(block);
 
             if (maxLength != 0 && blocks.size() > maxLength) {
-                blocks.remove(0);
+                blocks.removeFirst();
             }
 
             String id = block.getId();
@@ -526,7 +526,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 1.0f;
     }
 
-    /** The radius of the area of blocks the entity will attempt to stay within around a target. */
+    /** The radius of the area blocks the entity will attempt to stay within around a target. */
     public int getFollowRadius() {
         if (isCustomEntity()) {
             return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).radius();

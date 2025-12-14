@@ -121,10 +121,9 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
             return Item.EMPTY_ARRAY;
         }
 
-        if (getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
-            if (event.getDamager() instanceof EntityFrog) {
-                return new Item[]{Item.get(Item.SLIME_BALL, 0, 1)};
-            }
+        if (getLastDamageCause() instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof EntityFrog) {
+            return new Item[]{Item.get(Item.SLIME_BALL, 0, 1)};
         }
 
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
@@ -134,6 +133,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
                 Item.get(Item.SLIME_BALL, 0, amount)
         };
     }
+
 
 
     @Override

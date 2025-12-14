@@ -131,23 +131,19 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
                 && lastDamageCause instanceof EntityDamageByEntityEvent event
                 && event.getDamager() instanceof EntityFrog frog) {
 
-            String froglight;
-            switch (frog.getVariant()) {
-                case 0 -> froglight = Block.OCHRE_FROGLIGHT;
-                case 1 -> froglight = Block.VERDANT_FROGLIGHT;
-                default -> froglight = Block.PEARLESCENT_FROGLIGHT;
-            }
+            String froglight = switch (frog.getVariant()) {
+                case 0 -> Block.OCHRE_FROGLIGHT;
+                case 1 -> Block.VERDANT_FROGLIGHT;
+                default -> Block.PEARLESCENT_FROGLIGHT;
+            };
 
-            drops.add(Item.get(froglight));
-            return drops.toArray(Item.EMPTY_ARRAY);
+            return new Item[]{Item.get(froglight)};
         }
 
-        if (getVariant() != SIZE_SMALL) {
-            if (Utils.rand(0, 2) != 0) {
-                int amount = Utils.rand(0, 2 + looting);
-                if (amount > 0) {
-                    drops.add(Item.get(Item.MAGMA_CREAM, 0, amount));
-                }
+        if (getVariant() != SIZE_SMALL && Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.MAGMA_CREAM, 0, amount));
             }
         }
 
