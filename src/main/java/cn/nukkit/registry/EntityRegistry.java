@@ -2,6 +2,7 @@ package cn.nukkit.registry;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFakeInventory;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
@@ -59,6 +60,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
+        registerInternal(new EntityDefinition(FAKE_INVENTORY, "", 9999, false, false), EntityFakeInventory.class);
+
         registerInternal(new EntityDefinition(CHICKEN, "", 10, true, true), EntityChicken.class);
         registerInternal(new EntityDefinition(COW, "", 11, true, true), EntityCow.class);
         registerInternal(new EntityDefinition(PIG, "", 12, true, true), EntityPig.class);
@@ -564,6 +567,11 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             BufferedInputStream bis = new BufferedInputStream(inputStream);
             CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+
+            // Add fake inventory entity definition
+            EntityRegistry.EntityDefinition fakeEntityInventory = Registries.ENTITY.getEntityDefinition(EntityID.FAKE_INVENTORY);
+            list.add(fakeEntityInventory.toNBT());
+
             for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
                 list.add(customEntityDefinition.toNBT());
             }
