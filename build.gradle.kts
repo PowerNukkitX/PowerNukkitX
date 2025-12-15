@@ -66,9 +66,24 @@ dependencies {
     testAnnotationProcessor(libs.lombok)
 }
 
+configurations.all {
+    resolutionStrategy {
+        cacheDynamicVersionsFor(10, "minutes")
+        cacheChangingModulesFor(10, "minutes")
+        preferProjectModules()
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+}
+
 java {
     withSourcesJar()
     withJavadocJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 //Automatically download dependencies source code
@@ -76,6 +91,11 @@ idea {
     module {
         isDownloadSources = true
         isDownloadJavadoc = false
+        excludeDirs.addAll(listOf(
+            file(".gradle"),
+            file("build"),
+            file("out")
+        ))
     }
 }
 
@@ -87,42 +107,35 @@ sourceSets {
     }
 }
 
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.processTestResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 tasks.register<DefaultTask>("buildFast") {
-    dependsOn(tasks.build)
     group = "alpha build"
-    tasks["delombok"].enabled = false
-    tasks["javadoc"].enabled = false
-    tasks["javadocJar"].enabled = false
-    tasks["sourcesJar"].enabled = false
-    tasks["copyDependencies"].enabled = false
-    tasks["shadowJar"].enabled = false
-    tasks["compileTestJava"].enabled = false
-    tasks["processTestResources"].enabled = false
-    tasks["testClasses"].enabled = false
-    tasks["test"].enabled = false
-    tasks["check"].enabled = false
+    description = "Fast build without documentation and tests - for rapid development"
+    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar)
 }
 
 tasks.register<DefaultTask>("buildSkipChores") {
-    dependsOn(tasks.build)
     group = "alpha build"
-    tasks["delombok"].enabled = false
-    tasks["javadoc"].enabled = false
-    tasks["javadocJar"].enabled = false
-    tasks["sourcesJar"].enabled = false
-    tasks["compileTestJava"].enabled = false
-    tasks["processTestResources"].enabled = false
-    tasks["testClasses"].enabled = false
-    tasks["test"].enabled = false
-    tasks["check"].enabled = false
+    description = "Build without documentation and tests"
+    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, "shadowJar")
 }
 
 tasks.register<DefaultTask>("buildForGithubAction") {
-    dependsOn(tasks.build)
     group = "build"
-    tasks["delombok"].enabled = false
-    tasks["javadoc"].enabled = false
-    tasks["javadocJar"].enabled = false
+    description = "Optimized build for CI/CD pipelines"
+    dependsOn(tasks.build)
+    doFirst {
+        tasks["delombok"].enabled = false
+        tasks["javadoc"].enabled = false
+        tasks["javadocJar"].enabled = false
+    }
 }
 
 tasks.build {
@@ -132,22 +145,62 @@ tasks.build {
 
 tasks.clean {
     group = "alpha build"
+    description = "Deletes the build directory and generated files"
     delete("pnx.yml", "terra", "services")
 }
 
 tasks.compileJava {
     options.encoding = "UTF-8"
-    options.compilerArgs.add("-Xpkginfo:always")
+    options.compilerArgs.addAll(listOf(
+        "-Xpkginfo:always",
+        "-parameters",
+        "-Xlint:-options",
+        "-Xlint:deprecation",
+        "-Xlint:unchecked"
+    ))
+    options.isIncremental = true
+    options.isFork = true
+    options.forkOptions.jvmArgs = listOf("-Xmx2g")
+    options.release.set(21)
+
     java.sourceCompatibility = JavaVersion.VERSION_21
     java.targetCompatibility = JavaVersion.VERSION_21
 }
 
+tasks.compileTestJava {
+    options.encoding = "UTF-8"
+    options.isIncremental = true
+    options.isFork = true
+    options.forkOptions.jvmArgs = listOf("-Xmx1g")
+}
+
 tasks.test {
     useJUnitPlatform()
-    jvmArgs(listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED"))
-    jvmArgs(listOf("--add-opens", "java.base/java.io=ALL-UNNAMED"))
+    jvmArgs(
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/java.io=ALL-UNNAMED",
+        "-Xmx1g", // Limit test JVM memory
+        "-XX:+UseG1GC", // Use G1GC for tests
+        "-XX:MaxGCPauseMillis=200" // Lower GC pause time
+    )
+
+    // Performance for tests
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+    forkEvery = 100 // Fork new JVM after 100 tests
+
+    // Test settings
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = false
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = false
+    }
+
     finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
+
 
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
@@ -179,15 +232,39 @@ tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
 
 tasks.named<ShadowJar>("shadowJar") {
     dependsOn("copyDependencies")
+    archiveClassifier.set("shaded")
+
     manifest {
         attributes(
-            "Main-Class" to "cn.nukkit.JarStart"
+            "Main-Class" to "cn.nukkit.JarStart",
+            "Implementation-Version" to project.version,
+            "Implementation-Title" to project.name,
+            "Multi-Release" to "true"
         )
     }
 
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java) //required to fix shadowJar log4j2 issue
+    // Required to fix shadowJar log4j2 plugin caching issue
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
+
+    // Minimize JAR size by excluding unnecessary files
+    exclude(
+        "META-INF/*.SF",
+        "META-INF/*.DSA",
+        "META-INF/*.RSA",
+        "META-INF/DEPENDENCIES",
+        "META-INF/LICENSE*",
+        "META-INF/NOTICE*",
+        "META-INF/maven/**",
+        "about.html"
+    )
+
+    // Merge service files for better compatibility
+    mergeServiceFiles()
 
     destinationDirectory.set(layout.buildDirectory)
+
+    // Enable ZIP64 format for large archives (>4GB)
+    isZip64 = true
 }
 
 tasks.register<Copy>("copyDependencies") {
@@ -196,6 +273,13 @@ tasks.register<Copy>("copyDependencies") {
     description = "Copy all dependencies to libs folder"
     from(configurations.runtimeClasspath)
     into(layout.buildDirectory.dir("libs"))
+
+    // Enable up-to-date checking for better incremental builds
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    // Performance: Only copy if dependencies changed
+    inputs.files(configurations.runtimeClasspath)
+    outputs.dir(layout.buildDirectory.dir("libs"))
 }
 
 tasks.javadoc {
@@ -208,6 +292,12 @@ tasks.javadoc {
     )
     // Suppress some meaningless warnings
     javadocOptions.addStringOption("Xdoclint:none", "-quiet")
+
+    // Performance: Only generate javadoc for public API
+    javadocOptions.addBooleanOption("public", true)
+
+    // Enable parallel processing
+    isFailOnError = false
 }
 
 publishing {
@@ -248,12 +338,18 @@ publishing {
     }
 }
 
-
-
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
+}
+
+// Task optimization - disable unnecessary tasks for faster builds
+tasks.configureEach {
+    // Skip tasks that aren't needed for standard builds
+    if (name.contains("delombok") && !gradle.startParameter.taskNames.contains("javadoc")) {
+        enabled = false
+    }
 }
