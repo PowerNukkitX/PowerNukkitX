@@ -62,7 +62,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@f236b35da9d031e13b1005234ebe4392ed54c580
 
       - name: Build PNX Server
         run: ./gradlew buildForGithubAction --no-configuration-cache
