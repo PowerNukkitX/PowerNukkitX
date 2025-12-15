@@ -2,6 +2,7 @@ package cn.nukkit.config.category;
 
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.Exclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,8 +25,10 @@ public class NetworkSettings extends OkaeriConfig {
     int maxDecompressSize = 268435456;
     @Comment("pnx.settings.network.packetlimit")
     int packetLimit = 8000;
+    @Exclude // Configured in server.properties
     @Comment("pnx.settings.network.query")
     boolean enableQuery = true;
+    @Exclude // Configured in server.properties
     @Comment("pnx.settings.network.encryption")
     boolean networkEncryption = true;
     @Comment("pnx.settings.network.logintime")

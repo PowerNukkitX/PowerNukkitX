@@ -10,10 +10,166 @@ public class LegacyServerProperties {
 
     public LegacyServerProperties(String dataPath) {
         File file = new File(dataPath + "server.properties");
+
+        // Create file if it doesn't exist
         if (!file.exists()) {
-            new Config(file.getPath(), Config.PROPERTIES).save();
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        // Load existing properties
         this.properties = new Config(dataPath + "server.properties", Config.PROPERTIES);
+
+        // Check and add missing properties with defaults (preserves existing values)
+        boolean modified = false;
+
+        // Basic Server Settings
+        if (!this.properties.exists("server-ip")) {
+            this.properties.set("server-ip", "0.0.0.0");
+            modified = true;
+        }
+        if (!this.properties.exists("server-port")) {
+            this.properties.set("server-port", 19132);
+            modified = true;
+        }
+        if (!this.properties.exists("max-players")) {
+            this.properties.set("max-players", 20);
+            modified = true;
+        }
+        if (!this.properties.exists("motd")) {
+            this.properties.set("motd", "PowerNukkitX Server");
+            modified = true;
+        }
+        if (!this.properties.exists("sub-motd")) {
+            this.properties.set("sub-motd", "powernukkitx.org");
+            modified = true;
+        }
+        if (!this.properties.exists("level-name")) {
+            this.properties.set("level-name", "world");
+            modified = true;
+        }
+        if (!this.properties.exists("language")) {
+            this.properties.set("language", "eng");
+            modified = true;
+        }
+
+        // Authentication & Security
+        if (!this.properties.exists("xbox-auth")) {
+            this.properties.set("xbox-auth", true);
+            modified = true;
+        }
+        if (!this.properties.exists("white-list")) {
+            this.properties.set("white-list", false);
+            modified = true;
+        }
+
+        // Gameplay Settings
+        if (!this.properties.exists("achievements")) {
+            this.properties.set("achievements", true);
+            modified = true;
+        }
+        if (!this.properties.exists("announce-player-achievements")) {
+            this.properties.set("announce-player-achievements", true);
+            modified = true;
+        }
+        if (!this.properties.exists("gamemode")) {
+            this.properties.set("gamemode", 0);
+            modified = true;
+        }
+        if (!this.properties.exists("force-gamemode")) {
+            this.properties.set("force-gamemode", false);
+            modified = true;
+        }
+        if (!this.properties.exists("hardcore")) {
+            this.properties.set("hardcore", false);
+            modified = true;
+        }
+        if (!this.properties.exists("difficulty")) {
+            this.properties.set("difficulty", 1);
+            modified = true;
+        }
+        if (!this.properties.exists("pvp")) {
+            this.properties.set("pvp", true);
+            modified = true;
+        }
+
+        // World & Spawn Settings
+        if (!this.properties.exists("spawn-protection")) {
+            this.properties.set("spawn-protection", 16);
+            modified = true;
+        }
+        if (!this.properties.exists("spawn-radius")) {
+            this.properties.set("spawn-radius", 16);
+            modified = true;
+        }
+        if (!this.properties.exists("view-distance")) {
+            this.properties.set("view-distance", 8);
+            modified = true;
+        }
+        if (!this.properties.exists("allow-nether")) {
+            this.properties.set("allow-nether", true);
+            modified = true;
+        }
+        if (!this.properties.exists("allow-the-end")) {
+            this.properties.set("allow-the-end", true);
+            modified = true;
+        }
+
+        // Player Settings
+        if (!this.properties.exists("allow-flight")) {
+            this.properties.set("allow-flight", false);
+            modified = true;
+        }
+        if (!this.properties.exists("enable-command-block")) {
+            this.properties.set("enable-command-block", true);
+            modified = true;
+        }
+
+        // Server Management
+        if (!this.properties.exists("auto-save")) {
+            this.properties.set("auto-save", true);
+            modified = true;
+        }
+        if (!this.properties.exists("force-resources")) {
+            this.properties.set("force-resources", false);
+            modified = true;
+        }
+        if (!this.properties.exists("allow-client-packs")) {
+            this.properties.set("allow-client-packs", true);
+            modified = true;
+        }
+        if (!this.properties.exists("safe-spawn")) {
+            this.properties.set("safe-spawn", true);
+            modified = true;
+        }
+
+        // Network & Movement
+        if (!this.properties.exists("server-authoritative-movement")) {
+            this.properties.set("server-authoritative-movement", "server-auth");
+            modified = true;
+        }
+        if (!this.properties.exists("enable-query")) {
+            this.properties.set("enable-query", true);
+            modified = true;
+        }
+        if (!this.properties.exists("allow-beta")) {
+            this.properties.set("allow-beta", false);
+            modified = true;
+        }
+
+        // Misc
+        if (!this.properties.exists("shutdown-message")) {
+            this.properties.set("shutdown-message", "Server closed");
+            modified = true;
+        }
+
+        // Save only if we added missing properties
+        if (modified) {
+            this.properties.save();
+        }
     }
 
     public void save() {
@@ -96,4 +252,3 @@ public class LegacyServerProperties {
         return this.properties.exists(key);
     }
 }
-

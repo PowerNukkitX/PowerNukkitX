@@ -338,9 +338,159 @@ public class Server {
         });
         this.settings.baseSettings().language(chooseLanguage);
 
-        while(updateConfiguration());
+        // Initialize server.properties for hosting platform compatibility
+        cn.nukkit.config.legacy.LegacyServerProperties serverProperties = new cn.nukkit.config.legacy.LegacyServerProperties(
+                this.dataPath);
 
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+        // Override settings from server.properties (takes priority over pnx.yml for
+        // hosting platform compatibility)
+        log.info("{}Loading configuration from server.properties...", TextFormat.YELLOW);
+
+        // Basic Server Settings
+        String ip = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SERVER_IP, (String) null);
+        if (ip != null && !ip.isEmpty()) {
+            this.settings.baseSettings().ip(ip);
+        }
+
+        Integer port = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SERVER_PORT, -1);
+        if (port != null && port > 0) {
+            log.info("{}  server-port: {}", TextFormat.GREEN, port);
+            this.settings.baseSettings().port(port);
+        }
+
+        Integer maxPlayers = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.MAX_PLAYERS, -1);
+        if (maxPlayers != null && maxPlayers > 0) {
+            this.settings.baseSettings().maxPlayers(maxPlayers);
+        }
+
+        String motd = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.MOTD, (String) null);
+        if (motd != null) {
+            this.settings.baseSettings().motd(motd);
+        }
+
+        String subMotd = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SUB_MOTD,
+                (String) null);
+        if (subMotd != null) {
+            this.settings.baseSettings().subMotd(subMotd);
+        }
+
+        String levelName = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.LEVEL_NAME,
+                (String) null);
+        if (levelName != null && !levelName.isEmpty()) {
+            this.settings.baseSettings().defaultLevelName(levelName);
+        }
+
+        // Authentication & Security
+        Boolean xboxAuth = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.XBOX_AUTH,
+                (Boolean) null);
+        if (xboxAuth != null) {
+            this.settings.baseSettings().xboxAuth(xboxAuth);
+        }
+
+        Boolean allowList = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.WHITE_LIST,
+                (Boolean) null);
+        if (allowList != null) {
+            this.settings.baseSettings().allowList(allowList);
+        }
+
+        // Gameplay Settings
+        Integer gamemode = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.GAMEMODE, -1);
+        if (gamemode != null && gamemode >= 0 && gamemode <= 3) {
+            this.settings.gameplaySettings().gamemode(gamemode);
+        }
+
+        Boolean forceGamemode = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.FORCE_GAMEMODE,
+                (Boolean) null);
+        if (forceGamemode != null) {
+            this.settings.gameplaySettings().forceGamemode(forceGamemode);
+        }
+
+        Boolean hardcore = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.HARDCORE,
+                (Boolean) null);
+        if (hardcore != null) {
+            this.settings.gameplaySettings().hardcore(hardcore);
+        }
+
+        Integer difficulty = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.DIFFICULTY, -1);
+        if (difficulty != null && difficulty >= 0 && difficulty <= 3) {
+            this.settings.gameplaySettings().difficulty(difficulty);
+        }
+
+        Boolean pvp = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.PVP, (Boolean) null);
+        if (pvp != null) {
+            this.settings.gameplaySettings().pvp(pvp);
+        }
+
+        // World & Spawn Settings
+        Integer spawnProtection = serverProperties
+                .get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SPAWN_PROTECTION, -1);
+        if (spawnProtection != null && spawnProtection >= 0) {
+            this.settings.playerSettings().spawnRadius(spawnProtection);
+        }
+
+        Integer viewDistance = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.VIEW_DISTANCE,
+                -1);
+        if (viewDistance != null && viewDistance > 0) {
+            this.settings.gameplaySettings().viewDistance(viewDistance);
+        }
+
+        Boolean allowNether = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.ALLOW_NETHER,
+                (Boolean) null);
+        if (allowNether != null) {
+            this.settings.gameplaySettings().allowNether(allowNether);
+        }
+
+        Boolean allowTheEnd = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.ALLOW_THE_END,
+                (Boolean) null);
+        if (allowTheEnd != null) {
+            this.settings.gameplaySettings().allowTheEnd(allowTheEnd);
+        }
+
+        // Server Management
+        Boolean autoSave = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.AUTO_SAVE,
+                (Boolean) null);
+        if (autoSave != null) {
+            this.settings.baseSettings().autoSave(autoSave);
+        }
+
+        Boolean safeSpawn = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SAFE_SPAWN,
+                (Boolean) null);
+        if (safeSpawn != null) {
+            this.settings.baseSettings().safeSpawn(safeSpawn);
+        }
+
+        // Network & Movement
+        String serverAuthMovement = serverProperties
+                .get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT, (String) null);
+        if (serverAuthMovement != null && !serverAuthMovement.isEmpty()) {
+            this.settings.gameplaySettings().serverAuthoritativeMovement(serverAuthMovement);
+        }
+
+        Boolean enableQuery = serverProperties.get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.ENABLE_QUERY,
+                (Boolean) null);
+        if (enableQuery != null) {
+            this.settings.networkSettings().enableQuery(enableQuery);
+        }
+
+        Boolean networkEncryption = serverProperties
+                .get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.NETWORK_ENCRYPTION, (Boolean) null);
+        if (networkEncryption != null) {
+            this.settings.networkSettings().networkEncryption(networkEncryption);
+        }
+
+        String shutdownMessage = serverProperties
+                .get(cn.nukkit.config.legacy.LegacyServerPropertiesKeys.SHUTDOWN_MESSAGE, (String) null);
+        if (shutdownMessage != null) {
+            this.settings.miscSettings().shutdownMessage(shutdownMessage);
+        }
+
+        log.info("{}Configuration loaded from server.properties", TextFormat.GREEN);
+
+        while (updateConfiguration())
+            ;
+
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()),
+                new ComputeThreadPoolThreadFactory(), null, false);
 
         levelArray = Level.EMPTY_ARRAY;
 
@@ -657,10 +807,10 @@ public class Server {
         }
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //todo enable js plugin when adapt
-//        JSIInitiator.reset();
-//        JSFeatures.clearFeatures();
-//        JSFeatures.initInternalFeatures();
+        // todo enable js plugin when adapt
+        // JSIInitiator.reset();
+        // JSFeatures.clearFeatures();
+        // JSFeatures.initInternalFeatures();
         this.scoreboardManager.read();
 
         log.info("Reloading Registries...");

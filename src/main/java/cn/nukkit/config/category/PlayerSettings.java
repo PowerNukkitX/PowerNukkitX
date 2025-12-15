@@ -2,6 +2,7 @@ package cn.nukkit.config.category;
 
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.Exclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -18,6 +19,7 @@ public class PlayerSettings extends OkaeriConfig {
     boolean forceSkinTrusted = false;
     @Comment("pnx.settings.player.checkmovement")
     boolean checkMovement = true;
+    @Exclude // Configured in server.properties
     @Comment("pnx.settings.player.spawnRadius")
     int spawnRadius = 16;
 }
