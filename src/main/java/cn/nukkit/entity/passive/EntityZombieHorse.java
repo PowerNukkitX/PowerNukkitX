@@ -54,7 +54,6 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
         };
     }
 
-
     @Override
     public boolean isUndead() {
         return true;

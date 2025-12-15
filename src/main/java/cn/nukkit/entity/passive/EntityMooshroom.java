@@ -131,7 +131,6 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     protected void initEntity() {
         this.setMaxHealth(10);

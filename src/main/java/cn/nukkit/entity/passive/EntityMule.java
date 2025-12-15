@@ -61,7 +61,6 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(

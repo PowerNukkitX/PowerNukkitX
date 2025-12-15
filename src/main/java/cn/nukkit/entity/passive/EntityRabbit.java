@@ -131,7 +131,6 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     protected void initEntity() {
         super.initEntity();

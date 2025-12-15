@@ -150,7 +150,6 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public Integer getExperienceDrops() {
         return getVariant();

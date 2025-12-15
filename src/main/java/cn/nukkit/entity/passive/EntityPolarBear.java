@@ -111,7 +111,6 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public String getOriginalName() {
         return "Polar Bear";

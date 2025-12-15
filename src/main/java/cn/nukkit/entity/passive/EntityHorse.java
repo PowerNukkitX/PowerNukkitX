@@ -226,7 +226,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public String getOriginalName() {
         return "Horse";

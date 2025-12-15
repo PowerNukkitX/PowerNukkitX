@@ -195,7 +195,6 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean superResult = super.onInteract(player, item, clickedPos);

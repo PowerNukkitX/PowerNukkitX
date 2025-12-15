@@ -57,7 +57,6 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
         return Item.EMPTY_ARRAY;
     }
 
-
     @Override
     public boolean isUndead() {
         return true;

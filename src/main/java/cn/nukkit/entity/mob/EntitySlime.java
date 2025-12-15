@@ -134,8 +134,6 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
         };
     }
 
-
-
     @Override
     public Integer getExperienceDrops() {
         return getVariant();

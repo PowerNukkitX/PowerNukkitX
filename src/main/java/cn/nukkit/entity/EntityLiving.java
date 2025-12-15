@@ -434,6 +434,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public Item[] getDrops(@NotNull Item weapon) {
         return this.getDrops();
     }
+
     public Integer getExperienceDrops() {
         return 0;
     }

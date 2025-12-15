@@ -209,7 +209,6 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
         return new Item[]{porkchop};
     }
 
-
     @Override
     public boolean isBreedingItem(Item item) {
         String id = item.getId();

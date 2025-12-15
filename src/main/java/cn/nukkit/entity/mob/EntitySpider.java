@@ -124,7 +124,6 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

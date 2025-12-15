@@ -93,7 +93,6 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public boolean isUndead() {
         return true;

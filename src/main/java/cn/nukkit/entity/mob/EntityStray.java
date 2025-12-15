@@ -94,7 +94,6 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-
     @Override
     public boolean isUndead() {
         return true;

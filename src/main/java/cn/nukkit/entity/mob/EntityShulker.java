@@ -176,7 +176,6 @@ public class EntityShulker extends EntityMob implements EntityVariant {
         return Item.EMPTY_ARRAY;
     }
 
-
     public void teleport() {
         Arrays.stream(getLevel().getCollisionBlocks(getBoundingBox().grow(7, 7, 7))).filter(block -> block.isFullBlock() && block.up().isAir()).findAny().ifPresent(
                 block -> {

@@ -210,7 +210,6 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
         return new Item[]{mutton, woolItem};
     }
 
-
     public int getColor() {
         return namedTag.getByte("Color");
     }

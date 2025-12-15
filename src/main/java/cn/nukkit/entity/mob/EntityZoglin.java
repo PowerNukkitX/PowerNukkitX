@@ -124,7 +124,6 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
         };
     }
 
-
     @Override
     public boolean attackTarget(Entity entity) {
         return (!(entity instanceof EntityZoglin) && entity instanceof EntityIntelligent);

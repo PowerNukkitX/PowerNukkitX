@@ -129,7 +129,6 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
         return Item.EMPTY_ARRAY;
     }
 
-
     @Override
     public Integer getExperienceDrops() {
         return 10;
