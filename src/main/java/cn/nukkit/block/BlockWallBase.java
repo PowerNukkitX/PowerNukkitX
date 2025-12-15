@@ -215,7 +215,8 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
     }
 
     /**
-     * @return true if it should be a post
+     * Re-evaluates whether this block should be treated as a wall post
+     * and updates the internal post-flag accordingly.
      */
     public void autoUpdatePostFlag() {
         setWallPost(recheckPostConditions(up(1, 0)));

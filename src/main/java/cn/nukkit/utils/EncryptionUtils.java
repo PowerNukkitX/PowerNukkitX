@@ -338,7 +338,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * Create handshake JWS used in the {@link}
+     * Create handshake JWS used in the {@link cn.nukkit.network.protocol.ServerToClientHandshakePacket}
      * which completes the encryption handshake.
      *
      * @param serverKeyPair used to sign the JWT

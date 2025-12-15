@@ -25,7 +25,8 @@ public class MemoryCodec<Data> implements IMemoryCodec<Data> {
     }
 
     /**
-     * BiConsumer<Data, EntityIntelligent> Data can be Null
+     * A {@link java.util.function.BiConsumer} of {@code Data} and {@code EntityIntelligent},
+     * where the {@code Data} parameter may be {@code null}.
      */
     public MemoryCodec<Data> onInit(BiConsumer<Data, EntityIntelligent> onInit) {
         this.onInit = onInit;

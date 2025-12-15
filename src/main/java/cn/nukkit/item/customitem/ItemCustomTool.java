@@ -1,5 +1,6 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -24,7 +25,7 @@ public abstract class ItemCustomTool extends ItemTool implements CustomItem {
     }
 
     /**
-     * @deprecated prefer to use {@link Item.getDiggerSpeed} instead.
+     * @deprecated prefer to use {@link Item#getDiggerSpeed} instead.
      */
     @Deprecated
     public final Integer getSpeed() {

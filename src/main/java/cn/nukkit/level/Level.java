@@ -4491,8 +4491,6 @@ public class Level implements Metadatable {
      * 异步执行服务器内存垃圾收集
      * <p>
      * Run server memory garbage collection asynchronously
-     *
-     * @return the list
      */
     public void doLevelGarbageCollection() {
         //gcBlockInventoryMetaData

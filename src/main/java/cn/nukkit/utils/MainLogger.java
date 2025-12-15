@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: MagicDroidX (Nukkit)
+ * @author MagicDroidX (Nukkit)
  */
 /*
 We need to keep this class for backwards compatibility

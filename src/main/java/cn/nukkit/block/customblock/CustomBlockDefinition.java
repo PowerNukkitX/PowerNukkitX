@@ -10,6 +10,7 @@ import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.block.property.type.IntPropertyType;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.math.AxisAlignedBB;
@@ -550,7 +551,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         /**
          * Enables step sensor logic (entity step-on/off).
          * <p>
-         * When enabled, override {@link #onEntityStepOn(Entity)} and {@link #onEntityStepOff(Entity)} for custom handling.
+         * When enabled, override {@link Block#onEntityStepOn(Entity)} and {@link Block#onEntityStepOff(Entity)} for custom handling.
          */
         public Builder isStepSensor(boolean value) {
             this.isStepSensor = value;

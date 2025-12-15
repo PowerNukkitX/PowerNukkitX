@@ -4778,7 +4778,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @Since 1.21.90 (818)
+     * @since 1.21.90 (818)
      * The client closes inventores when the SLEEP player tag is set.
      * Even the players inventory, which cannot be closed with the ContainerClosePacket
      * This won't close the inventories on the server side, but the client will send us the ContainerClose which in return will close the inventory on the server side

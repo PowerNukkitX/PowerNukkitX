@@ -3,9 +3,8 @@ package cn.nukkit.camera.data;
 import lombok.Getter;
 
 /**
- * @author daoge_cmd
- * @date 2023/6/10
- * PowerNukkitX Project
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/6/10
  */
 
 

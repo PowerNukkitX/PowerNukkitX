@@ -73,7 +73,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the up face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials up(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -87,7 +87,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the up face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @see TintMethod         Set tintint method for the block
      * @return the materials
      */
@@ -123,7 +123,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          指定down方向的Specify the texture's name of the down face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials down(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -137,7 +137,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          指定down方向的Specify the texture's name of the down face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @see TintMethod         Set tintint method for the block
      * @return the materials
      */
@@ -172,7 +172,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the north face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials north(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -186,7 +186,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the north face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @see TintMethod         Set tintint method for the block
      * @return the materials
      */
@@ -221,7 +221,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the south face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials south(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -235,7 +235,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the south face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @see TintMethod         Set tintint method for the block
      * @return the materials
      */
@@ -271,7 +271,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the east face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials east(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -285,7 +285,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name of the east face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @see TintMethod         Set tintint method for the block
      * @return the materials
      */
@@ -320,7 +320,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          指定west方向的Specify the texture's name of the west face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials west(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -334,7 +334,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          指定west方向的Specify the texture's name of the west face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @see TintMethod         Set tintint method for the block
      * @return the materials
      */
@@ -370,7 +370,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials any(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture) {
@@ -384,7 +384,7 @@ public class Materials implements NBTData {
      * @param renderMethod     Rendering method to be used
      * @param texture          Specify the texture's name
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @return the materials
      */
     public Materials any(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
@@ -398,7 +398,7 @@ public class Materials implements NBTData {
      *
      * @param face             Specifies the name of the face. The optional value is：up, down, north, south, east, west, *
      * @param ambientOcclusion Should it be applied ambient light shielding when lighting?
-     * @param PackedBools      Carries bools for face dimming, random UV rotation and texture variation support.
+     * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
      * @param renderMethodName Rendering method to be used
      * @param texture          Specify the texture's name
      * @see TintMethod       Specify the tinting type

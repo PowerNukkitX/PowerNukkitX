@@ -1768,7 +1768,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Get items locked mode in the player's item inventory
      *
-     * @return
+     * @return ItemLockMode
      */
     public ItemLockMode getItemLockMode() {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1791,7 +1791,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Define if the item does not drop on death
      *
-     * @return
+     * @return if item does not drop on death
      */
     public boolean keepOnDeath() {
         CompoundTag tag = getOrCreateNamedTag();
