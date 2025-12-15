@@ -65,4 +65,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build PNX Server
-        run: ./gradlew buildForGithubAction --scan
+        run: ./gradlew buildForGithubAction --no-configuration-cache
