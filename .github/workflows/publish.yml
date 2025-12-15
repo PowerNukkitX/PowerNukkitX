@@ -79,7 +79,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Build PNX & Publish to repository
         run: ./gradlew publish --no-configuration-cache

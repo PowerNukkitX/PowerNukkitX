@@ -29,6 +29,8 @@ description = "PNX Server"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
+// Constants
+val SHADOW_JAR = "shadowJar"
 
 dependencies {
     api(libs.bundles.netty)
@@ -124,17 +126,17 @@ tasks.register<DefaultTask>("buildFast") {
 tasks.register<DefaultTask>("buildSkipChores") {
     group = "alpha build"
     description = "Build without documentation and tests"
-    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, "shadowJar")
+    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.register<DefaultTask>("buildForGithubAction") {
     group = "build"
     description = "Optimized build for CI/CD pipelines (without tests)"
-    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, "shadowJar")
+    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.build {
-    dependsOn("shadowJar")
+    dependsOn(SHADOW_JAR)
     group = "alpha build"
 }
 
