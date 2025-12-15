@@ -231,7 +231,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         List<Item> drops = new ArrayList<>();
         if(ThreadLocalRandom.current().nextInt(200) < 17) { // 8.5%
             drops.add(getItemInHand());

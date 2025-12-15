@@ -25,6 +25,7 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -160,8 +161,19 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.SHULKER_SHELL, 0, Utils.rand(0, 2))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 1) == 0) {
+            int amount = Utils.rand(0, 1 + looting);
+            if (amount > 0) {
+                return new Item[]{
+                        Item.get(Item.SHULKER_SHELL, 0, amount)
+                };
+            }
+        }
+
+        return Item.EMPTY_ARRAY;
     }
 
     public void teleport() {

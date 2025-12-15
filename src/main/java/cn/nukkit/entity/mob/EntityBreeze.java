@@ -20,6 +20,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -82,8 +83,17 @@ public class EntityBreeze extends EntityMob {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BREEZE_ROD, 0, Utils.rand(1, 2))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int min = 1 + looting;
+        int max = 2 + (looting * 2);
+
+        int amount = Utils.rand(min, max);
+
+        return new Item[]{
+                Item.get(Item.BREEZE_ROD, 0, amount)
+        };
     }
 
     @Override

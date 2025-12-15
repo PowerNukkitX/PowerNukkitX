@@ -7,6 +7,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -50,7 +51,9 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.FEATHER)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        return new Item[]{
+                Item.get(Item.FEATHER, 0, Utils.rand(1, 2))
+        };
     }
 }

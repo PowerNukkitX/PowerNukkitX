@@ -26,11 +26,9 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
@@ -58,6 +56,7 @@ import cn.nukkit.form.window.Form;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
 import cn.nukkit.inventory.CreativeOutputInventory;
+import cn.nukkit.inventory.EntityHandItem;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
@@ -68,7 +67,6 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemArrow;
 import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.CommandOutputContainer;
@@ -2108,7 +2106,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Sets the cooldown time for the specified item to use
      *
-     * @param coolDownTick the cool down tick
+     * @param coolDown the cool down tick
      * @param itemId       the item id
      */
     public void setItemCoolDown(int coolDown, Identifier itemId) {
@@ -2118,8 +2116,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Sets the cooldown time for the specified item to use
      *
-     * @param coolDownTick the cool down tick
-     * @param itemId       a string category
+     * @param coolDown the cool down tick
+     * @param category a string category
      */
     public void setItemCoolDown(int coolDown, String category) {
         var pk = new PlayerStartItemCoolDownPacket();
@@ -2522,9 +2520,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         if (!this.isCreative() && !this.isSpectator()) {
-            return super.getDrops();
+            return super.getDrops(weapon);
         }
 
         return Item.EMPTY_ARRAY;
@@ -3636,6 +3634,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         String message = "";
         List<String> params = new ArrayList<>();
         EntityDamageEvent cause = this.getLastDamageCause();
+        Item weapon = Item.AIR;
 
         if (showMessages) {
             params.add(this.getDisplayName());
@@ -3645,6 +3644,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
+                        if(e instanceof EntityHandItem entityHandItem) {
+                            weapon = entityHandItem.getItemInHand();
+                        }
                         if (e instanceof Player) {
                             message = "death.attack.player";
                             params.add(((Player) e).getDisplayName());
@@ -3719,9 +3721,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 case CONTACT:
                     if (cause instanceof EntityDamageByBlockEvent) {
                         String id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
-                        if (id == BlockID.CACTUS) {
+                        if (id.equals(BlockID.CACTUS)) {
                             message = "death.attack.cactus";
-                        } else if (id == BlockID.ANVIL) {
+                        } else if (id.equals(BlockID.ANVIL)) {
                             message = "death.attack.anvil";
                         }
                     }
@@ -3764,7 +3766,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
-        PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray(EmptyArrays.EMPTY_STRINGS)), this.expLevel);
+        PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(weapon), new TranslationContainer(message, params.toArray(EmptyArrays.EMPTY_STRINGS)), this.expLevel);
         ev.setKeepExperience(this.level.gameRules.getBoolean(GameRule.KEEP_INVENTORY));
         ev.setKeepInventory(ev.getKeepExperience());
 

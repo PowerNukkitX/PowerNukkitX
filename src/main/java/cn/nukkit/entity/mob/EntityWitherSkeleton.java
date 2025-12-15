@@ -141,7 +141,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     //掉落剑的概率为8.5% 掉落头的概率为2.5%
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         List<Item> drops = new ArrayList<>();
         drops.add(Item.get(Item.BONE, 0, Utils.rand(0, 2)));
         if (Utils.rand(0, 2) == 0) {

@@ -22,6 +22,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
@@ -261,7 +262,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         return getInventory().getContents().values().stream().filter(item -> !item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)).toArray(Item[]::new);
     }
 

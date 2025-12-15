@@ -18,6 +18,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.inventory.EntityHandItem;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
@@ -34,12 +35,12 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.TickCachedBlockIterator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
 
 public abstract class EntityLiving extends Entity implements EntityDamageable {
     public final static float DEFAULT_SPEED = 0.1f;
@@ -162,7 +163,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                 if (!useCorridor) {
                     List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
-                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
                     if (!blocked) return true;
                     continue;
                 }
@@ -184,7 +185,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     Vector3 t = to.add(o.x, o.y, o.z);
 
                     List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
-                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.get(visited.size() - 1), includeLiquidBlocks, includePassableBlocks);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
 
                     if (blocked) { allClear = false; break; }
                 }
@@ -311,19 +312,24 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
         super.kill();
-        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops());
+        Item weapon = Item.AIR;
+        if (this.getLastDamageCause() instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof EntityHandItem handItem) {
+            weapon = handItem.getItemInHand();
+        }
+
+        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
 
         var manager = this.server.getScoreboardManager();
-        //测试环境中此项会null，所以说需要判空下
+        // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
-
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            for (cn.nukkit.item.Item item : ev.getDrops()) {
+            for (Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
-            this.getLevel().dropExpOrb(this, getExperienceDrops());
         }
+        this.getLevel().dropExpOrb(this, getExperienceDrops());
     }
 
     @Override
@@ -427,10 +433,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     /**
-     * Defines the drops after the entity's death
+     * Defines the drops after the entity's death without looting
+     * @deprecated Use {@link #getDrops(Item)}
      */
+    @Deprecated
     public Item[] getDrops() {
         return Item.EMPTY_ARRAY;
+    }
+
+    /**
+     * Defines the drops of the entity adjusted with the enchantments of the item
+     * @param weapon - The weapon that was used to kill the entity.
+     * @since 12/12/2025
+     */
+    public Item[] getDrops(@NotNull Item weapon) {
+        return this.getDrops();
     }
 
     public Integer getExperienceDrops() {
@@ -463,7 +480,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             blocks.add(block);
 
             if (maxLength != 0 && blocks.size() > maxLength) {
-                blocks.remove(0);
+                blocks.removeFirst();
             }
 
             String id = block.getId();
@@ -525,7 +542,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 1.0f;
     }
 
-    /** The radius of the area of blocks the entity will attempt to stay within around a target. */
+    /** The radius of the area blocks the entity will attempt to stay within around a target. */
     public int getFollowRadius() {
         if (isCustomEntity()) {
             return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).radius();

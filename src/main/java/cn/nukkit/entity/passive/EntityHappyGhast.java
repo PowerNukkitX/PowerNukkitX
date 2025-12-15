@@ -83,7 +83,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Ent
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         return new Item[]{getHarness()};
     }
 

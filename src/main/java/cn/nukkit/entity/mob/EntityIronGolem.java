@@ -154,7 +154,7 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         // Item drops
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int flowerAmount = random.nextInt(3);

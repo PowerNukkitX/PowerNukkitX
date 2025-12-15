@@ -19,11 +19,15 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,8 +43,6 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
     public EntityStray(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     protected void initEntity() {
@@ -69,8 +71,27 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE),Item.get(Item.ARROW)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        float boneChance = 0.66f + (0.12f * looting);
+        boneChance = Math.min(boneChance, 1.0f);
+
+        if (Utils.rand(0f, 1f) < boneChance) {
+            int amount = Utils.rand(1, 2 + looting);
+            drops.add(Item.get(Item.BONE, 0, amount));
+        }
+
+        float arrowChance = 0.55f + (0.10f * looting);
+        arrowChance = Math.min(arrowChance, 1.0f);
+
+        if (Utils.rand(0f, 1f) < arrowChance) {
+            int amount = Utils.rand(1, 2 + looting);
+            drops.add(Item.get(Item.ARROW, 0, amount));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

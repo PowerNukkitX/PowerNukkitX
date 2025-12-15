@@ -317,7 +317,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         return new Item[]{Item.get(Item.NETHER_STAR)};
     }
 

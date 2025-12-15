@@ -278,7 +278,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     //击杀猫会掉落0-2根线
     //击杀小猫不会获得
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         if (!this.isBaby()) {
             int catdrops = Utils.rand(0, 2);
             if (catdrops > 0)

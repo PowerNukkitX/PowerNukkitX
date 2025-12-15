@@ -40,6 +40,7 @@ import cn.nukkit.event.entity.EntityFallEvent;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
@@ -55,7 +56,9 @@ import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -198,8 +201,29 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 2) != 0) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        Item armor = getHorseArmor();
+        if (!armor.isNull()) {
+            drops.add(armor);
+        }
+
+        Item saddle = getSaddle();
+        if (!saddle.isNull()) {
+            drops.add(saddle);
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

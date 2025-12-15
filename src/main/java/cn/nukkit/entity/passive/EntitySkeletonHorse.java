@@ -3,11 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,8 +42,19 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite, En
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                return new Item[]{
+                        Item.get(Item.BONE, 0, amount)
+                };
+            }
+        }
+
+        return Item.EMPTY_ARRAY;
     }
 
     @Override

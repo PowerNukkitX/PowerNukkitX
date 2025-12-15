@@ -185,9 +185,8 @@ public class EntityAllay extends EntityMob implements EntityFlyable, EntityOwnab
         this.lastItemDropTick = currentTick;
         return true;
     }
-
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         return getInventory().getContents().values().toArray(Item.EMPTY_ARRAY);
     }
 }
