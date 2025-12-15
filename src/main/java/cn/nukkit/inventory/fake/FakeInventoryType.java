@@ -15,15 +15,21 @@ public enum FakeInventoryType {
     HOPPER(InventoryType.HOPPER, new SingleFakeBlock(BlockID.HOPPER, BlockEntity.HOPPER), 5),
     SHULKER_BOX(InventoryType.CONTAINER, new SingleFakeBlock(BlockID.UNDYED_SHULKER_BOX, BlockEntity.SHULKER_BOX), 27),
     WORKBENCH(InventoryType.WORKBENCH, new SingleFakeBlock(BlockID.CRAFTING_TABLE, "default"), 9),
-    ENTITY(InventoryType.CONTAINER, null, -1);
+    ENTITY(InventoryType.CONTAINER, null, -1, inventory -> new EntityFakeBlock(inventory));
 
     final InventoryType inventoryType;
     final FakeBlock fakeBlock;
+    final FakeBlockBuilder builder;
     final int size;
 
     FakeInventoryType(InventoryType inventoryType, FakeBlock fakeBlock, int size) {
+        this(inventoryType, fakeBlock, size, null);
+    }
+
+    FakeInventoryType(InventoryType inventoryType, FakeBlock fakeBlock, int size, FakeBlockBuilder builder) {
         this.inventoryType = inventoryType;
         this.fakeBlock = fakeBlock;
+        this.builder = builder;
         this.size = size;
     }
 

@@ -43,7 +43,6 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     private String title;
     private ItemHandler defaultItemHandler;
     private Consumer<Player> onCloseHandler;
-    private EntityFakeInventory fakeEntity;
 
     public FakeInventory(FakeInventoryType fakeInventoryType) {
         this(fakeInventoryType, fakeInventoryType.name(), fakeInventoryType.size);
@@ -59,7 +58,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
 
         this.title = title;
         this.fakeInventoryType = fakeInventoryType;
-        this.fakeBlock = fakeInventoryType.fakeBlock;
+        this.fakeBlock = fakeInventoryType.builder != null ? fakeInventoryType.builder.create(this) : fakeInventoryType.fakeBlock;
         this.defaultItemHandler = (a, b, c, d, e) -> {};
 
         switch (fakeInventoryType) {
@@ -121,44 +120,27 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     public void onOpen(Player player) {
         player.setFakeInventoryOpen(true);
 
-        if (this.fakeInventoryType == FakeInventoryType.ENTITY) {
-            if (this.fakeEntity == null || this.fakeEntity.isClosed()) {
-                Location loc = player.getLocation();
-
-                CompoundTag nbt = Entity.getDefaultNBT(loc);
-                nbt.putInt("ContainerSize", this.getSize());
-                nbt.putString("displayName", this.title);
-
-                Entity raw = Entity.createEntity(EntityID.FAKE_INVENTORY, player.getChunk(), nbt);
-                if (!(raw instanceof EntityFakeInventory fake)) {
-                    Server.getInstance().getLogger().error("[FakeInventory] Failed to create EntityFakeInventory");
-                    player.setFakeInventoryOpen(false);
-                    return;
-                }
-
-                this.fakeEntity = fake;
-                fake.spawnTo(player);
-            }
-
-            sendOpenContainerPacket(player, this.fakeEntity.getFloorX(), this.fakeEntity.getFloorY(), this.fakeEntity.getFloorZ(), this.fakeEntity.getId());
-            super.onOpen(player);
-            this.sendContents(player);
-            return;
+        if (this.fakeBlock != null) {
+            this.fakeBlock.create(player, this.getTitle());
         }
 
-        this.fakeBlock.create(player, this.getTitle());
         player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream()
-                    .filter(v -> !(v instanceof BlockEntity))
-                    .findAny();
+            if (this.fakeBlock == null) {
+                player.setFakeInventoryOpen(false);
+                return;
+            }
 
+            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().filter(v -> !(v instanceof BlockEntity)).findAny();
             if (first.isPresent()) {
                 Vector3 position = first.get();
-                sendOpenContainerPacket(player, position.getFloorX(), position.getFloorY(), position.getFloorZ(), 0);
+                long entityId = this.fakeBlock.getEntityId(player);
+                sendOpenContainerPacket(player, position.getFloorX(), position.getFloorY(), position.getFloorZ(), entityId);
+
                 super.onOpen(player);
                 this.sendContents(player);
             } else {
                 this.fakeBlock.remove(player);
+                player.setFakeInventoryOpen(false);
             }
         }, 5);
     }
@@ -182,15 +164,14 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         packet.type = getType();
         player.dataPacket(packet);
 
-        if (this.fakeInventoryType == FakeInventoryType.ENTITY) {
-            if (this.fakeEntity != null && !this.fakeEntity.isClosed()) {
-                this.fakeEntity.close();
-                this.fakeEntity = null;
-            }
-        } else {
-            player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        if (this.fakeBlock != null) {
+            if (this.fakeInventoryType == FakeInventoryType.ENTITY) {
                 this.fakeBlock.remove(player);
-            }, 5);
+            } else {
+                player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                    this.fakeBlock.remove(player);
+                }, 5);
+            }
         }
 
         super.onClose(player);
@@ -200,6 +181,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
             this.onCloseHandler.accept(player);
         }
     }
+
 
     public String getTitle() {
         return this.title;
