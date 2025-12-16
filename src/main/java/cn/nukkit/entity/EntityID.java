@@ -264,4 +264,12 @@ public interface EntityID {
   String HAPPY_GHAST = "minecraft:happy_ghast";
 
   String COPPER_GOLEM = "minecraft:copper_golem";
+
+  String NAUTILUS = "minecraft:nautilus";
+
+  String ZOMBIE_NAUTILUS = "minecraft:zombie_nautilus";
+
+  String PARCHED = "minecraft:parched";
+
+  String CAMEL_HUSK = "minecraft:camel_husk";
 }

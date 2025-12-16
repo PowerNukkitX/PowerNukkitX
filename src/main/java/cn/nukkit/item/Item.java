@@ -2361,6 +2361,15 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
+     * Define if the item is a Spear
+     */
+    public boolean isSpear() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isSpear();
+        return false;
+    }
+
+    /**
      * Define if the item is a Axe
      */
     public boolean isAxe() {

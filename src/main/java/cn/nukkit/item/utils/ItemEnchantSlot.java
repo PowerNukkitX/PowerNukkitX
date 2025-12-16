@@ -37,7 +37,7 @@ public enum ItemEnchantSlot {
     LEGS("armor_legs"),
     BOOTS("armor_feet"),
     FEET("armor_feet"),
-    TRIDENT("spear"),
+    TRIDENT("trident"),
     FLINT_AND_STEEL("flintsteel"),
     CARROT_ON_A_STICK("carrot_stick");
 

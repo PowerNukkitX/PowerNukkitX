@@ -1809,7 +1809,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     public boolean isShears()    { return getEnchantSlot() == ItemEnchantSlot.SHEARS; }
     public boolean isBow()       { return getEnchantSlot() == ItemEnchantSlot.BOW; }
     public boolean isCrossbow()  { return getEnchantSlot() == ItemEnchantSlot.CROSSBOW; }
-    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
+    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.TRIDENT; }
+    public boolean isSpear()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
 
     public int wearableProtection() {
         CompoundTag wearable = getComponent("minecraft:wearable");
