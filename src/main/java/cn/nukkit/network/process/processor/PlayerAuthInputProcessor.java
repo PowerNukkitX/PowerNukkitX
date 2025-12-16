@@ -236,7 +236,8 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             if (check(clientLoc, player)) {
                 Location playerLoc;
                 if (entityHorse.hasOwner() && !entityHorse.getSaddle().isNull()) {
-                    entityHorse.onInput(clientLoc.add(0, entityHorse.getHeight(), 0));
+                    //Temporary disabled
+                    //entityHorse.onInput(clientLoc.add(0, entityHorse.getHeight(), 0));
                     playerLoc = clientLoc.add(0, playerHandle.getBaseOffset() + entityHorse.getHeight(), 0);
                 } else {
                     playerLoc = clientLoc.add(0, 0.8, 0);

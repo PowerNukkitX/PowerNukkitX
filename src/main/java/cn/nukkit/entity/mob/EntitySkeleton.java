@@ -105,7 +105,9 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
 
     @Override
     public boolean onUpdate(int currentTick) {
-        burn(this);
+        if (!(this instanceof EntityParched)) {
+            burn(this);
+        }
         return super.onUpdate(currentTick);
     }
 
