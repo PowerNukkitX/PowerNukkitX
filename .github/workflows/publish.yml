@@ -131,11 +131,6 @@ jobs:
             3. Restart your server.
             4. Enjoy the latest features and bug fixes!
             
-            ### Checksums
-            
-            Use the provided checksums to verify the integrity of your download:
-            - SHA256: See `powernukkitx.jar.sha256`
-            - MD5: See `powernukkitx.jar.md5`
             
             Thank you for using PowerNukkitX ⭐
           assets: build/powernukkitx.jar

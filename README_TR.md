@@ -63,25 +63,13 @@
 ## Kurulum
 
 1. `JDK21` yüklü olduğundan emin olun, yüklü değilse [buradan indirin](https://www.graalvm.org/downloads)
-2. [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip) dosyasını indirin
-3. `PowerNukkitX-Run.zip` dosyasını istediğiniz dizine çıkarın.
-4. Java ortam değişkenlerini ayarlayın veya JDK'yı aynı dizine çıkarın.
+2. [`powernukkitx.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx.jar) dosyasını indirin
+3. Başlatma betiğinizi [buradan alın](https://github.com/PowerNukkitX/scripts/tree/master)
 
-CLI kullanmadan PowerNukkitX çalıştırmak mı istiyorsunuz?
-
-1. `JDK21` yüklü olduğundan emin olun, yüklü değilse [buradan indirin](https://www.graalvm.org/downloads)
-2. [`powernukkitx-shaded.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-shaded.jar) dosyasını indirin
-
-## Kullanım
-
-CLI kullanıyorsanız PowerNukkitX’i başlatma
-```sh
-java -jar cli.jar
-```
 
 Shaded jar kullanıyorsanız (CLI olmadan) PowerNukkitX’i başlatma
 ```sh
-java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-shaded.jar
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx.jar
 ```
 
 ## Topluluk ve Destek

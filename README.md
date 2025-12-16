@@ -63,14 +63,14 @@
 ## Install
 
 1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
-2. Download the [`powernukkitx-shaded.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-shaded.jar)
+2. Download the [`powernukkitx.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx.jar)
 3. Get your start script [here](https://github.com/PowerNukkitX/scripts/tree/master)
 
 ## Usage
 
 Starting PowerNukkitX
 ```sh
-java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-shaded.jar
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx.jar
 ```
 If you use a newer java version (greater than 21) you have to use one of the [startup scripts.](https://github.com/PowerNukkitX/scripts/tree/master)
 
