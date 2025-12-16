@@ -66,14 +66,13 @@
 ## Установка
 
 1. Проверьте установлена ли `JDK21`, если нет, [скачайте отсюда](https://www.graalvm.org/downloads)
-2. Скачайте [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip)
-3. Распакуйте `PowerNukkitX-Run.zip` в папку которую захотите
-4. Установите environment переменные Java, или распакуйте JDK в ту же папку, что и в предыдущем шаге
+2. Скачайте файл [`powernukkitx.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx.jar)
+3. Получите ваш скрипт запуска [здесь](https://github.com/PowerNukkitX/scripts/tree/master)
 
 ## Использование
 
 ```sh
-java -jar cli.jar
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx.jar
 ```
 
 ## Сообщество & Помощь
