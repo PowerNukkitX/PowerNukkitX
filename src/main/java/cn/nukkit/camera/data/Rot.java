@@ -3,9 +3,8 @@ package cn.nukkit.camera.data;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
- * @author daoge_cmd
- * @date 2023/6/11
- * PowerNukkitX Project
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/6/11
  */
 public record Rot(float x, float y) implements SerializableData {
     public CompoundTag serialize() {
