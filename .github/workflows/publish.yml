@@ -99,17 +99,6 @@ jobs:
         with:
           path: 'build/resources/main/git.properties'
           properties: 'git.build.version'
-
-      - name: Prepare release artifact
-        run: |
-          cd build
-          # Rename the shaded JAR to powernukkitx.jar for release
-          mv powernukkitx-${{ steps.read_version.outputs.git-build-version }}-all.jar powernukkitx.jar
-          # Calculate checksums
-          mkdir -p hash
-          sha256sum powernukkitx.jar > hash/powernukkitx.jar.sha256
-          md5sum powernukkitx.jar > hash/powernukkitx.jar.md5
-
       - name: Archive PowerNukkitX artifact
         uses: actions/upload-artifact@v4
         if: success()
@@ -149,6 +138,6 @@ jobs:
             - MD5: See `powernukkitx.jar.md5`
             
             Thank you for using PowerNukkitX ⭐
-          assets: build/powernukkitx.jar;build/hash/powernukkitx.jar.sha256|text/plain;build/hash/powernukkitx.jar.md5|text/plain;
+          assets: build/powernukkitx.jar
           replace_assets: true
           github_token: ${{ secrets.GITHUB_TOKEN }}

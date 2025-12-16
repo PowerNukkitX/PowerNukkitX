@@ -224,7 +224,7 @@ tasks.withType<AbstractArchiveTask> {
 
 tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
     destinationDirectory.set(layout.buildDirectory)
-    archiveFileName.set("${project.description}.jar")
+    archiveFileName.set("powernukkitx.jar")
 }
 
 tasks.named<ShadowJar>("shadowJar") {
