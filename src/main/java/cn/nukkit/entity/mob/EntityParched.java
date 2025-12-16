@@ -59,12 +59,12 @@ public class EntityParched extends EntitySkeleton {
 
         int arrows = Utils.rand(0, 2 + looting);
         if (arrows > 0) {
-            drops.add(Item.get(Item.ARROW, 35, arrows));
+            drops.add(Item.get(Item.ARROW, 0, arrows));
         }
 
         float weaknessChance = 0.10f + (0.05f * looting);
         if (Utils.rand(0f, 1f) < weaknessChance) {
-            Item weaknessArrow = Item.get(Item.ARROW, 0, 1);
+            Item weaknessArrow = Item.get(Item.ARROW, 35, 1);
             drops.add(weaknessArrow);
         }
 
