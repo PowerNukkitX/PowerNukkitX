@@ -31,7 +31,7 @@ public class HorseInventory extends BaseInventory {
                 .putShort("Aux", Short.MAX_VALUE)
                 .putString("Name", ItemID.SADDLE)));
         ListTag<CompoundTag> horseArmor = new ListTag<>();
-        for (var h : List.of(ItemID.LEATHER_HORSE_ARMOR, ItemID.IRON_HORSE_ARMOR, ItemID.GOLDEN_HORSE_ARMOR, ItemID.DIAMOND_HORSE_ARMOR, ItemID.COPPER_HORSE_ARMOR)) {
+        for (var h : List.of(ItemID.LEATHER_HORSE_ARMOR, ItemID.IRON_HORSE_ARMOR, ItemID.GOLDEN_HORSE_ARMOR, ItemID.DIAMOND_HORSE_ARMOR, ItemID.COPPER_HORSE_ARMOR, ItemID.NETHERITE_HORSE_ARMOR)) {
             horseArmor.add(new CompoundTag().putCompound("slotItem", new CompoundTag().putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
         }
         slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);
