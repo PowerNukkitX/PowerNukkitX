@@ -25,7 +25,7 @@ plugins {
 
 group = "org.powernukkitx"
 version = "2.0.0-SNAPSHOT"
-description = "PNX Server"
+description = "powernukkitx"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
@@ -222,14 +222,8 @@ tasks.withType<AbstractArchiveTask> {
     isReproducibleFileOrder = true
 }
 
-tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
-    destinationDirectory.set(layout.buildDirectory)
-    archiveFileName.set("powernukkitx.jar")
-}
-
 tasks.named<ShadowJar>("shadowJar") {
     dependsOn("copyDependencies")
-    archiveClassifier.set("shaded")
 
     manifest {
         attributes(
@@ -259,6 +253,7 @@ tasks.named<ShadowJar>("shadowJar") {
     mergeServiceFiles()
 
     destinationDirectory.set(layout.buildDirectory)
+    archiveFileName.set("${project.description}.jar")
 
     // Enable ZIP64 format for large archives (>4GB)
     isZip64 = true
