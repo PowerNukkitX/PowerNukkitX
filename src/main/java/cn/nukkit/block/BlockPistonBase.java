@@ -298,7 +298,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 var oldPos = oldPosList.get(i);
                 var blockEntityHolder = blockEntityHolderList.get(i);
                 var nbt = nbtList.get(i);
-                BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
+                BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, false, true, nbt);
                 if (!this.level.getBlock(oldPos).getId().equals(BlockID.MOVING_BLOCK)) {
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR));
                 }

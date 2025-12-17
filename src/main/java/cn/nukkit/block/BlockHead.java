@@ -84,7 +84,7 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
                 nbt.put(e.getKey(), e.getValue());
             }
         }
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
         // TODO: 2016/2/3 SPAWN WITHER
     }
 

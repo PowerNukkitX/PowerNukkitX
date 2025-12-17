@@ -28,8 +28,7 @@ public class ConditionPopulationControl extends Condition {
         boolean surface = block.getY() >= block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ());
         for(int x = -5; x <=5; x++) {
             for(int z = -5; z <=5; z++) {
-                IChunk chunk = level.getChunk(chunkX + x, chunkZ + z);
-                for(Entity entity : chunk.getEntities().values()) {
+                for(Entity entity : level.getChunkEntities(chunkX + x, chunkZ + z, false).values()) {
                     if(checkForClass.isAssignableFrom(entity.getClass())) {
                         if(entity.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) == block.getFloorY()-1) {
                             if(surface) entityDensity++;

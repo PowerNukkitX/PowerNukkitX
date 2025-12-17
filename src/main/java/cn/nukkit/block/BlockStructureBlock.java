@@ -76,7 +76,7 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
             }
         }
 
-        BlockEntityStructBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
+        BlockEntityStructBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
         return blockEntity != null;
     }
 
