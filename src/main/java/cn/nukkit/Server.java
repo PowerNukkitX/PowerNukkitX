@@ -110,6 +110,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -209,7 +210,7 @@ public class Server {
     private static final int DP_MAX_STRING_BYTES = 32767;
     private static final double DP_NUMBER_ABS_MAX = 9_223_372_036_854_775_807d;
     private static final Pattern DP_UUID_CANON =
-                Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+            Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
@@ -251,7 +252,7 @@ public class Server {
     private List<ExperimentEntry> experiments;
     ///
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, boolean isSetupSkipped) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, SetupWizard.WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
@@ -286,44 +287,26 @@ public class Server {
         while(convertLegacyConfiguration());
 
         File config = new File(this.dataPath + "pnx.yml");
-        String chooseLanguage;
-        String motd;
-        int port, gamemode;
-
-        String defaultLanguage = "eng";
-        String defaultMotd = "PowerNukkitX Server";
-        int defaultPort = 19132;
-        int defaultGamemode = 0;
+        String chooseLanguage = null;
 
         if (!config.exists()) {
-            if (isSetupSkipped){
-                log.warn("Skipped setup, continuing with default settings");
-                chooseLanguage = defaultLanguage;
-                motd = defaultMotd;
-                port = defaultPort;
-                gamemode = defaultGamemode;
+            // Config doesn't exist - use wizard config if provided, otherwise use predefined or default
+            if (wizardConfig != null) {
+                chooseLanguage = wizardConfig.getLanguage();
+                log.info("Using language from setup wizard: {}", chooseLanguage);
+            } else if (predefinedLanguage != null && !predefinedLanguage.isEmpty()) {
+                chooseLanguage = predefinedLanguage;
+                log.info("Using predefined language: {}", chooseLanguage);
             } else {
-                SetupWizard wizard = new SetupWizard(log, predefinedLanguage, console);
-                wizard.run();
-                while (!wizard.isEnded());
-
-                chooseLanguage = wizard.getChosenLanguage();
-                motd = wizard.getMotd();
-                port = wizard.getPort();
-                gamemode = wizard.getGamemode();
+                chooseLanguage = "eng";
+                log.info("Using default language: eng");
             }
         } else {
             Config configInstance = new Config(config);
-
-            chooseLanguage = configInstance.getString("settings.language", defaultLanguage);
-            motd = configInstance.getString("settings.motd", defaultMotd);
-            port = configInstance.getInt("settings.port", defaultPort);
-            gamemode = configInstance.getInt("gameplay-settings.gamemode", defaultGamemode);
+            chooseLanguage = configInstance.getString("settings.language", "eng");
         }
-
         this.baseLang = new BaseLang(chooseLanguage);
         this.baseLangCode = mapInternalLang(chooseLanguage);
-
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
             log.info("Loading {}...", TextFormat.GREEN + "pnx.yml" + TextFormat.RESET);
             it.withConfigurer(new YamlSnakeYamlConfigurer());
@@ -333,11 +316,19 @@ public class Server {
             it.load(true);
         });
 
-        this.settings.baseSettings().language(chooseLanguage);
-        this.settings.baseSettings().motd(motd);
-        this.settings.baseSettings().port(port);
-        this.settings.gameplaySettings().gamemode(gamemode);
-        this.settings.save();
+        // Apply wizard configuration if it was run
+        if (wizardConfig != null) {
+            this.settings.baseSettings().language(wizardConfig.getLanguage());
+            this.settings.baseSettings().motd(wizardConfig.getMotd());
+            this.settings.baseSettings().port(wizardConfig.getPort());
+            this.settings.baseSettings().maxPlayers(wizardConfig.getMaxPlayers());
+            this.settings.gameplaySettings().gamemode(wizardConfig.getGamemode());
+            this.settings.baseSettings().allowList(wizardConfig.isEnableWhitelist());
+            this.settings.networkSettings().enableQuery(wizardConfig.isEnableQuery());
+            this.settings.save();
+        } else {
+            this.settings.baseSettings().language(chooseLanguage);
+        }
 
         while(updateConfiguration());
 
@@ -396,6 +387,20 @@ public class Server {
         this.levelMetadata = new LevelMetadataStore();
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
         this.whitelist = new Config(this.dataPath + "white-list.txt", Config.ENUM);
+
+        // Apply wizard whitelist and operators configuration if it was run
+        if (wizardConfig != null) {
+            for (String player : wizardConfig.getWhitelistedPlayers()) {
+                this.whitelist.set(player, true);
+            }
+            this.whitelist.save();
+
+            for (String op : wizardConfig.getOperators()) {
+                this.operators.set(op, true);
+            }
+            this.operators.save();
+        }
+
         this.banByName = new BanList(this.dataPath + "banned-players.json");
         this.banByName.load();
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
@@ -859,7 +864,7 @@ public class Server {
                     long levelTime = System.currentTimeMillis();
                     //Ensures that the server won't try to tick a level without providers.
                     if (level.getProvider().getLevel() == null) {
-                        log.warn("Tried to tick Level " + level.getName() + " without a provider!");
+                        log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
                     }
                     level.doTick(currentTick);
@@ -1450,7 +1455,7 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
@@ -1942,12 +1947,12 @@ public class Server {
                 playerDataDB.delete(uuidBytes);  // Delete from player data DB
                 playerDataDB.delete(nameBytes);   // Delete name-to-UUID mapping
 
-                log.info(name + " player data deleted (UUID: " + uuidStr + ")");
+                log.info("{} player data deleted (UUID: {})", name, uuidStr);
             } else {
-                log.warn(name + " player not found or invalid UUID data");
+                log.warn("{} player not found or invalid UUID data", name);
             }
         } catch (Exception e) {
-            log.error("Error deleting player data for " + name, e);
+            log.error("Error deleting player data for {}", name, e);
         }
     }
 
@@ -1977,13 +1982,13 @@ public class Server {
                     if (Arrays.equals(value, uuidBytes)) {
                         playerDataDB.delete(key);
                         String playerName = new String(key, StandardCharsets.UTF_8);
-                        log.info("Deleted name mapping for " + playerName);
+                        log.info("Deleted name mapping for {}", playerName);
                         break;
                     }
                 }
             }
         } catch (Exception e) {
-            log.error("Error deleting player data for UUID " + uuid, e);
+            log.error("Error deleting player data for UUID {}", uuid, e);
         }
     }
 
@@ -2184,12 +2189,10 @@ public class Server {
         if (level == this.getDefaultLevel() && !forceUnload) {
             throw new IllegalStateException("The default level cannot be unloaded while running, please switch levels.");
         }
-
         return level.unload(forceUnload);
 
     }
 
-    @Nullable
     public LevelConfig getLevelConfig(String levelFolderName) {
         if (Objects.equals(levelFolderName.trim(), "")) {
             throw new LevelException("Invalid empty level name");
@@ -2276,7 +2279,7 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
-        if (tickCounter != 0) {//update world enum when load  
+        if (tickCounter != 0) {//update world enum when load
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
@@ -2833,3 +2836,4 @@ public class Server {
     // endregion
 
 }
+
