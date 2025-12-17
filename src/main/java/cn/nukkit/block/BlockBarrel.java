@@ -88,7 +88,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
             }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

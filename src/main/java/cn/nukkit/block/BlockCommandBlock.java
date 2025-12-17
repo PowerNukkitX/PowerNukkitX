@@ -98,7 +98,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
             }
         }
 
-        BlockEntityCommandBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
+        BlockEntityCommandBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
         return blockEntity != null;
     }
 
@@ -109,15 +109,15 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player != null) {
-            Item itemInHand = player.getInventory().getItemInHand();
-            if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull()) || !Server.getInstance().getSettings().gameplaySettings().enableCommandBlocks()) {
-                return false;
-            }
-            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
-            tile.spawnTo(player);
-            player.addWindow(tile.getInventory());
+        if(isNotActivate(player)) return false;
+
+        Item itemInHand = player.getInventory().getItemInHand();
+        if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull()) || !Server.getInstance().getSettings().gameplaySettings().enableCommandBlocks()) {
+            return false;
         }
+        BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
+        tile.spawnTo(player);
+        player.addWindow(tile.getInventory());
         return true;
     }
 
