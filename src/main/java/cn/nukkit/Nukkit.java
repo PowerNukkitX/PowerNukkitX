@@ -237,7 +237,7 @@ public class Nukkit {
             version = GIT_INFO.getProperty("git.commit.id.describe");
         }
 
-        return (version != null && !version.isEmpty()) ? version : "2.0.0-SNAPSHOT";
+        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "2.0.0-SNAPSHOT";
     }
 
     private static String getGitCommit() {
