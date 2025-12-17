@@ -14,6 +14,10 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -642,5 +646,21 @@ public class Utils {
         byte[] payload = new byte[buf.readableBytes()];
         buf.readBytes(payload);
         return payload;
+    }
+
+    public static String getExternalIP() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("https://api.ipify.org"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String ip = response.body().trim();
+            return ip.isEmpty() ? "unknown" : ip;
+        } catch (Exception e) {
+            return "unknown";
+        }
     }
 }

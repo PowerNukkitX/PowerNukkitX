@@ -88,7 +88,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
-import cn.nukkit.wizard.SetupWizard;
+import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import eu.okaeri.configs.ConfigManager;
@@ -110,7 +110,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -252,7 +251,7 @@ public class Server {
     private List<ExperimentEntry> experiments;
     ///
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, SetupWizard.WizardConfig wizardConfig) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
@@ -316,20 +315,18 @@ public class Server {
             it.load(true);
         });
 
-        // Apply wizard configuration if it was run
         if (wizardConfig != null) {
             this.settings.baseSettings().language(wizardConfig.getLanguage());
             this.settings.baseSettings().motd(wizardConfig.getMotd());
             this.settings.baseSettings().port(wizardConfig.getPort());
             this.settings.baseSettings().maxPlayers(wizardConfig.getMaxPlayers());
             this.settings.gameplaySettings().gamemode(wizardConfig.getGamemode());
-            this.settings.baseSettings().allowList(wizardConfig.isEnableWhitelist());
-            this.settings.networkSettings().enableQuery(wizardConfig.isEnableQuery());
-            this.settings.save();
+            this.settings.baseSettings().allowList(wizardConfig.isWhitelistEnabled());
+            this.settings.networkSettings().enableQuery(wizardConfig.isQueryEnabled());
         } else {
             this.settings.baseSettings().language(chooseLanguage);
         }
-
+        this.settings.save();
         while(updateConfiguration());
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
@@ -388,7 +385,6 @@ public class Server {
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
         this.whitelist = new Config(this.dataPath + "white-list.txt", Config.ENUM);
 
-        // Apply wizard whitelist and operators configuration if it was run
         if (wizardConfig != null) {
             for (String player : wizardConfig.getWhitelistedPlayers()) {
                 this.whitelist.set(player, true);
@@ -2193,7 +2189,7 @@ public class Server {
 
     }
 
-    public LevelConfig getLevelConfig(String levelFolderName) {
+    public @Nullable LevelConfig getLevelConfig(String levelFolderName) {
         if (Objects.equals(levelFolderName.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
@@ -2279,7 +2275,7 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
-        if (tickCounter != 0) {//update world enum when load
+        if (tickCounter != 0) { // Update world enum when loading
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;

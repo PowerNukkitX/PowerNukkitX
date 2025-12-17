@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.wizard.SetupWizard;
+import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -16,12 +17,10 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -155,15 +154,13 @@ public class Nukkit {
             JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
         }
 
-        // Run SetupWizard BEFORE starting the server if config doesn't exist
         File configFile = new File(DATA_PATH + "pnx.yml");
-        SetupWizard.WizardConfig wizardConfig = null;
+        WizardConfig wizardConfig = null;
 
         if (!configFile.exists() && !skipSetup) {
-            log.info("First-time setup detected. Running SetupWizard...");
+            log.info("First-time setup detected. Running setup wizard...");
             try (SetupWizard wizard = new SetupWizard()) {
                 wizardConfig = wizard.run(language, false);
-                // Update language from wizard config if it was selected
                 if (wizardConfig != null && wizardConfig.getLanguage() != null) {
                     language = wizardConfig.getLanguage();
                 }
@@ -231,7 +228,16 @@ public class Nukkit {
     }
 
     private static String getVersion() {
-        return "2.0.0-SNAPSHOT";
+        if (GIT_INFO == null) {
+            return "2.0.0-SNAPSHOT";
+        }
+
+        String version = GIT_INFO.getProperty("git.build.version");
+        if (version == null || version.isEmpty()) {
+            version = GIT_INFO.getProperty("git.commit.id.describe");
+        }
+
+        return (version != null && !version.isEmpty()) ? version : "2.0.0-SNAPSHOT";
     }
 
     private static String getGitCommit() {

@@ -1,5 +1,6 @@
 package cn.nukkit.wizard;
 
+import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -11,15 +12,18 @@ import org.jline.reader.ParsedLine;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.*;
 
 /**
- * Interactive setup wizard using JLine for better user experience.
+ * Interactive setup wizard for PowerNukkitX using JLine for better user experience.
  * Provides language selection and configuration options with navigation and auto-completion.
  * Implements AutoCloseable for proper resource management.
  *
  * @author AzaleeX
  * @author xRookieFight
+ *
+ * @since 17/12/2025
  */
 @Slf4j
 public class SetupWizard implements AutoCloseable {
@@ -32,69 +36,14 @@ public class SetupWizard implements AutoCloseable {
     private final WizardConfig wizardConfig = new WizardConfig();
     private boolean skipWizard = false;
 
-    /**
-     * Configuration holder for wizard settings
-     */
-    public static class WizardConfig {
-        private String language = "eng";
-        private boolean licenseAccepted = false;
-        private String serverName = "PowerNukkitX Server";
-        private int port = 19132;
-        private String motd = "PowerNukkitX Server";
-        private int gamemode = 0;
-        private int maxPlayers = 20;
-        private boolean enableWhitelist = false;
-        private List<String> whitelistedPlayers = new ArrayList<>();
-        private List<String> operators = new ArrayList<>();
-        private boolean enableQuery = true;
-
-        public String getLanguage() { return language; }
-        public void setLanguage(String language) { this.language = language; }
-
-        public boolean isLicenseAccepted() { return licenseAccepted; }
-        public void setLicenseAccepted(boolean licenseAccepted) { this.licenseAccepted = licenseAccepted; }
-
-        public String getServerName() { return serverName; }
-        public void setServerName(String serverName) { this.serverName = serverName; }
-
-        public int getPort() { return port; }
-        public void setPort(int port) { this.port = port; }
-
-        public String getMotd() { return motd; }
-        public void setMotd(String motd) { this.motd = motd; }
-
-        public int getGamemode() { return gamemode; }
-        public void setGamemode(int gamemode) { this.gamemode = gamemode; }
-
-        public int getMaxPlayers() { return maxPlayers; }
-        public void setMaxPlayers(int maxPlayers) { this.maxPlayers = maxPlayers; }
-
-        public boolean isEnableWhitelist() { return enableWhitelist; }
-        public void setEnableWhitelist(boolean enableWhitelist) { this.enableWhitelist = enableWhitelist; }
-
-        public List<String> getWhitelistedPlayers() { return whitelistedPlayers; }
-        public void setWhitelistedPlayers(List<String> whitelistedPlayers) { this.whitelistedPlayers = whitelistedPlayers; }
-
-        public List<String> getOperators() { return operators; }
-        public void setOperators(List<String> operators) { this.operators = operators; }
-
-        public boolean isEnableQuery() { return enableQuery; }
-        public void setEnableQuery(boolean enableQuery) { this.enableQuery = enableQuery; }
-    }
-
     public SetupWizard() throws IOException {
-        // Initialize JLine terminal
-        // Allow dumb terminal and try to be as interactive as possible
         this.terminal = TerminalBuilder.builder()
                 .system(true)
                 .jna(false)
-                .dumb(true)  // Allow dumb terminal as fallback but still try to be interactive
+                .dumb(true)
                 .build();
 
-        // Load available languages
         this.availableLanguages = loadAvailableLanguages();
-
-        // Build line reader with completer
         this.reader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .completer(new LanguageCompleter(availableLanguages.keySet()))
@@ -146,33 +95,27 @@ public class SetupWizard implements AutoCloseable {
      */
     public WizardConfig run(String predefinedLanguage, boolean forceSkip) {
         try {
-            // Step 1: Language selection (mandatory)
             String selectedLanguage = selectLanguage(predefinedLanguage);
             wizardConfig.setLanguage(selectedLanguage);
 
-            // Step 2: License acceptance (MANDATORY - will force kill if not accepted)
             if (!acceptLicense()) {
                 terminal.writer().println();
                 terminal.writer().println("[x] License not accepted. The server cannot start without accepting the license.");
                 terminal.writer().println("[x] Terminating...");
                 terminal.writer().flush();
-                // Force exit
                 System.exit(1);
-                return wizardConfig; // Never reached, but needed for compilation
+                return wizardConfig;
             }
             wizardConfig.setLicenseAccepted(true);
 
-            // Step 3: If forceSkip is true, skip everything
             if (forceSkip) {
                 skipWizard = true;
                 terminal.writer().println();
                 terminal.writer().println("Setup wizard skipped via command line flag. Using default configuration.");
                 terminal.writer().flush();
             } else {
-                // Ask if user wants to skip the wizard
                 askSkipWizard();
 
-                // Step 4: If not skipping, ask all configuration questions in order
                 if (!skipWizard) {
                     terminal.writer().println();
                     terminal.writer().println("[*] All of these settings can be modified later in the pnx.yml configuration file.");
@@ -183,7 +126,6 @@ public class SetupWizard implements AutoCloseable {
                 }
             }
 
-            // Step 5: Display summary and wait for user to start server
             displaySummaryAndWaitForStart();
 
             return wizardConfig;
@@ -209,7 +151,6 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println("Welcome! Please choose a language first!");
         terminal.writer().println();
 
-        // Handle predefined language
         if (predefinedLanguage != null && !predefinedLanguage.isEmpty()) {
             if (validateLanguage(predefinedLanguage)) {
                 terminal.writer().println("✓ Using predefined language: " + predefinedLanguage);
@@ -222,37 +163,30 @@ public class SetupWizard implements AutoCloseable {
             }
         }
 
-        // Convert to list for indexed access
         List<Map.Entry<String, String>> languageList = new ArrayList<>(availableLanguages.entrySet());
         int selectedIndex = 0;
 
         terminal.writer().println("Use ↑/↓ arrow keys to navigate, Enter to select, or type language code:");
         terminal.writer().println();
 
-        // Try arrow key navigation first
         try {
             while (true) {
-                // Display menu with current selection highlighted
                 displayLanguageMenu(languageList, selectedIndex);
 
-                // Read input
                 String input = reader.readLine("» Selection [" + languageList.get(selectedIndex).getKey() + "]: ").trim();
 
                 if (input.isEmpty()) {
-                    // User pressed Enter - use current selection
                     String selected = languageList.get(selectedIndex).getKey();
                     terminal.writer().println("✓ Language selected: " + selected + " (" + availableLanguages.get(selected) + ")");
                     terminal.writer().println();
                     terminal.writer().flush();
                     return selected;
                 } else if (validateLanguage(input)) {
-                    // User typed a valid language code
                     terminal.writer().println("✓ Language selected: " + input + " (" + availableLanguages.get(input) + ")");
                     terminal.writer().println();
                     terminal.writer().flush();
                     return input;
                 } else {
-                    // Try to navigate
                     switch (input.toLowerCase()) {
                         case "up", "u" -> {
                             selectedIndex = (selectedIndex - 1 + languageList.size()) % languageList.size();
@@ -356,20 +290,20 @@ public class SetupWizard implements AutoCloseable {
             try {
                 String input = reader.readLine("» Do you want to skip the setup wizard? (y/n): ").trim().toLowerCase();
 
-                if (input.isEmpty() || input.equals("y") || input.equals("yes")) {
+                if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
                     skipWizard = true;
                     terminal.writer().println("✓ Setup wizard will be skipped. Server will use default configuration.");
                     terminal.writer().println();
                     terminal.writer().flush();
                     break;
-                } else if (input.equals("n") || input.equals("no")) {
+                } else if (input.isEmpty() || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
                     skipWizard = false;
                     terminal.writer().println("✓ Proceeding with setup wizard...");
                     terminal.writer().println();
                     terminal.writer().flush();
                     break;
                 } else {
-                    terminal.writer().println("[!] Invalid input. Please enter 'Y' for yes or 'n' for no.");
+                    terminal.writer().println("[!] Invalid input. Please enter 'y' for yes or 'n' for no.");
                     terminal.writer().flush();
                 }
             } catch (Exception e) {
@@ -385,49 +319,36 @@ public class SetupWizard implements AutoCloseable {
      */
     private void configureServerComplete() {
         terminal.writer().println();
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
+        terminal.writer().println("═".repeat(59));
         terminal.writer().println("              Server Configuration");
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
+        terminal.writer().println("═".repeat(59));
         terminal.writer().println();
         terminal.writer().flush();
 
-        // 1. Configure server name
-        configureServerName();
-
-        // 2. Configure server port
+        configureServerMotd();
         configureServerPort();
-
-        // 3. Configure gamemode
         configureGamemode();
-
-        // 4. Configure max players
         configureMaxPlayers();
-
-        // 5. Configure operators
         configureOperators();
-
-        // 6. Configure whitelist
         configureWhitelist();
-
-        // 7. Configure query
         configureQuery();
     }
 
     /**
-     * Configures server name.
+     * Configures server MOTD.
      */
-    private void configureServerName() {
+    private void configureServerMotd() {
         try {
-            terminal.writer().println("─────────────────────────────────────────────────────────");
-            String input = reader.readLine("» Server name [PowerNukkitX Server]: ").trim();
+            terminal.writer().println("─".repeat(57));
+            String input = reader.readLine("» Server MOTD [PowerNukkitX Server]: ").trim();
             if (!input.isEmpty()) {
-                wizardConfig.setServerName(input);
+                wizardConfig.setMotd(input);
             }
-            terminal.writer().println("  ✓ Server name: " + wizardConfig.getServerName());
+            terminal.writer().println("  ✓ Server name: " + wizardConfig.getMotd());
             terminal.writer().println();
             terminal.writer().flush();
         } catch (Exception e) {
-            log.error("Error reading server name", e);
+            log.error("Error reading server MOTD", e);
         }
     }
 
@@ -435,7 +356,7 @@ public class SetupWizard implements AutoCloseable {
      * Configures server port.
      */
     private void configureServerPort() {
-        terminal.writer().println("─────────────────────────────────────────────────────────");
+        terminal.writer().println("─".repeat(57));
         while (true) {
             try {
                 String input = reader.readLine("» Server port [19132]: ").trim();
@@ -469,7 +390,7 @@ public class SetupWizard implements AutoCloseable {
      * Configures default gamemode.
      */
     private void configureGamemode() {
-        terminal.writer().println("─────────────────────────────────────────────────────────");
+        terminal.writer().println("─".repeat(57));
         terminal.writer().println("Available gamemodes:");
         terminal.writer().println("  [0] Survival");
         terminal.writer().println("  [1] Creative");
@@ -518,24 +439,23 @@ public class SetupWizard implements AutoCloseable {
      * Configures whitelist settings.
      */
     private void configureWhitelist() {
-        terminal.writer().println("─────────────────────────────────────────────────────────");
+        terminal.writer().println("─".repeat(57));
 
         while (true) {
             try {
                 String input = reader.readLine("» Enable whitelist? (y/N): ").trim().toLowerCase();
 
                 if (input.isEmpty() || input.equals("n") || input.equals("no")) {
-                    wizardConfig.setEnableWhitelist(false);
+                    wizardConfig.setWhitelistEnabled(false);
                     terminal.writer().println("  ✓ Whitelist: Disabled");
                     terminal.writer().println();
                     terminal.writer().flush();
                     break;
                 } else if (input.equals("y") || input.equals("yes")) {
-                    wizardConfig.setEnableWhitelist(true);
+                    wizardConfig.setWhitelistEnabled(true);
                     terminal.writer().println("  ✓ Whitelist: Enabled");
                     terminal.writer().flush();
 
-                    // Ask for whitelisted players
                     configureWhitelistedPlayers();
                     break;
                 } else {
@@ -594,7 +514,7 @@ public class SetupWizard implements AutoCloseable {
      * Configures server operators.
      */
     private void configureOperators() {
-        terminal.writer().println("─────────────────────────────────────────────────────────");
+        terminal.writer().println("─".repeat(57));
         try {
             terminal.writer().println("  Enter operator names (username) separated by commas");
             terminal.writer().println("  Example: Admin1, Admin2");
@@ -635,7 +555,7 @@ public class SetupWizard implements AutoCloseable {
      * Configures maximum number of players.
      */
     private void configureMaxPlayers() {
-        terminal.writer().println("─────────────────────────────────────────────────────────");
+        terminal.writer().println("─".repeat(57));
         while (true) {
             try {
                 String input = reader.readLine("» Maximum number of players [20]: ").trim();
@@ -669,20 +589,20 @@ public class SetupWizard implements AutoCloseable {
      * Configures query settings.
      */
     private void configureQuery() {
-        terminal.writer().println("─────────────────────────────────────────────────────────");
+        terminal.writer().println("─".repeat(57));
 
         while (true) {
             try {
                 String input = reader.readLine("» Enable Query? (Y/n): ").trim().toLowerCase();
 
                 if (input.isEmpty() || input.equals("y") || input.equals("yes")) {
-                    wizardConfig.setEnableQuery(true);
+                    wizardConfig.setQueryEnabled(true);
                     terminal.writer().println("  ✓ Query: Enabled");
                     terminal.writer().println();
                     terminal.writer().flush();
                     break;
                 } else if (input.equals("n") || input.equals("no")) {
-                    wizardConfig.setEnableQuery(false);
+                    wizardConfig.setQueryEnabled(false);
                     terminal.writer().println("  ✓ Query: Disabled");
                     terminal.writer().println();
                     terminal.writer().flush();
@@ -703,20 +623,26 @@ public class SetupWizard implements AutoCloseable {
      */
     private void displaySummaryAndWaitForStart() {
         terminal.writer().println();
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
+        terminal.writer().println("═".repeat(59));
         terminal.writer().println("          Configuration Complete!");
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
+        terminal.writer().println("═".repeat(59));
         terminal.writer().println();
-        terminal.writer().println("✓ Your server is now configured and available at:");
+        terminal.writer().println("✓ Your PowerNukkitX server is now configured and available at:");
         terminal.writer().println();
 
-        //TODO: Detect public IP if possible
-        String ip = "0.0.0.0";
-        terminal.writer().println("    Server Address: " + ip + ":" + wizardConfig.getPort());
-        terminal.writer().println();
-        terminal.writer().println("═══════════════════════════════════════════════════════════");
-        terminal.writer().println();
-        terminal.writer().flush();
+        try {
+            String localIP = InetAddress.getLocalHost().getHostAddress();
+            String externalIP = Utils.getExternalIP();
+
+            terminal.writer().println("    Local Server Address: " + localIP + ":" + wizardConfig.getPort());
+            terminal.writer().println("    External Server Address: " + externalIP + ":" + wizardConfig.getPort());
+            terminal.writer().println();
+            terminal.writer().println("═".repeat(59));
+            terminal.writer().println();
+            terminal.writer().flush();
+        } catch (Exception e) {
+            log.error("Error reading IP address", e);
+        }
 
         try {
             reader.readLine("Press ENTER to start the server...");
@@ -741,19 +667,15 @@ public class SetupWizard implements AutoCloseable {
             return false;
         }
 
-        // Security: prevent path traversal attacks by validating the language code format
-        // Language codes should only contain lowercase letters (3 characters typically)
         if (!languageCode.matches(LANGUAGE_CODE_PATTERN)) {
             log.warn("Invalid language code format (must be 3 lowercase letters): {}", languageCode);
             return false;
         }
 
-        // Check if language exists in available languages
         if (availableLanguages.containsKey(languageCode)) {
             return true;
         }
 
-        // Also check if the language resource file exists
         String resourcePath = String.format("language/%s/lang.json", languageCode);
         try (InputStream conf = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
             return conf != null;
@@ -774,6 +696,7 @@ public class SetupWizard implements AutoCloseable {
     /**
      * Closes the terminal and releases resources.
      */
+    @Override
     public void close() {
         try {
             if (terminal != null) {
@@ -783,27 +706,21 @@ public class SetupWizard implements AutoCloseable {
             log.error("Error closing terminal", e);
         }
     }
-
-    /**
-     * Language completer for auto-completion support.
-     */
-    private static class LanguageCompleter implements Completer {
-        private final Set<String> languageCodes;
-
-        public LanguageCompleter(Set<String> languageCodes) {
-            this.languageCodes = languageCodes;
-        }
+         /**
+          * Language completer for auto-completion support.
+          */
+        private record LanguageCompleter(Set<String> languageCodes) implements Completer {
 
         @Override
-        public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-            String word = line.word();
-            String wordLower = word.toLowerCase();
-            for (String langCode : languageCodes) {
-                if (langCode.startsWith(wordLower)) {
-                    candidates.add(new Candidate(langCode));
+            public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+                String word = line.word();
+                String wordLower = word.toLowerCase();
+                for (String langCode : languageCodes) {
+                    if (langCode.startsWith(wordLower)) {
+                        candidates.add(new Candidate(langCode));
+                    }
                 }
             }
         }
-    }
 }
 
