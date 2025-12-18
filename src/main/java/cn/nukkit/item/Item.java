@@ -2406,9 +2406,48 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Define if the item can break the shield
+     * Define if the item is a Shield
      */
-    public boolean canBreakShield() {
+    public boolean isShield() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isShield();
+        if (this instanceof ItemShield) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Bow
+     */
+    public boolean isBow() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isBow();
+        if (this instanceof ItemBow) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Crossbow
+     */
+    public boolean isCrossbow() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isCrossbow();
+        if (this instanceof ItemCrossbow) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Trident
+     */
+    public boolean isTrident() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isTrident();
+        if (this instanceof ItemTrident) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Mace
+     */
+    public boolean isMace() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isMace();
+        if (this instanceof ItemMace) return true;
         return false;
     }
 
@@ -2418,6 +2457,13 @@ public abstract class Item implements Cloneable, ItemID {
     public boolean isShears() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) return def.isShears();
+        return false;
+    }
+
+    /**
+     * Define if the item can break the shield
+     */
+    public boolean canBreakShield() {
         return false;
     }
 
