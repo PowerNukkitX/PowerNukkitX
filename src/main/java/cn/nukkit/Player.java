@@ -5630,6 +5630,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return id;
     }
 
+    public void updateDebugShape(int id, DebugShape shape) {
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        shape.networkId = id;
+        pk.shapes = Collections.singletonList(shape);
+        this.dataPacket(pk);
+    }
+
+    public void removeDebugShape(int id) {
+        DebugShape shape = new DebugShape();
+        shape.networkId = id;
+
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        pk.shapes = Collections.singletonList(shape);
+        this.dataPacket(pk);
+    }
+
     public void clearDebugShapes() {
         List<DebugShape> shapes = new ArrayList<>();
 
