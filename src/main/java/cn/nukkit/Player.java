@@ -5607,7 +5607,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         List<Integer> ids = new ArrayList<>();
 
         for (DebugShape s : shape) {
-            ids.add(this.sendDebugShape(s));
+            int id = shapeIds.getAndIncrement();
+            s.networkId = id;
+            ids.add(id);
         }
 
         ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
