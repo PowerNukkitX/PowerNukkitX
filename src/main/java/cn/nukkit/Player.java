@@ -103,6 +103,7 @@ import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.debugshape.DebugShape;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -160,6 +161,7 @@ import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -359,6 +361,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
+    protected AtomicInteger shapeIds = new AtomicInteger(0);
 
     @UsedByReflection
     public Player(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
@@ -5598,5 +5601,64 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.getAdventureSettings().set(Type.FLYING, value);
             this.getAdventureSettings().update();
         }
+    }
+
+    public List<Integer> sendDebugShape(DebugShape ...shape) {
+        List<Integer> ids = new ArrayList<>();
+
+        for (DebugShape s : shape) {
+            int id = shapeIds.getAndIncrement();
+            s.networkId = id;
+            ids.add(id);
+        }
+
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        pk.shapes = Arrays.stream(shape).toList();
+        this.dataPacket(pk);
+
+        return ids;
+    }
+
+    public int sendDebugShape(DebugShape shape) {
+        int id = shapeIds.getAndIncrement();
+        shape.networkId = id;
+
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        pk.shapes = Collections.singletonList(shape);
+        this.dataPacket(pk);
+
+        return id;
+    }
+
+    public void updateDebugShape(int id, DebugShape shape) {
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        shape.networkId = id;
+        pk.shapes = Collections.singletonList(shape);
+        this.dataPacket(pk);
+    }
+
+    public void removeDebugShape(int id) {
+        DebugShape shape = new DebugShape();
+        shape.networkId = id;
+
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        pk.shapes = Collections.singletonList(shape);
+        this.dataPacket(pk);
+    }
+
+    public void clearDebugShapes() {
+        List<DebugShape> shapes = new ArrayList<>();
+
+        for (int i = 0; i < shapeIds.get(); i++) {
+            DebugShape shape = new DebugShape();
+            shape.networkId = i;
+            shapes.add(shape);
+        }
+
+        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
+        pk.shapes = shapes;
+        this.dataPacket(pk);
+
+        shapeIds.set(0);
     }
 }
