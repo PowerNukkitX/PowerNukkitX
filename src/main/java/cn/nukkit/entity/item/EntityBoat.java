@@ -8,6 +8,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.data.EntityDataType;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -62,6 +63,10 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_MAX_SPEED = 0.005;
     public static final double BOAT_LENGTH = 1.0; //for collision checks
     public static final double BOAT_HALF_WIDTH = 0.6; //for collision checks
+    //paddle animation states
+    private float paddleTimeLeft = 0f;
+    private float paddleTimeRight = 0f;
+
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
     public int woodID;
     protected boolean sinking = true;
@@ -605,8 +610,13 @@ public class EntityBoat extends EntityVehicle {
         double accel, maxSpeed, friction;
         double gravity = -0.08;
         double drag = 0.98;
+        double maxY = this.boundingBox.getMinY() + getBaseOffset();
+        double waterDiff = getWaterLevel();
+        boolean hasWaterSample = waterDiff != Double.MAX_VALUE;
+        boolean inWater = hasWaterSample && waterDiff >= -SINKING_DEPTH;
+        double levelY = hasWaterSample ? (maxY - waterDiff) : Double.NaN;
 
-        if (underBlock.getId().equals(Block.WATER) || underBlock.getId().equals(Block.FLOWING_WATER)) {
+        if (inWater) {
             accel = 0.01;
             maxSpeed = 0.39;
             friction = 0.85;
@@ -620,7 +630,16 @@ public class EntityBoat extends EntityVehicle {
             friction = 0.5;
         }
 
-        if (!underBlock.isSolid() && !underBlock.getId().equals(Block.WATER) && !underBlock.getId().equals(Block.FLOWING_WATER)) {
+        if (inWater) {
+            //Bobbing
+            double bobPhase = (System.currentTimeMillis() % 100000L) / 200.0;
+            double bobOffset = Math.sin(bobPhase) * 0.0050;
+            double desiredY = levelY - 0.09 + bobOffset;
+            double kBuoyancy = 0.08;
+            double dDamping  = 0.85;
+            this.motionY += (desiredY - this.y) * kBuoyancy;
+            this.motionY *= dDamping;
+        } else if (!underBlock.isSolid()) {
             this.motionY += gravity;
             this.motionY *= drag;
         } else {
@@ -632,10 +651,15 @@ public class EntityBoat extends EntityVehicle {
         double fz = Math.sin(yawRad);
         double px = -fz;
 
-        if (pk.inputData.contains(AuthInputAction.UP)) {
+        boolean forward  = pk.inputData.contains(AuthInputAction.UP);
+        boolean backward = pk.inputData.contains(AuthInputAction.DOWN);
+        boolean turnLeft = pk.inputData.contains(AuthInputAction.PADDLE_LEFT);
+        boolean turnRight= pk.inputData.contains(AuthInputAction.PADDLE_RIGHT);
+
+        if (forward) {
             this.motionX += pz * accel;
             this.motionZ += fz * accel;
-        } else if (pk.inputData.contains(AuthInputAction.DOWN)) {
+        } else if (backward) {
             this.motionX -= pz * (accel / 5);
             this.motionZ -= fz * (accel / 5);
         } else {
@@ -648,16 +672,49 @@ public class EntityBoat extends EntityVehicle {
             double scale = maxSpeed / speed;
             motionX *= scale;
             motionZ *= scale;
+            speed = maxSpeed;
         }
 
-        if (pk.inputData.contains(AuthInputAction.PADDLE_LEFT)) this.yaw -= 2.5;
-        if (pk.inputData.contains(AuthInputAction.PADDLE_RIGHT)) this.yaw += 2.5;
+        float animationSpeed = (float) Math.max(0.01, Math.min(0.08, speed * 0.05));
+        double turnRate = 4.0;
 
+        if (forward) {
+            paddleTimeLeft  += animationSpeed;
+            paddleTimeRight += animationSpeed;
+            if (turnLeft) {
+                this.yaw -= turnRate;
+            }
+            if (turnRight) {
+                this.yaw += turnRate;
+            }
+        } else if (backward) {
+            paddleTimeLeft  -= animationSpeed;
+            paddleTimeRight -= animationSpeed;
+
+            if (turnLeft) {
+                this.yaw -= turnRate;
+            }
+            if (turnRight) {
+                this.yaw += turnRate;
+            }
+        } else {
+            if (turnLeft && !turnRight) {
+                applyTurn(true, turnRate, accel, pz, fz, animationSpeed);
+            }
+            if (turnRight && !turnLeft) {
+                applyTurn(false, turnRate, accel, pz, fz, animationSpeed);
+            }
+            if (!turnLeft) paddleTimeLeft = 0;
+            if (!turnRight) paddleTimeRight = 0;
+        }
+
+        this.setDataProperty(EntityDataTypes.ROW_TIME_RIGHT, paddleTimeLeft);
+        this.setDataProperty(EntityDataTypes.ROW_TIME_LEFT, paddleTimeRight);
         double newX = this.x + motionX;
         double newY = this.y + motionY;
         double newZ = this.z + motionZ;
 
-        if (underBlock.isSolid()) {
+        if (underBlock.isSolid() && !(hasWaterSample && waterDiff >= -SINKING_DEPTH)) {
             newY = underBlock.getY() + 1.0;
             motionY = 0;
         } //final falling
@@ -696,13 +753,28 @@ public class EntityBoat extends EntityVehicle {
                 this.temporalVector.setComponents(newX, newY, newZ),
                 this.yaw % 360,
                 0
-        ); //update position to server-side
+        );
         this.headYaw = this.yaw;
         broadcastMovement(false);
+        this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
     }
+
 
     private boolean isSolid(Vector3 pos) {
         Block b = this.level.getBlock(pos);
         return b != null && b.isSolid();
+    }
+
+    private void applyTurn(boolean left, double turnRate, double accel, double pz, double fz, float animationSpeed) {
+        this.yaw += left ? -turnRate : turnRate;
+        this.motionX += pz * (accel * 0.6);
+        this.motionZ += fz * (accel * 0.6);
+        if (left) {
+            paddleTimeLeft += animationSpeed;
+            paddleTimeRight = 0f;
+        } else {
+            paddleTimeRight += animationSpeed;
+            paddleTimeLeft = 0f;
+        }
     }
 }
