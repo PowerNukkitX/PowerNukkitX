@@ -26,6 +26,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.PlayerAuthInputPacket;
+import cn.nukkit.network.protocol.types.AuthInputAction;
 import cn.nukkit.network.protocol.types.EntityLink;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,6 +60,8 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_DEPTH = 0.07;
     public static final double SINKING_SPEED = 0.0005;
     public static final double SINKING_MAX_SPEED = 0.005;
+    public static final double BOAT_LENGTH = 1.0; //for collision checks
+    public static final double BOAT_HALF_WIDTH = 0.6; //for collision checks
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
     public int woodID;
     protected boolean sinking = true;
@@ -590,10 +594,115 @@ public class EntityBoat extends EntityVehicle {
         return Set.of("boat", "inanimate");
     }
 
-    public void onInput(Location loc) {
-        this.move(loc.x - this.x, loc.y - this.y, loc.z - this.z);
-        this.yaw = loc.yaw;
-        this.headYaw = loc.headYaw;
+    @Override
+    public void onCollideWithPlayer(EntityHuman entityPlayer) {
+        super.onCollideWithPlayer(entityPlayer);
+        //TODO: Implement boat push mechanics when player collides
+    }
+
+    public void onInput(PlayerAuthInputPacket pk) {
+        Block underBlock = this.level.getBlock(this.getPosition().add(0, -1, 0));
+        double accel, maxSpeed, friction;
+        double gravity = -0.08;
+        double drag = 0.98;
+
+        if (underBlock.getId().equals(Block.WATER) || underBlock.getId().equals(Block.FLOWING_WATER)) {
+            accel = 0.01;
+            maxSpeed = 0.39;
+            friction = 0.85;
+        } else if (underBlock.getId().equals(Block.ICE) || underBlock.getId().equals(Block.FROSTED_ICE) || underBlock.getId().equals(Block.PACKED_ICE)) {
+            accel = 0.03;
+            maxSpeed = 0.8;
+            friction = 0.97;
+        } else {
+            accel = 0.005;
+            maxSpeed = 0.08;
+            friction = 0.5;
+        }
+
+        if (!underBlock.isSolid() && !underBlock.getId().equals(Block.WATER) && !underBlock.getId().equals(Block.FLOWING_WATER)) {
+            this.motionY += gravity;
+            this.motionY *= drag;
+        } else {
+            this.motionY = 0;
+        }
+
+        double yawRad = Math.toRadians(this.yaw);
+        double pz = Math.cos(yawRad);
+        double fz = Math.sin(yawRad);
+        double px = -fz;
+
+        if (pk.inputData.contains(AuthInputAction.UP)) {
+            this.motionX += pz * accel;
+            this.motionZ += fz * accel;
+        } else if (pk.inputData.contains(AuthInputAction.DOWN)) {
+            this.motionX -= pz * (accel / 5);
+            this.motionZ -= fz * (accel / 5);
+        } else {
+            this.motionX *= friction;
+            this.motionZ *= friction;
+        }
+
+        double speed = Math.sqrt(motionX * motionX + motionZ * motionZ);
+        if (speed > maxSpeed) {
+            double scale = maxSpeed / speed;
+            motionX *= scale;
+            motionZ *= scale;
+        }
+
+        if (pk.inputData.contains(AuthInputAction.PADDLE_LEFT)) this.yaw -= 2.5;
+        if (pk.inputData.contains(AuthInputAction.PADDLE_RIGHT)) this.yaw += 2.5;
+
+        double newX = this.x + motionX;
+        double newY = this.y + motionY;
+        double newZ = this.z + motionZ;
+
+        if (underBlock.isSolid()) {
+            newY = underBlock.getY() + 1.0;
+            motionY = 0;
+        } //final falling
+
+        Vector3 base = new Vector3(newX, newY, newZ);
+        Vector3 frontCenter = base.add(pz * BOAT_LENGTH, 0, fz * BOAT_LENGTH);
+        Vector3 backCenter  = base.add(-pz * BOAT_LENGTH, 0, -fz * BOAT_LENGTH);
+        Vector3 rightCenter = base.add(-px * BOAT_HALF_WIDTH, 0, -pz * BOAT_HALF_WIDTH);
+        Vector3 leftCenter  = base.add( px * BOAT_HALF_WIDTH, 0,  pz * BOAT_HALF_WIDTH);
+        Vector3 frontLeft  = frontCenter.add( px * BOAT_HALF_WIDTH, 0,  pz * BOAT_HALF_WIDTH);
+        Vector3 frontRight = frontCenter.add(-px * BOAT_HALF_WIDTH, 0, -pz * BOAT_HALF_WIDTH);
+        Vector3 backLeft   = backCenter.add( px * BOAT_HALF_WIDTH, 0,  pz * BOAT_HALF_WIDTH);
+        Vector3 backRight  = backCenter.add(-px * BOAT_HALF_WIDTH, 0, -pz * BOAT_HALF_WIDTH);
+        boolean frontBlocked = isSolid(frontCenter) || isSolid(frontLeft) || isSolid(frontRight);
+        boolean backBlocked  = isSolid(backCenter)  || isSolid(backLeft)  || isSolid(backRight);
+        boolean sideBlocked  = isSolid(leftCenter)  || isSolid(rightCenter);
+        double forwardComponent = motionX * pz + motionZ * fz;
+        double sideComponent    = motionX * px + motionZ * pz;
+
+        if (forwardComponent > 0 && frontBlocked) {
+            motionX -= pz * forwardComponent;
+            motionZ -= fz * forwardComponent;
+        } else if (forwardComponent < 0 && backBlocked) {
+            motionX -= pz * forwardComponent;
+            motionZ -= fz * forwardComponent;
+        }
+        if (Math.abs(sideComponent) > 0.0001 && sideBlocked) {
+            motionX -= px * sideComponent;
+            motionZ -= pz * sideComponent;
+        }
+
+        newX = this.x + motionX;
+        newZ = this.z + motionZ;
+
+        this.setPositionAndRotation(
+                this.temporalVector.setComponents(newX, newY, newZ),
+                this.yaw % 360,
+                0
+        ); //update position to server-side
+        this.headYaw = this.yaw;
         broadcastMovement(false);
+    }
+
+    private boolean isSolid(Vector3 pos) {
+        Block b = this.level.getBlock(pos);
+        return b != null && b.isSolid();
     }
 }
