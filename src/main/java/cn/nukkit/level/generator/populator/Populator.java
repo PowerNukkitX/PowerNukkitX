@@ -62,7 +62,9 @@ public abstract class Populator {
             }
         }
         writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate();
+        if(chunk.getChunkState().canSend()) {
+            manager.applySubChunkUpdate();
+        } else manager.applyWithoutUpdate();
     }
 
     public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
