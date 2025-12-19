@@ -1722,6 +1722,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void updateMovement() {
         // This is done for backward compatibility with older plugins.
+        if(isImmobile()) return; //Do not move when immobile
+
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
@@ -2398,6 +2400,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private static final float Y_SIZE_THRESHOLD = 0.05F;
     private static final float Y_SIZE_BOOST = 0.5F;
     public boolean move(double dx, double dy, double dz) {
+        if(isImmobile()) return true; //Do not move when immobile
+
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
             return true;
