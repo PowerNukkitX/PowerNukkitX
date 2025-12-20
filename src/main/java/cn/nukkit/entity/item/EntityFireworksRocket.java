@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
@@ -17,6 +18,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -26,9 +28,15 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author CreeperFace
  */
 public class EntityFireworksRocket extends Entity {
+    @Override
+    @NotNull
+    public String getIdentifier() {
+        return FIREWORKS_ROCKET;
+    }
 
-    private final int lifetime;
+    private int lifetime;
     private int fireworkAge;
+    private Item firework;
     private boolean hadCollision;
 
     public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
@@ -42,15 +50,14 @@ public class EntityFireworksRocket extends Entity {
         this.motionZ = rand.nextGaussian() * 0.001D;
         this.motionY = 0.05D;
 
-        Item firework;
         if (nbt.contains("FireworkItem")) {
             firework = NBTIO.getItemHelper(nbt.getCompound("FireworkItem"));
         } else {
             firework = new ItemFireworkRocket();
         }
 
-        CompoundTag tag = firework.getNamedTag();
-        if (tag == null || !tag.contains("Fireworks")) {
+        if (!firework.hasCompoundTag() || !firework.getNamedTag().contains("Fireworks")) {
+            CompoundTag tag = firework.getNamedTag();
             if (tag == null) {
                 tag = new CompoundTag();
             }
@@ -75,78 +82,81 @@ public class EntityFireworksRocket extends Entity {
     }
 
     @Override
-    @NotNull
-    public String getIdentifier() {
-        return FIREWORKS_ROCKET;
-    }
-
-    @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
 
         int tickDiff = currentTick - this.lastUpdate;
+
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
         }
 
         this.lastUpdate = currentTick;
+
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
-        if (!this.isAlive()) {
-            return hasUpdate;
-        }
+        if (this.isAlive()) {
+            this.motionX *= 1.15D;
+            this.motionZ *= 1.15D;
+            this.motionY += 0.04D;
+            Position position = getPosition();
+            Vector3 motion = getMotion();
+            this.move(this.motionX, this.motionY, this.motionZ);
 
-        this.motionX *= 1.15D;
-        this.motionZ *= 1.15D;
-        this.motionY += 0.04D;
+            if (this.isCollided && !this.hadCollision) { //collide with block
+                this.hadCollision = true;
 
-        Position position = getPosition();
-        Vector3 motion = getMotion();
-        this.move(this.motionX, this.motionY, this.motionZ);
-
-        if (this.isCollided && !this.hadCollision) {
-            this.hadCollision = true;
-            for (Block block : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
-                block.onProjectileHit(this, position, motion);
+                for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+                    collisionBlock.onProjectileHit(this, position, motion);
+                }
+            } else if (!this.isCollided && this.hadCollision) {
+                this.hadCollision = false;
             }
-        } else if (!this.isCollided) {
-            this.hadCollision = false;
+
+            this.updateMovement();
+
+            float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
+
+            if (this.fireworkAge == 0) {
+                this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
+            }
+
+            this.fireworkAge++;
+
+            hasUpdate = true;
+            if (this.fireworkAge >= this.lifetime) {
+                EntityEventPacket pk = new EntityEventPacket();
+                pk.data = 0;
+                pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
+                pk.eid = this.getId();
+
+                level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
+                Server.broadcastPacket(getViewers().values(), pk);
+
+                this.kill();
+                hasUpdate = true;
+            }
         }
 
-        this.updateMovement();
-
-        float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-        this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
-
-        if (this.fireworkAge++ == 0) {
-            this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
-        }
-
-        if (this.fireworkAge >= this.lifetime) {
-            EntityEventPacket pk = new EntityEventPacket();
-            pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
-            pk.data = 0;
-            pk.eid = this.getId();
-
-            level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
-            Server.broadcastPacket(getViewers().values(), pk);
-
-            this.kill();
-        }
-
-        return true;
+        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        return (source.getCause() == DamageCause.VOID
-                || source.getCause() == DamageCause.FIRE_TICK
-                || source.getCause() == DamageCause.ENTITY_EXPLOSION
-                || source.getCause() == DamageCause.BLOCK_EXPLOSION)
+        return (source.getCause() == DamageCause.VOID ||
+                source.getCause() == DamageCause.FIRE_TICK ||
+                source.getCause() == DamageCause.ENTITY_EXPLOSION ||
+                source.getCause() == DamageCause.BLOCK_EXPLOSION)
                 && super.attack(source);
+    }
+
+    public void setFirework(Item item) {
+        this.firework = item;
+        this.setDataProperty(new EntityDataType<>(0, "HORSE_FLAGS", 16), item.getNamedTag());
     }
 
     @Override
@@ -162,5 +172,9 @@ public class EntityFireworksRocket extends Entity {
     @Override
     public String getOriginalName() {
         return "Firework Rocket";
+    }
+
+    public void setLifetime(int lifetime) {
+        this.lifetime = lifetime;
     }
 }
