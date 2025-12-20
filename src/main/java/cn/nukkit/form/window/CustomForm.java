@@ -189,7 +189,7 @@ public class CustomForm extends Form<CustomResponse> {
     }
 
     public CustomForm stepSlider(String text, List<String> steps, int defaultStep, String tooltip) {
-        return this.addStepSlider(text, steps, defaultStep, text);
+        return this.addStepSlider(text, steps, defaultStep, tooltip);
     }
 
     public CustomForm addToggle(String text) {
