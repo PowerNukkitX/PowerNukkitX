@@ -23,6 +23,7 @@ import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.event.server.ServerReloadEvent;
 import cn.nukkit.event.server.ServerStartedEvent;
 import cn.nukkit.event.server.ServerStopEvent;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -628,10 +629,15 @@ public class Server {
     /**
      * 重载服务器
      * <p>
-     * Reload Server
+     * Reloads the server
      */
     public void reload() {
-        log.info("Reloading...");
+        ServerReloadEvent serverReloadEvent = new ServerReloadEvent();
+        getPluginManager().callEvent(serverReloadEvent);
+
+        if (serverReloadEvent.isCancelled()) return;
+
+        log.info("Reloading server...");
         log.info("Saving levels...");
 
         for (Level level : this.levelArray) {
@@ -663,7 +669,7 @@ public class Server {
 //        JSFeatures.initInternalFeatures();
         this.scoreboardManager.read();
 
-        log.info("Reloading Registries...");
+        log.info("Reloading registries...");
         {
             Registries.POTION.reload();
             Registries.PACKET.reload();
@@ -708,14 +714,12 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
-        ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
-        getPluginManager().callEvent(serverStartedEvent);
     }
 
     /**
      * 关闭服务器
      * <p>
-     * Shut down the server
+     * Shutdown the server
      */
     public void shutdown() {
         isRunning.compareAndSet(true, false);
@@ -724,7 +728,7 @@ public class Server {
     /**
      * 强制关闭服务器
      * <p>
-     * Force Shut down the server
+     * Force shutdown the server
      */
     public void forceShutdown() {
         if (this.hasStopped) {

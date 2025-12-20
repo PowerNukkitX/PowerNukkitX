@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
@@ -33,11 +34,10 @@ public class EntityFireworksRocket extends Entity {
         return FIREWORKS_ROCKET;
     }
 
-    private final int lifetime;
+    private int lifetime;
     private int fireworkAge;
     private Item firework;
     private boolean hadCollision;
-
 
     public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -77,7 +77,7 @@ public class EntityFireworksRocket extends Entity {
             firework.setNamedTag(tag);
         }
 
-//        this.setDataProperty(Entity.HORSE_FLAGS, firework.getNamedTag());//TODO FIXME
+        this.setDataProperty(new EntityDataType<>(0, "HORSE_FLAGS", 16), firework.getNamedTag());
         this.setDataProperty(DISPLAY_OFFSET, new Vector3f(0, 1, 0));
         this.setDataProperty(CUSTOM_DISPLAY, -1);
     }
@@ -100,7 +100,6 @@ public class EntityFireworksRocket extends Entity {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
-
             this.motionX *= 1.15D;
             this.motionZ *= 1.15D;
             this.motionY += 0.04D;
@@ -114,19 +113,15 @@ public class EntityFireworksRocket extends Entity {
                 for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
                     collisionBlock.onProjectileHit(this, position, motion);
                 }
-
             } else if (!this.isCollided && this.hadCollision) {
                 this.hadCollision = false;
             }
 
             this.updateMovement();
 
-
             float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-
             this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
-
 
             if (this.fireworkAge == 0) {
                 this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
@@ -142,7 +137,6 @@ public class EntityFireworksRocket extends Entity {
                 pk.eid = this.getId();
 
                 level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
-
                 Server.broadcastPacket(getViewers().values(), pk);
 
                 this.kill();
@@ -164,7 +158,7 @@ public class EntityFireworksRocket extends Entity {
 
     public void setFirework(Item item) {
         this.firework = item;
-//        this.setDataProperty(Entity.HORSE_FLAGS, item.getNamedTag());//TODO FIXME
+        this.setDataProperty(new EntityDataType<>(0, "HORSE_FLAGS", 16), item.getNamedTag());
     }
 
     @Override
@@ -180,5 +174,9 @@ public class EntityFireworksRocket extends Entity {
     @Override
     public String getOriginalName() {
         return "Firework Rocket";
+    }
+
+    public void setLifetime(int lifetime) {
+        this.lifetime = lifetime;
     }
 }

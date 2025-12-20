@@ -13,6 +13,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.utils.Faceable;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -290,7 +291,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             }
             if (decay >= 0) {
                 Block bottomBlock = this.level.getBlock((int) this.x, (int) this.y - 1, (int) this.z);
-                this.flowIntoBlock(bottomBlock, decay | 0x08);
+                this.flowIntoBlock(BlockFace.DOWN, decay | 0x08);
                 if (decay == 0 || !(usesWaterLogging() ? bottomBlock.canWaterloggingFlowInto() : bottomBlock.canBeFlowedInto())) {
                     int adjacentDecay;
                     if (decay >= 8) {
@@ -301,16 +302,16 @@ public abstract class BlockLiquid extends BlockTransparent {
                     if (adjacentDecay < 8) {
                         boolean[] flags = this.getOptimalFlowDirections();
                         if (flags[0]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z), adjacentDecay);
+                            this.flowIntoBlock(BlockFace.WEST, adjacentDecay);
                         }
                         if (flags[1]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x + 1, (int) this.y, (int) this.z), adjacentDecay);
+                            this.flowIntoBlock(BlockFace.EAST, adjacentDecay);
                         }
                         if (flags[2]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1), adjacentDecay);
+                            this.flowIntoBlock(BlockFace.NORTH, adjacentDecay);
                         }
                         if (flags[3]) {
-                            this.flowIntoBlock(this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1), adjacentDecay);
+                            this.flowIntoBlock(BlockFace.SOUTH, adjacentDecay);
                         }
                     }
                 }
@@ -320,12 +321,21 @@ public abstract class BlockLiquid extends BlockTransparent {
         return 0;
     }
 
-    protected void flowIntoBlock(Block block, int newFlowDecay) {
+    protected void flowIntoBlock(BlockFace blockFace, int newFlowDecay) {
+        Block block = getSide(blockFace);
         if (this.canFlowInto(block) && !(block instanceof BlockLiquid)) {
             if (usesWaterLogging()) {
                 Block layer1 = block.getLevelBlockAtLayer(1);
                 if (layer1 instanceof BlockLiquid) {
                     return;
+                }
+                if(this.layer == 1) {
+                    Block layer0 = getLevelBlockAtLayer(0);
+                    if(layer0 instanceof Faceable faceable) {
+                        if(faceable.getBlockFace() == blockFace) {
+                            return;
+                        }
+                    }
                 }
 
                 if (block.getWaterloggingLevel() > 1) {
