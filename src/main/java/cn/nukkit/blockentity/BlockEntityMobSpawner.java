@@ -103,6 +103,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
         this.scheduleUpdate();
         super.initBlockEntity();
+        this.level.getScheduler().scheduleTask(this::spawnToAll);
     }
 
     @Override
