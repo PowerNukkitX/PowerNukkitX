@@ -209,8 +209,8 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_PROJECTILE), enchantments[4]);
         namedEnchantments.put(new Identifier("minecraft", NAME_THORNS), enchantments[5]);
         namedEnchantments.put(new Identifier("minecraft", NAME_WATER_BREATHING), enchantments[6]);
-        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[7]);
-        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[8]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[7]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[8]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ALL), enchantments[9]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_SMITE), enchantments[10]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ARTHROPODS), enchantments[11]);
