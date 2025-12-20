@@ -191,11 +191,12 @@ public class BlockFlowingLava extends BlockLiquid {
     }
 
     @Override
-    protected void flowIntoBlock(Block block, int newFlowDecay) {
+    protected void flowIntoBlock(BlockFace face, int newFlowDecay) {
+        Block block = getSide(face);
         if (block instanceof BlockFlowingWater) {
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
         } else {
-            super.flowIntoBlock(block, newFlowDecay);
+            super.flowIntoBlock(face, newFlowDecay);
         }
     }
 
