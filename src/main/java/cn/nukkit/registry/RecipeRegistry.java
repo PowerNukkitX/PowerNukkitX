@@ -11,6 +11,7 @@ import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
+import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
 import cn.nukkit.recipe.special.DecoratedPotRecipe;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
@@ -900,6 +901,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     private void registerSpecial() {
         this.register(new DecoratedPotRecipe());
+        this.register(new SmithingArmorTrimCorrectedRecipe());
     }
 
     /**
