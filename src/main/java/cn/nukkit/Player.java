@@ -3555,12 +3555,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             namedTag.putInt("SpawnX", this.spawnPoint.getFloorX())
                     .putInt("SpawnY", this.spawnPoint.getFloorY())
                     .putInt("SpawnZ", this.spawnPoint.getFloorZ());
-            if (this.spawnPoint.getLevel() != null) {
+            if (this.spawnPoint.getLevel() != null && this.spawnPoint.getLevel().getProvider() != null) {
                 this.namedTag.putString("SpawnLevel", this.spawnPoint.getLevel().getName());
                 this.namedTag.putInt("SpawnDimension", this.spawnPoint.getLevel().getDimension());
             } else {
-                this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getName());
-                this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
+                if (this.server.getDefaultLevel() != null && this.server.getDefaultLevel().getProvider() != null) {
+                    this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getName());
+                    this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
+                } else {
+                    throw new IllegalStateException("Default level or default level provider is null");
+                }
             }
         }
 
