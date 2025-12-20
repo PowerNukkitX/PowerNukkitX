@@ -49,8 +49,8 @@ public class EntityFireworksRocket extends Entity {
             firework = new ItemFireworkRocket();
         }
 
-        if (!firework.hasCompoundTag() || !firework.getNamedTag().contains("Fireworks")) {
-            CompoundTag tag = firework.getNamedTag();
+        CompoundTag tag = firework.getNamedTag();
+        if (tag == null || !tag.contains("Fireworks")) {
             if (tag == null) {
                 tag = new CompoundTag();
             }
@@ -87,67 +87,57 @@ public class EntityFireworksRocket extends Entity {
         }
 
         int tickDiff = currentTick - this.lastUpdate;
-
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
         }
 
         this.lastUpdate = currentTick;
-
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
-        if (this.isAlive()) {
-
-            this.motionX *= 1.15D;
-            this.motionZ *= 1.15D;
-            this.motionY += 0.04D;
-
-            Position position = getPosition();
-            Vector3 motion = getMotion();
-            this.move(this.motionX, this.motionY, this.motionZ);
-
-            if (this.isCollided && !this.hadCollision) {
-                this.hadCollision = true;
-
-                for (Block block : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
-                    block.onProjectileHit(this, position, motion);
-                }
-            } else if (!this.isCollided && this.hadCollision) {
-                this.hadCollision = false;
-            }
-
-            this.updateMovement();
-
-            float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
-            this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
-
-            if (this.fireworkAge == 0) {
-                this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
-            }
-
-            this.fireworkAge++;
-
-            hasUpdate = true;
-            if (this.fireworkAge >= this.lifetime) {
-                EntityEventPacket pk = new EntityEventPacket();
-                pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
-                pk.data = 0;
-                pk.eid = this.getId();
-
-                level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
-                Server.broadcastPacket(getViewers().values(), pk);
-
-                this.kill();
-                hasUpdate = true;
-            }
+        if (!this.isAlive()) {
+            return hasUpdate;
         }
 
-        return hasUpdate
-                || !this.onGround
-                || Math.abs(this.motionX) > 0.00001
-                || Math.abs(this.motionY) > 0.00001
-                || Math.abs(this.motionZ) > 0.00001;
+        this.motionX *= 1.15D;
+        this.motionZ *= 1.15D;
+        this.motionY += 0.04D;
+
+        Position position = getPosition();
+        Vector3 motion = getMotion();
+        this.move(this.motionX, this.motionY, this.motionZ);
+
+        if (this.isCollided && !this.hadCollision) {
+            this.hadCollision = true;
+            for (Block block : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
+                block.onProjectileHit(this, position, motion);
+            }
+        } else if (!this.isCollided) {
+            this.hadCollision = false;
+        }
+
+        this.updateMovement();
+
+        float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+        this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+        this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
+
+        if (this.fireworkAge++ == 0) {
+            this.getLevel().addSound(this, Sound.FIREWORK_LAUNCH);
+        }
+
+        if (this.fireworkAge >= this.lifetime) {
+            EntityEventPacket pk = new EntityEventPacket();
+            pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
+            pk.data = 0;
+            pk.eid = this.getId();
+
+            level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
+            Server.broadcastPacket(getViewers().values(), pk);
+
+            this.kill();
+        }
+
+        return true;
     }
 
     @Override
@@ -157,10 +147,6 @@ public class EntityFireworksRocket extends Entity {
                 || source.getCause() == DamageCause.ENTITY_EXPLOSION
                 || source.getCause() == DamageCause.BLOCK_EXPLOSION)
                 && super.attack(source);
-    }
-
-    public void setFirework(Item item) {
-        this.firework = item;
     }
 
     @Override
