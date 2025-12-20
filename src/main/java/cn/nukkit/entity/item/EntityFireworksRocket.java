@@ -18,7 +18,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
-import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
