@@ -48,6 +48,174 @@ public class CustomForm extends Form<CustomResponse> {
         return this;
     }
 
+    public CustomForm addElements(ElementCustom... elements) {
+        for (ElementCustom element : elements) {
+            this.addElement(element);
+        }
+
+        return this;
+    }
+
+    public CustomForm addInput(String text) {
+        return this.addElement(new ElementInput(text));
+    }
+
+    public CustomForm addInput(String text, String placeholder) {
+        return this.addElement(new ElementInput(text, placeholder));
+    }
+
+    public CustomForm addInput(String text, String placeholder, String defaultText) {
+        return this.addElement(new ElementInput(text, placeholder, defaultText));
+    }
+
+    public CustomForm addInput(String text, String placeholder, String defaultText, String tooltip) {
+        return this.addElement(new ElementInput(text, placeholder, defaultText, tooltip));
+    }
+
+    public CustomForm input(String text) {
+        return this.addInput(text);
+    }
+
+    public CustomForm input(String text, String placeholder) {
+        return this.addInput(text, placeholder);
+    }
+
+    public CustomForm input(String text, String placeholder, String defaultText) {
+        return this.addInput(text, placeholder, defaultText);
+    }
+
+    public CustomForm input(String text, String placeholder, String defaultText, String tooltip) {
+        return this.addInput(text, placeholder, defaultText, tooltip);
+    }
+
+    public CustomForm addDropdown(String text) {
+        return this.addElement(new ElementDropdown(text));
+    }
+
+    public CustomForm addDropdown(String text, String tooltip) {
+        return this.addElement(new ElementDropdown(text, tooltip));
+    }
+
+    public CustomForm addDropdown(String text, List<String> options) {
+        return this.addElement(new ElementDropdown(text, options));
+    }
+
+    public CustomForm addDropdown(String text, List<String> options, String tooltip) {
+        return this.addElement(new ElementDropdown(text, options, tooltip));
+    }
+
+    public CustomForm dropdown(String text) {
+        return this.addDropdown(text);
+    }
+
+    public CustomForm dropdown(String text, String tooltip) {
+        return this.addDropdown(text, tooltip);
+    }
+
+    public CustomForm dropdown(String text, List<String> options) {
+        return this.addDropdown(text, options);
+    }
+
+    public CustomForm dropdown(String text, List<String> options, String tooltip) {
+        return this.addDropdown(text, options, tooltip);
+    }
+
+    public CustomForm addSlider(String text) {
+        return this.addElement(new ElementSlider(text));
+    }
+
+    public CustomForm addSlider(String text, float min, float max) {
+        return this.addElement(new ElementSlider(text, min, max));
+    }
+
+    public CustomForm addSlider(String text, float min, float max, int step) {
+        return this.addElement(new ElementSlider(text, min, max, step));
+    }
+
+    public CustomForm addSlider(String text, float min, float max, int step, float defaultValue) {
+        return this.addElement(new ElementSlider(text, min, max, step, defaultValue));
+    }
+
+    public CustomForm addSlider(String text, float min, float max, int step, float defaultValue, String tooltip) {
+        return this.addElement(new ElementSlider(text, min, max, step, defaultValue, tooltip));
+    }
+
+    public CustomForm slider(String text) {
+        return this.addSlider(text);
+    }
+
+    public CustomForm slider(String text, float min, float max) {
+        return this.addSlider(text, min, max);
+    }
+
+    public CustomForm slider(String text, float min, float max, int step) {
+        return this.addSlider(text, min, max, step);
+    }
+
+    public CustomForm slider(String text, float min, float max, int step, float defaultValue) {
+        return this.addSlider(text, min, max, step, defaultValue);
+    }
+
+    public CustomForm slider(String text, float min, float max, int step, float defaultValue, String tooltip) {
+        return this.addSlider(text, min, max, step, defaultValue, tooltip);
+    }
+
+    public CustomForm addStepSlider(String text) {
+        return this.addElement(new ElementStepSlider(text));
+    }
+
+    public CustomForm addStepSlider(String text, List<String> steps) {
+        return this.addElement(new ElementStepSlider(text, steps));
+    }
+
+    public CustomForm addStepSlider(String text, List<String> steps, int defaultStep) {
+        return this.addElement(new ElementStepSlider(text, steps, defaultStep));
+    }
+
+    public CustomForm addStepSlider(String text, List<String> steps, int defaultStep, String tooltip) {
+        return this.addElement(new ElementStepSlider(text, steps, defaultStep, tooltip));
+    }
+
+    public CustomForm stepSlider(String text) {
+        return this.addStepSlider(text);
+    }
+
+    public CustomForm stepSlider(String text, List<String> steps) {
+        return this.addStepSlider(text, steps);
+    }
+
+    public CustomForm stepSlider(String text, List<String> steps, int defaultStep) {
+        return this.addStepSlider(text, steps, defaultStep);
+    }
+
+    public CustomForm stepSlider(String text, List<String> steps, int defaultStep, String tooltip) {
+        return this.addStepSlider(text, steps, defaultStep, text);
+    }
+
+    public CustomForm addToggle(String text) {
+        return this.addElement(new ElementToggle(text));
+    }
+
+    public CustomForm addToggle(String text, boolean defaultValue) {
+        return this.addElement(new ElementToggle(text, defaultValue));
+    }
+
+    public CustomForm addToggle(String text, boolean defaultValue, String tooltip) {
+        return this.addElement(new ElementToggle(text, defaultValue, tooltip));
+    }
+
+    public CustomForm toggle(String text) {
+        return this.addToggle(text);
+    }
+
+    public CustomForm toggle(String text, boolean defaultValue) {
+        return this.addToggle(text, defaultValue);
+    }
+
+    public CustomForm toggle(String text, boolean defaultValue, String tooltip) {
+        return this.addToggle(text, defaultValue, tooltip);
+    }
+
     public CustomForm submitButton() {
         this.submitButton = null;
         return this;
