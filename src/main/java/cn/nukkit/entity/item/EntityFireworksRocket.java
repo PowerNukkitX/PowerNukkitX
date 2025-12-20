@@ -29,7 +29,6 @@ public class EntityFireworksRocket extends Entity {
 
     private final int lifetime;
     private int fireworkAge;
-    private final Item firework;
     private boolean hadCollision;
 
     public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
@@ -43,6 +42,7 @@ public class EntityFireworksRocket extends Entity {
         this.motionZ = rand.nextGaussian() * 0.001D;
         this.motionY = 0.05D;
 
+        Item firework;
         if (nbt.contains("FireworkItem")) {
             firework = NBTIO.getItemHelper(nbt.getCompound("FireworkItem"));
         } else {
