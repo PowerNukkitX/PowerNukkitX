@@ -70,8 +70,8 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        cacheDynamicVersionsFor(10, "minutes")
-        cacheChangingModulesFor(10, "minutes")
+        cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
+        cacheChangingModulesFor(10, TimeUnit.MINUTES)
         preferProjectModules()
     }
 }
