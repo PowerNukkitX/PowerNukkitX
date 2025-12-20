@@ -29,7 +29,7 @@ public class EntityFireworksRocket extends Entity {
 
     private final int lifetime;
     private int fireworkAge;
-    private Item firework;
+    private final Item firework;
     private boolean hadCollision;
 
     public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
