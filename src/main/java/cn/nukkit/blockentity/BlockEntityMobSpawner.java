@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowable;
 import cn.nukkit.block.BlockID;
@@ -13,6 +14,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ShortTag;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Utils;
 
 import java.util.Objects;
@@ -153,14 +155,21 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                         continue;
                     }
 
+                    Entity ent = Entity.createEntity(this.entityId, pos);
+                    if(ent instanceof EntityMob) {
+                        if(getLevel().getFullLight(this) > 7)  {
+                            ent.close();
+                            continue;
+                        }
+                    }
                     CreatureSpawnEvent ev = new CreatureSpawnEvent(this.entityId, pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.SPAWNER);
                     level.getServer().getPluginManager().callEvent(ev);
 
                     if (ev.isCancelled()) {
+                        ent.close();
                         continue;
                     }
 
-                    Entity ent = Entity.createEntity(this.entityId, pos);
                     if(ent != null) {
                         ent.namedTag.putBoolean("spawner", true);
                         ent.spawnToAll();
