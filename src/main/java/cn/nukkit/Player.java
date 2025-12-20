@@ -180,7 +180,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * <p>
      * An empty array of static constants that host the player
      */
-    public static final cn.nukkit.Player[] EMPTY_ARRAY = new cn.nukkit.Player[0];
+    public static final Player[] EMPTY_ARRAY = new Player[0];
     public static final int SURVIVAL = 0;
     public static final int CREATIVE = 1;
     public static final int ADVENTURE = 2;
@@ -222,7 +222,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected double blockBreakProgress = 0;
     protected final BedrockSession session;
     protected final InetSocketAddress rawSocketAddress;
-    protected final Map<UUID, cn.nukkit.Player> hiddenPlayers = new HashMap<>();
+    protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
     protected final int chunksPerTick;
     protected final int spawnThreshold;
     protected int messageLimitCounter = 2;
@@ -461,9 +461,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         playerHandle.setInteract();
         if (playerInteractEvent.isCancelled()) {
             this.inventory.sendHeldItem(this);
-            this.getLevel().sendBlocks(new cn.nukkit.Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             if (target.getLevelBlockAtLayer(1) instanceof BlockLiquid) {
-                this.getLevel().sendBlocks(new cn.nukkit.Player[]{this}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+                this.getLevel().sendBlocks(new Player[]{this}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
             return;
         }
@@ -562,7 +562,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)
-                this.level.sendBlocks(new cn.nukkit.Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                this.level.sendBlocks(new Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             return;
         }
 
@@ -571,7 +571,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (blockPos.distanceSquared(this) < 100) {
             Block target = this.level.getBlock(blockPos.asVector3());
-            this.level.sendBlocks(new cn.nukkit.Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+            this.level.sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
 
             BlockEntity blockEntity = this.level.getBlockEntity(blockPos.asVector3());
             if (blockEntity instanceof BlockEntitySpawnable) {
@@ -926,11 +926,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
                 if (!now.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                    if (this.getGamemode() != cn.nukkit.Player.SPECTATOR)
+                    if (this.getGamemode() != Player.SPECTATOR)
                         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                     this.teleport(ev.getTo(), null);
                 } else {
-                    if (this.getGamemode() != cn.nukkit.Player.SPECTATOR && (last.x != now.x || last.y != now.y || last.z != now.z)) {
+                    if (this.getGamemode() != Player.SPECTATOR && (last.x != now.x || last.y != now.y || last.z != now.z)) {
                         if (this.isOnGround() && this.isGliding()) {
                             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.ELYTRA_GLIDE));
                         } else if (this.isOnGround() && !(this.getSide(BlockFace.DOWN).getLevelBlock() instanceof BlockWool) && !this.isSneaking()) {
@@ -1095,8 +1095,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        cn.nukkit.Player oldPlayer = null;
-        for (cn.nukkit.Player p : new ArrayList<>(this.server.getOnlinePlayers().values())) {
+        Player oldPlayer = null;
+        for (Player p : new ArrayList<>(this.server.getOnlinePlayers().values())) {
             if (p != this && p.getName().equalsIgnoreCase(this.getName()) || this.getUniqueId().equals(p.getUniqueId())) {
                 oldPlayer = p;
                 break;
@@ -1280,7 +1280,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
           mode update packet.
          */
         this.setGamemode(this.gamemode, false, null, true);
-        this.sendData(this.hasSpawned.values().toArray(cn.nukkit.Player.EMPTY_ARRAY), entityDataMap);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
     }
@@ -1357,7 +1357,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setSprinting(false);
         this.setSneaking(false);
 
-        this.setDataProperty(cn.nukkit.Player.AIR_SUPPLY, 400, false);
+        this.setDataProperty(Player.AIR_SUPPLY, 400, false);
         this.fireTicks = 0;
         this.collisionBlocks = null;
         this.noDamageTicks = 60;
@@ -1387,11 +1387,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Map<Integer, cn.nukkit.Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
+                Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
                 newChunk.remove(this.getLoaderId());
 
                 //List<Player> reload = new ArrayList<>();
-                for (cn.nukkit.Player player : new ArrayList<>(this.hasSpawned.values())) {
+                for (Player player : new ArrayList<>(this.hasSpawned.values())) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
                     } else {
@@ -1400,7 +1400,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
 
-                for (cn.nukkit.Player player : newChunk.values()) {
+                for (Player player : newChunk.values()) {
                     this.spawnTo(player);
                 }
             }
@@ -1515,9 +1515,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Returns the value of {@link cn.nukkit.Player#lastInAirTick}, representing the server tick during which the player was last in the air.
+     * Returns the value of {@link Player#lastInAirTick}, representing the server tick during which the player was last in the air.
      * <p>
-     * Returns the value of {@link cn.nukkit.Player#lastInAirTick},represent the last server tick the player was in the air
+     * Returns the value of {@link Player#lastInAirTick},represent the last server tick the player was in the air
      *
      * @return int
      */
@@ -1566,7 +1566,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public cn.nukkit.Player getPlayer() {
+    public Player getPlayer() {
         return this;
     }
 
@@ -1681,7 +1681,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
     }
 
-    public void broadcastClientSyncedProperties(cn.nukkit.Player... viewers) {
+    public void broadcastClientSyncedProperties(Player... viewers) {
         PropertySyncData data = this.getClientSyncProperties();
         if (data == null) return;
 
@@ -1691,17 +1691,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.syncedProperties = data;
         pk.frame = 0L;
 
-        cn.nukkit.Player[] targets = (viewers == null || viewers.length == 0)
-                ? this.getViewers().values().toArray(cn.nukkit.Player.EMPTY_ARRAY)
+        Player[] targets = (viewers == null || viewers.length == 0)
+                ? this.getViewers().values().toArray(Player.EMPTY_ARRAY)
                 : viewers;
 
-        for (cn.nukkit.Player v : targets) {
+        for (Player v : targets) {
             if (v != null) v.dataPacket(pk);
         }
     }
 
     @Override
-    public void spawnTo(cn.nukkit.Player player) {
+    public void spawnTo(Player player) {
         if (player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
             this.broadcastClientSyncedProperties(player);
@@ -1749,7 +1749,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param player gamer
      * @return Can I see this player?<br>Whether the player can be seen
      */
-    public boolean canSee(cn.nukkit.Player player) {
+    public boolean canSee(Player player) {
         return !this.hiddenPlayers.containsKey(player.getUniqueId());
     }
 
@@ -1760,7 +1760,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param player Players to be hidden<br>Players who want to hide
      */
-    public void hidePlayer(cn.nukkit.Player player) {
+    public void hidePlayer(Player player) {
         if (this == player) {
             return;
         }
@@ -1775,7 +1775,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param player Players to display<br>Players who want to show
      */
-    public void showPlayer(cn.nukkit.Player player) {
+    public void showPlayer(Player player) {
         if (this == player) {
             return;
         }
@@ -1912,7 +1912,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public cn.nukkit.Player asPlayer() {
+    public Player asPlayer() {
         return this;
     }
 
@@ -2301,8 +2301,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         for (Entity p : this.level.getNearbyEntities(this.boundingBox.grow(2, 1, 2), this)) {
-            if (p instanceof cn.nukkit.Player) {
-                if (((cn.nukkit.Player) p).sleeping != null && pos.distance(((cn.nukkit.Player) p).sleeping) <= 0.1) {
+            if (p instanceof Player) {
+                if (((Player) p).sleeping != null && pos.distance(((Player) p).sleeping) <= 0.1) {
                     return false;
                 }
             }
@@ -3644,9 +3644,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
-                        if (e instanceof cn.nukkit.Player) {
+                        if (e instanceof Player) {
                             message = "death.attack.player";
-                            params.add(((cn.nukkit.Player) e).getDisplayName());
+                            params.add(((Player) e).getDisplayName());
                             break;
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.mob";
@@ -3661,9 +3661,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
-                        if (e instanceof cn.nukkit.Player) {
+                        if (e instanceof Player) {
                             message = "death.attack.arrow";
-                            params.add(((cn.nukkit.Player) e).getDisplayName());
+                            params.add(((Player) e).getDisplayName());
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.arrow";
                             params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
@@ -3731,9 +3731,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
-                        if (e instanceof cn.nukkit.Player) {
+                        if (e instanceof Player) {
                             message = "death.attack.explosion.player";
-                            params.add(((cn.nukkit.Player) e).getDisplayName());
+                            params.add(((Player) e).getDisplayName());
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.explosion.player";
                             params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
@@ -4144,8 +4144,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (this.getLastDamageCause() == source && this.spawned) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
                     Entity damager = entityDamageByEntityEvent.getDamager();
-                    if (damager instanceof cn.nukkit.Player) {
-                        ((cn.nukkit.Player) damager).getFoodData().exhaust(0.1);
+                    if (damager instanceof Player) {
+                        ((Player) damager).getFoodData().exhaust(0.1);
                     }
                     //保存攻击玩家的实体在lastBeAttackEntity
                     this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
@@ -4214,35 +4214,35 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, int, cn.nukkit.Player[])
+     * @see #sendPosition(Vector3, double, double, int, Player[])
      */
     public void sendPosition(Vector3 pos) {
         this.sendPosition(pos, this.yaw);
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, int, cn.nukkit.Player[])
+     * @see #sendPosition(Vector3, double, double, int, Player[])
      */
     public void sendPosition(Vector3 pos, double yaw) {
         this.sendPosition(pos, yaw, this.pitch);
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, int, cn.nukkit.Player[])
+     * @see #sendPosition(Vector3, double, double, int, Player[])
      */
     public void sendPosition(Vector3 pos, double yaw, double pitch) {
         this.sendPosition(pos, yaw, pitch, MovePlayerPacket.MODE_NORMAL);
     }
 
     /**
-     * @see #sendPosition(Vector3, double, double, int, cn.nukkit.Player[])
+     * @see #sendPosition(Vector3, double, double, int, Player[])
      */
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode) {
         this.sendPosition(pos, yaw, pitch, mode, null);
     }
 
     /**
-     The implementation of {@link cn.nukkit.Player#addMovement} only sends {@link MovePlayerPacket} packets to the client.
+     The implementation of {@link Player#addMovement} only sends {@link MovePlayerPacket} packets to the client.
      *
      * @param pos     the pos of MovePlayerPacket
      * @param yaw     the yaw of MovePlayerPacket
@@ -4250,7 +4250,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param mode    the mode of MovePlayerPacket
      * @param targets Players receiving data packets<br>players of receive the packet
      */
-    public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, cn.nukkit.Player[] targets) {
+    public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
         pk.x = (float) pos.x;
@@ -4364,7 +4364,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Sends a form to a player and assigns the next ID to it
-     * To open a form safely, please use {@link Form#send(cn.nukkit.Player)}
+     * To open a form safely, please use {@link Form#send(Player)}
      *
      * @param form The form to open
      * @return The id assigned to the form
@@ -4375,7 +4375,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     /**
      * Sends a form to a player and assigns a given ID to it
-     * To open a form safely, please use {@link Form#send(cn.nukkit.Player)}
+     * To open a form safely, please use {@link Form#send(Player)}
      *
      * @param form The form to open
      * @param id   The ID to assign the form to
@@ -5139,7 +5139,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof cn.nukkit.Player other)) {
+        if (!(obj instanceof Player other)) {
             return false;
         }
         return Objects.equals(this.getUniqueId(), other.getUniqueId()) && this.getId() == other.getId();
