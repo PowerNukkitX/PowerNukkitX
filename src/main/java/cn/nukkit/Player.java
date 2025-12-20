@@ -3428,7 +3428,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //dismount horse
-        if (this.riding.isRideable()) {
+        if (this.riding != null && this.riding.isRideable()) {
             riding.dismountEntity(this);
         }
 
