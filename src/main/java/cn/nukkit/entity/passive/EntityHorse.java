@@ -9,7 +9,6 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityMarkVariant;
 import cn.nukkit.entity.EntityOwnable;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
@@ -68,7 +67,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityOwnable, InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {
         return HORSE;
@@ -98,6 +97,26 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             return 0.8f;
         }
         return 1.6f;
+    }
+
+    @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
+    }
+
+    @Override
+    public boolean openInventory(Player player) {
+        if (hasOwner(false) && getOwnerName().equals(player.getName())) {
+            player.addWindow(getInventory());
+            return true;
+        }
+
+        return false;
     }
 
     @Override

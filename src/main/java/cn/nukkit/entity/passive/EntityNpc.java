@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.dialog.element.ElementDialogButton;
@@ -8,6 +9,7 @@ import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -18,6 +20,8 @@ import cn.nukkit.network.protocol.NPCRequestPacket;
 
 import java.util.Set;
 
+import cn.nukkit.network.protocol.PlayerAuthInputPacket;
+import cn.nukkit.network.protocol.types.EntityLink;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -45,7 +49,6 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         super(chunk, nbt);
     }
 
-
     @Override
     public float getWidth() {
         return 0.6f;
@@ -58,6 +61,27 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
 
     @Override
     public boolean canDoInteraction() {
+        return false;
+    }
+
+    public boolean mountEntity(Entity entity) {
+        return mountEntity(entity, EntityLink.Type.RIDER);
+    }
+
+    @Override
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        move(pk.motion.x, 0, pk.motion.y);
+        updateMovement();
+        return false;
+    }
+
+    @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
         return true;
     }
 
@@ -89,6 +113,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));
+        this.setDataFlag(EntityFlag.WASD_CONTROLLED);
         this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT), this);
         this.setNameTag(this.dialog.getTitle());
         if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
@@ -155,7 +180,8 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
         //另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
-        player.showDialogWindow(this.dialog, !player.isCreative());
+        //player.showDialogWindow(this.dialog, !player.isCreative());
+        mountEntity(player);
         return true;
     }
 

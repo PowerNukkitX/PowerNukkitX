@@ -8,6 +8,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.PlayerAuthInputPacket;
 import cn.nukkit.utils.MinecartType;
 
 import java.util.Set;
@@ -61,6 +62,16 @@ public class EntityMinecart extends EntityMinecartAbstract {
                 && !this.passengers.isEmpty()) {
             this.dismountEntity(this.getPassenger());
         }
+    }
+
+    @Override
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        double inputY = pk.motion.getY();
+        if (inputY >= -1.001 && inputY <= 1.001) {
+            this.setCurrentSpeed(inputY);
+        }
+
+        return false;
     }
 
     @Override
