@@ -101,6 +101,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
         this.scheduleUpdate();
         super.initBlockEntity();
+        this.level.getScheduler().scheduleTask(this::spawnToAll);
     }
 
     @Override
@@ -153,14 +154,21 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                         continue;
                     }
 
+                    Entity ent = Entity.createEntity(this.entityId, pos);
+                    if(ent instanceof EntityMob) {
+                        if(getLevel().getFullLight(this) > 7)  {
+                            ent.close();
+                            continue;
+                        }
+                    }
                     CreatureSpawnEvent ev = new CreatureSpawnEvent(this.entityId, pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.SPAWNER);
                     level.getServer().getPluginManager().callEvent(ev);
 
                     if (ev.isCancelled()) {
+                        ent.close();
                         continue;
                     }
 
-                    Entity ent = Entity.createEntity(this.entityId, pos);
                     if(ent != null) {
                         ent.namedTag.putBoolean("spawner", true);
                         ent.spawnToAll();
