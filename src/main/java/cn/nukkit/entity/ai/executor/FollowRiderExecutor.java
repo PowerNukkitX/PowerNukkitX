@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 
@@ -12,7 +11,7 @@ public class FollowRiderExecutor implements IBehaviorExecutor, EntityControl {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if(entity instanceof EntityRideable) {
+        if(entity.isRideable()) {
             Entity riding = entity.getPassenger();
             if(riding == null) return false;
             Vector2 direction = riding.getDirectionPlane().normalize();

@@ -17,5 +17,7 @@ public final class CustomEntityComponents {
     public static final String PUSHABLE              = "pushable";
     public static final String PHYSICS               = "physics";
     public static final String PERSISTENT            = "persistent";
+    public static final String RIDEABLE              = "rideable";
+    public static final String RIDE_CONTROL          = "ride_control";
 }
 

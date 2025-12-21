@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    <a href="https://powernukkitx.com">
+    <a href="https://powernukkitx.org">
       <img src="https://docs.powernukkitx.org/img/PNX_LOGO_sm.png" width=20%>
     </a>
     <p align="center">

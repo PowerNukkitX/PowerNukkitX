@@ -246,7 +246,23 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return withBoolean(CustomEntityComponents.PERSISTENT, value);
         }
 
+        /**
+         * If entity should be rideable by players
+         * @param value boolean, true = rideable
+         * @return
+         */
+        public SimpleBuilder isRideable(boolean value) {
+            return withBoolean(CustomEntityComponents.RIDEABLE, value);
+        }
 
+        /**
+         * If entity should be controllable by its passanger(s)
+         * @param value boolean, true = controllable
+         * @return
+         */
+        public SimpleBuilder isRideControllable(boolean value) {
+            return withBoolean(CustomEntityComponents.RIDE_CONTROL, value);
+        }
 
         public CustomEntityDefinition build() {
             MetaStore.put(this.id, this.meta.copy());
