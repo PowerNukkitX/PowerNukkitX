@@ -12,20 +12,26 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
 public class ElementInput extends Element implements ElementCustom {
+
     private String text;
     private String placeholder;
     private String defaultText;
+    private String tooltip;
 
     public ElementInput() {
-        this("");
+        this("", "", "", "");
     }
 
     public ElementInput(String text) {
-        this(text, "");
+        this(text, "", "", "");
     }
 
     public ElementInput(String text, String placeholder) {
-        this(text, placeholder, "");
+        this(text, placeholder, "", "");
+    }
+
+    public ElementInput(String text, String placeholder, String defaultText) {
+        this(text, placeholder, defaultText, "");
     }
 
     @Override
@@ -34,6 +40,10 @@ public class ElementInput extends Element implements ElementCustom {
         this.object.addProperty("text", this.text);
         this.object.addProperty("placeholder", this.placeholder);
         this.object.addProperty("default", this.defaultText);
+
+        if (this.tooltip != null && !this.tooltip.isEmpty()) {
+            this.object.addProperty("tooltip", this.tooltip);
+        }
 
         return this.object;
     }

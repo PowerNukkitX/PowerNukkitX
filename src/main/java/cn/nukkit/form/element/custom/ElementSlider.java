@@ -13,30 +13,36 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
 public class ElementSlider extends Element implements ElementCustom {
+
     private String text;
     private float min;
     private float max;
     private int step;
     private float defaultValue;
+    private String tooltip;
 
     public ElementSlider() {
-        this("");
+        this("", 1, 100, 1, 1, null);
     }
 
     public ElementSlider(String text) {
-        this(text, 1);
+        this(text, 1, 100, 1, 1, null);
     }
 
     public ElementSlider(String text, float min) {
-        this(text, min, Math.max(min, 100));
+        this(text, min, Math.max(min, 100), 1, min, null);
     }
 
     public ElementSlider(String text, float min, float max) {
-        this(text, min, max, 1);
+        this(text, min, max, 1, min, null);
     }
 
     public ElementSlider(String text, float min, float max, int step) {
-        this(text, min, max, step, 1);
+        this(text, min, max, step, min, null);
+    }
+
+    public ElementSlider(String text, float min, float max, int step, float defaultValue) {
+        this(text, min, max, step, defaultValue, null);
     }
 
     @Override
@@ -52,6 +58,10 @@ public class ElementSlider extends Element implements ElementCustom {
         this.object.addProperty("max", this.max);
         this.object.addProperty("step", this.step);
         this.object.addProperty("default", this.defaultValue);
+
+        if (this.tooltip != null && !this.tooltip.isEmpty()) {
+            this.object.addProperty("tooltip", this.tooltip);
+        }
 
         return this.object;
     }
