@@ -1,6 +1,4 @@
 /**
- * 与基岩版网络协议相关的类.
- * <p>
- * Classes relevant to bedrock edition network protocols.
+ * Classes relevant to Minecraft: Bedrock Edition network protocols.
  */
 package cn.nukkit.network;

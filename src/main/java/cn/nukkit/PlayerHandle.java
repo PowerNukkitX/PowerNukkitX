@@ -237,12 +237,12 @@ public final class PlayerHandle {
         player.lastInAirTick = lastInAirTick;
     }
 
-    public int getLastPlayerdLevelUpSoundTime() {
-        return player.lastPlayerdLevelUpSoundTime;
+    public int getLastPlayedLevelUpSoundTime() {
+        return player.lastPlayedLevelUpSoundTime;
     }
 
-    public void setLastPlayerdLevelUpSoundTime(int lastPlayerdLevelUpSoundTime) {
-        player.lastPlayerdLevelUpSoundTime = lastPlayerdLevelUpSoundTime;
+    public void setLastPlayedLevelUpSoundTime(int lastPlayedLevelUpSoundTime) {
+        player.lastPlayedLevelUpSoundTime = lastPlayedLevelUpSoundTime;
     }
 
     public void setLastAttackEntity(Entity lastAttackEntity) {

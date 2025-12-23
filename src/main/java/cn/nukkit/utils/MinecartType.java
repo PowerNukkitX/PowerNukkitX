@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * Helper class of Minecart variants
  * <p>
- * By Adam Matthew
- * Creation time: 2017/7/17 19:55.
+ * @author Adam Matthew
+ * @since 2017/7/17
  */
 
 public enum MinecartType {
@@ -89,7 +89,7 @@ public enum MinecartType {
     }
 
     /**
-     * Returns of an instance of Minecart-variants
+     * Returns an instance of Minecart-variants
      *
      * @param types The number of minecart
      * @return Integer

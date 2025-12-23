@@ -41,7 +41,7 @@ import java.util.*;
 
 /**
  * Took from CloudburstMC Protocol.
- * https://github.com/CloudburstMC/Protocol/blob/3.0/bedrock-connection/src/main/java/org/cloudburstmc/protocol/bedrock/util/EncryptionUtils.java
+ * <a href="https://github.com/CloudburstMC/Protocol/blob/3.0/bedrock-connection/src/main/java/org/cloudburstmc/protocol/bedrock/util/EncryptionUtils.java">...</a>
  */
 
 @UtilityClass
