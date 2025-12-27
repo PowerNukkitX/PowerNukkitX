@@ -51,7 +51,7 @@ public class Watchdog extends Thread {
                             .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new").append('\n')
                             .append("---------------- Main thread ----------------").append('\n');
 
-                    dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(this.server.getPrimaryThread().getId(), Integer.MAX_VALUE), builder);
+                    dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(this.server.getPrimaryThread().threadId(), Integer.MAX_VALUE), builder);
 
                     builder.append("---------------- All threads ----------------").append('\n');
                     ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);

@@ -1510,7 +1510,8 @@ public class HandleByteBuf extends ByteBuf {
                 readEntityUniqueId(),
                 EntityLink.Type.values()[readByte()],
                 readBoolean(),
-                readBoolean()
+                readBoolean(), 
+                0f
         );
     }
 

@@ -2324,10 +2324,10 @@ public class Level implements Metadatable {
             Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
             Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-            var iter = blockLightQueue.entrySet().iterator();
+            var iter = blockLightQueue.long2ObjectEntrySet().iterator();
             while (iter.hasNext() && size-- > 0) {
                 var entry = iter.next();
-                long index = entry.getKey();
+                long index = entry.getLongKey();
                 var blocks = entry.getValue();
 
                 iter.remove();
