@@ -12,9 +12,8 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.List;
 
 /**
- * Allay Project 2023/4/29
- *
- * @author daoge_cmd
+ * @author daoge_cmd (Allay Project)
+ * @since 2023/4/29
  */
 @Unmodifiable
 public interface BlockState {

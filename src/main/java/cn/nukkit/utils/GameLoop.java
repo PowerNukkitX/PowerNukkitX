@@ -10,9 +10,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
- * Allay Project 2023/4/14
+ * Game loop class
  *
- * @author daoge_cmd
+ * @author daoge_cmd (Allay Project)
+ * @since 2023/4/14
  */
 @Slf4j
 public final class GameLoop {

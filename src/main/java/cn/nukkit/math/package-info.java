@@ -1,6 +1,4 @@
 /**
- * 一些数学工具类.
- * <p>
- * Some math tool classes.
+ * Classes relevant to math utils for PowerNukkitX.
  */
 package cn.nukkit.math;

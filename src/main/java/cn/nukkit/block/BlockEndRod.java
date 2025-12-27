@@ -12,9 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 /**
- * http://minecraft.wiki/w/End_Rod
+ * Class for End Rod block.
  *
  * @author PikyCZ
+ * @see <a href="https://minecraft.wiki/w/End_Rod">Minecraft wiki</a>
  */
 public class BlockEndRod extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(END_ROD, CommonBlockProperties.FACING_DIRECTION);

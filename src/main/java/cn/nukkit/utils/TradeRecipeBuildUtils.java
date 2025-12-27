@@ -21,9 +21,9 @@ public class TradeRecipeBuildUtils {
     }
 
     /**
-     * @param buyA   交易材料1
-     * @param output 交易结果
-     * @return 配方构造工具
+     * @param buyA   Transaction materials 1
+     * @param output Transaction results
+     * @return recipe builder
      */
     public static TradeRecipeBuildUtils of(Item buyA, Item output) {
         var cmp = new CompoundTag()
@@ -31,10 +31,10 @@ public class TradeRecipeBuildUtils {
                         .putByte("Count", buyA.getCount())
                         .putShort("Damage", buyA.getDamage())
                         .putString("Name", buyA.getId())
-                        .putBoolean("WasPickedUp", false))//是否是掉落物？？
+                        .putBoolean("WasPickedUp", false)) // Is it a dropped item?
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountB", 0)
-                .putInt("demand", 0)//未知
+                .putInt("demand", 0) // Unknown
                 .putInt("netId", TRADE_RECIPE_NETID.getAndIncrement())
                 .putFloat("priceMultiplierB", 0)
                 .putCompound("sell", new CompoundTag()
@@ -42,7 +42,7 @@ public class TradeRecipeBuildUtils {
                         .putShort("Damage", output.getDamage())
                         .putString("Name", output.getId())
                         .putBoolean("WasPickedUp", false))
-                .putInt("uses", 0);//未知
+                .putInt("uses", 0); // Unknown
         if (buyA.hasCompoundTag()) {
             cmp.getCompound("buyA").putCompound("tag", buyA.getNamedTag());
         }
@@ -53,10 +53,10 @@ public class TradeRecipeBuildUtils {
     }
 
     /**
-     * @param buyA   交易材料1
-     * @param buyB   交易材料2
-     * @param output 交易结果
-     * @return 配方构造工具
+     * @param buyA   Transaction materials 1
+     * @param buyB   Transaction materials 2
+     * @param output Transaction results
+     * @return Recipe builder
      */
     public static TradeRecipeBuildUtils of(Item buyA, Item buyB, Item output) {
         var cmp = new CompoundTag()
@@ -64,7 +64,7 @@ public class TradeRecipeBuildUtils {
                         .putByte("Count", buyA.getCount())
                         .putShort("Damage", buyA.getDamage())
                         .putString("Name", buyA.getId())
-                        .putBoolean("WasPickedUp", false))//是否是掉落物？？
+                        .putBoolean("WasPickedUp", false)) // Is it a dropped item?
                 .putCompound("buyB", new CompoundTag()
                         .putByte("Count", buyB.getCount())
                         .putShort("Damage", buyB.getDamage())
@@ -72,14 +72,14 @@ public class TradeRecipeBuildUtils {
                         .putBoolean("WasPickedUp", false))
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountA", buyB.getCount())
-                .putInt("demand", 0)//未知
+                .putInt("demand", 0) // Unknown
                 .putInt("netId", TRADE_RECIPE_NETID.getAndIncrement())
                 .putCompound("sell", new CompoundTag()
                         .putByte("Count", output.getCount())
                         .putShort("Damage", output.getDamage())
                         .putString("Name", output.getId())
                         .putBoolean("WasPickedUp", false))
-                .putInt("uses", 0);//未知
+                .putInt("uses", 0); // Unknown
         if (buyA.hasCompoundTag()) {
             cmp.getCompound("buyA").putCompound("tag", buyA.getNamedTag());
         }
@@ -93,34 +93,34 @@ public class TradeRecipeBuildUtils {
     }
 
     /**
-     * @param maxUses 设置该交易配方最大交易次数
+     * @param maxUses Set the maximum number of transactions for this trading recipe
      */
     public TradeRecipeBuildUtils setMaxUses(int maxUses) {
-        recipe.putInt("maxUses", maxUses);//最大交易次数
+        recipe.putInt("maxUses", maxUses); // Maximum number of transactions
         return this;
     }
 
     /**
-     * @param priceMultiplierA 设置该交易配方价格增长系数(第一个交易物品)
+     * @param priceMultiplierA Set the price increase factor for this trade recipe (first traded item)
      */
     public TradeRecipeBuildUtils setPriceMultiplierA(float priceMultiplierA) {
-        recipe.putFloat("priceMultiplierA", priceMultiplierA);//价格增长？
+        recipe.putFloat("priceMultiplierA", priceMultiplierA); // Price increase?
         return this;
     }
 
     /**
-     * @param priceMultiplierB 设置该交易配方价格增长系数(第二个交易物品)
+     * @param priceMultiplierB Set the price increase factor for this trade recipe (second trade item)
      */
     public TradeRecipeBuildUtils setPriceMultiplierB(float priceMultiplierB) {
         if (size == 3) {
-            recipe.putFloat("priceMultiplierB", priceMultiplierB);//价格增长？
+            recipe.putFloat("priceMultiplierB", priceMultiplierB); // Price increase?
             return this;
         }
         return this;
     }
 
     /**
-     * @param rewardExp 设置该交易配方奖励玩家的经验值
+     * @param rewardExp Set the experience points awarded to players for this transaction recipe.
      */
     public TradeRecipeBuildUtils setRewardExp(Byte rewardExp) {
         recipe.putByte("rewardExp", rewardExp);
@@ -128,18 +128,18 @@ public class TradeRecipeBuildUtils {
     }
 
     /**
-     * @param tier 该配方需要的交易等级 从1开始
+     * @param tier The transaction level required for this recipe starts at 1.
      */
     public TradeRecipeBuildUtils setTier(int tier) {
-        recipe.putInt("tier", --tier);//需要村民等级
+        recipe.putInt("tier", --tier); // Village resident level required
         return this;
     }
 
     /**
-     * @param traderExp 设置该交易配方给予村民的经验
+     * @param traderExp Set the experience granted to villagers by this trade recipe.
      */
     public TradeRecipeBuildUtils setTraderExp(int traderExp) {
-        recipe.putInt("traderExp", traderExp);//村民增加的经验
+        recipe.putInt("traderExp", traderExp); // Experience gained by villagers
         return this;
     }
 

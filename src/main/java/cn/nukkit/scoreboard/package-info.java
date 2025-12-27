@@ -1,6 +1,4 @@
 /**
- * 与计分板相关的一些类.
- * <p>
- * Classes relevant to score board.
+ * Classes for scoreboard.
  */
 package cn.nukkit.scoreboard;

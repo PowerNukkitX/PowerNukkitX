@@ -7,7 +7,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Alias STILL LAVA
+ * The alias is Still Lava.
  *
  * @author Angelic47 (Nukkit Project)
  */

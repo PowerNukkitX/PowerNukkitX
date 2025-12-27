@@ -1,6 +1,4 @@
 /**
- * 与物品相关的类.
- * <p>
- * Classes relevant to item.
+ * Classes relevant to items and custom items.
  */
 package cn.nukkit.item;

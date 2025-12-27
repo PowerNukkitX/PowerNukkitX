@@ -15,9 +15,8 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 /**
- * PowerNukkitX Project 2023/7/15
- *
- * @author daoge_cmd
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/7/15
  */
 public class BlockWildflowers extends BlockFlower {
 

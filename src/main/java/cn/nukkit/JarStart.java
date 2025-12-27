@@ -2,7 +2,7 @@ package cn.nukkit;
 
 public final class JarStart {
     /**
-     * If the user use java -jar to start the server.
+     * If the user uses java -jar to start the server.
      */
     private static boolean usingJavaJar = false;
 

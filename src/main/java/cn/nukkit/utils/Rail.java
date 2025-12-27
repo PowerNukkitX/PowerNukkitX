@@ -19,10 +19,10 @@ import static cn.nukkit.utils.Rail.Orientation.State.CURVED;
 import static cn.nukkit.utils.Rail.Orientation.State.STRAIGHT;
 
 /**
- * INTERNAL helper class of railway
+ * Internal helper class of railway
  * <p>
- * By lmlstarqaq http://snake1999.com/
- * Creation time: 2017/7/1 17:42.
+ * @author lmlstarqaq
+ * @since 2017/7/1
  */
 
 public final class Rail {

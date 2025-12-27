@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Alias NetherPortal
+ * The alias is NetherPortal.
  */
 public class BlockPortal extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PORTAL, CommonBlockProperties.PORTAL_AXIS);

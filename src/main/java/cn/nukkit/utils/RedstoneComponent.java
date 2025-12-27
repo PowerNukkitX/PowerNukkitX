@@ -13,7 +13,6 @@ import java.util.Set;
  * Interface, all redstone components implement, containing redstone related methods.
  */
 
-
 public interface RedstoneComponent {
     /**
      * Send a redstone update to all blocks around this block.

@@ -15,9 +15,10 @@ import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
 /**
- * PowerNukkitX Project 2023/7/15
+ * Class for the pink petals block.
  *
- * @author daoge_cmd
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/7/15
  */
 public class BlockPinkPetals extends BlockFlower {
 

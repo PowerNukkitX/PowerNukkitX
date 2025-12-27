@@ -20,7 +20,7 @@ public class BlockDeepslateCoalOre extends BlockCoalOre {
 
     @Override
     public String getName() {
-        return "Deeplsate Coal Ore";
+        return "Deepslate Coal Ore";
     }
 
     @Override

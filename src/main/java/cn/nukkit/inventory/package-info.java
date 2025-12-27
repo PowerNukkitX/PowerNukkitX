@@ -1,6 +1,4 @@
 /**
- * 与物品栏相关的类.
- * <p>
- * Classes relevant to Inventory.
+ * Classes relevant to inventory.
  */
 package cn.nukkit.inventory;

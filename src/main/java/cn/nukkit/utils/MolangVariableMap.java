@@ -51,7 +51,7 @@ public final class MolangVariableMap {
         return this;
     }
 
-    /** Set a int variable */
+    /** Set an int variable */
     public MolangVariableMap setInt(String varName, int value) {
         put(varName, "int", Integer.valueOf(value));
         return this;

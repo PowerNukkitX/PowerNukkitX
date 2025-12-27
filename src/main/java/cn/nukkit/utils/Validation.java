@@ -35,8 +35,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, byte value) {
@@ -48,8 +48,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, short value) {
@@ -61,8 +61,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, int value) {
@@ -74,8 +74,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, long value) {
@@ -87,8 +87,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, float value) {
@@ -100,8 +100,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, double value) {
@@ -113,8 +113,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, BigInteger value) {
@@ -126,8 +126,8 @@ public class Validation {
     /**
      * Throws an exception if the value is negative.
      *
-     * @param arg   The name of the argument, will be placed in front of the exception message if the value is is not null.
-     * @param value The argument value to be validated.
+     * @param arg   The name of the argument will be placed in front of the exception message if the value is is not null.
+     * @param value The argument value to be validated
      * @throws IllegalArgumentException If the value is negative.
      */
     public static void checkPositive(@Nullable String arg, BigDecimal value) {

@@ -16,7 +16,8 @@ import java.util.List;
 
 /**
  * SimpleConfig for Nukkit
- * added 11/02/2016 by fromgate
+ * @author fromgate
+ * @since 11/02/2026
  */
 @Slf4j
 public abstract class SimpleConfig {

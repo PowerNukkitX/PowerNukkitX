@@ -1,6 +1,4 @@
 /**
- * 与资源包相关的类.
- * <p>
- * Classes relevant to ResourcePack.
+ * Classes relevant to resource packs.
  */
 package cn.nukkit.resourcepacks;
