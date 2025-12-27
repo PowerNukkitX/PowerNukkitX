@@ -14,16 +14,14 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ClientboundControlSchemeSetPacket extends DataPacket {
 
-    public byte controlScheme;
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        controlScheme = byteBuf.readByte();
+
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeByte(controlScheme);
+
     }
 
     @Override

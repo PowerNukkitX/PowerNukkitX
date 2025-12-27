@@ -14,8 +14,6 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ClientboundDataDrivenUIReloadPacket extends DataPacket {
 
-    public byte controlScheme;
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
     }
