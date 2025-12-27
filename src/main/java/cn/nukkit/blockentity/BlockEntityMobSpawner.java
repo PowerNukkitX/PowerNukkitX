@@ -155,7 +155,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                     }
 
                     Entity ent = Entity.createEntity(this.entityId, pos);
-                    if(ent instanceof EntityMob && getLevel().getFullLight(this) > 8) {
+                    if(ent instanceof EntityMob && getLevel().getFullLight(this) > 7) {
                         ent.close();
                         continue;
                     }
