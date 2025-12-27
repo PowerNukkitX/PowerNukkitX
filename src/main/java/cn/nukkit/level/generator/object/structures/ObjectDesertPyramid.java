@@ -263,7 +263,7 @@ public class ObjectDesertPyramid extends RuledObjectGenerator {
             return false;
         }
 
-        if (!level.getBlock(x, y, z).is(BlockTags.SAND)) {
+        if (!level.getBlock(x, y, z).hasTag(BlockTags.SAND)) {
             return false;
         }
 
