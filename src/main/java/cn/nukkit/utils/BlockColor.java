@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * @author Snake1999
- * @since 2016/1/10
+ * Represents a color used for blocks, including support for tints and alpha.
+ * Provides utility methods for color manipulation and conversion.
  */
 public class BlockColor implements Cloneable {
 

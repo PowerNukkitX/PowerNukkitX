@@ -130,9 +130,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
- * Represents a server object, global singleton.
- * <p>is instantiated in {@link Nukkit} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
- * The constructor method of {@link cn.nukkit.Server} performs a number of operations, including but not limited to initializing configuration files, creating threads, thread pools, start plugins, registering recipes, blocks, entities, items, etc.
+ * Represents the main server singleton for PowerNukkitX.
+ * <p>
+ * This class is instantiated in {@link Nukkit} and can be accessed via {@link cn.nukkit.Server#getInstance()}.
+ * The constructor performs various initialization tasks, including configuration loading, thread and thread pool creation,
+ * plugin startup, and registration of recipes, blocks, entities, items, and more.
+ *
+ * <p>Key responsibilities include:
+ * <ul>
+ *   <li>Managing server lifecycle and configuration</li>
+ *   <li>Handling plugins, commands, and events</li>
+ *   <li>Managing players, levels, and networking</li>
+ *   <li>Providing access to server-wide utilities and managers</li>
+ * </ul>
+ *
+ * <p>Note: This class is a singleton and should be accessed via {@link #getInstance()}.
  *
  * @author MagicDroidX
  * @author Box
@@ -960,7 +972,7 @@ public class Server {
             // TODO: sendUsage
         }
 
-        // 处理可冻结数组
+        // Handle freezable array
         int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
@@ -1434,7 +1446,7 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
@@ -1944,7 +1956,7 @@ public class Server {
 
     // endregion
 
-    // region constants - 常量
+    // region constants
 
     /**
      * @return The name of server

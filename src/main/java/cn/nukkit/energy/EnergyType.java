@@ -3,7 +3,6 @@ package cn.nukkit.energy;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 定义一个能源种类
  * Define an energy type.
  *
  * @author superice666

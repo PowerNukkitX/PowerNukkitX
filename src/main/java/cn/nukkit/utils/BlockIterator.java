@@ -8,7 +8,9 @@ import cn.nukkit.math.Vector3;
 import java.util.Iterator;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Iterator for traversing blocks in a level along a direction vector.
+ * <p>
+ * Used for ray tracing and block selection logic.
  */
 public class BlockIterator implements Iterator<Block> {
     private final Level level;

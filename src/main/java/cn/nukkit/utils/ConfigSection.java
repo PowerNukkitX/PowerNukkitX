@@ -9,33 +9,29 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author fromgate
- * @since 26.04.2016
+ * Represents a section of configuration data, similar to a map or dictionary.
+ * Provides utility methods for nested configuration access, type conversion, and manipulation.
+ * Used as the underlying structure for Config.
  */
 public class ConfigSection extends LinkedHashMap<String, Object> {
-
     /**
-     * Empty ConfigSection constructor
+     * Creates an empty ConfigSection.
      */
     public ConfigSection() {
         super();
     }
-
     /**
-     * Constructor of ConfigSection that contains initial key/value data
-     *
-     * @param key
-     * @param value
+     * Creates a ConfigSection with an initial key/value pair.
+     * @param key The key
+     * @param value The value
      */
     public ConfigSection(String key, Object value) {
         this();
         this.set(key, value);
     }
-
     /**
-     * Constructor of ConfigSection, based on values stored in map.
-     *
-     * @param map
+     * Creates a ConfigSection from a LinkedHashMap.
+     * @param map The map to use
      */
     @SuppressWarnings("unchecked")
     public ConfigSection(LinkedHashMap<String, Object> map) {

@@ -7,6 +7,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+/**
+ * Represents a toggle (checkbox) element for custom forms.
+ * Allows the user to select true/false.
+ */
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
@@ -15,14 +19,25 @@ public class ElementToggle extends Element implements ElementCustom {
     private String text;
     private boolean defaultValue;
 
+    /**
+     * Creates a toggle with empty text and default value false.
+     */
     public ElementToggle() {
         this("");
     }
 
+    /**
+     * Creates a toggle with specified text and default value false.
+     * @param text The toggle label
+     */
     public ElementToggle(String text) {
         this(text, false);
     }
 
+    /**
+     * Serializes the toggle element to JSON.
+     * @return The toggle as a JsonObject
+     */
     @Override
     public JsonObject toJson() {
         this.object.addProperty("type", "toggle");

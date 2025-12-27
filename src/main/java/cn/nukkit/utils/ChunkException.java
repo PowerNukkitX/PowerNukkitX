@@ -1,7 +1,7 @@
 package cn.nukkit.utils;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Exception thrown when a chunk-related error occurs in the world or level system.
  */
 public class ChunkException extends RuntimeException {
 

@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+/**
+ * Represents a slider element for custom forms.
+ * Allows the user to select a value within a range.
+ */
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
@@ -19,26 +23,55 @@ public class ElementSlider extends Element implements ElementCustom {
     private int step;
     private float defaultValue;
 
+    /**
+     * Creates a slider with empty text and default range.
+     */
     public ElementSlider() {
         this("");
     }
 
+    /**
+     * Creates a slider with specified text and default min value.
+     * @param text The slider label
+     */
     public ElementSlider(String text) {
         this(text, 1);
     }
 
+    /**
+     * Creates a slider with specified text and min value, default max value.
+     * @param text The slider label
+     * @param min The minimum value
+     */
     public ElementSlider(String text, float min) {
         this(text, min, Math.max(min, 100));
     }
 
+    /**
+     * Creates a slider with specified text, min, and max values, default step.
+     * @param text The slider label
+     * @param min The minimum value
+     * @param max The maximum value
+     */
     public ElementSlider(String text, float min, float max) {
         this(text, min, max, 1);
     }
 
+    /**
+     * Creates a slider with specified text, min, max, and step values, default value.
+     * @param text The slider label
+     * @param min The minimum value
+     * @param max The maximum value
+     * @param step The step value
+     */
     public ElementSlider(String text, float min, float max, int step) {
         this(text, min, max, step, 1);
     }
 
+    /**
+     * Serializes the slider element to JSON.
+     * @return The slider as a JsonObject
+     */
     @Override
     public JsonObject toJson() {
         Preconditions.checkArgument(this.min < this.max,
