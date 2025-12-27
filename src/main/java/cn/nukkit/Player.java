@@ -2014,7 +2014,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * the cooldown of specified item is endED
+     * the cooldown of specified item is ended
      *
      * @param category a string category
      * @return boolean
