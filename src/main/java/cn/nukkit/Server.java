@@ -2478,7 +2478,7 @@ public class Server {
     /**
      * Get game difficulty from string
      *
-     * @param str A string representing the game difficulty, e.g., 0,peaceful...
+     * @param difficultyString A string representing the game difficulty, e.g., 0,peaceful...
      * @return game difficulty id
      */
     public static int getDifficultyFromString(String difficultyString) {
