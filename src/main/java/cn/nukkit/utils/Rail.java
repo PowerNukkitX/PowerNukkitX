@@ -21,7 +21,7 @@ import static cn.nukkit.utils.Rail.Orientation.State.STRAIGHT;
 /**
  * Internal helper class of railway
  * <p>
- * @author lmlstarqqq
+ * @author lmlstarqaq
  * @since 2017/7/1
  */
 

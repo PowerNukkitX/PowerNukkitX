@@ -31,7 +31,7 @@ public class Watchdog extends Thread {
     @Override
     public void run() {
         while (this.running) {
-            //Refresh the advanced network information in watchdog, as this is time-consuming operated and will block the main thread
+            //Refresh the advanced network information in watchdog, as this is a time-consuming operation and will block the main thread
             server.getNetwork().resetStatistics();
 
             long current = server.getNextTick();
