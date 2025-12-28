@@ -101,6 +101,7 @@ public class EntityBoat extends EntityVehicle {
         this.entityDataMap.put(AMBIENT_SOUND_INTERVAL_RANGE, 16F);
         this.entityDataMap.put(AMBIENT_SOUND_EVENT_NAME, "ambient");
         this.entityDataMap.put(FALL_DAMAGE_MULTIPLIER, 1F);
+        setDataFlag(EntityFlag.COLLIDABLE);
         entityCollisionReduction = -0.5;
     }
 
@@ -597,7 +598,8 @@ public class EntityBoat extends EntityVehicle {
         //TODO: Implement boat push mechanics when player collides
     }
 
-    public void onInput(PlayerAuthInputPacket pk) {
+    @Override
+    public boolean onRiderInput(Player player, PlayerAuthInputPacket pk) {
         Block underBlock = this.level.getBlock(this.getPosition().add(0, -1, 0));
         double accel, maxSpeed;
         boolean inWater = isBoatInWater();
@@ -664,6 +666,7 @@ public class EntityBoat extends EntityVehicle {
         this.headYaw = this.yaw;
         broadcastMovement(false);
         this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
+        return true;
     }
 
     private boolean isWaterBlock(Block b) {

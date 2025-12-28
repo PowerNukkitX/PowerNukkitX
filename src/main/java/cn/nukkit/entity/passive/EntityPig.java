@@ -5,7 +5,6 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -53,7 +52,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRideable, ClimateVariant {
+public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVariant {
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
         new EnumEntityProperty("minecraft:climate_variant", new String[]{
             "temperate",
@@ -66,7 +65,6 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
     @NotNull public String getIdentifier() {
         return PIG;
     }
-    
 
     public EntityPig(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -126,6 +124,16 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, EntityRid
             return 0.45f;
         }
         return 0.9f;
+    }
+
+    @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
     }
 
     @Override

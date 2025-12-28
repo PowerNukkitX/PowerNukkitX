@@ -25,7 +25,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -3439,8 +3438,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //dismount horse
-        if (this.riding instanceof EntityRideable entityRideable) {
-            entityRideable.dismountEntity(this);
+        if (this.riding != null && this.riding.isRideable()) {
+            riding.dismountEntity(this);
         }
 
         unloadAllUsedChunk();
