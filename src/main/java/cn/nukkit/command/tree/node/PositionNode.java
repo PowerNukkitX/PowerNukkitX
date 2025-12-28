@@ -10,6 +10,36 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
+ * Abstract base class for position parameter nodes in PowerNukkitX command trees.
+ * <p>
+ * Provides parsing and validation logic for position arguments, supporting absolute, relative (~), and local (^) coordinates.
+ * Subclasses should provide the appropriate regex pattern for their coordinate type (integer or float).
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Parses and validates position arguments using a regex pattern.</li>
+ *   <li>Supports absolute, relative (~), and local (^) coordinate notation.</li>
+ *   <li>Handles coordinate math for relative and local positions.</li>
+ *   <li>Provides methods for retrieving the parsed position with or without a base position.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Extend this class for custom position node types (e.g., integer or float positions).</li>
+ *   <li>Used as the base for all position parameter nodes.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * public class MyPositionNode extends PositionNode { ... }
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see cn.nukkit.level.Position
+ * @see ParamNode
+ * @since PowerNukkitX 1.19.50
+ */
+/**
  * 坐标节点基类
  */
 public abstract class PositionNode extends ParamNode<Position> {

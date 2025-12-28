@@ -1,3 +1,42 @@
+/**
+ * Provides a comprehensive logging and feedback utility for command execution in PowerNukkitX.
+ * <p>
+ * This record encapsulates all context and output for a command execution, including the command, sender, label, arguments,
+ * output container, and plugin context. It offers a fluent API for adding success, error, and informational messages, handling
+ * localization, formatting, and broadcasting to administrative channels. The logger supports outputting results to the sender,
+ * broadcasting to admins, and whispering feedback to specific players. It also provides specialized error reporting for syntax,
+ * parameter bounds, and selector issues, and integrates with plugin and server i18n systems.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Fluent API for adding success, error, and informational messages with localization support.</li>
+ *   <li>Handles command output formatting, colorization, and message broadcasting.</li>
+ *   <li>Supports output to sender, admin broadcast, and player whispering.</li>
+ *   <li>Provides detailed error reporting for syntax, parameter bounds, and selector issues.</li>
+ *   <li>Integrates with plugin and server i18n for multilingual feedback.</li>
+ *   <li>Tracks and manages command output state and success count.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Instantiate with command context and use fluent methods to add messages and output results.</li>
+ *   <li>Supports both plugin and internal command execution scenarios.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * CommandLogger logger = new CommandLogger(cmd, sender, label, args);
+ * logger.addSuccess("commands.success").output();
+ * logger.addError("commands.error").output();
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see Command
+ * @see CommandSender
+ * @see CommandOutputContainer
+ * @see Plugin
+ * @since PowerNukkitX 1.19.50
+ */
 package cn.nukkit.command.utils;
 
 

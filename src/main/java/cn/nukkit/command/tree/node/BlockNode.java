@@ -7,9 +7,38 @@ import cn.nukkit.command.utils.CommandUtils;
 import cn.nukkit.registry.Registries;
 
 /**
- * 解析对应参数为{@link Block}值
+ * Parses a command parameter as a {@link Block} value for PowerNukkitX command trees.
  * <p>
- * 所有命令枚举{@link CommandEnum#ENUM_BLOCK ENUM_BLOCK}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * This node is used for all command enums of type {@link CommandEnum#ENUM_BLOCK ENUM_BLOCK} if no custom {@link IParamNode}
+ * is specified. It resolves block names (with or without namespace), supports legacy block name mapping, and rejects hidden custom blocks.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Resolves block names to {@link Block} instances using {@link Registries#BLOCK}.</li>
+ *   <li>Supports both namespaced and non-namespaced block names (e.g., "minecraft:stone").</li>
+ *   <li>Maps legacy block names to their modern equivalents.</li>
+ *   <li>Rejects custom blocks that are hidden from commands.</li>
+ *   <li>Sets the parsed block as the node value or triggers an error if invalid.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for block parameter parsing.</li>
+ *   <li>Automatically selected for block enums if no custom node is provided.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses "stone" or "minecraft:stone" as a Block
+ * // Maps legacy names like "stone_slab" to "stone_block_slab"
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see Block
+ * @see CommandEnum#ENUM_BLOCK
+ * @see IParamNode
+ * @see Registries#BLOCK
+ * @since PowerNukkitX 1.19.50
  */
 public class BlockNode extends ParamNode<Block> {
     @Override

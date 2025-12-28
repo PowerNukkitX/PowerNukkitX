@@ -11,57 +11,73 @@ import cn.nukkit.permission.Permissible;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Who sends commands.<br>
- * That can be a player or a console.
+ * Represents an entity capable of sending commands to the server, such as a player or the console.
+ * <p>
+ * The CommandSender interface provides methods for sending messages, retrieving sender information,
+ * and determining the sender's type and location. Implementations may represent players, the console,
+ * command blocks, or other entities capable of executing commands.
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Use {@link #sendMessage(String)} or {@link #sendMessage(TextContainer)} to send messages to the sender.</li>
+ *   <li>Use {@link #getName()} to get the sender's name ("CONSOLE" for the console).</li>
+ *   <li>Use {@link #isPlayer()} and {@link #isEntity()} to check the sender's type.</li>
+ *   <li>Use {@link #getPosition()} and {@link #getLocation()} to get the sender's coordinates.</li>
+ *   <li>Use {@link #sendCommandOutput(CommandOutputContainer)} to send command output containers.</li>
+ * </ul>
+ * <p>
+ * For entity-based senders, use {@link #asEntity()} and {@link #asPlayer()} to retrieve the underlying entity or player.
+ * <p>
+ * Default implementations for entity and player checks return false/null; override in concrete implementations as needed.
+ * <p>
+ * The default position and location are (0, 0, 0) in the server's default level if not overridden.
  *
- * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
- * @author smartcmd(code) @ PowerNukkitX Project
+ * @author MagicDroidX (code) @ Nukkit Project
+ * @author 粉鞋大妈 (javadoc) @ Nukkit Project
+ * @author smartcmd (code) @ PowerNukkitX Project
  * @see cn.nukkit.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public interface CommandSender extends Permissible {
-
     /**
-     * Sends a message to the command sender.
+     * Sends a plain text message to the command sender.
      *
-     * @param message Message to send.
+     * @param message the message to send
      * @see cn.nukkit.utils.TextFormat
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     void sendMessage(String message);
 
     /**
-     * Sends a message to the command sender.
+     * Sends a formatted or translatable message to the command sender.
      *
-     * @param message Message to send.
+     * @param message the TextContainer message to send
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     void sendMessage(TextContainer message);
 
     /**
-     * Send command output.
+     * Sends a command output container to the sender, for advanced command feedback.
      *
-     * @param container the container
+     * @param container the command output container to send
      */
     void sendCommandOutput(CommandOutputContainer container);
 
     /**
-     * Returns the server of the command sender.
+     * Gets the server instance associated with this sender.
      *
-     * @return the server of the command sender.
+     * @return the server instance
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     Server getServer();
 
     /**
-     * Returns the name of the command sender.<br>
-     * If this command sender is a player, will return his/her player name(not display name).<br>
-     * If it is a console, will return {@code "CONSOLE"}.<br>
-     * When you need to determine if the sender is a console, use this:<br>
-     * {@code if(sender instanceof ConsoleCommandSender) .....;}
+     * Gets the name of the command sender.
+     * <p>
+     * For players, returns the player name (not display name). For the console, returns "CONSOLE".
+     * To check if the sender is the console, use {@code if(sender instanceof ConsoleCommandSender)}.
      *
-     * @return The name of the command sender.
+     * @return the name of the sender
      * @see cn.nukkit.Player#getName()
      * @see cn.nukkit.command.ConsoleCommandSender#getName()
      * @see cn.nukkit.plugin.PluginDescription
@@ -71,40 +87,48 @@ public interface CommandSender extends Permissible {
     String getName();
 
     /**
-     * @return Whether the sender is a player
+     * Checks if the sender is a player.
+     *
+     * @return true if the sender is a player, false otherwise
      */
     boolean isPlayer();
 
     /**
-     * Please use this method to check whether the sender is an entity instead of using code {@code "xxx instanceof Entity"} <br>
-     * Because the sender may not an instance of {@code "Entity"} but in fact it is executing commands identity as an entity(e.g.,: {@code "ExecutorCommandSender"})
+     * Checks if the sender is an entity (not just a player).
+     * <p>
+     * Prefer this method over {@code instanceof Entity} checks, as some senders may act as entities
+     * without being direct instances of Entity (e.g., ExecutorCommandSender).
      *
-     * @return Whether the sender is an entity
+     * @return true if the sender is an entity, false otherwise
      */
     default boolean isEntity() {
         return false;
     }
 
     /**
-     * Return the entity who executes the command if the sender is a entity.
+     * Gets the underlying entity if the sender is an entity.
      *
-     * @return Entity instance
+     * @return the Entity instance, or null if not applicable
      */
     default Entity asEntity() {
         return null;
     }
 
     /**
-     * Return the player who executes the command if the sender is a player.
+     * Gets the underlying player if the sender is a player.
      *
-     * @return Player instance
+     * @return the Player instance, or null if not applicable
      */
     default Player asPlayer() {
         return null;
     }
 
     /**
-     * @return Return the sender's position.
+     * Gets the position of the sender in the world.
+     * <p>
+     * Default is (0, 0, 0) in the server's default level if not overridden.
+     *
+     * @return the sender's position
      */
     @NotNull
     default Position getPosition() {
@@ -112,7 +136,11 @@ public interface CommandSender extends Permissible {
     }
 
     /**
-     * @return Return the sender's location.
+     * Gets the location of the sender in the world.
+     * <p>
+     * Default is (0, 0, 0) in the server's default level if not overridden.
+     *
+     * @return the sender's location
      */
     @NotNull
     default Location getLocation() {

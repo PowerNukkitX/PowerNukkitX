@@ -19,7 +19,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * Represents a Minecraft Bedrock Edition rawtext structure and provides parsing, manipulation,
+ * and serialization utilities for PowerNukkitX commands and messages.
+ * <p>
+ * This class allows parsing JSON-formatted rawtext, pre-processing selectors and scoreboard scores,
+ * and converting to and from JSON. It supports all Bedrock rawtext component types, including text,
+ * selectors, translations, scores, and nested rawtext arrays. The class is used to build rich, dynamic
+ * chat messages and command outputs that can include player names, entity selectors, translated strings,
+ * and scoreboard values.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Parses JSON rawtext into a component tree structure.</li>
+ *   <li>Pre-processes selectors and scoreboard scores to resolve dynamic values for a given sender.</li>
+ *   <li>Supports all Bedrock rawtext component types: text, selector, translate, score, rawtext, etc.</li>
+ *   <li>Serializes the component tree back to JSON for network transmission or storage.</li>
+ *   <li>Provides a nested {@code Component} class for representing each rawtext element.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Use {@link #fromRawText(String)} to parse a JSON rawtext string.</li>
+ *   <li>Call {@link #preParse(CommandSender)} to resolve selectors and scores for a specific sender.</li>
+ *   <li>Use {@link #toRawText()} or {@link #toString()} to serialize back to JSON.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * RawText raw = RawText.fromRawText('{"rawtext":[{"text":"Hello "},{"selector":"@a"}]}');
+ * raw.preParse(sender);
+ * String json = raw.toRawText();
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see CommandSender
+ * @see EntitySelectorAPI
+ * @see JSONUtils
+ * @since PowerNukkitX 1.19.50
+ */
 @Getter
 public class RawText {
     private Component base = null;

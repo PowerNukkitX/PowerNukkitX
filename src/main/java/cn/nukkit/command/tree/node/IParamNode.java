@@ -7,7 +7,37 @@ import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 
 /**
- * 代表一个抽象的命令节点，类型T对应节点解析结果类型<br>
+ * Represents an abstract command parameter node for PowerNukkitX command trees.
+ * <p>
+ * This interface defines the contract for parsing, validating, and managing command parameter nodes of type T.
+ * It provides methods for filling the node with a value, retrieving the result, resetting state, error handling,
+ * and initialization with command metadata. Implementations are responsible for argument validation and conversion.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Defines methods for filling, retrieving, and resetting node values.</li>
+ *   <li>Supports error reporting with custom messages and localization.</li>
+ *   <li>Allows initialization with command parameter metadata.</li>
+ *   <li>Supports optional parameters and result state checking.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Implemented by all command parameter node types in the command tree system.</li>
+ *   <li>Used by the command parser to manage argument parsing and error handling.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Custom node implementation:
+ * public class MyNode implements IParamNode<MyType> { ... }
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see ParamList
+ * @see CommandEnum
+ * @see CommandParamType
+ * @since PowerNukkitX 1.19.50
  */
 public interface IParamNode<T> {
 

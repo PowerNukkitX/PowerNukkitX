@@ -1,39 +1,44 @@
 package cn.nukkit.command;
 
 /**
- * An interface what can be implemented by classes which listens to command executing.
+ * Represents a listener for command execution events.
+ * <p>
+ * Classes implementing this interface can handle commands executed by players, the console, or command blocks.
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Implement this interface in your plugin or handler class.</li>
+ *   <li>Register your CommandExecutor with a command to handle its execution.</li>
+ *   <li>Use {@link #onCommand(CommandSender, Command, String, String[])} to define command logic.</li>
+ * </ul>
+ * <p>
+ * The {@code label} parameter is always converted to lower case, while {@code args} preserves the original case.
+ * <p>
+ * If {@code onCommand} returns {@code false}, the server will send usage information to the sender.
+ * <p>
+ * To check permissions, use {@link cn.nukkit.command.Command#testPermissionSilent}.
  *
- * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author MagicDroidX (code) @ Nukkit Project
+ * @author 粉鞋大妈 (javadoc) @ Nukkit Project
  * @see cn.nukkit.plugin.PluginBase
  * @see cn.nukkit.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public interface CommandExecutor {
     /**
-     * Called when a command is executed.</p>
+     * Called when a command is executed.
+     * <p>
+     * The label is always lower case, while arguments keep their original case.
+     * <p>
+     * Return {@code true} if the command executed successfully, or {@code false} to send usage information to the sender.
+     * <p>
+     * To check permissions, use {@link cn.nukkit.command.Command#testPermissionSilent}.
      *
-     * A command can be such a form like {@code /a_LABEL an_arg1 AN_ARG2...}. At this time, the value of
-     * variable {@code label} is {@code "a_label"}, and the values of elements of array {@code args} are
-     * {@code "an_arg1","AN_ARG2",...}. Notice that the value of variable {@code label} will be converted to
-     * lower case, but the cases of elements of array {@code args} won't change.</p>
-     *
-     * If this function returns {@code false}, Nukkit will send command usages to command sender, to explain that
-     * the command didn't work normally. If your command works properly, a {@code true} should be returned to explain
-     * that the command works.</p>
-     *
-     * If you want to test whether a command sender has the permission to execute a command,
-     * you can use {@link cn.nukkit.command.Command#testPermissionSilent}.</p>
-     *
-     * @param sender The sender of this command, this can be a player or a console.
-     *
-     * @param command The command to send.
-     *
-     * @param label  Label of the command.
-     *
-     * @param args  Arguments of this command.
-     *
-     * @return Whether this command is executed successfully.
+     * @param sender The sender of this command (player, console, etc.)
+     * @param command The command being executed
+     * @param label The command label (lower case)
+     * @param args The command arguments (original case)
+     * @return true if the command executed successfully, false otherwise
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     boolean onCommand(CommandSender sender, Command command, String label, String[] args);

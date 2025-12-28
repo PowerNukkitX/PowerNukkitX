@@ -4,7 +4,44 @@ import cn.nukkit.Server;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 
 /**
- * Some commonly used static functions for target selector parsing
+ * Utility class providing static methods for parsing and validating target selector arguments in PowerNukkitX.
+ * <p>
+ * This class contains helper functions commonly used in the parsing and validation of Minecraft selectors (e.g., @p, @a, @e)
+ * and their arguments. It supports offset parsing for coordinates, inversion checks, argument count validation,
+ * value range checks, and gamemode parsing. All methods are static and designed for use in selector and command parsing logic.
+ * <p>
+ * Features:
+ * <ul>
+ *   <li>Parses offset integer and double values (e.g., ~5, ~, 10) for relative and absolute coordinates.</li>
+ *   <li>Checks for argument inversion (negation with '!') and enforces non-negatable parameters.</li>
+ *   <li>Validates that only a single argument is provided for required parameters.</li>
+ *   <li>Checks if a value is within a specified range, regardless of bound order.</li>
+ *   <li>Parses gamemode tokens (e.g., s, survival, 0, c, creative, 1, etc.) to their numeric IDs, including default mode.</li>
+ *   <li>Throws {@link cn.nukkit.command.exceptions.SelectorSyntaxException} for invalid syntax or values.</li>
+ * </ul>
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Call static methods for parsing and validation during selector argument processing.</li>
+ *   <li>Use {@link #parseOffsetInt(String, int)} and {@link #parseOffsetDouble(String, double)} for coordinate parsing.</li>
+ *   <li>Use {@link #checkReversed(String)} and {@link #cannotReversed(String)} for inversion checks.</li>
+ *   <li>Use {@link #singleArgument(String[], String)} to enforce single-value arguments.</li>
+ *   <li>Use {@link #checkBetween(double, double, double)} for range validation.</li>
+ *   <li>Use {@link #parseGameMode(String)} to convert gamemode tokens to numeric IDs.</li>
+ * </ul>
+ * <p>
+ * Example:
+ * <pre>
+ * int x = ParseUtils.parseOffsetInt("~5", 100); // 105
+ * boolean inverted = ParseUtils.checkReversed("!zombie"); // true
+ * ParseUtils.cannotReversed("!player"); // throws SelectorSyntaxException
+ * ParseUtils.singleArgument(args, "type");
+ * boolean inRange = ParseUtils.checkBetween(1, 10, 5); // true
+ * int gamemode = ParseUtils.parseGameMode("creative"); // 1
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @since PowerNukkitX 2.0.0
  */
 
 
