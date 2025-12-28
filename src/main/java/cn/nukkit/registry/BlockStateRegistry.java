@@ -3,6 +3,7 @@ package cn.nukkit.registry;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.education.Education;
 import cn.nukkit.utils.BlockColor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -11,7 +12,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,7 +34,7 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
                 JsonObject entry = blockStateData.get(i).getAsJsonObject();
                 int hash = entry.get("blockStateHash").getAsInt();
                 String name = entry.get("name").getAsString();
-                if(BlockRegistry.skipBlockSet.contains(name)) continue;
+                if (!Education.isEnabled() && Education.eduBlocks.contains(name)) continue;// skip for educational blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
                     Server.getInstance().getLogger().alert(name + " (" + hash + ") was not a part of block_states.json.");

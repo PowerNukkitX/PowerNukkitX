@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.*;
 import cn.nukkit.block.copper.bars.*;
 import cn.nukkit.block.copper.bulb.*;
@@ -11,6 +12,8 @@ import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.shelf.*;
+import cn.nukkit.education.Education;
+import cn.nukkit.education.block.*;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -47,182 +50,10 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
 
-
-    public static final Set<String> skipBlockSet = Set.of(
-            "minecraft:camera",
-            "minecraft:chalkboard",
-            "minecraft:chemical_heat",
-            "minecraft:compound_creator",
-            "minecraft:element_constructor",
-            "minecraft:lab_table",
-            "minecraft:material_reducer",
-            "minecraft:colored_torch_purple",
-            "minecraft:colored_torch_blue",
-            "minecraft:colored_torch_red",
-            "minecraft:colored_torch_green",
-            "minecraft:deprecated_anvil",
-            "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2",
-            "minecraft:element_0",
-            "minecraft:element_1",
-            "minecraft:element_10",
-            "minecraft:element_100",
-            "minecraft:element_101",
-            "minecraft:element_102",
-            "minecraft:element_103",
-            "minecraft:element_104",
-            "minecraft:element_105",
-            "minecraft:element_106",
-            "minecraft:element_107",
-            "minecraft:element_108",
-            "minecraft:element_109",
-            "minecraft:element_11",
-            "minecraft:element_110",
-            "minecraft:element_111",
-            "minecraft:element_112",
-            "minecraft:element_113",
-            "minecraft:element_114",
-            "minecraft:element_115",
-            "minecraft:element_116",
-            "minecraft:element_117",
-            "minecraft:element_118",
-            "minecraft:element_12",
-            "minecraft:element_13",
-            "minecraft:element_14",
-            "minecraft:element_15",
-            "minecraft:element_16",
-            "minecraft:element_17",
-            "minecraft:element_18",
-            "minecraft:element_19",
-            "minecraft:element_2",
-            "minecraft:element_20",
-            "minecraft:element_21",
-            "minecraft:element_22",
-            "minecraft:element_23",
-            "minecraft:element_24",
-            "minecraft:element_25",
-            "minecraft:element_26",
-            "minecraft:element_27",
-            "minecraft:element_28",
-            "minecraft:element_29",
-            "minecraft:element_3",
-            "minecraft:element_30",
-            "minecraft:element_31",
-            "minecraft:element_32",
-            "minecraft:element_33",
-            "minecraft:element_34",
-            "minecraft:element_35",
-            "minecraft:element_36",
-            "minecraft:element_37",
-            "minecraft:element_38",
-            "minecraft:element_39",
-            "minecraft:element_4",
-            "minecraft:element_40",
-            "minecraft:element_41",
-            "minecraft:element_42",
-            "minecraft:element_43",
-            "minecraft:element_44",
-            "minecraft:element_45",
-            "minecraft:element_46",
-            "minecraft:element_47",
-            "minecraft:element_48",
-            "minecraft:element_49",
-            "minecraft:element_5",
-            "minecraft:element_50",
-            "minecraft:element_51",
-            "minecraft:element_52",
-            "minecraft:element_53",
-            "minecraft:element_54",
-            "minecraft:element_55",
-            "minecraft:element_56",
-            "minecraft:element_57",
-            "minecraft:element_58",
-            "minecraft:element_59",
-            "minecraft:element_6",
-            "minecraft:element_60",
-            "minecraft:element_61",
-            "minecraft:element_62",
-            "minecraft:element_63",
-            "minecraft:element_64",
-            "minecraft:element_65",
-            "minecraft:element_66",
-            "minecraft:element_67",
-            "minecraft:element_68",
-            "minecraft:element_69",
-            "minecraft:element_7",
-            "minecraft:element_70",
-            "minecraft:element_71",
-            "minecraft:element_72",
-            "minecraft:element_73",
-            "minecraft:element_74",
-            "minecraft:element_75",
-            "minecraft:element_76",
-            "minecraft:element_77",
-            "minecraft:element_78",
-            "minecraft:element_79",
-            "minecraft:element_8",
-            "minecraft:element_80",
-            "minecraft:element_81",
-            "minecraft:element_82",
-            "minecraft:element_83",
-            "minecraft:element_84",
-            "minecraft:element_85",
-            "minecraft:element_86",
-            "minecraft:element_87",
-            "minecraft:element_88",
-            "minecraft:element_89",
-            "minecraft:element_9",
-            "minecraft:element_90",
-            "minecraft:element_91",
-            "minecraft:element_92",
-            "minecraft:element_93",
-            "minecraft:element_94",
-            "minecraft:element_95",
-            "minecraft:element_96",
-            "minecraft:element_97",
-            "minecraft:element_98",
-            "minecraft:element_99",
-            "minecraft:hard_black_stained_glass",
-            "minecraft:hard_black_stained_glass_pane",
-            "minecraft:hard_blue_stained_glass",
-            "minecraft:hard_blue_stained_glass_pane",
-            "minecraft:hard_brown_stained_glass",
-            "minecraft:hard_brown_stained_glass_pane",
-            "minecraft:hard_cyan_stained_glass",
-            "minecraft:hard_cyan_stained_glass_pane",
-            "minecraft:hard_glass",
-            "minecraft:hard_glass_pane",
-            "minecraft:hard_gray_stained_glass",
-            "minecraft:hard_gray_stained_glass_pane",
-            "minecraft:hard_green_stained_glass",
-            "minecraft:hard_green_stained_glass_pane",
-            "minecraft:hard_light_blue_stained_glass",
-            "minecraft:hard_light_blue_stained_glass_pane",
-            "minecraft:hard_light_gray_stained_glass",
-            "minecraft:hard_light_gray_stained_glass_pane",
-            "minecraft:hard_lime_stained_glass",
-            "minecraft:hard_lime_stained_glass_pane",
-            "minecraft:hard_magenta_stained_glass",
-            "minecraft:hard_magenta_stained_glass_pane",
-            "minecraft:hard_orange_stained_glass",
-            "minecraft:hard_orange_stained_glass_pane",
-            "minecraft:hard_pink_stained_glass",
-            "minecraft:hard_pink_stained_glass_pane",
-            "minecraft:hard_purple_stained_glass",
-            "minecraft:hard_purple_stained_glass_pane",
-            "minecraft:hard_red_stained_glass",
-            "minecraft:hard_red_stained_glass_pane",
-            "minecraft:hard_white_stained_glass",
-            "minecraft:hard_white_stained_glass_pane",
-            "minecraft:hard_yellow_stained_glass",
-            "minecraft:hard_yellow_stained_glass_pane",
-            "minecraft:underwater_torch",
-            "minecraft:underwater_tnt"
-    );
-
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
+
         try {
             register(ACACIA_BUTTON, BlockAcaciaButton.class);
             register(ACACIA_DOOR, BlockAcaciaDoor.class);
@@ -1405,7 +1236,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     @Override
     public void register(String key, Class<? extends Block> value) throws RegisterException {
-        if (skipBlockSet.contains(key)) return;// skip for experimental or educational blocks
+        if (!Education.isEnabled() && Education.eduBlocks.contains(key)) return;// skip for educational blocks
         if (Modifier.isAbstract(value.getModifiers())) {
             throw new RegisterException("You can't register a abstract block class!");
         }
@@ -1659,7 +1490,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public boolean shouldSkip(String bid) {
-        return skipBlockSet.contains(bid);
+        return Education.eduBlocks.contains(bid);
     }
 
     public static CustomBlockDefinition getCustomBlockDefinition(String identifier) {

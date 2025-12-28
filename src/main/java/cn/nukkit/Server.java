@@ -14,6 +14,7 @@ import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
@@ -442,6 +443,8 @@ public class Server {
             BlockComposter.init();
             DispenseBehaviorRegister.init();
         }
+
+        if(settings.gameplaySettings().enableEducation()) Education.enable();
 
         if (useTerra) {//load terra
             PNXPlatform instance = PNXPlatform.getInstance();
