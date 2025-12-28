@@ -222,7 +222,8 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
 
         Entity vehicle = null;
         if((vehicle = player.getRiding()) != null && (vehicle.getDataFlag(EntityFlag.WASD_CONTROLLED) || vehicle.isRiderControl())) {
-            if(vehicle.onRiderInput(player, pk)) return;
+          if(!check(clientLoc, player)) return; 
+          if(vehicle.onRiderInput(player, pk)) return;
         }
 
         playerHandle.offerMovementTask(clientLoc);
