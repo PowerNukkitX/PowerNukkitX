@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  *     <li><b>exactLocationMatch</b> – Only match entities exactly at block coords of location (ignores hitbox size).</li>
  * </ul>
  *
- * <p><b>Result limits & ordering:</b></p>
+ * <p><b>Result limits and ordering:</b></p>
  * <ul>
  *     <li><b>limit</b> – Max results after filtering/sorting. Handy for performance-sensitive scans.</li>
  *     <li><b>closest</b> – Keep N closest entities (requires location).</li>

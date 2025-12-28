@@ -3,16 +3,17 @@ package cn.nukkit.lang;
 /**
  * 一个带有多语言功能的占位符插值文本容器，多语言功能通过{@link BaseLang}实现.
  * <p>
- * A placeholder interpolation text container with multi-language functionality,the multilingualism is implemented via {@link BaseLang}.
+ * A placeholder interpolation text container with multi-language functionality, the multilingualism is implemented via {@link BaseLang}.
  *
  * @author MagicDroidX (Nukkit Project)
  */
 public class TranslationContainer extends TextContainer {
 
     /**
-     * 将参数数组每个下标的参数插入对应占位符{@code {%0,%1,%2...}}
-     * <p>
-     * Insert the argument of each index of the params into the corresponding placeholder {@code {%0,%1,%2...}
+     * Inserts each argument in the given parameter array into its corresponding placeholder
+     * in the form of {@literal {%0, %1, %2, ...}}.
+     *
+     * <p>Each placeholder index refers to the position of the argument in the array.
      */
     protected String[] params;
 

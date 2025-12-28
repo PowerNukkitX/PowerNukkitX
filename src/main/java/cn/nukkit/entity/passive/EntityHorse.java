@@ -9,7 +9,6 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityMarkVariant;
 import cn.nukkit.entity.EntityOwnable;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
@@ -40,6 +39,7 @@ import cn.nukkit.event.entity.EntityFallEvent;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
@@ -55,7 +55,9 @@ import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -65,12 +67,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityOwnable, InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {
         return HORSE;
     }
-    
+
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
@@ -80,8 +82,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     public float getWidth() {
@@ -100,6 +100,26 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
+    }
+
+    @Override
+    public boolean openInventory(Player player) {
+        if (hasOwner(false) && getOwnerName().equals(player.getName())) {
+            player.addWindow(getInventory());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void initEntity() {
         attributeMap = new HashMap<>();
         if (this.namedTag.containsList("Attributes")) {
@@ -115,10 +135,13 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         super.initEntity();
 
         this.horseInventory = new HorseInventory(this);
+
         ListTag<CompoundTag> inventoryTag;
         if (this.namedTag.containsList("Inventory")) {
             inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
             Item item0 = NBTIO.getItemHelper(inventoryTag.get(0));
+            Item item1 = NBTIO.getItemHelper(inventoryTag.get(1));
+
             if (item0.isNull()) {
                 this.setDataFlag(EntityFlag.SADDLED, false);
                 this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -126,7 +149,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             } else {
                 this.getInventory().setItem(0, item0);
             }
-            this.getInventory().setItem(1, NBTIO.getItemHelper(inventoryTag.get(1)));
+
+            if (!item1.isNull()){
+                this.getInventory().setItem(1, item1);
+            }
         } else {
             this.setDataFlag(EntityFlag.SADDLED, false);
             this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -194,8 +220,29 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 2) != 0) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        Item armor = getHorseArmor();
+        if (!armor.isNull()) {
+            drops.add(armor);
+        }
+
+        Item saddle = getSaddle();
+        if (!saddle.isNull()) {
+            drops.add(saddle);
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
@@ -545,4 +592,5 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);
     }
+
 }

@@ -100,9 +100,7 @@ public abstract class Item implements Cloneable, ItemID {
     public static final int WEARABLE_TIER_OTHER = dynamic(1000);
 
     private String idConvertToName() {
-        if (this.name != null) {
-            return this.name;
-        } else {
+        if (this.name == null) {
             var path = this.id.split(":")[1];
             StringBuilder result = new StringBuilder();
             String[] parts = path.split("_");
@@ -112,8 +110,8 @@ public abstract class Item implements Cloneable, ItemID {
                 }
             }
             this.name = result.toString().trim().intern();
-            return name;
         }
+        return this.name;
     }
 
     public Item(@NotNull String id) {
@@ -1312,8 +1310,8 @@ public abstract class Item implements Cloneable, ItemID {
         if (netId != null) {
             if (netId < 0)
                 throw new IllegalArgumentException("stack network id cannot be negative");
-            this.netId = netId;
-        } else this.netId = netId;
+        }
+        this.netId = netId;
     }
 
     @ApiStatus.Internal
@@ -1770,7 +1768,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Get items locked mode in the player's item inventory
      *
-     * @return
+     * @return ItemLockMode
      */
     public ItemLockMode getItemLockMode() {
         CompoundTag tag = getOrCreateNamedTag();
@@ -1793,7 +1791,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Define if the item does not drop on death
      *
-     * @return
+     * @return if item does not drop on death
      */
     public boolean keepOnDeath() {
         CompoundTag tag = getOrCreateNamedTag();
@@ -2309,6 +2307,15 @@ public abstract class Item implements Cloneable, ItemID {
         }
     }
 
+    /**
+     * Retrieves armor knockback resistance of an item
+     *
+     * @return armor knockback resistance
+     */
+    public float getKnockbackResistance() {
+        return 0.0f;
+    }
+
 
     /////////////////////////////
     // Item Tools/Weapons Methods
@@ -2321,7 +2328,7 @@ public abstract class Item implements Cloneable, ItemID {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) {
         return isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears();
-        };
+        }
         return false;
     }
 
@@ -2350,6 +2357,15 @@ public abstract class Item implements Cloneable, ItemID {
     public boolean isSword() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) return def.isSword();
+        return false;
+    }
+
+    /**
+     * Define if the item is a Spear
+     */
+    public boolean isSpear() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isSpear();
         return false;
     }
 
@@ -2390,9 +2406,48 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
-     * Define if the item can break the shield
+     * Define if the item is a Shield
      */
-    public boolean canBreakShield() {
+    public boolean isShield() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isShield();
+        if (this instanceof ItemShield) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Bow
+     */
+    public boolean isBow() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isBow();
+        if (this instanceof ItemBow) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Crossbow
+     */
+    public boolean isCrossbow() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isCrossbow();
+        if (this instanceof ItemCrossbow) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Trident
+     */
+    public boolean isTrident() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isTrident();
+        if (this instanceof ItemTrident) return true;
+        return false;
+    }
+    /**
+     * Define if the item is a Mace
+     */
+    public boolean isMace() {
+        CustomItemDefinition def = getCustomDefinition();
+        if (def != null) return def.isMace();
+        if (this instanceof ItemMace) return true;
         return false;
     }
 
@@ -2402,6 +2457,13 @@ public abstract class Item implements Cloneable, ItemID {
     public boolean isShears() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) return def.isShears();
+        return false;
+    }
+
+    /**
+     * Define if the item can break the shield
+     */
+    public boolean canBreakShield() {
         return false;
     }
 
@@ -2538,8 +2600,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean isCustomItem() {
-        if (this instanceof CustomItem) return true;
-        return false;
+        return this instanceof CustomItem;
     }
 
     private CompoundTag customComponents() {

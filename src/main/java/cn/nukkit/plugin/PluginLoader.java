@@ -1,5 +1,7 @@
 package cn.nukkit.plugin;
 
+import cn.nukkit.Server;
+
 import java.io.File;
 import java.util.regex.Pattern;
 
@@ -31,7 +33,7 @@ public interface PluginLoader {
      * @return 加载完毕的插件的 {@code Plugin}对象。<br>The loaded plugin as a {@code Plugin} object.
      * @throws java.lang.Exception 插件加载失败所抛出的异常。<br>Thrown when an error occurred.
      * @see #loadPlugin(File)
-     * @see cn.nukkit.plugin.PluginBase#init(PluginLoader, cn.nukkit.Server, PluginDescription, File, File)
+     * @see cn.nukkit.plugin.PluginBase#init(PluginLoader, ClassLoader, cn.nukkit.Server, PluginDescription, File, File)
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     Plugin loadPlugin(String filename) throws Exception;
@@ -53,7 +55,7 @@ public interface PluginLoader {
      * @return 加载完毕的插件的 {@code Plugin}对象。<br>The loaded plugin as a {@code Plugin} object.
      * @throws java.lang.Exception 插件加载失败所抛出的异常。<br>Thrown when an error occurred.
      * @see #loadPlugin(String)
-     * @see cn.nukkit.plugin.PluginBase#init(PluginLoader, cn.nukkit.Server, PluginDescription, File, File)
+     * @see cn.nukkit.plugin.PluginBase#init(PluginLoader, ClassLoader, cn.nukkit.Server, PluginDescription, File, File)
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     Plugin loadPlugin(File file) throws Exception;

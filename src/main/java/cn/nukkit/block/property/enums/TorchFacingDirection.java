@@ -32,12 +32,12 @@ public enum TorchFacingDirection {
 
     public @Nullable static TorchFacingDirection getByTorchDirection(@NotNull BlockFace face) {
         return switch (face) {
-            default -> null;
             case UP -> TOP;
             case EAST -> WEST;
             case WEST -> EAST;
             case SOUTH -> NORTH;
             case NORTH -> SOUTH;
+            default -> null;
         };
     }
 
@@ -46,22 +46,22 @@ public enum TorchFacingDirection {
      */
     @NotNull public BlockFace getAttachedFace() {
         return switch (this) {
-            default -> BlockFace.DOWN;
             case EAST -> BlockFace.EAST;
             case WEST -> BlockFace.WEST;
             case SOUTH -> BlockFace.SOUTH;
             case NORTH -> BlockFace.NORTH;
+            default -> BlockFace.DOWN;
         };
     }
 
     public @Nullable static TorchFacingDirection getByAttachedFace(@NotNull BlockFace face) {
         return switch (face) {
-            default -> null;
             case DOWN -> TorchFacingDirection.TOP;
             case SOUTH -> TorchFacingDirection.SOUTH;
             case NORTH -> TorchFacingDirection.NORTH;
             case EAST -> TorchFacingDirection.EAST;
             case WEST -> TorchFacingDirection.WEST;
+            default -> null;
         };
     }
 }

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    <a href="https://powernukkitx.com">
+    <a href="https://powernukkitx.org">
       <img src="https://docs.powernukkitx.org/img/PNX_LOGO_sm.png" width=20%>
     </a>
     <p align="center">
@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft--bedrock-edition-1-21-120">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.120%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-130-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.130%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Protocol" src="https://img.shields.io/badge/protocol-859-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-898-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
@@ -63,14 +63,14 @@
 ## Install
 
 1. Make sure you have `JDK21` installed, if not [download from here](https://www.graalvm.org/downloads)
-2. Download the [`powernukkitx-shaded.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-shaded.jar)
+2. Download the [`powernukkitx.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx.jar)
 3. Get your start script [here](https://github.com/PowerNukkitX/scripts/tree/master)
 
 ## Usage
 
 Starting PowerNukkitX
 ```sh
-java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx-shaded.jar
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx.jar
 ```
 If you use a newer java version (greater than 21) you have to use one of the [startup scripts.](https://github.com/PowerNukkitX/scripts/tree/master)
 

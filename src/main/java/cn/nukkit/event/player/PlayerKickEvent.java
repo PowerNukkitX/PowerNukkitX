@@ -49,7 +49,7 @@ public class PlayerKickEvent extends PlayerEvent implements Cancellable {
         this.player = player;
         this.quitMessage = quitMessage;
         this.reason = reason;
-        this.reasonString = reason.name();
+        this.reasonString = reasonString;
     }
 
     public String getReason() {

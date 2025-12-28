@@ -634,8 +634,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
         color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
         if (color == null) {
-            log.error("Failed to get color of block " + getName());
-            log.error("Current block state hash: " + this.blockstate.blockStateHash());
+            log.error("Failed to get color of block {}", getName());
+            log.error("Current block state hash: {}", this.blockstate.blockStateHash());
             color = BlockColor.VOID_BLOCK_COLOR;
         }
         color.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()));
@@ -1720,7 +1720,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             clonedBlock.position(pos);
             CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
             //方块实体要求direct=true
-            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag) != null;
+            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, false, update, tag) != null;
         } else {
             return pos.level.setBlock(pos, this.layer, this.clone(), true, update);
         }

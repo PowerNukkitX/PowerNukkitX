@@ -49,23 +49,22 @@ public class BlockDeadbush extends BlockFlowable implements BlockFlowerPot.Flowe
     
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (isSupportValid()) {
+        if (isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
         return false;
     }
     
-    private boolean isSupportValid() {
-        Block down = down();
-        if(down instanceof BlockHardenedClay)  return true;
+    public static boolean isSupportValid(Block down) {
+        if(down instanceof BlockHardenedClay) return true;
         return down.hasTag(BlockTags.DIRT) || down.hasTag(BlockTags.SAND);
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isSupportValid()) {
+            if (!isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
 
                 return Level.BLOCK_UPDATE_NORMAL;

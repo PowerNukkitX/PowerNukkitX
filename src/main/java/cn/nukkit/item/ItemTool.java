@@ -25,6 +25,7 @@ public abstract class ItemTool extends Item {
     public static final int TYPE_AXE = 4;
     public static final int TYPE_SHEARS = 5;
     public static final int TYPE_HOE = 6;
+    public static final int TYPE_SPEAR = 7;
     /**
      * Same breaking speed independent of the tool.
      */
@@ -64,6 +65,9 @@ public abstract class ItemTool extends Item {
             }
             case TYPE_SWORD -> {
                 return Item.get(ItemID.NETHERITE_SWORD);
+            }
+            case TYPE_SPEAR -> {
+                return Item.get(ItemID.NETHERITE_SPEAR);
             }
             default -> {
                 // Can't use the switch-case syntax because they are dynamic types

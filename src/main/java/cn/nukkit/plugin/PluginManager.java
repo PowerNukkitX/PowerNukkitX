@@ -8,6 +8,7 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.plugin.PluginReloadEvent;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.permission.Permission;
@@ -675,5 +676,22 @@ public class PluginManager {
                 throw new IllegalAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlers method required!");
             }
         }
+    }
+
+    public void reloadPlugin(Plugin plugin) {
+        if (plugin == null) return;
+
+        PluginReloadEvent event = new PluginReloadEvent(plugin);
+        this.callEvent(event);
+
+        if (event.isCancelled()) return;
+
+        server.getLogger().info("Reloading plugin: " + plugin.getName());
+
+        this.disablePlugin(plugin);
+        this.getPlugins().remove(plugin.getDescription().getName());
+
+        Plugin loadedPlugin = this.loadPlugin(plugin.getFile());
+        this.enablePlugin(loadedPlugin);
     }
 }

@@ -24,6 +24,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -31,8 +32,11 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -105,8 +109,26 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), Item.get(Item.BEEF)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int meatAmount = Utils.rand(1, 3 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_BEEF : Item.BEEF,
+                0,
+                meatAmount
+        ));
+
+        if (Utils.rand(0, 2) != 0) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
@@ -121,14 +143,14 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
             return true;
         }
 
-        if (item.getId() == Item.SHEARS && item.useOn(this)) {
+        if (item.getId().equals(Item.SHEARS) && item.useOn(this)) {
             shear();
             return true;
-        } else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
+        } else if (item.getId().equals(Item.BUCKET) && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
-        } else if (item.getId() == Item.BOWL && item.getDamage() == 0) {
+        } else if (item.getId().equals(Item.BOWL) && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
             return true;

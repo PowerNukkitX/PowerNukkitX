@@ -212,7 +212,7 @@ public class PlayerFood {
     }
 
     public boolean isEnabled() {
-        return !(player.isCreative() || player.isSpectator()) && this.enabled;
+        return !(player.isCreative() || player.isFlying() || player.isSpectator()) && this.enabled;
     }
 
     public void setEnabled(boolean enabled) {

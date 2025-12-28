@@ -4,12 +4,10 @@ import cn.nukkit.block.BlockCarvedPumpkin;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemBook;
-import cn.nukkit.item.ItemBow;
-import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemFishingRod;
 import cn.nukkit.item.ItemHead;
-import cn.nukkit.item.ItemMace;
-import cn.nukkit.item.ItemTrident;
+import cn.nukkit.item.customitem.CustomItem;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -41,7 +39,7 @@ public enum EnchantmentType {
             return true;
         }
 
-        if (item instanceof ItemArmor) {
+        if (item instanceof ItemArmor || (item instanceof CustomItem && item.isArmor())) {
             if (this == WEARABLE || this == ARMOR && item.isArmor()) {
                 return true;
             }
@@ -56,14 +54,14 @@ public enum EnchantmentType {
         }
 
         return switch (this) {
-            case SWORD -> item.isSword() && !(item instanceof ItemTrident);
+            case SWORD -> item.isSword() && !item.isTrident();
             case DIGGER -> item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
-            case BOW -> item instanceof ItemBow;
+            case BOW -> item.isBow();
             case FISHING_ROD -> item instanceof ItemFishingRod;
             case WEARABLE -> item instanceof ItemHead || item.getBlock() instanceof BlockCarvedPumpkin;
-            case TRIDENT -> item instanceof ItemTrident;
-            case CROSSBOW -> item instanceof ItemCrossbow;
-            case MACE -> item instanceof ItemMace;
+            case TRIDENT -> item.isTrident();
+            case CROSSBOW -> item.isCrossbow();
+            case MACE -> item.isMace();
             default -> false;
         };
     }

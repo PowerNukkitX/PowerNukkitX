@@ -46,7 +46,7 @@ public class BookEditProcessor extends DataPacketProcessor<BookEditPacket> {
                 break;
             case SIGN_BOOK:
                 if (pk.title == null || pk.author == null || pk.xuid == null || pk.title.length() > 64 || pk.author.length() > 64 || pk.xuid.length() > 64) {
-                    log.debug(playerHandle.getUsername() + ": Invalid BookEditPacket action SIGN_BOOK: title/author/xuid is too long");
+                    log.debug("{}: Invalid BookEditPacket action SIGN_BOOK: title/author/xuid is too long", playerHandle.getUsername());
                     return;
                 }
                 newBook = Item.get(Item.WRITTEN_BOOK, 0, 1, oldBook.getCompoundTag());

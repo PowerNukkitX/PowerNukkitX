@@ -133,7 +133,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             }
         }
 
-        BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
+        BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
         if (blockEntity == null) {
             return false;
         }

@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockPaleHangingMoss;
 import cn.nukkit.block.BlockPaleOakLeaves;
+import cn.nukkit.block.BlockPaleOakLog;
 import cn.nukkit.block.BlockPaleOakWood;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.property.CommonBlockProperties;
@@ -25,7 +26,7 @@ public class ObjectSmallPaleOakTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final BlockState metaWood = BlockPaleOakWood.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
+    private final BlockState metaWood = BlockPaleOakLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS.createValue(BlockFace.Axis.Y));
 
     /**
      * The metadata value of the leaves to use in tree generation.

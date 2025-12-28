@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDamageByEntityEvent;
@@ -17,7 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityVehicle extends Entity implements EntityRideable, EntityInteractable {
+public abstract class EntityVehicle extends Entity implements EntityInteractable {
 
     protected boolean rollingDirection = true;
 
@@ -52,6 +51,16 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
     @Override
     public String getInteractButtonText(Player player) {
         return "action.interact.mount";
+    }
+
+    @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
     }
 
     @Override

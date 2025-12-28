@@ -227,11 +227,11 @@ public interface Inventory {
 
     void onOpen(Player who);
 
-    @ApiStatus.Internal
     /**
      * @apiNote Used for internal calls. This won't open the window for the player.
-     * @see player.addWindow
+     * @see Player#addWindow
      */
+    @ApiStatus.Internal
     boolean open(Player who);
 
     void onClose(Player who);
@@ -260,7 +260,7 @@ public interface Inventory {
     }
 
     /**
-     * native slot id <-> network slot id
+     * native slot id {@literal <->} network slot id
      */
     @ApiStatus.Internal
     default BiMap<Integer, Integer> networkSlotMap() {

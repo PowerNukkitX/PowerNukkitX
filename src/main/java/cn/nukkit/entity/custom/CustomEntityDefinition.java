@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * CustomEntityDefinition defines custom entities from behavior packs.
+ * CustomEntityDefinition defines custom entities from behavior packs.<p>
  *
  * Use {@link CustomEntityDefinition.SimpleBuilder} to declare all
  * properties and behaviors. The builder centralizes supported fields and
@@ -136,17 +136,16 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
         /**
-         * Set movement speed of the entity and it`s multipliyer when rushing.
-         * @param movement Float value
-         * @param speedMultiplier Float value
+         * Set movement speed of the entity and it's multiplayer when rushing.
+         * @param moveSpeed Float value
          */
         public SimpleBuilder movement(float moveSpeed) {
             return movement(moveSpeed, 1.0f);
         }
 
         /**
-         * Set movement speed of the entity and it`s multipliyer when rushing.
-         * @param movement Float value
+         * Set movement speed of the entity and it's multiplayer when rushing.
+         * @param moveSpeed Float value
          * @param speedMultiplier Float value
          */
         public SimpleBuilder movement(float moveSpeed, float speedMultiplier) {
@@ -155,7 +154,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
 
         /**
          * Defines the range, in blocks, that a mob will pursue a target.
-         * @param radius Int value, the radius of the area of blocks the entity will attempt to stay within around a target.
+         * @param radius Int value, the radius of the area blocks the entity will attempt to stay within around a target.
          * @param max Int value, the maximum distance the mob will go from a target.
          */
         public SimpleBuilder followRange(int radius, int max) {
@@ -190,8 +189,8 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
         /**
-         * Set family types of the entity, can be one or multiple strings
-         * @param values Set of strings ex: .typeFamily("type1", "type2", "type3")
+         * Set family types of the entity can be one or multiple strings
+         * @param families Set of strings ex: .typeFamily("type1", "type2", "type3")
          */
         public SimpleBuilder typeFamily(String... families) {
             LinkedHashSet<String> out = new LinkedHashSet<>();
@@ -241,13 +240,29 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
 
         /**
          * Set the default max health of the entity.
-         * @param maxHealth Int value
+         * @param value Int value
          */
         public SimpleBuilder isPersistent(boolean value) {
             return withBoolean(CustomEntityComponents.PERSISTENT, value);
         }
 
+        /**
+         * If entity should be rideable by players
+         * @param value boolean, true = rideable
+         * @return
+         */
+        public SimpleBuilder isRideable(boolean value) {
+            return withBoolean(CustomEntityComponents.RIDEABLE, value);
+        }
 
+        /**
+         * If entity should be controllable by its passanger(s)
+         * @param value boolean, true = controllable
+         * @return
+         */
+        public SimpleBuilder isRideControllable(boolean value) {
+            return withBoolean(CustomEntityComponents.RIDE_CONTROL, value);
+        }
 
         public CustomEntityDefinition build() {
             MetaStore.put(this.id, this.meta.copy());

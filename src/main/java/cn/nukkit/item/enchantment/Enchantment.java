@@ -198,7 +198,7 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_CROSSBOW_QUICK_CHARGE] = new EnchantmentCrossbowQuickCharge();
         enchantments[ID_SOUL_SPEED] = new EnchantmentSoulSpeed();
         enchantments[ID_SWIFT_SNEAK] = new EnchantmentSwiftSneak();
-        enchantments[38] = null;
+        enchantments[ID_WIND_BURST] = new EnchantmentWindBurst();
         enchantments[ID_DENSITY] = new EnchantmentDensity();
         enchantments[ID_BREACH] = new EnchantmentBreach();
         //custom
@@ -209,8 +209,8 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_PROJECTILE), enchantments[4]);
         namedEnchantments.put(new Identifier("minecraft", NAME_THORNS), enchantments[5]);
         namedEnchantments.put(new Identifier("minecraft", NAME_WATER_BREATHING), enchantments[6]);
-        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[7]);
-        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[8]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WALKER), enchantments[7]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WATER_WORKER), enchantments[8]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ALL), enchantments[9]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_SMITE), enchantments[10]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DAMAGE_ARTHROPODS), enchantments[11]);
@@ -240,6 +240,7 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_CROSSBOW_QUICK_CHARGE), enchantments[35]);
         namedEnchantments.put(new Identifier("minecraft", NAME_SOUL_SPEED), enchantments[36]);
         namedEnchantments.put(new Identifier("minecraft", NAME_SWIFT_SNEAK), enchantments[37]);
+        namedEnchantments.put(new Identifier("minecraft", NAME_WIND_BURST), enchantments[38]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DENSITY), enchantments[39]);
         namedEnchantments.put(new Identifier("minecraft", NAME_BREACH), enchantments[40]);
 

@@ -144,16 +144,17 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public IChunk loadChunk(long index, int chunkX, int chunkZ, boolean create) {
-        IChunk chunk;
-        try {
-            chunk = storage.readChunk(chunkX, chunkZ, this);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        IChunk chunk = this.chunks.get(index);
+        if(chunk == null) {
+            try {
+                chunk = storage.readChunk(chunkX, chunkZ, this);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         if (chunk == null) {
             if (create) {
-                chunk = this.getEmptyChunk(chunkX, chunkZ);
-                putChunk(index, chunk);
+                chunk = getOrPutChunk(index, this.getEmptyChunk(chunkX, chunkZ));
             }
         } else {
             if (Server.getInstance().getSettings().chunkSettings().convertBDSChunks() && chunk.isPopulated()) {
@@ -250,7 +251,17 @@ public class LevelDBProvider implements LevelProvider {
         return isChunkLoaded(Level.chunkHash(X, Z));
     }
 
+    public IChunk getOrPutChunk(long index, IChunk chunk) {
+        IChunk existing = this.chunks.putIfAbsent(index, chunk);
+        return existing != null ? existing : chunk; 
+    }
+
     public void putChunk(long index, IChunk chunk) {
+        if(this.chunks.containsKey(index)) {
+            level.getPlayers().values().forEach(player -> {
+                player.getPlayerChunkManager().getUsedChunks().remove(index);
+            });
+        }
         chunks.put(index, chunk);
     }
 
@@ -577,13 +588,11 @@ public class LevelDBProvider implements LevelProvider {
         }
         long index = Level.chunkHash(chunkX, chunkZ);
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
-        if (tmp != null) {
-            return tmp;
-        } else {
+        if (tmp == null) {
             tmp = this.loadChunk(index, chunkX, chunkZ, create);
             lastChunk.set(new WeakReference<>(tmp));
-            return tmp;
         }
+        return tmp;
     }
 
     @Override

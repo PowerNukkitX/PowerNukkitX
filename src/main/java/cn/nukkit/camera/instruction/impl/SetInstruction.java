@@ -13,9 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 /**
- * @author daoge_cmd
- * @date 2023/6/11
- * PowerNukkitX Project
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/6/11
  */
 
 

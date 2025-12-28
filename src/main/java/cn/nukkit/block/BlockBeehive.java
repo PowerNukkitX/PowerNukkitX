@@ -91,7 +91,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
         int honeyLevel = item.hasCustomBlockData() ? item.getCustomBlockData().getByte("HoneyLevel") : 0;
         setHoneyLevel(honeyLevel);
-        BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, item.getCustomBlockData());
+        BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, item.getCustomBlockData());
         if (beehive == null) {
             return false;
         }

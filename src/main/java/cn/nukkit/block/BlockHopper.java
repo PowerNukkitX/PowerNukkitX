@@ -100,7 +100,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         }
 
         CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

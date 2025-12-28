@@ -37,11 +37,6 @@ public abstract class BlockDoublePlant extends BlockFlowable {
         return new ItemBlock(this, aux);
     }
 
-    /*@Override
-    public boolean canBeReplaced() {
-        return getDoublePlantType() == DoublePlantType.GRASS || getDoublePlantType() == DoublePlantType.FERN;
-    }*/
-
     @Override
     public String getName() {
         return getDoublePlantType().name();
@@ -58,7 +53,7 @@ public abstract class BlockDoublePlant extends BlockFlowable {
                 }
             } else {
                 // Bottom
-                if (!isSupportValid(down())) {
+                if (!isSupportValid(down()) || !(this.up() instanceof BlockDoublePlant)) {
                     this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }

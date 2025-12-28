@@ -28,7 +28,7 @@ public class CreateActionProcessor implements ItemStackRequestActionProcessor<Cr
     public ActionResponse handle(CreateAction action, Player player, ItemStackRequestContext context) {
         Optional<ItemStackRequestAction> itemStackRequestAction = Arrays.stream(context.getItemStackRequest().getActions()).filter(action1 -> action1 instanceof CraftRecipeAction).findFirst();
         if (itemStackRequestAction.isEmpty()) {
-            log.warn("Recipe not found in ItemStackRequest Context! Context: " + context);
+            log.warn("Recipe not found in ItemStackRequest Context! Context: {}", context);
             return context.error();
         }
         Recipe recipe = Registries.RECIPE.getRecipeByNetworkId(((CraftRecipeAction) itemStackRequestAction.get()).getRecipeNetworkId());

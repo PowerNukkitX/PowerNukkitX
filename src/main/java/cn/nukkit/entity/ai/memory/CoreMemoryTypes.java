@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBed;
 import cn.nukkit.block.BlockWoodenDoor;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.memory.codec.BooleanMemoryCodec;
 import cn.nukkit.entity.ai.memory.codec.NumberMemoryCodec;
@@ -15,11 +17,14 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -243,6 +248,13 @@ public interface CoreMemoryTypes {
     MemoryType<Integer> LAST_SITTING_CHECK = new MemoryType<>("minecraft:last_sitting_check", 0);
 
     MemoryType<Integer> PIG_BOOST = new MemoryType<>("minecraft:pig_boost", 0);
+
+    MemoryType<ObjectList<InventoryHolder>> CHESTS = new MemoryType<>("minecraft:chests", new ObjectArrayList<>());
+
+    MemoryType<ObjectList<InventoryHolder>> COPPER_CHESTS = new MemoryType<>("minecraft:copper_chests", new ObjectArrayList<>());
+
+    MemoryType<Integer> FORCE_WANDERING = new MemoryType<>("minecraft:force_wandering", 0);
+
 
 
     /**

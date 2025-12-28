@@ -44,6 +44,7 @@ import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentWindBurst;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -73,6 +74,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.network.protocol.types.SwingSource;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
@@ -624,9 +626,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
         this.scale = this.namedTag.getFloat("Scale");
         if (!this.namedTag.contains("Despawnable")) {
-            boolean persistent = 
-                (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
-                this.namedTag.getBoolean("Persistent");
+            boolean persistent =
+                    (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
+                            this.namedTag.getBoolean("Persistent");
 
             this.namedTag.putBoolean("Despawnable", !persistent);
         }
@@ -1585,8 +1587,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.justCreated = false;
         this.stepOnBlocks = null;
 
-        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable entityRideable) {
-            entityRideable.dismountEntity(this);
+        if (riding != null && !riding.isAlive() && riding.isRideable()) {
+            riding.dismountEntity(this);
         }
         updatePassengers();
 
@@ -1720,6 +1722,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void updateMovement() {
         // This is done for backward compatibility with older plugins.
+        if(isImmobile()) return; //Do not move when immobile
+
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
@@ -2000,7 +2004,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * @deprecated Use {@link #canBePushedByEntities(boolean)} and/or {@link #canBePushedByPiston(boolean)}instead. <p>
+     * @deprecated Use {@link #canBePushedByEntities()} and/or {@link #canBePushedByPiston()} instead. <p>
      * If custom entitye use simpleBuilder.pusable() to define.
      */
     @Deprecated
@@ -2078,10 +2082,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
+    public void updateFallDistance() {
+        this.fallDistance = (float) (this.highestPosition - this.y);
+    }
+
     protected void updateFallState(boolean onGround) {
         if (onGround) {
-            fallDistance = (float) (this.highestPosition - this.y);
-
+            this.updateFallDistance();
             if (fallDistance > 0) {
                 // check if we fell into at least 1 block of water
                 var lb = this.getLevelBlock();
@@ -2247,6 +2254,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        return false; //if false, normal player movement will proceed
+    }
+
+    public boolean isRideable() {
+        if (isCustomEntity()) {
+            return meta().getBoolean(CustomEntityComponents.RIDEABLE, false);
+        }
+
+        return false;
+    }
+
+    public boolean isRiderControl() {
+        if (isCustomEntity()) {
+            return meta().getBoolean(CustomEntityComponents.RIDE_CONTROL, false);
+        }
+
+        return false;
+    }
+
+    public boolean openInventory(Player player) {
+        return false; //return true if opening inventory, otherwise players inventory will be opnened
+    }
+
     public boolean onInteract(Player player, Item item) {
         this.despawnable = false;
         this.setPersistent(true);
@@ -2393,6 +2424,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private static final float Y_SIZE_THRESHOLD = 0.05F;
     private static final float Y_SIZE_BOOST = 0.5F;
     public boolean move(double dx, double dy, double dz) {
+        if(isImmobile()) return true; //Do not move when immobile
+
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
             return true;
@@ -3374,10 +3407,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(players, pk);
     }
 
-    public void playActionAnimation(AnimatePacket.Action action, float rowingTime) {
+    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
-        playActionAnimation(action, rowingTime, viewers);
+        playActionAnimation(action, swingSource, viewers);
     }
 
     /**
@@ -3386,14 +3419,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * 向指定玩家群体播放此实体的action动画
      *
      * @param action     the action
-     * @param rowingTime the rowing time
+     * @param swingSource the swing source
      * @param players    可视玩家 Visible Player
      */
-    public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
+    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
         pk.action = action;
-        pk.rowingTime = rowingTime;
         pk.eid = this.getId();
+        pk.setSwingSource(swingSource);
         Server.broadcastPacket(players, pk);
     }
 
@@ -3420,7 +3453,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (intProperty == null) return false;
 
         if (value < intProperty.getMinValue() || value > intProperty.getMaxValue()) {
-                return false;
+            return false;
         }
 
         intProperties.put(identifier, value);
@@ -3444,7 +3477,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (floatProperty == null) return false;
 
         if (value < floatProperty.getMinValue() || value > floatProperty.getMaxValue()) {
-                return false;
+            return false;
         }
 
         floatProperties.put(identifier, value);
@@ -3510,18 +3543,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
 
         int[] intArray = propertyDefs.stream()
-            .filter(this::shouldSyncIntProperty)
-            .map(this::getIntPropertyValue)
-            .filter(Objects::nonNull)
-            .mapToInt(Integer::intValue)
-            .toArray();
+                .filter(this::shouldSyncIntProperty)
+                .map(this::getIntPropertyValue)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .toArray();
 
         double[] doubleArray = propertyDefs.stream()
-            .filter(this::shouldSyncFloatProperty)
-            .map(this::getFloatPropertyValue)
-            .filter(Objects::nonNull)
-            .mapToDouble(Float::doubleValue)
-            .toArray();
+                .filter(this::shouldSyncFloatProperty)
+                .map(this::getFloatPropertyValue)
+                .filter(Objects::nonNull)
+                .mapToDouble(Float::doubleValue)
+                .toArray();
 
         float[] floatArray = new float[doubleArray.length];
         for (int i = 0; i < doubleArray.length; i++) {
@@ -3534,8 +3567,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private boolean shouldSyncIntProperty(EntityProperty prop) {
         if (!prop.isClientSync()) return false;
         return (prop instanceof IntEntityProperty)
-            || (prop instanceof BooleanEntityProperty)
-            || (prop instanceof EnumEntityProperty);
+                || (prop instanceof BooleanEntityProperty)
+                || (prop instanceof EnumEntityProperty);
     }
 
     private Integer getIntPropertyValue(EntityProperty prop) {

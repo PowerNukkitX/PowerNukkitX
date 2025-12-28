@@ -10,6 +10,7 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.level.generator.object.structures.utils.StructureStart;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -68,7 +69,14 @@ public class StrongholdPopulator extends Populator {
                     generated = true;
                 }
             }
-            if(generated) apply(context);
+            if(generated) {
+                CompoundTag extra = chunk.getExtraData();
+                int attempt = extra.getInt("strongholdGeneratioAttepmt") + 1;
+                if(attempt < 5) {
+                    chunk.getExtraData().putInt("strongholdGeneratioAttepmt", attempt);
+                    apply(context);
+                }
+            }
             else queueObject(chunk, object);
         }
     }

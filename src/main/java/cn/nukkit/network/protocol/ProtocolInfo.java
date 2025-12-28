@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(859);
+    int CURRENT_PROTOCOL = dynamic(898);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.120");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.21.130");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 12,0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 21, 13,0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
@@ -243,4 +243,7 @@ public interface ProtocolInfo {
     int CLIENTBOUND_CONTROL_SCHEME_SET_PACKET = 327;
     int SERVER_SCRIPT_DEBUG_DRAWER_PACKET = 328;
     int SERVERBOUND_PACK_SETTING_CHANGE_PACKET = 329;
+    int GRAPHICS_PARAMETER_OVERRIDE_PACKET = 330;
+    int SERVER_PLAYER_POST_MOVE_POSITION_PACKET = 331;
+    int SERVERBOUND_DATA_STORE_PACKET = 332;
 }

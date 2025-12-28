@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * CustomItemDefinition defines custom items from behavior packs.
+ * CustomItemDefinition defines custom items from behavior packs. <p>
  *
  * Use {@link CustomItemDefinition.SimpleBuilder} to declare all client-facing
  * properties and behaviors. The builder centralizes supported fields and
@@ -55,7 +55,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
      * Definition builder for custom items (deprecated signature).
      *
      * @param item deprecated ItemCustom
-     * @deprecated Extend {@link Item} and implement {@link CustomItem}; use {@link #simpleBuilder(CustomItem)} instead.
+     * @deprecated Extend {@link Item} and implement {@link CustomItem}; use {@link #simpleBuilder(Item)} instead.
      */
     @Deprecated
     public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item) {
@@ -395,7 +395,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         /**
          * Make persistent component determines if the item should eventually despawn/or not while floating in the world
-         * @param persistent boolean true/flase
+         * @param shouldDespawn boolean true/flase
          */
         public SimpleBuilder shouldDespawn(boolean shouldDespawn) {
             this.shouldDespawn = shouldDespawn;
@@ -465,7 +465,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         /**
          * Sets item durability (Bedrock "minecraft:durability"). <p>
-         * If not set: damage_chance min & max defaults to 100.
+         * If not set: damage_chance min and max defaults to 100.
          * @param maxDurability int value, must be >= 0
          */
         public SimpleBuilder durability(int maxDurability) {
@@ -475,10 +475,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
 
         /**
          * Sets item durability (Bedrock "minecraft:durability"). <p>
-         * damage_chance will randomize between the min & max.
-         * @param maxDurability int value, must be >= 0.
-         * @param damageChanceMin int value, percentage change must be >= 0 & <=100.
-         * @param damageChanceMax int value, percentage change must be >= 0 & <=100.
+         * damage_chance will randomize between the min and max.
+         * @param maxDurability int value must be >= 0.
+         * @param damageChanceMin int value, percentage change must be >= 0 and {@literal <=100}.
+         * @param damageChanceMax int value, percentage change must be >= 0 and {@literal <=100}.
          */
         public SimpleBuilder durability(int maxDurability, int damageChanceMin, int damageChanceMax) {
             Preconditions.checkArgument(maxDurability >= 0, "maxDurability must be >= 0");
@@ -499,7 +499,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * builder.enchantable("pickaxe", 20);
          * </pre>
          * @param slot {@link ItemEnchantSlot} slot ID of the enchantable item
-         * @param value int value, must be >= 0
+         * @param value int value, can be 0 if you enchant over API, must be >= 1 if you use Anvil
          */
         public SimpleBuilder enchantable(ItemEnchantSlot slot, int value) {
             if (value < 0) value = 0;
@@ -516,7 +516,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * builder.enchantable("pickaxe", 20);
          * </pre>
          * @param slot string slot ID of the enchantable item
-         * @param value int value, must be >= 0
+         * @param value int value, can be 0 if you enchant over API, must be >= 1 if you use Anvil
          */
         public SimpleBuilder enchantable(String slot, int value) {
             if (slot == null || slot.isBlank()) return this;
@@ -901,9 +901,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          * @param doSwingAnimation Determines whether the item should use the swing animation when thrown.
          * @param launchPowerScale The scale at which the power of the throw increases.
          * @param maxLaunchPower The maximum power to launch the throwable item.
-         * @param maxDrawDuration The maximum duration to draw a throwable item. Default is set to 0.0.
-         * @param minDrawDuration The minimum duration to draw a throwable item. Default is set to 0.0.
-         * @param scalePowerByDrawDuration Whether or not the power of the throw increases with duration charged. Default is set to false
          */
         public SimpleBuilder throwable(boolean doSwingAnimation,
                                        float launchPowerScale,
@@ -1221,9 +1218,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         /**
          * @deprecated Mining speed is not present in any Microsoft / Mojang docs,
          * it might have deprecated as it also is part of item properties as most of
-         * legacy deprecated components.
-         *
-         * Prefer using {@link digger} component.
+         * the legacy deprecated components.
+         * Prefer using {@link #digger} component.
          */
         @Deprecated
         public SimpleBuilder miningSpeed(float speed) {
@@ -1233,9 +1229,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         }
 
         /**
-         * @deprecated to avoid misleading, use {@link #shouldDespawn()} instead.
-         * Make persistent component determines if the item should eventually despawn/or not while floating in the world
-         * @param persistent boolean true/flase
+         * @deprecated to avoid misleading, use {@link #shouldDespawn(boolean)} instead.
+         * Make persistent component determine if the item should eventually despawn/or not while floating in the world
+         * @param makePersistent boolean true/false
          */
         @Deprecated
         public SimpleBuilder makePersistent(boolean makePersistent) {
@@ -1247,7 +1243,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
      * Definition builder for custom items
      *
      * @param item the item
-     * @return the custom item definition . simple builder
+     * @return the custom item definition. Simple builder
      */
     public static <T extends Item & CustomItem> CustomItemDefinition.SimpleBuilder customBuilder(T item) {
         return simpleBuilder(item);
@@ -1805,6 +1801,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         return ItemEnchantSlot.fromId(slot);
     }
     public boolean isSword()     { return getEnchantSlot() == ItemEnchantSlot.SWORD; }
+    public boolean isMace()      { return getEnchantSlot() == ItemEnchantSlot.MACE; }
     public boolean isShield()    { return getEnchantSlot() == ItemEnchantSlot.SHIELD; }
     public boolean isPickaxe()   { return getEnchantSlot() == ItemEnchantSlot.PICKAXE; }
     public boolean isShovel()    { return getEnchantSlot() == ItemEnchantSlot.SHOVEL; }
@@ -1813,7 +1810,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     public boolean isShears()    { return getEnchantSlot() == ItemEnchantSlot.SHEARS; }
     public boolean isBow()       { return getEnchantSlot() == ItemEnchantSlot.BOW; }
     public boolean isCrossbow()  { return getEnchantSlot() == ItemEnchantSlot.CROSSBOW; }
-    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
+    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.TRIDENT; }
+    public boolean isSpear()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
 
     public int wearableProtection() {
         CompoundTag wearable = getComponent("minecraft:wearable");

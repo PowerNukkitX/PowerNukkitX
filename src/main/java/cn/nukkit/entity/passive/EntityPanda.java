@@ -277,7 +277,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         return new Item[] {
           Item.get(Block.BAMBOO, 0, Utils.rand(0, 3))
         };

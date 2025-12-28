@@ -11,6 +11,8 @@ import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
+import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
+import cn.nukkit.recipe.special.DecoratedPotRecipe;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
@@ -892,6 +894,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 Collections.singletonList(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false),
                 Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
+
+        //Registering special recipes
+        this.registerSpecial();
+    }
+
+    private void registerSpecial() {
+        this.register(new DecoratedPotRecipe());
+        this.register(new SmithingArmorTrimCorrectedRecipe());
     }
 
     /**
@@ -1058,12 +1068,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             char ingredientChar = ingredientEntry.getKey().charAt(0);
             var ingredient = ingredientEntry.getValue();
             ItemDescriptor itemDescriptor = parseRecipeItem(ingredient);
-            if (itemDescriptor == null) return null;
             ingredients.put(ingredientChar, itemDescriptor);
         }
 
         RecipeUnlockingRequirement recipeUnlockingRequirement = null;
-        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, recipeUnlockingRequirement);
+        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, null);
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {

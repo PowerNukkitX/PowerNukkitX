@@ -22,7 +22,7 @@ public class ConfigUpdater {
         int ver = Integer.parseInt(version.replaceAll("\\.", ""));
         for(Updater updater : updaters) {
             if(updater.getVersion() <= ver) continue;
-            log.info("Updating config to version " + updater.getVersion());
+            log.info("Updating config to version {}", updater.getVersion());
             updater.update(server);
             ver = updater.getVersion();
         }

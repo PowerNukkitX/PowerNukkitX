@@ -12,8 +12,10 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -65,8 +67,13 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{ Item.get(ItemID.INK_SAC, 0, 1) };
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(1, 3 + looting);
+
+        return new Item[]{
+                Item.get(ItemID.INK_SAC, 0, amount)
+        };
     }
 
     @Override

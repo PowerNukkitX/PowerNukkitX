@@ -110,6 +110,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BUCKET, ItemBucket.class);
             register(BUNDLE, ItemBundle.class);
             register(BURN_POTTERY_SHERD, ItemBurnPotterySherd.class);
+            register(CAMEL_HUSK_SPAWN_EGG, ItemCamelHuskSpawnEgg.class);
             register(CAMEL_SPAWN_EGG, ItemCamelSpawnEgg.class);
             register(CARPET, ItemCarpet.class);
             register(CARROT, ItemCarrot.class);
@@ -178,8 +179,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(DIAMOND_HOE, ItemDiamondHoe.class);
             register(DIAMOND_HORSE_ARMOR, ItemDiamondHorseArmor.class);
             register(DIAMOND_LEGGINGS, ItemDiamondLeggings.class);
+            register(DIAMOND_NAUTILUS_ARMOR, ItemDiamondNautilusArmor.class);
             register(DIAMOND_PICKAXE, ItemDiamondPickaxe.class);
             register(DIAMOND_SHOVEL, ItemDiamondShovel.class);
+            register(DIAMOND_SPEAR, ItemDiamondSpear.class);
             register(DIAMOND_SWORD, ItemDiamondSword.class);
             register(DIRT, ItemDirt.class);
             register(DISC_FRAGMENT_5, ItemDiscFragment5.class);
@@ -251,8 +254,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(GOLDEN_HOE, ItemGoldenHoe.class);
             register(GOLDEN_HORSE_ARMOR, ItemGoldenHorseArmor.class);
             register(GOLDEN_LEGGINGS, ItemGoldenLeggings.class);
+            register(GOLDEN_NAUTILUS_ARMOR, ItemGoldenNautilusArmor.class);
             register(GOLDEN_PICKAXE, ItemGoldenPickaxe.class);
             register(GOLDEN_SHOVEL, ItemGoldenShovel.class);
+            register(GOLDEN_SPEAR, ItemGoldenSpear.class);
             register(GOLDEN_SWORD, ItemGoldenSword.class);
             register(GRAY_BUNDLE, ItemGrayBundle.class);
             register(GRAY_DYE, ItemGrayDye.class);
@@ -286,9 +291,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(IRON_HORSE_ARMOR, ItemIronHorseArmor.class);
             register(IRON_INGOT, ItemIronIngot.class);
             register(IRON_LEGGINGS, ItemIronLeggings.class);
+            register(IRON_NAUTILUS_ARMOR, ItemIronNautilusArmor.class);
             register(IRON_NUGGET, ItemIronNugget.class);
             register(IRON_PICKAXE, ItemIronPickaxe.class);
             register(IRON_SHOVEL, ItemIronShovel.class);
+            register(IRON_SPEAR, ItemIronSpear.class);
             register(IRON_SWORD, ItemIronSword.class);
             register(JUNGLE_BOAT, ItemJungleBoat.class);
             register(JUNGLE_CHEST_BOAT, ItemJungleChestBoat.class);
@@ -356,6 +363,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(MUTTON, ItemMutton.class);
             register(NAME_TAG, ItemNameTag.class);
             register(NAUTILUS_SHELL, ItemNautilusShell.class);
+            register(NAUTILUS_SPAWN_EGG, ItemNautilusSpawnEgg.class);
             register(NETHER_STAR, ItemNetherStar.class);
             register(NETHERBRICK, ItemNetherbrick.class);
             register(NETHERITE_AXE, ItemNetheriteAxe.class);
@@ -363,11 +371,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(NETHERITE_CHESTPLATE, ItemNetheriteChestplate.class);
             register(NETHERITE_HELMET, ItemNetheriteHelmet.class);
             register(NETHERITE_HOE, ItemNetheriteHoe.class);
+            register(NETHERITE_HORSE_ARMOR, ItemNetheriteHorseArmor.class);
             register(NETHERITE_INGOT, ItemNetheriteIngot.class);
             register(NETHERITE_LEGGINGS, ItemNetheriteLeggings.class);
+            register(NETHERITE_NAUTILUS_ARMOR, ItemNetheriteNautilusArmor.class);
             register(NETHERITE_PICKAXE, ItemNetheritePickaxe.class);
             register(NETHERITE_SCRAP, ItemNetheriteScrap.class);
             register(NETHERITE_SHOVEL, ItemNetheriteShovel.class);
+            register(NETHERITE_SPEAR, ItemNetheriteSpear.class);
             register(NETHERITE_SWORD, ItemNetheriteSword.class);
             register(NETHERITE_UPGRADE_SMITHING_TEMPLATE, ItemNetheriteUpgradeSmithingTemplate.class);
             register(NPC_SPAWN_EGG, ItemNpcSpawnEgg.class);
@@ -386,6 +397,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(PALE_OAK_SIGN, ItemPaleOakSign.class);
             register(PANDA_SPAWN_EGG, ItemPandaSpawnEgg.class);
             register(PAPER, ItemPaper.class);
+            register(PARCHED_SPAWN_EGG, ItemParchedSpawnEgg.class);
             register(PARROT_SPAWN_EGG, ItemParrotSpawnEgg.class);
             register(PHANTOM_MEMBRANE, ItemPhantomMembrane.class);
             register(PHANTOM_SPAWN_EGG, ItemPhantomSpawnEgg.class);
@@ -496,6 +508,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(STONE_HOE, ItemStoneHoe.class);
             register(STONE_PICKAXE, ItemStonePickaxe.class);
             register(STONE_SHOVEL, ItemStoneShovel.class);
+            register(STONE_SPEAR, ItemStoneSpear.class);
             register(STONE_SWORD, ItemStoneSword.class);
             register(STRAY_SPAWN_EGG, ItemStraySpawnEgg.class);
             register(STRIDER_SPAWN_EGG, ItemStriderSpawnEgg.class);
@@ -548,6 +561,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(WOODEN_PICKAXE, ItemWoodenPickaxe.class);
             register(WOODEN_SHOVEL, ItemWoodenShovel.class);
             register(WOODEN_SLAB, ItemWoodenSlab.class);
+            register(WOODEN_SPEAR, ItemWoodenSpear.class);
             register(WOODEN_SWORD, ItemWoodenSword.class);
             register(WOOL, ItemWool.class);
             register(WRITABLE_BOOK, ItemWritableBook.class);
@@ -557,6 +571,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOGLIN_SPAWN_EGG, ItemZoglinSpawnEgg.class);
             register(ZOMBIE_HEAD, ItemZombieHead.class);
             register(ZOMBIE_HORSE_SPAWN_EGG, ItemZombieHorseSpawnEgg.class);
+            register(ZOMBIE_NAUTILUS_SPAWN_EGG, ItemZombieNautilusSpawnEgg.class);
             register(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
             register(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
@@ -594,6 +609,8 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(COPPER_HOE, ItemCopperHoe.class);
             register(COPPER_PICKAXE, ItemCopperPickaxe.class);
             register(COPPER_SHOVEL, ItemCopperShovel.class);
+            register(COPPER_NAUTILUS_ARMOR, ItemCopperNautilusArmor.class);
+            register(COPPER_SPEAR, ItemCopperSpear.class);
             register(COPPER_SWORD, ItemCopperSword.class);
 
             registerBlockItem();

@@ -15,38 +15,30 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
-import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
-import cn.nukkit.nbt.tag.IntArrayTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.LongTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.registry.BiomeRegistry;
+import cn.nukkit.plugin.Plugin;
+import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.OptionalValue;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import cn.nukkit.utils.TextFormat;
 
-import java.lang.reflect.Field;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -85,6 +77,11 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("type", new String[]{"placejava", "place", "registry"}),
                 CommandParameter.newType("file", CommandParamType.STRING)
         });
+        this.commandParameters.put("reload", new CommandParameter[]{
+                CommandParameter.newEnum("reload", new String[]{"reload"}),
+                CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin"}),
+                CommandParameter.newType("plugin", true, CommandParamType.STRING)
+        });
         this.enableParamTree();
     }
 
@@ -102,7 +99,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 AbstractStructure structure = null;
                 switch (list.getResult(1).toString()) {
                     case "placejava" -> {
-
                         try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".nbt")) {
                             CompoundTag root = NBTIO.readCompressed(stream);
                             structure = JeStructure.fromNbt(root);
@@ -112,12 +108,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         }
                     }
 
-                    case "place" -> {
-                        structure = StructureAPI.load(structureName);
-                    }
-                    case "registry" -> {
-                        structure = Registries.STRUCTURE.get(structureName);
-                    }
+                    case "place" -> structure = StructureAPI.load(structureName);
+                    case "registry" -> structure = Registries.STRUCTURE.get(structureName);
                 }
                 if (structure == null) {
                     log.addError("Structure " + structureName + " not found").output();
@@ -302,6 +294,41 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     }
                 }
                 return 0;
+            }
+            case "reload" -> {
+                var server = sender.getServer();
+                if (!list.hasResult(1)) {
+                    log.addMessage(TextFormat.YELLOW + "%nukkit.command.debug.reloading" + TextFormat.WHITE).output(true);
+                    server.reload();
+                } else {
+                    switch (list.getResult(1).toString()) {
+                        case "function" -> {
+                            log.addSuccess("§eReloading functions...").output(true);
+                            server.getFunctionManager().reload();
+                        }
+                        case "plugin" -> {
+                            if (!list.hasResult(2)) {
+                                log.addError("Plugin name required").output(true);
+                                return 0;
+                            }
+
+                            String pluginName = list.getResult(2);
+
+                            PluginManager pluginManager = server.getPluginManager();
+                            Plugin plugin = pluginManager.getPlugin(pluginName);
+
+                            if (plugin == null) {
+                                log.addError("Plugin not found: " + pluginName).output(true);
+                                return 0;
+                            }
+
+                            log.addSuccess("§eReloading plugin...").output(true);
+                            pluginManager.reloadPlugin(plugin);
+                        }
+                    }
+                }
+
+                return 1;
             }
             default -> {
                 return 0;

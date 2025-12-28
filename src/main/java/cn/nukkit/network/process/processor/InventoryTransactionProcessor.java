@@ -191,7 +191,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     if(event.isKick())
                         player.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
 
-                    log.warn(player.getName() + " tried to attack oneself");
+                    log.warn("{} tried to attack oneself", player.getName());
                     return;
                 }
                 if (!player.canInteract(target, player.isCreative() ? 8 : 5)) {

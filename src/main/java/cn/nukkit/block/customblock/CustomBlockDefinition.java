@@ -10,6 +10,7 @@ import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.block.property.type.BooleanPropertyType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.block.property.type.IntPropertyType;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.math.AxisAlignedBB;
@@ -444,23 +445,36 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         }
 
         /**
-         * Set the block collision box.
+         * Set the block collision box. You can add multiple boxes to create complex shapes by calling this method multiple times.
          *
          * @param origin The origin of the collision box
          * @param size   The size of the collision box
          */
         public Builder collisionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:collision_box", new CompoundTag()
-                            .putBoolean("enabled", true)
-                            .putList("origin", new ListTag<FloatTag>()
-                                    .add(new FloatTag(origin.x))
-                                    .add(new FloatTag(origin.y))
-                                    .add(new FloatTag(origin.z)))
-                            .putList("size", new ListTag<FloatTag>()
-                                    .add(new FloatTag(size.x))
-                                    .add(new FloatTag(size.y))
-                                    .add(new FloatTag(size.z))));
+            float minX = origin.x + 8f;
+            float minY = origin.y;
+            float minZ = origin.z + 8f;
+
+            float maxX = minX + size.x;
+            float maxY = minY + size.y;
+            float maxZ = minZ + size.z;
+
+            CompoundTag components = this.nbt.getCompound("components");
+            CompoundTag collision = components.getCompound("minecraft:collision_box");
+            if (collision.isEmpty()) collision.putBoolean("enabled", true);
+
+            ListTag<CompoundTag> boxes = collision.getList("boxes", CompoundTag.class);
+            boxes.add(new CompoundTag()
+                    .putFloat("minX", minX)
+                    .putFloat("minY", minY)
+                    .putFloat("minZ", minZ)
+                    .putFloat("maxX", maxX)
+                    .putFloat("maxY", maxY)
+                    .putFloat("maxZ", maxZ));
+
+            collision.putList("boxes", boxes);
+            components.putCompound("minecraft:collision_box", collision);
+
             return this;
         }
 
@@ -537,7 +551,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         /**
          * Enables step sensor logic (entity step-on/off).
          * <p>
-         * When enabled, override {@link #onEntityStepOn(Entity)} and {@link #onEntityStepOff(Entity)} for custom handling.
+         * When enabled, override {@link Block#onEntityStepOn(Entity)} and {@link Block#onEntityStepOff(Entity)} for custom handling.
          */
         public Builder isStepSensor(boolean value) {
             this.isStepSensor = value;

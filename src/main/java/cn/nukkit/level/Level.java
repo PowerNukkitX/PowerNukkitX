@@ -10,6 +10,7 @@ import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.EntityID;
@@ -453,7 +454,7 @@ public class Level implements Metadatable {
         };
         subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
-                .onStop(() -> log.debug(levelName + " SubTick is closed!"))
+                .onStop(() -> log.debug("{} SubTick is closed!", levelName))
                 .loopCountPerSec(20)
                 .build();
         this.subTickThread = new Thread() {
@@ -1472,7 +1473,7 @@ public class Level implements Metadatable {
         for (Vector3 block : blocks) {
             if (block != null) size++;
         }
-        var packets = new ArrayList<UpdateBlockPacket>(size);
+        var packets = new ArrayList<DataPacket>(size);
         LongSet chunks = null;
         if (optimizeRebuilds) {
             chunks = new LongOpenHashSet();
@@ -1500,6 +1501,9 @@ public class Level implements Metadatable {
             int runtimeId;
             if (b instanceof Block block) {
                 runtimeId = block.getRuntimeId();
+                if(block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntitySpawnable spawnable) {
+                    packets.add(spawnable.getSpawnPacket());
+                }
             } else if (b instanceof Vector3WithRuntimeId vRid) {
                 if (dataLayer == 0) {
                     runtimeId = vRid.getRuntimeIdLayer0();
@@ -2935,7 +2939,11 @@ public class Level implements Metadatable {
 
         boolean isPlayerInput = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT;
 
-        if (player != null && isPlayerInput) {
+        // TriggerType == SIMULATION_TICK when a player spam-uses bone meal on a fertilizable block
+        // therefore isPlayerInput check has to be overriden when bone meal is used
+        boolean isValidTrigger = isPlayerInput || item.isFertilizer();
+
+        if (player != null && isValidTrigger) {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
             //                                handle spawn protect
             if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
@@ -4297,7 +4305,7 @@ public class Level implements Metadatable {
                         Position checkLoc = Position.fromObject(spawn, this).add(dx, dy, dz);
                         count++;
                         if(count > 10000) {
-                            log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + ". Too many attempts!");
+                            log.debug("cannot find a safe spawn around {}. Too many attempts!", spawn.asBlockVector3());
                             if(checkHighest)
                                 return getSafeSpawn(spawn.setY(getHighestBlockAt((int) spawn.getX(), (int) spawn.getZ())), horizontalMaxOffset, allowWaterUnder, false);
                             else
@@ -4309,7 +4317,7 @@ public class Level implements Metadatable {
             }
         }
 
-        log.debug("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
+        log.debug("cannot find a safe spawn around {}!", spawn.asBlockVector3());
         return Position.fromObject(spawn, this);
     }
 
@@ -4483,8 +4491,6 @@ public class Level implements Metadatable {
      * 异步执行服务器内存垃圾收集
      * <p>
      * Run server memory garbage collection asynchronously
-     *
-     * @return the list
      */
     public void doLevelGarbageCollection() {
         //gcBlockInventoryMetaData

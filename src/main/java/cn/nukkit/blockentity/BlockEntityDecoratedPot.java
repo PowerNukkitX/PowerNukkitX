@@ -18,6 +18,6 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     @Override
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
-                .putList("sherds",namedTag.getList("sherds"));
+                .putList("sherds", namedTag.getList("sherds"));
     }
 }

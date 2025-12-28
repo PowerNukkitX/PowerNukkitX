@@ -22,7 +22,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
         Player player = playerHandle.player;
         Block block = player.level.getBlock(pk.x, pk.y, pk.z, false);
         if (block.distanceSquared(player) > 1000) {
-            log.debug(playerHandle.getUsername() + ": Block pick request for a block too far away");
+            log.debug("{}: Block pick request for a block too far away", playerHandle.getUsername());
             return;
         }
         Item item = block.toItem();

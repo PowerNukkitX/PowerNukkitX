@@ -12,7 +12,7 @@ public class ByteBufVarInt {
     private static final BigInteger BIG_INTEGER_80 = BigInteger.valueOf(0x80);
 
     public void writeInt(ByteBuf buffer, int value) {
-        encode(buffer, ((value << 1) ^ (value >> 31)) & 0xFFFFFFFFL);
+        encode(buffer, (((long) value << 1) ^ (value >> 31)) & 0xFFFFFFFFL);
     }
 
     public int readInt(ByteBuf buffer) {

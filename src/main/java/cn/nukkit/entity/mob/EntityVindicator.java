@@ -23,10 +23,12 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -116,12 +118,13 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         Item axe = Item.get(Item.IRON_AXE);
         axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
         return new Item[]{
                 axe,
-                Item.get(Item.EMERALD, 0, ThreadLocalRandom.current().nextInt(2))
+                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + looting))
         };
     }
 

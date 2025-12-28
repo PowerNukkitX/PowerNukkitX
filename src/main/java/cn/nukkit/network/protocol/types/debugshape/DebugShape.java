@@ -9,6 +9,7 @@ import java.awt.*;
 @Getter
 public class DebugShape {
     public long networkId;
+    public int dimension;
     public ScriptDebugShapeType shapeType;
     public Vector3f location;
     public Float scale;

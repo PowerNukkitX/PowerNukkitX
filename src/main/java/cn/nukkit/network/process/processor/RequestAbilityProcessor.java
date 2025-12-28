@@ -21,7 +21,7 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
         Player player = playerHandle.player;
         PlayerAbility ability = pk.ability;
         if (ability != PlayerAbility.FLYING) {
-            log.info("[" + player.getName() + "] has tried to trigger " + ability + " ability " + (pk.boolValue ? "on" : "off"));
+            log.info("[{}] has tried to trigger {} ability {}", player.getName(), ability, pk.boolValue ? "on" : "off");
             return;
         }
 

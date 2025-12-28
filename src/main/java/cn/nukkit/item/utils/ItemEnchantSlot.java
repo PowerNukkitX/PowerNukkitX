@@ -6,6 +6,7 @@ public enum ItemEnchantSlot {
     NONE("none"),
     ALL("all"),
     SWORD("sword"),
+    MACE("all"), // Temporary untill Mojang opens what slot is used for mace
     SPEAR("spear"),
     BOW("bow"),
     CROSSBOW("crossbow"),
@@ -37,7 +38,7 @@ public enum ItemEnchantSlot {
     LEGS("armor_legs"),
     BOOTS("armor_feet"),
     FEET("armor_feet"),
-    TRIDENT("spear"),
+    TRIDENT("trident"),
     FLINT_AND_STEEL("flintsteel"),
     CARROT_ON_A_STICK("carrot_stick");
 

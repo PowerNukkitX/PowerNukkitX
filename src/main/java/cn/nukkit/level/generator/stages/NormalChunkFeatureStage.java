@@ -43,7 +43,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                     }
                 } else {
                     if(definition.getTags().contains(BiomeTags.JUNGLE)) {
-                        log.warn("No chunkGenData for biome " + definition.getName());
+                        log.warn("No chunkGenData for biome {}", definition.getName());
                     }
                 }
             }
@@ -58,7 +58,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                         GenerateFeature feature = Registries.GENERATE_FEATURE.get(key);
                         feature.apply(context);
                     } catch (Exception e) {
-                        log.error("Error while applying feature " + key, e);
+                        log.error("Error while applying feature {}", key, e);
                     }
                 }
             }

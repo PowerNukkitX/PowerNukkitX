@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * @implNote This is not an official protocol object. This was added by us for easier use on our side.
+ * @implNote This is not an official protocol object. We added this for easier use on our side.
  */
 public class BiomeDefinition implements IBiomeDefinitionListObject {
 

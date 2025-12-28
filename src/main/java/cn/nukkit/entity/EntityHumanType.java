@@ -6,6 +6,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
+import cn.nukkit.inventory.EntityHandItem;
 import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class EntityHumanType extends EntityCreature implements IHuman, InventoryHolder {
+public abstract class EntityHumanType extends EntityCreature implements IHuman, InventoryHolder, EntityHandItem {
 
     protected HumanInventory inventory;
     protected HumanEnderChestInventory enderChestInventory;
@@ -49,6 +50,11 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
     }
 
     @Override
+    public Item getItemInHand() {
+        return this.getInventory().getItemInHand();
+    }
+
+    @Override
     public void setInventories(Inventory[] inventory) {
         this.inventory = (HumanInventory) inventory[0];
         this.offhandInventory = (HumanOffHandInventory) inventory[1];
@@ -56,7 +62,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         if (this.inventory != null) {
             List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
             drops.addAll(this.offhandInventory.getContents().values());

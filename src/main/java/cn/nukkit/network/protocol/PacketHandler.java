@@ -595,4 +595,8 @@ public interface PacketHandler {
 
     default void handle(StructureTemplateDataResponsePacket pk) {
     }
+
+    default void handle(ServerboundDataStorePacket pk) {
+
+    }
 }

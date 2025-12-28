@@ -63,6 +63,11 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();

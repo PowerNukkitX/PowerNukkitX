@@ -19,13 +19,16 @@ import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.projectile.EntityFireball;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -99,15 +102,26 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{
-                Item.get(Item.GHAST_TEAR, 0, Utils.rand(0, 1)),
-                Item.get(Item.GUNPOWDER, 0, Utils.rand(0, 2))
-        };
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 1) == 1) {
+            int amount = Utils.rand(0, 1 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.GHAST_TEAR, 0, amount));
+            }
+        }
+
+        if (Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.GUNPOWDER, 0, amount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
-    @Override
-    public Integer getExperienceDrops() {
-        return 5;
-    }
 }

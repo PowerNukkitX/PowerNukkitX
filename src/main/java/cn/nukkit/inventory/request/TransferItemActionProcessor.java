@@ -96,7 +96,9 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
         Item resultSourItem;
         Item resultDestItem;
-        boolean sendSource = false; //Previous "!(source instanceof SoleInventory);", Not sending the source fixes the drag item distribution. Shouldn't cause any problems because inventory management is serversided.
+        // Not sending the source helps avoid drag distribution glitches for normal inventories.
+        // HOWEVER: equipment containers (OFFHAND/ARMOR) must be sent, otherwise viewers won't get MobEquipment/MobArmor updates.
+        boolean sendSource = sourceSlotType == ContainerSlotType.OFFHAND || sourceSlotType == ContainerSlotType.ARMOR;
         boolean sendDest = !(destination instanceof SoleInventory);
 
         if (sourItem.getCount() == count) { // first case：transfer all item

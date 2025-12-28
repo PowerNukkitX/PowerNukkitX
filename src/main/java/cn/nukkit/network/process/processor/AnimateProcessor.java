@@ -38,7 +38,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         switch (animation) {
             case ROW_RIGHT, ROW_LEFT -> {
                 if (player.riding instanceof EntityBoat boat) {
-                    boat.onPaddle(animation, pk.rowingTime);
+                    boat.onPaddle(animation, 1); // TODO: Paddle time got removed from packet. Needs debugging!!
                 }
                 return;
             }
@@ -51,7 +51,7 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         pk = new AnimatePacket();
         pk.eid = player.getId();
         pk.action = animationEvent.getAnimationType();
-        pk.rowingTime = animationEvent.getRowingTime();
+        pk.swingSource = animationEvent.getSwingSource();
         pk.data = animationEvent.getData();
         Server.broadcastPacket(player.getViewers().values(), pk);
     }

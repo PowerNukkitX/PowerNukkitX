@@ -9,10 +9,13 @@ import cn.nukkit.item.ItemSpawnEgg;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<BlockEntityMobSpawner> {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
@@ -28,6 +31,20 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
 
     public BlockMobSpawner(BlockState blockState) {
         super(blockState);
+    }
+
+    @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
+        CompoundTag nbt = new CompoundTag();
+
+        if (item.hasCustomBlockData()) {
+            Map<String, Tag> customData = item.getCustomBlockData().getTags();
+            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
+                nbt.put(tag.getKey(), tag.getValue());
+            }
+        }
+
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
