@@ -20,27 +20,27 @@ public class ElementDropdown extends Element implements ElementCustom {
 
     protected String text;
     protected List<String> options;
-    protected String tooltip;
     protected int defaultOption;
+    protected String tooltip;
 
     public ElementDropdown() {
-        this("", new ArrayList<>(), null, 0);
+        this("", new ArrayList<>(), 0, null);
     }
 
     public ElementDropdown(String text) {
-        this(text, new ArrayList<>(), null, 0);
+        this(text, new ArrayList<>(), 0, null);
     }
 
     public ElementDropdown(String text, String tooltip) {
-        this(text, new ArrayList<>(), tooltip, 0);
+        this(text, new ArrayList<>(), 0, tooltip);
     }
 
     public ElementDropdown(String text, List<String> options) {
-        this(text, options, null, 0);
+        this(text, options, 0, null);
     }
 
     public ElementDropdown(String text, List<String> options, String tooltip) {
-        this(text, options, tooltip, 0);
+        this(text, options, 0, tooltip);
     }
 
     public ElementDropdown addOption(String option) {
