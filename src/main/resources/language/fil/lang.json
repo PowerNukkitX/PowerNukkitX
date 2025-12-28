@@ -844,7 +844,7 @@
   "commands.time.disabled": "Palaging pinagana ang Araw sa mundong ito.", 
   "commands.time.query.day": "Ang Araw ay {%0}", 
   "commands.time.query.daytime": "Ang Araw ay {%0}", 
-  "commands.time.query.gametime": "Ang Oras ng Laro ay {%0}", " 
+  "commands.time.query.gametime": "Ang Oras ng Laro ay {%0}",
   "commands.time.set": "Itakda ang oras sa {%0}", 
   "commands.time.stop": "Oras {%0}", 
   "commands.title.description": "Screen ng mga Kontrol titles.", 
