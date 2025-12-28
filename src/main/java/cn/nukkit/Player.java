@@ -992,7 +992,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
                 this.newPosition = newPosition;
-                this.clientMovements.offer(newPosition);
+                if (!this.clientMovements.offer(newPosition)) {
+                    log.warn("Failed to enqueue movement task for player {} at position {}", this.getName(), newPosition);
+                }
             }
         }
 
