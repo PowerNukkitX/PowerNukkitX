@@ -189,10 +189,10 @@ public class Education implements BlockID, ItemID {
             "minecraft:colored_torch_red",
             "minecraft:colored_torch_green",
             "minecraft:underwater_torch",
+            "minecraft:underwater_tnt",
 
             //NEED TO BE IMPLEMENTED:
-            "minecraft:chalkboard",
-            "minecraft:underwater_tnt"
+            "minecraft:chalkboard"
     );
 
     public static void enable() {
@@ -370,6 +370,7 @@ public class Education implements BlockID, ItemID {
         Registries.BLOCK.register(COLORED_TORCH_RED, BlockColoredTorchRed.class);
         Registries.BLOCK.register(COLORED_TORCH_GREEN, BlockColoredTorchGreen.class);
         Registries.BLOCK.register(UNDERWATER_TORCH, BlockUnderwaterTorch.class);
+        Registries.BLOCK.register(UNDERWATER_TNT, BlockUnderwaterTNT.class);
     }
 
     private static void addCreativeGroup(String name, String icon) {
@@ -412,15 +413,8 @@ public class Education implements BlockID, ItemID {
             for (Map<String, Object> tag : items) {
                 String id = (String) tag.getOrDefault("id", null);
                 String group = (String) tag.getOrDefault("group", null);
-                String groupAs = (String) tag.getOrDefault("groupAs", null);
 
-                Integer groupIndex = null;
-
-                if(groupAs != null) {
-                    groupIndex = Registries.CREATIVE.getCreativeItemGroupIndex(groupAs);
-                } else {
-                    groupIndex = groups.get(group);
-                }
+                Integer groupIndex = groups.get(group);
 
                 Item item = Item.get(id, 0, 1, null, false);
 

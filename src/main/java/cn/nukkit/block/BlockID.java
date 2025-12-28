@@ -2306,6 +2306,8 @@ public interface BlockID {
 
     String UNDERWATER_TORCH = "minecraft:underwater_torch";
 
+    String UNDERWATER_TNT = "minecraft:underwater_tnt";
+
     String UNDYED_SHULKER_BOX = "minecraft:undyed_shulker_box";
 
     String UNKNOWN = "minecraft:unknown";

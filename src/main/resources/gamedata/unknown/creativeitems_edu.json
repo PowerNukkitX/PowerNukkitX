@@ -186,6 +186,7 @@
     { "id": "minecraft:colored_torch_green", "group": "Torches" },
     { "id": "minecraft:underwater_torch", "group": "Torches" },
 
-    { "id": "minecraft:camera" }
+    { "id": "minecraft:camera" },
+    { "id": "minecraft:underwater_tnt" }
   ]
 }
