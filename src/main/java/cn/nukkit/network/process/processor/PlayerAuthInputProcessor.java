@@ -223,12 +223,11 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
             if (inputY >= -1.001 && inputY <= 1.001) {
                 entityMinecartAbstract.setCurrentSpeed(inputY);
             }
-        } else if (player.riding instanceof EntityBoat boat && pk.inputData.contains(AuthInputAction.IN_CLIENT_PREDICTED_IN_VEHICLE)) {
-            if (player.riding.getId() == pk.predictedVehicle && player.riding.isControlling(player)) {
+        } else if (player.riding instanceof EntityBoat boat) { //CLIENT IN PREDICTED DOESN'T COME IF RIDING A BOAT
+            if (pk.predictedVehicle == 0 && player.riding.isControlling(player)) { //Boat ID IS 1, BUT predictedVehicle IS 0 IN THE RIDING BOAT
                 if (check(clientLoc, player)) {
-                    Location offsetLoc = clientLoc.add(0, playerHandle.getBaseOffset(), 0);
-                    boat.onInput(offsetLoc);
-                    playerHandle.handleMovement(offsetLoc);
+                    boat.onInput(pk);
+                    playerHandle.handleMovement(clientLoc.add(0, playerHandle.getBaseOffset(), 0));
                 }
                 return;
             }
