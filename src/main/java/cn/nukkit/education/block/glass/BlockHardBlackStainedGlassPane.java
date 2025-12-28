@@ -1,5 +1,8 @@
-package cn.nukkit.block;
+package cn.nukkit.education.block.glass;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockProperties;
+import cn.nukkit.block.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockHardBlackStainedGlassPane extends Block {

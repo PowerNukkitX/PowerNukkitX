@@ -1,7 +1,7 @@
 package cn.nukkit.education;
 
-import cn.nukkit.education.block.elements.*;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.education.block.elements.*;
 import cn.nukkit.education.block.glass.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -332,6 +332,14 @@ public class Education implements BlockID, ItemID {
         Registries.BLOCK.register(ELEMENT_118, BlockElement118.class);
         Registries.BLOCK.register(HARD_GLASS, BlockHardGlass.class);
         Registries.BLOCK.register(HARD_GLASS_PANE, BlockHardGlassPane.class);
+        Registries.BLOCK.register(HARD_BLACK_STAINED_GLASS, BlockHardBlackStainedGlass.class);
+        Registries.BLOCK.register(HARD_BLACK_STAINED_GLASS_PANE, BlockHardBlackStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_BLUE_STAINED_GLASS, BlockHardBlueStainedGlass.class);
+        Registries.BLOCK.register(HARD_BLUE_STAINED_GLASS_PANE, BlockHardBlueStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_BROWN_STAINED_GLASS, BlockHardBrownStainedGlass.class);
+        Registries.BLOCK.register(HARD_BROWN_STAINED_GLASS_PANE, BlockHardBrownStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_CYAN_STAINED_GLASS, BlockHardCyanStainedGlass.class);
+        Registries.BLOCK.register(HARD_CYAN_STAINED_GLASS_PANE, BlockHardCyanStainedGlassPane.class);
         Registries.BLOCK.register(HARD_GRAY_STAINED_GLASS, BlockHardGrayStainedGlass.class);
         Registries.BLOCK.register(HARD_GRAY_STAINED_GLASS_PANE, BlockHardGrayStainedGlassPane.class);
         Registries.BLOCK.register(HARD_GREEN_STAINED_GLASS, BlockHardGreenStainedGlass.class);
