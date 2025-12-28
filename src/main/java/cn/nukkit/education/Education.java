@@ -1,26 +1,31 @@
 package cn.nukkit.education;
 
-import cn.nukkit.education.block.*;
+import cn.nukkit.education.block.elements.*;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.education.block.glass.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
+import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.registry.CreativeGroupsRegistry;
+import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 public class Education implements BlockID, ItemID {
     @Getter
     private static boolean enabled = false;
+
+    static final String CATEGORY_ELEMENT = "Elements";
+    static final String CATEGORY_HARD_GLASS = "Hard Glass";
+    static final String CATEGORY_HARD_GLASS_PANE = "Hard Glass Pane";
 
     public static final Set<String> eduBlocks = Set.of(
             "minecraft:camera",
@@ -199,7 +204,6 @@ public class Education implements BlockID, ItemID {
 
         try {
             registerBlocks();
-            addCreativeGroup();
             registerCreative();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -326,37 +330,85 @@ public class Education implements BlockID, ItemID {
         Registries.BLOCK.register(ELEMENT_116, BlockElement116.class);
         Registries.BLOCK.register(ELEMENT_117, BlockElement117.class);
         Registries.BLOCK.register(ELEMENT_118, BlockElement118.class);
+        Registries.BLOCK.register(HARD_GLASS, BlockHardGlass.class);
+        Registries.BLOCK.register(HARD_GLASS_PANE, BlockHardGlassPane.class);
+        Registries.BLOCK.register(HARD_GRAY_STAINED_GLASS, BlockHardGrayStainedGlass.class);
+        Registries.BLOCK.register(HARD_GRAY_STAINED_GLASS_PANE, BlockHardGrayStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_GREEN_STAINED_GLASS, BlockHardGreenStainedGlass.class);
+        Registries.BLOCK.register(HARD_GREEN_STAINED_GLASS_PANE, BlockHardGreenStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_LIGHT_BLUE_STAINED_GLASS, BlockHardLightBlueStainedGlass.class);
+        Registries.BLOCK.register(HARD_LIGHT_BLUE_STAINED_GLASS_PANE, BlockHardLightBlueStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_LIGHT_GRAY_STAINED_GLASS, BlockHardLightGrayStainedGlass.class);
+        Registries.BLOCK.register(HARD_LIGHT_GRAY_STAINED_GLASS_PANE, BlockHardLightGrayStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_LIME_STAINED_GLASS, BlockHardLimeStainedGlass.class);
+        Registries.BLOCK.register(HARD_LIME_STAINED_GLASS_PANE, BlockHardLimeStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_MAGENTA_STAINED_GLASS, BlockHardMagentaStainedGlass.class);
+        Registries.BLOCK.register(HARD_MAGENTA_STAINED_GLASS_PANE, BlockHardMagentaStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_ORANGE_STAINED_GLASS, BlockHardOrangeStainedGlass.class);
+        Registries.BLOCK.register(HARD_ORANGE_STAINED_GLASS_PANE, BlockHardOrangeStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_PINK_STAINED_GLASS, BlockHardPinkStainedGlass.class);
+        Registries.BLOCK.register(HARD_PINK_STAINED_GLASS_PANE, BlockHardPinkStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_PURPLE_STAINED_GLASS, BlockHardPurpleStainedGlass.class);
+        Registries.BLOCK.register(HARD_PURPLE_STAINED_GLASS_PANE, BlockHardPurpleStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_RED_STAINED_GLASS, BlockHardRedStainedGlass.class);
+        Registries.BLOCK.register(HARD_RED_STAINED_GLASS_PANE, BlockHardRedStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_WHITE_STAINED_GLASS, BlockHardWhiteStainedGlass.class);
+        Registries.BLOCK.register(HARD_WHITE_STAINED_GLASS_PANE, BlockHardWhiteStainedGlassPane.class);
+        Registries.BLOCK.register(HARD_YELLOW_STAINED_GLASS, BlockHardYellowStainedGlass.class);
+        Registries.BLOCK.register(HARD_YELLOW_STAINED_GLASS_PANE, BlockHardYellowStainedGlassPane.class);
+
     }
 
-    private static void addCreativeGroup() {
-        CreativeCustomGroups.define(CreativeItemCategory.CONSTRUCTION, "Elements", ELEMENT_0);
-        CreativeGroupsRegistry.register();
+    private static void addCreativeGroup(String name, String icon) {
+        Item item = Item.get(icon, 0, 1, null, false);
+        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(item, -1));
+        CreativeCustomGroups.define(CreativeItemCategory.CONSTRUCTION, name, icon);
     }
 
     private static void registerCreative() {
-        int elementGroup = Registries.CREATIVE.resolveGroupIndexFromGroupName("Elements");
+        Map<String, Integer> categories = new HashMap<>();
 
         try (var input = Education.class.getClassLoader().getResourceAsStream("gamedata/unknown/creativeitems_edu.json")) {
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
+            List<String> tmpCat = new ArrayList<>();
+
+            List<Map<String, Object>> cat = (List<Map<String, Object>>) data.get("categories");
+            for (int i = 0; i < cat.size(); i++) {
+                Map<String, Object> tag = cat.get(i);
+
+                String name = (String) tag.getOrDefault("name", null);
+                String icon = (String) tag.getOrDefault("icon", null);
+
+                addCreativeGroup(name, icon);
+                tmpCat.add(name);
+            }
+
+            CreativeGroupsRegistry.register();
+
+            for(String cate : tmpCat)
+                categories.put(cate, Registries.CREATIVE.resolveGroupIndexFromGroupName(cate));
 
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
             for (int i = 0; i < items.size(); i++) {
                 Map<String, Object> tag = items.get(i);
 
-                String blockState = (String) tag.getOrDefault("blockState", null);
-                Item item = Item.get(blockState.split(";")[0], 0, 1, null, false);
+                String id = (String) tag.getOrDefault("id", null);
+                String category = (String) tag.getOrDefault("category", null);
+                Item item = Item.get(id, 0, 1, null, false);
 
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
-                    log.warn("load creative edu item {} is null", blockState);
+                    log.warn("load creative edu item {} is null", id);
                 }
 
-                if(item.getId().startsWith("minecraft:element_")) Registries.CREATIVE.addCreativeItem(item, elementGroup);
-                else Registries.CREATIVE.addCreativeItem(item);
+                if(category == null || categories.get(category) == null) {
+                    Registries.CREATIVE.addCreativeItem(item);
+                } else {
+                    Registries.CREATIVE.addCreativeItem(item, categories.get(category));
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
-
         }
     }
 }

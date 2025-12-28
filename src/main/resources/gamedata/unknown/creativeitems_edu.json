@@ -1,373 +1,106 @@
 {
-  "items": [
+  "categories": [
     {
-      "blockState": "minecraft:chemistry_table;chemistry_table_type=compound_creator"
+      "name": "Elements",
+      "icon": "minecraft:element_0"
     },
     {
-      "blockState": "minecraft:chemistry_table;chemistry_table_type=element_constructor"
+      "name": "Hard Glass",
+      "icon": "minecraft:hard_glass"
     },
     {
-      "blockState": "minecraft:chemistry_table;chemistry_table_type=lab_table"
-    },
-    {
-      "blockState": "minecraft:chemistry_table;chemistry_table_type=material_reducer"
-    },
-    {
-      "blockState": "minecraft:element_0"
-    },
-    {
-      "blockState": "minecraft:element_1"
-    },
-    {
-      "blockState": "minecraft:element_2"
-    },
-    {
-      "blockState": "minecraft:element_3"
-    },
-    {
-      "blockState": "minecraft:element_4"
-    },
-    {
-      "blockState": "minecraft:element_5"
-    },
-    {
-      "blockState": "minecraft:element_6"
-    },
-    {
-      "blockState": "minecraft:element_7"
-    },
-    {
-      "blockState": "minecraft:element_8"
-    },
-    {
-      "blockState": "minecraft:element_9"
-    },
-    {
-      "blockState": "minecraft:element_10"
-    },
-    {
-      "blockState": "minecraft:element_11"
-    },
-    {
-      "blockState": "minecraft:element_12"
-    },
-    {
-      "blockState": "minecraft:element_13"
-    },
-    {
-      "blockState": "minecraft:element_14"
-    },
-    {
-      "blockState": "minecraft:element_15"
-    },
-    {
-      "blockState": "minecraft:element_16"
-    },
-    {
-      "blockState": "minecraft:element_17"
-    },
-    {
-      "blockState": "minecraft:element_18"
-    },
-    {
-      "blockState": "minecraft:element_19"
-    },
-    {
-      "blockState": "minecraft:element_20"
-    },
-    {
-      "blockState": "minecraft:element_21"
-    },
-    {
-      "blockState": "minecraft:element_22"
-    },
-    {
-      "blockState": "minecraft:element_23"
-    },
-    {
-      "blockState": "minecraft:element_24"
-    },
-    {
-      "blockState": "minecraft:element_25"
-    },
-    {
-      "blockState": "minecraft:element_26"
-    },
-    {
-      "blockState": "minecraft:element_27"
-    },
-    {
-      "blockState": "minecraft:element_28"
-    },
-    {
-      "blockState": "minecraft:element_29"
-    },
-    {
-      "blockState": "minecraft:element_30"
-    },
-    {
-      "blockState": "minecraft:element_31"
-    },
-    {
-      "blockState": "minecraft:element_32"
-    },
-    {
-      "blockState": "minecraft:element_33"
-    },
-    {
-      "blockState": "minecraft:element_34"
-    },
-    {
-      "blockState": "minecraft:element_35"
-    },
-    {
-      "blockState": "minecraft:element_36"
-    },
-    {
-      "blockState": "minecraft:element_37"
-    },
-    {
-      "blockState": "minecraft:element_38"
-    },
-    {
-      "blockState": "minecraft:element_39"
-    },
-    {
-      "blockState": "minecraft:element_40"
-    },
-    {
-      "blockState": "minecraft:element_41"
-    },
-    {
-      "blockState": "minecraft:element_42"
-    },
-    {
-      "blockState": "minecraft:element_43"
-    },
-    {
-      "blockState": "minecraft:element_44"
-    },
-    {
-      "blockState": "minecraft:element_45"
-    },
-    {
-      "blockState": "minecraft:element_46"
-    },
-    {
-      "blockState": "minecraft:element_47"
-    },
-    {
-      "blockState": "minecraft:element_48"
-    },
-    {
-      "blockState": "minecraft:element_49"
-    },
-    {
-      "blockState": "minecraft:element_50"
-    },
-    {
-      "blockState": "minecraft:element_51"
-    },
-    {
-      "blockState": "minecraft:element_52"
-    },
-    {
-      "blockState": "minecraft:element_53"
-    },
-    {
-      "blockState": "minecraft:element_54"
-    },
-    {
-      "blockState": "minecraft:element_55"
-    },
-    {
-      "blockState": "minecraft:element_56"
-    },
-    {
-      "blockState": "minecraft:element_57"
-    },
-    {
-      "blockState": "minecraft:element_58"
-    },
-    {
-      "blockState": "minecraft:element_59"
-    },
-    {
-      "blockState": "minecraft:element_60"
-    },
-    {
-      "blockState": "minecraft:element_61"
-    },
-    {
-      "blockState": "minecraft:element_62"
-    },
-    {
-      "blockState": "minecraft:element_63"
-    },
-    {
-      "blockState": "minecraft:element_64"
-    },
-    {
-      "blockState": "minecraft:element_65"
-    },
-    {
-      "blockState": "minecraft:element_66"
-    },
-    {
-      "blockState": "minecraft:element_67"
-    },
-    {
-      "blockState": "minecraft:element_68"
-    },
-    {
-      "blockState": "minecraft:element_69"
-    },
-    {
-      "blockState": "minecraft:element_70"
-    },
-    {
-      "blockState": "minecraft:element_71"
-    },
-    {
-      "blockState": "minecraft:element_72"
-    },
-    {
-      "blockState": "minecraft:element_73"
-    },
-    {
-      "blockState": "minecraft:element_74"
-    },
-    {
-      "blockState": "minecraft:element_75"
-    },
-    {
-      "blockState": "minecraft:element_76"
-    },
-    {
-      "blockState": "minecraft:element_77"
-    },
-    {
-      "blockState": "minecraft:element_78"
-    },
-    {
-      "blockState": "minecraft:element_79"
-    },
-    {
-      "blockState": "minecraft:element_80"
-    },
-    {
-      "blockState": "minecraft:element_81"
-    },
-    {
-      "blockState": "minecraft:element_82"
-    },
-    {
-      "blockState": "minecraft:element_83"
-    },
-    {
-      "blockState": "minecraft:element_84"
-    },
-    {
-      "blockState": "minecraft:element_85"
-    },
-    {
-      "blockState": "minecraft:element_86"
-    },
-    {
-      "blockState": "minecraft:element_87"
-    },
-    {
-      "blockState": "minecraft:element_88"
-    },
-    {
-      "blockState": "minecraft:element_89"
-    },
-    {
-      "blockState": "minecraft:element_90"
-    },
-    {
-      "blockState": "minecraft:element_91"
-    },
-    {
-      "blockState": "minecraft:element_92"
-    },
-    {
-      "blockState": "minecraft:element_93"
-    },
-    {
-      "blockState": "minecraft:element_94"
-    },
-    {
-      "blockState": "minecraft:element_95"
-    },
-    {
-      "blockState": "minecraft:element_96"
-    },
-    {
-      "blockState": "minecraft:element_97"
-    },
-    {
-      "blockState": "minecraft:element_98"
-    },
-    {
-      "blockState": "minecraft:element_99"
-    },
-    {
-      "blockState": "minecraft:element_100"
-    },
-    {
-      "blockState": "minecraft:element_101"
-    },
-    {
-      "blockState": "minecraft:element_102"
-    },
-    {
-      "blockState": "minecraft:element_103"
-    },
-    {
-      "blockState": "minecraft:element_104"
-    },
-    {
-      "blockState": "minecraft:element_105"
-    },
-    {
-      "blockState": "minecraft:element_106"
-    },
-    {
-      "blockState": "minecraft:element_107"
-    },
-    {
-      "blockState": "minecraft:element_108"
-    },
-    {
-      "blockState": "minecraft:element_109"
-    },
-    {
-      "blockState": "minecraft:element_110"
-    },
-    {
-      "blockState": "minecraft:element_111"
-    },
-    {
-      "blockState": "minecraft:element_112"
-    },
-    {
-      "blockState": "minecraft:element_113"
-    },
-    {
-      "blockState": "minecraft:element_114"
-    },
-    {
-      "blockState": "minecraft:element_115"
-    },
-    {
-      "blockState": "minecraft:element_116"
-    },
-    {
-      "blockState": "minecraft:element_117"
-    },
-    {
-      "blockState": "minecraft:element_118"
+      "name": "Hard Glass Pane",
+      "icon": "minecraft:hard_glass_pane"
     }
+  ],
+
+  "items": [
+    { "id": "minecraft:element_0", "category": "Elements" },
+    { "id": "minecraft:element_1", "category": "Elements" },
+    { "id": "minecraft:element_2", "category": "Elements" },
+    { "id": "minecraft:element_3", "category": "Elements" },
+    { "id": "minecraft:element_4", "category": "Elements" },
+    { "id": "minecraft:element_5", "category": "Elements" },
+    { "id": "minecraft:element_6", "category": "Elements" },
+    { "id": "minecraft:element_7", "category": "Elements" },
+    { "id": "minecraft:element_8", "category": "Elements" },
+    { "id": "minecraft:element_9", "category": "Elements" },
+    { "id": "minecraft:element_10", "category": "Elements" },
+    { "id": "minecraft:element_11", "category": "Elements" },
+    { "id": "minecraft:element_12", "category": "Elements" },
+    { "id": "minecraft:element_13", "category": "Elements" },
+    { "id": "minecraft:element_14", "category": "Elements" },
+    { "id": "minecraft:element_15", "category": "Elements" },
+    { "id": "minecraft:element_16", "category": "Elements" },
+    { "id": "minecraft:element_17", "category": "Elements" },
+    { "id": "minecraft:element_18", "category": "Elements" },
+    { "id": "minecraft:element_19", "category": "Elements" },
+    { "id": "minecraft:element_20", "category": "Elements" },
+    { "id": "minecraft:element_21", "category": "Elements" },
+    { "id": "minecraft:element_22", "category": "Elements" },
+    { "id": "minecraft:element_23", "category": "Elements" },
+    { "id": "minecraft:element_24", "category": "Elements" },
+    { "id": "minecraft:element_25", "category": "Elements" },
+    { "id": "minecraft:element_26", "category": "Elements" },
+    { "id": "minecraft:element_27", "category": "Elements" },
+    { "id": "minecraft:element_28", "category": "Elements" },
+    { "id": "minecraft:element_29", "category": "Elements" },
+    { "id": "minecraft:element_30", "category": "Elements" },
+    { "id": "minecraft:element_31", "category": "Elements" },
+    { "id": "minecraft:element_32", "category": "Elements" },
+    { "id": "minecraft:element_33", "category": "Elements" },
+    { "id": "minecraft:element_34", "category": "Elements" },
+    { "id": "minecraft:element_35", "category": "Elements" },
+    { "id": "minecraft:element_36", "category": "Elements" },
+    { "id": "minecraft:element_37", "category": "Elements" },
+    { "id": "minecraft:element_38", "category": "Elements" },
+    { "id": "minecraft:element_39", "category": "Elements" },
+    { "id": "minecraft:element_40", "category": "Elements" },
+    { "id": "minecraft:element_41", "category": "Elements" },
+    { "id": "minecraft:element_42", "category": "Elements" },
+    { "id": "minecraft:element_43", "category": "Elements" },
+    { "id": "minecraft:element_44", "category": "Elements" },
+    { "id": "minecraft:element_45", "category": "Elements" },
+    { "id": "minecraft:element_46", "category": "Elements" },
+    { "id": "minecraft:element_47", "category": "Elements" },
+    { "id": "minecraft:element_48", "category": "Elements" },
+    { "id": "minecraft:element_49", "category": "Elements" },
+    { "id": "minecraft:element_50", "category": "Elements" },
+
+    { "id": "minecraft:hard_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_black_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_blue_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_brown_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_cyan_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_gray_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_green_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_light_blue_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_light_gray_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_lime_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_magenta_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_orange_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_pink_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_purple_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_red_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_white_stained_glass", "category": "Hard Glass" },
+    { "id": "minecraft:hard_yellow_stained_glass", "category": "Hard Glass" },
+
+    { "id": "minecraft:hard_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_black_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_blue_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_brown_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_cyan_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_gray_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_green_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_light_blue_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_light_gray_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_lime_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_magenta_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_orange_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_pink_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_purple_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_red_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_white_stained_glass_pane", "category": "Hard Glass Pane" },
+    { "id": "minecraft:hard_yellow_stained_glass_pane", "category": "Hard Glass Pane" }
   ]
 }
