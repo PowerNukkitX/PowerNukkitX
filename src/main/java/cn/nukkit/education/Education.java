@@ -1,6 +1,7 @@
 package cn.nukkit.education;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.education.block.*;
 import cn.nukkit.education.block.elements.*;
 import cn.nukkit.education.block.glass.*;
 import cn.nukkit.item.Item;
@@ -23,25 +24,7 @@ public class Education implements BlockID, ItemID {
     @Getter
     private static boolean enabled = false;
 
-    static final String CATEGORY_ELEMENT = "Elements";
-    static final String CATEGORY_HARD_GLASS = "Hard Glass";
-    static final String CATEGORY_HARD_GLASS_PANE = "Hard Glass Pane";
-
     public static final Set<String> eduBlocks = Set.of(
-            "minecraft:camera",
-            "minecraft:chalkboard",
-            "minecraft:chemical_heat",
-            "minecraft:compound_creator",
-            "minecraft:element_constructor",
-            "minecraft:lab_table",
-            "minecraft:material_reducer",
-            "minecraft:colored_torch_purple",
-            "minecraft:colored_torch_blue",
-            "minecraft:colored_torch_red",
-            "minecraft:colored_torch_green",
-            "minecraft:deprecated_anvil",
-            "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2",
             "minecraft:element_0",
             "minecraft:element_1",
             "minecraft:element_10",
@@ -195,8 +178,21 @@ public class Education implements BlockID, ItemID {
             "minecraft:hard_white_stained_glass_pane",
             "minecraft:hard_yellow_stained_glass",
             "minecraft:hard_yellow_stained_glass_pane",
+            "minecraft:camera",
+            "minecraft:chemical_heat",
+            "minecraft:chemistry_table",
+            "minecraft:colored_torch_purple",
+            "minecraft:colored_torch_blue",
+            "minecraft:colored_torch_red",
+            "minecraft:colored_torch_green",
+
+            //NEED TO BE IMPLEMENTED:
+            "minecraft:chalkboard",
             "minecraft:underwater_torch",
-            "minecraft:underwater_tnt"
+            "minecraft:underwater_tnt",
+            "minecraft:compound_creator",
+            "minecraft:element_constructor",
+            "minecraft:material_reducer"
     );
 
     public static void enable() {
@@ -364,12 +360,17 @@ public class Education implements BlockID, ItemID {
         Registries.BLOCK.register(HARD_WHITE_STAINED_GLASS_PANE, BlockHardWhiteStainedGlassPane.class);
         Registries.BLOCK.register(HARD_YELLOW_STAINED_GLASS, BlockHardYellowStainedGlass.class);
         Registries.BLOCK.register(HARD_YELLOW_STAINED_GLASS_PANE, BlockHardYellowStainedGlassPane.class);
+        Registries.BLOCK.register(CAMERA, BlockCamera.class);
+        Registries.BLOCK.register(CHEMICAL_HEAT, BlockChemicalHeat.class);
+        Registries.BLOCK.register(CHEMISTRY_TABLE, BlockChemistryTable.class);
+        Registries.BLOCK.register(COLORED_TORCH_BP, BlockColoredTorchBp.class);
+        Registries.BLOCK.register(COLORED_TORCH_RG, BlockColoredTorchRg.class);
 
     }
 
     private static void addCreativeGroup(String name, String icon) {
         Item item = Item.get(icon, 0, 1, null, false);
-        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(item, -1));
+        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(item, 0));
         CreativeCustomGroups.define(CreativeItemCategory.CONSTRUCTION, name, icon);
     }
 

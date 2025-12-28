@@ -49,6 +49,12 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
 
+    public static final List<String> skipBlocks = List.of(
+            "minecraft:deprecated_anvil",
+            "minecraft:deprecated_purpur_block_1",
+            "minecraft:deprecated_purpur_block_2"
+    );
+
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
@@ -1236,6 +1242,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     @Override
     public void register(String key, Class<? extends Block> value) throws RegisterException {
         if (!Education.isEnabled() && Education.eduBlocks.contains(key)) return;// skip for educational blocks
+        if(skipBlocks.contains(key)) return; //skip some old blocks
         if (Modifier.isAbstract(value.getModifiers())) {
             throw new RegisterException("You can't register a abstract block class!");
         }

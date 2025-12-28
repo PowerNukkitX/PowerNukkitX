@@ -1,5 +1,8 @@
-package cn.nukkit.block;
+package cn.nukkit.education.block;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockProperties;
+import cn.nukkit.block.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockChemicalHeat extends Block {

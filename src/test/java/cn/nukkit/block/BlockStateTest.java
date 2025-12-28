@@ -32,6 +32,7 @@ public class BlockStateTest {
                 int hash = entry.get("blockStateHash").getAsInt();
                 String name = entry.get("name").getAsString();
                 if (!Education.isEnabled() && Education.eduBlocks.contains(name)) continue;// skip for educational blocks
+                if(BlockRegistry.skipBlocks.contains(name)) continue; //skip some old blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
                     throw new RuntimeException(name + " (" + hash + ") was not a part of block_states.json.");
