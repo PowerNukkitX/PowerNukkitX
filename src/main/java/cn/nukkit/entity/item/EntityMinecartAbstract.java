@@ -10,6 +10,7 @@ import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
@@ -108,6 +109,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         super.initEntity();
 
         prepareDataProperty();
+        setDataFlag(EntityFlag.COLLIDABLE);
     }
 
     @Override

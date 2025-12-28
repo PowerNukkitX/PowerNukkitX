@@ -6,8 +6,6 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.item.EntityBoat;
-import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerJumpEvent;
