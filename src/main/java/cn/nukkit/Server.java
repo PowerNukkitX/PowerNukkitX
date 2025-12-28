@@ -444,7 +444,11 @@ public class Server {
             DispenseBehaviorRegister.init();
         }
 
-        if(settings.gameplaySettings().enableEducation()) Education.enable();
+        if(settings.gameplaySettings().enableEducation()) {
+            Education.enable();
+            if(settings.baseSettings().waterdogpe())
+                log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
+        }
 
         if (useTerra) {//load terra
             PNXPlatform instance = PNXPlatform.getInstance();
