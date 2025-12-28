@@ -256,7 +256,7 @@ public class SetupWizard implements AutoCloseable {
 
         while (true) {
             try {
-                String input = reader.readLine("» Do you accept the license? (yes/no): ").trim().toLowerCase();
+                String input = reader.readLine("» Do you accept the license? (y/n): ").trim().toLowerCase();
 
                 if (input.equals("yes") || input.equals("y")) {
                     terminal.writer().println("✓ License accepted.");
@@ -288,15 +288,15 @@ public class SetupWizard implements AutoCloseable {
 
         while (true) {
             try {
-                String input = reader.readLine("» Do you want to skip the setup wizard? (y/n): ").trim().toLowerCase();
+                String input = reader.readLine("» Do you want to skip the setup wizard? (Y/n): ").trim().toLowerCase();
 
-                if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
+                if (input.isEmpty() || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
                     skipWizard = true;
                     terminal.writer().println("✓ Setup wizard will be skipped. Server will use default configuration.");
                     terminal.writer().println();
                     terminal.writer().flush();
                     break;
-                } else if (input.isEmpty() || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
+                } else if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
                     skipWizard = false;
                     terminal.writer().println("✓ Proceeding with setup wizard...");
                     terminal.writer().println();

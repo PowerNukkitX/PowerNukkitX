@@ -316,7 +316,7 @@ public class Server {
             it.load(true);
         });
 
-        if (wizardConfig != null) {
+        if (wizardConfig != null && !config.exists()) {
             this.settings.baseSettings().language(wizardConfig.getLanguage());
             this.settings.baseSettings().motd(wizardConfig.getMotd());
             this.settings.baseSettings().port(wizardConfig.getPort());
@@ -386,7 +386,7 @@ public class Server {
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
         this.whitelist = new Config(this.dataPath + "white-list.txt", Config.ENUM);
 
-        if (wizardConfig != null) {
+        if (wizardConfig != null && !config.exists()) {
             for (String player : wizardConfig.getWhitelistedPlayers()) {
                 this.whitelist.set(player, true);
             }
