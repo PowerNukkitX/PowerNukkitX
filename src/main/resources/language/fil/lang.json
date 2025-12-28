@@ -61,8 +61,8 @@
   "pnx.settings.level.entityspawncap": "Nililimitahan kung ilang entite ang maaaring mag-spawn sa isang mundo", 
   "pnx.settings.level.fieldofview": "Tinutukoy ang FOV na ginagamit ng server upang unahin ang pagbuo ng chunk", 
   "pnx.settings.chunk.perticksend": "Pinakamataas na bilang ng mga chunks na ipinapadala sa mga manlalaro bawat tick", 
-  "pnx.settings.chunk.spawnthreshold": 
-  "Bilang ng mga chunks na kailangang matanggap ng isang manlalaro sa unang spawn", "pnx.settings.chunk.chunksperticks": "Lagyan ng tsek ang cycle ng mga chunks", 
+  "pnx.settings.chunk.spawnthreshold": "Bilang ng mga chunks na kailangang matanggap ng isang manlalaro sa unang spawn", 
+  "pnx.settings.chunk.chunksperticks": "Lagyan ng tsek ang cycle ng mga chunks", 
   "pnx.settings.chunk.tickRadius": "Lagyan ng tsek ang radius ng mga chunks", 
   "pnx.settings.chunk.lightupdates": "Kung ang mga chunks ay nagsasagawa ng mga light update",
   "pnx.settings.chunk.clearticklist": "Kung tatanggalin ba ang listahan ng mga tsek sa dulo ng bawat tsek", 
@@ -146,8 +146,8 @@
   "commands.agent.setitem.success": "Matagumpay ang pagtakda ng ahente ng item", 
   "commands.agent.till.failed": "Nabigong mailagay ng ahente", 
   "commands.agent.till.success": "Matagumpay ang ahente", 
-  "commands.agent.tpagent.description": "I-teleport ang iyong Ahente.", "commands.agent.tpagent.failed" 
-  : "Nabigong mai-teleport ang ahente", 
+  "commands.agent.tpagent.description": "I-teleport ang iyong Ahente.", 
+  "commands.agent.tpagent.failed": "Nabigong mai-teleport ang ahente", 
   "commands.agent.tpagent.success": " Nabigong mai-teleport ang ahente", 
   "commands.agent.tpagent.success": "Na-teleport ang ahente", "commands.agent.transfer.failed": "Nabigong mailipat ang ahente", 
   "commands.agent.transfer.success": "Matagumpay ang paglipat ng ahente", 
@@ -293,8 +293,8 @@
   "commands.difficulty.description": "Itinatakda ang antas ng kahirapan.", 
   "commands.difficulty.success": "Itakda ang kahirapan ng laro sa {%0}", 
   "commands.difficulty.usage": "/difficulty \u003cnew difficulty\u003e", 
-  "commands.downfall.success": "Na-toggle ang downfall", " 
-  commands.educlientinfo.description": "Kunin ang tenant ID at katayuan ng host. Para sa CM.", 
+  "commands.downfall.success": "Na-toggle ang downfall", 
+  "commands.educlientinfo.description": "Kunin ang tenant ID at katayuan ng host. Para sa CM.", 
   "commands.effect.description": "Magdagdag o mag-alis ng mga epekto ng katayuan.", 
   "commands.effect.failure.notAMob":"Hindi maaaring magkaroon ng mga epekto ang {%0}", 
   "commands.effect.failure.notActive": "Hindi maaaring kumuha ng {%0} mula sa {%1} dahil wala silang epekto", 
@@ -709,8 +709,7 @@
   "commands.setfixedinvslots.success": "Bilang ng mga Nakapirming Puwang ng Imbentaryo na nakatakda sa {%0}", 
   "commands.setidletimeout.success": "Matagumpay na naitakda ang idle timeout sa {%0} minuto.", 
   "commands.setmaxplayers.description": "Itinatakda ang pinakamataas na bilang ng mga manlalaro para sa sesyon ng larong ito.", 
-  "commands.setmaxplayers.success" 
-  : "Itakda ang pinakamataas na bilang ng mga manlalaro sa {%0}.", "commands.setmaxplayers.success.lowerbound": "(Nakatali sa kasalukuyang bilang ng manlalaro)", 
+  "commands.setmaxplayers.success": "Itakda ang pinakamataas na bilang ng mga manlalaro sa {%0}.", "commands.setmaxplayers.success.lowerbound": "(Nakatali sa kasalukuyang bilang ng manlalaro)", 
   "commands.setmaxplayers.success.upperbound": "(Nakatali sa pinakamataas na pinapayagang koneksyon)", 
   "commands.setworldspawn.description": "Itinatakda ang spawn ng mundo.", 
   "commands.setworldspawn.notAllowedInLegacyWorlds": "Hindi maaaring itakda ang spawn ng mundo sa mga legacy na mundo", 
