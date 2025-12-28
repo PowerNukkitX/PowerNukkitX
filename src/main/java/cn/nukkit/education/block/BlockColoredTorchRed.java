@@ -1,24 +1,24 @@
 package cn.nukkit.education.block;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockProperties;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockTorch;
 import cn.nukkit.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockChemistryTable extends Block {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHEMISTRY_TABLE, CommonBlockProperties.CHEMISTRY_TABLE_TYPE, CommonBlockProperties.DIRECTION);
+public class BlockColoredTorchRed extends BlockTorch {
+    public static final BlockProperties PROPERTIES = new BlockProperties(COLORED_TORCH_RED,  CommonBlockProperties.TORCH_FACING_DIRECTION);
 
     @Override
     @NotNull public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
-    public BlockChemistryTable() {
+    public BlockColoredTorchRed() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockChemistryTable(BlockState blockstate) {
+    public BlockColoredTorchRed(BlockState blockstate) {
         super(blockstate);
     }
 }

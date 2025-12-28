@@ -180,19 +180,19 @@ public class Education implements BlockID, ItemID {
             "minecraft:hard_yellow_stained_glass_pane",
             "minecraft:camera",
             "minecraft:chemical_heat",
-            "minecraft:chemistry_table",
+            "minecraft:compound_creator",
+            "minecraft:element_constructor",
+            "minecraft:lab_table",
+            "minecraft:material_reducer",
             "minecraft:colored_torch_purple",
             "minecraft:colored_torch_blue",
             "minecraft:colored_torch_red",
             "minecraft:colored_torch_green",
+            "minecraft:underwater_torch",
 
             //NEED TO BE IMPLEMENTED:
             "minecraft:chalkboard",
-            "minecraft:underwater_torch",
-            "minecraft:underwater_tnt",
-            "minecraft:compound_creator",
-            "minecraft:element_constructor",
-            "minecraft:material_reducer"
+            "minecraft:underwater_tnt"
     );
 
     public static void enable() {
@@ -200,7 +200,6 @@ public class Education implements BlockID, ItemID {
 
         try {
             registerBlocks();
-            registerCreative();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -362,10 +361,15 @@ public class Education implements BlockID, ItemID {
         Registries.BLOCK.register(HARD_YELLOW_STAINED_GLASS_PANE, BlockHardYellowStainedGlassPane.class);
         Registries.BLOCK.register(CAMERA, BlockCamera.class);
         Registries.BLOCK.register(CHEMICAL_HEAT, BlockChemicalHeat.class);
-        Registries.BLOCK.register(CHEMISTRY_TABLE, BlockChemistryTable.class);
-        Registries.BLOCK.register(COLORED_TORCH_BP, BlockColoredTorchBp.class);
-        Registries.BLOCK.register(COLORED_TORCH_RG, BlockColoredTorchRg.class);
-
+        Registries.BLOCK.register(COMPOUND_CREATOR, BlockCompoundCreator.class);
+        Registries.BLOCK.register(ELEMENT_CONSTRUCTOR, BlockElementConstructor.class);
+        Registries.BLOCK.register(LAB_TABLE, BlockLabTable.class);
+        Registries.BLOCK.register(MATERIAL_REDUCER, BlockMaterialReducer.class);
+        Registries.BLOCK.register(COLORED_TORCH_BLUE, BlockColoredTorchBlue.class);
+        Registries.BLOCK.register(COLORED_TORCH_PURPLE, BlockColoredTorchPurple.class);
+        Registries.BLOCK.register(COLORED_TORCH_RED, BlockColoredTorchRed.class);
+        Registries.BLOCK.register(COLORED_TORCH_GREEN, BlockColoredTorchGreen.class);
+        Registries.BLOCK.register(UNDERWATER_TORCH, BlockUnderwaterTorch.class);
     }
 
     private static void addCreativeGroup(String name, String icon) {
@@ -374,35 +378,50 @@ public class Education implements BlockID, ItemID {
         CreativeCustomGroups.define(CreativeItemCategory.CONSTRUCTION, name, icon);
     }
 
-    private static void registerCreative() {
-        Map<String, Integer> categories = new HashMap<>();
+    public static void registerCreative() {
+        if(!enabled) return;
+
+        Map<String, Integer> groups = new HashMap<>();
 
         try (var input = Education.class.getClassLoader().getResourceAsStream("gamedata/unknown/creativeitems_edu.json")) {
+            if(input == null) return;
+
             Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
-            List<String> tmpCat = new ArrayList<>();
+            List<String> tmpGroups = new ArrayList<>();
 
-            List<Map<String, Object>> cat = (List<Map<String, Object>>) data.get("categories");
-            for (int i = 0; i < cat.size(); i++) {
-                Map<String, Object> tag = cat.get(i);
-
+            List<Map<String, Object>> groupData = (List<Map<String, Object>>) data.get("groups");
+            for (Map<String, Object> tag : groupData) {
                 String name = (String) tag.getOrDefault("name", null);
                 String icon = (String) tag.getOrDefault("icon", null);
 
                 addCreativeGroup(name, icon);
-                tmpCat.add(name);
+                tmpGroups.add(name);
             }
 
             CreativeGroupsRegistry.register();
 
-            for(String cate : tmpCat)
-                categories.put(cate, Registries.CREATIVE.resolveGroupIndexFromGroupName(cate));
+            for(String group : tmpGroups) {
+                groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
+                CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
+                    CreativeItemRegistry.ITEM_DATA.remove(entry);
+                    CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
+                });
+            }
 
             List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
-            for (int i = 0; i < items.size(); i++) {
-                Map<String, Object> tag = items.get(i);
-
+            for (Map<String, Object> tag : items) {
                 String id = (String) tag.getOrDefault("id", null);
-                String category = (String) tag.getOrDefault("category", null);
+                String group = (String) tag.getOrDefault("group", null);
+                String groupAs = (String) tag.getOrDefault("groupAs", null);
+
+                Integer groupIndex = null;
+
+                if(groupAs != null) {
+                    groupIndex = Registries.CREATIVE.getCreativeItemGroupIndex(groupAs);
+                } else {
+                    groupIndex = groups.get(group);
+                }
+
                 Item item = Item.get(id, 0, 1, null, false);
 
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
@@ -410,10 +429,10 @@ public class Education implements BlockID, ItemID {
                     log.warn("load creative edu item {} is null", id);
                 }
 
-                if(category == null || categories.get(category) == null) {
+                if (groupIndex == null) {
                     Registries.CREATIVE.addCreativeItem(item);
                 } else {
-                    Registries.CREATIVE.addCreativeItem(item, categories.get(category));
+                    Registries.CREATIVE.addCreativeItem(item, groupIndex);
                 }
             }
         } catch (Exception e) {

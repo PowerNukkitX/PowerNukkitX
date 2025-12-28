@@ -185,6 +185,43 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
     }
 
+    public int getCreativeItemGroupIndex(String id) {
+        if (id == null || id.isEmpty()) {
+            return CreativeItemRegistry.LAST_ITEMS_INDEX;
+        }
+
+        try {
+            // 1. If we already resolved a group name for this item, use it
+            String groupName = ITEM_GROUP_MAP.get(id);
+            if (groupName != null && !groupName.isEmpty()) {
+                for (Map<String, Integer> groupMap : CATEGORY_GROUP_INDEX_MAP.values()) {
+                    Integer index = groupMap.get(groupName);
+                    if (index != null) {
+                        return index;
+                    }
+                }
+            }
+
+            // 2. Try resolving by direct group-name match (id == group)
+            for (Map<String, Integer> groupMap : CATEGORY_GROUP_INDEX_MAP.values()) {
+                Integer index = groupMap.get(id);
+                if (index != null) {
+                    return index;
+                }
+            }
+
+        } catch (Exception e) {
+            log.warn(
+                    "Failed to resolve creative group index for '{}': {}",
+                    id,
+                    e.getMessage()
+            );
+        }
+
+        // 3. Final fallback (items tab tail)
+        return CreativeItemRegistry.LAST_ITEMS_INDEX;
+    }
+
     /**
      * Determines whether a block should be shown in the creative inventory <p>
      * based on its NBT "menu_category" tag.

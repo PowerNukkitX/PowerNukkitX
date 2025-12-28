@@ -534,9 +534,10 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
-
         EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
+
+        if(settings.gameplaySettings().enableEducation()) Education.registerCreative();
 
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
