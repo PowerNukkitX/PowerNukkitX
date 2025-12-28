@@ -34,8 +34,7 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
                 JsonObject entry = blockStateData.get(i).getAsJsonObject();
                 int hash = entry.get("blockStateHash").getAsInt();
                 String name = entry.get("name").getAsString();
-                if (!Education.isEnabled() && Education.eduBlocks.contains(name)) continue;// skip for educational blocks
-                if(BlockRegistry.skipBlocks.contains(name)) continue; //skip some old blocks
+                if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
                     Server.getInstance().getLogger().alert(name + " (" + hash + ") was not a part of block_states.json.");

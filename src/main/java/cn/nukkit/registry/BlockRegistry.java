@@ -1241,8 +1241,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     @Override
     public void register(String key, Class<? extends Block> value) throws RegisterException {
-        if (!Education.isEnabled() && Education.eduBlocks.contains(key)) return;// skip for educational blocks
-        if(skipBlocks.contains(key)) return; //skip some old blocks
+        if(shouldSkip(key)) return; //Skip blocks
         if (Modifier.isAbstract(value.getModifiers())) {
             throw new RegisterException("You can't register a abstract block class!");
         }
@@ -1495,8 +1494,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    public boolean shouldSkip(String bid) {
-        return Education.eduBlocks.contains(bid);
+    public static boolean shouldSkip(String bid) {
+        return (!Education.isEnabled() && Education.eduBlocks.contains(bid)) || skipBlocks.contains(bid);
     }
 
     public static CustomBlockDefinition getCustomBlockDefinition(String identifier) {
