@@ -712,7 +712,8 @@
   "commands.setfixedinvslots.success": "Bilang ng mga Nakapirming Puwang ng Imbentaryo na nakatakda sa {%0}", 
   "commands.setidletimeout.success": "Matagumpay na naitakda ang idle timeout sa {%0} minuto.", 
   "commands.setmaxplayers.description": "Itinatakda ang pinakamataas na bilang ng mga manlalaro para sa sesyon ng larong ito.", 
-  "commands.setmaxplayers.success": "Itakda ang pinakamataas na bilang ng mga manlalaro sa {%0}.", "commands.setmaxplayers.success.lowerbound": "(Nakatali sa kasalukuyang bilang ng manlalaro)", 
+  "commands.setmaxplayers.success": "Itakda ang pinakamataas na bilang ng mga manlalaro sa {%0}.", 
+  "commands.setmaxplayers.success.lowerbound": "(Nakatali sa kasalukuyang bilang ng manlalaro)", 
   "commands.setmaxplayers.success.upperbound": "(Nakatali sa pinakamataas na pinapayagang koneksyon)", 
   "commands.setworldspawn.description": "Itinatakda ang spawn ng mundo.", 
   "commands.setworldspawn.notAllowedInLegacyWorlds": "Hindi maaaring itakda ang spawn ng mundo sa mga legacy na mundo", 
@@ -830,7 +831,7 @@
   "commands.tickingarea-preload.count": "{%0} na tumutugmang lugar ang minarkahan para sa preload.", 
   "commands.tickingarea-preload.success": "Na-update na ang mga lugar na may ticking", 
   "commands.tickingarea-remove.byname.failure": "Walang mga lugar na may ticking na pinangalanang {%0} ang umiiral sa kasalukuyang dimensyon.", 
-  "commands.tickingarea-remove.failure": "Walang mga lugar na may ticking na naglalaman ng posisyon ng bloke na {%0} ang umiiral sa kasalukuyang dimensyon.", " 
+  "commands.tickingarea-remove.failure": "Walang mga lugar na may ticking na naglalaman ng posisyon ng bloke na {%0} ang umiiral sa kasalukuyang dimensyon.",
   "commands.tickingarea-remove.success": "Inalis ang mga lugar na may ticking", 
   "commands.tickingarea-remove_all.failure": "Walang mga lugar na may ticking sa kasalukuyang dimensyon.", 
   "commands.tickingarea-remove_all.success": "Inalis ang mga lugar na may ticking", 
