@@ -97,6 +97,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import eu.okaeri.configs.ConfigManager;
@@ -118,7 +119,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -219,7 +219,7 @@ public class Server {
     private static final int DP_MAX_STRING_BYTES = 32767;
     private static final double DP_NUMBER_ABS_MAX = 9_223_372_036_854_775_807d;
     private static final Pattern DP_UUID_CANON =
-                Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+            Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
@@ -261,7 +261,7 @@ public class Server {
     private List<ExperimentEntry> experiments;
     ///
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
@@ -297,40 +297,18 @@ public class Server {
 
         File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage = null;
+
         if (!config.exists()) {
-            log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
-            try {
-                InputStream languageList = this.getClass().getModule().getResourceAsStream("language/language.list");
-                if (languageList == null) {
-                    throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
-                }
-                String[] lines = Utils.readFile(languageList).split("\n");
-                for (String line : lines) {
-                    log.info(line);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            while (chooseLanguage == null) {
-                String lang;
-                if (predefinedLanguage != null) {
-                    log.info("Trying to load language from predefined language: {}", predefinedLanguage);
-                    lang = predefinedLanguage;
-                } else {
-                    lang = this.console.readLine();
-                }
-
-                try (InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
-                    if (conf != null) {
-                        chooseLanguage = lang;
-                    } else if (predefinedLanguage != null) {
-                        log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
-                        predefinedLanguage = null;
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            // Config doesn't exist - use wizard config if provided, otherwise use predefined or default
+            if (wizardConfig != null) {
+                chooseLanguage = wizardConfig.getLanguage();
+                log.info("Using language from setup wizard: {}", chooseLanguage);
+            } else if (predefinedLanguage != null && !predefinedLanguage.isEmpty()) {
+                chooseLanguage = predefinedLanguage;
+                log.info("Using predefined language: {}", chooseLanguage);
+            } else {
+                chooseLanguage = "eng";
+                log.info("Using default language: eng");
             }
         } else {
             Config configInstance = new Config(config);
@@ -346,8 +324,27 @@ public class Server {
             it.saveDefaults();
             it.load(true);
         });
-        this.settings.baseSettings().language(chooseLanguage);
 
+        if (wizardConfig != null && !config.exists()) {
+            this.settings.baseSettings().language(wizardConfig.getLanguage());
+            this.settings.baseSettings().motd(wizardConfig.getMotd());
+            this.settings.baseSettings().port(wizardConfig.getPort());
+            this.settings.baseSettings().maxPlayers(wizardConfig.getMaxPlayers());
+            this.settings.gameplaySettings().gamemode(wizardConfig.getGamemode());
+            this.settings.baseSettings().allowList(wizardConfig.isWhitelistEnabled());
+            this.settings.networkSettings().enableQuery(wizardConfig.isQueryEnabled());
+        } else {
+            this.settings.baseSettings().language(chooseLanguage);
+            if (wizardConfig != null) {
+                if (wizardConfig.getMotd() != null && !wizardConfig.getMotd().isEmpty()) {
+                    this.settings.baseSettings().motd(wizardConfig.getMotd());
+                }
+                if (wizardConfig.getPort() != 19132) {
+                    this.settings.baseSettings().port(wizardConfig.getPort());
+                }
+            }
+        }
+        this.settings.save();
         while(updateConfiguration());
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
@@ -405,6 +402,19 @@ public class Server {
         this.levelMetadata = new LevelMetadataStore();
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
         this.whitelist = new Config(this.dataPath + "white-list.txt", Config.ENUM);
+
+        if (wizardConfig != null && !config.exists()) {
+            for (String player : wizardConfig.getWhitelistedPlayers()) {
+                this.whitelist.set(player, true);
+            }
+            this.whitelist.save();
+
+            for (String op : wizardConfig.getOperators()) {
+                this.operators.set(op, true);
+            }
+            this.operators.save();
+        }
+
         this.banByName = new BanList(this.dataPath + "banned-players.json");
         this.banByName.load();
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
@@ -545,7 +555,6 @@ public class Server {
         this.autoSaveTicks = settings.baseSettings().autosaveDelay();
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
-
         EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
 
@@ -1471,7 +1480,7 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
@@ -2205,13 +2214,11 @@ public class Server {
         if (level == this.getDefaultLevel() && !forceUnload) {
             throw new IllegalStateException("The default level cannot be unloaded while running, please switch levels.");
         }
-
         return level.unload(forceUnload);
 
     }
 
-    @Nullable
-    public LevelConfig getLevelConfig(String levelFolderName) {
+    public @Nullable LevelConfig getLevelConfig(String levelFolderName) {
         if (Objects.equals(levelFolderName.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
@@ -2297,7 +2304,7 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
-        if (tickCounter != 0) {//update world enum when load  
+        if (tickCounter != 0) { // Update world enum when loading
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
