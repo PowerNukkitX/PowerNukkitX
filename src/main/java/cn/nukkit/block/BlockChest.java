@@ -177,7 +177,9 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         for (var direction : universe) {
             BlockFace directionFace = CommonPropertyMap.CARDINAL_BLOCKFACE.get(direction);
             Block side = this.getSide(directionFace);
-            if (side instanceof BlockChest chest && directionFace.getAxis() != thisFace.getAxis()) {
+            if (side instanceof BlockChest chest
+                    && !(side instanceof BlockTrappedChest)
+                    && directionFace.getAxis() != thisFace.getAxis()) {
                 BlockFace pairFace = chest.getBlockFace();
                 if (thisFace == pairFace) {
                     return chest.getBlockEntity();
