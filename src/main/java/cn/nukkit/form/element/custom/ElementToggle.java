@@ -16,14 +16,16 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
 public class ElementToggle extends Element implements ElementCustom {
+
     private String text;
     private boolean defaultValue;
+    private String tooltip;
 
     /**
      * Creates a toggle with empty text and default value false.
      */
     public ElementToggle() {
-        this("");
+        this("", false, null);
     }
 
     /**
@@ -31,7 +33,11 @@ public class ElementToggle extends Element implements ElementCustom {
      * @param text The toggle label
      */
     public ElementToggle(String text) {
-        this(text, false);
+        this(text, false, null);
+    }
+
+    public ElementToggle(String text, boolean defaultValue) {
+        this(text, defaultValue, null);
     }
 
     /**
@@ -43,6 +49,10 @@ public class ElementToggle extends Element implements ElementCustom {
         this.object.addProperty("type", "toggle");
         this.object.addProperty("text", this.text);
         this.object.addProperty("default", this.defaultValue);
+
+        if (this.tooltip != null && !this.tooltip.isEmpty()) {
+            this.object.addProperty("tooltip", this.tooltip);
+        }
 
         return this.object;
     }

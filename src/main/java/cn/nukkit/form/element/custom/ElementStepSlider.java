@@ -21,20 +21,26 @@ import java.util.List;
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
 public class ElementStepSlider extends Element implements ElementCustom {
+
     protected String text;
     protected List<String> steps;
     protected int defaultStep;
+    protected String tooltip;
 
     public ElementStepSlider() {
-        this("");
+        this("", new ArrayList<>(), 0, null);
     }
 
     public ElementStepSlider(String text) {
-        this(text, new ArrayList<>());
+        this(text, new ArrayList<>(), 0, null);
     }
 
     public ElementStepSlider(String text, List<String> steps) {
-        this(text, steps, 0);
+        this(text, steps, 0, null);
+    }
+
+    public ElementStepSlider(String text, List<String> steps, int defaultStep) {
+        this(text, steps, defaultStep, null);
     }
 
     /**
@@ -57,7 +63,6 @@ public class ElementStepSlider extends Element implements ElementCustom {
         }
 
         this.steps.add(step);
-
         return this;
     }
     /**
@@ -66,12 +71,18 @@ public class ElementStepSlider extends Element implements ElementCustom {
      */
     @Override
     public JsonObject toJson() {
-        Preconditions.checkArgument(this.defaultStep > -1 && this.defaultStep < this.steps.size(),
-                "Default option not within range");
+        Preconditions.checkArgument(
+                this.defaultStep >= 0 && this.defaultStep < this.steps.size(),
+                "Default option not within range"
+        );
 
         this.object.addProperty("type", "step_slider");
         this.object.addProperty("text", this.text);
         this.object.addProperty("default", this.defaultStep);
+
+        if (this.tooltip != null && !this.tooltip.isEmpty()) {
+            this.object.addProperty("tooltip", this.tooltip);
+        }
 
         JsonArray stepsArray = new JsonArray();
         this.steps.forEach(stepsArray::add);

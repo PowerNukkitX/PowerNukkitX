@@ -62,4 +62,6 @@ public class GameplaySettings extends OkaeriConfig {
     ));
     @Comment("pnx.settings.gameplay.cacheStructures")
     boolean cacheStructures = false;
+    @Comment("pnx.settings.gameplay.enableEdu")
+    boolean enableEducation = false;
 }

@@ -68,6 +68,7 @@ public enum LangCode {
     uk_UA("Українська (Україна)"),
     vi_VN("Tiếng Việt (Việt Nam)"),
     lt_LT("Lietuvietis (Lithuania)");
+    tl_PH("Filipino (Pilipinas)");
 
     /**
      * The display name of the language, in its native language.
