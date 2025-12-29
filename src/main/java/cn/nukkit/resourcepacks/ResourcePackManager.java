@@ -1,6 +1,8 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
+import cn.nukkit.resourcepacks.impl.ChemistryBehaviorPack;
+import cn.nukkit.resourcepacks.impl.ChemistryResourcePack;
 import cn.nukkit.resourcepacks.loader.ResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
 import com.google.common.collect.Sets;
@@ -68,6 +70,21 @@ public class ResourcePackManager {
             loadedPacks.forEach(pack -> resourcePacksById.put(pack.getPackId(), pack));
             this.resourcePacks.addAll(loadedPacks);
         });
+
+        if (Server.getInstance().getSettings().gameplaySettings().enableEducation()) {
+            // Chemistry Resource Pack
+            ResourcePack resourcePack = new ChemistryResourcePack();
+            resourcePacks.add(resourcePack);
+            this.resourcePacksById.put(resourcePack.getPackId(), resourcePack);
+
+            // Chemistry Behavior Pack
+            ResourcePack behaviorPack = new ChemistryBehaviorPack();
+            resourcePacks.add(behaviorPack);
+            this.resourcePacksById.put(behaviorPack.getPackId(), behaviorPack);
+
+            Server.getInstance().getLogger().info(Server.getInstance().getLanguage()
+                    .tr("nukkit.resources.chemistry.success"));
+        }
 
         log.info(Server.getInstance().getLanguage()
                 .tr("nukkit.resources.success", String.valueOf(this.resourcePacks.size())));
