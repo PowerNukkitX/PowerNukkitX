@@ -138,9 +138,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
- * Represents a server object, global singleton.
- * <p>is instantiated in {@link Nukkit} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
- * The constructor method of {@link cn.nukkit.Server} performs a number of operations, including but not limited to initializing configuration files, creating threads, thread pools, start plugins, registering recipes, blocks, entities, items, etc.
+ * Represents the main server singleton for PowerNukkitX.
+ * <p>
+ * This class is instantiated in {@link Nukkit} and can be accessed via {@link cn.nukkit.Server#getInstance()}.
+ * The constructor performs various initialization tasks, including configuration loading, thread and thread pool creation,
+ * plugin startup, and registration of recipes, blocks, entities, items, and more.
+ *
+ * <p>Key responsibilities include:
+ * <ul>
+ *   <li>Managing server lifecycle and configuration</li>
+ *   <li>Handling plugins, commands, and events</li>
+ *   <li>Managing players, levels, and networking</li>
+ *   <li>Providing access to server-wide utilities and managers</li>
+ * </ul>
+ *
+ * <p>Note: This class is a singleton and should be accessed via {@link #getInstance()}.
  *
  * @author MagicDroidX
  * @author Box
@@ -162,7 +174,7 @@ public class Server {
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
-     * 一个tick计数器,记录服务器已经经过的tick数
+     * A tick counter that records the number of ticks the server has passed.
      */
     private int tickCounter;
     private long nextTick;
@@ -174,8 +186,6 @@ public class Server {
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
-     * 负责地形生成，数据压缩等计算任务的FJP线程池<br/>
-     * <p>
      * FJP thread pool responsible for terrain generation, data compression and other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
@@ -188,7 +198,7 @@ public class Server {
     private int maxPlayers;
     private boolean autoSave = true;
     /**
-     * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
+     * Does the configuration item check the login time.
      */
     public boolean checkLoginTime = false;
     private EntityMetadataStore entityMetadata;
@@ -254,12 +264,11 @@ public class Server {
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
 
-    ///default levels
+    // default levels
     private Level defaultLevel = null;
     private boolean allowNether;
     private boolean allowTheEnd;
     private List<ExperimentEntry> experiments;
-    ///
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
@@ -635,7 +644,7 @@ public class Server {
             }
 
             if (!this.loadLevel(levelFolder)) {
-                //default world not exist
+                //default world doesn't exist
                 //generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
                 long seed = LevelConfig.GeneratorConfig.randomSeed();
@@ -649,11 +658,9 @@ public class Server {
         }
     }
 
-    // region lifecycle & ticking - 生命周期与游戏刻
+    // region lifecycle and ticking
 
     /**
-     * 重载服务器
-     * <p>
      * Reloads the server
      */
     public void reload() {
@@ -688,7 +695,7 @@ public class Server {
         }
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //todo enable js plugin when adapt
+        // TODO: enable js plugin when adapt
 //        JSIInitiator.reset();
 //        JSFeatures.clearFeatures();
 //        JSFeatures.initInternalFeatures();
@@ -742,8 +749,6 @@ public class Server {
     }
 
     /**
-     * 关闭服务器
-     * <p>
      * Shutdown the server
      */
     public void shutdown() {
@@ -751,8 +756,6 @@ public class Server {
     }
 
     /**
-     * 强制关闭服务器
-     * <p>
      * Force shutdown the server
      */
     public void forceShutdown() {
@@ -991,10 +994,10 @@ public class Server {
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
             this.sendUsageTicker = 6000;
-            //todo sendUsage
+            // TODO: sendUsage
         }
 
-        // 处理可冻结数组
+        // Handle freezable array
         int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
@@ -1031,7 +1034,7 @@ public class Server {
     }
 
     /**
-     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
+     * @return Returns the number of ticks recorded by the server
      */
     public int getTick() {
         return tickCounter;
@@ -1093,10 +1096,10 @@ public class Server {
     }
 
     /**
-     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
-     * 请牢记，必须在设置之后清除。
+     * Set the server to busy status, which prevents related code from detecting the server as unresponsive.
+     * Remember to clear this setting after use.
      *
-     * @param busyTime 单位为毫秒
+     * @param busyTime milliseconds
      * @return id
      */
     public int addBusying(long busyTime) {
@@ -1125,7 +1128,7 @@ public class Server {
 
     // endregion
 
-    // region server singleton - Server 单例
+    // region server singleton
 
     public static Server getInstance() {
         return instance;
@@ -1133,13 +1136,13 @@ public class Server {
 
     // endregion
 
-    // region chat & commands - 聊天与命令
+    // region chat and commands
 
     /**
-     * 广播一条消息给所有玩家<p>Broadcast a message to all players
+     * Broadcast a message to all players
      *
-     * @param message 消息
-     * @return int 玩家数量<br>Number of players
+     * @param message The broadcasted message
+     * @return int Number of players
      */
     public int broadcastMessage(String message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
@@ -1153,10 +1156,10 @@ public class Server {
     }
 
     /**
-     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
+     * Broadcast a message to the specified {@link CommandSender recipients}
      *
-     * @param message 消息
-     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
+     * @param message The broadcasted message
+     * @return int Number of {@link CommandSender recipients}
      */
     public int broadcastMessage(String message, CommandSender[] recipients) {
         for (CommandSender recipient : recipients) {
@@ -1189,14 +1192,12 @@ public class Server {
     }
 
     /**
-     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
-     * 一个permission在{@code PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
      * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
      * The permission corresponds to a {@link CommandSender Sender} set in {@code PluginManager#permSubs}.
      *
-     * @param message     消息内容<br>Message content
-     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
-     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
+     * @param message     Message content
+     * @param permissions Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
+     * @return            Number of {@link CommandSender senders} who received the message
      */
     public int broadcast(String message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
@@ -1238,17 +1239,15 @@ public class Server {
     }
 
     /**
-     * 以sender身份执行一行命令
-     * <p>
      * Execute one line of command as sender
      *
-     * @param sender      命令执行者
-     * @param commandLine 一行命令
-     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
-     * @throws ServerException 服务器异常
+     * @param sender      Command sender
+     * @param commandLine A command
+     * @return Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @throws ServerException Server exception
      */
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First we need to check if this command is on the main thread or not, if not, merge it in the main thread.
+        // First, we need to check if this command is on the main thread or not, if not, merge it in the main thread.
         if (!this.isPrimaryThread()) {
             this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
             return 1;
@@ -1267,25 +1266,21 @@ public class Server {
     }
 
     /**
-     * 以该控制台身份静音执行这些命令，无视权限
-     * <p>
      * Execute these commands silently as the console, ignoring permissions.
      *
      * @param commands the commands
-     * @throws ServerException 服务器异常
+     * @throws ServerException Server exception
      */
     public void silentExecuteCommand(String... commands) {
         this.silentExecuteCommand(null, commands);
     }
 
     /**
-     * 以该玩家身份静音执行这些命令无视权限
-     * <p>
      * Execute these commands silently as this player, ignoring permissions.
      *
-     * @param sender   命令执行者<br>command sender
+     * @param sender command sender
      * @param commands the commands
-     * @throws ServerException 服务器异常
+     * @throws ServerException Server exception
      */
     public void silentExecuteCommand(@Nullable Player sender, String... commands) {
         final var revert = new ArrayList<Level>();
@@ -1312,13 +1307,11 @@ public class Server {
     }
 
     /**
-     * 得到控制台发送者
-     * <p>
      * Get the console sender
      *
      * @return {@link ConsoleCommandSender}
      */
-    //todo: use ticker to check console
+    // TODO: use ticker to check console
     public ConsoleCommandSender getConsoleSender() {
         return consoleSender;
     }
@@ -1346,7 +1339,7 @@ public class Server {
 
     // endregion
 
-    // region networking - 网络相关
+    // region networking
 
     /**
      * @see #broadcastPacket(Player[], DataPacket)
@@ -1358,10 +1351,10 @@ public class Server {
     }
 
     /**
-     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
+     * Broadcast a packet to the specified players.
      *
-     * @param players 接受数据包的所有玩家<br>All players receiving the data package
-     * @param packet  数据包
+     * @param players All players receiving the data packet
+     * @param packet  The data packet
      */
     public static void broadcastPacket(Player[] players, DataPacket packet) {
         for (Player player : players) {
@@ -1379,13 +1372,12 @@ public class Server {
 
     // endregion
 
-    // region plugins - 插件相关
+    // region plugins
 
     /**
-     * 以指定插件加载顺序启用插件<p>
      * Enable plugins in the specified plugin loading order
      *
-     * @param type 插件加载顺序<br>Plugin loading order
+     * @param type Plugin loading order
      */
     public void enablePlugins(PluginLoadOrder type) {
         for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
@@ -1400,17 +1392,16 @@ public class Server {
     }
 
     /**
-     * 启用一个指定插件<p>
      * Enable a specified plugin
      *
-     * @param plugin 插件实例<br>Plugin instance
+     * @param plugin Plugin instance
      */
     public void enablePlugin(Plugin plugin) {
         this.pluginManager.enablePlugin(plugin);
     }
 
     /**
-     * 禁用全部插件<p>Disable all plugins
+     * Disable all plugins
      */
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
@@ -1426,7 +1417,7 @@ public class Server {
 
     // endregion
 
-    // region Players - 玩家相关
+    // region players
 
     public void onPlayerCompleteLoginSequence(Player player) {
         this.sendFullPlayerListData(player);
@@ -1501,16 +1492,14 @@ public class Server {
     }
 
     /**
-     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
-     * <p>
-     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
+     * Update {@link PlayerListPacket} data packets (i.e., player list data) for specified players
      *
-     * @param uuid       uuid
-     * @param entityId   实体id
-     * @param name       名字
-     * @param skin       皮肤
-     * @param xboxUserId xbox用户id
-     * @param players    指定接受数据包的玩家
+     * @param uuid       the uuid
+     * @param entityId   entity id
+     * @param name       player name
+     * @param skin       player skin
+     * @param xboxUserId xbox user id
+     * @param players    players to send packet
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1531,10 +1520,9 @@ public class Server {
     }
 
     /**
-     * 移除玩家数组中所有玩家的玩家列表数据.<p>
      * Remove player list data for all players in the array.
      *
-     * @param players 玩家数组
+     * @param players player array
      */
     public void removePlayerListData(UUID uuid, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1544,10 +1532,9 @@ public class Server {
     }
 
     /**
-     * 移除这个玩家的玩家列表数据.<p>
      * Remove this player's player list data.
      *
-     * @param player 玩家
+     * @param player The player
      */
 
     public void removePlayerListData(UUID uuid, Player player) {
@@ -1562,10 +1549,9 @@ public class Server {
     }
 
     /**
-     * 发送玩家列表数据包给一个玩家.<p>
      * Send a player list packet to a player.
      *
-     * @param player 玩家
+     * @param player The player
      */
     public void sendFullPlayerListData(Player player) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1584,12 +1570,10 @@ public class Server {
     }
 
     /**
-     * 从指定的UUID得到玩家实例.
-     * <p>
      * Get the player instance from the specified UUID.
      *
      * @param uuid uuid
-     * @return 玩家实例，可为空<br>Player example, can be empty
+     * @return Player example can be empty
      */
     public Optional<Player> getPlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
@@ -1597,12 +1581,10 @@ public class Server {
     }
 
     /**
-     * 从数据库中查找指定玩家名对应的UUID.
-     * <p>
      * Find the UUID corresponding to the specified player name from the database.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家的UUID，可为空.<br>The player's UUID, which can be empty.
+     * @param name player name
+     * @return The player's UUID, which can be empty.
      */
     public Optional<UUID> lookupName(String name) {
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
@@ -1622,8 +1604,6 @@ public class Server {
     }
 
     /**
-     * 更新数据库中指定玩家名的UUID，若不存在则添加.
-     * <p>
      * Update the UUID of the specified player name in the database, or add it if it does not exist.
      *
      * @param info the player info
@@ -1659,12 +1639,10 @@ public class Server {
     }
 
     /**
-     * 从指定的UUID得到一个玩家实例,可以是在线玩家也可以是离线玩家.
-     * <p>
      * Get a player instance from the specified UUID, either online or offline.
      *
      * @param uuid uuid
-     * @return 玩家<br>player
+     * @return player
      */
     public IPlayer getOfflinePlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
@@ -1677,8 +1655,6 @@ public class Server {
     }
 
     /**
-     * create为false
-     * <p>
      * create is false
      *
      * @see #getOfflinePlayerData(UUID, boolean)
@@ -1688,10 +1664,10 @@ public class Server {
     }
 
     /**
-     * 获得UUID指定的玩家的NBT数据
+     * Retrieve the NBT data for the player specified by the UUID
      *
-     * @param uuid   要获取数据的玩家UUID<br>UUID of the player to get data from
-     * @param create 如果玩家数据不存在是否创建<br>If player data does not exist whether to create.
+     * @param uuid   UUID of the player to get data from
+     * @param create If player data does not exist, whether to create.
      * @return {@link CompoundTag}
      */
     public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
@@ -1806,13 +1782,11 @@ public class Server {
     }
 
     /**
-     * 保存玩家数据，玩家在线离线都行.
-     * <p>
      * Save player data, players can be offline.
      *
      * @param nameOrUUid the name or uuid
-     * @param tag        NBT数据<br>nbt data
-     * @param async      是否异步保存<br>Whether to save asynchronously
+     * @param tag        nbt data
+     * @param async      Whether to save asynchronously
      */
     public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
         UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
@@ -1825,7 +1799,7 @@ public class Server {
                     this.onCancel();
                 }
 
-                //doing it like this ensures that the playerdata will be saved in a server shutdown
+                //doing it like this ensures that the player data will be saved in a server shutdown
                 @Override
                 public void onCancel() {
                     if (!hasRun.getAndSet(true)) {
@@ -1856,12 +1830,10 @@ public class Server {
     }
 
     /**
-     * 从玩家名获得一个在线玩家，这个方法是模糊匹配，只要玩家名带有name前缀就会被返回.
-     * <p>
      * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
+     * @param name player name
+     * @return Player instance object, failed to get null
      */
     public Player getPlayer(String name) {
         Player found = null;
@@ -1884,12 +1856,10 @@ public class Server {
     }
 
     /**
-     * 从玩家名获得一个在线玩家，这个方法是精确匹配，当玩家名字符串完全相同时返回.
-     * <p>
      * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
+     * @param name player name
+     * @return Player instance object, failed to get null
      */
     public Player getPlayerExact(String name) {
         name = name.toLowerCase(Locale.ENGLISH);
@@ -1903,12 +1873,10 @@ public class Server {
     }
 
     /**
-     * 指定一个部分玩家名，返回所有包含或者等于该名称的玩家.
-     * <p>
      * Specify a partial player name and return all players with or equal to that name.
      *
-     * @param partialName 部分玩家名<br>partial name
-     * @return 匹配到的所有玩家, 若匹配不到则为一个空数组<br>All players matched, if not matched then an empty array
+     * @param partialName partial name
+     * @return All players matched, if not matched then an empty array
      */
     public Player[] matchPlayer(String partialName) {
         partialName = partialName.toLowerCase(Locale.ENGLISH);
@@ -1941,11 +1909,9 @@ public class Server {
     }
 
     /**
-     * 获得所有在线的玩家Map.
-     * <p>
      * Get all online players Map.
      *
-     * @return 所有的在线玩家Map
+     * @return a map of players uuid and a player instance object
      */
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
@@ -1956,8 +1922,7 @@ public class Server {
      * This method handles the LevelDB structure used by PowerNukkitX where player data is stored
      * in two separate databases: one for name-to-UUID mapping and another for actual player data.
      *
-     * @param name The player name to delete (case-insensitive)
-     * @throws Exception if any LevelDB operation fails
+     * @param name The player name to delete it (case-insensitive)
      */
     public void deletePlayerData(String name) {
         try {
@@ -1983,12 +1948,8 @@ public class Server {
 
     /**
      * Deletes all player data for the specified UUID.
-     * This handles the LevelDB structure by:
-     * 1. Deleting the main player data record
-     * 2. Finding and deleting the name-to-UUID mapping
      *
      * @param uuid The UUID of the player to delete
-     * @throws Exception if any LevelDB operation fails
      */
     public void deletePlayerData(UUID uuid) {
         try {
@@ -2020,10 +1981,10 @@ public class Server {
 
     // endregion
 
-    // region constants - 常量
+    // region constants
 
     /**
-     * @return 服务器名称<br>The name of server
+     * @return The name of server
      */
     public String getName() {
         return "PowerNukkitX";
@@ -2068,7 +2029,7 @@ public class Server {
     }
 
     /**
-     * @return 服务器UUID<br>server UUID
+     * @return server UUID
      */
     public UUID getServerUniqueId() {
         return this.serverID;
@@ -2103,24 +2064,21 @@ public class Server {
         return positionTrackingService;
     }
 
-    // region crafting & recipe - 合成与配方
+    // region crafting a recipe
 
     /**
-     * 发送配方列表数据包给一个玩家.<p>
      * Send a recipe list packet to a player.
      *
-     * @param player 玩家
+     * @param player the player
      */
     public void sendRecipeList(Player player) {
         player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
 
     /**
-     * 注册配方到配方管理器
-     * <p>
-     * Register Recipe to Recipe Manager
+     * Register the recipe to recipe manager
      *
-     * @param recipe 配方
+     * @param recipe the recipe
      */
     public void addRecipe(Recipe recipe) {
         Registries.RECIPE.register(recipe);
@@ -2132,10 +2090,10 @@ public class Server {
 
     // endregion
 
-    // region Levels - 游戏世界相关
+    // region levels
 
     /**
-     * @return 获得所有游戏世界<br>Get all the game world
+     * @return Get all the game world
      */
     public Map<Integer, Level> getLevels() {
         return levels;
@@ -2158,20 +2116,18 @@ public class Server {
     }
 
     /**
-     * @param name 世界名字
-     * @return 世界是否已经加载<br>Is the world already loaded
+     * @param name the level name
+     * @return Is the world already loaded
      */
     public boolean isLevelLoaded(String name) {
         return this.getLevelByName(name) != null;
     }
 
     /**
-     * 从世界id得到世界,0主世界 1 地狱 2 末地
-     * <p>
-     * Get world from world id,0 OVERWORLD 1 NETHER 2 THE_END
+     * Get world from world id, 0 OVERWORLD 1 NETHER 2 THE_END
      *
-     * @param levelId 世界id<br>world id
-     * @return level实例<br>level instance
+     * @param levelId world id
+     * @return level level instance
      */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {
@@ -2181,12 +2137,10 @@ public class Server {
     }
 
     /**
-     * 从世界名得到世界,overworld 主世界 nether 地狱 the_end 末地
-     * <p>
-     * Get world from world name,{@code overworld nether the_end}
+     * Get world from world name, {@code overworld nether the_end}
      *
-     * @param name 世界名<br>world name
-     * @return level实例<br>level instance
+     * @param name world name
+     * @return level instance
      */
     public Level getLevelByName(String name) {
         for (Level level : this.levelArray) {
@@ -2202,13 +2156,11 @@ public class Server {
     }
 
     /**
-     * 卸载世界
-     * <p>
-     * unload level
+     * Unloads the level
      *
-     * @param level       世界
-     * @param forceUnload 是否强制卸载<br>whether to force uninstallation.
-     * @return 卸载是否成功
+     * @param level       the level
+     * @param forceUnload Whether force to unload.
+     * @return was the uninstallation successful
      */
     public boolean unloadLevel(Level level, boolean forceUnload) {
         if (level == this.getDefaultLevel() && !forceUnload) {
@@ -2266,6 +2218,8 @@ public class Server {
     }
 
     /**
+     * Loads the selected level by its folder name
+     *
      * @param levelFolderName the level folder name
      * @return whether load success
      */
@@ -2310,6 +2264,13 @@ public class Server {
         return true;
     }
 
+    /**
+     * Generates a level with selected name and LevelConfig options.
+     *
+     * @param name The level name
+     * @param levelConfig The level config
+     * @return boolean
+     */
     public boolean generateLevel(String name, @Nullable LevelConfig levelConfig) {
         if (name.isBlank()) {
             return false;
@@ -2372,7 +2333,7 @@ public class Server {
     }
     // endregion
 
-    // region Ban, OP and whitelist - Ban，OP与白名单
+    // region Ban, OP and Whitelist
     public BanList getNameBans() {
         return this.banByName;
     }
@@ -2437,7 +2398,7 @@ public class Server {
 
     // endregion
 
-    // region configs - 配置相关
+    // region configs
 
     public int getMaxPlayers() {
         return maxPlayers;
@@ -2454,39 +2415,37 @@ public class Server {
     }
 
     /**
-     * @return 服务器端口<br>server port
+     * @return The server port
      */
     public int getPort() {
         return this.settings.baseSettings().port();
     }
 
     /**
-     * @return 可视距离<br>server view distance
+     * @return The server view distance
      */
     public int getViewDistance() {
         return this.settings.gameplaySettings().viewDistance();
     }
 
     /**
-     * @return 服务器网络地址<br>server ip
+     * @return The server ip
      */
     public String getIp() {
         return this.settings.baseSettings().ip();
     }
 
     /**
-     * @return 服务器是否会自动保存<br>Does the server automatically save
+     * @return Does the server automatically save
      */
     public boolean getAutoSave() {
         return this.autoSave;
     }
 
     /**
-     * 设置服务器自动保存
-     * <p>
      * Set server autosave
      *
-     * @param autoSave 是否自动保存<br>Whether to save automatically
+     * @param autoSave Whether to save automatically
      */
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
@@ -2496,8 +2455,6 @@ public class Server {
     }
 
     /**
-     * 得到服务器的gamemode
-     * <p>
      * Get the gamemode of the server
      *
      * @return gamemode id
@@ -2512,7 +2469,7 @@ public class Server {
     }
 
     /**
-     * 默认{@code direct=false}
+     * default {@code direct=false}
      *
      * @see #getGamemodeString(int, boolean)
      */
@@ -2521,13 +2478,11 @@ public class Server {
     }
 
     /**
-     * 从gamemode id获取游戏模式字符串.
-     * <p>
      * Get game mode string from gamemode id.
      *
      * @param mode   gamemode id
-     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
-     * @return 游戏模式字符串<br>Game Mode String
+     * @param direct If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
+     * @return Gamemode string
      */
     public static String getGamemodeString(int mode, boolean direct) {
         return switch (mode) {
@@ -2540,15 +2495,13 @@ public class Server {
     }
 
     /**
-     * 从字符串获取gamemode
-     * <p>
      * Get gamemode from string
      *
-     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
-     * @return 游戏模式id<br>gamemode id
+     * @param gamemodeString A string representing the game mode, e.g., 0 for survival...
+     * @return gamemode id
      */
-    public static int getGamemodeFromString(String str) {
-        return switch (str.trim().toLowerCase(Locale.ENGLISH)) {
+    public static int getGamemodeFromString(String gamemodeString) {
+        return switch (gamemodeString.trim().toLowerCase(Locale.ENGLISH)) {
             case "0", "survival", "s" -> Player.SURVIVAL;
             case "1", "creative", "c" -> Player.CREATIVE;
             case "2", "adventure", "a" -> Player.ADVENTURE;
@@ -2558,55 +2511,34 @@ public class Server {
     }
 
     /**
-     * 从字符串获取游戏难度
-     * <p>
      * Get game difficulty from string
      *
-     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
-     * @return 游戏难度id<br>game difficulty id
+     * @param difficultyString A string representing the game difficulty, e.g., 0,peaceful...
+     * @return game difficulty id
      */
-    public static int getDifficultyFromString(String str) {
-        switch (str.trim().toLowerCase(Locale.ENGLISH)) {
-            case "0":
-            case "peaceful":
-            case "p":
-                return 0;
-
-            case "1":
-            case "easy":
-            case "e":
-                return 1;
-
-            case "2":
-            case "normal":
-            case "n":
-                return 2;
-
-            case "3":
-            case "hard":
-            case "h":
-                return 3;
-        }
-        return -1;
+    public static int getDifficultyFromString(String difficultyString) {
+        return switch (difficultyString.trim().toLowerCase(Locale.ENGLISH)) {
+            case "0", "peaceful", "p" -> 0;
+            case "1", "easy", "e" -> 1;
+            case "2", "normal", "n" -> 2;
+            case "3", "hard", "h" -> 3;
+            default -> -1;
+        };
     }
 
     /**
-     * 获得服务器游戏难度
-     * <p>
      * Get server game difficulty
      *
-     * @return 游戏难度id<br>game difficulty id
+     * @return game difficulty id
      */
     public int getDifficulty() {
         return this.settings.gameplaySettings().difficulty();
     }
 
     /**
-     * 设置服务器游戏难度
-     * <p>
-     * set server game difficulty
+     * Set server game difficulty
      *
-     * @param difficulty 游戏难度id<br>game difficulty id
+     * @param difficulty game difficulty id
      */
     public void setDifficulty(int difficulty) {
         int value = difficulty;
@@ -2616,28 +2548,28 @@ public class Server {
     }
 
     /**
-     * @return 是否开启白名单<br>Whether to start server whitelist
+     * @return Whether to start server whitelist
      */
     public boolean hasWhitelist() {
         return this.settings.baseSettings().allowList();
     }
 
     /**
-     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
+     * @return Get server birth point protection radius
      */
     public int getSpawnRadius() {
         return this.settings.playerSettings().spawnRadius();
     }
 
     /**
-     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
+     * @return Whether the server is in hardcore mode
      */
     public boolean isHardcore() {
         return this.settings.gameplaySettings().hardcore();
     }
 
     /**
-     * @return 获取默认gamemode<br>Get default gamemode
+     * @return Get default gamemode
      */
     public int getDefaultGamemode() {
         if (this.defaultGamemode == Integer.MAX_VALUE) {
@@ -2647,7 +2579,7 @@ public class Server {
     }
 
     /**
-     * Set default gamemode for the server.
+     * Set the default gamemode for the server.
      *
      * @param defaultGamemode the default gamemode
      */
@@ -2657,7 +2589,7 @@ public class Server {
     }
 
     /**
-     * @return 得到服务器标题<br>Get server motd
+     * @return Get server motd
      */
     public String getMotd() {
         return this.settings.baseSettings().motd();
@@ -2674,7 +2606,7 @@ public class Server {
     }
 
     /**
-     * @return 得到服务器子标题<br>Get the server subheading
+     * @return Get the server subheading
      */
     public String getSubMotd() {
         String subMotd = this.settings.baseSettings().subMotd();
@@ -2695,14 +2627,14 @@ public class Server {
     }
 
     /**
-     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
+     * @return Whether to force the use of server resource pack
      */
     public boolean getForceResources() {
         return this.settings.gameplaySettings().forceResources();
     }
 
     /**
-     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     * @return Whether to force the use of server resource pack while allowing the loading of client resource pack
      */
     public boolean getForceResourcesAllowOwnPacks() {
         return this.settings.gameplaySettings().allowClientPacks();
@@ -2722,13 +2654,13 @@ public class Server {
             case "idn" -> LangCode.valueOf("id_ID");
             case "jpn" -> LangCode.valueOf("ja_JP");
             case "kor" -> LangCode.valueOf("ko_KR");
-            case "ltu" -> LangCode.valueOf("en_US");
+            case "ltu" -> LangCode.valueOf("lt_LT");
             case "pol" -> LangCode.valueOf("pl_PL");
             case "rus" -> LangCode.valueOf("ru_RU");
             case "spa" -> LangCode.valueOf("es_ES");
             case "tur" -> LangCode.valueOf("tr_TR");
             case "ukr" -> LangCode.valueOf("uk_UA");
-            case "vie" -> LangCode.valueOf("en_US");
+            case "vie" -> LangCode.valueOf("vi_VN");
             default -> throw new IllegalArgumentException();
         };
     }
@@ -2762,7 +2694,7 @@ public class Server {
     }
     // endregion
 
-    // region threading - 并发基础设施
+    // region threading
 
     /**
      * Checks the current thread against the expected primary thread for the
@@ -2799,6 +2731,8 @@ public class Server {
     public List<ExperimentEntry> getExperiments() {
         return experiments;
     }
+  
+  
 
     /** Allow plugins to override the default DP group UUID (e.g., when migrating from BDS). */
     public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
@@ -3230,8 +3164,9 @@ public class Server {
     }
     // Dynamic Properties Helpers end
 
-
-    //todo NukkitConsole 会阻塞关不掉
+  
+  
+    // TODO: It will block NukkitConsole and cannot be turned off.
     private class ConsoleThread extends Thread implements InterruptibleThread {
         public ConsoleThread() {
             super("Console Thread");

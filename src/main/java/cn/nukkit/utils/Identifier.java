@@ -9,7 +9,7 @@ package cn.nukkit.utils;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 命名空间标识符
+ * Namespace identifier
  */
 
 
@@ -40,11 +40,11 @@ public class Identifier {
     }
 
     /**
-     * 通过自定义的命名空间分割符分割并返回一个Identifier对象
+     * Splits and returns an Identifier object using a custom namespace delimiter.
      *
-     * @param id        字符串
-     * @param delimiter 分割符
-     * @return 命名空间对象
+     * @param id        String
+     * @param delimiter Delimiter
+     * @return Namespace object
      */
     public static Identifier splitOn(String id, char delimiter) {
         return new Identifier(Identifier.split(id, delimiter));

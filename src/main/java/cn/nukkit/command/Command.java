@@ -33,6 +33,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * Represents a command that can be executed by players, the console, or command blocks.
+ * <p>
+ * This abstract class provides the base structure for all commands in the server, including name, description,
+ * usage, permission, aliases, and overloads. Subclasses must implement the {@link #execute(CommandSender, String, String[])}
+ * method to define command behavior.
+ * <p>
+ * Commands can be registered to a {@link CommandMap}, have custom parameters, and support localization for descriptions.
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Extend this class to create a new command.</li>
+ *   <li>Override {@link #execute(CommandSender, String, String[])} to implement command logic.</li>
+ *   <li>Set command parameters, permission, and aliases as needed.</li>
+ * </ul>
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class Command {
@@ -91,36 +106,58 @@ public abstract class Command {
     }
 
     /**
-     * Returns an CommandData containing command data
+     * Returns the default command data for this command.
      *
-     * @return CommandData
+     * @return the default {@link CommandData} instance
      */
     public CommandData getDefaultCommandData() {
         return this.commandData;
     }
 
+    /**
+     * Gets the command parameters for a specific key.
+     *
+     * @param key the parameter key
+     * @return an array of {@link CommandParameter} for the key, or null if not found
+     */
     public CommandParameter[] getCommandParameters(String key) {
         return commandParameters.get(key);
     }
 
+    /**
+     * Gets all command parameters mapped by key.
+     *
+     * @return a map of parameter keys to arrays of {@link CommandParameter}
+     */
     public Map<String, CommandParameter[]> getCommandParameters() {
         return commandParameters;
     }
 
+    /**
+     * Sets the command parameters for this command.
+     *
+     * @param commandParameters the map of parameter keys to arrays of {@link CommandParameter}
+     */
     public void setCommandParameters(Map<String, CommandParameter[]> commandParameters) {
         this.commandParameters = commandParameters;
     }
 
+    /**
+     * Adds command parameters for a specific key.
+     *
+     * @param key the parameter key
+     * @param parameters the array of {@link CommandParameter} to add
+     */
     public void addCommandParameters(String key, CommandParameter[] parameters) {
         this.commandParameters.put(key, parameters);
     }
 
     /**
-     * Generates modified command data for the specified player
-     * for AvailableCommandsPacket.
+     * Generates custom command data for a player, used for AvailableCommandsPacket.
+     * Returns null if the player does not have permission for this command.
      *
-     * @param player player
-     * @return CommandData|null
+     * @param player the player for whom to generate command data
+     * @return a {@link CommandDataVersions} instance, or null if no permission
      */
     public CommandDataVersions generateCustomCommandData(Player player) {
         if (!this.testPermission(player)) {
@@ -166,39 +203,77 @@ public abstract class Command {
         return versions;
     }
 
+    /**
+     * Gets the overloads for this command.
+     *
+     * @return a map of overload keys to {@link CommandOverload}
+     */
     public Map<String, CommandOverload> getOverloads() {
         return commandData.overloads;
     }
 
+    /**
+     * Executes the command with the given sender, label, and arguments.
+     * Must be implemented by subclasses.
+     *
+     * @param sender the command sender
+     * @param commandLabel the command label
+     * @param args the command arguments
+     * @return true if the command executed successfully, false otherwise
+     * @throws UnsupportedOperationException if not implemented
+     */
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Execute int.
+     * Executes the command with parsed parameters and logging.
+     * Must be implemented by subclasses.
      *
-     * @param sender       命令发送者
+     * @param sender the command sender
      * @param commandLabel the command label
-     * @param result       解析的命令结果
-     * @param log          命令输出工具
-     * @return int 返回0代表执行失败, 返回大于等于1代表执行成功
+     * @param result the parsed command result
+     * @param log the command logger
+     * @return 0 for failure, >=1 for success
+     * @throws UnsupportedOperationException if not implemented
      */
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Gets the name of the command.
+     *
+     * @return the command name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the permission string required to execute this command.
+     *
+     * @return the permission string
+     */
     public String getPermission() {
         return permission;
     }
 
+    /**
+     * Sets the permission string required to execute this command.
+     *
+     * @param permission the permission string
+     */
     public void setPermission(String permission) {
         this.permission = permission;
     }
 
+    /**
+     * Checks if the target has permission to execute this command and sends a message if not.
+     *
+     * @param target the command sender to check
+     * @return true if the sender has permission, false otherwise
+     */
     public boolean testPermission(CommandSender target) {
         if (this.testPermissionSilent(target)) {
             return true;
@@ -213,6 +288,12 @@ public abstract class Command {
         return false;
     }
 
+    /**
+     * Checks if the target has permission to execute this command without sending any message.
+     *
+     * @param target the command sender to check
+     * @return true if the sender has permission, false otherwise
+     */
     public boolean testPermissionSilent(CommandSender target) {
         if (this.permission == null || this.permission.isEmpty()) {
             return true;
@@ -228,10 +309,21 @@ public abstract class Command {
         return false;
     }
 
+    /**
+     * Gets the label of this command.
+     *
+     * @return the command label
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * Sets the label of this command if it is not registered.
+     *
+     * @param name the new label name
+     * @return true if the label was set, false otherwise
+     */
     public boolean setLabel(String name) {
         this.nextLabel = name;
         if (!this.isRegistered()) {
@@ -241,6 +333,12 @@ public abstract class Command {
         return false;
     }
 
+    /**
+     * Registers this command to the given command map.
+     *
+     * @param commandMap the command map to register to
+     * @return true if registration succeeded, false otherwise
+     */
     public boolean register(CommandMap commandMap) {
         if (this.allowChangesFrom(commandMap)) {
             this.commandMap = commandMap;
@@ -249,6 +347,12 @@ public abstract class Command {
         return false;
     }
 
+    /**
+     * Unregisters this command from the given command map.
+     *
+     * @param commandMap the command map to unregister from
+     * @return true if unregistration succeeded, false otherwise
+     */
     public boolean unregister(CommandMap commandMap) {
         if (this.allowChangesFrom(commandMap)) {
             this.commandMap = null;
@@ -259,34 +363,75 @@ public abstract class Command {
         return false;
     }
 
+    /**
+     * Checks if changes are allowed from the given command map.
+     *
+     * @param commandMap the command map to check
+     * @return true if changes are allowed, false otherwise
+     */
     public boolean allowChangesFrom(CommandMap commandMap) {
         return !isRegistered() || this.commandMap.equals(commandMap);
     }
 
+    /**
+     * Checks if this command is registered to a command map.
+     *
+     * @return true if registered, false otherwise
+     */
     public boolean isRegistered() {
         return this.commandMap != null;
     }
 
+    /**
+     * Gets the active aliases for this command.
+     *
+     * @return an array of active aliases
+     */
     public String[] getAliases() {
         return this.activeAliases;
     }
 
+    /**
+     * Gets the permission message shown when permission is denied.
+     *
+     * @return the permission message
+     */
     public String getPermissionMessage() {
         return permissionMessage;
     }
 
+    /**
+     * Gets the description of this command.
+     *
+     * @return the command description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Gets the usage message for this command.
+     *
+     * @return the usage message
+     */
     public String getUsage() {
         return usageMessage;
     }
 
+    /**
+     * Checks if this command is server-side only.
+     *
+     * @return true if server-side only, false otherwise
+     */
     public boolean isServerSideOnly() {
         return serverSideOnly;
     }
 
+    /**
+     * Returns formatted usage tips for this command, including parameters and types.
+     *
+     * @return a formatted string with command usage tips
+     */
     public String getCommandFormatTips() {
         StringBuilder builder = new StringBuilder();
         for (String form : this.getCommandParameters().keySet()) {
@@ -312,6 +457,11 @@ public abstract class Command {
         return builder.toString();
     }
 
+    /**
+     * Sets the aliases for this command.
+     *
+     * @param aliases the array of aliases to set
+     */
     public void setAliases(String[] aliases) {
         this.aliases = aliases;
         if (!this.isRegistered()) {
@@ -319,37 +469,75 @@ public abstract class Command {
         }
     }
 
+    /**
+     * Sets the description for this command.
+     *
+     * @param description the description to set
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Sets the permission message for this command.
+     *
+     * @param permissionMessage the permission message to set
+     */
     public void setPermissionMessage(String permissionMessage) {
         this.permissionMessage = permissionMessage;
     }
 
+    /**
+     * Sets the usage message for this command.
+     *
+     * @param usageMessage the usage message to set
+     */
     public void setUsage(String usageMessage) {
         this.usageMessage = usageMessage;
     }
 
+    /**
+     * Checks if this command has a parameter tree for advanced parsing.
+     *
+     * @return true if a parameter tree is present, false otherwise
+     */
     public boolean hasParamTree() {
         return this.paramTree != null;
     }
 
     /**
-     * 若调用此方法，则将启用ParamTree用于解析命令参数
+     * Enables the parameter tree for advanced command parameter parsing.
      */
     public void enableParamTree() {
         this.paramTree = new ParamTree(this);
     }
 
+    /**
+     * Gets the parameter tree for this command.
+     *
+     * @return the parameter tree, or null if not enabled
+     */
     public ParamTree getParamTree() {
         return paramTree;
     }
 
+    /**
+     * Broadcasts a command message to all users with administrative permissions.
+     *
+     * @param source the sender of the command
+     * @param message the message to broadcast
+     */
     public static void broadcastCommandMessage(CommandSender source, String message) {
         broadcastCommandMessage(source, message, true);
     }
 
+    /**
+     * Broadcasts a command message to all users with administrative permissions, optionally sending to the source.
+     *
+     * @param source the sender of the command
+     * @param message the message to broadcast
+     * @param sendToSource whether to send the message to the source
+     */
     public static void broadcastCommandMessage(CommandSender source, String message, boolean sendToSource) {
         Set<Permissible> users = source.getServer().getPluginManager().getPermissionSubscriptions(Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
 
@@ -372,10 +560,23 @@ public abstract class Command {
         }
     }
 
+    /**
+     * Broadcasts a command message to all users with administrative permissions using a TextContainer.
+     *
+     * @param source the sender of the command
+     * @param message the TextContainer message to broadcast
+     */
     public static void broadcastCommandMessage(CommandSender source, TextContainer message) {
         broadcastCommandMessage(source, message, true);
     }
 
+    /**
+     * Broadcasts a command message to all users with administrative permissions using a TextContainer, optionally sending to the source.
+     *
+     * @param source the sender of the command
+     * @param message the TextContainer message to broadcast
+     * @param sendToSource whether to send the message to the source
+     */
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
         if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
                 (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
@@ -409,6 +610,11 @@ public abstract class Command {
         }
     }
 
+    /**
+     * Returns the string representation of this command (its name).
+     *
+     * @return the command name
+     */
     @Override
     public String toString() {
         return this.name;

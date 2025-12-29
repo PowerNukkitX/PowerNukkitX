@@ -8,9 +8,37 @@ import cn.nukkit.block.property.type.BlockPropertyType;
 import java.util.Set;
 
 /**
- * Parse the corresponding parameter to the value of {@link BlockState},Must be defined one after {@link BlockNode}
+ * Parses a command parameter as a {@link BlockState} value for PowerNukkitX command trees.
  * <p>
- * Corresponding parameter type {@link cn.nukkit.command.data.CommandParamType#BLOCK_STATES}
+ * This node must be defined immediately after a {@link BlockNode} and is used for parameters of type
+ * {@link cn.nukkit.command.data.CommandParamType#BLOCK_STATES}. It parses block state strings (e.g., "[facing=north,powered=true]")
+ * and resolves them to a valid {@link BlockState} for the given block, supporting enum, boolean, and integer properties.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Requires a valid preceding {@link BlockNode} with a parsed block.</li>
+ *   <li>Parses block state strings in the format [property1=value1,property2=value2,...].</li>
+ *   <li>Supports enum, boolean, and integer block property types.</li>
+ *   <li>Validates property names and values, setting the corresponding state or triggering an error if invalid.</li>
+ *   <li>Returns the default state if the block state string is empty.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for block state parameter parsing.</li>
+ *   <li>Automatically selected for block state parameters if no custom node is provided.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses "[facing=\"north\",powered=\"true\"]" as a BlockState
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see BlockState
+ * @see BlockNode
+ * @see cn.nukkit.command.data.CommandParamType#BLOCK_STATES
+ * @since PowerNukkitX 1.19.50
  */
 public class BlockStateNode extends ParamNode<BlockState> {
     @Override

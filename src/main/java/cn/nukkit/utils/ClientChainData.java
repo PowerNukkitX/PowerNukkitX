@@ -9,17 +9,11 @@ import java.util.Base64;
 import java.util.UUID;
 
 /**
- * ClientChainData is a container of chain data sent from clients.
- * <p>
- * Device information such as client UUID, xuid and serverAddress, can be
- * read from instances of this object.
- * <p>
- * To get chain data, you can use player.getLoginChainData()
- * <p>
- * ===============
+ * Container for client chain data sent during login.
+ * Provides access to device and authentication information such as UUID, XUID, and server address.
+ * Use player.getLoginChainData() to retrieve an instance.
  *
  * @author boybook (Nukkit Project)
- * ===============
  */
 public final class ClientChainData implements LoginChainData {
     public static ClientChainData of(LoginData data) {

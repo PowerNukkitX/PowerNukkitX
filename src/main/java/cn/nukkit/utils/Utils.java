@@ -371,8 +371,6 @@ public class Utils {
     }
 
     /**
-     * 返回介于最小值(包含)和最大值(包含)之间的伪随机数
-     * <p>
      * Return a random number between the minimum (inclusive) and maximum (inclusive).
      *
      * @param min the min
@@ -466,8 +464,8 @@ public class Utils {
         return true;
     }
 
-    //used for commands /fill , /clone and so on
-    //todo: using other methods instead of this one
+    // Used for commands /fill, /clone and so on
+    // TODO: using other methods instead of this one
 
 
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
@@ -527,7 +525,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
                         return true;
                     }
@@ -550,7 +548,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         return true;
                     }
@@ -589,7 +587,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         if (x < centerX) {
                             returnValue |= 0b010000;

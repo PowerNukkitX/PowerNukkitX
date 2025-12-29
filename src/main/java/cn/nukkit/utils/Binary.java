@@ -21,30 +21,59 @@ import java.util.UUID;
 import java.util.function.Function;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Utility class for binary data manipulation and conversion.
+ * <p>
+ * Provides static methods for reading and writing primitive types, arrays, UUIDs, and more
+ * in various byte orders and formats. Used extensively for network and file IO.
+ *
+ * All methods are static and stateless.
  */
 public class Binary {
-
+    /**
+     * Converts a value to a signed byte.
+     * @param value The value to convert
+     * @return The signed byte value
+     */
     public static int signByte(int value) {
         return value << 56 >> 56;
     }
-
+    /**
+     * Converts a value to an unsigned byte.
+     * @param value The value to convert
+     * @return The unsigned byte value
+     */
     public static int unsignByte(int value) {
         return value & 0xff;
     }
-
+    /**
+     * Converts a value to a signed short.
+     * @param value The value to convert
+     * @return The signed short value
+     */
     public static int signShort(int value) {
         return value << 48 >> 48;
     }
-
+    /**
+     * Converts a value to an unsigned short.
+     * @param value The value to convert
+     * @return The unsigned short value
+     */
     public int unsignShort(int value) {
         return value & 0xffff;
     }
-
+    /**
+     * Converts a value to a signed int.
+     * @param value The value to convert
+     * @return The signed int value
+     */
     public static int signInt(int value) {
         return value << 32 >> 32;
     }
-
+    /**
+     * Returns the value as an unsigned int (no conversion).
+     * @param value The value
+     * @return The value itself
+     */
     public static int unsignInt(int value) {
         return value;
     }

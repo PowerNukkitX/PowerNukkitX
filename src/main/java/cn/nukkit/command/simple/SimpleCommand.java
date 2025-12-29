@@ -9,7 +9,42 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Method;
 
 /**
+ * Represents a reflective command handler for PowerNukkitX using method invocation.
+ * <p>
+ * This class wraps a method and its owning object to provide a dynamic command handler. It supports argument count validation,
+ * permission checks, console restrictions, and usage message feedback. The command is executed by invoking the specified method
+ * with the sender, command label, and arguments. This enables flexible, annotation-driven command registration and execution.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Reflectively invokes a method as a command handler.</li>
+ *   <li>Supports argument count validation (min/max).</li>
+ *   <li>Supports console execution restriction (forbidConsole).</li>
+ *   <li>Handles permission checks and usage message feedback.</li>
+ *   <li>Logs errors on command execution failure.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Construct with the target object, method, and command metadata (name, description, usage, aliases).</li>
+ *   <li>Configure argument limits and console restriction via setters.</li>
+ *   <li>Register with the command system to enable reflective command handling.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Suppose you have a method:
+ * public boolean myCommandHandler(CommandSender sender, String label, String[] args) { ... }
+ * // Register as:
+ * new SimpleCommand(this, MyClass.class.getMethod("myCommandHandler", ...), "mycmd", "desc", "/mycmd", new String[]{"alias"});
+ * </pre>
+ *
+ * <b>Thread Safety:</b> This class is not thread-safe for concurrent modification of configuration.
+ *
  * @author Tee7even
+ * @see cn.nukkit.command.Command
+ * @see java.lang.reflect.Method
+ * @since PowerNukkitX 1.19.50
  */
 @Slf4j
 public class SimpleCommand extends Command {

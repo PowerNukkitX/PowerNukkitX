@@ -1,6 +1,4 @@
 /**
- * 各种工具类.
- * <p>
- * Some tool classes.
+ * Utils for PowerNukkitX
  */
 package cn.nukkit.utils;

@@ -17,9 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Allay Project 12/15/2023
- *
- * @author Cool_Loong
+ * @author Cool_Loong (Allay Project)
+ * @since 12/15/2023
  */
 @Slf4j
 public record BlockStateImpl(String identifier,

@@ -5,8 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * This is used to mark methods which abuse unintended client behaviour.
- * Mojang may (probably won't) fix those 
+ * Marks methods that exploit unintended client behavior. These behaviors may be fixed by Mojang in the future.
  */
 @Documented
 @Target({ElementType.METHOD})

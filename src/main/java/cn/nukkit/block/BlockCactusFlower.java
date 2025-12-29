@@ -9,9 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * PowerNukkitX Project 2023/7/15
+ * Class for cactus flower block.
  *
- * @author daoge_cmd
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/7/15
  */
 public class BlockCactusFlower extends BlockFlower {
 

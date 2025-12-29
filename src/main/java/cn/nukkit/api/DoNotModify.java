@@ -7,9 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * DoNotModify is used to indicate that the return value of method, variables, etc. should not be modified
- * <p/>
- * DoNotModify注解用于标明方法的返回值，变量等不应该被修改
+ * Indicates that the return value of a method, variable, or parameter should not be modified.
+ * This annotation is intended to help prevent unintended side effects.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)

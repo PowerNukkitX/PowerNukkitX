@@ -20,10 +20,10 @@ public class SHAUtil {
     }
 
     private String SHA(final String strText, final String strType) {
-        // 返回值
+        // The return value
         String strResult = null;
 
-        // 是否是有效字符串
+        // Is it a valid string
         if (strText != null && !strText.isEmpty()) {
             try {
                 MessageDigest messageDigest = MessageDigest.getInstance(strType);
@@ -38,7 +38,7 @@ public class SHAUtil {
                     }
                     strHexString.append(hex);
                 }
-                // 得到返回結果
+                // Receive the returned result
                 strResult = strHexString.toString();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();

@@ -12,6 +12,10 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a dropdown element for custom forms.
+ * Allows the user to select one option from a list.
+ */
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
@@ -43,6 +47,11 @@ public class ElementDropdown extends Element implements ElementCustom {
         this(text, options, 0, tooltip);
     }
 
+    /**
+     * Adds an option to the dropdown.
+     * @param option The option text
+     * @return This ElementDropdown instance
+     */
     public ElementDropdown addOption(String option) {
         return this.addOption(option, false, null);
     }
@@ -50,7 +59,12 @@ public class ElementDropdown extends Element implements ElementCustom {
     public ElementDropdown addOption(String option, String tooltip) {
         return this.addOption(option, false, tooltip);
     }
-
+    /**
+     * Adds an option to the dropdown and sets it as default if specified.
+     * @param option The option text
+     * @param isDefault Whether this option should be the default
+     * @return This ElementDropdown instance
+     */
     public ElementDropdown addOption(String option, boolean isDefault) {
         return this.addOption(option, isDefault, null);
     }
@@ -68,7 +82,10 @@ public class ElementDropdown extends Element implements ElementCustom {
 
         return this;
     }
-
+    /**
+     * Serializes the dropdown element to JSON.
+     * @return The dropdown as a JsonObject
+     */
     @Override
     public JsonObject toJson() {
         Preconditions.checkArgument(

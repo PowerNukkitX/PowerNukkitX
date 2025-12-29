@@ -7,9 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * ImmutableCollection is used to mark a collection as immutable.
- * <p>
- * ImmutableCollection是用来标记一个集合为不可变的。
+ * Marks a collection as immutable. Collections annotated with this should not be modified after creation.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)

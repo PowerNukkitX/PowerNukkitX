@@ -3,7 +3,13 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.command.tree.ParamList;
 
 /**
- * 一个用来占位的空参数节点
+ * Represents a placeholder parameter node for PowerNukkitX command trees.
+ * <p>
+ * This node is used as a placeholder for parameters that do not require a value. It always returns null and is always considered optional and filled.
+ *
+ * @author PowerNukkitX Project Team
+ * @see IParamNode
+ * @since PowerNukkitX 1.19.50
  */
 public class VoidNode implements IParamNode<Void> {
     @Override

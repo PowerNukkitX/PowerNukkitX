@@ -9,10 +9,36 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * 解析全部剩余参数拼接为{@code String}值
+ * Parses all remaining command arguments as a single {@code String} value for PowerNukkitX command trees, supporting entity selector replacement.
  * <p>
- * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#MESSAGE MESSAGE}
- * 如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * This node is used for all command parameters of type {@link cn.nukkit.command.data.CommandParamType#MESSAGE MESSAGE}
+ * if no custom {@link IParamNode} is specified. It joins all remaining arguments, replaces valid entity selectors with player names,
+ * and sets the result as the node value.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Joins all remaining arguments with spaces to form a message string.</li>
+ *   <li>Replaces valid entity selectors with a comma-separated list of player/entity names.</li>
+ *   <li>Handles selector syntax errors and highlights them in the output.</li>
+ *   <li>Resets state between parses.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for message parameter parsing.</li>
+ *   <li>Automatically selected for message parameters if no custom node is provided.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses: say @a Hello -> "Steve, Alex Hello"
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see cn.nukkit.command.data.CommandParamType#MESSAGE
+ * @see EntitySelectorAPI
+ * @see IParamNode
+ * @since PowerNukkitX 1.19.50
  */
 public class MessageStringNode extends ParamNode<String> {
 

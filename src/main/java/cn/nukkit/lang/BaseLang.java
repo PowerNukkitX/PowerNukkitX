@@ -21,42 +21,92 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
+ * BaseLang is responsible for managing language translations for the application.
+ * <p>
+ * It loads language files, provides translation for keys, supports fallback languages,
+ * and allows parameterized translations. The class supports loading language data from
+ * both resource streams and file paths, and provides several translation methods for
+ * different use cases, including parameterized and prefix-based translations.
+ * </p>
+ *
+ * <h2>Features:</h2>
+ * <ul>
+ *   <li>Loads language mappings from JSON files.</li>
+ *   <li>Supports a fallback language if a translation is missing.</li>
+ *   <li>Provides translation methods with and without parameters.</li>
+ *   <li>Handles translation containers for advanced use cases.</li>
+ *   <li>Allows translation filtering by prefix and mode.</li>
+ * </ul>
+ *
+ * <h2>Usage:</h2>
+ * <pre>
+ *     BaseLang lang = new BaseLang("eng");
+ *     String translated = lang.tr("welcome.message", "Player");
+ * </pre>
+ *
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * This class is not thread-safe. If used in a multi-threaded context, external synchronization is required.
+ * </p>
+ *
  * @author MagicDroidX (Nukkit Project)
+ * @since 1.0
  */
 @Slf4j
 public class BaseLang {
     /**
-     * 默认备选语言，对应language文件夹
+     * The default fallback language code, corresponding to the language folder.
      */
     public static final String FALLBACK_LANGUAGE = "eng";
 
     /**
-     * The Lang name.
+     * The language code (e.g., "eng", "fra").
      */
     protected final String langName;
 
     /**
-     * 本地语言，从nukkit.yml中指定
+     * The main language map loaded from the language file, as specified in pnx.yml.
      */
     protected Map<String, String> lang;
 
     /**
-     * 备选语言映射，当从本地语言映射中无法翻译时调用备选语言映射，默认为英文
+     * The fallback language map, used when a translation is missing from the main language map. Defaults to English.
      */
     protected Map<String, String> fallbackLang = new HashMap<>();
 
-    //用于提取字符串中%后带有[a-zA-Z0-9_.-]这些字符的字符串的模式
+    /**
+     * Pattern to extract strings starting with % followed by [a-zA-Z0-9_.-] characters.
+     */
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
 
 
+    /**
+     * Constructs a BaseLang instance for the specified language code, using the default language path and fallback language.
+     *
+     * @param lang the language code (e.g., "eng", "fra")
+     */
     public BaseLang(String lang) {
         this(lang, null);
     }
 
+    /**
+     * Constructs a BaseLang instance for the specified language code and path, using the default fallback language.
+     *
+     * @param lang the language code (e.g., "eng", "fra")
+     * @param path the path to the language files directory
+     */
     public BaseLang(String lang, String path) {
         this(lang, path, FALLBACK_LANGUAGE);
     }
 
+    /**
+     * Constructs a BaseLang instance for the specified language code, path, and fallback language.
+     * Loads the language and fallback language maps from the specified locations.
+     *
+     * @param lang     the language code (e.g., "eng", "fra")
+     * @param path     the path to the language files directory (if null, uses default resource path)
+     * @param fallback the fallback language code
+     */
     public BaseLang(String lang, String path, String fallback) {
         this.langName = lang.toLowerCase(Locale.ENGLISH);
         boolean useFallback = !lang.equals(fallback);
@@ -78,22 +128,48 @@ public class BaseLang {
         if (this.fallbackLang == null) this.fallbackLang = this.lang;
     }
 
+    /**
+     * Returns the main language map.
+     *
+     * @return the language map for the current language
+     */
     public Map<String, String> getLangMap() {
         return lang;
     }
 
+    /**
+     * Returns the fallback language map.
+     *
+     * @return the fallback language map
+     */
     public Map<String, String> getFallbackLangMap() {
         return fallbackLang;
     }
 
+    /**
+     * Returns the display name of the current language, as defined by the key "language.name".
+     *
+     * @return the display name of the language
+     */
     public String getName() {
         return this.get("language.name");
     }
 
+    /**
+     * Returns the language code for this BaseLang instance.
+     *
+     * @return the language code (e.g., "eng", "fra")
+     */
     public String getLang() {
         return langName;
     }
 
+    /**
+     * Loads a language map from a file path.
+     *
+     * @param path the file path to the language JSON file
+     * @return the loaded language map, or null if loading fails
+     */
     protected Map<String, String> loadLang(String path) {
         try {
             File file = new File(path);
@@ -109,6 +185,12 @@ public class BaseLang {
         }
     }
 
+    /**
+     * Loads a language map from an input stream.
+     *
+     * @param stream the input stream to the language JSON file
+     * @return the loaded language map, or null if loading fails
+     */
     protected Map<String, String> loadLang(InputStream stream) {
         try {
             return parseLang(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
@@ -118,27 +200,34 @@ public class BaseLang {
         }
     }
 
+    /**
+     * Parses a language map from a buffered reader.
+     *
+     * @param reader the buffered reader for the language JSON file
+     * @return the parsed language map
+     * @throws IOException if an I/O error occurs
+     */
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         return JSONUtils.from(reader, new TypeToken<Map<String, String>>() {
         });
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询
+     * Translates a text key by looking it up in the language file.
      *
-     * @param key the key
-     * @return the string
+     * @param key the translation key
+     * @return the translated string, or the key itself if not found
      */
     public String tr(String key) {
         return tr(key, EmptyArrays.EMPTY_STRINGS);
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     * Translates a text key with parameters, replacing placeholders in the translation string.
      *
-     * @param key  the key
-     * @param args the args
-     * @return the string
+     * @param key  the translation key
+     * @param args the parameters to replace in the translation string
+     * @return the translated string with parameters applied
      */
     public String tr(String key, String... args) {
         String baseText = parseLanguageText(key);
@@ -149,13 +238,11 @@ public class BaseLang {
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
-     * <p>
-     * Translate a text key, the key is queried from the language file and the result is populated according to the given parameters
+     * Translates a text key with object parameters, replacing placeholders in the translation string.
      *
-     * @param key  the key
-     * @param args the args
-     * @return the string
+     * @param key  the translation key
+     * @param args the parameters to replace in the translation string
+     * @return the translated string with parameters applied
      */
     public String tr(String key, Object... args) {
         String baseText = parseLanguageText(key);
@@ -165,6 +252,12 @@ public class BaseLang {
         return baseText;
     }
 
+    /**
+     * Translates a TextContainer, supporting parameterized translations.
+     *
+     * @param c the TextContainer to translate
+     * @return the translated string
+     */
     public String tr(TextContainer c) {
         String baseText = this.parseLanguageText(c.getText());
         if (c instanceof TranslationContainer cc) {
@@ -176,15 +269,13 @@ public class BaseLang {
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
-     * <p>
-     * Translate a text key, the key is queried from the language file and the result is populated according to the given parameters
+     * Translates a text key with parameters, prefix, and mode filtering.
      *
-     * @param str    the str
-     * @param params the params
-     * @param prefix str的前缀<br>Prefix of str
-     * @param mode   为true，则只翻译以指定前缀的多语言文本，为false则只翻译不带有指定前缀的多语言文本<br>If true translate only multilingual text with the specified prefix, false translate only multilingual text without the specified prefix
-     * @return the string
+     * @param str    the translation key
+     * @param params the parameters to replace in the translation string
+     * @param prefix the prefix to filter translation keys
+     * @param mode   if true, only translate keys with the specified prefix; if false, only translate keys without the prefix
+     * @return the translated string with parameters applied
      */
     public String tr(String str, String[] params, String prefix, boolean mode) {
         String baseText = parseLanguageText(str, prefix, mode);
@@ -195,10 +286,10 @@ public class BaseLang {
     }
 
     /**
-     * 获取指定id对应的多语言文本，若不存在则返回null
+     * Returns the translation for the given id from the main or fallback language map, or null if not found.
      *
-     * @param id the id
-     * @return the string
+     * @param id the translation key
+     * @return the translated string, or null if not found
      */
     public String internalGet(String id) {
         if (this.lang.containsKey(id)) {
@@ -210,10 +301,10 @@ public class BaseLang {
     }
 
     /**
-     * 获取指定id对应的多语言文本，若不存在则返回id本身
+     * Returns the translation for the given id from the main or fallback language map, or the id itself if not found.
      *
-     * @param id the id
-     * @return the string
+     * @param id the translation key
+     * @return the translated string, or the id itself if not found
      */
     public String get(String id) {
         if (this.lang.containsKey(id)) {
@@ -224,6 +315,12 @@ public class BaseLang {
         return id;
     }
 
+    /**
+     * Converts an argument to its string representation, handling arrays and objects.
+     *
+     * @param arg the argument to convert
+     * @return the string representation of the argument
+     */
     protected String parseArg(Object arg) {
         switch (arg.getClass().getSimpleName()) {
             case "int[]" -> {
@@ -253,6 +350,12 @@ public class BaseLang {
         }
     }
 
+    /**
+     * Parses and translates a string, replacing placeholders with translations if present.
+     *
+     * @param str the string to parse
+     * @return the translated string, or the original if not found
+     */
     protected String parseLanguageText(String str) {
         String result = internalGet(str);
         if (result != null) {
@@ -263,6 +366,14 @@ public class BaseLang {
         }
     }
 
+    /**
+     * Parses and translates a string with prefix and mode filtering, replacing placeholders with translations if present.
+     *
+     * @param str    the string to parse
+     * @param prefix the prefix to filter translation keys
+     * @param mode   if true, only translate keys with the specified prefix; if false, only translate keys without the prefix
+     * @return the translated string, or the original if not found
+     */
     protected String parseLanguageText(String str, String prefix, boolean mode) {
         if (mode && !str.startsWith(prefix)) {
             return str;

@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * 描述一个不在线的玩家的类。<br>
  * Describes an offline player.
  *
  * @author MagicDroidX(code) @ Nukkit Project
@@ -22,13 +21,10 @@ public class OfflinePlayer implements IPlayer {
     private final CompoundTag namedTag;
 
     /**
-     * 初始化这个{@code OfflinePlayer}对象。<br>
      * Initializes the object {@code OfflinePlayer}.
      *
-     * @param server 这个玩家所在服务器的{@code Server}对象。<br>
-     *               The server this player is in, as a {@code Server} object.
-     * @param uuid   这个玩家的UUID。<br>
-     *               UUID of this player.
+     * @param server The server this player is in, as a {@code Server} object.
+     * @param uuid  UUID of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     public OfflinePlayer(Server server, UUID uuid) {

@@ -36,19 +36,72 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
+ * Implements the command registry and execution system for PowerNukkitX.
+ * <p>
+ * SimpleCommandMap manages the registration, execution, and organization of all commands in the server.
+ * It supports default commands, plugin commands, annotation-based commands, aliases, and advanced argument parsing.
+ * <p>
+ * Features:
+ * <ul>
+ *   <li>Registers default and custom commands with support for aliases and fallback prefixes.</li>
+ *   <li>Handles command conflicts, including vanilla and plugin commands.</li>
+ *   <li>Supports annotation-based command registration via {@link #registerSimpleCommands(Object)}.</li>
+ *   <li>Parses command arguments, including quoted and brace-enclosed parameters.</li>
+ *   <li>Executes commands with permission checks, parameter trees, and error handling.</li>
+ *   <li>Provides methods to clear, unregister, and retrieve commands.</li>
+ *   <li>Integrates with plugin lifecycle and command output containers.</li>
+ * </ul>
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Instantiate with a {@link Server} instance.</li>
+ *   <li>Register commands using {@link #register(String, Command)}, {@link #registerAll(String, List)}, or annotation-based registration.</li>
+ *   <li>Execute commands using {@link #executeCommand(CommandSender, String)}.</li>
+ *   <li>Retrieve commands with {@link #getCommand(String)} or {@link #getCommands()}.</li>
+ *   <li>Clear or unregister commands as needed.</li>
+ * </ul>
+ * <p>
+ * Command registration supports fallback prefixes to avoid label conflicts. Aliases are managed and updated automatically.
+ * Argument parsing supports quoted strings and brace-enclosed blocks for complex command input.
+ * <p>
+ * Error handling includes permission checks, unknown command feedback, and exception logging.
+ * <p>
+ * Thread safety: Not guaranteed. External synchronization may be required for concurrent access.
+ *
  * @author MagicDroidX (Nukkit Project)
+ * @see CommandMap
+ * @see Command
+ * @see CommandSender
+ * @see PluginCommand
+ * @see SimpleCommand
+ * @see Server
  */
 @Slf4j
 public class SimpleCommandMap implements CommandMap {
+    /**
+     * Stores all known commands mapped by label and alias.
+     */
     protected final Map<String, Command> knownCommands = new HashMap<>();
 
+    /**
+     * The server instance associated with this command map.
+     */
     private final Server server;
 
+    /**
+     * Constructs a SimpleCommandMap and registers default commands.
+     *
+     * @param server the server instance
+     */
     public SimpleCommandMap(Server server) {
         this.server = server;
         this.setDefaultCommands();
     }
 
+    /**
+     * Registers all default commands to the command map.
+     * This includes vanilla and custom commands for server management and gameplay.
+     */
     private void setDefaultCommands() {
         this.register("nukkit", new ExecuteCommand("execute"));
         this.register("nukkit", new CameraCommand("camera"));
@@ -129,6 +182,12 @@ public class SimpleCommandMap implements CommandMap {
         }
     }
 
+    /**
+     * Registers all commands in the provided list with the given fallback prefix.
+     *
+     * @param fallbackPrefix the prefix to use for label conflicts
+     * @param commands the list of commands to register
+     */
     @Override
     public void registerAll(String fallbackPrefix, List<? extends Command> commands) {
         for (Command command : commands) {
@@ -136,11 +195,27 @@ public class SimpleCommandMap implements CommandMap {
         }
     }
 
+    /**
+     * Registers a command with the given fallback prefix.
+     *
+     * @param fallbackPrefix the prefix to use for label conflicts
+     * @param command the command to register
+     * @return true if registration succeeded, false if the label is already registered
+     */
     @Override
     public boolean register(String fallbackPrefix, Command command) {
         return this.register(fallbackPrefix, command, null);
     }
 
+    /**
+     * Registers a command with the given fallback prefix and label.
+     * Handles alias management and label conflicts.
+     *
+     * @param fallbackPrefix the prefix to use for label conflicts
+     * @param command the command to register
+     * @param label the label to register the command under
+     * @return true if registration succeeded, false if the label is already registered
+     */
     @Override
     public boolean register(String fallbackPrefix, Command command, String label) {
         if (label == null) {
@@ -170,6 +245,12 @@ public class SimpleCommandMap implements CommandMap {
         return registered;
     }
 
+    /**
+     * Registers annotation-based commands from the given object.
+     * Scans for command annotations and registers corresponding commands.
+     *
+     * @param object the object containing annotated command methods
+     */
     @Override
     public void registerSimpleCommands(Object object) {
         for (Method method : object.getClass().getDeclaredMethods()) {
@@ -208,6 +289,15 @@ public class SimpleCommandMap implements CommandMap {
         }
     }
 
+    /**
+     * Internal method to register a command alias or label, handling conflicts and vanilla command overrides.
+     *
+     * @param command the command to register
+     * @param isAlias true if registering an alias, false for main label
+     * @param fallbackPrefix the fallback prefix
+     * @param label the label or alias
+     * @return true if registration succeeded, false otherwise
+     */
     private boolean registerAlias(Command command, boolean isAlias, String fallbackPrefix, String label) {
         this.knownCommands.put(fallbackPrefix + ":" + label, command);
 
@@ -302,6 +392,14 @@ public class SimpleCommandMap implements CommandMap {
         return args;
     }
 
+    /**
+     * Executes a command from the given sender and command line.
+     * Handles argument parsing, permission checks, parameter trees, and error feedback.
+     *
+     * @param sender the sender executing the command
+     * @param cmdLine the full command line to execute
+     * @return 0 if execution failed, >=1 if successful
+     */
     @Override
     public int executeCommand(CommandSender sender, String cmdLine) {
         ArrayList<String> parsed = parseArguments(cmdLine);
@@ -351,6 +449,10 @@ public class SimpleCommandMap implements CommandMap {
         return output;
     }
 
+    /**
+     * Clears all commands from the registry and re-registers default commands.
+     * Typically used when unloading plugins or resetting the command map.
+     */
     @Override
     public void clearCommands() {
         for (Command command : this.knownCommands.values()) {
@@ -360,6 +462,12 @@ public class SimpleCommandMap implements CommandMap {
         this.setDefaultCommands();
     }
 
+    /**
+     * Retrieves a command by its name or alias.
+     *
+     * @param name the name or alias of the command
+     * @return the Command object, or null if not found
+     */
     @Override
     public Command getCommand(String name) {
         name = name.toLowerCase(Locale.ENGLISH);
@@ -369,6 +477,12 @@ public class SimpleCommandMap implements CommandMap {
         return null;
     }
 
+    /**
+     * Unregisters the specified commands by name.
+     * Removes the commands from the registry so they can no longer be executed.
+     *
+     * @param commands the names of commands to unregister
+     */
     @Override
     public void unregister(String... commands){
         for (String name : commands) {
@@ -380,9 +494,9 @@ public class SimpleCommandMap implements CommandMap {
     }
 
     /**
-     * 获取{@link #knownCommands}的未克隆实例
+     * Returns the un-cloned instance of {@link #knownCommands} for direct access.
      *
-     * @return the commands
+     * @return the map of known commands
      */
     public Map<String, Command> getCommands() {
         return knownCommands;

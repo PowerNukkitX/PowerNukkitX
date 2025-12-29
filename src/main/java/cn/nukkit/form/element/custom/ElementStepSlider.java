@@ -12,6 +12,10 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a step slider element for custom forms.
+ * Allows the user to select a value from a list of steps.
+ */
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
@@ -39,10 +43,20 @@ public class ElementStepSlider extends Element implements ElementCustom {
         this(text, steps, defaultStep, null);
     }
 
+    /**
+     * Adds a step to the step slider.
+     * @param step The step label
+     * @return This ElementStepSlider instance
+     */
     public ElementStepSlider addStep(String step) {
         return this.addStep(step, false);
     }
-
+    /**
+     * Adds a step to the step slider and sets it as default if specified.
+     * @param step The step label
+     * @param isDefault Whether this step should be the default
+     * @return This ElementStepSlider instance
+     */
     public ElementStepSlider addStep(String step, boolean isDefault) {
         if (isDefault) {
             this.defaultStep = this.steps.size();
@@ -51,7 +65,10 @@ public class ElementStepSlider extends Element implements ElementCustom {
         this.steps.add(step);
         return this;
     }
-
+    /**
+     * Serializes the step slider element to JSON.
+     * @return The step slider as a JsonObject
+     */
     @Override
     public JsonObject toJson() {
         Preconditions.checkArgument(
