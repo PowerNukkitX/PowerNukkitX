@@ -2964,28 +2964,15 @@ public class Server {
      */
     public Server setVec3DynamicProperty(String key, Map<String, Number> xyz) {
         if (xyz == null) return removeDynamicProperty(key);
+
         Number nx = xyz.get("x"), ny = xyz.get("y"), nz = xyz.get("z");
         if (nx == null || ny == null || nz == null) {
             log.warn("DynamicProperty '{}' rejected: vec3 map must contain numeric keys 'x','y','z'", key);
             return this;
         }
-        double x = nx.doubleValue(), y = ny.doubleValue(), z = nz.doubleValue();
-        if (!isFiniteAndInRange(x) || !isFiniteAndInRange(y) || !isFiniteAndInRange(z)) {
-            log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, x, y, z);
-            return this;
-        }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) x));
-        list.add(new FloatTag((float) y));
-        list.add(new FloatTag((float) z));
 
-        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
-
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        g.putList(key, list);
-        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
-        return this;
+        // Delegate to the Vector3 overload (keeps validation + storage consistent)
+        return setVec3DynamicProperty(key, new Vector3(nx.doubleValue(), ny.doubleValue(), nz.doubleValue()));
     }
 
     /**
