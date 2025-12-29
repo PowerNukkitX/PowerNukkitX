@@ -12,6 +12,9 @@ import java.util.Set;
  * Represents a section of configuration data, similar to a map or dictionary.
  * Provides utility methods for nested configuration access, type conversion, and manipulation.
  * Used as the underlying structure for Config.
+ *
+ * @author fromgate
+ * @since 26/04/2016
  */
 public class ConfigSection extends LinkedHashMap<String, Object> {
     /**
@@ -22,7 +25,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     }
     /**
      * Creates a ConfigSection with an initial key/value pair.
-     * @param key The key
+     *
+     * @param key   The key
      * @param value The value
      */
     public ConfigSection(String key, Object value) {
@@ -31,6 +35,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     }
     /**
      * Creates a ConfigSection from a LinkedHashMap.
+     *
      * @param map The map to use
      */
     @SuppressWarnings("unchecked")

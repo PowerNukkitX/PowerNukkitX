@@ -12,6 +12,8 @@ import java.util.UUID;
  * Container for client chain data sent during login.
  * Provides access to device and authentication information such as UUID, XUID, and server address.
  * Use player.getLoginChainData() to retrieve an instance.
+ *
+ * @author boybook (Nukkit Project)
  */
 public final class ClientChainData implements LoginChainData {
     public static ClientChainData of(LoginData data) {

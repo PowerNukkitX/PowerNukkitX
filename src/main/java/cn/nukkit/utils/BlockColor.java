@@ -11,6 +11,9 @@ import java.util.Arrays;
 /**
  * Represents a color used for blocks, including support for tints and alpha.
  * Provides utility methods for color manipulation and conversion.
+ *
+ * @author Snake1999
+ * @since 2016/1/10
  */
 public class BlockColor implements Cloneable {
 
