@@ -9,9 +9,13 @@ import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import cn.nukkit.level.util.LevelDBKeyUtil;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.file.Path;
 
 public final class LevelDBStorage {
@@ -56,6 +60,28 @@ public final class LevelDBStorage {
             WriteOptions writeOptions = new WriteOptions();
             writeOptions.sync(false);
             this.db.write(writeBatch, writeOptions);
+        }
+    }
+
+    public CompoundTag readWorldDynamicProperties() {
+        try {
+            byte[] bytes = this.db.get(LevelDBKeyUtil.WORLD_DYNAMIC_PROPERTIES.getGlobalKey());
+            if (bytes == null) return null;
+            return NBTIO.read(bytes, ByteOrder.LITTLE_ENDIAN);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void writeWorldDynamicProperties(CompoundTag tag) {
+        try (WriteBatch writeBatch = this.db.createWriteBatch()) {
+            byte[] key = LevelDBKeyUtil.WORLD_DYNAMIC_PROPERTIES.getGlobalKey();
+            CompoundTag safe = (tag == null) ? new CompoundTag() : tag;
+            writeBatch.put(key, NBTIO.write(safe, ByteOrder.LITTLE_ENDIAN));
+
+            WriteOptions writeOptions = new WriteOptions().sync(false);
+            this.db.write(writeBatch, writeOptions);
+        } catch (Exception ignored) {
         }
     }
 
