@@ -36,7 +36,7 @@ public class SetupWizard implements AutoCloseable {
     private final Map<String, String> availableLanguages;
     private final WizardConfig wizardConfig = new WizardConfig();
     private boolean skipWizard = false;
-    private BaseLang baseLang;
+    protected BaseLang baseLang;
 
     private boolean motdProvidedByArg = false;
     private boolean portProvidedByArg = false;
@@ -248,7 +248,7 @@ public class SetupWizard implements AutoCloseable {
      * @param forceAccept If true, accept the license automatically
      * @return true if license accepted, false otherwise
      */
-    private boolean acceptLicense(boolean forceAccept) {
+    public boolean acceptLicense(boolean forceAccept) {
         if (forceAccept) {
             terminal.writer().println();
             terminal.writer().println("License automatically accepted by command line argument.");
@@ -779,5 +779,9 @@ public class SetupWizard implements AutoCloseable {
 
     private String promptText(String text) {
         return "» " + text;
+    }
+
+    public void setBaseLang(BaseLang lang) {
+        this.baseLang = lang;
     }
 }

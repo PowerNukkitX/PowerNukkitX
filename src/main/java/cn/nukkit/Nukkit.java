@@ -182,13 +182,9 @@ public class Nukkit {
             // Utilise SetupWizard pour afficher la licence et demander l'acceptation
             try (SetupWizard wizard = new SetupWizard()) {
                 String lang = (language != null && !language.isEmpty()) ? language : "eng";
-                java.lang.reflect.Field baseLangField = SetupWizard.class.getDeclaredField("baseLang");
-                baseLangField.setAccessible(true);
-                baseLangField.set(wizard, new cn.nukkit.lang.BaseLang(lang));
+                wizard.setBaseLang(new cn.nukkit.lang.BaseLang(lang));
                 if (!autoAcceptLicense) {
-                    java.lang.reflect.Method acceptLicenseMethod = SetupWizard.class.getDeclaredMethod("acceptLicense", boolean.class);
-                    acceptLicenseMethod.setAccessible(true);
-                    boolean accepted = (boolean) acceptLicenseMethod.invoke(wizard, false);
+                    boolean accepted = wizard.acceptLicense(false);
                     if (!accepted) {
                         System.out.println("License not accepted. Exiting.");
                         System.exit(1);
@@ -198,7 +194,6 @@ public class Nukkit {
                 log.error("Failed to display license acceptance dialog", e);
                 System.exit(1);
             }
-            // Création d'une configuration par défaut si skip-setup
             wizardConfig = new WizardConfig();
             if (serverName != null && !serverName.isEmpty()) {
                 wizardConfig.setMotd(serverName);
