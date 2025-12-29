@@ -129,6 +129,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if(isNotActivate(player)) return false;
         // lava
         if (getCauldronLiquid() == CauldronLiquid.LAVA) {
             return onLavaActivate(item, player, blockFace, fx, fy, fz);
