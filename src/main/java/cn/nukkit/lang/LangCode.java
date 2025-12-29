@@ -34,7 +34,8 @@ public enum LangCode {
     sk_SK("Slovenčina (Slovensko)"),
     sv_SE("Svenska (Sverige)"),
     tr_TR("Türkçe (Türkiye)"),
-    uk_UA("Українська (Україна)");
+    uk_UA("Українська (Україна)"),
+    tl_PH("Filipino (Pilipinas)");
 
     private final String string;
 

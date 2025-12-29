@@ -2690,6 +2690,7 @@ public class Server {
             case "cht" -> LangCode.valueOf("zh_TW");
             case "cze" -> LangCode.valueOf("cs_CZ");
             case "deu" -> LangCode.valueOf("de_DE");
+            case "fil" -> LangCode.valueOf("tl_PH");
             case "fin" -> LangCode.valueOf("fi_FI");
             case "eng" -> LangCode.valueOf("en_US");
             case "fra" -> LangCode.valueOf("fr_FR");
