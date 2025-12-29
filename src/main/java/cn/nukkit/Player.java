@@ -24,7 +24,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -939,24 +938,34 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    protected void offerMovementTask(Location newPosition) {
-        var distance = newPosition.distance(this);
-        var updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;//sqrt distance
-        var updateRotation = (float) Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
-                || (float) Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
-        var isHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
-        if (isHandle) {
-            // TODO: hack for receive a error position after teleport
-            long now = System.currentTimeMillis();
-            if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
-                var dis = newPosition.distance(lastTeleportMessage.left());
-                if (dis < MOVEMENT_DISTANCE_THRESHOLD) return;
+    /**
+         * Offers a new movement task to the player, considering distance and rotation thresholds.
+         * Also handles the special case where an erroneous position may be received right after teleportation.
+         */
+        protected void offerMovementTask(Location newPosition) {
+            double distance = newPosition.distance(this);
+            boolean updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;
+            boolean updateRotation = Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
+                    || Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
+                    || Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
+
+            boolean shouldHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
+            if (shouldHandle) {
+                // Hack: ignore erroneous positions received right after teleportation
+                long now = System.currentTimeMillis();
+                if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
+                    double teleportDistance = newPosition.distance(lastTeleportMessage.left());
+                    if (teleportDistance < MOVEMENT_DISTANCE_THRESHOLD) {
+                        // Ignore this movement as it is probably due to post-teleport desynchronization
+                        return;
+                    }
+                }
+                this.newPosition = newPosition;
+                if (!this.clientMovements.offer(newPosition)) {
+                    log.warn("Failed to enqueue movement task for player {} at position {}", this.getName(), newPosition);
+                }
             }
-            this.newPosition = newPosition;
-            this.clientMovements.offer(newPosition);
         }
-    }
 
 
     protected void handleLogicInMove(boolean invalidMotion, double distance) {
@@ -3292,8 +3301,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         //dismount horse
-        if (this.riding instanceof EntityRideable entityRideable) {
-            entityRideable.dismountEntity(this);
+        if (this.riding != null && this.riding.isRideable()) {
+            riding.dismountEntity(this);
         }
 
         unloadAllUsedChunk();

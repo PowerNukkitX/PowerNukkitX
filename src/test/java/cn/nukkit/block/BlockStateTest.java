@@ -2,9 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.education.Education;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import com.google.gson.JsonArray;
@@ -14,15 +12,9 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class BlockStateTest {
 
@@ -39,7 +31,7 @@ public class BlockStateTest {
                 JsonObject entry = blockStateData.get(i).getAsJsonObject();
                 int hash = entry.get("blockStateHash").getAsInt();
                 String name = entry.get("name").getAsString();
-                if(BlockRegistry.skipBlockSet.contains(name)) continue;
+                if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
                     throw new RuntimeException(name + " (" + hash + ") was not a part of block_states.json.");

@@ -9,9 +9,9 @@ package cn.nukkit.block.property.enums;
 public enum ChemistryTableType {
     COMPOUND_CREATOR,
 
+    MATERIAL_REDUCER,
+
     ELEMENT_CONSTRUCTOR,
 
-    LAB_TABLE,
-
-    MATERIAL_REDUCER
+    LAB_TABLE
 }

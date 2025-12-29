@@ -2,7 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityFlyable;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.Inventory;
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author KeksDev
  */
-public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, EntityRideable, InventoryHolder {
+public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, InventoryHolder {
     private EntityArmorInventory armorInventory;
 
     @Override
@@ -60,6 +59,16 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Ent
             }
             this.namedTag.putList("Armor", armorTag);
         }
+    }
+
+    @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
     }
 
     @Override
