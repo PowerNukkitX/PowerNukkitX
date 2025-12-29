@@ -179,7 +179,6 @@ public class Nukkit {
                 }
             }
         } else if (!configFile.exists() && skipSetup) {
-            // Utilise SetupWizard pour afficher la licence et demander l'acceptation
             try (SetupWizard wizard = new SetupWizard()) {
                 String lang = (language != null && !language.isEmpty()) ? language : "eng";
                 wizard.setBaseLang(new cn.nukkit.lang.BaseLang(lang));
