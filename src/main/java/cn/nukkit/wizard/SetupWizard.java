@@ -38,6 +38,9 @@ public class SetupWizard implements AutoCloseable {
     private boolean skipWizard = false;
     private BaseLang baseLang;
 
+    private boolean motdProvidedByArg = false;
+    private boolean portProvidedByArg = false;
+
     public SetupWizard() throws IOException {
         this.terminal = TerminalBuilder.builder()
                 .system(true)
@@ -93,15 +96,18 @@ public class SetupWizard implements AutoCloseable {
      *
      * @param predefinedLanguage Optional predefined language from command line
      * @param forceSkip If true, automatically skip the wizard
+     * @param forceAcceptLicense If true, automatically accept the license
+     * @param serverName Optional server name (MOTD) from command line
+     * @param port Optional server port from command line
      * @return The wizard configuration
      */
-    public WizardConfig run(String predefinedLanguage, boolean forceSkip) {
+    public WizardConfig run(String predefinedLanguage, boolean forceSkip, boolean forceAcceptLicense, String serverName, Integer port) {
         try {
             String selectedLanguage = selectLanguage(predefinedLanguage);
             wizardConfig.setLanguage(selectedLanguage);
             baseLang = new BaseLang(selectedLanguage);
 
-            if (!acceptLicense()) {
+            if (!acceptLicense(forceAcceptLicense)) {
                 terminal.writer().println();
                 refuse(baseLang.tr("pnx.setupWizard.license.no_accept"));
                 refuse(baseLang.tr("pnx.setupWizard.license.terminating"));
@@ -110,6 +116,16 @@ public class SetupWizard implements AutoCloseable {
                 return wizardConfig;
             }
             wizardConfig.setLicenseAccepted(true);
+
+            // Set server name and port if provided
+            if (serverName != null && !serverName.isEmpty()) {
+                wizardConfig.setMotd(serverName);
+                motdProvidedByArg = true;
+            }
+            if (port != null) {
+                wizardConfig.setPort(port);
+                portProvidedByArg = true;
+            }
 
             if (forceSkip) {
                 skipWizard = true;
@@ -229,9 +245,16 @@ public class SetupWizard implements AutoCloseable {
      * Displays the license and asks for acceptance.
      * MANDATORY - will cause program termination if not accepted.
      *
+     * @param forceAccept If true, accept the license automatically
      * @return true if license accepted, false otherwise
      */
-    private boolean acceptLicense() {
+    private boolean acceptLicense(boolean forceAccept) {
+        if (forceAccept) {
+            terminal.writer().println();
+            terminal.writer().println("License automatically accepted by command line argument.");
+            terminal.writer().flush();
+            return true;
+        }
         terminal.writer().println();
         terminal.writer().println("═══════════════════════════════════════════════════════════");
         terminal.writer().println("          GNU Lesser General Public License v3.0");
@@ -340,6 +363,12 @@ public class SetupWizard implements AutoCloseable {
      * Configures server MOTD.
      */
     private void configureServerMotd() {
+        if (motdProvidedByArg) {
+            accept(baseLang.tr("pnx.setupWizard.motd.accept", wizardConfig.getMotd()));
+            terminal.writer().println();
+            terminal.writer().flush();
+            return;
+        }
         try {
             String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.motd.question")).trim());
             if (!input.isEmpty()) {
@@ -357,6 +386,12 @@ public class SetupWizard implements AutoCloseable {
      * Configures server port.
      */
     private void configureServerPort() {
+        if (portProvidedByArg) {
+            accept(baseLang.tr("pnx.setupWizard.port.accept", wizardConfig.getPort()));
+            terminal.writer().println();
+            terminal.writer().flush();
+            return;
+        }
         terminal.writer().println("─".repeat(57));
         while (true) {
             try {

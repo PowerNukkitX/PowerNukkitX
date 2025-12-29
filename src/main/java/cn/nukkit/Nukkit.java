@@ -110,8 +110,11 @@ public class Nukkit {
         OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging").withRequiredArg().ofType(String.class);
         OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language").withOptionalArg().ofType(String.class);
         OptionSpec<Void> skipSetupSpec = parser.accepts("skip-setup", "Skip the setup wizard and use default values");
+        OptionSpec<Void> acceptLicense = parser.accepts("accept-license", "Accept the license automatically");
         OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
         OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
+        OptionSpec<String> serverNameSpec = parser.accepts("server-name", "Set the server name (MOTD)").withRequiredArg().ofType(String.class);
+        OptionSpec<Integer> portSpec = parser.accepts("port", "Set the server port").withRequiredArg().ofType(Integer.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -145,6 +148,7 @@ public class Nukkit {
 
         String language = options.valueOf(languageSpec);
         boolean skipSetup = options.has(skipSetupSpec);
+        boolean autoAcceptLicense = options.has(acceptLicense);
 
         if (options.has(chromeDebugPortSpec)) {
             CHROME_DEBUG_PORT = options.valueOf(chromeDebugPortSpec);
@@ -154,13 +158,16 @@ public class Nukkit {
             JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
         }
 
+        String serverName = options.valueOf(serverNameSpec);
+        Integer port = options.valueOf(portSpec);
+
         File configFile = new File(DATA_PATH + "pnx.yml");
         WizardConfig wizardConfig = null;
 
         if (!configFile.exists() && !skipSetup) {
             log.info("First-time setup detected. Running setup wizard...");
             try (SetupWizard wizard = new SetupWizard()) {
-                wizardConfig = wizard.run(language, false);
+                wizardConfig = wizard.run(language, false, autoAcceptLicense, serverName, port);
                 if (wizardConfig != null && wizardConfig.getLanguage() != null) {
                     language = wizardConfig.getLanguage();
                 }
@@ -170,6 +177,34 @@ public class Nukkit {
                 if (language == null) {
                     language = "eng";
                 }
+            }
+        } else if (!configFile.exists() && skipSetup) {
+            // Utilise SetupWizard pour afficher la licence et demander l'acceptation
+            try (SetupWizard wizard = new SetupWizard()) {
+                String lang = (language != null && !language.isEmpty()) ? language : "eng";
+                java.lang.reflect.Field baseLangField = SetupWizard.class.getDeclaredField("baseLang");
+                baseLangField.setAccessible(true);
+                baseLangField.set(wizard, new cn.nukkit.lang.BaseLang(lang));
+                if (!autoAcceptLicense) {
+                    java.lang.reflect.Method acceptLicenseMethod = SetupWizard.class.getDeclaredMethod("acceptLicense", boolean.class);
+                    acceptLicenseMethod.setAccessible(true);
+                    boolean accepted = (boolean) acceptLicenseMethod.invoke(wizard, false);
+                    if (!accepted) {
+                        System.out.println("License not accepted. Exiting.");
+                        System.exit(1);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed to display license acceptance dialog", e);
+                System.exit(1);
+            }
+            // Création d'une configuration par défaut si skip-setup
+            wizardConfig = new WizardConfig();
+            if (serverName != null && !serverName.isEmpty()) {
+                wizardConfig.setMotd(serverName);
+            }
+            if (port != null) {
+                wizardConfig.setPort(port);
             }
         }
 
@@ -266,4 +301,3 @@ public class Nukkit {
         return loggerConfig.getLevel();
     }
 }
-

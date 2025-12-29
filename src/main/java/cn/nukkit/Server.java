@@ -327,6 +327,14 @@ public class Server {
             this.settings.networkSettings().enableQuery(wizardConfig.isQueryEnabled());
         } else {
             this.settings.baseSettings().language(chooseLanguage);
+            if (wizardConfig != null) {
+                if (wizardConfig.getMotd() != null && !wizardConfig.getMotd().isEmpty()) {
+                    this.settings.baseSettings().motd(wizardConfig.getMotd());
+                }
+                if (wizardConfig.getPort() != 19132) {
+                    this.settings.baseSettings().port(wizardConfig.getPort());
+                }
+            }
         }
         this.settings.save();
         while(updateConfiguration());
