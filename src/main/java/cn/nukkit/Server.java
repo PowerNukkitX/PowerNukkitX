@@ -14,6 +14,7 @@ import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
@@ -445,6 +446,12 @@ public class Server {
             DispenseBehaviorRegister.init();
         }
 
+        if(settings.gameplaySettings().enableEducation()) {
+            Education.enable();
+            if(settings.baseSettings().waterdogpe())
+                log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
+        }
+
         if (useTerra) {//load terra
             PNXPlatform instance = PNXPlatform.getInstance();
         }
@@ -534,6 +541,8 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
+
+        if(settings.gameplaySettings().enableEducation()) Education.registerCreative();
 
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
