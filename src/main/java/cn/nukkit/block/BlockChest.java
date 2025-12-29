@@ -172,7 +172,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
      * @return 找到的可配对箱子。若没找到，则为null <br> Chest to pair with. Null if none have been found
      */
     protected @Nullable BlockEntityChest findPair() {
-        List<MinecraftCardinalDirection> universe = CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.getValidValues();
+        List<MinecraftCardinalDirection> universe = CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.getValidValues().reversed(); // The client tries to calculate the pair on their end as well, but in reverse order than our MINECRAFT_CARDINAL_DIRECTION
         BlockFace thisFace = getBlockFace();
         for (var direction : universe) {
             BlockFace directionFace = CommonPropertyMap.CARDINAL_BLOCKFACE.get(direction);
