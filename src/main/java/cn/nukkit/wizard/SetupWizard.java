@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Interactive setup wizard for PowerNukkitX using JLine for better user experience.
@@ -59,7 +60,7 @@ public class SetupWizard implements AutoCloseable {
     }
 
     /**
-     * Loads available languages from the language.list resource file.
+     * Loads available languages from the 'language.list' resource file.
      *
      * @return Map of language codes to language names
      */
@@ -298,12 +299,24 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println();
         terminal.writer().flush();
         handleUserInputLoop(
-            baseLang.tr("pnx.setupWizard.skip.question"),
-            new String[]{"y", "yes", "n", "no", ""},
-            () -> { skipWizard = true; accept(baseLang.tr("pnx.setupWizard.skip")); },
-            () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
-            () -> { log.error("Error reading skip wizard input"); skipWizard = true; }
+                baseLang.tr("pnx.setupWizard.skip.question"),
+                new String[]{"y", "yes", "n", "no", ""},
+                input -> {
+                    if (input.equals("y") || input.equals("yes") || input.isEmpty()) {
+                        skipWizard = true;
+                        accept(baseLang.tr("pnx.setupWizard.skip"));
+                    } else {
+                        skipWizard = false;
+                        accept(baseLang.tr("pnx.setupWizard.noskip"));
+                    }
+                },
+                () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
+                () -> {
+                    log.error("Error reading skip wizard input");
+                    skipWizard = true;
+                }
         );
+
         terminal.writer().println();
         terminal.writer().flush();
     }
@@ -397,10 +410,10 @@ public class SetupWizard implements AutoCloseable {
     private void configureGamemode() {
         terminal.writer().println("─".repeat(57));
         notice(baseLang.tr("pnx.setupWizard.gamemode"));
-        prompt("[0]" + baseLang.tr("pnx.setupWizard.gamemode.survival"));
-        prompt("[1]" + baseLang.tr("pnx.setupWizard.gamemode.creative"));
-        prompt("[2]" + baseLang.tr("pnx.setupWizard.gamemode.adventure"));
-        prompt("[3]" + baseLang.tr("pnx.setupWizard.gamemode.spectator"));
+        prompt("[0] " + baseLang.tr("pnx.setupWizard.gamemode.survival"));
+        prompt("[1] " + baseLang.tr("pnx.setupWizard.gamemode.creative"));
+        prompt("[2] " + baseLang.tr("pnx.setupWizard.gamemode.adventure"));
+        prompt("[3] " + baseLang.tr("pnx.setupWizard.gamemode.spectator"));
         terminal.writer().println();
         terminal.writer().flush();
 
@@ -445,19 +458,25 @@ public class SetupWizard implements AutoCloseable {
      */
     private void configureWhitelist() {
         terminal.writer().println("─".repeat(57));
+
         handleUserInputLoop(
-            baseLang.tr("pnx.setupWizard.whitelist.question"),
-            new String[]{"y", "yes", "n", "no", ""},
-            () -> {
-                wizardConfig.setWhitelistEnabled(true);
-                accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
-                terminal.writer().flush();
-                configureWhitelistedPlayers();
-            },
-            () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
-            () -> log.error("Error reading whitelist setting")
+                baseLang.tr("pnx.setupWizard.whitelist.question"),
+                new String[]{"y", "yes", "n", "no", ""},
+                input -> {
+                    if (input.equals("y") || input.equals("yes") || input.isEmpty()) {
+                        wizardConfig.setWhitelistEnabled(true);
+                        accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
+                        configureWhitelistedPlayers();
+                    } else {
+                        wizardConfig.setWhitelistEnabled(false);
+                        accept(baseLang.tr("pnx.setupWizard.whitelist.disabled"));
+                    }
+                },
+                () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
+                () -> log.error("Error reading whitelist setting")
         );
     }
+
 
     /**
      * Configures whitelisted players.
@@ -786,13 +805,18 @@ public class SetupWizard implements AutoCloseable {
      * @param onInvalid   Runnable to execute when input is invalid
      * @param onException Runnable to execute on exception
      */
-    private void handleUserInputLoop(String prompt, String[] validInputs, Runnable onValid, Runnable onInvalid, Runnable onException) {
+    private void handleUserInputLoop(
+            String prompt,
+            String[] validInputs,
+            Consumer<String> onValid,
+            Runnable onInvalid,
+            Runnable onException
+    ) {
         while (true) {
             try {
                 String input = reader.readLine(promptText(prompt)).trim().toLowerCase();
-                boolean isValid = Arrays.asList(validInputs).contains(input);
-                if (isValid) {
-                    onValid.run();
+                if (Arrays.asList(validInputs).contains(input)) {
+                    onValid.accept(input);
                     terminal.writer().flush();
                     return;
                 } else {
@@ -805,5 +829,6 @@ public class SetupWizard implements AutoCloseable {
             }
         }
     }
+
 
 }
