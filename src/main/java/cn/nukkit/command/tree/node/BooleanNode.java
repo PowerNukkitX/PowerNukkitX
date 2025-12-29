@@ -37,7 +37,6 @@ import java.util.Set;
  * @since PowerNukkitX 1.19.50
  * <p>
  * The parsing parameter corresponds to a {@link Boolean} value.
- * <p>
  * All commands enumerated as {@link cn.nukkit.command.data.CommandEnum#ENUM_BOOLEAN ENUM_BOOLEAN} will default to this parser if no {@link IParamNode} is manually specified.
  */
 public class BooleanNode extends ParamNode<Boolean> {
