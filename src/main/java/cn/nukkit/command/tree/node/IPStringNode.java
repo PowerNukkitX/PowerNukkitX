@@ -30,9 +30,9 @@ import java.util.regex.Pattern;
  * @see String
  * @see IParamNode
  * @since PowerNukkitX 1.19.50
- * 验证IP地址并解析为{@link String}值
+ * Validate the IP address and resolve it to a {@link String} value
  * <p>
- * 不会默认使用，需要手动指定
+ * Not used by default; must be manually specified
  */
 public class IPStringNode extends StringNode {
     private static final Predicate<String> IP_PREDICATE = Pattern.compile("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$").asPredicate();

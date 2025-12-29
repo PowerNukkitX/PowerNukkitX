@@ -27,12 +27,12 @@ package cn.nukkit.command.tree.node;
  * @author PowerNukkitX Project Team
  * @see IParamNode
  * @since PowerNukkitX 1.19.50
- *//**
- * 解析为{@link String}值
  * <p>
- * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#TEXT TEXT} , {@link cn.nukkit.command.data.CommandParamType#STRING STRING} ,
- * {@link cn.nukkit.command.data.CommandParamType#FILE_PATH FILE_PATH}的
- * 如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * Parsed as a {@link String} value
+ * <p>
+ * All command parameters are of type {@link cn.nukkit.command.data.CommandParamType#TEXT TEXT}, {@link cn.nukkit.command.data.CommandParamType#STRING STRING},
+ * {@link cn.nukkit.command.data.CommandParamType#FILE_PATH FILE_PATH}
+ * If {@link IParamNode} is not manually specified, this parser will be used by default.
  */
 public class StringNode extends ParamNode<String> {
     @Override

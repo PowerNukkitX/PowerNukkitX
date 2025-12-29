@@ -34,9 +34,9 @@ import java.util.HashSet;
  * @see cn.nukkit.command.data.CommandParamType#COMPARE_OPERATOR
  * @see IParamNode
  * @since PowerNukkitX 1.19.50
- * 负责解析ExecuteCommand中的比较操作，解析为{@link String}值
+ * Responsible for parsing comparison operations within ExecuteCommand, resolving them to {@link String} values
  * <p>
- * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#COMPARE_OPERATOR COMPARE_OPERATOR}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * All command parameters are of type {@link cn.nukkit.command.data.CommandParamType#COMPARE_OPERATOR COMPARE_OPERATOR}. If no {@link IParamNode} is manually specified, this parser is used by default.
  */
 public class CompareOperatorStringNode extends StringNode {
     private static final HashSet<String> COMPARE_OPERATOR = Sets.newHashSet("<", "<=", "=", ">=", ">");

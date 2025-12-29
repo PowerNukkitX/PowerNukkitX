@@ -35,10 +35,10 @@ import java.util.Set;
  * @see cn.nukkit.command.data.CommandEnum#ENUM_BOOLEAN
  * @see IParamNode
  * @since PowerNukkitX 1.19.50
- *//**
- * 解析对应参数为{@link Boolean}值
  * <p>
- * 所有命令枚举{@link cn.nukkit.command.data.CommandEnum#ENUM_BOOLEAN ENUM_BOOLEAN}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * The parsing parameter corresponds to a {@link Boolean} value.
+ * <p>
+ * All commands enumerated as {@link cn.nukkit.command.data.CommandEnum#ENUM_BOOLEAN ENUM_BOOLEAN} will default to this parser if no {@link IParamNode} is manually specified.
  */
 public class BooleanNode extends ParamNode<Boolean> {
     private final static Set<String> ENUM_BOOLEAN = Sets.newHashSet(CommandEnum.ENUM_BOOLEAN.getValues());

@@ -30,10 +30,10 @@ package cn.nukkit.command.tree.node;
  * @see cn.nukkit.command.data.CommandParamType#FLOAT
  * @see IParamNode
  * @since PowerNukkitX 1.19.50
- *//**
- * 解析为{@link Float}值
  * <p>
- * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#FLOAT FLOAT}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * Parsed as {@link Float} values
+ * <p>
+ * All command parameters are of type {@link cn.nukkit.command.data.CommandParamType#FLOAT FLOAT}. If no {@link IParamNode} is manually specified, this parser is used by default.
  */
 public class FloatNode extends ParamNode<Float> {
     @Override
