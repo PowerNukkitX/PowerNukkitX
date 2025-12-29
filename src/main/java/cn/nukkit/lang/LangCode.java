@@ -67,7 +67,7 @@ public enum LangCode {
     tr_TR("Türkçe (Türkiye)"),
     uk_UA("Українська (Україна)"),
     vi_VN("Tiếng Việt (Việt Nam)"),
-    lt_LT("Lietuvietis (Lithuania)");
+    lt_LT("Lietuvietis (Lithuania)"),
     tl_PH("Filipino (Pilipinas)");
 
     /**
