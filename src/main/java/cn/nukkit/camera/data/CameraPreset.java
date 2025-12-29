@@ -161,10 +161,11 @@ public final class CameraPreset {
 
     private int id = 0;
 
+    @Builder
     /**
      * Constructs a CameraPreset using the builder pattern.
      * <p>
-     * Only a subset of fields are settable via the builder. For advanced configuration, use the full constructor.
+     * Only a subset of fields is settable via the builder. For advanced configuration, use the full constructor.
      * <p>
      * You must call {@link #registerCameraPresets(CameraPreset...)} to make the preset available.
      *
@@ -176,7 +177,6 @@ public final class CameraPreset {
      * @param listener the audio listener configuration (optional)
      * @param playEffect whether to play camera effects (optional)
      */
-    @Builder
     public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, OptionalValue<Boolean> playEffect) {
         this(
                 identifier,
