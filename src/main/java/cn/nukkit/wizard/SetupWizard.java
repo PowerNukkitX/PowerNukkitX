@@ -277,30 +277,17 @@ public class SetupWizard implements AutoCloseable {
         warn(baseLang.tr("pnx.setupWizard.license.notice"));
         terminal.writer().println();
         terminal.writer().flush();
-
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.license.question")).trim());
-
-                if (input.equals("yes") || input.equals("y")) {
-                    accept(baseLang.tr("pnx.setupWizard.license.accept"));
-                    terminal.writer().flush();
-                    return true;
-                } else if (input.equals("no") || input.equals("n")) {
-                    return false;
-                } else {
-                    refuse(baseLang.tr("pnx.setupWizard.invalid_input"));
-                    terminal.writer().flush();
-                }
-            } catch (Exception e) {
-                log.error("Error reading license acceptance", e);
-                return false;
-            }
-        }
+        return askConfirmation(
+            baseLang.tr("pnx.setupWizard.license.question"),
+            baseLang.tr("pnx.setupWizard.license.accept"),
+            baseLang.tr("pnx.setupWizard.license.no_accept"),
+            baseLang.tr("pnx.setupWizard.invalid_input"),
+            false
+        );
     }
 
     /**
-     * Asks the user if they want to skip the setup wizard.
+     * Handles the user confirmation for skipping the wizard.
      */
     private void askSkipWizard() {
         terminal.writer().println();
@@ -310,33 +297,15 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println(baseLang.tr("pnx.setupWizard.skip_prompt"));
         terminal.writer().println();
         terminal.writer().flush();
-
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.skip.question")).trim());
-
-                if (input.isEmpty() || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
-                    skipWizard = true;
-                    accept(baseLang.tr("pnx.setupWizard.skip"));
-                    terminal.writer().println();
-                    terminal.writer().flush();
-                    break;
-                } else if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
-                    skipWizard = false;
-                    accept(baseLang.tr("pnx.setupWizard.noskip"));
-                    terminal.writer().println();
-                    terminal.writer().flush();
-                    break;
-                } else {
-                    warn(baseLang.tr("pnx.setupWizard.invalid_input"));
-                    terminal.writer().flush();
-                }
-            } catch (Exception e) {
-                log.error("Error reading skip wizard input", e);
-                skipWizard = true;
-                break;
-            }
-        }
+        handleUserInputLoop(
+            baseLang.tr("pnx.setupWizard.skip.question"),
+            new String[]{"y", "yes", "n", "no", ""},
+            () -> { skipWizard = true; accept(baseLang.tr("pnx.setupWizard.skip")); },
+            () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
+            () -> { log.error("Error reading skip wizard input"); skipWizard = true; }
+        );
+        terminal.writer().println();
+        terminal.writer().flush();
     }
 
     /**
@@ -476,33 +445,18 @@ public class SetupWizard implements AutoCloseable {
      */
     private void configureWhitelist() {
         terminal.writer().println("─".repeat(57));
-
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.whitelist.question"))).trim();
-
-                if (input.isEmpty() || input.equals("n") || input.equals("no")) {
-                    wizardConfig.setWhitelistEnabled(false);
-                    accept(baseLang.tr("pnx.setupWizard.whitelist.disabled"));
-                    terminal.writer().println();
-                    terminal.writer().flush();
-                    break;
-                } else if (input.equals("y") || input.equals("yes")) {
-                    wizardConfig.setWhitelistEnabled(true);
-                    accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
-                    terminal.writer().flush();
-
-                    configureWhitelistedPlayers();
-                    break;
-                } else {
-                    warn(baseLang.tr("pnx.setupWizard.invalid_input"));
-                    terminal.writer().flush();
-                }
-            } catch (Exception e) {
-                log.error("Error reading whitelist setting", e);
-                break;
-            }
-        }
+        handleUserInputLoop(
+            baseLang.tr("pnx.setupWizard.whitelist.question"),
+            new String[]{"y", "yes", "n", "no", ""},
+            () -> {
+                wizardConfig.setWhitelistEnabled(true);
+                accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
+                terminal.writer().flush();
+                configureWhitelistedPlayers();
+            },
+            () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
+            () -> log.error("Error reading whitelist setting")
+        );
     }
 
     /**
@@ -784,4 +738,72 @@ public class SetupWizard implements AutoCloseable {
     public void setBaseLang(BaseLang lang) {
         this.baseLang = lang;
     }
+
+    /**
+     * Displays a prompt and waits for user confirmation (yes/no).
+     * Returns true if accepted, false if rejected.
+     */
+    private boolean askConfirmation(String prompt, String acceptMsg, String refuseMsg, String invalidMsg, boolean defaultAccept) {
+        terminal.writer().flush();
+        while (true) {
+            try {
+                String input = reader.readLine(promptText(prompt)).trim();
+                if (input.isEmpty()) {
+                    if (defaultAccept) {
+                        accept(acceptMsg);
+                        terminal.writer().flush();
+                        return true;
+                    } else {
+                        refuse(refuseMsg);
+                        terminal.writer().flush();
+                        return false;
+                    }
+                } else if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
+                    accept(acceptMsg);
+                    terminal.writer().flush();
+                    return true;
+                } else if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
+                    refuse(refuseMsg);
+                    terminal.writer().flush();
+                    return false;
+                } else {
+                    warn(invalidMsg);
+                    terminal.writer().flush();
+                }
+            } catch (Exception e) {
+                log.error("Error reading confirmation input", e);
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Handles a generic user input loop for confirmation or selection.
+     *
+     * @param prompt      The prompt to display
+     * @param validInputs Array of valid inputs (case-insensitive)
+     * @param onValid     Runnable to execute when input is valid
+     * @param onInvalid   Runnable to execute when input is invalid
+     * @param onException Runnable to execute on exception
+     */
+    private void handleUserInputLoop(String prompt, String[] validInputs, Runnable onValid, Runnable onInvalid, Runnable onException) {
+        while (true) {
+            try {
+                String input = reader.readLine(promptText(prompt)).trim().toLowerCase();
+                boolean isValid = Arrays.asList(validInputs).contains(input);
+                if (isValid) {
+                    onValid.run();
+                    terminal.writer().flush();
+                    return;
+                } else {
+                    onInvalid.run();
+                    terminal.writer().flush();
+                }
+            } catch (Exception e) {
+                onException.run();
+                break;
+            }
+        }
+    }
+
 }
