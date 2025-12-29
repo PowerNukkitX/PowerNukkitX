@@ -88,7 +88,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
     private static final int    DP_MAX_STRING_BYTES = Server.getDynamicPropertiesMaxStringBytes();
     private static final double DP_NUMBER_ABS_MAX   = Server.getDynamicPropertiesNumberAbsMax();
-    private static final String DP_ROOT = "DynamicProperties";
+    private static final String DP_ROOT = Server.getDynamicPropertyRoot();
 
     public static final int WEARABLE_TIER_LEATHER = 1;
     public static final int WEARABLE_TIER_IRON = 2;

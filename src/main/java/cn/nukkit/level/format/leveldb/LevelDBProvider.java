@@ -72,6 +72,8 @@ public class LevelDBProvider implements LevelProvider {
     protected final LevelDBStorage storage;
     protected final Level level;
     protected final String path;
+    protected CompoundTag worldDynamicProperties = new CompoundTag();
+    protected boolean worldDynamicPropertiesDirty = false;
 
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
@@ -94,6 +96,10 @@ public class LevelDBProvider implements LevelProvider {
         } else {
             this.levelDat = levelDat;
         }
+
+        CompoundTag dp = this.storage.readWorldDynamicProperties();
+        this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
+        this.worldDynamicPropertiesDirty = false;
     }
 
     @UsedByReflection
@@ -504,6 +510,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveLevelData() {
+        flushWorldDynamicProperties();
         writeLevelDat(path, getDimensionData(), this.levelDat);
     }
 
@@ -608,12 +615,36 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void close() {
+        flushWorldDynamicProperties();
         storage.close();
     }
 
     @Override
     public boolean isChunkGenerated(int chunkX, int chunkZ) {
         return true;
+    }
+
+    public CompoundTag getWorldDynamicProperties() {
+        return this.worldDynamicProperties;
+    }
+
+    public void setWorldDynamicProperties(CompoundTag tag) {
+        this.worldDynamicProperties = tag == null ? new CompoundTag() : tag;
+        this.worldDynamicPropertiesDirty = false;
+    }
+
+    public boolean isWorldDynamicPropertiesDirty() {
+        return this.worldDynamicPropertiesDirty;
+    }
+
+    public void setWorldDynamicPropertiesDirty(boolean dirty) {
+        this.worldDynamicPropertiesDirty = dirty;
+    }
+
+    private void flushWorldDynamicProperties() {
+        if (!this.worldDynamicPropertiesDirty) return;
+        this.storage.writeWorldDynamicProperties(this.worldDynamicProperties);
+        this.worldDynamicPropertiesDirty = false;
     }
 
     public synchronized LevelDat readLevelDat() throws IOException {

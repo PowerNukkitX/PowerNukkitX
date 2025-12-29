@@ -46,15 +46,22 @@ import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.BlockStateUpdaterBase;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
 import cn.nukkit.metadata.PlayerMetadataStore;
 import cn.nukkit.metrics.NukkitMetrics;
 import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.LongTag;
+import cn.nukkit.nbt.tag.ShortTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
@@ -207,6 +214,7 @@ public class Server {
     private PositionTrackingService positionTrackingService;
 
     // Dynamic Properties defaults
+    private static final String DP_ROOT = "DynamicProperties";
     private static volatile String DP_DEFAULT_GROUP_UUID = "00000000-0000-0000-0000-000000000000";
     private static final int DP_MAX_STRING_BYTES = 32767;
     private static final double DP_NUMBER_ABS_MAX = 9_223_372_036_854_775_807d;
@@ -2801,9 +2809,427 @@ public class Server {
         DP_DEFAULT_GROUP_UUID = uuid.toLowerCase();
     }
 
+    public static String getDynamicPropertyRoot()               { return DP_ROOT; }
     public static String getDefaultDynamicPropertiesGroupUUID() { return DP_DEFAULT_GROUP_UUID; }
     public static int    getDynamicPropertiesMaxStringBytes()   { return DP_MAX_STRING_BYTES; }
     public static double getDynamicPropertiesNumberAbsMax()     { return DP_NUMBER_ABS_MAX; }
+
+    /**
+     * Remove a DynamicProperty by key id.
+     *
+     * @param key the key id of the DynamicProperty
+     */
+    public Server removeDynamicProperty(String key) {
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) return this;
+
+        if (!root.contains(DP_ROOT)) return this;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+
+        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.contains(key)) return this;
+
+        group.remove(key);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, group);
+        return this;
+    }
+
+    /**
+     * Remove all DynamicProperties on the world.
+     */
+    public Server clearDynamicProperties() {
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
+
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) dyn = new CompoundTag();
+
+        dyn.putCompound(DP_DEFAULT_GROUP_UUID, new CompoundTag());
+        root.putCompound(DP_ROOT, dyn);
+
+        provider.setWorldDynamicProperties(root);
+        provider.setWorldDynamicPropertiesDirty(true);
+        return this;
+    }
+
+    /**
+     * Set a double int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param value the double int value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Double value) {
+        if (value == null) return removeDynamicProperty(key);
+        if (!isFiniteAndInRange(value)) {
+            log.warn("DynamicProperty '{}' rejected: out of numeric bounds or non-finite (value={})", key, value);
+            return this;
+        }
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putDouble(key, value);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param value the int value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Integer value) {
+        return setDynamicProperty(key, value == null ? null : value.doubleValue());
+    }
+
+    /**
+     * Set a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param value the int value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Float value) {
+        return setDynamicProperty(key, value == null ? null : value.doubleValue());
+    }
+
+    /**
+     * Set a boolean DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param bool the bool value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Boolean bool) {
+        if (bool == null) return removeDynamicProperty(key);
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putBoolean(key, bool);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a string DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param string the string value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, String string) {
+        if (string == null) return removeDynamicProperty(key);
+        if (!fitsUtf8Limit(string)) {
+            log.warn("DynamicProperty '{}' rejected: string exceeds {} UTF-8 bytes", key, DP_MAX_STRING_BYTES);
+            return this;
+        }
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putString(key, string);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a Vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param vec3 the vec3 value of the DynamicProperty
+     */
+    public Server setVec3DynamicProperty(String key, Vector3 vec3) {
+        if (vec3 == null) return removeDynamicProperty(key);
+        if (!isFiniteAndInRange(vec3.x) || !isFiniteAndInRange(vec3.y) || !isFiniteAndInRange(vec3.z)) {
+            log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, vec3.x, vec3.y, vec3.z);
+            return this;
+        }
+        ListTag<FloatTag> list = new ListTag<>();
+        list.add(new FloatTag((float) vec3.x));
+        list.add(new FloatTag((float) vec3.y));
+        list.add(new FloatTag((float) vec3.z));
+
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putList(key, list);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a Vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param xyz a map with keys "x","y","z" and numeric values, e.g. {x: 400, y: 60, z: 300}
+     */
+    public Server setVec3DynamicProperty(String key, Map<String, Number> xyz) {
+        if (xyz == null) return removeDynamicProperty(key);
+
+        Number nx = xyz.get("x"), ny = xyz.get("y"), nz = xyz.get("z");
+        if (nx == null || ny == null || nz == null) {
+            log.warn("DynamicProperty '{}' rejected: vec3 map must contain numeric keys 'x','y','z'", key);
+            return this;
+        }
+
+        // Delegate to the Vector3 overload (keeps validation + storage consistent)
+        return setVec3DynamicProperty(key, new Vector3(nx.doubleValue(), ny.doubleValue(), nz.doubleValue()));
+    }
+
+    /**
+     * Get a double int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the double int value or null if not available.
+     */
+    public Double getDoubleDynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+
+        return switch (t) {
+            case DoubleTag d -> d.data;
+            case FloatTag  f -> (double) f.data;
+            case IntTag    i -> (double) i.data;
+            case LongTag   l -> (double) l.data;
+            case ShortTag  s -> (double) s.data;
+            case ByteTag   b -> (double) b.data;
+            case StringTag s -> {
+                try { yield Double.parseDouble(s.data.trim()); }
+                catch (NumberFormatException ignored) { yield null; }
+            }
+            default -> null;
+        };
+    }
+
+    /**
+     * Get a double int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the double int value or defaultValue if not available.
+     */
+    public Double getDoubleDynamicProperty(String key, double defaultValue) {
+        Double d = getDoubleDynamicProperty(key);
+        return (d != null) ? d : defaultValue;
+    }
+
+    /**
+     * Get a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the int value or defaultValue if not available.
+     */
+    public Integer getIntDynamicProperty(String key) {
+        Double d = getDoubleDynamicProperty(key);
+        if (d == null) return null;
+        return (int) Math.floor(d);
+    }
+
+    /**
+     * Get a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the int value or defaultValue if not available.
+     */
+    public int getIntDynamicProperty(String key, int defaultValue) {
+        Integer i = getIntDynamicProperty(key);
+        return (i != null) ? i : defaultValue;
+    }
+
+    /**
+     * Get a float DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the float value or null if not available.
+     */
+    public Float getFloatDynamicProperty(String key) {
+        Double d = getDoubleDynamicProperty(key);
+        if (d == null) return null;
+        return d.floatValue();
+    }
+
+    /**
+     * Get a float DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the float value or defaultValue if not available.
+     */
+    public float getFloatDynamicProperty(String key, float defaultValue) {
+        Float f = getFloatDynamicProperty(key);
+        return (f != null) ? f : defaultValue;
+    }
+
+    /**
+     * Get a boolean DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the bool value or false if not available.
+     */
+    public Boolean getBoolDynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+        if (t instanceof ByteTag)   return ((ByteTag) t).data != 0;
+        Double d = getDoubleDynamicProperty(key);
+        if (d != null) return d != 0.0;
+        if (t instanceof StringTag) {
+            String s = ((StringTag) t).data.trim().toLowerCase();
+            if ("true".equals(s) || "1".equals(s))  return true;
+            if ("false".equals(s) || "0".equals(s)) return false;
+        }
+        return null;
+    }
+
+    /**
+     * Get a boolean DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the bool value or defaultValue if not available.
+     */
+    public boolean getBoolDynamicProperty(String key, boolean defaultValue) {
+        Boolean b = getBoolDynamicProperty(key);
+        return (b != null) ? b : defaultValue;
+    }
+
+    /**
+     * Get a string DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the bool value or null if not available.
+     */
+    public String getStringDynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+
+        return switch (t) {
+            case StringTag s -> s.data;
+            case DoubleTag d -> String.valueOf(d.data);
+            case FloatTag  f -> String.valueOf(f.data);
+            case IntTag    i -> String.valueOf(i.data);
+            case LongTag   l -> String.valueOf(l.data);
+            case ShortTag  s -> String.valueOf(s.data);
+            case ByteTag   b -> String.valueOf(b.data);
+            default -> null;
+        };
+    }
+
+    /**
+     * Get a string DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the string value or defaultValue if not available.
+     */
+    public String getStringDynamicProperty(String key, String defaultValue) {
+        String s = getStringDynamicProperty(key);
+        return (s != null) ? s : defaultValue;
+    }
+
+    /**
+     * Get a vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the bool value or null if not available.
+     */
+    public Vector3 getVec3DynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+
+        if (t instanceof ListTag<?> list &&
+            list.size() == 3 &&
+            list.get(0) instanceof FloatTag fx &&
+            list.get(1) instanceof FloatTag fy &&
+            list.get(2) instanceof FloatTag fz) {
+
+            float x = fx.data;
+            float y = fy.data;
+            float z = fz.data;
+            return new Vector3(x, y, z);
+        }
+        return null;
+    }
+
+    // Dynamic Properties Helpers start
+    private static boolean isFiniteAndInRange(double v) {
+        return !Double.isNaN(v) && !Double.isInfinite(v) && Math.abs(v) <= DP_NUMBER_ABS_MAX;
+    }
+
+    private static boolean fitsUtf8Limit(String s) {
+        if (s == null) return false;
+        int byteCount = s.getBytes(StandardCharsets.UTF_8).length;
+        return byteCount <= DP_MAX_STRING_BYTES;
+    }
+
+    private LevelDBProvider getWorldDynamicPropertiesProvider() {
+        Level level = this.getDefaultLevel();
+        if (level == null) return null;
+
+        LevelProvider provider = level.getProvider();
+        if (!(provider instanceof LevelDBProvider ldb)) return null;
+
+        return ldb;
+    }
+
+    private CompoundTag ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
+
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT) || dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
+        }
+
+        CompoundTag group = dyn.getCompound(groupId);
+        if (group == null) group = new CompoundTag();
+
+        dyn.putCompound(groupId, group);
+        provider.setWorldDynamicProperties(root);
+        return group;
+    }
+
+
+    private CompoundTag getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null || !root.contains(DP_ROOT)) return null;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) return null;
+        return dyn.getCompound(groupId);
+    }
+
+    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, CompoundTag group) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
+
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT) || dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
+        }
+
+        dyn.putCompound(groupId, group);
+        provider.setWorldDynamicProperties(root);
+        provider.setWorldDynamicPropertiesDirty(true);
+    }
+
+    private Tag findWorldDynamicPropertyTagInConfiguredGroup(String key) {
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return null;
+
+        CompoundTag group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.contains(key)) return null;
+        return group.get(key);
+    }
+    // Dynamic Properties Helpers end
+
 
     //todo NukkitConsole 会阻塞关不掉
     private class ConsoleThread extends Thread implements InterruptibleThread {
@@ -2854,4 +3280,3 @@ public class Server {
     // endregion
 
 }
-

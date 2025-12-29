@@ -64,6 +64,10 @@ public enum LevelDBKeyUtil {
     HARDCODED_SPAWNERS('9'),
     LEGACY_VERSION('v'),
     /**
+     * Stores world-scoped dynamic properties (little-endian NBT)
+     */
+    WORLD_DYNAMIC_PROPERTIES('~'),
+    /**
      * Stores PNX-defined extra data,BIG BYTE_ORDER NBT FORMAT
      */
     PNX_EXTRA_DATA('|'),
@@ -175,5 +179,9 @@ public enum LevelDBKeyUtil {
                     (byte) chunkSectionY
             };
         }
+    }
+
+    public byte[] getGlobalKey() {
+        return new byte[] { this.encoded };
     }
 }
