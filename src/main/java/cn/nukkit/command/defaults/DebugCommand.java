@@ -79,7 +79,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("reload", new CommandParameter[]{
                 CommandParameter.newEnum("reload", new String[]{"reload"}),
-                CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin"}),
+                CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin", "chunk"}),
                 CommandParameter.newType("plugin", true, CommandParamType.STRING)
         });
         this.enableParamTree();
@@ -324,6 +324,30 @@ public class DebugCommand extends TestCommand implements CoreCommand {
 
                             log.addSuccess("§eReloading plugin...").output(true);
                             pluginManager.reloadPlugin(plugin);
+                        }
+                        case "chunk" -> {
+                            if (!sender.isPlayer())
+                                return 0;
+                            Player player = sender.asPlayer();
+                            log.addSuccess("§eReloading chunk...").output(true);
+
+                            Level level = player.getLevel();
+                            int chunkX = player.getChunkX();
+                            int chunkZ = player.getChunkZ();
+
+                            int radius = 1; // TODO: We can make this argument
+
+                            for (int x = chunkX - radius; x <= chunkX + radius; x++) {
+                                for (int z = chunkZ - radius; z <= chunkZ + radius; z++) {
+                                    IChunk chunk = level.getChunk(x, z);
+                                    if (chunk != null) {
+                                        level.unloadChunk(x, z, true);
+                                        level.loadChunk(x, z, true);
+                                        level.requestChunk(x, z, player);
+                                    }
+                                }
+                            }
+
                         }
                     }
                 }
