@@ -156,16 +156,14 @@ public class EntityVex extends EntityMob implements EntityFlyable {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if(closed) return true;
-        if(getIllager() != null) {
-            if(this.distanceSquared(illager) > 56.25d) {
+        if (closed) return true;
+        if (getIllager() != null) {
+            if (this.distanceSquared(illager) > 56.25d) {
                 setMoveTarget(illager);
                 setLookTarget(illager);
             }
-            if(ticksLived%20 == 0) {
-                if(ticksLived >= start_damage_timer*20) {
-                    this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.AGE, 1));
-                }
+            if (ticksLived % 20 == 0 && ticksLived >= start_damage_timer * 20) {
+                this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.AGE, 1));
             }
         }
         return super.onUpdate(currentTick);
