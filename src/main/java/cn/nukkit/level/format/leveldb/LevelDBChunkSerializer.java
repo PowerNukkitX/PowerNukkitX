@@ -431,7 +431,8 @@ public class LevelDBChunkSerializer {
             case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
                  BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
                  BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
-                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR -> {
+                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR,
+                 BlockID.PISTON, BlockID.STICKY_PISTON -> {
                 CompoundTag tag = new CompoundTag()
                     .putInt("x", x + (cx << 4))
                     .putInt("y", (sectionY << 4) + y)
