@@ -37,14 +37,9 @@ public @interface DeprecationDetails {
     String replaceWith() default "";
 
     /**
-<<<<<<< HEAD
-     * The maintainer party that has added this depreciation.
-     * For example: PowerNukkit, Cloudburst Nukkit, and Nukkit
-=======
      * Identifies the maintainer or project that introduced the deprecation (e.g., PowerNukkit, Cloudburst Nukkit).
      *
      * @return the maintainer or project name, or an empty string if unspecified
->>>>>>> 1f91aaa92ca6b7746c372a9a7035883315328290
      */
     String by() default "";
 }
