@@ -43,6 +43,9 @@ public class ElementDropdown extends Element implements ElementCustom {
         this(text, options, 0, null);
     }
 
+    public ElementDropdown(String text, List<String> options, int defaultOption) {
+        this(text, options, defaultOption, null);
+    }
     public ElementDropdown(String text, List<String> options, String tooltip) {
         this(text, options, 0, tooltip);
     }
