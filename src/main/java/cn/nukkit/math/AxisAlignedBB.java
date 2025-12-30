@@ -179,6 +179,21 @@ public interface AxisAlignedBB extends Cloneable {
         return false;
     }
 
+    default AxisAlignedBB intersection(AxisAlignedBB other) {
+        double xMinNew = Math.max(this.getMinX(), other.getMinX());
+        double yMinNew = Math.max(this.getMinY(), other.getMinY());
+        double zMinNew = Math.max(this.getMinZ(), other.getMinZ());
+        double xMaxNew = Math.min(this.getMaxX(), other.getMaxX());
+        double yMaxNew = Math.min(this.getMaxY(), other.getMaxY());
+        double zMaxNew = Math.min(this.getMaxZ(), other.getMaxZ());
+
+        return new SimpleAxisAlignedBB(xMinNew, yMinNew, zMinNew, xMaxNew, yMaxNew, zMaxNew);
+    }
+
+    default double getVolume() {
+        return getEdgeLengthX() * getEdgeLengthY() * getEdgeLengthZ();
+    }
+
     default boolean isVectorInside(Vector3 vector) {
         return vector.x >= this.getMinX() && vector.x <= this.getMaxX() && vector.y >= this.getMinY() && vector.y <= this.getMaxY() && vector.z >= this.getMinZ() && vector.z <= this.getMaxZ();
     }
@@ -187,8 +202,28 @@ public interface AxisAlignedBB extends Cloneable {
         return x >= this.getMinX() && x <= this.getMaxX() && y >= this.getMinY() && y <= this.getMaxY() && z >= this.getMinZ() && z <= this.getMaxZ();
     }
 
+    default double getEdgeLengthX() {
+        return this.getMaxX() - this.getMinX();
+    }
+
+    default double getEdgeLengthY() {
+        return this.getMaxY() - this.getMinY();
+    }
+
+    default double getEdgeLengthZ() {
+        return this.getMaxZ() - this.getMinZ();
+    }
+
+    default double getShortestSide() {
+        return Math.min(getEdgeLengthX(), Math.min(getEdgeLengthY(), getEdgeLengthZ()));
+    }
+
+    default double getLongestSide() {
+        return Math.max(getEdgeLengthX(), Math.max(getEdgeLengthY(), getEdgeLengthZ()));
+    }
+
     default double getAverageEdgeLength() {
-        return (this.getMaxX() - this.getMinX() + this.getMaxY() - this.getMinY() + this.getMaxZ() - this.getMinZ()) / 3;
+        return (getEdgeLengthX() + getEdgeLengthY() + getEdgeLengthZ()) / 3;
     }
 
     default boolean isVectorInYZ(Vector3 vector) {
@@ -201,6 +236,14 @@ public interface AxisAlignedBB extends Cloneable {
 
     default boolean isVectorInXY(Vector3 vector) {
         return vector.x >= this.getMinX() && vector.x <= this.getMaxX() && vector.y >= this.getMinY() && vector.y <= this.getMaxY();
+    }
+
+    default Vector3 maxCorner() {
+        return new Vector3(getMaxX(), getMaxY(), getMaxZ());
+    }
+
+    default Vector3 minCorner() {
+        return new Vector3(getMinX(), getMinY(), getMinZ());
     }
 
     default MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {

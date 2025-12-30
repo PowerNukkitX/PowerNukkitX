@@ -20,16 +20,14 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
-import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -85,9 +83,9 @@ public class EntityHusk extends EntityZombie {
         super.initEntity();
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL, 8);
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL_RANGE, 16);
-        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT);
+        this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
         if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT_BABY);
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY.getId());
         }
     }
 
@@ -104,6 +102,11 @@ public class EntityHusk extends EntityZombie {
     @Override
     public String getOriginalName() {
         return "Husk";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("husk", "zombie", "undead", "monster", "mob");
     }
 
     @Override

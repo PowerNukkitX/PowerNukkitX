@@ -65,14 +65,14 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.setEnablePitch(false);
         endShootSequence(entity);
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         entity.setEnablePitch(false);
         endShootSequence(entity);
     }

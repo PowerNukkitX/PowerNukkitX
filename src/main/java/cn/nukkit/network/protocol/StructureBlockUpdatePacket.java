@@ -7,7 +7,7 @@ import cn.nukkit.network.protocol.types.StructureAnimationMode;
 import cn.nukkit.network.protocol.types.StructureEditorData;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.network.protocol.types.StructureSettings;
 import lombok.*;
 
@@ -67,7 +67,7 @@ public class StructureBlockUpdatePacket extends DataPacket {
         var integritySeed = byteBuf.readIntLE();
         var pivot = byteBuf.readVector3f();
         return new StructureSettings(paletteName, isIgnoringEntities, isIgnoringBlocks, isNonTickingPlayersAndTickingAreasEnabled, size, offset,
-                lastEditedByEntityId, StructureRotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
+                lastEditedByEntityId, Rotation.from(rotation), StructureMirror.from(mirror), StructureAnimationMode.from(animationMode),
                 animationSeconds, integrityValue, integritySeed, pivot
         );
     }

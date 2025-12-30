@@ -23,10 +23,12 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -106,17 +108,23 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("vindicator", "monster", "illager", "mob");
+    }
+
+    @Override
     public Integer getExperienceDrops() {
         return Math.toIntExact(isBaby() ? 1 : 5 + (getArmorInventory().getContents().values().stream().filter(Item::isArmor).count() * ThreadLocalRandom.current().nextInt(1, 4)));
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         Item axe = Item.get(Item.IRON_AXE);
         axe.setDamage(ThreadLocalRandom.current().nextInt(1, axe.getMaxDurability()));
         return new Item[]{
                 axe,
-                Item.get(Item.EMERALD, 0, ThreadLocalRandom.current().nextInt(2))
+                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + looting))
         };
     }
 
@@ -136,7 +144,7 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
             super.onStart(entity);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ANGRY, -1, Entity.VINDICATOR, false, false);
+            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.VINDICATOR, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)));
             if(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntityHoglin) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, entity.getLevel().getTick());

@@ -7,7 +7,6 @@ import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;

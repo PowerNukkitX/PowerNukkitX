@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
@@ -119,16 +120,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (this.namedTag.contains(TAG_POSE_INDEX)) {
             this.setPose(this.namedTag.getInt(TAG_POSE_INDEX));
         }
-    }
-
-    @Override
-    public boolean isPersistent() {
-        return true;
-    }
-
-    @Override
-    public void setPersistent(boolean persistent) {
-        // Armor stands are always persistent
     }
 
     @Override
@@ -439,6 +430,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     @Override
     public String getOriginalName() {
         return "Armor Stand";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("armor_stand", "inanimate", "mob");
     }
 
     @Override

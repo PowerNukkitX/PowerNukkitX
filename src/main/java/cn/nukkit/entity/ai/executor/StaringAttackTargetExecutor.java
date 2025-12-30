@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Sound;

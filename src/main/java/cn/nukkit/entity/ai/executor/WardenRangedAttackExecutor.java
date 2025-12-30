@@ -45,7 +45,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             //sound
             entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
 //            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//            pk.sound = LevelSoundEventPacket.SOUND_SONIC_BOOM;
+//            pk.sound = LevelSoundEvent.SONIC_BOOM;
 //            pk.entityIdentifier = "minecraft:warden";
 //            pk.x = (float) entity.x;
 //            pk.y = (float) entity.y;
@@ -93,7 +93,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
 //        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//        pk.sound = LevelSoundEventPacket.SOUND_SONIC_CHARGE;
+//        pk.sound = LevelSoundEvent.SONIC_CHARGE;
 //        pk.entityIdentifier = "minecraft:warden";
 //        pk.x = (float) entity.x;
 //        pk.y = (float) entity.y;

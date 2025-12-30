@@ -3,12 +3,9 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.custom.CustomEntity;
-import cn.nukkit.entity.item.EntityChestBoat;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
-import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -35,7 +32,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
         }
 
         if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXpOrb) {
-            // 自定义实体在客户端中可以互动, 所以不踢出玩家
+            // Custom entities can interact in the client, so they don't kick players out.
             if (targetEntity instanceof CustomEntity) {
                 return;
             }
@@ -58,27 +55,24 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
                 player.getServer().getPluginManager().callEvent(new PlayerMouseOverEntityEvent(player, targetEntity));
             }
             case InteractPacket.ACTION_VEHICLE_EXIT -> {
-                if (!(targetEntity instanceof EntityRideable) || player.riding == null) {
+                if (!targetEntity.isRideable() || player.riding == null) {
                     return;
                 }
-                ((EntityRideable) player.riding).dismountEntity(player);
+                player.riding.dismountEntity(player);
             }
             case InteractPacket.ACTION_OPEN_INVENTORY -> {
-                if (targetEntity instanceof EntityRideable) {
-                    if (targetEntity instanceof EntityChestBoat chestBoat) {
-                        player.addWindow(chestBoat.getInventory());
-                        return;
-                    } else if (targetEntity instanceof EntityHorse horse) {
-                        if (horse.hasOwner(false) && horse.getOwnerName().equals(player.getName())) {
-                            player.addWindow(horse.getInventory());
-                            return;
-                        }
-                    }
+                if (targetEntity.isRideable()) {
+                    if(targetEntity.openInventory(player)) return;
                 } else if (targetEntity.getId() != player.getId()) {
                     return;
                 }
                 if (!playerHandle.getInventoryOpen()) {
+                    if(player.getTopWindow().isPresent()) return;
                     playerHandle.setInventoryOpen(player.getInventory().open(player));
+                } else {
+                    player.forceClientCloseInventory();
+                    playerHandle.setInventoryOpen(false);
+                    log.warn("{} tried to open the inventory while still being open!", player.getName());
                 }
             }
         }

@@ -9,11 +9,10 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
-import cn.nukkit.entity.ai.controller.DiveController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
+import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
@@ -27,13 +26,9 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
-import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.passive.EntityAxolotl;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTrident;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -45,7 +40,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityDrowned extends EntityZombie implements EntitySwimmable, EntityWalkable, EntitySmite {
 
@@ -150,17 +144,17 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     }
 
     @Override
-    public Item[] getDrops() {
+    public Set<String> typeFamily() {
+        return Set.of("drowned", "zombie", "undead", "monster", "mob");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
         Item trident = Item.AIR;
         if(getItemInHand() instanceof ItemTrident) {
-            EntityDamageEvent event = getLastDamageCause();
-            int lootingLevel = 0;
-            if(event instanceof EntityDamageByEntityEvent entityEvent) {
-                if(entityEvent.getDamager() instanceof EntityInventoryHolder holder) {
-                    lootingLevel = holder.getItemInHand().getEnchantmentLevel(Enchantment.ID_LOOTING);
-                }
-            }
-            if(ThreadLocalRandom.current().nextInt(1, 100) < Math.min(37, 25+lootingLevel)) {
+            int lootingLevel = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+            if(Utils.rand(0,100) < Math.min(37, 25+ lootingLevel)) {
                 trident = Item.get(Item.TRIDENT);
             }
         }

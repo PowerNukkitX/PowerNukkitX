@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.property.enums.CrackedState;
 import cn.nukkit.block.property.enums.TurtleEggCount;
 import cn.nukkit.entity.Entity;
@@ -25,8 +26,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
-import cn.nukkit.math.*;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -115,7 +118,7 @@ public class BlockTurtleEgg extends BlockFlowable {
             }
             Block placeBlock = placeEvent.getBlock();
             this.level.addLevelSoundEvent(this,
-                    LevelSoundEventPacket.SOUND_PLACE,
+                    LevelSoundEvent.PLACE,
                     placeBlock.getRuntimeId());
             item.setCount(item.getCount() - 1);
 
@@ -268,6 +271,7 @@ public class BlockTurtleEgg extends BlockFlowable {
 
             ev.setCancelled(ThreadLocalRandom.current().nextInt(200) > 0);
             this.level.getServer().getPluginManager().callEvent(ev);
+            if(entity instanceof Player player) new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 this.level.useBreakOn(this, null, null, true);
             }

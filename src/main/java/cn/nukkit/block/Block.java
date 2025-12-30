@@ -1,6 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -10,7 +13,6 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.customitem.ItemCustomTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
@@ -25,6 +27,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.plugin.Plugin;
+import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
@@ -32,9 +35,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 /**
@@ -43,7 +47,7 @@ import java.util.function.Predicate;
 @Slf4j
 public abstract class Block extends Position implements Metadatable, AxisAlignedBB, BlockID {
     public static final Block[] EMPTY_ARRAY = new Block[0];
-    public static final double DEFAULT_FRICTION_FACTOR = 0.6;
+    public static final double DEFAULT_FRICTION_FACTOR = 0.4;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
     public static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     protected BlockState blockstate;
@@ -224,8 +228,44 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    /**
+     * Handles ticking logic for custom blocks using either RANDOM or SCHEDULED tick types.
+     * 
+     * To enable ticking, configure the block with:
+     * <pre>{@code
+     *     .blockTick(60, 60, true)
+     * }</pre>
+     * Where:
+     * <ul>
+     *   <li><b>minTicks</b> and <b>maxTicks</b>: define the tick interval range (in server ticks).</li>
+     *   <li><b>looping</b>: if {@code true}, the block will continue ticking; if {@code false}, it will tick once and stop.</li>
+     * </ul>
+     *
+     * <b>Important:</b> Always call {@code super.onUpdate(type)} in any overridden implementation to preserve base behavior.
+     *
+     * <b>Note:</b> For custom blocks, ticking logic should only be applied to {@code BLOCK_UPDATE_SCHEDULED} updates.
+     * Return early for all other tick types (like {@code BLOCK_UPDATE_RANDOM}) to avoid interfering with the core scheduling system.
+     *
+     * @return The update type to continue ticking, or 0 to stop future ticks.
+     */
     public int onUpdate(int type) {
-        return 0;
+        if (type != Level.BLOCK_UPDATE_SCHEDULED) return 0;
+
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def == null || def.tickSettings() == null) return 0;
+
+        BlockTickSettings tick = def.tickSettings();
+        int min = tick.minTicks();
+        int max = tick.maxTicks();
+
+        if (tick.looping() && this.getLevel().isChunkLoaded(this.getFloorX() >> 4, this.getFloorZ() >> 4)) {
+            int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
+            this.getLevel().scheduleUpdate(this, delay);
+            return Level.BLOCK_UPDATE_SCHEDULED;
+        } else {
+            this.getLevel().cancelScheduledUpdate(this, this);
+            return 0;
+        }
     }
 
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
@@ -272,6 +312,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * Defines the block explosion resistance
      */
     public double getResistance() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            return def.getComponents()
+                      .getCompound("minecraft:destructible_by_explosion")
+                      .getInt("explosion_resistance");
+        }
         return 1;
     }
 
@@ -297,26 +343,32 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制挖掘方块的工具类型
+     * Controls the type of tool used to mine blocks
      *
-     * @return 挖掘方块的工具类型
+     * @return Types of tools used to mine blocks
      */
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
 
     /**
-     * 服务端侧的摩擦系数，用于控制玩家丢弃物品、实体、船其在上方移动的速度。值越大，移动越快。
-     * <p>
-     * The friction on the server side, which is used to control the speed that player drops item,entity walk and boat movement on the block.The larger the value, the faster the movement.
+     * The friction, which is used to control the speed that player / entity movement on the block.The larger the value, the faster the movement.
      */
     public double getFrictionFactor() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag comp = def.getComponents().getCompound("minecraft:friction");
+            if (comp != null && comp.contains("value")) {
+                return comp.getFloat("value");
+            }
+        }
+
         return DEFAULT_FRICTION_FACTOR;
     }
 
     /**
-     * 控制方块的通过阻力因素（0-1）。此值越小阻力越大<p/>
-     * 对于不可穿过的方块，若未覆写，此值始终为1（无效）<p/>
+     * Controls the block's resistance factor (0-1). The smaller the value, the greater the resistance.<p/>
+     * For impassable blocks, this value is always 1 (invalid) unless overridden.<p/>
      */
     public double getPassableBlockFrictionFactor() {
         if (!this.canPassThrough()) return 1;
@@ -333,11 +385,19 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制方块的发光等级
+     * Controls the light level of the block
      *
-     * @return 发光等级(0 - 15)
+     * @return Luminance Level (0 - 15)
      */
     public int getLightLevel() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag light = def.getComponents().getCompound("minecraft:light_emission");
+            if (light != null && light.contains("emission")) {
+                return light.getByte("emission");
+            }
+        }
+
         return 0;
     }
 
@@ -349,24 +409,81 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+
     /**
-     * 控制方块是否透明(默认为false)
+     * Check if above space is greatner than 0.5 for chests
      *
-     * @return 方块是否透明
+     * @return Can chest be opened with the above space?
+     */
+    public boolean hasFreeSpaceAbove() {
+        Block above = this.up();
+
+        if (above instanceof BlockSlab slab) {
+            return slab.isOnTop();
+        }
+
+        if (above.isTransparent()) {
+            return true;
+        }
+
+        AxisAlignedBB box = above.getCollisionBoundingBox();
+        if (box != null) {
+            double minY = box.getMinY();
+            double relativeMinY = minY - above.getY();
+            return relativeMinY >= 0.5;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Controls whether the block is transparent (default is false)
+     *
+     * @return Is the block transparent?
      */
     public boolean isTransparent() {
         return false;
     }
 
     public boolean isSolid() {
-        return true;
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            AxisAlignedBB box = def.getBoundingBox(this);
+            if (box != null) {
+                double height = box.getMaxY() - box.getMinY();
+                return height >= 0.999;
+            }
+        }
+
+        return true; // default for vanilla or unknown blocks
     }
 
     /**
      * Check if blocks can be attached in the given side.
      */
     public boolean isSolid(BlockFace side) {
-        return isSideFull(side);
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            AxisAlignedBB box = def.getBoundingBox(this);
+            if (box != null) {
+                switch (side) {
+                    case UP -> {
+                        double height = box.getMaxY() - box.getMinY();
+                        return height >= 0.999;
+                    }
+                    case DOWN -> {
+                        double base = box.getMinY();
+                        return base <= 0.001;
+                    }
+                    default -> {
+                        return true;
+                    }
+                }
+            }
+        }
+
+    return isSideFull(side);
     }
 
     // https://minecraft.wiki/w/Opacity#Lighting
@@ -378,20 +495,65 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return false;
     }
 
+    /**
+     * Returns the level of waterlogging for this block.
+     * 0 means the block is not waterlogged; a value greater than 0 indicates the degree of waterlogging.
+     *
+     * @return the waterlogging level (0 if not waterlogged)
+     */
     public int getWaterloggingLevel() {
         return 0;
+    }
+
+    /**
+     * Checks if this block is waterlogged.
+     * Returns {@code true} if the waterlogging level is greater than 0, otherwise {@code false}.
+     *
+     * @return {@code true} if waterlogged, {@code false} otherwise
+     */
+    public boolean isWaterLogged() {
+        if (getWaterloggingLevel() == 0) return false;
+
+        Block fluid = this.getLevelBlockAtLayer(1);
+        return fluid instanceof BlockWater && !fluid.isAir();
     }
 
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
     }
 
+    /**
+     * Returns true if this block is interactable (can be activated).
+     * <p>
+     * For custom blocks, set interactability using the builder (isPlayerInteractable)
+     * instead of overriding this method, so it is correctly saved in NBT and synced with client.
+     */
     public boolean canBeActivated() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag components = def.getComponents();
+            if (components != null && components.contains("minecraft:custom_components")) {
+                CompoundTag custom = components.getCompound("minecraft:custom_components");
+                if (custom.contains("hasPlayerInteract")) {
+                    return custom.getByte("hasPlayerInteract") != 0;
+                }
+            }
+        }
         return false;
     }
 
     public boolean hasEntityCollision() {
         return false;
+    }
+
+    /**
+     * Returns true if this block has step-on/off sensor.
+     * <p>
+     * For custom blocks, can be set this by using the builder (isStepSensor).
+     */
+    public boolean hasEntityStepSensor() {
+        CustomBlockDefinition def = getCustomDefinition();
+        return def != null && def.isStepSensor();
     }
 
     public boolean canPassThrough() {
@@ -461,13 +623,47 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public BlockColor getColor() {
         if (color != null) return color;
-        else color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
+
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            String hex = def.nbt().getCompound("components").getString("minecraft:map_color");
+            color = parseHexColor(hex);
+            color.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()));
+            return color;
+        }
+
+        color = VANILLA_BLOCK_COLOR_MAP.get(this.blockstate.blockStateHash());
         if (color == null) {
-            log.error("Failed to get color of block " + getName());
-            log.error("Current block state hash: " + this.blockstate.blockStateHash());
+            log.error("Failed to get color of block {}", getName());
+            log.error("Current block state hash: {}", this.blockstate.blockStateHash());
             color = BlockColor.VOID_BLOCK_COLOR;
         }
+        color.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()));
         return color;
+    }
+
+    private static BlockColor parseHexColor(String hex) {
+        if (hex == null || hex.isEmpty()) return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
+        String s = hex.charAt(0) == '#' ? hex.substring(1) : hex;
+        long val = Long.parseLong(s, 16);
+
+        if (s.length() == 6) {
+            return new BlockColor(
+                (int) ((val >> 16) & 0xFF),
+                (int) ((val >> 8) & 0xFF),
+                (int) (val & 0xFF),
+                0xFF
+            );
+        }
+        if (s.length() == 8) {
+            return new BlockColor(
+                (int) ((val >> 16) & 0xFF),
+                (int) ((val >> 8) & 0xFF),
+                (int) (val & 0xFF),
+                (int) ((val >> 24) & 0xFF)
+            );
+        }
+        return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
     }
 
     public String getName() {
@@ -499,19 +695,72 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public List<BlockPropertyType.BlockPropertyValue<?, ?, ?>> getPropertyValues() {
-        return this.blockstate.getBlockPropertyValues();
+        try {
+            return this.blockstate.getBlockPropertyValues();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.warn("The block does not have this property.");
+            return Collections.emptyList();
+        }
+    }
+
+    @Nullable
+    public Object getPropertyValue(String name) {
+        for (BlockPropertyType.BlockPropertyValue<?, ?, ?> prop : this.getPropertyValues()) {
+            if (prop.getPropertyType().getName().equals(name)) {
+                return prop.getValue();
+            }
+        }
+        return null;
     }
 
     public boolean isAir() {
-        return this.blockstate == BlockAir.PROPERTIES.getDefaultState();
+        return this.blockstate == BlockAir.STATE;
     }
 
     public BlockState getBlockState() {
         return blockstate;
     }
 
+    /**
+     * @deprecated Use {@link #hasTag(String)} instead.
+     */
+    @Deprecated
     public boolean is(final String blockTag) {
+        return hasTag(blockTag);
+    }
+
+    /**
+     * @return true if block has a string tag
+     */
+    public boolean hasTag(final String blockTag) {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag nbt = def.nbt();
+            if (nbt.contains("blockTags")) {
+                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
+                return tagList.getAll().stream().anyMatch(t -> blockTag.equals(t.data));
+            }
+        }
+
         return BlockTags.getTagSet(this.getId()).contains(blockTag);
+    }
+
+    /**
+     * @return list of tags for the block
+     */
+    public String[] getTags() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag nbt = def.nbt();
+            if (nbt.contains("blockTags")) {
+                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
+                return tagList.getAll().stream()
+                    .map(tag -> tag.data)
+                    .toArray(String[]::new);
+            }
+        }
+
+        return BlockTags.getTagSet(this.getId()).toArray(new String[0]);
     }
 
     public <DATATYPE, PROPERTY extends BlockPropertyType<DATATYPE>> DATATYPE getPropertyValue(PROPERTY p) {
@@ -553,9 +802,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     private double toolBreakTimeBonus0(Item item) {
-        if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
-            return customToolBreakTimeBonus(customToolType(item), itemCustomTool.getSpeed());
-        } else return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
+        Integer speed = item.getDiggerSpeed(this);
+        if (speed != null) {
+            return customToolBreakTimeBonus(customToolType(item), speed);
+        }
+        return toolBreakTimeBonus0(toolType0(item, this), item.getTier(), getId());
     }
 
     private double customToolBreakTimeBonus(int toolType, @Nullable Integer speed) {
@@ -676,18 +927,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 计算方块挖掘时间
+     * Calculating block mining time
      *
-     * @param item   挖掘该方块的物品
-     * @param player 挖掘该方块的玩家
-     * @return 方块的挖掘时间
+     * @param item   Mining items from this block
+     * @param player The player who mined the block
+     * @return Mining time of blocks
      */
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
         double seconds = this.calculateBreakTimeNotInAir(item, player);
 
         if (player != null) {
-            //玩家距离上次在空中过去5tick之后，才认为玩家是在地上挖掘。
-            //如果单纯用onGround检测，这个方法返回的时间将会不连续。
+            // The player is considered to be digging on the ground only after 5 ticks have passed since the last time the player was in the air.
+            // If you only use onGround detection, the time returned by this method will be discontinuous.
             if (player.getLevel().getTick() - player.getLastInAirTick() < 5) {
                 seconds *= 5;
             }
@@ -696,11 +947,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 忽略玩家在空中时，计算方块的挖掘时间
+     * Ignore when the player is in the air when calculating the mining time of the block
      *
-     * @param item   挖掘该方块的物品
-     * @param player 挖掘该方块的玩家
-     * @return 方块的挖掘时间
+     * @param item   Mining items from this block
+     * @param player The player who mined the block
+     * @return Mining time of blocks
      */
     public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
         double seconds;
@@ -760,8 +1011,32 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return seconds;
     }
 
-    public boolean canBeBrokenWith(Item item) {
+    /**
+     * Checks if the block can be destroyed by mining with a specific item.
+     */
+    public boolean canBeMinedWith(Item item) {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag mining = def.getComponents().getCompound("minecraft:destructible_by_mining");
+            if (mining != null && mining.contains("value")) {
+                float secondsToDestroy = mining.getFloat("value");
+                return secondsToDestroy != -1f;
+            }
+        }
         return this.getHardness() != -1;
+    }
+
+    /**
+     * Checks if the block can be destroyed by explosions.
+     */
+    public boolean canBeExploded() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag resistance = def.getComponents().getCompound("minecraft:destructible_by_explosion");
+            int resistanceValue = resistance.getInt("explosion_resistance");
+            return resistanceValue != -1;
+        }
+        return this.getResistance() != -1;
     }
 
     public Block getTickCachedSide(BlockFace face) {
@@ -929,6 +1204,20 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public void onEntityCollide(Entity entity) {
     }
 
+    /**
+     * Called when an entity steps onto this block.<p>
+     * Only triggered if isStepSensor() returns true on the builder.
+     */
+    public void onEntityStepOn(Entity entity) {
+    }
+
+    /**
+     * Called when an entity steps off this block.<p>
+     * Only triggered if isStepSensor() returns true on the builder.
+     */
+    public void onEntityStepOff(Entity entity) {
+    }
+
     public void onEntityFallOn(Entity entity, float fallDistance) {
     }
 
@@ -936,15 +1225,26 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return true;
     }
 
-    public AxisAlignedBB getBoundingBox() {
-        return this.recalculateBoundingBox();
-    }
-
     public AxisAlignedBB getCollisionBoundingBox() {
         return this.recalculateCollisionBoundingBox();
     }
 
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return getBoundingBox();
+    }
+
+    public AxisAlignedBB getBoundingBox() {
+        return this.recalculateBoundingBox();
+    }
+
     protected AxisAlignedBB recalculateBoundingBox() {
+        try {
+            CustomBlockDefinition def = getCustomDefinition();
+            if (def != null && def.getComponents().contains("minecraft:collision_box")) {
+                AxisAlignedBB box = def.getBoundingBox(this);
+                if (box != null) return box;
+            }
+        } catch (Exception ignored) {}
         return this;
     }
 
@@ -978,9 +1278,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         return this.z + 1;
     }
 
-    protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return getBoundingBox();
-    }
+
 
     @Override
     public MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {
@@ -1356,11 +1654,17 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
-     * 控制方块吸收的光亮
-     *
-     * @return 方块吸收的光亮
+     * Controls the amount of light absorbed by the block
+     * @return Light absorbed by the block 0-15
      */
     public int getLightFilter() {
+        CustomBlockDefinition def = getCustomDefinition();
+        if (def != null) {
+            CompoundTag light = def.getComponents().getCompound("minecraft:light_dampening");
+            if (light != null && light.contains("lightLevel")) {
+                return light.getByte("lightLevel");
+            }
+        }
         return isSolid() && !isTransparent() ? 15 : 1;
     }
 
@@ -1382,7 +1686,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return if the gets powered.
      */
     public boolean isGettingPower() {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) return false;
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) return false;
 
         for (BlockFace side : BlockFace.values()) {
             Block b = this.getSide(side).getLevelBlock();
@@ -1416,10 +1720,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             clonedBlock.position(pos);
             CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
             //方块实体要求direct=true
-            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, true, update, tag) != null;
+            return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, false, update, tag) != null;
         } else {
             return pos.level.setBlock(pos, this.layer, this.clone(), true, update);
         }
+    }
+
+    @Nullable
+    public CustomBlockDefinition getCustomDefinition() {
+        if (this instanceof CustomBlock customBlock) {
+            return BlockRegistry.getCustomBlockDefinitionByIdStatic(customBlock.getId());
+        }
+        return null;
     }
 
     @Override

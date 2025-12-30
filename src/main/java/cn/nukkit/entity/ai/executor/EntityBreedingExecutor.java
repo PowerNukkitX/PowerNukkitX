@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import org.jetbrains.annotations.Nullable;
 
@@ -145,9 +146,14 @@ public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBeh
     protected void bear(T entity) {
         T baby = (T) Entity.createEntity(entity.getNetworkId(), entity.getPosition());
         baby.setBaby(true);
-        //防止小屁孩去生baby
+
         baby.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, entity.level.getTick());
         baby.getMemoryStorage().put(CoreMemoryTypes.PARENT, entity);
+        if(baby instanceof EntityVariant variant) {
+            if(entity instanceof EntityVariant parent) {
+                variant.setVariant(parent.getVariant());
+            }
+        }
         baby.spawnToAll();
     }
 }

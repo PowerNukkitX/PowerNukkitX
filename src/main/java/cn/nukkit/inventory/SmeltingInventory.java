@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.item.Item;
 
@@ -22,7 +21,10 @@ public abstract class SmeltingInventory extends ContainerInventory {
     }
 
     public boolean setResult(Item item) {
-        return this.setItem(2, item);
+        //This wont call onSlotChange. Therefore no EXP will be dropped.
+        this.setItemInternal(2, item);
+        sendSlot(2, getViewers());
+        return true;
     }
 
     public boolean setFuel(Item item) {

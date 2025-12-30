@@ -49,6 +49,7 @@ public class ItemChestBoat extends Item {
             case 6 -> name = "Mangrove Chest Boat";
             case 7 -> name = "Bamboo Chest Raft";
             case 8 -> name = "Cherry Chest Boat";
+            case 9 -> name = "Pale Oak Chest Boat";
             default -> name = "Chest Boat";
         }
     }
@@ -64,7 +65,8 @@ public class ItemChestBoat extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (face != BlockFace.UP || block instanceof BlockFlowingWater) return false;
+        if (face != BlockFace.UP) return false;
+        if(block instanceof BlockFlowingWater) block = block.up();
         EntityChestBoat boat = (EntityChestBoat) Entity.createEntity(Entity.CHEST_BOAT,
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
                         .putList("Pos", new ListTag<DoubleTag>()

@@ -21,7 +21,7 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
         Skin skin = pk.skin;
 
         if (!skin.isValid()) {
-            log.warn(playerHandle.getUsername() + ": PlayerSkinPacket with invalid skin");
+            log.warn("{}: PlayerSkinPacket with invalid skin", playerHandle.getUsername());
             return;
         }
 
@@ -33,7 +33,7 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
         var tooQuick = TimeUnit.SECONDS.toMillis(player.getServer().getSettings().playerSettings().skinChangeCooldown()) > System.currentTimeMillis() - player.lastSkinChange;
         if (tooQuick) {
             playerChangeSkinEvent.setCancelled(true);
-            log.warn("Player " + playerHandle.getUsername() + " change skin too quick!");
+            log.warn("Player {} change skin too quick!", playerHandle.getUsername());
         }
         player.getServer().getPluginManager().callEvent(playerChangeSkinEvent);
         if (!playerChangeSkinEvent.isCancelled()) {

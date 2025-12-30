@@ -7,8 +7,6 @@ import cn.nukkit.block.BlockPumpkin;
 import cn.nukkit.block.BlockSnow;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -22,7 +20,6 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShears;
@@ -37,7 +34,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -81,7 +78,7 @@ public class EntitySnowGolem extends EntityGolem {
         if(item instanceof ItemShears) {
             if(!isSheared()) {
                 this.setSheared(true);
-                this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SHEAR);
+                this.level.addLevelSoundEvent(this, LevelSoundEvent.SHEAR);
                 if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.CARVED_PUMPKIN));
             }
@@ -92,6 +89,16 @@ public class EntitySnowGolem extends EntityGolem {
     @Override
     public String getOriginalName() {
         return "Snow Golem";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("snowgolem", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override
@@ -131,12 +138,18 @@ public class EntitySnowGolem extends EntityGolem {
             }
         }
         if(this.waterTicks >= 20) {
-            if((this.level.isRaining() && !this.isUnderBlock()) || this.getLevelBlock() instanceof BlockLiquid || Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).temperature() > 1.0) {
+            if((this.level.isRaining() && !this.isUnderBlock()) || this.getLevelBlock() instanceof BlockLiquid || Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).data.temperature > 1.0) {
                 this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.WEATHER, 1));
             }
             this.waterTicks = 0;
         }
         return super.onUpdate(currentTick);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(source.getCause() == EntityDamageEvent.DamageCause.FALL) return false;
+        return super.attack(source);
     }
 
     public static void checkAndSpawnGolem(Block block) {

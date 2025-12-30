@@ -27,6 +27,7 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -111,8 +112,26 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(ItemID.PHANTOM_MEMBRANE)};
+    public Set<String> typeFamily() {
+        return Set.of("phantom", "undead", "monster", "mob");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 1) == 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        int amount = Utils.rand(0, 1 + looting);
+        if (amount <= 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{
+                Item.get(ItemID.PHANTOM_MEMBRANE, 0, amount)
+        };
     }
 
     @Override
@@ -131,7 +150,7 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         return super.onUpdate(currentTick);
     }
 
-    private class PhantomMeleeAttackExecutor extends MeleeAttackExecutor {
+    private static class PhantomMeleeAttackExecutor extends MeleeAttackExecutor {
 
         public PhantomMeleeAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
             super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown, 2.5f);

@@ -82,6 +82,10 @@ public class ItemBoat extends Item {
                 name = "Cherry Boat";
                 this.id = ItemID.CHERRY_BOAT;
                 this.identifier = new Identifier(ItemID.CHERRY_BOAT);
+            case 9:
+                name = "Pale Oak Boat";
+                this.id = ItemID.PALE_OAK_BOAT;
+                this.identifier = new Identifier(ItemID.PALE_OAK_BOAT);
         }
         this.meta = 0;
     }
@@ -97,7 +101,8 @@ public class ItemBoat extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (face != BlockFace.UP || block instanceof BlockFlowingWater) return false;
+        if (face != BlockFace.UP) return false;
+        if(block instanceof BlockFlowingWater) block = block.up();
         EntityBoat boat = (EntityBoat) Entity.createEntity(Entity.BOAT,
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
                         .putList("Pos", new ListTag<DoubleTag>()

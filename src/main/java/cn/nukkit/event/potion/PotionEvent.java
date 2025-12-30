@@ -1,7 +1,7 @@
 package cn.nukkit.event.potion;
 
-import cn.nukkit.event.Event;
 import cn.nukkit.entity.effect.PotionType;
+import cn.nukkit.event.Event;
 
 /**
  * @author Snake1999

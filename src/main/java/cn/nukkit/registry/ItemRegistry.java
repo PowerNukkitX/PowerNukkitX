@@ -2,8 +2,10 @@ package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
+import cn.nukkit.item.armor.copper.*;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
+import cn.nukkit.item.tools.copper.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
@@ -13,9 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
+
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +88,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BLEACH, ItemBleach.class);
             register(BLUE_BUNDLE, ItemBlueBundle.class);
             register(BLUE_DYE, ItemBlueDye.class);
+            register(BLUE_EGG, ItemBlueEgg.class);
             register(BOAT, ItemBoat.class);
             register(BOGGED_SPAWN_EGG, ItemBoggedSpawnEgg.class);
             register(BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemBoltArmorTrimSmithingTemplate.class);
@@ -99,10 +105,12 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(BRICK, ItemBrick.class);
             register(BROWN_BUNDLE, ItemBrownBundle.class);
             register(BROWN_DYE, ItemBrownDye.class);
+            register(BROWN_EGG, ItemBrownEgg.class);
             register(BRUSH, ItemBrush.class);
             register(BUCKET, ItemBucket.class);
             register(BUNDLE, ItemBundle.class);
             register(BURN_POTTERY_SHERD, ItemBurnPotterySherd.class);
+            register(CAMEL_HUSK_SPAWN_EGG, ItemCamelHuskSpawnEgg.class);
             register(CAMEL_SPAWN_EGG, ItemCamelSpawnEgg.class);
             register(CARPET, ItemCarpet.class);
             register(CARROT, ItemCarrot.class);
@@ -171,8 +179,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(DIAMOND_HOE, ItemDiamondHoe.class);
             register(DIAMOND_HORSE_ARMOR, ItemDiamondHorseArmor.class);
             register(DIAMOND_LEGGINGS, ItemDiamondLeggings.class);
+            register(DIAMOND_NAUTILUS_ARMOR, ItemDiamondNautilusArmor.class);
             register(DIAMOND_PICKAXE, ItemDiamondPickaxe.class);
             register(DIAMOND_SHOVEL, ItemDiamondShovel.class);
+            register(DIAMOND_SPEAR, ItemDiamondSpear.class);
             register(DIAMOND_SWORD, ItemDiamondSword.class);
             register(DIRT, ItemDirt.class);
             register(DISC_FRAGMENT_5, ItemDiscFragment5.class);
@@ -244,8 +254,10 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(GOLDEN_HOE, ItemGoldenHoe.class);
             register(GOLDEN_HORSE_ARMOR, ItemGoldenHorseArmor.class);
             register(GOLDEN_LEGGINGS, ItemGoldenLeggings.class);
+            register(GOLDEN_NAUTILUS_ARMOR, ItemGoldenNautilusArmor.class);
             register(GOLDEN_PICKAXE, ItemGoldenPickaxe.class);
             register(GOLDEN_SHOVEL, ItemGoldenShovel.class);
+            register(GOLDEN_SPEAR, ItemGoldenSpear.class);
             register(GOLDEN_SWORD, ItemGoldenSword.class);
             register(GRAY_BUNDLE, ItemGrayBundle.class);
             register(GRAY_DYE, ItemGrayDye.class);
@@ -279,9 +291,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(IRON_HORSE_ARMOR, ItemIronHorseArmor.class);
             register(IRON_INGOT, ItemIronIngot.class);
             register(IRON_LEGGINGS, ItemIronLeggings.class);
+            register(IRON_NAUTILUS_ARMOR, ItemIronNautilusArmor.class);
             register(IRON_NUGGET, ItemIronNugget.class);
             register(IRON_PICKAXE, ItemIronPickaxe.class);
             register(IRON_SHOVEL, ItemIronShovel.class);
+            register(IRON_SPEAR, ItemIronSpear.class);
             register(IRON_SWORD, ItemIronSword.class);
             register(JUNGLE_BOAT, ItemJungleBoat.class);
             register(JUNGLE_CHEST_BOAT, ItemJungleChestBoat.class);
@@ -349,6 +363,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(MUTTON, ItemMutton.class);
             register(NAME_TAG, ItemNameTag.class);
             register(NAUTILUS_SHELL, ItemNautilusShell.class);
+            register(NAUTILUS_SPAWN_EGG, ItemNautilusSpawnEgg.class);
             register(NETHER_STAR, ItemNetherStar.class);
             register(NETHERBRICK, ItemNetherbrick.class);
             register(NETHERITE_AXE, ItemNetheriteAxe.class);
@@ -356,11 +371,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(NETHERITE_CHESTPLATE, ItemNetheriteChestplate.class);
             register(NETHERITE_HELMET, ItemNetheriteHelmet.class);
             register(NETHERITE_HOE, ItemNetheriteHoe.class);
+            register(NETHERITE_HORSE_ARMOR, ItemNetheriteHorseArmor.class);
             register(NETHERITE_INGOT, ItemNetheriteIngot.class);
             register(NETHERITE_LEGGINGS, ItemNetheriteLeggings.class);
+            register(NETHERITE_NAUTILUS_ARMOR, ItemNetheriteNautilusArmor.class);
             register(NETHERITE_PICKAXE, ItemNetheritePickaxe.class);
             register(NETHERITE_SCRAP, ItemNetheriteScrap.class);
             register(NETHERITE_SHOVEL, ItemNetheriteShovel.class);
+            register(NETHERITE_SPEAR, ItemNetheriteSpear.class);
             register(NETHERITE_SWORD, ItemNetheriteSword.class);
             register(NETHERITE_UPGRADE_SMITHING_TEMPLATE, ItemNetheriteUpgradeSmithingTemplate.class);
             register(NPC_SPAWN_EGG, ItemNpcSpawnEgg.class);
@@ -379,6 +397,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(PALE_OAK_SIGN, ItemPaleOakSign.class);
             register(PANDA_SPAWN_EGG, ItemPandaSpawnEgg.class);
             register(PAPER, ItemPaper.class);
+            register(PARCHED_SPAWN_EGG, ItemParchedSpawnEgg.class);
             register(PARROT_SPAWN_EGG, ItemParrotSpawnEgg.class);
             register(PHANTOM_MEMBRANE, ItemPhantomMembrane.class);
             register(PHANTOM_SPAWN_EGG, ItemPhantomSpawnEgg.class);
@@ -489,6 +508,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(STONE_HOE, ItemStoneHoe.class);
             register(STONE_PICKAXE, ItemStonePickaxe.class);
             register(STONE_SHOVEL, ItemStoneShovel.class);
+            register(STONE_SPEAR, ItemStoneSpear.class);
             register(STONE_SWORD, ItemStoneSword.class);
             register(STRAY_SPAWN_EGG, ItemStraySpawnEgg.class);
             register(STRIDER_SPAWN_EGG, ItemStriderSpawnEgg.class);
@@ -541,6 +561,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(WOODEN_PICKAXE, ItemWoodenPickaxe.class);
             register(WOODEN_SHOVEL, ItemWoodenShovel.class);
             register(WOODEN_SLAB, ItemWoodenSlab.class);
+            register(WOODEN_SPEAR, ItemWoodenSpear.class);
             register(WOODEN_SWORD, ItemWoodenSword.class);
             register(WOOL, ItemWool.class);
             register(WRITABLE_BOOK, ItemWritableBook.class);
@@ -550,9 +571,48 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(ZOGLIN_SPAWN_EGG, ItemZoglinSpawnEgg.class);
             register(ZOMBIE_HEAD, ItemZombieHead.class);
             register(ZOMBIE_HORSE_SPAWN_EGG, ItemZombieHorseSpawnEgg.class);
+            register(ZOMBIE_NAUTILUS_SPAWN_EGG, ItemZombieNautilusSpawnEgg.class);
             register(ZOMBIE_PIGMAN_SPAWN_EGG, ItemZombiePigmanSpawnEgg.class);
             register(ZOMBIE_SPAWN_EGG, ItemZombieSpawnEgg.class);
             register(ZOMBIE_VILLAGER_SPAWN_EGG, ItemZombieVillagerSpawnEgg.class);
+            register(MUSIC_DISC_TEARS, ItemDiscTears.class);
+            register(MUSIC_DISC_LAVA_CHICKEN, ItemDiscLavaChicken.class);
+            register(HAPPY_GHAST_SPAWN_EGG, ItemHappyGhastSpawnEgg.class);
+            register(HARNESS_BLACK, ItemHarnessBlack.class);
+            register(HARNESS_BLUE, ItemHarnessBlue.class);
+            register(HARNESS_BROWN, ItemHarnessBrown.class);
+            register(HARNESS_CYAN, ItemHarnessCyan.class);
+            register(HARNESS_GRAY, ItemHarnessGray.class);
+            register(HARNESS_GREEN, ItemHarnessGreen.class);
+            register(HARNESS_LIGHT_BLUE, ItemHarnessLightBlue.class);
+            register(HARNESS_LIGHT_GRAY, ItemHarnessLightGray.class);
+            register(HARNESS_LIME, ItemHarnessLime.class);
+            register(HARNESS_MAGENTA, ItemHarnessMagenta.class);
+            register(HARNESS_ORANGE, ItemHarnessOrange.class);
+            register(HARNESS_PINK, ItemHarnessPink.class);
+            register(HARNESS_PURPLE, ItemHarnessPurple.class);
+            register(HARNESS_RED, ItemHarnessRed.class);
+            register(HARNESS_WHITE, ItemHarnessWhite.class);
+            register(HARNESS_YELLOW, ItemHarnessYellow.class);
+
+            /**
+             * @since 1.21.110
+             */
+            register(COPPER_BOOTS, ItemCopperBoots.class);
+            register(COPPER_CHESTPLATE, ItemCopperChestplate.class);
+            register(COPPER_HELMET, ItemCopperHelmet.class);
+            register(COPPER_LEGGINGS, ItemCopperLeggings.class);
+            register(COPPER_HORSE_ARMOR, ItemCopperHorseArmor.class);
+            register(COPPER_GOLEM_SPAWN_EGG, ItemCopperGolemSpawnEgg.class);
+            register(COPPER_NUGGET, ItemNuggetCopper.class);
+            register(COPPER_AXE, ItemCopperAxe.class);
+            register(COPPER_HOE, ItemCopperHoe.class);
+            register(COPPER_PICKAXE, ItemCopperPickaxe.class);
+            register(COPPER_SHOVEL, ItemCopperShovel.class);
+            register(COPPER_NAUTILUS_ARMOR, ItemCopperNautilusArmor.class);
+            register(COPPER_SPEAR, ItemCopperSpear.class);
+            register(COPPER_SWORD, ItemCopperSword.class);
+
             registerBlockItem();
         } catch (RegisterException e) {
             throw new RuntimeException(e);
@@ -561,7 +621,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     }
 
     private void loadItemComponents() {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("item_components.nbt")) {
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_components.nbt")) {
             itemComponents = NBTIO.readCompressed(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -589,7 +649,13 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         try {
             FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
             if (fastConstructor == null) return null;
-            return (Item) fastConstructor.invoke();
+            Item item = (Item) fastConstructor.invoke();
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(key);
+            }
+
+            return item;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -600,6 +666,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -612,6 +683,11 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setCount(count);
             item.setDamage(meta);
             return item;
@@ -625,8 +701,14 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
             item.setCount(count);
             item.setCompoundTag(tags);
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -639,10 +721,16 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
             Item item = (Item) c.invoke();
+
             item.setCount(count);
             if (tags != null) {
                 item.setCompoundTag(tags);
             }
+
+            if (item instanceof ItemCustomEntitySpawnEgg egg) {
+                egg.resolveSpawnEgg(id);
+            }
+
             item.setDamage(meta);
             return item;
         } catch (Throwable e) {
@@ -692,25 +780,32 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
-
     public void registerCustomItem(Plugin plugin, Class<? extends Item> value) throws RegisterException {
         try {
-            if (CustomItem.class.isAssignableFrom(value)) {
-                FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-                FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
-                CustomItem customItem = (CustomItem) c.invoke((Object) null);
-                String key = customItem.getDefinition().identifier();
-                if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
-                    CUSTOM_ITEM_DEFINITIONS.put(key, customItem.getDefinition());
-                    Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, customItem.getDefinition().getRuntimeId(), true));
-                    Item ci = (Item) customItem;
-                    ci.setNetId(null);
-                    Registries.CREATIVE.addCreativeItem(ci);
-                } else {
-                    throw new RegisterException("This item has already been registered with the identifier: " + key);
-                }
-            } else {
+            if (!CustomItem.class.isAssignableFrom(value)) {
                 throw new RegisterException("This class does not implement the CustomItem interface and cannot be registered as a custom item!");
+            }
+
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
+
+            CustomItem customItem = (CustomItem) c.invoke((Object) null);
+            CustomItemDefinition def = customItem.getDefinition();
+            String key = def.identifier();
+
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
+                throw new RegisterException("This item has already been registered with the identifier: " + key);
+            }
+
+            CUSTOM_ITEM_DEFINITIONS.put(key, def);
+            Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
+
+            CompoundTag nbt = def.nbt();
+            if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+                Item ci = (Item) customItem;
+                ci.setNetId(null);
+                int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
+                Registries.CREATIVE.addCreativeItem(ci, groupIndex);
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
@@ -719,11 +814,35 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
-    private void register0(String key, Class<? extends Item> value) {
-        try {
-            register(key, value);
-        } catch (RegisterException e) {
-            throw new RuntimeException(e);
+    public void registerSpawnEgg(String eggId) throws RegisterException {
+        register(eggId, ItemCustomEntitySpawnEgg.class);
+        CustomItemDefinition def = ItemCustomEntitySpawnEgg.buildEggDefinition(eggId);
+
+        CUSTOM_ITEM_DEFINITIONS.put(eggId, def);
+        int rid = CustomItemDefinition.ensureRuntimeIdAllocated(eggId);
+        Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(eggId, rid, false));
+
+        CompoundTag nbt = def.nbt();
+        if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+            Item ci = this.get(eggId, 0);
+            if (ci != null) {
+                ci.setNetId(null);
+                int groupIndex = Registries.CREATIVE.resolveGroupIndexForSpawnEgg(eggId);
+                Registries.CREATIVE.addCreativeItem(ci, groupIndex);
+            }
         }
+    }
+
+    @UnmodifiableView
+    public static Collection<CustomItemDefinition> getCustomItemDefinitionList() {
+        return Collections.unmodifiableCollection(CUSTOM_ITEM_DEFINITIONS.values());
+    }
+
+    public static @Nullable CustomItemDefinition getCustomItemDefinitionByIdStatic(String id) {
+        return CUSTOM_ITEM_DEFINITIONS.get(id);
+    }
+
+    public static cn.nukkit.item.customitem.CustomItemDefinition getCustomItemDefinition(String identifier) {
+        return CUSTOM_ITEM_DEFINITIONS.get(identifier);
     }
 }

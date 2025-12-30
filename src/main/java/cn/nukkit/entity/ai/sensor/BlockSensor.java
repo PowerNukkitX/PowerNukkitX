@@ -2,22 +2,18 @@ package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.entity.condition.Condition;
+import cn.nukkit.level.entity.condition.ConditionTrue;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-
-//存储最近的玩家的Memory
-
 
 @Getter
 public class BlockSensor implements ISensor {
 
     protected int range;
-
     protected int lookY;
-
     protected int period;
 
     @NotNull
@@ -25,30 +21,41 @@ public class BlockSensor implements ISensor {
 
     @NotNull
     protected MemoryType<Block> memory;
+    protected Condition condition;
 
     public BlockSensor(Class<? extends Block> blockClass, MemoryType<Block> memory, int range, int lookY) {
         this(blockClass, memory, range, lookY, 1);
     }
 
     public BlockSensor(@NotNull Class<? extends Block> blockClass, @NotNull MemoryType<Block> memory, int range, int lookY, int period) {
+        this(blockClass, memory, range, lookY, period, new ConditionTrue());
+    }
+    public BlockSensor(@NotNull Class<? extends Block> blockClass, @NotNull MemoryType<Block> memory, int range, int lookY, int period, Condition condition) {
         this.blockClass = blockClass;
         this.memory = memory;
         this.range = range;
         this.lookY = lookY;
         this.period = period;
+        this.condition = condition;
     }
 
     @Override
     public void sense(EntityIntelligent entity) {
+        double distance = Double.MAX_VALUE;
         Block block = null;
         for(int x = -range; x<=range; x++) {
             for(int z = -range; z<=range; z++) {
                 for(int y = -lookY; y<=lookY; y++) {
                     Location lookLocation = entity.add(x, y, z);
-                    Block lookBlock = lookLocation.getLevelBlock();
-                    if(blockClass.isAssignableFrom(lookBlock.getClass())) {
-                        block = lookBlock;
-                        break;
+                    double lookDist = lookLocation.distance(entity);
+                    if(lookDist < distance) {
+                        Block lookBlock = lookLocation.getLevelBlock();
+                        if(blockClass.isAssignableFrom(lookBlock.getClass())) {
+                            if(condition.evaluate(lookBlock)) {
+                                block = lookBlock;
+                                distance = lookDist;
+                            }
+                        }
                     }
                 }
             }

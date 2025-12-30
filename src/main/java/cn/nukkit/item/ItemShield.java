@@ -80,4 +80,9 @@ public class ItemShield extends ItemTool {
     public int getMaxDurability() {
         return DURABILITY_SHIELD;
     }
+
+    @Override
+    public boolean isUsingNetId() {
+        return false;
+    }
 }

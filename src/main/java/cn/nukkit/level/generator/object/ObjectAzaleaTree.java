@@ -83,7 +83,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
     private void placeLogAt(BlockManager worldIn, int x, int y, int z) {
         Vector3 blockpos = new Vector3(x, y, z);
-        String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+        String material = worldIn.getBlockIdIfCachedOrLoaded(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
         if (material.equals(BlockID.AIR) || material.equals(BlockID.AZALEA_LEAVES) || material.equals(BlockID.AZALEA_LEAVES_FLOWERED)) {
             worldIn.setBlockStateAt(blockpos, OAK_LOG);
@@ -92,7 +92,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
     private void placeLeafAt(BlockManager worldIn, int x, int y, int z, RandomSourceProvider random) {
         Vector3 blockpos = new Vector3(x, y, z);
-        String material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+        String material = worldIn.getBlockIdIfCachedOrLoaded(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
         if (material.equals(BlockID.AIR)) {
             if (random.nextInt(3) == 1) {

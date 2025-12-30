@@ -109,7 +109,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
             }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

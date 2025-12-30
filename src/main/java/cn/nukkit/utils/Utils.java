@@ -1,11 +1,11 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +14,10 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -21,10 +25,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.SplittableRandom;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -33,8 +41,7 @@ import java.util.zip.ZipOutputStream;
  */
 @Slf4j
 public class Utils {
-
-
+    public static final Gson GSON = new Gson();
     public static final Integer[] EMPTY_INTEGERS = new Integer[0];
 
 
@@ -235,7 +242,7 @@ public class Utils {
 
     public static long toABGR(int argb) {
         long result = argb & 0xFF00FF00L;
-        result |= (argb << 16) & 0x00FF0000L; // B to R
+        result |= ((long) argb << 16) & 0x00FF0000L; // B to R
         result |= (argb >>> 16) & 0xFFL; // R to B
         return result & 0xFFFFFFFFL;
     }
@@ -266,7 +273,9 @@ public class Utils {
     public static <T> T[] concatArray(T[]... arrays) {
         ArrayList<T> list = new ArrayList<>();
         for(T[] array : arrays) list.addAll(Arrays.asList(array));
-        return (T[]) Array.newInstance(arrays[0][0].getClass().getComponentType(), list.size());
+        T[] output = (T[]) Array.newInstance(list.getFirst().getClass(), list.size());
+        for(int i = 0; i < list.size(); i++) output[i] = list.get(i);
+        return output;
     }
 
     public static <T> T[] reverseArray(T[] array, boolean copy) {
@@ -362,8 +371,6 @@ public class Utils {
     }
 
     /**
-     * 返回介于最小值(包含)和最大值(包含)之间的伪随机数
-     * <p>
      * Return a random number between the minimum (inclusive) and maximum (inclusive).
      *
      * @param min the min
@@ -457,8 +464,8 @@ public class Utils {
         return true;
     }
 
-    //used for commands /fill , /clone and so on
-    //todo: using other methods instead of this one
+    // Used for commands /fill, /clone and so on
+    // TODO: using other methods instead of this one
 
 
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
@@ -518,7 +525,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
                         return true;
                     }
@@ -541,7 +548,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         return true;
                     }
@@ -580,7 +587,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         if (x < centerX) {
                             returnValue |= 0b010000;
@@ -637,5 +644,21 @@ public class Utils {
         byte[] payload = new byte[buf.readableBytes()];
         buf.readBytes(payload);
         return payload;
+    }
+
+    public static String getExternalIP() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("https://api.ipify.org"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String ip = response.body().trim();
+            return ip.isEmpty() ? "unknown" : ip;
+        } catch (Exception e) {
+            return "unknown";
+        }
     }
 }

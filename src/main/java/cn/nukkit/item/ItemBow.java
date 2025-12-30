@@ -3,15 +3,12 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.bow.EnchantmentBow;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -22,7 +19,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Stream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -59,6 +55,11 @@ public class ItemBow extends ItemTool {
     }
 
     @Override
+    public int getUsingTicks() {
+        return 72000;
+    }
+
+    @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Optional<Map.Entry<Integer, Item>> inventoryOptional = player.getInventory().getContents().entrySet().stream().filter(item -> item.getValue() instanceof ItemArrow).findFirst();
         Optional<Map.Entry<Integer, Item>> offhandOptional = player.getOffhandInventory().getContents().entrySet().stream().filter(item -> item.getValue() instanceof ItemArrow).findFirst();
@@ -80,18 +81,19 @@ public class ItemBow extends ItemTool {
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        Location arrowLocation = player.getLocation();
-        Vector3 directionVector = player.getDirectionVector().multiply(1.1);
-        arrowLocation = arrowLocation.add(directionVector.getX(), 0, directionVector.getZ());
-        arrowLocation.setY(player.y + player.getEyeHeight() + directionVector.getY());
+        ItemArrow itemArrow = (ItemArrow) (offhandOptional.isPresent() ?  offhandOptional.get().getValue() : inventoryOptional.map(Map.Entry::getValue).orElse(null));
 
-        ItemArrow itemArrow = (ItemArrow) (offhandOptional.isPresent() ?  offhandOptional.get().getValue() : inventoryOptional.get().getValue());
+        if(itemArrow == null) {
+            if(player.isCreative()) {
+                itemArrow = new ItemArrow();
+            } else return false;
+        }
 
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(arrowLocation.x))
-                        .add(new DoubleTag(arrowLocation.y))
-                        .add(new DoubleTag(arrowLocation.z)))
+                        .add(new DoubleTag(player.x))
+                        .add(new DoubleTag(player.y + player.getEyeHeight()))
+                        .add(new DoubleTag(player.z)))
                 .putList("Motion", new ListTag<DoubleTag>()
                         .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))

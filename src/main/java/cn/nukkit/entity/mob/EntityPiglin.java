@@ -39,7 +39,6 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.ItemPorkchop;
@@ -51,7 +50,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AnimateEntityPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -101,7 +100,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 9, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD),
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item.isWearable() && item.getTier() == Item.WEARABLE_TIER_GOLD),
                                 entity -> getItemInHand() instanceof ItemCrossbow
                         ), 8, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
@@ -118,7 +117,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 6, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.5f, 40, false, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
-                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item instanceof ItemArmor armor && armor.getTier() == ItemArmor.TIER_GOLD)
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) instanceof Player player && player.getInventory() != null && !Arrays.stream(player.getInventory().getArmorContents()).anyMatch(item -> !item.isNull() && item.isWearable() && item.getTier() == Item.WEARABLE_TIER_GOLD)
                         ), 5, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
@@ -218,6 +217,11 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("piglin", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return !this.isBaby();
     }
@@ -227,7 +231,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         List<Item> drops = new ArrayList<>();
         if(ThreadLocalRandom.current().nextInt(200) < 17) { // 8.5%
             drops.add(getItemInHand());
@@ -301,7 +305,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
 
     @Override
     public boolean equip(Item item) {
-         if((item.getTier() > getItemInHand().getTier() && getItemInHand().getTier() != ItemArmor.TIER_GOLD) || item.getTier() == ItemArmor.TIER_GOLD) {
+         if((item.getTier() > getItemInHand().getTier() && getItemInHand().getTier() != Item.WEARABLE_TIER_GOLD) || item.getTier() == Item.WEARABLE_TIER_GOLD) {
             this.getEquipmentInventory().addItem(getItemInHand());
             this.setItemInHand(item);
             return true;
@@ -335,7 +339,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
             super.onStart(entity);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ANGRY, -1, Entity.PIGLIN, false, false);
+            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.PIGLIN, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(memory)));
             if(entity.getMemoryStorage().get(memory) instanceof EntityHoglin) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, entity.getLevel().getTick());

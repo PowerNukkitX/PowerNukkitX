@@ -10,6 +10,7 @@ import cn.nukkit.network.protocol.AnimateEntityPacket;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class PlayAnimationCommand extends VanillaCommand {
@@ -32,6 +33,7 @@ public class PlayAnimationCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         List<Entity> entities = list.getResult(0);
+        entities = entities.stream().filter(Objects::nonNull).toList();
         if (entities.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;

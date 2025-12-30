@@ -19,13 +19,15 @@ import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.DoNothingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
-import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
+import cn.nukkit.entity.data.property.IntEntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
@@ -43,9 +45,26 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityCreaking extends EntityMob {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:creaking_state", new String[]{
+            "neutral",
+            "hostile_observed",
+            "hostile_unobserved",
+            "twitching",
+            "crumbling"
+        }, "neutral", true),
+        new IntEntityProperty("minecraft:creaking_swaying_ticks", 0, 0, 6, true)
+    };
+    private final static String PROPERTY_CREAKING = "minecraft:creaking_state";
+    private final static String PROPERTY_SWAYING_TICKS = "minecraft:creaking_swaying_ticks";
 
     @Override @NotNull public String getIdentifier() {
         return CREAKING;
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("creaking", "monster", "mob");
     }
 
     @Setter
@@ -205,9 +224,14 @@ public class EntityCreaking extends EntityMob {
     @Override
     public void updateMovement() {
         super.updateMovement();
-        if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
-            creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
-        } else kill();
+        try {
+            if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
+                creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
+            } else kill();
+        } catch (Exception e) {
+            //can happen when you regenerate a chunk with debug command.
+            kill();
+        }
     }
 
     private class NearestPlayerCreakingSensor extends NearestPlayerSensor {

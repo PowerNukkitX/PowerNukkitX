@@ -2,8 +2,8 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.generator.stages.FinishedStage;
-import cn.nukkit.level.generator.stages.FlatGenerateStage;
+import cn.nukkit.level.generator.stages.flat.FinishedStage;
+import cn.nukkit.level.generator.stages.flat.FlatGenerateStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.registry.Registries;
 

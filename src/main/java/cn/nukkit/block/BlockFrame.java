@@ -20,13 +20,19 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.block.property.CommonBlockProperties.ITEM_FRAME_MAP_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.ITEM_FRAME_PHOTO_BIT;
 import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
 
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
+
+    private static final ConcurrentHashMap<Player, AtomicBoolean> playerInteractionLocks = new ConcurrentHashMap<>();
 
     @Override
     @NotNull
@@ -115,7 +121,25 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
             BlockEntityItemFrame blockEntity = getOrCreateBlockEntity();
             if (player.isCreative()) {
+                Item before = blockEntity.getItem();
+                if (before.isNull()) return;
+
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, blockEntity, before, ItemFrameUseEvent.Action.REMOVE);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    blockEntity.spawnTo(player);
+                    return;
+                }
+
                 blockEntity.setItem(Item.AIR);
+                blockEntity.setItemRotation(0);
+
+                if (isStoringMap()) {
+                    setStoringMap(false);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_REMOVE);
             } else {
                 blockEntity.dropItem(player);
             }
@@ -124,36 +148,61 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player != null && player.isSneaking()) return false;
-        BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
-        if (itemFrame.getItem().isNull()) {
-            Item itemOnFrame = item.clone();
-            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
-            this.getLevel().getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) return false;
-            if (player != null && !player.isCreative()) {
-                itemOnFrame.setCount(itemOnFrame.getCount() - 1);
-                player.getInventory().setItemInHand(itemOnFrame);
-            }
-            itemOnFrame.setCount(1);
-            itemFrame.setItem(itemOnFrame);
-            if (Objects.equals(itemOnFrame.getId(), ItemID.FILLED_MAP)) {
-                setStoringMap(true);
-                this.getLevel().setBlock(this, this, true);
-            }
-            this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
-        } else {
-            ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
-            this.getLevel().getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) return false;
-            itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
-            if (isStoringMap()) {
-                setStoringMap(false);
-                this.getLevel().setBlock(this, this, true);
-            }
-            this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ROTATE);
+        if (player == null || player.isSneaking()) {
+            return false;
         }
-        return true;
+        AtomicBoolean interactionLock = playerInteractionLocks.computeIfAbsent(player, p -> new AtomicBoolean(false));
+
+        if (!interactionLock.compareAndSet(false, true)) {
+            return false;
+        }
+
+        try {
+            BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
+
+            if (itemFrame.getItem().isNull()) {
+                Item itemOnFrame = item.clone();
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) return false;
+
+                if (player != null && !player.isCreative()) {
+                    itemOnFrame.setCount(itemOnFrame.getCount() - 1);
+                    player.getInventory().setItemInHand(itemOnFrame);
+                }
+
+                itemOnFrame.setCount(1);
+                itemFrame.setItem(itemOnFrame);
+
+                if (Objects.equals(itemOnFrame.getId(), ItemID.FILLED_MAP)) {
+                    setStoringMap(true);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
+            } else {
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) return false;
+
+                itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
+
+                if (isStoringMap()) {
+                    setStoringMap(false);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ROTATE);
+            }
+
+            return true;
+        } finally {
+            interactionLock.set(false);
+
+            if (player != null && !player.isOnline()) {
+                playerInteractionLocks.remove(player);
+            }
+        }
     }
 
     @Override

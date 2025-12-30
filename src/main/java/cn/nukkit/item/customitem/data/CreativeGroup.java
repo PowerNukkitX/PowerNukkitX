@@ -79,12 +79,12 @@ package cn.nukkit.item.customitem.data;
  * 72. WOOL_CARPET
  * 73. CANDLES
  * 74. GOAT_HORN
- *
- * @return The major group of the custom item in the creative inventory.
+ * <p>
+ * Represents the major creative inventory group of a custom item.
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
  */
 public enum CreativeGroup {
-    NONE("none"),
+    NONE(""),
 
     ANVIL("itemGroup.name.anvil"),
 

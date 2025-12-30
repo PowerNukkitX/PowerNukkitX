@@ -14,7 +14,7 @@ public class FilterTextProcessor extends DataPacketProcessor<FilterTextPacket> {
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull FilterTextPacket pk) {
         Player player = playerHandle.player;
         if (pk.text == null || pk.text.length() > 64) {
-            log.debug(playerHandle.getUsername() + ": FilterTextPacket with too long text");
+            log.debug("{}: FilterTextPacket with too long text", playerHandle.getUsername());
             return;
         }
         FilterTextPacket textResponsePacket = new FilterTextPacket();

@@ -7,24 +7,24 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -81,12 +81,43 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.COD), Item.get(Item.SALMON)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        List<Item> drops = new ArrayList<>();
+
+        if (Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(
+                        this.isOnFire() ? Item.COOKED_COD : Item.COD,
+                        0,
+                        amount
+                ));
+            }
+        }
+
+        if (Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(
+                        this.isOnFire() ? Item.COOKED_SALMON : Item.SALMON,
+                        0,
+                        amount
+                ));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
     public String getOriginalName() {
         return "Polar Bear";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("polarbear", "mob");
     }
 }

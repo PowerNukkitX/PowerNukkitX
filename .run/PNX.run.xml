@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="PNX" type="Application" factoryName="Application">
+   <configuration default="false" name="PNX" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="cn.nukkit.Nukkit" />
     <module name="powernukkitx.main" />
     <option name="VM_PARAMETERS"

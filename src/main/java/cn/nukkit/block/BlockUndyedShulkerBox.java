@@ -126,7 +126,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        CompoundTag nbt = new CompoundTag().putByte("facing", face.getIndex());
+        CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -146,8 +146,8 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        nbt.putByte("facing", face.getIndex());
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -157,9 +157,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if (player == null) {
-            return false;
-        }
+        if(isNotActivate(player)) return false;
 
         BlockEntityShulkerBox box = getOrCreateBlockEntity();
         Block block = this.getSide(BlockFace.fromIndex(box.namedTag.getByte("facing")));

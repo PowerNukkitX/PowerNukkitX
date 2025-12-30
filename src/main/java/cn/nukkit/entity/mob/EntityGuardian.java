@@ -2,7 +2,6 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -11,10 +10,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.DiveController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
-import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
@@ -38,8 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 
 /**
  * @author PikyCZ
@@ -112,6 +106,11 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("guardian", "monster", "mob");
+    }
+
+    @Override
     public float getWidth() {
         return 0.85f;
     }
@@ -127,7 +126,7 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         int secondLoot = ThreadLocalRandom.current().nextInt(6);
         return new Item[]{
                 Item.get(Item.PRISMARINE_SHARD, 0, Utils.rand(0, 2)),

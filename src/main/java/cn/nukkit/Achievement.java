@@ -1,14 +1,12 @@
 package cn.nukkit;
 
-import cn.nukkit.config.ServerProperties;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.HashMap;
 
 /**
  * @author CreeperFace
- * @since 9. 11. 2016
+ * @since 9/11/2016
  */
 public class Achievement {
 
@@ -34,8 +32,7 @@ public class Achievement {
         String translation = server.getLanguage()
                 .tr("chat.type.achievement", player.getDisplayName(), name);
 
-        ServerProperties properties = server.getProperties();
-        if (properties.get(ServerPropertiesKeys.ANNOUNCE_PLAYER_ACHIEVEMENTS, true)) {
+        if (Server.getInstance().getSettings().gameplaySettings().announceAchievements()) {
             server.broadcastMessage(translation);
         } else {
             player.sendMessage(translation);

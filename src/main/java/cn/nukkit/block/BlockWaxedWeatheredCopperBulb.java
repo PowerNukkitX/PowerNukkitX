@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.copper.bulb.BlockCopperBulbBase;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;

@@ -47,7 +47,7 @@ public abstract class GenerateStage {
         }
 
         public Builder next(GenerateStage next) {
-            start.next(next);
+            end.next(next);
             end = next;
             return this;
         }

@@ -21,10 +21,14 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,8 +46,19 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, amount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
@@ -58,7 +73,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -101,6 +116,12 @@ public class EntityMule extends EntityAnimal implements EntityWalkable {
     public String getOriginalName() {
         return "Mule";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("mule", "mob");
+    }
+
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);

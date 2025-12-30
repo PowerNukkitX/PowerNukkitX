@@ -1,48 +1,23 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
-import cn.nukkit.network.connection.util.EncryptionUtils;
-import cn.nukkit.network.protocol.LoginPacket;
+import cn.nukkit.network.process.login.LoginData;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import org.jose4j.jws.JsonWebSignature;
-import org.jose4j.lang.JoseException;
 
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-import java.time.Instant;
 import java.util.Base64;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
- * ClientChainData is a container of chain data sent from clients.
- * <p>
- * Device information such as client UUID, xuid and serverAddress, can be
- * read from instances of this object.
- * <p>
- * To get chain data, you can use player.getLoginChainData() or read(loginPacket)
- * <p>
- * ===============
+ * Container for client chain data sent during login.
+ * Provides access to device and authentication information such as UUID, XUID, and server address.
+ * Use player.getLoginChainData() to retrieve an instance.
  *
  * @author boybook (Nukkit Project)
- * ===============
  */
 public final class ClientChainData implements LoginChainData {
-
-    public static ClientChainData of(BinaryStream buffer) {
-        return new ClientChainData(buffer);
-    }
-
-    public static ClientChainData read(LoginPacket pk) {
-        return of(pk.getBuffer());
+    public static ClientChainData of(LoginData data) {
+        return new ClientChainData(data);
     }
 
     @Override
@@ -172,20 +147,6 @@ public final class ClientChainData implements LoginChainData {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Override
-    ///////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ClientChainData && Objects.equals(bs, ((ClientChainData) obj).bs);
-    }
-
-    @Override
-    public int hashCode() {
-        return bs.hashCode();
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     // Internal
     ///////////////////////////////////////////////////////////////////////////
 
@@ -193,10 +154,6 @@ public final class ClientChainData implements LoginChainData {
     private UUID clientUUID;
     private String xuid;
     private String titleId;
-
-    private static ECPublicKey generateKey(String base64) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        return (ECPublicKey) KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(base64)));
-    }
 
     private String identityPublicKey;
 
@@ -221,13 +178,12 @@ public final class ClientChainData implements LoginChainData {
 
     private JsonObject rawData;
 
-    private final BinaryStream bs;
+    private final JsonObject data;
 
-    private ClientChainData(BinaryStream buffer) {
-        buffer.setOffset(0);
-        bs = buffer;
-        decodeChainData();
-        decodeSkinData();
+    private ClientChainData(LoginData data) {
+        this.data = data.clientData();
+        loadAuthData(data);
+        loadClientData(data.clientData());
     }
 
     @Override
@@ -235,8 +191,7 @@ public final class ClientChainData implements LoginChainData {
         return xboxAuthed;
     }
 
-    private void decodeSkinData() {
-        JsonObject skinToken = decodeToken(new String(bs.get(bs.getLInt())));
+    private void loadClientData(JsonObject skinToken) {
         if (skinToken == null) return;
         if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
         if (skinToken.has("ServerAddress")) this.serverAddress = skinToken.get("ServerAddress").getAsString();
@@ -262,7 +217,7 @@ public final class ClientChainData implements LoginChainData {
         this.rawData = skinToken;
     }
 
-    private JsonObject decodeToken(String token) {
+    public static JsonObject decodeToken(String token) {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
         String json = new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8);
@@ -270,104 +225,21 @@ public final class ClientChainData implements LoginChainData {
         return JSONUtils.from(json, JsonObject.class);
     }
 
-    private void decodeChainData() {
-        Map<String, List<String>> map = JSONUtils.from(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
-                new TypeToken<Map<String, List<String>>>() {
-                }.getType());
-        if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
-        List<String> chains = map.get("chain");
+    private void loadAuthData(cn.nukkit.network.process.login.LoginData data) {
+        xboxAuthed = data.xboxAuthed();
 
-        // Validate keys
-        try {
-            xboxAuthed = verifyChain(chains);
-        } catch (Exception e) {
-            xboxAuthed = false;
-        }
+        username = data.displayName();
+        clientUUID = data.uuid();
+        xuid = data.xuid();
+        identityPublicKey = data.rawIdentityPublicKey();
+        /*titleId = data.;
 
-        for (String c : chains) {
-            JsonObject chainMap = decodeToken(c);
-            if (chainMap == null) continue;
-            if (chainMap.has("extraData")) {
-                JsonObject extra = chainMap.get("extraData").getAsJsonObject();
-                if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
-                if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
-                if (extra.has("XUID")) this.xuid = extra.get("XUID").getAsString();
-                if (extra.has("titleId")) this.titleId = extra.get("titleId").getAsString();
-            }
-            if (chainMap.has("identityPublicKey"))
-                this.identityPublicKey = chainMap.get("identityPublicKey").getAsString();
-        }
 
-        if (!xboxAuthed) {
-            xuid = null;
-        }
-    }
+                JsonElement titleIdElement = extra.get("titleId");
+                if (titleIdElement != null && !titleIdElement.isJsonNull()) {
+                    this.titleId = titleIdElement.getAsString();
+                }
 
-    private boolean verifyChain(List<String> chains) throws Exception {
-        ECPublicKey lastKey = null;
-        boolean mojangKeyVerified = false;
-        Iterator<String> iterator = chains.iterator();
-        long epoch = Instant.now().getEpochSecond();
-        while (iterator.hasNext()) {
-            JsonWebSignature jws = (JsonWebSignature) JsonWebSignature.fromCompactSerialization(iterator.next());
-            String x5us = jws.getHeader("x5u");
-            if (x5us == null) {
-                return false;
-            }
-            ECPublicKey expectedKey = generateKey(x5us);
-            // First key is self-signed
-            if (lastKey == null) {
-                lastKey = expectedKey;
-            } else if (!lastKey.equals(expectedKey)) {
-                return false;
-            }
-
-            if (!verify(lastKey, jws)) {
-                return false;
-            }
-
-            if (mojangKeyVerified) {
-                return !iterator.hasNext();
-            }
-
-            if (lastKey.equals(EncryptionUtils.getMojangPublicKey()) || lastKey.equals(EncryptionUtils.getOldMojangPublicKey())) {
-                mojangKeyVerified = true;
-            }
-
-            Map<String, Object> payload = JSONUtils.from(jws.getPayload(), new TypeToken<Map<String, Object>>() {
-            });
-
-            // chain expiry check
-            Object chainExpiresObj = payload.get("exp");
-            long chainExpires;
-            if (chainExpiresObj instanceof Number number) {
-                chainExpires = number.longValue();
-            } else {
-                throw new RuntimeException("Unsupported expiry time format");
-            }
-            if (chainExpires < epoch) {
-                // chain has already expires
-                return false;
-            }
-
-            Object base64key = payload.get("identityPublicKey");
-            if (!(base64key instanceof String)) {
-                throw new RuntimeException("No key found");
-            }
-            lastKey = generateKey((String) base64key);
-        }
-        return mojangKeyVerified;
-    }
-
-    private boolean verify(ECPublicKey key, JsonWebSignature jws) {
-        try {
-            if (key == null || jws == null) {
-                return false;
-            }
-            jws.setKey(key);
-            return jws.verifySignature();
-        } catch (JoseException e) {
-            throw new RuntimeException(e);
-        }
+         */
     }
 }

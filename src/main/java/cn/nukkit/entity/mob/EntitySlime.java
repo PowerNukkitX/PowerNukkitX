@@ -1,7 +1,5 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
@@ -10,18 +8,17 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.HoppingController;
 import cn.nukkit.entity.ai.controller.LookController;
-import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.passive.EntityFrog;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
@@ -114,18 +111,27 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
     }
 
     @Override
-    public Item[] getDrops() {
-        if(getVariant() == SIZE_SMALL) {
-            if(getLastDamageCause() != null) {
-                if(lastDamageCause instanceof EntityDamageByEntityEvent event) {
-                    if(event.getDamager() instanceof EntityFrog frog) {
-                        return new Item[]{Item.get(Item.SLIME_BALL)};
-                    }
-                }
-            }
-            return new Item[] {Item.get(Item.SLIME_BALL, Utils.rand(0,3))};
+    public Set<String> typeFamily() {
+        return Set.of("slime", "monster", "mob");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (getVariant() != SIZE_SMALL) {
+            return Item.EMPTY_ARRAY;
         }
-        return Item.EMPTY_ARRAY;
+
+        if (getLastDamageCause() instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof EntityFrog) {
+            return new Item[]{Item.get(Item.SLIME_BALL, 0, 1)};
+        }
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(1, 2) + looting;
+
+        return new Item[]{
+                Item.get(Item.SLIME_BALL, 0, amount)
+        };
     }
 
     @Override

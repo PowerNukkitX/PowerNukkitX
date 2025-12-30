@@ -14,6 +14,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
+
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 
@@ -35,10 +38,20 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         return "Chest Boat";
     }
 
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("boat", "inanimate");
+    }
 
     @Override
     public ChestBoatInventory getInventory() {
         return inventory;
+    }
+
+    @Override
+    public boolean openInventory(Player player) {
+        player.addWindow(getInventory());
+        return true;
     }
 
     @Override
@@ -48,7 +61,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             return false;
         }
 
-        if (this.passengers.size() >= 1 || getWaterLevel() < -SINKING_DEPTH) {
+        if (!this.passengers.isEmpty() || getWaterLevel() < -SINKING_DEPTH) {
             return false;
         }
 

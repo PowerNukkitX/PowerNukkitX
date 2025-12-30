@@ -70,7 +70,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

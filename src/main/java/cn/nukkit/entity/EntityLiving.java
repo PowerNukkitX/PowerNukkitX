@@ -5,7 +5,10 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
+import cn.nukkit.entity.custom.CustomEntityComponents;
+import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
@@ -15,7 +18,12 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.inventory.EntityHandItem;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemShield;
 import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
@@ -27,6 +35,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.TickCachedBlockIterator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +63,30 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     protected float getDrag() {
         return 0.02f;
+    }
+
+    @Override
+    protected double getStepHeight() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).base();
+        }
+        return 0.5625;
+    }
+
+    @Override
+    protected double getStepHeightControlled() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).controlled();
+        }
+        return 0.5625;
+    }
+
+    @Override
+    protected double getStepHeightJumpPrevented() {
+        if (isCustomEntity()) {
+            return meta().getMaxAutoStep(CustomEntityComponents.MAX_AUTO_STEP).jumpPrevented();
+        }
+        return 0.5625;
     }
 
     @Override
@@ -90,15 +123,82 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.namedTag.putFloat("Health", this.getHealth());
     }
 
-    public boolean hasLineOfSight(Entity entity) {
-        //todo
-        return true;
+    public boolean hasLineOfSight(Entity target) {
+        return hasLineOfSight(target, 0.0);
+    }
+
+    public boolean hasLineOfSight(Entity target, double thickness) {
+        if (this.level != target.level) return false;
+
+        final boolean includeLiquidBlocks = false;
+        final boolean includePassableBlocks = false;
+        final double step = 0.25;
+
+        final Vector3 selfPos = this.getPosition();
+        final double selfEye = this.getEyeHeight();
+        final double selfChest = this.getHeight() * 0.60;
+
+        Vector3[] fromPoints = new Vector3[] {
+            selfPos.add(0, selfEye + 0.001, 0),
+            selfPos.add(0, selfChest + 0.001, 0),
+        };
+
+        final double tH = Math.max(0.0, target.getHeight());
+        final double tEye = Math.max(0.0, target.getEyeHeight());
+        final Vector3 tBase = target.getPosition();
+
+        Vector3[] toPoints = new Vector3[] {
+            tBase.add(0, Math.max(0.2 * tH, 0.25), 0),
+            tBase.add(0, Math.max(0.5 * tH, 0.5),  0),
+            tBase.add(0, Math.max(0.8 * tH, 0.75), 0),
+            tBase.add(0, Math.max(tEye, 0.9),      0),
+        };
+
+        boolean useCorridor = thickness > 0.0;
+
+        for (Vector3 from : fromPoints) {
+            for (Vector3 to : toPoints) {
+                Vector3 dir = to.subtract(from);
+                if (dir.lengthSquared() < 1e-6) continue;
+
+                if (!useCorridor) {
+                    List<Block> visited = this.level.raycastBlocks(from, to, true, false, step, false, false, true);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
+                    if (!blocked) return true;
+                    continue;
+                }
+
+                Vector3 right = new Vector3(-dir.z, 0, dir.x);
+                if (right.lengthSquared() < 1e-6) right = new Vector3(1, 0, 0);
+                right = right.normalize().multiply(thickness);
+
+                Vector3 up = new Vector3(0, thickness, 0);
+
+                Vector3[] offsets = new Vector3[] {
+                    right, right.multiply(-1),
+                    up,    up.multiply(-1),
+                };
+
+                boolean allClear = true;
+                for (Vector3 o : offsets) {
+                    Vector3 f = from.add(o.x, o.y, o.z);
+                    Vector3 t = to.add(o.x, o.y, o.z);
+
+                    List<Block> visited = this.level.raycastBlocks(f, t, true, false, step, false, false, true);
+                    boolean blocked = !visited.isEmpty() && this.level.blocksBlockSight(visited.getLast(), includeLiquidBlocks, includePassableBlocks);
+
+                    if (blocked) { allClear = false; break; }
+                }
+
+                if (allClear) return true;
+            }
+        }
+        return false;
     }
 
     public void collidingWith(Entity ent) { // can override (IronGolem|Bats)
         ent.applyEntityCollision(this);
     }
-
 
     @Override
     public boolean attack(EntityDamageEvent source) {
@@ -168,6 +268,26 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
 
+        if(this instanceof Player player) {
+            float totalReduction = 0.0f;
+
+            InventorySlice armorInventory = player.getInventory().getArmorInventory();
+
+            for (Item item : armorInventory.getContents().values()){
+                if(!item.isNull()){
+                    totalReduction += item.getKnockbackResistance();
+                }
+            }
+
+            base *= (1.0 - totalReduction);
+        }
+
+        float resist = this.getKnockbackResistance();
+        base *= (1.0 - resist);
+        if (base <= 0) {
+            return;
+        }
+
         f = 1 / f;
 
         Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
@@ -192,19 +312,24 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
         super.kill();
-        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops());
+        Item weapon = Item.AIR;
+        if (this.getLastDamageCause() instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof EntityHandItem handItem) {
+            weapon = handItem.getItemInHand();
+        }
+
+        EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops(weapon));
         this.server.getPluginManager().callEvent(ev);
 
         var manager = this.server.getScoreboardManager();
-        //测试环境中此项会null，所以说需要判空下
+        // This will be null in the test environment, so it is necessary to check for null values.
         if (manager != null) manager.onEntityDead(this);
-
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            for (cn.nukkit.item.Item item : ev.getDrops()) {
+            for (Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
-            this.getLevel().dropExpOrb(this, getExperienceDrops());
         }
+        this.getLevel().dropExpOrb(this, getExperienceDrops());
     }
 
     @Override
@@ -308,10 +433,21 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     /**
-     * Defines the drops after the entity's death
+     * Defines the drops after the entity's death without looting
+     * @deprecated Use {@link #getDrops(Item)}
      */
+    @Deprecated
     public Item[] getDrops() {
         return Item.EMPTY_ARRAY;
+    }
+
+    /**
+     * Defines the drops of the entity adjusted with the enchantments of the item
+     * @param weapon - The weapon that was used to kill the entity.
+     * @since 12/12/2025
+     */
+    public Item[] getDrops(@NotNull Item weapon) {
+        return this.getDrops();
     }
 
     public Integer getExperienceDrops() {
@@ -344,7 +480,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             blocks.add(block);
 
             if (maxLength != 0 && blocks.size() > maxLength) {
-                blocks.remove(0);
+                blocks.removeFirst();
             }
 
             String id = block.getId();
@@ -385,19 +521,62 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return null;
     }
 
+    /** Returns the default movement speed of the entity */
+    public float getDefaultSpeed() {
+        if (isCustomEntity()) {
+            return meta().getMovement(CustomEntityComponents.MOVEMENT).moveSpeed();
+        }
+        return EntityLiving.DEFAULT_SPEED;
+    }
+
+    /** Returns the current movement speed of the entity */
     public float getMovementSpeed() {
         return this.movementSpeed;
     }
 
+    /** Returns the default movement multiplier of the entity */
+    public float getSpeedMultiplier() {
+        if (isCustomEntity()) {
+            return meta().getMovement(CustomEntityComponents.MOVEMENT).multiplier();
+        }
+        return 1.0f;
+    }
+
+    /** The radius of the area blocks the entity will attempt to stay within around a target. */
+    public int getFollowRadius() {
+        if (isCustomEntity()) {
+            return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).radius();
+        }
+        return 0;
+    }
+
+    /** The maximum distance the mob will go from a target. */
+    public int getFollowMax() {
+        if (isCustomEntity()) {
+            return meta().getFollowRange(CustomEntityComponents.FOLLOW_RANGE).max();
+        }
+        return 0;
+    }
+
     /**
-     * 设置该有生命实体的移动速度
-     * <p>
      * Set the movement speed of this Entity.
      *
-     * @param speed 速度大小<br>Speed value
+     * @param speed Speed value
      */
     public void setMovementSpeed(float speed) {
         this.movementSpeed = (float) NukkitMath.round(speed, 2);
+    }
+
+    /** Gets the attack power of the entity. */
+    public int getAttackPower() {
+        if (isCustomEntity()) {
+            Meta.Attack atk = meta().getAttack(CustomEntityComponents.ATTACK);
+            int min = atk.min();
+            int max = atk.max();
+            if (max > min) return ThreadLocalRandom.current().nextInt(min, max + 1);
+            return max;
+        }
+        return 1;
     }
 
     public int getAirTicks() {
@@ -453,19 +632,25 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean isBlocking() {
-        return this.getDataFlag(EntityFlag.BLOCKING);
+        if(this.getDataFlag(EntityFlag.BLOCKING)) {
+            if(this instanceof InventoryHolder holder) {
+                if(holder.getInventory() instanceof HumanInventory inventory) {
+                    return inventory.getItemInHand() instanceof ItemShield;
+                }
+            }
+        }
+        return false;
     }
 
     public void setBlocking(boolean value) {
-        this.setDataFlagExtend(EntityFlag.BLOCKING, value);
+        this.setDataFlagExtend(EntityFlag.BLOCKING, value, false);
+        this.setDataFlagExtend(EntityFlag.TRANSITION_BLOCKING, value, true);
     }
 
+    @Override
     public boolean isPersistent() {
-        return namedTag.containsByte("Persistent") && namedTag.getBoolean("Persistent");
-    }
-
-    public void setPersistent(boolean persistent) {
-        namedTag.putBoolean("Persistent", persistent);
+        return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
+            || (this.namedTag.contains("Persistent") && this.namedTag.getBoolean("Persistent"));
     }
 
     public void preAttack(Player player) {
@@ -491,5 +676,36 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public int getAttackTimeBefore() {
         return attackTimeBefore;
+    }
+
+    public void recalcMovementSpeedFromEffects() {
+        float base = this.getDefaultSpeed() * this.getSpeedMultiplier();
+        float mul = 1.0f;
+
+        Effect speed = this.getEffect(EffectType.SPEED);
+        int speedLvl = (speed != null) ? (Math.max(0, speed.getAmplifier()) + 1) : 0;
+
+        Effect slow = this.getEffect(EffectType.SLOWNESS);
+        int slowLvl = (slow != null) ? (Math.max(0, slow.getAmplifier()) + 1) : 0;
+
+        if (slowLvl >= 7) {
+            mul = 0.0f;
+        } else {
+            if (speedLvl > 0) {
+                mul *= (1.0f + 0.20f * speedLvl);
+            }
+            if (slowLvl > 0) {
+                mul *= Math.max(0.0f, 1.0f - 0.15f * slowLvl);
+            }
+        }
+
+        if (this instanceof Player p && p.isSprinting()) mul *= 1.3f;
+        float newSpeed = base * mul;
+
+        if (this instanceof Player) {
+            ((Player) this).setMovementSpeed(newSpeed, true);
+        } else {
+            this.setMovementSpeed(newSpeed);
+        }
     }
 }

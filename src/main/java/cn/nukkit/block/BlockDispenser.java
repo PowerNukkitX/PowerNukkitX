@@ -163,12 +163,12 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 

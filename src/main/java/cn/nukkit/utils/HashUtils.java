@@ -12,9 +12,10 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 /**
- * Allay Project 2023/6/1
+ * Utils for hash
  *
- * @author Cool_Loong
+ * @author Cool_Loong (Allay Project)
+ * @since 2023/6/1
  */
 @UtilityClass
 public class HashUtils {

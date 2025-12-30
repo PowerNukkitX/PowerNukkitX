@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.evaluator;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 public interface LogicalUtils {
 
-    default IBehaviorEvaluator any(@NotNull Set<IBehaviorEvaluator> evaluators) {
+    default IBehaviorEvaluator any(@NotNull ObjectArrayList<IBehaviorEvaluator> evaluators) {
         return new AnyMatchEvaluator(evaluators);
     }
 
@@ -21,7 +22,7 @@ public interface LogicalUtils {
         return new AnyMatchEvaluator(evaluators);
     }
 
-    default IBehaviorEvaluator all(@NotNull Set<IBehaviorEvaluator> evaluators) {
+    default IBehaviorEvaluator all(@NotNull ObjectArrayList<IBehaviorEvaluator> evaluators) {
         return new AllMatchEvaluator(evaluators);
     }
 

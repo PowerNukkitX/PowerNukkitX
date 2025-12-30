@@ -9,12 +9,12 @@ import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.command.defaults.WorldCommand;
 import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.compression.ZlibChooser;
-import cn.nukkit.config.ServerProperties;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
+import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
@@ -24,6 +24,7 @@ import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
+import cn.nukkit.event.server.ServerReloadEvent;
 import cn.nukkit.event.server.ServerStartedEvent;
 import cn.nukkit.event.server.ServerStopEvent;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -45,22 +46,29 @@ import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.BlockStateUpdaterBase;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
 import cn.nukkit.metadata.PlayerMetadataStore;
 import cn.nukkit.metrics.NukkitMetrics;
 import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.LongTag;
+import cn.nukkit.nbt.tag.ShortTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
-import cn.nukkit.network.rcon.RCON;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
@@ -89,6 +97,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import eu.okaeri.configs.ConfigManager;
@@ -99,16 +108,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -116,23 +126,33 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.Permission;
-import java.security.Permissions;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
+import java.security.*;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
- * Represents a server object, global singleton.
- * <p>is instantiated in {@link Nukkit} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
- * The constructor method of {@link cn.nukkit.Server} performs a number of operations, including but not limited to initializing configuration files, creating threads, thread pools, start plugins, registering recipes, blocks, entities, items, etc.
+ * Represents the main server singleton for PowerNukkitX.
+ * <p>
+ * This class is instantiated in {@link Nukkit} and can be accessed via {@link cn.nukkit.Server#getInstance()}.
+ * The constructor performs various initialization tasks, including configuration loading, thread and thread pool creation,
+ * plugin startup, and registration of recipes, blocks, entities, items, and more.
+ *
+ * <p>Key responsibilities include:
+ * <ul>
+ *   <li>Managing server lifecycle and configuration</li>
+ *   <li>Handling plugins, commands, and events</li>
+ *   <li>Managing players, levels, and networking</li>
+ *   <li>Providing access to server-wide utilities and managers</li>
+ * </ul>
+ *
+ * <p>Note: This class is a singleton and should be accessed via {@link #getInstance()}.
  *
  * @author MagicDroidX
  * @author Box
@@ -154,7 +174,7 @@ public class Server {
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
-     * 一个tick计数器,记录服务器已经经过的tick数
+     * A tick counter that records the number of ticks the server has passed.
      */
     private int tickCounter;
     private long nextTick;
@@ -166,8 +186,6 @@ public class Server {
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
-     * 负责地形生成，数据压缩等计算任务的FJP线程池<br/>
-     * <p>
      * FJP thread pool responsible for terrain generation, data compression and other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
@@ -180,17 +198,15 @@ public class Server {
     private int maxPlayers;
     private boolean autoSave = true;
     /**
-     * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
+     * Does the configuration item check the login time.
      */
     public boolean checkLoginTime = false;
-    private RCON rcon;
     private EntityMetadataStore entityMetadata;
     private PlayerMetadataStore playerMetadata;
     private LevelMetadataStore levelMetadata;
     private Network network;
     private int serverAuthoritativeMovementMode = 0;
     private Boolean getAllowFlight = null;
-    private int difficulty = Integer.MAX_VALUE;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -200,12 +216,20 @@ public class Server {
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
+    public final String structurePath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
-    private final ServerProperties properties;
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
     private QueryRegenerateEvent queryRegenerateEvent;
     private PositionTrackingService positionTrackingService;
+
+    // Dynamic Properties defaults
+    private static final String DP_ROOT = "DynamicProperties";
+    private static volatile String DP_DEFAULT_GROUP_UUID = "00000000-0000-0000-0000-000000000000";
+    private static final int DP_MAX_STRING_BYTES = 32767;
+    private static final double DP_NUMBER_ABS_MAX = 9_223_372_036_854_775_807d;
+    private static final Pattern DP_UUID_CANON =
+            Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
@@ -240,15 +264,13 @@ public class Server {
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
 
-    ///default levels
+    // default levels
     private Level defaultLevel = null;
-    private Level defaultNether = null;
-    private Level defaultEnd = null;
     private boolean allowNether;
     private boolean allowTheEnd;
-    ///
+    private List<ExperimentEntry> experiments;
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
         currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
@@ -261,11 +283,16 @@ public class Server {
         if (!new File(dataPath + "players/").exists()) {
             new File(dataPath + "players/").mkdirs();
         }
+        if (!new File(dataPath + "structures/").exists()) {
+            new File(dataPath + "structures/").mkdirs();
+        }
         if (!new File(pluginPath).exists()) {
             new File(pluginPath).mkdirs();
         }
+
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
+        this.structurePath = new File(dataPath).getAbsolutePath() + "/structures/";
         String commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
         if (!new File(commandDataPath).exists()) {
             new File(commandDataPath).mkdirs();
@@ -275,42 +302,22 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
-        File config = new File(this.dataPath + "nukkit.yml");
+        while(convertLegacyConfiguration());
+
+        File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage = null;
+
         if (!config.exists()) {
-            log.info("{}Welcome! Please choose a language first!", TextFormat.GREEN);
-            try {
-                InputStream languageList = this.getClass().getModule().getResourceAsStream("language/language.list");
-                if (languageList == null) {
-                    throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
-                }
-                String[] lines = Utils.readFile(languageList).split("\n");
-                for (String line : lines) {
-                    log.info(line);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            while (chooseLanguage == null) {
-                String lang;
-                if (predefinedLanguage != null) {
-                    log.info("Trying to load language from predefined language: {}", predefinedLanguage);
-                    lang = predefinedLanguage;
-                } else {
-                    lang = this.console.readLine();
-                }
-
-                try (InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.json")) {
-                    if (conf != null) {
-                        chooseLanguage = lang;
-                    } else if (predefinedLanguage != null) {
-                        log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
-                        predefinedLanguage = null;
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            // Config doesn't exist - use wizard config if provided, otherwise use predefined or default
+            if (wizardConfig != null) {
+                chooseLanguage = wizardConfig.getLanguage();
+                log.info("Using language from setup wizard: {}", chooseLanguage);
+            } else if (predefinedLanguage != null && !predefinedLanguage.isEmpty()) {
+                chooseLanguage = predefinedLanguage;
+                log.info("Using predefined language: {}", chooseLanguage);
+            } else {
+                chooseLanguage = "eng";
+                log.info("Using default language: eng");
             }
         } else {
             Config configInstance = new Config(config);
@@ -318,15 +325,36 @@ public class Server {
         }
         this.baseLang = new BaseLang(chooseLanguage);
         this.baseLangCode = mapInternalLang(chooseLanguage);
-        log.info("Loading {}...", TextFormat.GREEN + "nukkit.yml" + TextFormat.RESET);
         this.settings = ConfigManager.create(ServerSettings.class, it -> {
+            log.info("Loading {}...", TextFormat.GREEN + "pnx.yml" + TextFormat.RESET);
             it.withConfigurer(new YamlSnakeYamlConfigurer());
             it.withBindFile(config);
             it.withRemoveOrphans(true);
             it.saveDefaults();
             it.load(true);
         });
-        this.settings.baseSettings().language(chooseLanguage);
+
+        if (wizardConfig != null && !config.exists()) {
+            this.settings.baseSettings().language(wizardConfig.getLanguage());
+            this.settings.baseSettings().motd(wizardConfig.getMotd());
+            this.settings.baseSettings().port(wizardConfig.getPort());
+            this.settings.baseSettings().maxPlayers(wizardConfig.getMaxPlayers());
+            this.settings.gameplaySettings().gamemode(wizardConfig.getGamemode());
+            this.settings.baseSettings().allowList(wizardConfig.isWhitelistEnabled());
+            this.settings.networkSettings().enableQuery(wizardConfig.isQueryEnabled());
+        } else {
+            this.settings.baseSettings().language(chooseLanguage);
+            if (wizardConfig != null) {
+                if (wizardConfig.getMotd() != null && !wizardConfig.getMotd().isEmpty()) {
+                    this.settings.baseSettings().motd(wizardConfig.getMotd());
+                }
+                if (wizardConfig.getPort() != 19132) {
+                    this.settings.baseSettings().port(wizardConfig.getPort());
+                }
+            }
+        }
+        this.settings.save();
+        while(updateConfiguration());
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
@@ -338,30 +366,20 @@ public class Server {
             Nukkit.setLogLevel(targetLevel);
         }
 
-        log.info("Loading {}...", TextFormat.GREEN + "server.properties" + TextFormat.RESET);
-        this.properties = new ServerProperties(this.dataPath);
-
-        var isShaded = StartArgUtils.isShaded();
-        if (!StartArgUtils.isValidStart() || (JarStart.isUsingJavaJar() && !isShaded)) {
+        if (!StartArgUtils.loadModules()) {
             log.error(getLanguage().tr("nukkit.start.invalid"));
             return;
         }
-        if (!this.properties.get(ServerPropertiesKeys.ALLOW_SHADED, false) && isShaded) {
-            log.error(getLanguage().tr("nukkit.start.shaded1"));
-            log.error(getLanguage().tr("nukkit.start.shaded2"));
-            log.error(getLanguage().tr("nukkit.start.shaded3"));
-            return;
-        }
 
-        this.allowNether = this.properties.get(ServerPropertiesKeys.ALLOW_NETHER, true);
-        this.allowTheEnd = this.properties.get(ServerPropertiesKeys.ALLOW_THE_END, true);
-        this.useTerra = this.properties.get(ServerPropertiesKeys.USE_TERRA, false);
-        this.checkLoginTime = this.properties.get(ServerPropertiesKeys.CHECK_LOGIN_TIME, false);
+        this.allowNether = this.settings.gameplaySettings().allowNether();
+        this.allowTheEnd = this.settings.gameplaySettings().allowTheEnd();
+        this.useTerra = this.settings.miscSettings().enableTerra();
+        this.checkLoginTime = this.settings.networkSettings().checkLoginTime();
 
         log.info(this.getLanguage().tr("language.selected", getLanguage().getName(), getLanguage().getLang()));
         log.info(getLanguage().tr("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
-        String poolSize = settings.baseSettings().asyncWorkers();
+        String poolSize = settings.performanceSettings().asyncWorkers();
         int poolSizeNumber;
         try {
             poolSizeNumber = Integer.parseInt(poolSize);
@@ -373,37 +391,47 @@ public class Server {
 
         ZlibChooser.setProvider(settings.networkSettings().zlibProvider());
 
-        this.serverAuthoritativeMovementMode = switch (this.properties.get(ServerPropertiesKeys.SERVER_AUTHORITATIVE_MOVEMENT, "server-auth")) {
+        this.serverAuthoritativeMovementMode = switch (this.settings.gameplaySettings().serverAuthoritativeMovement()) {
             case "client-auth" -> 0;
             case "server-auth" -> 1;
             case "server-auth-with-rewind" -> 2;
             default -> throw new IllegalArgumentException();
         };
-        this.enabledNetworkEncryption = this.properties.get(ServerPropertiesKeys.NETWORK_ENCRYPTION, true);
+        this.enabledNetworkEncryption = this.settings.networkSettings().networkEncryption();
         if (this.getSettings().baseSettings().waterdogpe()) {
             this.checkLoginTime = false;
         }
 
-        if (this.properties.get(ServerPropertiesKeys.ENABLE_RCON, false)) {
-            try {
-                this.rcon = new RCON(this, this.properties.get(ServerPropertiesKeys.RCON_PASSWORD, ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPort());
-            } catch (IllegalArgumentException e) {
-                log.error(getLanguage().tr(e.getMessage(), e.getCause().getMessage()));
-            }
-        }
+        this.experiments = new ArrayList<>();
+        for(String experiment : settings.gameplaySettings().experiments())
+            experiments.add(new ExperimentEntry(experiment, true));
+
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
         this.levelMetadata = new LevelMetadataStore();
         this.operators = new Config(this.dataPath + "ops.txt", Config.ENUM);
         this.whitelist = new Config(this.dataPath + "white-list.txt", Config.ENUM);
+
+        if (wizardConfig != null && !config.exists()) {
+            for (String player : wizardConfig.getWhitelistedPlayers()) {
+                this.whitelist.set(player, true);
+            }
+            this.whitelist.save();
+
+            for (String op : wizardConfig.getOperators()) {
+                this.operators.set(op, true);
+            }
+            this.operators.save();
+        }
+
         this.banByName = new BanList(this.dataPath + "banned-players.json");
         this.banByName.load();
         this.banByIP = new BanList(this.dataPath + "banned-ips.json");
         this.banByIP.load();
-        this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
-        this.setAutoSave(this.properties.get(ServerPropertiesKeys.AUTO_SAVE, true));
-        if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
-            this.properties.get(ServerPropertiesKeys.DIFFICULTY, 3);
+        this.maxPlayers = this.settings.baseSettings().maxPlayers();
+        this.setAutoSave(this.settings.baseSettings().autoSave());
+        if (this.settings.gameplaySettings().hardcore() && this.getDifficulty() < 3) {
+            this.settings.gameplaySettings().difficulty(3);
         }
 
         log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.RESET + " (" + TextFormat.YELLOW + this.getGitCommit() + TextFormat.RESET + ")" + TextFormat.RESET, this.getApiVersion()));
@@ -418,7 +446,6 @@ public class Server {
             Registries.PACKET.init();
             Registries.ENTITY.init();
             Registries.BLOCKENTITY.init();
-            Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.ITEM_RUNTIMEID.init();
             Registries.BLOCK.init();
             Registries.BLOCKSTATE.init();
@@ -428,6 +455,9 @@ public class Server {
             Registries.FUEL.init();
             Registries.GENERATOR.init();
             Registries.GENERATE_STAGE.init();
+            Registries.POPULATOR.init();
+            Registries.GENERATE_FEATURE.init();
+            Registries.STRUCTURE.init();
             Registries.EFFECT.init();
             Registries.RECIPE.init();
             Profession.init();
@@ -441,20 +471,26 @@ public class Server {
             DispenseBehaviorRegister.init();
         }
 
+        if(settings.gameplaySettings().enableEducation()) {
+            Education.enable();
+            if(settings.baseSettings().waterdogpe())
+                log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
+        }
+
         if (useTerra) {//load terra
             PNXPlatform instance = PNXPlatform.getInstance();
         }
 
         freezableArrayManager = new FreezableArrayManager(
-                this.settings.freezeArraySettings().enable(),
-                this.settings.freezeArraySettings().slots(),
-                this.settings.freezeArraySettings().defaultTemperature(),
-                this.settings.freezeArraySettings().freezingPoint(),
-                this.settings.freezeArraySettings().absoluteZero(),
-                this.settings.freezeArraySettings().boilingPoint(),
-                this.settings.freezeArraySettings().melting(),
-                this.settings.freezeArraySettings().singleOperation(),
-                this.settings.freezeArraySettings().batchOperation());
+                this.settings.performanceSettings().enable(),
+                this.settings.performanceSettings().slots(),
+                this.settings.performanceSettings().defaultTemperature(),
+                this.settings.performanceSettings().freezingPoint(),
+                this.settings.performanceSettings().absoluteZero(),
+                this.settings.performanceSettings().boilingPoint(),
+                this.settings.performanceSettings().melting(),
+                this.settings.performanceSettings().singleOperation(),
+                this.settings.performanceSettings().batchOperation());
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(commandDataPath + "/functions");
         tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
@@ -493,7 +529,6 @@ public class Server {
             Registries.PACKET.trim();
             Registries.ENTITY.trim();
             Registries.BLOCKENTITY.trim();
-            Registries.BLOCKSTATE_ITEMMETA.trim();
             Registries.BLOCKSTATE.trim();
             Registries.ITEM_RUNTIMEID.trim();
             Registries.BLOCK.trim();
@@ -502,7 +537,9 @@ public class Server {
             Registries.BIOME.trim();
             Registries.FUEL.trim();
             Registries.GENERATOR.trim();
+            Registries.POPULATOR.trim();
             Registries.GENERATE_STAGE.trim();
+            Registries.STRUCTURE.trim();
             Registries.EFFECT.trim();
             Registries.RECIPE.trim();
         }
@@ -517,8 +554,6 @@ public class Server {
         this.network = new Network(this);
         this.getTickingAreaManager().loadAllTickingArea();
 
-        this.properties.save();
-
         if (this.getDefaultLevel() == null) {
             log.error(this.getLanguage().tr("nukkit.level.defaultError"));
             this.forceShutdown();
@@ -526,16 +561,15 @@ public class Server {
             return;
         }
 
-        this.autoSaveTicks = settings.baseSettings().autosave();
+        this.autoSaveTicks = settings.baseSettings().autosaveDelay();
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
-
-
-        EntityProperty.init();
-        EntityProperty.buildPacketData();
+        EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
 
-        if (settings.baseSettings().installSpark()) {
+        if(settings.gameplaySettings().enableEducation()) Education.registerCreative();
+
+        if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
         }
 
@@ -545,6 +579,45 @@ public class Server {
         }
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         this.start();
+    }
+
+    private boolean convertLegacyConfiguration() {
+        File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
+        File oldServerProperties = new File(this.dataPath + "server.properties");
+        if(oldNukkitYml.exists() && oldServerProperties.exists()) {
+            try {
+                File backupFolder = new File(this.dataPath + "backup/");
+                if (!backupFolder.exists()) {
+                    backupFolder.mkdirs();
+                }
+                FileUtils.copyFile(oldNukkitYml, new File(backupFolder, "nukkit.yml"));
+                FileUtils.copyFile(oldServerProperties, new File(backupFolder, "server.properties"));
+                log.info("Copied nukkit.yml and server.properties to backup folder");
+                log.info("Start migration now...");
+
+                ConfigUpdater.update("1.0.0", this);
+
+                oldNukkitYml.delete();
+                oldServerProperties.delete();
+
+                log.info("Migration completed, start server now...");
+            } catch (IOException e) {
+                log.error("Failed to copy nukkit.yml to server.properties", e);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean updateConfiguration() {
+        if(ConfigUpdater.canUpdate(this.settings.configSettings().version())) {
+            log.info("New version detected, updating config...");
+            ConfigUpdater.update(this.settings.configSettings().version(), this);
+            log.info("Config updated to version {}", this.settings.configSettings().version());
+            return true;
+        }
+
+        return false;
     }
 
     private void loadLevels() {
@@ -563,43 +636,40 @@ public class Server {
         }
 
         if (this.getDefaultLevel() == null) {
-            String levelFolder = this.properties.get(ServerPropertiesKeys.LEVEL_NAME, "world");
+            String levelFolder = this.settings.baseSettings().defaultLevelName();
             if (levelFolder == null || levelFolder.trim().isEmpty()) {
                 log.warn("level-name cannot be null, using default");
                 levelFolder = "world";
-                this.properties.get(ServerPropertiesKeys.LEVEL_NAME, levelFolder);
+                this.settings.baseSettings().defaultLevelName(levelFolder);
             }
 
             if (!this.loadLevel(levelFolder)) {
-                //default world not exist
+                //default world doesn't exist
                 //generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
-                //spawn seed
-                long seed;
-                String seedString = String.valueOf(this.properties.get(ServerPropertiesKeys.LEVEL_SEED, System.currentTimeMillis()));
-                try {
-                    seed = Long.parseLong(seedString);
-                } catch (NumberFormatException e) {
-                    seed = seedString.hashCode();
-                }
-                //todo nether the_end overworld
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("flat", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                long seed = LevelConfig.GeneratorConfig.randomSeed();
+                generatorConfig.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
-            this.setDefaultLevel(this.getLevelByName(levelFolder + " Dim0"));
+            this.setDefaultLevel(this.getLevelByName(levelFolder));
         }
     }
 
-    // region lifecycle & ticking - 生命周期与游戏刻
+    // region lifecycle and ticking
 
     /**
-     * 重载服务器
-     * <p>
-     * Reload Server
+     * Reloads the server
      */
     public void reload() {
-        log.info("Reloading...");
+        ServerReloadEvent serverReloadEvent = new ServerReloadEvent();
+        getPluginManager().callEvent(serverReloadEvent);
+
+        if (serverReloadEvent.isCancelled()) return;
+
+        log.info("Reloading server...");
         log.info("Saving levels...");
 
         for (Level level : this.levelArray) {
@@ -610,13 +680,6 @@ public class Server {
         this.pluginManager.disablePlugins();
         this.pluginManager.clearPlugins();
         this.commandMap.clearCommands();
-
-        log.info("Reloading properties...");
-        this.properties.reload();
-        this.maxPlayers = this.properties.get(ServerPropertiesKeys.MAX_PLAYERS, 20);
-        if (this.properties.get(ServerPropertiesKeys.HARDCORE, false) && this.getDifficulty() < 3) {
-            this.properties.get(ServerPropertiesKeys.DIFFICULTY, difficulty = 3);
-        }
 
         this.banByIP.load();
         this.banByName.load();
@@ -632,19 +695,18 @@ public class Server {
         }
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        //todo enable js plugin when adapt
+        // TODO: enable js plugin when adapt
 //        JSIInitiator.reset();
 //        JSFeatures.clearFeatures();
 //        JSFeatures.initInternalFeatures();
         this.scoreboardManager.read();
 
-        log.info("Reloading Registries...");
+        log.info("Reloading registries...");
         {
             Registries.POTION.reload();
             Registries.PACKET.reload();
             Registries.ENTITY.reload();
             Registries.BLOCKENTITY.reload();
-            Registries.BLOCKSTATE_ITEMMETA.reload();
             Registries.BLOCKSTATE.reload();
             Registries.ITEM_RUNTIMEID.reload();
             Registries.BLOCK.reload();
@@ -654,6 +716,9 @@ public class Server {
             Registries.FUEL.reload();
             Registries.GENERATOR.reload();
             Registries.GENERATE_STAGE.reload();
+            Registries.POPULATOR.reload();
+            Registries.GENERATE_FEATURE.reload();
+            Registries.STRUCTURE.reload();
             Registries.EFFECT.reload();
             Registries.RECIPE.reload();
             Enchantment.reload();
@@ -668,7 +733,6 @@ public class Server {
             Registries.PACKET.trim();
             Registries.ENTITY.trim();
             Registries.BLOCKENTITY.trim();
-            Registries.BLOCKSTATE_ITEMMETA.trim();
             Registries.BLOCKSTATE.trim();
             Registries.ITEM_RUNTIMEID.trim();
             Registries.BLOCK.trim();
@@ -682,23 +746,17 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
-        ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
-        getPluginManager().callEvent(serverStartedEvent);
     }
 
     /**
-     * 关闭服务器
-     * <p>
-     * Shut down the server
+     * Shutdown the server
      */
     public void shutdown() {
         isRunning.compareAndSet(true, false);
     }
 
     /**
-     * 强制关闭服务器
-     * <p>
-     * Force Shut down the server
+     * Force shutdown the server
      */
     public void forceShutdown() {
         if (this.hasStopped) {
@@ -713,12 +771,8 @@ public class Server {
             ServerStopEvent serverStopEvent = new ServerStopEvent();
             getPluginManager().callEvent(serverStopEvent);
 
-            if (this.rcon != null) {
-                this.rcon.close();
-            }
-
             for (Player player : new ArrayList<>(this.players.values())) {
-                player.close(player.getLeaveMessage(), getSettings().baseSettings().shutdownMessage());
+                player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
             }
 
             this.getSettings().save();
@@ -838,7 +892,7 @@ public class Server {
                     long levelTime = System.currentTimeMillis();
                     //Ensures that the server won't try to tick a level without providers.
                     if (level.getProvider().getLevel() == null) {
-                        log.warn("Tried to tick Level " + level.getName() + " without a provider!");
+                        log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
                     }
                     level.doTick(currentTick);
@@ -913,10 +967,6 @@ public class Server {
         ++this.tickCounter;
         this.network.processInterfaces();
 
-        if (this.rcon != null) {
-            this.rcon.check();
-        }
-
         this.getScheduler().mainThreadHeartbeat(this.tickCounter);
 
         this.checkTickUpdates(this.tickCounter);
@@ -937,15 +987,17 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            this.doAutoSave();
+            CompletableFuture.runAsync(() -> {
+                this.doAutoSave();
+            });
         }
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
             this.sendUsageTicker = 6000;
-            //todo sendUsage
+            // TODO: sendUsage
         }
 
-        // 处理可冻结数组
+        // Handle freezable array
         int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
@@ -982,7 +1034,7 @@ public class Server {
     }
 
     /**
-     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
+     * @return Returns the number of ticks recorded by the server
      */
     public int getTick() {
         return tickCounter;
@@ -1044,10 +1096,10 @@ public class Server {
     }
 
     /**
-     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
-     * 请牢记，必须在设置之后清除。
+     * Set the server to busy status, which prevents related code from detecting the server as unresponsive.
+     * Remember to clear this setting after use.
      *
-     * @param busyTime 单位为毫秒
+     * @param busyTime milliseconds
      * @return id
      */
     public int addBusying(long busyTime) {
@@ -1076,7 +1128,7 @@ public class Server {
 
     // endregion
 
-    // region server singleton - Server 单例
+    // region server singleton
 
     public static Server getInstance() {
         return instance;
@@ -1084,13 +1136,13 @@ public class Server {
 
     // endregion
 
-    // region chat & commands - 聊天与命令
+    // region chat and commands
 
     /**
-     * 广播一条消息给所有玩家<p>Broadcast a message to all players
+     * Broadcast a message to all players
      *
-     * @param message 消息
-     * @return int 玩家数量<br>Number of players
+     * @param message The broadcasted message
+     * @return int Number of players
      */
     public int broadcastMessage(String message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
@@ -1104,10 +1156,10 @@ public class Server {
     }
 
     /**
-     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
+     * Broadcast a message to the specified {@link CommandSender recipients}
      *
-     * @param message 消息
-     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
+     * @param message The broadcasted message
+     * @return int Number of {@link CommandSender recipients}
      */
     public int broadcastMessage(String message, CommandSender[] recipients) {
         for (CommandSender recipient : recipients) {
@@ -1140,14 +1192,12 @@ public class Server {
     }
 
     /**
-     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
-     * 一个permission在{@code PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
      * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
      * The permission corresponds to a {@link CommandSender Sender} set in {@code PluginManager#permSubs}.
      *
-     * @param message     消息内容<br>Message content
-     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
-     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
+     * @param message     Message content
+     * @param permissions Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
+     * @return            Number of {@link CommandSender senders} who received the message
      */
     public int broadcast(String message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
@@ -1189,17 +1239,15 @@ public class Server {
     }
 
     /**
-     * 以sender身份执行一行命令
-     * <p>
      * Execute one line of command as sender
      *
-     * @param sender      命令执行者
-     * @param commandLine 一行命令
-     * @return 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
-     * @throws ServerException 服务器异常
+     * @param sender      Command sender
+     * @param commandLine A command
+     * @return Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @throws ServerException Server exception
      */
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First we need to check if this command is on the main thread or not, if not, merge it in the main thread.
+        // First, we need to check if this command is on the main thread or not, if not, merge it in the main thread.
         if (!this.isPrimaryThread()) {
             this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
             return 1;
@@ -1218,25 +1266,21 @@ public class Server {
     }
 
     /**
-     * 以该控制台身份静音执行这些命令，无视权限
-     * <p>
      * Execute these commands silently as the console, ignoring permissions.
      *
      * @param commands the commands
-     * @throws ServerException 服务器异常
+     * @throws ServerException Server exception
      */
     public void silentExecuteCommand(String... commands) {
         this.silentExecuteCommand(null, commands);
     }
 
     /**
-     * 以该玩家身份静音执行这些命令无视权限
-     * <p>
      * Execute these commands silently as this player, ignoring permissions.
      *
-     * @param sender   命令执行者<br>command sender
+     * @param sender command sender
      * @param commands the commands
-     * @throws ServerException 服务器异常
+     * @throws ServerException Server exception
      */
     public void silentExecuteCommand(@Nullable Player sender, String... commands) {
         final var revert = new ArrayList<Level>();
@@ -1263,13 +1307,11 @@ public class Server {
     }
 
     /**
-     * 得到控制台发送者
-     * <p>
      * Get the console sender
      *
      * @return {@link ConsoleCommandSender}
      */
-    //todo: use ticker to check console
+    // TODO: use ticker to check console
     public ConsoleCommandSender getConsoleSender() {
         return consoleSender;
     }
@@ -1297,7 +1339,7 @@ public class Server {
 
     // endregion
 
-    // region networking - 网络相关
+    // region networking
 
     /**
      * @see #broadcastPacket(Player[], DataPacket)
@@ -1309,10 +1351,10 @@ public class Server {
     }
 
     /**
-     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
+     * Broadcast a packet to the specified players.
      *
-     * @param players 接受数据包的所有玩家<br>All players receiving the data package
-     * @param packet  数据包
+     * @param players All players receiving the data packet
+     * @param packet  The data packet
      */
     public static void broadcastPacket(Player[] players, DataPacket packet) {
         for (Player player : players) {
@@ -1330,13 +1372,12 @@ public class Server {
 
     // endregion
 
-    // region plugins - 插件相关
+    // region plugins
 
     /**
-     * 以指定插件加载顺序启用插件<p>
      * Enable plugins in the specified plugin loading order
      *
-     * @param type 插件加载顺序<br>Plugin loading order
+     * @param type Plugin loading order
      */
     public void enablePlugins(PluginLoadOrder type) {
         for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
@@ -1351,17 +1392,16 @@ public class Server {
     }
 
     /**
-     * 启用一个指定插件<p>
      * Enable a specified plugin
      *
-     * @param plugin 插件实例<br>Plugin instance
+     * @param plugin Plugin instance
      */
     public void enablePlugin(Plugin plugin) {
         this.pluginManager.enablePlugin(plugin);
     }
 
     /**
-     * 禁用全部插件<p>Disable all plugins
+     * Disable all plugins
      */
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
@@ -1377,7 +1417,7 @@ public class Server {
 
     // endregion
 
-    // region Players - 玩家相关
+    // region players
 
     public void onPlayerCompleteLoginSequence(Player player) {
         this.sendFullPlayerListData(player);
@@ -1400,7 +1440,7 @@ public class Server {
     @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID());
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID(), player.getLocatorBarColor());
         this.getNetwork().getPong().playerCount(playerList.size()).update();
     }
 
@@ -1418,61 +1458,61 @@ public class Server {
             ;
         }
     }
-
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
+
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
+        this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, this.playerList.values());
+    }
+
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
+        this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, players);
     }
 
     /**
-     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
-     * <p>
-     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
-     *
-     * @param uuid       uuid
-     * @param entityId   实体id
-     * @param name       名字
-     * @param skin       皮肤
-     * @param xboxUserId xbox用户id
-     * @param players    指定接受数据包的玩家
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
-        // In some circumstances, the game sends confidential data in this string,
-        // so under no circumstances should it be sent to all players on the server.
-        // @Zwuiix
-        skin.setSkinId("");
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color, Player[] players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, "", color, players);
+    }
 
+    /**
+     * Update {@link PlayerListPacket} data packets (i.e., player list data) for specified players
+     *
+     * @param uuid       the uuid
+     * @param entityId   entity id
+     * @param name       player name
+     * @param skin       player skin
+     * @param xboxUserId xbox user id
+     * @param players    players to send packet
+     */
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
+        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId, color)};
         Server.broadcastPacket(players, pk);
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
-        // In some circumstances, the game sends confidential data in this string,
-        // so under no circumstances should it be sent to all players on the server.
-        // @Zwuiix
-        skin.setSkinId("");
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Collection<Player> players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 
     public void removePlayerListData(UUID uuid) {
@@ -1480,10 +1520,9 @@ public class Server {
     }
 
     /**
-     * 移除玩家数组中所有玩家的玩家列表数据.<p>
      * Remove player list data for all players in the array.
      *
-     * @param players 玩家数组
+     * @param players player array
      */
     public void removePlayerListData(UUID uuid, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1493,10 +1532,9 @@ public class Server {
     }
 
     /**
-     * 移除这个玩家的玩家列表数据.<p>
      * Remove this player's player list data.
      *
-     * @param player 玩家
+     * @param player The player
      */
 
     public void removePlayerListData(UUID uuid, Player player) {
@@ -1511,10 +1549,9 @@ public class Server {
     }
 
     /**
-     * 发送玩家列表数据包给一个玩家.<p>
      * Send a player list packet to a player.
      *
-     * @param player 玩家
+     * @param player The player
      */
     public void sendFullPlayerListData(Player player) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1525,19 +1562,18 @@ public class Server {
                         p.getId(),
                         p.getDisplayName(),
                         p.getSkin(),
-                        p.getLoginChainData().getXUID()))
+                        p.getLoginChainData().getXUID(),
+                        p.getLocatorBarColor()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);
     }
 
     /**
-     * 从指定的UUID得到玩家实例.
-     * <p>
      * Get the player instance from the specified UUID.
      *
      * @param uuid uuid
-     * @return 玩家实例，可为空<br>Player example, can be empty
+     * @return Player example can be empty
      */
     public Optional<Player> getPlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
@@ -1545,12 +1581,10 @@ public class Server {
     }
 
     /**
-     * 从数据库中查找指定玩家名对应的UUID.
-     * <p>
      * Find the UUID corresponding to the specified player name from the database.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家的UUID，可为空.<br>The player's UUID, which can be empty.
+     * @param name player name
+     * @return The player's UUID, which can be empty.
      */
     public Optional<UUID> lookupName(String name) {
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
@@ -1570,8 +1604,6 @@ public class Server {
     }
 
     /**
-     * 更新数据库中指定玩家名的UUID，若不存在则添加.
-     * <p>
      * Update the UUID of the specified player name in the database, or add it if it does not exist.
      *
      * @param info the player info
@@ -1590,7 +1622,7 @@ public class Server {
         if (bytes == null) {
             playerDataDB.put(nameBytes, array);
         }
-        boolean xboxAuthEnabled = this.properties.get(ServerPropertiesKeys.XBOX_AUTH, false);
+        boolean xboxAuthEnabled = this.settings.baseSettings().xboxAuth();
         if (info instanceof XboxLivePlayerInfo || !xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
@@ -1607,12 +1639,10 @@ public class Server {
     }
 
     /**
-     * 从指定的UUID得到一个玩家实例,可以是在线玩家也可以是离线玩家.
-     * <p>
      * Get a player instance from the specified UUID, either online or offline.
      *
      * @param uuid uuid
-     * @return 玩家<br>player
+     * @return player
      */
     public IPlayer getOfflinePlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
@@ -1625,8 +1655,6 @@ public class Server {
     }
 
     /**
-     * create为false
-     * <p>
      * create is false
      *
      * @see #getOfflinePlayerData(UUID, boolean)
@@ -1636,10 +1664,10 @@ public class Server {
     }
 
     /**
-     * 获得UUID指定的玩家的NBT数据
+     * Retrieve the NBT data for the player specified by the UUID
      *
-     * @param uuid   要获取数据的玩家UUID<br>UUID of the player to get data from
-     * @param create 如果玩家数据不存在是否创建<br>If player data does not exist whether to create.
+     * @param uuid   UUID of the player to get data from
+     * @param create If player data does not exist, whether to create.
      * @return {@link CompoundTag}
      */
     public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
@@ -1754,13 +1782,11 @@ public class Server {
     }
 
     /**
-     * 保存玩家数据，玩家在线离线都行.
-     * <p>
      * Save player data, players can be offline.
      *
      * @param nameOrUUid the name or uuid
-     * @param tag        NBT数据<br>nbt data
-     * @param async      是否异步保存<br>Whether to save asynchronously
+     * @param tag        nbt data
+     * @param async      Whether to save asynchronously
      */
     public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
         UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
@@ -1773,7 +1799,7 @@ public class Server {
                     this.onCancel();
                 }
 
-                //doing it like this ensures that the playerdata will be saved in a server shutdown
+                //doing it like this ensures that the player data will be saved in a server shutdown
                 @Override
                 public void onCancel() {
                     if (!hasRun.getAndSet(true)) {
@@ -1786,6 +1812,7 @@ public class Server {
 
     private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
         try {
+            cleanupOfflinePlayerData(tag);
             byte[] bytes = NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN);
             ByteBuffer buffer = ByteBuffer.allocate(16);
             buffer.putLong(uuid.getMostSignificantBits());
@@ -1796,13 +1823,17 @@ public class Server {
         }
     }
 
+    private void cleanupOfflinePlayerData(CompoundTag tag) {
+        tag.remove("Colors");
+        tag.remove("PieceTintColors");
+        tag.remove("Skin");
+    }
+
     /**
-     * 从玩家名获得一个在线玩家，这个方法是模糊匹配，只要玩家名带有name前缀就会被返回.
-     * <p>
      * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
+     * @param name player name
+     * @return Player instance object, failed to get null
      */
     public Player getPlayer(String name) {
         Player found = null;
@@ -1825,12 +1856,10 @@ public class Server {
     }
 
     /**
-     * 从玩家名获得一个在线玩家，这个方法是精确匹配，当玩家名字符串完全相同时返回.
-     * <p>
      * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
      *
-     * @param name 玩家名<br>player name
-     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
+     * @param name player name
+     * @return Player instance object, failed to get null
      */
     public Player getPlayerExact(String name) {
         name = name.toLowerCase(Locale.ENGLISH);
@@ -1844,12 +1873,10 @@ public class Server {
     }
 
     /**
-     * 指定一个部分玩家名，返回所有包含或者等于该名称的玩家.
-     * <p>
      * Specify a partial player name and return all players with or equal to that name.
      *
-     * @param partialName 部分玩家名<br>partial name
-     * @return 匹配到的所有玩家, 若匹配不到则为一个空数组<br>All players matched, if not matched then an empty array
+     * @param partialName partial name
+     * @return All players matched, if not matched then an empty array
      */
     public Player[] matchPlayer(String partialName) {
         partialName = partialName.toLowerCase(Locale.ENGLISH);
@@ -1882,22 +1909,82 @@ public class Server {
     }
 
     /**
-     * 获得所有在线的玩家Map.
-     * <p>
      * Get all online players Map.
      *
-     * @return 所有的在线玩家Map
+     * @return a map of players uuid and a player instance object
      */
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
     }
 
-    // endregion
+    /**
+     * Deletes all player data (both UUID mapping and player data) for the specified player name.
+     * This method handles the LevelDB structure used by PowerNukkitX where player data is stored
+     * in two separate databases: one for name-to-UUID mapping and another for actual player data.
+     *
+     * @param name The player name to delete it (case-insensitive)
+     */
+    public void deletePlayerData(String name) {
+        try {
+            byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
+            byte[] uuidBytes = playerDataDB.get(nameBytes);
 
-    // region constants - 常量
+            if (uuidBytes != null && uuidBytes.length == 16) {
+                ByteBuffer buffer = ByteBuffer.wrap(uuidBytes);
+                UUID uuid = new UUID(buffer.getLong(), buffer.getLong());
+                String uuidStr = uuid.toString();
+
+                playerDataDB.delete(uuidBytes);  // Delete from player data DB
+                playerDataDB.delete(nameBytes);   // Delete name-to-UUID mapping
+
+                log.info("{} player data deleted (UUID: {})", name, uuidStr);
+            } else {
+                log.warn("{} player not found or invalid UUID data", name);
+            }
+        } catch (Exception e) {
+            log.error("Error deleting player data for {}", name, e);
+        }
+    }
 
     /**
-     * @return 服务器名称<br>The name of server
+     * Deletes all player data for the specified UUID.
+     *
+     * @param uuid The UUID of the player to delete
+     */
+    public void deletePlayerData(UUID uuid) {
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(16);
+            buffer.putLong(uuid.getMostSignificantBits());
+            buffer.putLong(uuid.getLeastSignificantBits());
+            byte[] uuidBytes = buffer.array();
+
+            playerDataDB.delete(uuidBytes);
+
+            try (DBIterator iterator = playerDataDB.iterator()) {
+                for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+                    byte[] key = iterator.peekNext().getKey();
+                    byte[] value = iterator.peekNext().getValue();
+
+                    if (Arrays.equals(value, uuidBytes)) {
+                        playerDataDB.delete(key);
+                        String playerName = new String(key, StandardCharsets.UTF_8);
+                        log.info("Deleted name mapping for {}", playerName);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error deleting player data for UUID {}", uuid, e);
+        }
+    }
+
+
+    // endregion
+
+    // region constants
+
+    /**
+     * @return The name of server
      */
     public String getName() {
         return "PowerNukkitX";
@@ -1942,7 +2029,7 @@ public class Server {
     }
 
     /**
-     * @return 服务器UUID<br>server UUID
+     * @return server UUID
      */
     public UUID getServerUniqueId() {
         return this.serverID;
@@ -1977,24 +2064,21 @@ public class Server {
         return positionTrackingService;
     }
 
-    // region crafting & recipe - 合成与配方
+    // region crafting a recipe
 
     /**
-     * 发送配方列表数据包给一个玩家.<p>
      * Send a recipe list packet to a player.
      *
-     * @param player 玩家
+     * @param player the player
      */
     public void sendRecipeList(Player player) {
         player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
     }
 
     /**
-     * 注册配方到配方管理器
-     * <p>
-     * Register Recipe to Recipe Manager
+     * Register the recipe to recipe manager
      *
-     * @param recipe 配方
+     * @param recipe the recipe
      */
     public void addRecipe(Recipe recipe) {
         Registries.RECIPE.register(recipe);
@@ -2006,10 +2090,10 @@ public class Server {
 
     // endregion
 
-    // region Levels - 游戏世界相关
+    // region levels
 
     /**
-     * @return 获得所有游戏世界<br>Get all the game world
+     * @return Get all the game world
      */
     public Map<Integer, Level> getLevels() {
         return levels;
@@ -2032,63 +2116,18 @@ public class Server {
     }
 
     /**
-     * @return Get the default nether
-     */
-    public Level getDefaultNetherLevel() {
-        return defaultNether;
-    }
-
-    /**
-     * Set default nether
-     */
-    public void setDefaultNetherLevel(Level defaultLevel) {
-        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultNether)) {
-            this.defaultNether = defaultLevel;
-        }
-    }
-
-    /**
-     * @return Get the default the_end level
-     */
-    public Level getDefaultEndLevel() {
-        return defaultLevel;
-    }
-
-    /**
-     * Set default the_end level
-     */
-    public void setDefaultEndLevel(Level defaultLevel) {
-        if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getName()) && defaultLevel != this.defaultEnd)) {
-            this.defaultEnd = defaultLevel;
-        }
-    }
-
-    public static final String levelDimPattern = "^.*Dim[0-9]$";
-
-    /**
-     * @param name 世界名字
-     * @return 世界是否已经加载<br>Is the world already loaded
+     * @param name the level name
+     * @return Is the world already loaded
      */
     public boolean isLevelLoaded(String name) {
-        if (!name.matches(levelDimPattern)) {
-            for (int i = 0; i < 3; i++) {
-                if (this.getLevelByName(name + " Dim" + i) != null) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return this.getLevelByName(name) != null;
-        }
+        return this.getLevelByName(name) != null;
     }
 
     /**
-     * 从世界id得到世界,0主世界 1 地狱 2 末地
-     * <p>
-     * Get world from world id,0 OVERWORLD 1 NETHER 2 THE_END
+     * Get world from world id, 0 OVERWORLD 1 NETHER 2 THE_END
      *
-     * @param levelId 世界id<br>world id
-     * @return level实例<br>level instance
+     * @param levelId world id
+     * @return level level instance
      */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {
@@ -2098,19 +2137,14 @@ public class Server {
     }
 
     /**
-     * 从世界名得到世界,overworld 主世界 nether 地狱 the_end 末地
-     * <p>
-     * Get world from world name,{@code overworld nether the_end}
+     * Get world from world name, {@code overworld nether the_end}
      *
-     * @param name 世界名<br>world name
-     * @return level实例<br>level instance
+     * @param name world name
+     * @return level instance
      */
     public Level getLevelByName(String name) {
-        if (!name.matches(levelDimPattern)) {
-            name = name + " Dim0";
-        }
         for (Level level : this.levelArray) {
-            if (level.getName().equalsIgnoreCase(name)) {
+            if (level.getName().equals(name)) {
                 return level;
             }
         }
@@ -2122,25 +2156,21 @@ public class Server {
     }
 
     /**
-     * 卸载世界
-     * <p>
-     * unload level
+     * Unloads the level
      *
-     * @param level       世界
-     * @param forceUnload 是否强制卸载<br>whether to force uninstallation.
-     * @return 卸载是否成功
+     * @param level       the level
+     * @param forceUnload Whether force to unload.
+     * @return was the uninstallation successful
      */
     public boolean unloadLevel(Level level, boolean forceUnload) {
         if (level == this.getDefaultLevel() && !forceUnload) {
             throw new IllegalStateException("The default level cannot be unloaded while running, please switch levels.");
         }
-
         return level.unload(forceUnload);
 
     }
 
-    @Nullable
-    public LevelConfig getLevelConfig(String levelFolderName) {
+    public @Nullable LevelConfig getLevelConfig(String levelFolderName) {
         if (Objects.equals(levelFolderName.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
@@ -2188,13 +2218,12 @@ public class Server {
     }
 
     /**
+     * Loads the selected level by its folder name
+     *
      * @param levelFolderName the level folder name
      * @return whether load success
      */
     public boolean loadLevel(String levelFolderName) {
-        if (levelFolderName.matches(levelDimPattern)) {
-            levelFolderName = levelFolderName.replaceFirst("\\sDim\\d$", "");
-        }
         LevelConfig levelConfig = getLevelConfig(levelFolderName);
         if (levelConfig == null) return false;
 
@@ -2209,7 +2238,7 @@ public class Server {
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
-            String levelName = levelFolderName + " Dim" + entry.getKey();
+            String levelName = levelFolderName + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
             if (this.isLevelLoaded(levelName)) {
                 return true;
             }
@@ -2229,12 +2258,19 @@ public class Server {
             this.getPluginManager().callEvent(new LevelLoadEvent(level));
             level.setTickRate(getSettings().levelSettings().baseTickRate());
         }
-        if (tickCounter != 0) {//update world enum when load  
+        if (tickCounter != 0) { // Update world enum when loading
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
         }
         return true;
     }
 
+    /**
+     * Generates a level with selected name and LevelConfig options.
+     *
+     * @param name The level name
+     * @param levelConfig The level config
+     * @return boolean
+     */
     public boolean generateLevel(String name, @Nullable LevelConfig levelConfig) {
         if (name.isBlank()) {
             return false;
@@ -2276,7 +2312,7 @@ public class Server {
             Level level;
             try {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
-                String levelName = name + " Dim" + entry.getKey();
+                String levelName = name + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
                 if (this.isLevelLoaded(levelName)) {
                     log.warn("level {} has already been loaded!", levelName);
                     continue;
@@ -2297,7 +2333,7 @@ public class Server {
     }
     // endregion
 
-    // region Ban, OP and whitelist - Ban，OP与白名单
+    // region Ban, OP and Whitelist
     public BanList getNameBans() {
         return this.banByName;
     }
@@ -2362,7 +2398,7 @@ public class Server {
 
     // endregion
 
-    // region configs - 配置相关
+    // region configs
 
     public int getMaxPlayers() {
         return maxPlayers;
@@ -2379,39 +2415,37 @@ public class Server {
     }
 
     /**
-     * @return 服务器端口<br>server port
+     * @return The server port
      */
     public int getPort() {
-        return this.properties.get(ServerPropertiesKeys.SERVER_PORT, 19132);
+        return this.settings.baseSettings().port();
     }
 
     /**
-     * @return 可视距离<br>server view distance
+     * @return The server view distance
      */
     public int getViewDistance() {
-        return this.properties.get(ServerPropertiesKeys.VIEW_DISTANCE, 10);
+        return this.settings.gameplaySettings().viewDistance();
     }
 
     /**
-     * @return 服务器网络地址<br>server ip
+     * @return The server ip
      */
     public String getIp() {
-        return this.properties.get(ServerPropertiesKeys.SERVER_IP, "0.0.0.0");
+        return this.settings.baseSettings().ip();
     }
 
     /**
-     * @return 服务器是否会自动保存<br>Does the server automatically save
+     * @return Does the server automatically save
      */
     public boolean getAutoSave() {
         return this.autoSave;
     }
 
     /**
-     * 设置服务器自动保存
-     * <p>
      * Set server autosave
      *
-     * @param autoSave 是否自动保存<br>Whether to save automatically
+     * @param autoSave Whether to save automatically
      */
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
@@ -2421,26 +2455,21 @@ public class Server {
     }
 
     /**
-     * 得到服务器的gamemode
-     * <p>
      * Get the gamemode of the server
      *
      * @return gamemode id
      */
     public int getGamemode() {
-        try {
-            return this.properties.get(ServerPropertiesKeys.GAMEMODE, 0) & 0b11;
-        } catch (NumberFormatException exception) {
-            return getGamemodeFromString(this.properties.get(ServerPropertiesKeys.GAMEMODE, "survival")) & 0b11;
-        }
+        return this.settings.gameplaySettings().gamemode() & 0b11;
+
     }
 
     public boolean getForceGamemode() {
-        return this.properties.get(ServerPropertiesKeys.FORCE_GAMEMODE, false);
+        return this.settings.gameplaySettings().forceGamemode();
     }
 
     /**
-     * 默认{@code direct=false}
+     * default {@code direct=false}
      *
      * @see #getGamemodeString(int, boolean)
      */
@@ -2449,13 +2478,11 @@ public class Server {
     }
 
     /**
-     * 从gamemode id获取游戏模式字符串.
-     * <p>
      * Get game mode string from gamemode id.
      *
      * @param mode   gamemode id
-     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
-     * @return 游戏模式字符串<br>Game Mode String
+     * @param direct If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
+     * @return Gamemode string
      */
     public static String getGamemodeString(int mode, boolean direct) {
         return switch (mode) {
@@ -2468,15 +2495,13 @@ public class Server {
     }
 
     /**
-     * 从字符串获取gamemode
-     * <p>
      * Get gamemode from string
      *
-     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
-     * @return 游戏模式id<br>gamemode id
+     * @param gamemodeString A string representing the game mode, e.g., 0 for survival...
+     * @return gamemode id
      */
-    public static int getGamemodeFromString(String str) {
-        return switch (str.trim().toLowerCase(Locale.ENGLISH)) {
+    public static int getGamemodeFromString(String gamemodeString) {
+        return switch (gamemodeString.trim().toLowerCase(Locale.ENGLISH)) {
             case "0", "survival", "s" -> Player.SURVIVAL;
             case "1", "creative", "c" -> Player.CREATIVE;
             case "2", "adventure", "a" -> Player.ADVENTURE;
@@ -2486,100 +2511,65 @@ public class Server {
     }
 
     /**
-     * 从字符串获取游戏难度
-     * <p>
      * Get game difficulty from string
      *
-     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
-     * @return 游戏难度id<br>game difficulty id
+     * @param difficultyString A string representing the game difficulty, e.g., 0,peaceful...
+     * @return game difficulty id
      */
-    public static int getDifficultyFromString(String str) {
-        switch (str.trim().toLowerCase(Locale.ENGLISH)) {
-            case "0":
-            case "peaceful":
-            case "p":
-                return 0;
-
-            case "1":
-            case "easy":
-            case "e":
-                return 1;
-
-            case "2":
-            case "normal":
-            case "n":
-                return 2;
-
-            case "3":
-            case "hard":
-            case "h":
-                return 3;
-        }
-        return -1;
+    public static int getDifficultyFromString(String difficultyString) {
+        return switch (difficultyString.trim().toLowerCase(Locale.ENGLISH)) {
+            case "0", "peaceful", "p" -> 0;
+            case "1", "easy", "e" -> 1;
+            case "2", "normal", "n" -> 2;
+            case "3", "hard", "h" -> 3;
+            default -> -1;
+        };
     }
 
     /**
-     * 获得服务器游戏难度
-     * <p>
      * Get server game difficulty
      *
-     * @return 游戏难度id<br>game difficulty id
+     * @return game difficulty id
      */
     public int getDifficulty() {
-        if (this.difficulty == Integer.MAX_VALUE) {
-            this.difficulty = getDifficultyFromString(this.properties.get(ServerPropertiesKeys.DIFFICULTY, "1"));
-        }
-        return this.difficulty;
+        return this.settings.gameplaySettings().difficulty();
     }
 
     /**
-     * 设置服务器游戏难度
-     * <p>
-     * set server game difficulty
+     * Set server game difficulty
      *
-     * @param difficulty 游戏难度id<br>game difficulty id
+     * @param difficulty game difficulty id
      */
     public void setDifficulty(int difficulty) {
         int value = difficulty;
         if (value < 0) value = 0;
         if (value > 3) value = 3;
-        this.difficulty = value;
-        this.properties.get(ServerPropertiesKeys.DIFFICULTY, value);
+        this.settings.gameplaySettings().difficulty(value);
     }
 
     /**
-     * @return 是否开启白名单<br>Whether to start server whitelist
+     * @return Whether to start server whitelist
      */
     public boolean hasWhitelist() {
-        return this.properties.get(ServerPropertiesKeys.WHITE_LIST, false);
+        return this.settings.baseSettings().allowList();
     }
 
     /**
-     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
+     * @return Get server birth point protection radius
      */
     public int getSpawnRadius() {
-        return this.properties.get(ServerPropertiesKeys.SPAWN_PROTECTION, 16);
+        return this.settings.playerSettings().spawnRadius();
     }
 
     /**
-     * @return 服务器是否允许飞行<br>Whether the server allows flying
-     */
-    public boolean getAllowFlight() {
-        if (getAllowFlight == null) {
-            getAllowFlight = this.properties.get(ServerPropertiesKeys.ALLOW_FLIGHT, false);
-        }
-        return getAllowFlight;
-    }
-
-    /**
-     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
+     * @return Whether the server is in hardcore mode
      */
     public boolean isHardcore() {
-        return this.properties.get(ServerPropertiesKeys.HARDCORE, false);
+        return this.settings.gameplaySettings().hardcore();
     }
 
     /**
-     * @return 获取默认gamemode<br>Get default gamemode
+     * @return Get default gamemode
      */
     public int getDefaultGamemode() {
         if (this.defaultGamemode == Integer.MAX_VALUE) {
@@ -2589,7 +2579,7 @@ public class Server {
     }
 
     /**
-     * Set default gamemode for the server.
+     * Set the default gamemode for the server.
      *
      * @param defaultGamemode the default gamemode
      */
@@ -2599,10 +2589,10 @@ public class Server {
     }
 
     /**
-     * @return 得到服务器标题<br>Get server motd
+     * @return Get server motd
      */
     public String getMotd() {
-        return this.properties.get(ServerPropertiesKeys.MOTD, "PowerNukkitX Server");
+        return this.settings.baseSettings().motd();
     }
 
     /**
@@ -2611,17 +2601,17 @@ public class Server {
      * @param motd the motd content
      */
     public void setMotd(String motd) {
-        this.properties.get(ServerPropertiesKeys.MOTD, motd);
+        this.settings.baseSettings().motd(motd);
         this.getNetwork().getPong().motd(motd).update();
     }
 
     /**
-     * @return 得到服务器子标题<br>Get the server subheading
+     * @return Get the server subheading
      */
     public String getSubMotd() {
-        String subMotd = this.properties.get(ServerPropertiesKeys.SUB_MOTD, "v2.powernukkitx.com");
+        String subMotd = this.settings.baseSettings().subMotd();
         if (subMotd.isEmpty()) {
-            subMotd = "v2.powernukkitx.com";
+            subMotd = "powernukkitx.org";
         }
         return subMotd;
     }
@@ -2632,22 +2622,22 @@ public class Server {
      * @param subMotd the sub motd
      */
     public void setSubMotd(String subMotd) {
-        this.properties.get(ServerPropertiesKeys.SUB_MOTD, subMotd);
+        this.settings.baseSettings().subMotd(subMotd);
         this.getNetwork().getPong().subMotd(subMotd).update();
     }
 
     /**
-     * @return 是否强制使用服务器资源包<br>Whether to force the use of server resourcepack
+     * @return Whether to force the use of server resource pack
      */
     public boolean getForceResources() {
-        return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES, false);
+        return this.settings.gameplaySettings().forceResources();
     }
 
     /**
-     * @return 是否强制使用服务器资源包的同时允许加载客户端资源包<br>Whether to force the use of server resourcepack while allowing the loading of client resourcepack
+     * @return Whether to force the use of server resource pack while allowing the loading of client resource pack
      */
     public boolean getForceResourcesAllowOwnPacks() {
-        return this.properties.get(ServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, false);
+        return this.settings.gameplaySettings().allowClientPacks();
     }
 
     private LangCode mapInternalLang(String langName) {
@@ -2657,19 +2647,20 @@ public class Server {
             case "cht" -> LangCode.valueOf("zh_TW");
             case "cze" -> LangCode.valueOf("cs_CZ");
             case "deu" -> LangCode.valueOf("de_DE");
+            case "fil" -> LangCode.valueOf("tl_PH");
             case "fin" -> LangCode.valueOf("fi_FI");
             case "eng" -> LangCode.valueOf("en_US");
             case "fra" -> LangCode.valueOf("fr_FR");
             case "idn" -> LangCode.valueOf("id_ID");
             case "jpn" -> LangCode.valueOf("ja_JP");
             case "kor" -> LangCode.valueOf("ko_KR");
-            case "ltu" -> LangCode.valueOf("en_US");
+            case "ltu" -> LangCode.valueOf("lt_LT");
             case "pol" -> LangCode.valueOf("pl_PL");
             case "rus" -> LangCode.valueOf("ru_RU");
             case "spa" -> LangCode.valueOf("es_ES");
             case "tur" -> LangCode.valueOf("tr_TR");
             case "ukr" -> LangCode.valueOf("uk_UA");
-            case "vie" -> LangCode.valueOf("en_US");
+            case "vie" -> LangCode.valueOf("vi_VN");
             default -> throw new IllegalArgumentException();
         };
     }
@@ -2684,10 +2675,6 @@ public class Server {
 
     public ServerSettings getSettings() {
         return settings;
-    }
-
-    public ServerProperties getProperties() {
-        return properties;
     }
 
     public boolean isNetherAllowed() {
@@ -2707,7 +2694,7 @@ public class Server {
     }
     // endregion
 
-    // region threading - 并发基础设施
+    // region threading
 
     /**
      * Checks the current thread against the expected primary thread for the
@@ -2737,7 +2724,449 @@ public class Server {
         return computeThreadPool;
     }
 
-    //todo NukkitConsole 会阻塞关不掉
+    public boolean allowVibrantVisuals() {
+        return settings.gameplaySettings().allowVibrantVisuals();
+    }
+
+    public List<ExperimentEntry> getExperiments() {
+        return experiments;
+    }
+  
+  
+
+    /** Allow plugins to override the default DP group UUID (e.g., when migrating from BDS). */
+    public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
+        if (uuid == null || !DP_UUID_CANON.matcher(uuid).matches()) {
+            log.warn("DynamicProperties default group UUID rejected: '{}'", uuid);
+            return;
+        }
+        DP_DEFAULT_GROUP_UUID = uuid.toLowerCase();
+    }
+
+    public static String getDynamicPropertyRoot()               { return DP_ROOT; }
+    public static String getDefaultDynamicPropertiesGroupUUID() { return DP_DEFAULT_GROUP_UUID; }
+    public static int    getDynamicPropertiesMaxStringBytes()   { return DP_MAX_STRING_BYTES; }
+    public static double getDynamicPropertiesNumberAbsMax()     { return DP_NUMBER_ABS_MAX; }
+
+    /**
+     * Remove a DynamicProperty by key id.
+     *
+     * @param key the key id of the DynamicProperty
+     */
+    public Server removeDynamicProperty(String key) {
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) return this;
+
+        if (!root.contains(DP_ROOT)) return this;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+
+        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.contains(key)) return this;
+
+        group.remove(key);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, group);
+        return this;
+    }
+
+    /**
+     * Remove all DynamicProperties on the world.
+     */
+    public Server clearDynamicProperties() {
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
+
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) dyn = new CompoundTag();
+
+        dyn.putCompound(DP_DEFAULT_GROUP_UUID, new CompoundTag());
+        root.putCompound(DP_ROOT, dyn);
+
+        provider.setWorldDynamicProperties(root);
+        provider.setWorldDynamicPropertiesDirty(true);
+        return this;
+    }
+
+    /**
+     * Set a double int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param value the double int value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Double value) {
+        if (value == null) return removeDynamicProperty(key);
+        if (!isFiniteAndInRange(value)) {
+            log.warn("DynamicProperty '{}' rejected: out of numeric bounds or non-finite (value={})", key, value);
+            return this;
+        }
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putDouble(key, value);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param value the int value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Integer value) {
+        return setDynamicProperty(key, value == null ? null : value.doubleValue());
+    }
+
+    /**
+     * Set a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param value the int value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Float value) {
+        return setDynamicProperty(key, value == null ? null : value.doubleValue());
+    }
+
+    /**
+     * Set a boolean DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param bool the bool value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, Boolean bool) {
+        if (bool == null) return removeDynamicProperty(key);
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putBoolean(key, bool);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a string DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param string the string value of the DynamicProperty
+     */
+    public Server setDynamicProperty(String key, String string) {
+        if (string == null) return removeDynamicProperty(key);
+        if (!fitsUtf8Limit(string)) {
+            log.warn("DynamicProperty '{}' rejected: string exceeds {} UTF-8 bytes", key, DP_MAX_STRING_BYTES);
+            return this;
+        }
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putString(key, string);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a Vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param vec3 the vec3 value of the DynamicProperty
+     */
+    public Server setVec3DynamicProperty(String key, Vector3 vec3) {
+        if (vec3 == null) return removeDynamicProperty(key);
+        if (!isFiniteAndInRange(vec3.x) || !isFiniteAndInRange(vec3.y) || !isFiniteAndInRange(vec3.z)) {
+            log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, vec3.x, vec3.y, vec3.z);
+            return this;
+        }
+        ListTag<FloatTag> list = new ListTag<>();
+        list.add(new FloatTag((float) vec3.x));
+        list.add(new FloatTag((float) vec3.y));
+        list.add(new FloatTag((float) vec3.z));
+
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return this;
+
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putList(key, list);
+        saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
+        return this;
+    }
+
+    /**
+     * Set a Vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param xyz a map with keys "x","y","z" and numeric values, e.g. {x: 400, y: 60, z: 300}
+     */
+    public Server setVec3DynamicProperty(String key, Map<String, Number> xyz) {
+        if (xyz == null) return removeDynamicProperty(key);
+
+        Number nx = xyz.get("x"), ny = xyz.get("y"), nz = xyz.get("z");
+        if (nx == null || ny == null || nz == null) {
+            log.warn("DynamicProperty '{}' rejected: vec3 map must contain numeric keys 'x','y','z'", key);
+            return this;
+        }
+
+        // Delegate to the Vector3 overload (keeps validation + storage consistent)
+        return setVec3DynamicProperty(key, new Vector3(nx.doubleValue(), ny.doubleValue(), nz.doubleValue()));
+    }
+
+    /**
+     * Get a double int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the double int value or null if not available.
+     */
+    public Double getDoubleDynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+
+        return switch (t) {
+            case DoubleTag d -> d.data;
+            case FloatTag  f -> (double) f.data;
+            case IntTag    i -> (double) i.data;
+            case LongTag   l -> (double) l.data;
+            case ShortTag  s -> (double) s.data;
+            case ByteTag   b -> (double) b.data;
+            case StringTag s -> {
+                try { yield Double.parseDouble(s.data.trim()); }
+                catch (NumberFormatException ignored) { yield null; }
+            }
+            default -> null;
+        };
+    }
+
+    /**
+     * Get a double int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the double int value or defaultValue if not available.
+     */
+    public Double getDoubleDynamicProperty(String key, double defaultValue) {
+        Double d = getDoubleDynamicProperty(key);
+        return (d != null) ? d : defaultValue;
+    }
+
+    /**
+     * Get a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the int value or defaultValue if not available.
+     */
+    public Integer getIntDynamicProperty(String key) {
+        Double d = getDoubleDynamicProperty(key);
+        if (d == null) return null;
+        return (int) Math.floor(d);
+    }
+
+    /**
+     * Get a int DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the int value or defaultValue if not available.
+     */
+    public int getIntDynamicProperty(String key, int defaultValue) {
+        Integer i = getIntDynamicProperty(key);
+        return (i != null) ? i : defaultValue;
+    }
+
+    /**
+     * Get a float DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the float value or null if not available.
+     */
+    public Float getFloatDynamicProperty(String key) {
+        Double d = getDoubleDynamicProperty(key);
+        if (d == null) return null;
+        return d.floatValue();
+    }
+
+    /**
+     * Get a float DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the float value or defaultValue if not available.
+     */
+    public float getFloatDynamicProperty(String key, float defaultValue) {
+        Float f = getFloatDynamicProperty(key);
+        return (f != null) ? f : defaultValue;
+    }
+
+    /**
+     * Get a boolean DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the bool value or false if not available.
+     */
+    public Boolean getBoolDynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+        if (t instanceof ByteTag)   return ((ByteTag) t).data != 0;
+        Double d = getDoubleDynamicProperty(key);
+        if (d != null) return d != 0.0;
+        if (t instanceof StringTag) {
+            String s = ((StringTag) t).data.trim().toLowerCase();
+            if ("true".equals(s) || "1".equals(s))  return true;
+            if ("false".equals(s) || "0".equals(s)) return false;
+        }
+        return null;
+    }
+
+    /**
+     * Get a boolean DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the bool value or defaultValue if not available.
+     */
+    public boolean getBoolDynamicProperty(String key, boolean defaultValue) {
+        Boolean b = getBoolDynamicProperty(key);
+        return (b != null) ? b : defaultValue;
+    }
+
+    /**
+     * Get a string DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the bool value or null if not available.
+     */
+    public String getStringDynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+
+        return switch (t) {
+            case StringTag s -> s.data;
+            case DoubleTag d -> String.valueOf(d.data);
+            case FloatTag  f -> String.valueOf(f.data);
+            case IntTag    i -> String.valueOf(i.data);
+            case LongTag   l -> String.valueOf(l.data);
+            case ShortTag  s -> String.valueOf(s.data);
+            case ByteTag   b -> String.valueOf(b.data);
+            default -> null;
+        };
+    }
+
+    /**
+     * Get a string DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @param defaultValue the default value to be returned if null.
+     * @return the string value or defaultValue if not available.
+     */
+    public String getStringDynamicProperty(String key, String defaultValue) {
+        String s = getStringDynamicProperty(key);
+        return (s != null) ? s : defaultValue;
+    }
+
+    /**
+     * Get a vec3 DynamicProperty.
+     *
+     * @param key the key id of the DynamicProperty
+     * @return the bool value or null if not available.
+     */
+    public Vector3 getVec3DynamicProperty(String key) {
+        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+
+        if (t instanceof ListTag<?> list &&
+            list.size() == 3 &&
+            list.get(0) instanceof FloatTag fx &&
+            list.get(1) instanceof FloatTag fy &&
+            list.get(2) instanceof FloatTag fz) {
+
+            float x = fx.data;
+            float y = fy.data;
+            float z = fz.data;
+            return new Vector3(x, y, z);
+        }
+        return null;
+    }
+
+    // Dynamic Properties Helpers start
+    private static boolean isFiniteAndInRange(double v) {
+        return !Double.isNaN(v) && !Double.isInfinite(v) && Math.abs(v) <= DP_NUMBER_ABS_MAX;
+    }
+
+    private static boolean fitsUtf8Limit(String s) {
+        if (s == null) return false;
+        int byteCount = s.getBytes(StandardCharsets.UTF_8).length;
+        return byteCount <= DP_MAX_STRING_BYTES;
+    }
+
+    private LevelDBProvider getWorldDynamicPropertiesProvider() {
+        Level level = this.getDefaultLevel();
+        if (level == null) return null;
+
+        LevelProvider provider = level.getProvider();
+        if (!(provider instanceof LevelDBProvider ldb)) return null;
+
+        return ldb;
+    }
+
+    private CompoundTag ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
+
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT) || dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
+        }
+
+        CompoundTag group = dyn.getCompound(groupId);
+        if (group == null) group = new CompoundTag();
+
+        dyn.putCompound(groupId, group);
+        provider.setWorldDynamicProperties(root);
+        return group;
+    }
+
+
+    private CompoundTag getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null || !root.contains(DP_ROOT)) return null;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) return null;
+        return dyn.getCompound(groupId);
+    }
+
+    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, CompoundTag group) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
+
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT) || dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
+        }
+
+        dyn.putCompound(groupId, group);
+        provider.setWorldDynamicProperties(root);
+        provider.setWorldDynamicPropertiesDirty(true);
+    }
+
+    private Tag findWorldDynamicPropertyTagInConfiguredGroup(String key) {
+        LevelDBProvider provider = getWorldDynamicPropertiesProvider();
+        if (provider == null) return null;
+
+        CompoundTag group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.contains(key)) return null;
+        return group.get(key);
+    }
+    // Dynamic Properties Helpers end
+
+  
+  
+    // TODO: It will block NukkitConsole and cannot be turned off.
     private class ConsoleThread extends Thread implements InterruptibleThread {
         public ConsoleThread() {
             super("Console Thread");

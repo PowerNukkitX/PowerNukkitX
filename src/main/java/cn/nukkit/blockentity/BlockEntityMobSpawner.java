@@ -101,6 +101,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
         this.scheduleUpdate();
         super.initBlockEntity();
+        this.level.getScheduler().scheduleTask(this::spawnToAll);
     }
 
     @Override
@@ -141,11 +142,11 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                                     this.level
                             );
                     Block block = level.getBlock(pos);
-                    //Mobs shouldn't spawn in walls and they shouldn't retry to
+                    //Mobs shouldn't spawn in walls, and they shouldn't retry to
                     if (
-                            block.getId() != Block.AIR && !(block instanceof BlockFlowable) &&
-                                    block.getId() != BlockID.FLOWING_WATER && block.getId() != BlockID.WATER &&
-                                    block.getId() != BlockID.LAVA && block.getId() != BlockID.FLOWING_LAVA
+                            !block.getId().equals(Block.AIR) && !(block instanceof BlockFlowable) &&
+                                    !block.getId().equals(BlockID.FLOWING_WATER) && !block.getId().equals(BlockID.WATER) &&
+                                    !block.getId().equals(BlockID.LAVA) && !block.getId().equals(BlockID.FLOWING_LAVA)
                     ) {
                         continue;
                     }
@@ -153,14 +154,19 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                         continue;
                     }
 
+                    Entity ent = Entity.createEntity(this.entityId, pos);
+                    if(ent instanceof EntityMob && getLevel().getFullLight(this) > 7) {
+                        ent.close();
+                        continue;
+                    }
                     CreatureSpawnEvent ev = new CreatureSpawnEvent(this.entityId, pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.SPAWNER);
                     level.getServer().getPluginManager().callEvent(ev);
 
                     if (ev.isCancelled()) {
+                        ent.close();
                         continue;
                     }
 
-                    Entity ent = Entity.createEntity(this.entityId, pos);
                     if(ent != null) {
                         ent.namedTag.putBoolean("spawner", true);
                         ent.spawnToAll();

@@ -104,4 +104,9 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
     public String getOriginalName() {
         return "Piglin Brute";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("piglin", "adult_piglin", "piglin_brute", "monster");
+    }
 }

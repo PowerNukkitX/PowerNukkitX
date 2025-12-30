@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCarpet;
 import cn.nukkit.block.BlockID;
@@ -13,8 +12,8 @@ import cn.nukkit.math.Vector3;
 import java.util.Arrays;
 
 /**
- * 处理陆地行走实体运动
- * todo: 有待解耦
+ * Handling land walking entity movement
+ * todo: To be decoupled
  */
 
 
@@ -40,7 +39,7 @@ public class WalkController implements IController {
         }
 
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
-            //clone防止异步导致的NPE
+            // Clone prevents NPE caused by asynchronous
             Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeed();
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
@@ -61,13 +60,15 @@ public class WalkController implements IController {
             var dy = 0.0d;
             Block target = entity.getLevel().getBlock(entity.getMoveDirectionStart());
             if (target.down().isSolid() && relativeVector.y > 0 && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN || (entity.isTouchingWater() && !(target instanceof BlockLiquid || target.getLevel().getBlock(target, 1) instanceof BlockLiquid)  && target.down().isSolid())) {
-                //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
+                // note: From the BDS packet capture information, the collision box of the stairs is the same as that of the half brick on the server side, and the height is 0.5
                 Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, this::canJump);
-                //计算出需要向上移动的高度
+                // Calculate the height you need to move upward
                 double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                 double diffY = maxY - entity.getY();
-                dy += entity.getJumpingMotion(diffY);
-                currentJumpCoolDown = 0;
+                if (diffY > 0.01 && diffY <= 1.1) { // 1.1 gives some leeway for stairs etc.
+                    dy += entity.getJumpingMotion(diffY);
+                    currentJumpCoolDown = 0;
+                }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             entity.setDataFlag(EntityFlag.MOVING, true);
@@ -83,7 +84,7 @@ public class WalkController implements IController {
     }
 
     protected void needNewDirection(EntityIntelligent entity) {
-        //通知需要新的移动目标
+        // Notification requires new moving target
         entity.setShouldUpdateMoveDirection(true);
     }
 

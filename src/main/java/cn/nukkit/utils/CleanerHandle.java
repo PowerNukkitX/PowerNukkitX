@@ -2,6 +2,11 @@ package cn.nukkit.utils;
 
 import java.lang.ref.Cleaner;
 
+/**
+ * Utility class for managing automatic resource cleanup using Java's Cleaner API.
+ * Registers a resource for cleanup when the CleanerHandle is garbage collected.
+ * @param <RESOURCE> The type of resource to manage (must be AutoCloseable)
+ */
 public final class CleanerHandle<RESOURCE extends AutoCloseable> {
     private static final Cleaner CLEANER = Cleaner.create();
     private final Cleaner.Cleanable cleanable;
@@ -24,11 +29,19 @@ public final class CleanerHandle<RESOURCE extends AutoCloseable> {
         }
     }
 
+    /**
+     * Constructs a CleanerHandle for the given resource.
+     * @param resource The resource to manage
+     */
     public CleanerHandle(RESOURCE resource) {
         this.resource = resource;
         this.cleanable = CLEANER.register(this, new CleanerTask<>(resource));
     }
 
+    /**
+     * Returns the managed resource.
+     * @return The managed resource
+     */
     public RESOURCE getResource() {
         return resource;
     }

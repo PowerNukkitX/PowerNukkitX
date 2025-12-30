@@ -2,13 +2,17 @@ package cn.nukkit.registry;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFakeInventory;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
+import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
+import cn.nukkit.level.entity.spawners.*;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -18,7 +22,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
@@ -28,13 +31,17 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Slf4j
 public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.EntityDefinition, Class<? extends Entity>, Class<? extends Entity>> {
@@ -44,13 +51,17 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final Int2ObjectArrayMap<String> RID2ID = new Int2ObjectArrayMap<>();
     private static final Object2ObjectOpenHashMap<String, EntityRegistry.EntityDefinition> DEFINITIONS = new Object2ObjectOpenHashMap<>();
     private static final List<EntityRegistry.EntityDefinition> CUSTOM_ENTITY_DEFINITIONS = new ArrayList<>();
+    private static final List<SpawnRule> SPAWN_RULES = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final ConcurrentHashMap<String, CustomEntityDefinition> CUSTOM_ENTITY_DEFINITION_MAP = new ConcurrentHashMap<>();
     private static byte[] TAG;
 
 
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
+        registerInternal(new EntityDefinition(FAKE_INVENTORY, "", 9999, false, false), EntityFakeInventory.class);
+
         registerInternal(new EntityDefinition(CHICKEN, "", 10, true, true), EntityChicken.class);
         registerInternal(new EntityDefinition(COW, "", 11, true, true), EntityCow.class);
         registerInternal(new EntityDefinition(PIG, "", 12, true, true), EntityPig.class);
@@ -70,7 +81,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(SKELETON_HORSE, "", 26, true, true), EntitySkeletonHorse.class);
         registerInternal(new EntityDefinition(ZOMBIE_HORSE, "", 27, true, true), EntityZombieHorse.class);
         registerInternal(new EntityDefinition(POLAR_BEAR, "", 28, true, true), EntityPolarBear.class);
-        registerInternal(new EntityDefinition(LLAMA, "", 29, true, true), EntityLlamaSpit.class);
+        registerInternal(new EntityDefinition(LLAMA, "", 29, true, true), EntityLlama.class);
         registerInternal(new EntityDefinition(PARROT, "", 30, true, true), EntityParrot.class);
         registerInternal(new EntityDefinition(DOLPHIN, "", 31, true, true), EntityDolphin.class);
         registerInternal(new EntityDefinition(ZOMBIE, "", 32, true, true), EntityZombie.class);
@@ -178,6 +189,61 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(WIND_CHARGE_PROJECTILE, "", 143, false, false), EntityWindCharge.class);
         registerInternal(new EntityDefinition(BOGGED, "", 144, true, true), EntityBogged.class);
         registerInternal(new EntityDefinition(CREAKING, "", 146, true, true), EntityCreaking.class);
+        registerInternal(new EntityDefinition(HAPPY_GHAST, "", 147, true, true), EntityHappyGhast.class);
+        registerInternal(new EntityDefinition(COPPER_GOLEM, "", 148, true, true), EntityCopperGolem.class);
+        registerInternal(new EntityDefinition(NAUTILUS, "", 149, true, true), EntityNautilus.class);
+        registerInternal(new EntityDefinition(ZOMBIE_NAUTILUS, "", 150, true, true), EntityZombieNautilus.class);
+        registerInternal(new EntityDefinition(PARCHED, "", 151, true, true), EntityParched.class);
+        registerInternal(new EntityDefinition(CAMEL_HUSK, "", 152, true, true), EntityCamelHusk.class);
+
+        registerSpawner(new SpawnRuleArmadillo());
+        registerSpawner(new SpawnRuleAxolotl());
+        registerSpawner(new SpawnRuleBat());
+        registerSpawner(new SpawnRuleBee());
+        registerSpawner(new SpawnRuleBogged());
+        registerSpawner(new SpawnRuleCamel());
+        registerSpawner(new SpawnRuleChicken());
+        registerSpawner(new SpawnRuleCod());
+        registerSpawner(new SpawnRuleCow());
+        registerSpawner(new SpawnRuleCreeper());
+        registerSpawner(new SpawnRuleDolphin());
+        registerSpawner(new SpawnRuleDonkey());
+        registerSpawner(new SpawnRuleDrowned());
+        registerSpawner(new SpawnRuleEnderman());
+        registerSpawner(new SpawnRuleFox());
+        registerSpawner(new SpawnRuleFrog());
+        registerSpawner(new SpawnRuleGhast());
+        registerSpawner(new SpawnRuleGlowSquid());
+        registerSpawner(new SpawnRuleGoat());
+        registerSpawner(new SpawnRuleHoglin());
+        registerSpawner(new SpawnRuleHorse());
+        registerSpawner(new SpawnRuleHusk());
+        registerSpawner(new SpawnRuleLlama());
+        registerSpawner(new SpawnRuleMagmaCube());
+        registerSpawner(new SpawnRuleMooshroom());
+        registerSpawner(new SpawnRuleOcelot());
+        registerSpawner(new SpawnRulePanda());
+        registerSpawner(new SpawnRuleParrot());
+        registerSpawner(new SpawnRulePhantom());
+        registerSpawner(new SpawnRulePig());
+        registerSpawner(new SpawnRulePiglin());
+        registerSpawner(new SpawnRulePolarBear());
+        registerSpawner(new SpawnRulePufferfish());
+        registerSpawner(new SpawnRuleRabbit());
+        registerSpawner(new SpawnRuleSalmon());
+        registerSpawner(new SpawnRuleSheep());
+        registerSpawner(new SpawnRuleSkeleton());
+        registerSpawner(new SpawnRuleSlime());
+        registerSpawner(new SpawnRuleSpider());
+        registerSpawner(new SpawnRuleSquid());
+        registerSpawner(new SpawnRuleStray());
+        registerSpawner(new SpawnRuleStrider());
+        registerSpawner(new SpawnRuleTropicalFish());
+        registerSpawner(new SpawnRuleTurtle());
+        registerSpawner(new SpawnRuleWitch());
+        registerSpawner(new SpawnRuleWolf());
+        registerSpawner(new SpawnRuleZombie());
+        registerSpawner(new SpawnRuleZombieVillager());
 
         this.rebuildTag();
     }
@@ -207,9 +273,11 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         return Collections.unmodifiableList(CUSTOM_ENTITY_DEFINITIONS);
     }
 
+    public List<SpawnRule> getSpawnRules() {
+        return Collections.unmodifiableList(SPAWN_RULES);
+    }
+
     /**
-     * 获得全部实体的网络id
-     * <p>
      * Get the network id of all entities
      *
      * @return the known entity ids
@@ -223,8 +291,6 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     /**
-     * 获取全部已经注册的实体，包括自定义实体
-     * <p>
      * Get all registered entities, including custom entities
      *
      * @return the known entities
@@ -311,6 +377,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         RID2ID.clear();
         DEFINITIONS.clear();
         CUSTOM_ENTITY_DEFINITIONS.clear();
+        CUSTOM_ENTITY_DEFINITION_MAP.clear();
         init();
     }
 
@@ -361,62 +428,133 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     /**
      * register custom entity
      */
-    public void registerCustomEntity(Plugin plugin, CustomEntityDefinition key, Class<? extends Entity> value) throws RegisterException {
-        if (CustomEntity.class.isAssignableFrom(value)) {
-            if (CLASS.putIfAbsent(key.id, value) == null) {
-                try {
-                    FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-                    FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-                int rid = RUNTIME_ID.getAndIncrement();
-                ID2RID.put(key.id, rid);
-                RID2ID.put(rid, key.id);
-                EntityDefinition entityDefinition = new EntityDefinition(key.id, key.bid, rid, key.hasSpawnegg, key.summonable);
-                DEFINITIONS.put(key.id, entityDefinition);
-                CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
-            } else {
-                throw new RegisterException("This Entity has already been registered with the identifier: " + key.id);
+    public void registerCustomEntity(Plugin plugin, Class<? extends Entity> value) throws RegisterException {
+        try {
+            if (!CustomEntity.class.isAssignableFrom(value)) {
+                throw new RegisterException("This class does not implement the CustomEntity interface and cannot be registered as a custom entity!");
             }
-        } else {
-            throw new RegisterException("This class does not implement the CustomEntity interface and cannot be registered as a custom entity!");
+
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
+            CustomEntityDefinition def = resolveDefinitionFromClass(value);
+            String id = def.id();
+
+            if (CLASS.putIfAbsent(id, value) != null) {
+                throw new RegisterException("This entity has already been registered with the identifier: " + id);
+            }
+
+            FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false);
+            FAST_NEW.put(id, runtimeCtor);
+
+            int rid = RUNTIME_ID.getAndIncrement();
+            ID2RID.put(id, rid);
+            RID2ID.put(rid, id);
+            EntityDefinition entityDefinition = new EntityDefinition(id, def.eid(), rid, def.hasSpawnEgg(), def.isSummonable());
+            DEFINITIONS.put(id, entityDefinition);
+            CUSTOM_ENTITY_DEFINITIONS.add(entityDefinition);
+            CUSTOM_ENTITY_DEFINITION_MAP.put(id, def);
+
+            try {
+                EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
+                for (EntityProperty prop : props) {
+                    EntityProperty.register(id, prop);
+                }
+            } catch (NoSuchFieldException ignored) {
+            } catch (IllegalAccessException e) {
+                log.error("Failed to access PROPERTIES for custom entity: {}", id, e);
+            }
+
+            if (def.hasSpawnEgg()) {
+                String eggId = id + "_spawn_egg";
+                Registries.ITEM.registerSpawnEgg(eggId);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RegisterException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private static final String[] PREFERRED_METHODS = { "definition", "getDefinition" };
+    private CustomEntityDefinition resolveDefinitionFromClass(Class<?> clazz) throws RegisterException {
+        try {
+            var f = clazz.getField("DEF");
+            if (Modifier.isStatic(f.getModifiers())
+                    && CustomEntityDefinition.class.isAssignableFrom(f.getType())) {
+                var def = (CustomEntityDefinition) f.get(null);
+                if (def != null) return def;
+            }
+        } catch (NoSuchFieldException ignored) {
+        } catch (IllegalAccessException e) {
+            log.warn("Found static field DEF on {} but couldn't read it: {}", clazz.getName(), e.toString());
+        }
+
+        for (String name : PREFERRED_METHODS) {
+            try {
+                var m = clazz.getMethod(name);
+                if (Modifier.isStatic(m.getModifiers())
+                        && m.getParameterCount() == 0
+                        && CustomEntityDefinition.class.isAssignableFrom(m.getReturnType())) {
+                    return (CustomEntityDefinition) m.invoke(null);
+                }
+            } catch (NoSuchMethodException ignored) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RegisterException("Failed to call static " + name + "() on " + clazz.getName(), e);
+            }
+        }
+
+        for (var m : clazz.getMethods()) {
+            if (Modifier.isStatic(m.getModifiers())
+                    && m.getParameterCount() == 0
+                    && CustomEntityDefinition.class.isAssignableFrom(m.getReturnType())) {
+                try {
+                    log.warn("Using non-standard static method {}() on {} for CustomEntityDefinition (prefer DEF field or definition()/getDefinition()).",
+                            m.getName(), clazz.getName());
+                    return (CustomEntityDefinition) m.invoke(null);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RegisterException("Failed to call static " + m.getName() + "() on " + clazz.getName(), e);
+                }
+            }
+        }
+
+        throw new RegisterException("Could not resolve CustomEntityDefinition for " + clazz.getName()
+                    + ". Provide one of: static DEF field; or a static definition()/getDefinition() method.");
     }
 
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
         try {
             register(key, value);
+
+            // Attempt to register entity properties if they exist
+            try {
+                EntityProperty[] props = (EntityProperty[]) value.getField("PROPERTIES").get(null);
+                for (EntityProperty prop : props) {
+                    EntityProperty.register(key.id(), prop);
+                }
+            } catch (NoSuchFieldException ignored) {
+                // Entity does not declare PROPERTIES
+            }
+
         } catch (RegisterException e) {
             log.error("{}", e.getCause().getMessage());
+        } catch (IllegalAccessException e) {
+            log.error("Failed to access PROPERTIES for: {}", key.id(), e);
         }
+    }
+
+    public void registerSpawner(@NotNull SpawnRule spawnRule) {
+        SPAWN_RULES.add(spawnRule);
     }
 
     private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
 
-    @Getter
-    public static final class CustomEntityDefinition {
-        private final String id;
-        private final String bid;
-        private final boolean hasSpawnegg;
-        private final boolean summonable;
-
-        public CustomEntityDefinition(String id, String bid, boolean hasSpawnegg, boolean summonable) {
-            this.id = id;
-            this.bid = bid;
-            this.hasSpawnegg = hasSpawnegg;
-            this.summonable = summonable;
-        }
-    }
-
-    public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnegg, boolean summonable) {
+    public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnEgg, boolean isSummonable) {
         public CompoundTag toNBT() {
             return new CompoundTag()
                     .putString("bid", bid)
-                    .putBoolean("hasspawnegg", hasSpawnegg)
+                    .putBoolean("hasspawnegg", hasSpawnEgg)
                     .putString("id", id)
                     .putInt("rid", rid)
-                    .putBoolean("summonable", summonable);
+                    .putBoolean("summonable", isSummonable);
         }
     }
 
@@ -425,7 +563,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     }
 
     public void rebuildTag() {
-        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("entity_identifiers.nbt")) {
+        try (InputStream inputStream = Nukkit.class.getModule().getResourceAsStream("gamedata/kaooot/entity_identifiers.nbt")) {
             if (inputStream == null) {
                 throw new AssertionError("Could not find entity_identifiers.nbt");
             }
@@ -433,13 +571,22 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             BufferedInputStream bis = new BufferedInputStream(inputStream);
             CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+
+            // Add fake inventory entity definition
+            EntityRegistry.EntityDefinition fakeEntityInventory = Registries.ENTITY.getEntityDefinition(EntityID.FAKE_INVENTORY);
+            list.add(fakeEntityInventory.toNBT());
+
             for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
                 list.add(customEntityDefinition.toNBT());
             }
             nbt.putList("idlist", list);
             TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
-            throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
+            throw new AssertionError("Error whilst loading entity_identifiers.nbt", e);
         }
+    }
+
+    public static @Nullable CustomEntityDefinition getCustomEntityDefinitionById(String id) {
+        return CUSTOM_ENTITY_DEFINITION_MAP.get(id);
     }
 }

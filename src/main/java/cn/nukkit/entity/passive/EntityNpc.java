@@ -15,6 +15,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.NPCRequestPacket;
+
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -42,7 +44,6 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         super(chunk, nbt);
     }
 
-
     @Override
     public float getWidth() {
         return 0.6f;
@@ -66,6 +67,16 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     @Override
     public String getOriginalName() {
         return "NPC";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("npc", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override
@@ -140,8 +151,8 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
-        //另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
+        //For Creative Mode players, the sceneName of the dialog sent by the NPC must be empty; otherwise, the client will not allow modification of the dialog content.
+        //Additionally, we do not need to record dialogs sent to Creative Mode players, firstly because we cannot clear them, and secondly because it is unnecessary.
         player.showDialogWindow(this.dialog, !player.isCreative());
         return true;
     }

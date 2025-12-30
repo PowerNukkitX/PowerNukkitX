@@ -5,7 +5,6 @@ public final class Registries {
     public static final PacketRegistry PACKET = new PacketRegistry();
     public static final EntityRegistry ENTITY = new EntityRegistry();
     public static final BlockEntityRegistry BLOCKENTITY = new BlockEntityRegistry();
-    public static final BlockState2ItemMetaRegistry BLOCKSTATE_ITEMMETA = new BlockState2ItemMetaRegistry();
     public static final BlockStateRegistry BLOCKSTATE = new BlockStateRegistry();
     public static final ItemRuntimeIdRegistry ITEM_RUNTIMEID = new ItemRuntimeIdRegistry();
     public static final BlockRegistry BLOCK = new BlockRegistry();
@@ -15,6 +14,9 @@ public final class Registries {
     public static final FuelRegistry FUEL = new FuelRegistry();
     public static final GeneratorRegistry GENERATOR = new GeneratorRegistry();
     public static final GenerateStageRegistry GENERATE_STAGE = new GenerateStageRegistry();
+    public static final PopulatorRegistry POPULATOR = new PopulatorRegistry();
+    public static final GenerateFeatureRegistry GENERATE_FEATURE = new GenerateFeatureRegistry();
+    public static final StructureRegistry STRUCTURE = new StructureRegistry();
     public static final EffectRegistry EFFECT = new EffectRegistry();
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
 }

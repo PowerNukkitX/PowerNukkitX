@@ -105,6 +105,11 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("zombie_pigman", "undead", "monster", "mob");
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }

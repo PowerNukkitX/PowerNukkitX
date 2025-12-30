@@ -1,12 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.enums.DirtType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
-import javax.annotation.Nullable;
 
 /**
  * @author xtypr

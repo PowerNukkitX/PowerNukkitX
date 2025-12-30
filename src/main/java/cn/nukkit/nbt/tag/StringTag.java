@@ -1,11 +1,8 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class StringTag extends Tag {

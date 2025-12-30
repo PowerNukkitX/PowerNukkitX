@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.ClimateVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -11,25 +12,42 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.InLoveExecutor;
+import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityCow extends EntityAnimal implements EntityWalkable {
+public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVariant {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:climate_variant", new String[]{
+            "temperate",
+            "warm",
+            "cold"
+        }, "temperate", true)
+    };
+
     @Override
     @NotNull public String getIdentifier() {
         return COW;
@@ -52,7 +70,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -91,19 +109,43 @@ public class EntityCow extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        if (!this.isBaby()) {
-            return new Item[]{Item.get(Item.LEATHER, 0, Utils.rand(0, 2)), Item.get(((this.isOnFire()) ? Item.COOKED_BEEF : Item.BEEF), 0, Utils.rand(1, 3))};
-        }
-        return Item.EMPTY_ARRAY;
+    public Set<String> typeFamily() {
+        return Set.of("cow", "mob");
     }
 
-    
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (this.isBaby()) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        int beefAmount = Utils.rand(1, 3 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_BEEF : Item.BEEF,
+                0,
+                beefAmount
+        ));
+
+        if (Utils.rand(0f, 1f) < (2f / 3f)) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
 
     @Override
     protected void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
+        if(namedTag.contains("variant")) {
+            setVariant(Variant.get(namedTag.getString("variant")));
+        } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
     }
 
     @Override

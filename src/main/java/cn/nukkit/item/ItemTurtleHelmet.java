@@ -16,7 +16,7 @@ public class ItemTurtleHelmet extends ItemArmor {
 
     @Override
     public int getTier() {
-        return ItemArmor.TIER_OTHER;
+        return Item.WEARABLE_TIER_OTHER;
     }
 
     @Override

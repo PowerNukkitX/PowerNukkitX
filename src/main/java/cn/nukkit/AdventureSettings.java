@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * AdventureSettings class for managing player abilities and permissions.
- * Author: MagicDroidX (Nukkit Project)
+ * @author MagicDroidX (Nukkit Project)
  */
 public class AdventureSettings implements Cloneable {
 
@@ -139,13 +139,9 @@ public class AdventureSettings implements Cloneable {
     }
 
     public void update() {
-        /*
-        Permission to send to all players to enable them to see each other.
-        Make sure it will be sent to yourself
-        (e.g.: There is no such player among the online players when the player enters the server)
-         */
-        Collection<Player> players = new HashSet<>(player.getServer().getOnlinePlayers().values());
-        players.add(this.player);
+        //Permission to send to all players so they can see each other
+        //Make sure it will be sent to yourself (e.g.: there is no such player among the online players when the player enters the server)
+        Collection<Player> players = new HashSet<>(this.player.getServer().getOnlinePlayers().values());
         sendAbilities(players);
         updateAdventureSettings();
     }
@@ -153,7 +149,7 @@ public class AdventureSettings implements Cloneable {
 
     /**
      * This method will be called when the player's OP status changes.
-     * Note that this method does not send a packet to the client to refresh the privilege information, you need to manually call the update() method to do so
+     * Note that this method does not send a packet to the client to refresh the privilege information; you need to manually call the update() method to do so
      * @param op is OP or not
      */
     public void onOpChange(boolean op) {

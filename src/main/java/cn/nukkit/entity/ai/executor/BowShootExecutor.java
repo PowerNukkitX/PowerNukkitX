@@ -90,8 +90,8 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
         Location clone = this.target.getLocation();
-
-        if (entity.distanceSquared(target) > maxShootDistanceSquared) {
+        boolean canSee = entity.hasLineOfSight(target);
+        if (entity.distanceSquared(target) > maxShootDistanceSquared || !canSee) {
             //更新寻路target
             setRouteTarget(entity, clone);
         } else {
@@ -100,7 +100,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         //更新视线target
         setLookTarget(entity, clone);
 
-        if (tick2 == 0 && tick1 > coolDownTick) {
+        if (tick2 == 0 && tick1 > coolDownTick && canSee) {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
                 this.tick2++;
@@ -126,7 +126,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -140,7 +140,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

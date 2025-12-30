@@ -6,18 +6,15 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.CreatureSpawnEvent;
 import cn.nukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -63,29 +60,16 @@ public class ItemSpawnEgg extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (player.isAdventure()) {
-            return false;
-        }
+        if (player.isAdventure()) return false;
 
         IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        if (chunk == null) return false;
 
-        if (chunk == null) {
-            return false;
-        }
+        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
+        float yaw = java.util.concurrent.ThreadLocalRandom.current().nextFloat() * 360f;
+        Location loc = new Location(block.getX() + 0.5, spawnY, block.getZ() + 0.5, yaw, 0f, level);
 
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(block.getX() + 0.5))
-                        .add(new DoubleTag(target.getBoundingBox() == null ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001f))
-                        .add(new DoubleTag(block.getZ() + 0.5)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(new Random().nextFloat() * 360))
-                        .add(new FloatTag(0)));
-
+        CompoundTag nbt = Entity.getDefaultNBT(loc);
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
         }
@@ -93,25 +77,20 @@ public class ItemSpawnEgg extends Item {
         int networkId = getEntityNetworkId();
         CreatureSpawnEvent ev = new CreatureSpawnEvent(networkId, block, nbt, SpawnReason.SPAWN_EGG);
         level.getServer().getPluginManager().callEvent(ev);
-
-        if (ev.isCancelled()) {
-            return false;
-        }
+        if (ev.isCancelled()) return false;
 
         Entity entity = Entity.createEntity(networkId, chunk, nbt);
+        if (entity == null) return false;
 
-        if (entity != null) {
-            if (player.isSurvival()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            }
-            entity.spawnToAll();
-
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, entity.clone(), VibrationType.ENTITY_PLACE));
-
-            return true;
+        if (player.isSurvival()) {
+            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
         }
 
-        return false;
+        entity.spawnToAll();
+        level.getVibrationManager().callVibrationEvent(
+                new VibrationEvent(player, entity.clone(), VibrationType.ENTITY_PLACE)
+        );
+        return true;
     }
 
     public int getEntityNetworkId() {

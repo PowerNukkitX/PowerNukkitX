@@ -79,7 +79,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @NotNull
@@ -229,40 +229,41 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     }
 
     /**
-     * 实现了此接口的方块可以放入花盆中
+     * Blocks implementing this interface can be placed in flower pots.
      */
     public interface FlowerPotBlock {
 
         /**
-         * 获取方块在花盆NBT中的标签<p/>
-         * 形如以下形式：<p/>
+         * Retrieve the tag of a block in the flowerpot's NBT file<p/>
+         * Formatted as follows:<p/>
          * {@code
-         * "PlantBlock": {
-         * "name": "minecraft:red_flower",
-         * "states": {
-         * "flower_type": "poppy"
+         * “PlantBlock”: {
+         * “name”: “minecraft:red_flower”,
+         * “states”: {
+         * “flower_type”: “poppy”
          * },
-         * "version": 17959425i
-         * "itemId": xxx,
-         * "itemMeta": xxx
+         * “version”: 17959425i
+         * “itemId”: xxx,
+         * “itemMeta”: xxx
          * }
          * }<p/>
-         * 请注意，必须在这个tag中包含键"itemId"与"itemMeta"。服务端将通过读取这两个参数快速重建Item对象，而不是通过stateId重建。这太慢了
+         * Note: The keys “itemId” and “itemMeta” must be included within this tag. The server will rapidly reconstruct the Item object by reading these two parameters, rather than rebuilding via stateId, which is too slow.
          *
-         * @return 方块在花盆NBT中的标签
+         * @return The tag of the block in the flowerpot's NBT file
          */
+
         default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
             var tag = block.getBlockState().getBlockStateTag().copy();
             var item = block.toItem();
             return tag.putString("itemId", item.getId())
-                    .putInt("itemMeta", item.getDamage()); //only exist in PNX
+                    .putInt("itemMeta", item.getDamage()); // only exists in PNX
         }
 
         /**
-         * 对于高草丛来说，只有状态为"fern"的方块才能放入花盆中
+         * For tall grass, only blocks in the “fern” state can be placed in flower pots.
          *
-         * @return 是否是可作为花盆方块的状态
+         * @return Whether the block is in a state suitable for use as a flower pot.
          */
         default boolean isPotBlockState() {
             return true;

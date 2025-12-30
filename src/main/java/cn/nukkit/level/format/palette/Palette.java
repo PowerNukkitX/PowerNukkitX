@@ -12,7 +12,6 @@ import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.ByteBufVarInt;
@@ -24,7 +23,6 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.common.reflection.qual.UnknownMethod;
 
 import java.io.IOException;
 import java.nio.ByteOrder;

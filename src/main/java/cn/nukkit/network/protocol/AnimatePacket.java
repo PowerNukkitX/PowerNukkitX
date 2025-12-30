@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.SwingSource;
+import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AllArgsConstructor;
@@ -18,24 +20,23 @@ import lombok.*;
 public class AnimatePacket extends DataPacket {
     public long eid;
     public Action action;
-    public float rowingTime;
+    public float data;
+    public SwingSource swingSource = SwingSource.NONE;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.action = Action.fromId(byteBuf.readVarInt());
+        this.action = Action.fromId(byteBuf.readByte());
         this.eid = byteBuf.readEntityRuntimeId();
-        if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
-            this.rowingTime = byteBuf.readFloatLE();
-        }
+        this.data = byteBuf.readFloatLE();
+        this.swingSource = byteBuf.readOptional(SwingSource.NONE, () -> SwingSource.from(byteBuf.readString()));
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeVarInt(this.action.getId());
+        byteBuf.writeByte(this.action.getId());
         byteBuf.writeEntityRuntimeId(this.eid);
-        if (this.action == Action.ROW_RIGHT || this.action == Action.ROW_LEFT) {
-            byteBuf.writeFloatLE(this.rowingTime);
-        }
+        byteBuf.writeFloatLE(this.data);
+        byteBuf.writeOptional(OptionalValue.of(swingSource.getName()), byteBuf::writeString);
     }
 
     public enum Action {

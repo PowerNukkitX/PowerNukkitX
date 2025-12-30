@@ -1,6 +1,12 @@
 package cn.nukkit.entity.ai.memory.codec;
 
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.LongTag;
+import cn.nukkit.nbt.tag.NumberTag;
+import cn.nukkit.nbt.tag.ShortTag;
 
 
 @SuppressWarnings("unchecked")

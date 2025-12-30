@@ -11,6 +11,8 @@ import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
+import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
+import cn.nukkit.recipe.special.DecoratedPotRecipe;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
@@ -103,14 +105,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return result;
     }
 
-    public ShapedRecipe findShapedRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.SHAPED).get(items.length);
-        if (recipes != null) {
-            for (var r : recipes) {
-                if (r.fastCheck(items)) return (ShapedRecipe) r;
-            }
-        }
-        return null;
+    public ShapedRecipe findShapedRecipe(Input input) {
+        Optional<ShapedRecipe> recipe = getShapedRecipeMap().stream().filter(r -> r.match(input)).findFirst();
+        return recipe.orElse(null);
     }
 
     public Set<FurnaceRecipe> getFurnaceRecipeMap() {
@@ -487,7 +484,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     private void loadRecipes() {
         //load xp config
         var furnaceXpConfig = new Config(Config.JSON);
-        try (var r = Server.class.getClassLoader().getResourceAsStream("furnace_xp.json")) {
+        try (var r = Server.class.getClassLoader().getResourceAsStream("gamedata/unknown/furnace_xp.json")) {
             furnaceXpConfig.load(r);
         } catch (IOException e) {
             log.warn("Failed to load furnace xp config");
@@ -500,7 +497,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         // We can use the original reader again, once endstone generates data again
 
         var recipeConfig = new Config(Config.JSON);
-        try (var r = Server.class.getClassLoader().getResourceAsStream("recipes.json")) {
+        try (var r = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/recipes.json")) {
             recipeConfig.load(r);
 
             //load potionMixes
@@ -897,6 +894,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                 Collections.singletonList(Item.get(ItemID.FILLED_MAP, 4, 1, EmptyArrays.EMPTY_BYTES, false))));
         register(new CartographyRecipe(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false),
                 Collections.singletonList(Item.get(ItemID.FILLED_MAP, 5, 1, EmptyArrays.EMPTY_BYTES, false))));
+
+        //Registering special recipes
+        this.registerSpecial();
+    }
+
+    private void registerSpecial() {
+        this.register(new DecoratedPotRecipe());
+        this.register(new SmithingArmorTrimCorrectedRecipe());
     }
 
     /**
@@ -1063,12 +1068,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             char ingredientChar = ingredientEntry.getKey().charAt(0);
             var ingredient = ingredientEntry.getValue();
             ItemDescriptor itemDescriptor = parseRecipeItem(ingredient);
-            if (itemDescriptor == null) return null;
             ingredients.put(ingredientChar, itemDescriptor);
         }
 
         RecipeUnlockingRequirement recipeUnlockingRequirement = null;
-        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, recipeUnlockingRequirement);
+        return new ShapedRecipe(id, uuid, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, null);
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {

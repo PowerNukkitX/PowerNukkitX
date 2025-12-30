@@ -49,7 +49,7 @@ public class TagCommand extends VanillaCommand {
                 String tag = list.getResult(2);
                 int success_count = 0;
                 for (Entity entity : entities) {
-                    if (entity.containTag(tag))
+                    if (entity.hasTag(tag))
                         continue;
                     entity.addTag(tag);
                     success_count++;
@@ -70,7 +70,7 @@ public class TagCommand extends VanillaCommand {
                 String tag = list.getResult(2);
                 int success_count = 0;
                 for (Entity entity : entities) {
-                    if (!entity.containTag(tag))
+                    if (!entity.hasTag(tag))
                         continue;
                     entity.removeTag(tag);
                     success_count++;

@@ -1,9 +1,5 @@
 package cn.nukkit.nbt.tag;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
-
-import java.io.IOException;
 import java.util.Arrays;
 
 public class IntArrayTag extends Tag {

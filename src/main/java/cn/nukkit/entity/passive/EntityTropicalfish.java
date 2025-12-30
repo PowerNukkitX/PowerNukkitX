@@ -7,6 +7,7 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -31,12 +32,14 @@ public class EntityTropicalfish extends EntityFish {
         super(chunk, nbt);
     }
 
-    
-
-
     @Override
     public String getOriginalName() {
         return "Tropical Fish";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("tropicalfish", "fish");
     }
 
     @Override
@@ -102,7 +105,7 @@ public class EntityTropicalfish extends EntityFish {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         if (Utils.rand(0, 3) == 1) {
             return new Item[]{Item.get(Item.TROPICAL_FISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
         }

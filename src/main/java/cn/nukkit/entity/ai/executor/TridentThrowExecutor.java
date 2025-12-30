@@ -12,7 +12,6 @@ import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
@@ -22,7 +21,6 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 
 public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
@@ -119,7 +117,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -133,7 +131,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

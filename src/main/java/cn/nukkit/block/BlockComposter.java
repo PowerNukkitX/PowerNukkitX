@@ -206,14 +206,8 @@ public class BlockComposter extends BlockSolid {
     }
 
     public static void registerBlock(int chance, String blockId, int meta) {
-        int i = Registries.BLOCKSTATE_ITEMMETA.get(blockId, meta);
-        BlockState blockState;
-        if (i == 0) {
-            Block block = Registries.BLOCK.get(blockId);
-            blockState = block.getProperties().getDefaultState();
-        } else {
-            blockState = Registries.BLOCKSTATE.get(i);
-        }
+        Block block = Registries.BLOCK.get(blockId);
+        BlockState blockState = block.getProperties().getDefaultState();
         compostableBlocks.put(blockState, chance);
     }
 
@@ -270,7 +264,14 @@ public class BlockComposter extends BlockSolid {
                 SHORT_GRASS,
                 SWEET_BERRY_BUSH,
                 MOSS_CARPET, HANGING_ROOTS,
-                SMALL_DRIPLEAF_BLOCK);
+                SMALL_DRIPLEAF_BLOCK,
+                LEAF_LITTER,
+                FIREFLY_BUSH,
+                BUSH,
+                CACTUS_FLOWER,
+                SHORT_DRY_GRASS,
+                TALL_DRY_GRASS,
+                WILDFLOWERS);
         registerBlocks(50, GLOW_LICHEN, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS,
                 TWISTING_VINES, WEEPING_VINES, TALL_GRASS);
         registerBlocks(65,

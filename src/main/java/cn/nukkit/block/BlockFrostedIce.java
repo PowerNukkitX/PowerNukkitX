@@ -63,14 +63,14 @@ public class BlockFrostedIce extends BlockTransparent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (level.getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11 && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
+            if (level.getFullLight(this) > 11 && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
                 slightlyMelt(true);
             } else {
                 level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (countNeighbors() < 2) {
-                level.setBlock(this, layer, get(FLOWING_WATER), true);
+                level.setBlock(this, layer, get(WATER), true);
             }
         }
         return super.onUpdate(type);
@@ -93,7 +93,7 @@ public class BlockFrostedIce extends BlockTransparent {
             level.setBlock(this, layer, this, true);
             level.scheduleUpdate(level.getBlock(this), ThreadLocalRandom.current().nextInt(20, 40));
         } else {
-            level.setBlock(this, layer, get(FLOWING_WATER), true);
+            level.setBlock(this, layer, get(WATER), true);
             if (isSource) {
                 for (BlockFace face : BlockFace.values()) {
                     Block block = getSide(face);

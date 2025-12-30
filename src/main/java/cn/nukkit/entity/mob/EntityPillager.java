@@ -10,15 +10,12 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
-import cn.nukkit.entity.ai.executor.BowShootExecutor;
 import cn.nukkit.entity.ai.executor.CrossBowShootExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.item.Item;
@@ -85,6 +82,11 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     @Override
     public String getOriginalName() {
         return "Pillager";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("pillager", "monster", "illager", "mob");
     }
 
     @Override

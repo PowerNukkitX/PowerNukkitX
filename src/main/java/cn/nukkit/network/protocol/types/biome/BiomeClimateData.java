@@ -1,0 +1,28 @@
+package cn.nukkit.network.protocol.types.biome;
+
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.connection.util.HandleByteBuf;
+
+public class BiomeClimateData implements IBiomeDefinitionListObject {
+
+    public float temperature;
+    public float downfall;
+    public float snowAccumulationMin;
+    public float snowAccumulationMax;
+
+    @Override
+    public void encode(HandleByteBuf byteBuf) {
+        byteBuf.writeFloatLE(temperature);
+        byteBuf.writeFloatLE(downfall);
+        byteBuf.writeFloatLE(snowAccumulationMin);
+        byteBuf.writeFloatLE(snowAccumulationMax);
+    }
+
+    @Override
+    public void parse(CompoundTag tag) {
+        temperature = tag.getFloat("temperature");
+        downfall = tag.getFloat("downfall");
+        snowAccumulationMin = tag.getFloat("snowAccumulationMin");
+        snowAccumulationMax = tag.getFloat("snowAccumulationMax");
+    }
+}

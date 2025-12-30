@@ -1,6 +1,6 @@
 package cn.nukkit.entity.ai.evaluator;
 
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RandomSoundEvaluator extends AllMatchEvaluator {
 
@@ -9,7 +9,7 @@ public class RandomSoundEvaluator extends AllMatchEvaluator {
     }
 
     public RandomSoundEvaluator(int ticks, int probability) {
-        super(Set.of(
+        super(ObjectArrayList.of(
             entity -> entity.getLevel().getTick()%ticks == 0,
             new ProbabilityEvaluator(1, probability)
         ));

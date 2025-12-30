@@ -106,6 +106,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
         this.register0(ProtocolInfo.CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);
         this.register0(ProtocolInfo.CONTAINER_OPEN_PACKET, ContainerOpenPacket.class);
+        this.register0(ProtocolInfo.CORRECT_PLAYER_MOVE_PREDICTION_PACKET, CorrectPlayerMovePredictionPacket.class);
         this.register0(ProtocolInfo.CONTAINER_SET_DATA_PACKET, ContainerSetDataPacket.class);
         this.register0(ProtocolInfo.CRAFTING_DATA_PACKET, CraftingDataPacket.class);
         this.register0(ProtocolInfo.CRAFTING_EVENT_PACKET, CraftingEventPacket.class);
@@ -121,7 +122,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.INVENTORY_TRANSACTION_PACKET, InventoryTransactionPacket.class);
         this.register0(ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET, ItemFrameDropItemPacket.class);
         this.register0(ProtocolInfo.LEVEL_EVENT_PACKET, LevelEventPacket.class);
-        this.register0(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V1, LevelSoundEventPacketV1.class);
         this.register0(ProtocolInfo.LOGIN_PACKET, LoginPacket.class);
         this.register0(ProtocolInfo.MAP_INFO_REQUEST_PACKET, MapInfoRequestPacket.class);
         this.register0(ProtocolInfo.MOB_ARMOR_EQUIPMENT_PACKET, MobArmorEquipmentPacket.class);
@@ -174,7 +174,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.UPDATE_SOFT_ENUM_PACKET, UpdateSoftEnumPacket.class);
         this.register0(ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET, NetworkChunkPublisherUpdatePacket.class);
         this.register0(ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET, AvailableEntityIdentifiersPacket.class);
-        this.register0(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2, LevelSoundEventPacket.class);
+//        this.register0(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2, LevelSoundEventPacket.class); // deprecated since 1.21.70
 //        this.registerPacket(ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET, ScriptCustomEventPacket.class); // deprecated since 1.20.10
         this.register0(ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET, SpawnParticleEffectPacket.class);
         this.register0(ProtocolInfo.BIOME_DEFINITION_LIST_PACKET, BiomeDefinitionListPacket.class);
@@ -214,7 +214,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET, PlayerStartItemCoolDownPacket.class);
         this.register0(ProtocolInfo.CODE_BUILDER_SOURCE_PACKET, CodeBuilderSourcePacket.class);
         this.register0(ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET, UpdateSubChunkBlocksPacket.class);
-        //powernukkitx only
         this.register0(ProtocolInfo.REQUEST_PERMISSIONS_PACKET, RequestPermissionsPacket.class);
         this.register0(ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET, CommandBlockUpdatePacket.class);
         this.register0(ProtocolInfo.SET_SCORE_PACKET, SetScorePacket.class);
@@ -242,6 +241,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.PLAYER_FOG_PACKET, PlayerFogPacket.class);
         this.register0(ProtocolInfo.SET_DEFAULT_GAME_TYPE_PACKET, SetDefaultGameTypePacket.class);
         this.register0(ProtocolInfo.STRUCTURE_BLOCK_UPDATE_PACKET, StructureBlockUpdatePacket.class);
+        this.register0(ProtocolInfo.STRUCTURE_DATA_REQUEST, StructureTemplateDataRequestPacket.class);
+        this.register0(ProtocolInfo.STRUCTURE_DATA_RESPONSE, StructureTemplateDataResponsePacket.class);
         this.register0(ProtocolInfo.CAMERA_PRESETS_PACKET, CameraPresetsPacket.class);
         this.register0(ProtocolInfo.UNLOCKED_RECIPES_PACKET, UnlockedRecipesPacket.class);
         this.register0(ProtocolInfo.CAMERA_INSTRUCTION_PACKET, CameraInstructionPacket.class);
@@ -256,8 +257,17 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.CLIENTBOUND_CLOSE_FORM_PACKET, ClientboundCloseFormPacket.class);
         this.register0(ProtocolInfo.SERVERBOUND_LOADING_SCREEN_PACKET, ServerboundLoadingScreenPacket.class);
         this.register0(ProtocolInfo.SERVERBOUND_DIAGNOSTICS_PACKET, ServerboundDiagnosticsPacket.class);
+        this.register0(ProtocolInfo.SERVERBOUND_PACK_SETTING_CHANGE_PACKET, ServerboundPackSettingChangePacket.class);
         this.register0(ProtocolInfo.CAMERA_AIM_ASSIST_PRESETS_PACKET, CameraAimAssistPresetsPacket.class);
         this.register0(ProtocolInfo.CLIENT_CAMERA_AIM_ASSIST_PACKET, ClientCameraAimAssistPacket.class);
+        this.register0(ProtocolInfo.CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET, ClientMovementPredictionSyncPacket.class);
+        this.register0(ProtocolInfo.UPDATE_CLIENT_OPTIONS_PACKET, UpdateClientOptionsPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_CONTROL_SCHEME_SET_PACKET, ClientboundControlSchemeSetPacket.class);
+        this.register0(ProtocolInfo.PLAYER_VIDEO_CAPTURE_PACKET, PlayerVideoCapturePacket.class);
+        this.register0(ProtocolInfo.PLAYER_UPDATE_ENTITY_OVERRIDES_PACKET, PlayerUpdateEntityOverridesPacket.class);
+        this.register0(ProtocolInfo.PLAYER_LOCATION_PACKET, PlayerLocationPacket.class);
+        this.register0(ProtocolInfo.SERVER_SCRIPT_DEBUG_DRAWER_PACKET, ServerScriptDebugDrawerPacket.class);
+        this.register0(ProtocolInfo.SHOW_STORE_OFFER_PACKET, ShowStoreOfferPacket.class);
 
         this.PACKET_POOL.trim();
     }

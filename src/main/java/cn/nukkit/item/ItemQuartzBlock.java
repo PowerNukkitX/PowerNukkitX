@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemQuartzBlock extends Item {
+import cn.nukkit.block.BlockQuartzBlock;
+
+public class ItemQuartzBlock extends ItemBlock {
     public ItemQuartzBlock() {
-        super(QUARTZ_BLOCK);
+        super(new BlockQuartzBlock());
     }
 }

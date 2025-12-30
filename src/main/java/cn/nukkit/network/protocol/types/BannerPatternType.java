@@ -43,7 +43,9 @@ public enum BannerPatternType {
     TRIANGLES_BOTTOM(36, "bts", "Triangles Bottom"),
     TRIANGLES_TOP(37, "tts", "Triangles Top"),
     GLOBE(38, "glb", "Globe"),
-    PIGLIN(39, "pig", "Piglin");
+    PIGLIN(39, "pig", "Piglin"),
+    FLOW(40, "flw", "flow"),
+    GUSTER(41, "gus", "Guster");
 
     final int typeId;
     final String code;

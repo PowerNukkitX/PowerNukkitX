@@ -22,12 +22,12 @@ public class ItemPufferfish extends ItemFish {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 1;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 0.2F;
     }
 

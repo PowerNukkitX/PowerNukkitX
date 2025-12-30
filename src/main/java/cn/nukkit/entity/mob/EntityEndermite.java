@@ -10,8 +10,6 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
@@ -96,6 +94,11 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
     @Override
     public String getOriginalName() {
         return "Endermite";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("endermite", "arthropod", "monster", "lightweight", "mob");
     }
 
     @Override

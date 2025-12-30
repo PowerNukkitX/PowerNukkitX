@@ -1,7 +1,6 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.event.inventory.CraftItemEvent;
@@ -34,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -73,7 +71,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         if (action.getRecipeNetworkId() >= PlayerEnchantOptionsPacket.ENCH_RECIPEID) {  //handle ench recipe
             PlayerEnchantOptionsPacket.EnchantOptionData enchantOptionData = PlayerEnchantOptionsPacket.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (enchantOptionData == null) {
-                log.error("Can't find enchant recipe from netId " + action.getRecipeNetworkId());
+                log.error("Can't find enchant recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
             Item first = inventory.getItem(0);
@@ -199,7 +197,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
             var consumeActionCountNeeded = input.canConsumerItemCount();
             if (consumeActions.size() != consumeActionCountNeeded) {
-                log.warn("Mismatched consume action count! Expected: " + consumeActionCountNeeded + ", Actual: " + consumeActions.size() + " on inventory " + craft.getClass().getSimpleName());
+                log.warn("Mismatched consume action count! Expected: {}, Actual: {} on inventory {}", consumeActionCountNeeded, consumeActions.size(), craft.getClass().getSimpleName());
                 return context.error();
             }
             if (recipe.getResults().size() == 1) {
@@ -222,7 +220,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             return context.error();
         }
         if (!(topWindow.get() instanceof SmithingInventory smithingInventory)) {
-            log.error("the player's haven't open smithing inventory! Instead " + topWindow.get().getClass().getSimpleName());
+            log.error("the player's haven't open smithing inventory! Instead {}", topWindow.get().getClass().getSimpleName());
             return context.error();
         }
         Item equipment = smithingInventory.getEquipment();

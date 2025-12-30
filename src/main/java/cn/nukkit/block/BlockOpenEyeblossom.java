@@ -19,4 +19,8 @@ public class BlockOpenEyeblossom extends BlockClosedEyeblossom {
         super(blockstate);
     }
 
+    public void changeState() {
+        this.getLevel().setBlock(this, Block.get(Block.CLOSED_EYEBLOSSOM));
+    }
+
 }

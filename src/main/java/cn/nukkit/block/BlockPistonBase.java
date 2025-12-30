@@ -21,6 +21,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * @author CreeperFace
  */
+@Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
     public boolean sticky = false;
 
@@ -131,13 +133,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
+            if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            level.scheduleUpdate(this, 2);
+            level.scheduleUpdate(this, 0);
             return type;
         }
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().getSettings().levelSettings().enableRedstone())
+            if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
@@ -197,7 +199,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     protected boolean checkState(Boolean isPowered) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return false;
         }
 
@@ -296,7 +298,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 var oldPos = oldPosList.get(i);
                 var blockEntityHolder = blockEntityHolderList.get(i);
                 var nbt = nbtList.get(i);
-                BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, true, true, nbt);
+                BlockEntityHolder.setBlockAndCreateEntity(blockEntityHolder, false, true, nbt);
                 if (!this.level.getBlock(oldPos).getId().equals(BlockID.MOVING_BLOCK)) {
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR));
                 }

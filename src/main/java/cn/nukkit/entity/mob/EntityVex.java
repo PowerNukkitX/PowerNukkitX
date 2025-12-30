@@ -134,19 +134,24 @@ public class EntityVex extends EntityMob implements EntityFlyable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("vex", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         if(getItemInHand() instanceof ItemTool tool) {
             tool.setDamage(ThreadLocalRandom.current().nextInt(tool.getMaxDurability()));
             return new Item[] {
                 tool
             };
         }
-        return super.getDrops();
+        return super.getDrops(weapon);
     }
 
     @Override

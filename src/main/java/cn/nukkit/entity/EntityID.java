@@ -1,6 +1,8 @@
 package cn.nukkit.entity;
 
 public interface EntityID {
+  String FAKE_INVENTORY = "pnx:fake_inventory";
+
   String CHICKEN = "minecraft:chicken";
 
   String COW = "minecraft:cow";
@@ -258,4 +260,16 @@ public interface EntityID {
   String CHEST_BOAT = "minecraft:chest_boat";
 
   String PLAYER = "minecraft:player";
+
+  String HAPPY_GHAST = "minecraft:happy_ghast";
+
+  String COPPER_GOLEM = "minecraft:copper_golem";
+
+  String NAUTILUS = "minecraft:nautilus";
+
+  String ZOMBIE_NAUTILUS = "minecraft:zombie_nautilus";
+
+  String PARCHED = "minecraft:parched";
+
+  String CAMEL_HUSK = "minecraft:camel_husk";
 }

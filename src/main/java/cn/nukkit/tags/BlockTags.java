@@ -19,35 +19,35 @@ public final class BlockTags {
     BlockTags() {
     }
 
-    public static final String ACACIA = "acacia";
-    public static final String BIRCH = "birch";
-    public static final String DARK_OAK = "dark_oak";
-    public static final String DIAMOND_PICK_DIGGABLE = "diamond_pick_diggable";
-    public static final String DIRT = "dirt";
-    public static final String FERTILIZE_AREA = "fertilize_area";
-    public static final String GOLD_PICK_DIGGABLE = "gold_pick_diggable";
-    public static final String GRASS = "grass";
-    public static final String GRAVEL = "gravel";
-    public static final String IRON_PICK_DIGGABLE = "iron_pick_diggable";
-    public static final String JUNGLE = "jungle";
-    public static final String LOG = "log";
-    public static final String METAL = "metal";
+    public static final String ACACIA = "minecraft:acacia";
+    public static final String BIRCH = "minecraft:birch";
+    public static final String DARK_OAK = "minecraft:dark_oak";
+    public static final String DIAMOND_PICK_DIGGABLE = "minecraft:diamond_pick_diggable";
+    public static final String DIRT = "minecraft:dirt";
+    public static final String FERTILIZE_AREA = "minecraft:fertilize_area";
+    public static final String GOLD_PICK_DIGGABLE = "minecraft:gold_pick_diggable";
+    public static final String GRASS = "minecraft:grass";
+    public static final String GRAVEL = "minecraft:gravel";
+    public static final String IRON_PICK_DIGGABLE = "minecraft:iron_pick_diggable";
+    public static final String JUNGLE = "minecraft:jungle";
+    public static final String LOG = "minecraft:log";
+    public static final String METAL = "minecraft:metal";
     public static final String MINECRAFT_CROP = "minecraft:crop";
-    public static final String MOB_SPAWNER = "mob_spawner";
-    public static final String NOT_FEATURE_REPLACEABLE = "not_feature_replaceable";
-    public static final String OAK = "oak";
-    public static final String PLANT = "plant";
-    public static final String PUMPKIN = "pumpkin";
-    public static final String RAIL = "rail";
-    public static final String SAND = "sand";
-    public static final String SNOW = "snow";
-    public static final String SPRUCE = "spruce";
-    public static final String STONE = "stone";
-    public static final String STONE_PICK_DIGGABLE = "stone_pick_diggable";
-    public static final String TEXT_SIGN = "text_sign";
-    public static final String WATER = "water";
-    public static final String WOOD = "wood";
-    public static final String WOOD_PICK_DIGGABLE = "wood_pick_diggable";
+    public static final String MOB_SPAWNER = "minecraft:mob_spawner";
+    public static final String NOT_FEATURE_REPLACEABLE = "minecraft:not_feature_replaceable";
+    public static final String OAK = "minecraft:oak";
+    public static final String PLANT = "minecraft:plant";
+    public static final String PUMPKIN = "minecraft:pumpkin";
+    public static final String RAIL = "minecraft:rail";
+    public static final String SAND = "minecraft:sand";
+    public static final String SNOW = "minecraft:snow";
+    public static final String SPRUCE = "minecraft:spruce";
+    public static final String STONE = "minecraft:stone";
+    public static final String STONE_PICK_DIGGABLE = "minecraft:stone_pick_diggable";
+    public static final String TEXT_SIGN = "minecraft:text_sign";
+    public static final String WATER = "minecraft:water";
+    public static final String WOOD = "minecraft:wood";
+    public static final String WOOD_PICK_DIGGABLE = "minecraft:wood_pick_diggable";
 
     //PNX only
     public static final String PNX_WOOL = "pnx:wool";
@@ -59,7 +59,7 @@ public final class BlockTags {
 
     static {
         try {
-            try (var stream = Server.class.getClassLoader().getResourceAsStream("block_tags.json")) {
+            try (var stream = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/block_tags.json")) {
                 TypeToken<HashMap<String, HashSet<String>>> typeToken = new TypeToken<>() {
                 };
                 assert stream != null;

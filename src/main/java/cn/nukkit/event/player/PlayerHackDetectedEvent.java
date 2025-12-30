@@ -27,6 +27,7 @@ public class PlayerHackDetectedEvent extends PlayerEvent {
     }
 
     public enum HackType {
+        FLIGHT,
         COMMAND_SPAM,
         PERMISSION_REQUEST,
         INVALID_PVP,

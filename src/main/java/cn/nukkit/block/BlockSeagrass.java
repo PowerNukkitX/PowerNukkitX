@@ -10,7 +10,7 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.SEA_GRASS_TYPE;
 
 
 public class BlockSeagrass extends BlockFlowable {

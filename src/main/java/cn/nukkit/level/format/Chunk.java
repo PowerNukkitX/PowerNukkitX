@@ -1,19 +1,28 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.entity.spawners.SpawnRule;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.RedstoneComponent;
+import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +30,12 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
@@ -190,6 +202,11 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    public Level getLevel() {
+        return getProvider().getLevel();
+    }
+
+    @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
         long stamp = blockLock.tryOptimisticRead();
         try {
@@ -348,47 +365,19 @@ public class Chunk implements IChunk {
             // basic light calculation
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
-                    int top = unsafe.getHeightMap(x, z); // top-most block
-
-                    int y;
-                    for (y = getDimensionData().getMaxHeight(); y > top; --y) {
-                        // all the blocks above & including the top-most block in a column are exposed to sun and
-                        // thus have a skylight value of 15
-                        unsafe.setBlockSkyLight(x, y, z, 15);
-                    }
-
-                    int light = 15; // light value that will be applied starting with the next block
-                    int nextDecrease = 0; // decrease that that will be applied starting with the next block
-
-                    for (y = top; y >= getDimensionData().getMinHeight(); --y) { // going under the top-most block
-                        light -= nextDecrease; // this light value will be applied for this block. The following checks are all about the next blocks
-
-                        if (light < 0) {
-                            light = 0;
-                        }
-
-                        unsafe.setBlockSkyLight(x, y, z, light);
-
-                        if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
-                            // of 0 also has a skylight value of 0
-                            continue;
-                        }
-
-                        // START of checks for the next block
+                    int level = 15;
+                    for(int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
                         Block block = unsafe.getBlockState(x, y, z).toBlock();
 
-                        if (!block.isTransparent()) { // if we encounter an opaque block, all the blocks under it will
-                            // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
-                            light = 0;
+                        if (!block.isTransparent()) {
+                            level = 0;
                         } else if (block.diffusesSkyLight()) {
-                            nextDecrease += 1; // skylight value decreases by one for each block under a block
-                            // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
+                            level--;
                         } else {
-                            nextDecrease += block.getLightFilter(); // blocks under a light filtering block will have a skylight value
-                            // decreased by the lightFilter value of that block. The block itself
-                            // has a value of 15 (if it's a top-most block)
+                            level -= block.getLightLevel();
                         }
-                        // END of checks for the next block
+                        if(level <= 0) break;
+                        unsafe.setBlockSkyLight(x, y, z, level);
                     }
                 }
             }
@@ -402,6 +391,7 @@ public class Chunk implements IChunk {
         try {
             unsafeChunkConsumer.accept(new UnsafeChunk(this));
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An error occurred while executing chunk batch operation", e);
         } finally {
             blockLock.unlockWrite(stamp1);
@@ -514,6 +504,105 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    public void doMobSpawning() {
+        Level level = getProvider().getLevel();
+        if (!isLoaded() || !isGenerated() || !isLightPopulated()) return;
+        if (Utils.rand(0, 50) != 0) return;
+
+        var chunkEntities = level.getChunkEntities(getX(), getZ());
+        Collection<Entity> spawnedEntities = chunkEntities.values().stream().filter(
+                e -> e.despawnable && e.isAlive() && !e.closed
+        ).toList();
+
+        // Spawning
+        if (Utils.rand(0, 4) == 0 && spawnedEntities.size() < Server.getInstance().getSettings().chunkSettings().spawnLimit()) {
+            int x = Utils.rand(0, 16);
+            int z = Utils.rand(0, 16);
+            int chunkX = getX(), chunkZ = getZ();
+            int absX = (chunkX << 4) + x;
+            int absZ = (chunkZ << 4) + z;
+
+            int spawnedEntityCount = spawnedEntities.size();
+            int maxEntityCount = Server.getInstance().getSettings().chunkSettings().spawnLimit();
+
+            DimensionData data = getDimensionData();
+            SpawnRule[] spawnRules = Registries.ENTITY.getSpawnRules().toArray(new SpawnRule[0]);
+            var players = level.getPlayers().values();
+
+            boolean nearPlayer = false;
+            for (Player player : players) {
+                double dx = player.x - absX;
+                double dz = player.z - absZ;
+                double distSq = dx * dx + dz * dz;
+                if (distSq < 54 * 54 && distSq > 24 * 24) {
+                    nearPlayer = true;
+                    break;
+                }
+            }
+            if (!nearPlayer) return;
+
+            Vector3 lookVec = new Vector3();
+            for (int y = data.getMaxHeight(); y > data.getMinHeight(); y--) {
+                lookVec.setComponents(absX, y, absZ);
+                Block block = level.getBlock(lookVec, true);
+
+                List<SpawnRule> applicableRules = null;
+                for (SpawnRule rule : spawnRules) {
+                    if (rule.evaluate(block)) {
+                        if (applicableRules == null) applicableRules = new ArrayList<>();
+                        applicableRules.add(rule);
+                    }
+                }
+
+                if (applicableRules != null && !applicableRules.isEmpty()) {
+                    SpawnRule spawnRule = applicableRules.get(Utils.rand(0, applicableRules.size() - 1));
+                    int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
+                    int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
+
+                    for (int i = 0; i < herd; i++) {
+                        Vector3 spawnPos = lookVec;
+                        if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
+                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5, 0, 0.5);
+                        }
+                        if (spawnedEntityCount >= maxEntityCount) {
+                            break;
+                        }
+
+                        Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(spawnPos));
+                        if (entity != null) {
+                            spawnedEntityCount++;
+                            entity.despawnable = true;
+                            entity.spawnToAll();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Despawning
+        if (!spawnedEntities.isEmpty()) {
+            int randIndex = Utils.rand(0, spawnedEntities.size() - 1);
+            Entity randomEntity = spawnedEntities.stream().skip(randIndex).findFirst().orElse(null);
+            if (randomEntity != null) {
+                boolean anyNear = false;
+                for (Player player : level.getPlayers().values()) {
+                    if (player.distance(randomEntity) <= 54) {
+                        anyNear = true;
+                        break;
+                    }
+                }
+                if (!anyNear && randomEntity.getAge() > 6000) {
+                    try {
+                        randomEntity.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public Map<Long, BlockEntity> getBlockEntities() {
         return tiles;
     }
@@ -554,7 +643,7 @@ public class Chunk implements IChunk {
         if (provider == null) {
             return true;
         }
-        if (save && this.changes.get() != 0) {
+        if (save && this.changes.get() != 0 && isInit) {
             provider.saveChunk(this.getX(), this.getZ());
         }
         if (safe) {
@@ -592,10 +681,14 @@ public class Chunk implements IChunk {
                         changed = true;
                         continue;
                     }
-                    Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
-                    if (entity != null) {
-                        changed = true;
-                    }
+                   try {
+                       Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
+                       if (entity != null) {
+                           changed = true;
+                       }
+                   } catch (Exception e) {
+                       log.error("Failed to spawn blockentity", e);
+                   }
                 }
                 this.entityNBT = null;
             }
@@ -605,10 +698,12 @@ public class Chunk implements IChunk {
                     if (nbt != null) {
                         if (!nbt.contains("id")) {
                             changed = true;
+                            log.warn("BlockEntity tag without id");
                             continue;
                         }
                         if ((nbt.getInt("x") >> 4) != this.getX() || ((nbt.getInt("z") >> 4) != this.getZ())) {
                             changed = true;
+                            log.warn("BlockEntity tag position does not match chunk!");
                             continue;
                         }
                         BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
@@ -619,13 +714,17 @@ public class Chunk implements IChunk {
                 }
                 this.blockEntityNBT = null;
             }
-
             if (changed) {
                 this.setChanged();
             }
 
             this.isInit = true;
         }
+    }
+
+    @Override
+    public boolean isInitiated() {
+        return isInit;
     }
 
     @Override
@@ -664,6 +763,10 @@ public class Chunk implements IChunk {
 
     @Override
     public long getSectionBlockChanges(int sectionY) {
+        if(sectionY < 0 || sectionY >= getDimensionData().getChunkSectionCount()) {
+            return 0L;
+        }
+        if(sections[sectionY] == null) return 0L;
         return sections[sectionY].blockChanges().get();
     }
 
@@ -693,10 +796,8 @@ public class Chunk implements IChunk {
     protected ChunkSection getOrCreateSection(int sectionY) {
         int minSectionY = this.getDimensionData().getMinSectionY();
         int offsetY = sectionY - minSectionY;
-        for (int i = 0; i <= offsetY; i++) {
-            if (sections[i] == null) {
-                sections[i] = new ChunkSection((byte) (i + minSectionY));
-            }
+        if(this.sections[offsetY] == null) {
+            this.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY));
         }
         return sections[offsetY];
     }
@@ -801,6 +902,11 @@ public class Chunk implements IChunk {
         public Builder levelProvider(LevelProvider levelProvider) {
             this.levelProvider = levelProvider;
             return this;
+        }
+
+        @Override
+        public LevelProvider getLevelProvider() {
+            return levelProvider;
         }
 
         @Override

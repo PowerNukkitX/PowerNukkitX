@@ -1,8 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -11,7 +9,6 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.AnyMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
@@ -33,12 +30,12 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBrush;
-import cn.nukkit.item.ItemDurable;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -51,12 +48,20 @@ import java.util.Objects;
 import java.util.Set;
 
 public class EntityArmadillo extends EntityAnimal {
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:armadillo_state", new String[]{
+            "unrolled",
+            "rolled_up",
+            "rolled_up_peeking",
+            "rolled_up_relaxing",
+            "rolled_up_unrolling"
+        }, "unrolled", true)
+    };
+    private final static String PROPERTY_STATE = "minecraft:armadillo_state";
 
     public EntityArmadillo(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    private final static String PROPERTY_STATE = "minecraft:armadillo_state";
 
     @Getter
     private RollState rollState = RollState.UNROLLED;
@@ -64,6 +69,11 @@ public class EntityArmadillo extends EntityAnimal {
     @Override
     public @NotNull String getIdentifier() {
         return ARMADILLO;
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("armadillo", "mob");
     }
 
     @Override
@@ -78,7 +88,7 @@ public class EntityArmadillo extends EntityAnimal {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -169,7 +179,6 @@ public class EntityArmadillo extends EntityAnimal {
     public void setRollState(RollState state) {
         this.rollState = state;
         setEnumEntityProperty(PROPERTY_STATE, state.getState());
-        sendData(getViewers().values().toArray(Player[]::new));
         setDataFlag(EntityFlag.BODY_ROTATION_BLOCKED, rollState != RollState.UNROLLED);
     }
 

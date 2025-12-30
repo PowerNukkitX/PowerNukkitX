@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -44,7 +45,7 @@ public class EntityElytraFirework extends EntityFireworksRocket {
                     this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D);
                     this.pitch = (float) (Math.atan2(this.motionY, f) * 57.29577951308232D);
                     if (this.fireworkAge == 0) {
-                        this.getLevel().addLevelSoundEvent(this, 56);
+                        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.LAUNCH);
                     }
 
                     ++this.fireworkAge;
@@ -54,7 +55,7 @@ public class EntityElytraFirework extends EntityFireworksRocket {
                         pk.data = 0;
                         pk.event = 25;
                         pk.eid = this.getId();
-                        this.level.addLevelSoundEvent(this, 58, -1, 72);
+                        this.level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, 72);
                         Server.broadcastPacket(this.getViewers().values(), pk);
                         this.kill();
                     }

@@ -16,7 +16,6 @@ public class RecipeTest {
     @SneakyThrows
     static void before() {
         Registries.POTION.init();
-        Registries.BLOCKSTATE_ITEMMETA.init();
         Registries.BLOCK.init();
         Registries.ITEM.init();
         Registries.ITEM_RUNTIMEID.init();

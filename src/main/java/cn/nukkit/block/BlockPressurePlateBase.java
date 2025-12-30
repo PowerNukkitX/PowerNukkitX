@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.BlockRedstoneEvent;
@@ -13,7 +14,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -126,7 +127,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return;
         }
 
@@ -141,7 +142,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
             }
 
             this.level.getServer().getPluginManager().callEvent(ev);
-
+            if(entity instanceof Player player) new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 updateState(power);
             }
@@ -205,10 +206,10 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     }
 
     protected void playOnSound() {
-        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, getBlockState().blockStateHash());
+        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEvent.POWER_ON, getBlockState().blockStateHash());
     }
 
     protected void playOffSound() {
-        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, getBlockState().blockStateHash());
+        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEvent.POWER_OFF, getBlockState().blockStateHash());
     }
 }

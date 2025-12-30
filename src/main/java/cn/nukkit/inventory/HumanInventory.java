@@ -18,6 +18,8 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.PlayerArmorDamagePacket;
+import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
+import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
@@ -34,11 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 0-8 物品栏<br>
- * 9-35 背包<br>
- * 36-39 盔甲栏<br>
- * 想获取副手库存请用{@link HumanOffHandInventory}<br>
- * <p>
  * 0-8 hotbar<br>
  * 9-35 inventory<br>
  * 36-39 Armor Inventory<br>
@@ -143,6 +140,10 @@ public class HumanInventory extends BaseInventory {
         return this.getItem(this.getHeldItemIndex());
     }
 
+    public Item getUnclonedItemInHand() {
+        return this.getUnclonedItem(this.getHeldItemIndex());
+    }
+
     public boolean setItemInHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
     }
@@ -242,17 +243,17 @@ public class HumanInventory extends BaseInventory {
             }
         }
 
-        //使用FastUtils的IntArrayList提高性能
+        // Improve performance using IntArrayList of FastUtils
         IntList emptySlots = new IntArrayList(this.getSize());
 
         for (int i = 0; i < ARMORS_INDEX; ++i) {
-            //获取未克隆Item对象
+            // Get the uncloned Item object
             Item item = this.getUnclonedItem(i);
             if (item.isNull() || item.getCount() <= 0) {
                 emptySlots.add(i);
             }
 
-            //使用迭代器而不是新建一个ArrayList
+            // Use iterators instead of creating a new ArrayList
             for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
                 Item slot = iterator.next();
                 if (slot.equals(item)) {
@@ -261,7 +262,7 @@ public class HumanInventory extends BaseInventory {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
                         if (amount > 0) {
-                            //在需要clone时再clone
+                            // Clone when needed
                             item = item.clone();
                             slot.setCount(slot.getCount() - amount);
                             item.setCount(item.getCount() + amount);
@@ -373,12 +374,20 @@ public class HumanInventory extends BaseInventory {
             EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled() && this.getHolder() != null) {
-                this.sendArmorSlot(index, this.getViewers());
+                int rel = index - ARMORS_INDEX; // 0..3
+                this.sendArmorSlot(rel, this.getViewers());
+                this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
                 return false;
             }
             item = ev.getNewItem();
         } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), this.getItem(index), item, index);
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(
+                this.getHolder().getEntity(),
+                this.getItem(index),
+                item,
+                index,
+                this.getSlotType(index),
+                this.getHeldItemIndex());
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -401,12 +410,14 @@ public class HumanInventory extends BaseInventory {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
-                    this.sendSlot(index, this.getViewers());
+                    int rel = index - ARMORS_INDEX; // 0..3
+                    this.sendArmorSlot(rel, this.getViewers());
+                    this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
                     return false;
                 }
                 item = ev.getNewItem();
             } else if (index < ARMORS_INDEX) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index);
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getSlotType(index), this.getHeldItemIndex());
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.sendSlot(index, this.getViewers());
@@ -491,12 +502,8 @@ public class HumanInventory extends BaseInventory {
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 for (int i = 0; i < 4; ++i) {
                     Item item = armor[i];
-                    if (item.isNull()) {
-                        pk2.damage[i] = 0;
-                    } else {
-                        pk2.flags.add(PlayerArmorDamagePacket.PlayerArmorDamageFlag.values()[i]);
-                        pk2.damage[i] = item.getDamage();
-                    }
+                    short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
+                    pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(i), dmg));
                 }
                 player.dataPacket(pk2);
             } else {
@@ -577,12 +584,8 @@ public class HumanInventory extends BaseInventory {
 
                 PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 Item item = armor[index];
-                if (item.isNull()) {
-                    pk2.damage[index] = 0;
-                } else {
-                    pk2.flags.add(PlayerArmorDamagePacket.PlayerArmorDamageFlag.values()[index]);
-                    pk2.damage[index] = item.getDamage();
-                }
+                short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
+                pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(index), dmg));
                 player.dataPacket(pk2);
             } else {
                 player.dataPacket(pk);
@@ -606,7 +609,7 @@ public class HumanInventory extends BaseInventory {
         int inventoryAndHotBarSize = this.getSize() - 4;
         pk.slots = new Item[inventoryAndHotBarSize];
         for (int i = 0; i < inventoryAndHotBarSize; ++i) {
-            pk.slots[i] = this.getItem(i);
+            pk.slots[i] = this.getUnclonedItem(i);
         }
 
         for (Player player : players) {
@@ -696,5 +699,9 @@ public class HumanInventory extends BaseInventory {
         if (who != holder) {
             super.onClose(who);
         }
+    }
+
+    private static ArmorSlot armorSlotOfIndex(int index) {
+        return ArmorSlot.from(index * 2);
     }
 }

@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class TellrawCommand extends VanillaCommand {
@@ -34,6 +35,7 @@ public class TellrawCommand extends VanillaCommand {
         var list = result.getValue();
         try {
             List<Player> players = list.getResult(0);
+            players = players.stream().filter(Objects::nonNull).toList();
             if (players.isEmpty()) {
                 log.addNoTargetMatch().output();
                 return 0;

@@ -27,7 +27,8 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
 
     @Override
     public ActionResponse handle(DropAction action, Player player, ItemStackRequestContext context) {
-        Inventory inventory = NetworkMapping.getInventory(player, action.getSource().getContainer());
+        Integer dynamicId = action.getSource().getContainerName().getDynamicId();
+        Inventory inventory = NetworkMapping.getInventory(player, action.getSource().getContainer(), dynamicId);
         var count = action.getCount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
         var item = inventory.getItem(slot);

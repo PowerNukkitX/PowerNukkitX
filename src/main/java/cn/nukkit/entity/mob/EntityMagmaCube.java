@@ -19,11 +19,13 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.passive.EntityFrog;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -115,22 +117,37 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
     }
 
     @Override
-    public Item[] getDrops() {
-        if(getLastDamageCause() != null) {
-            if(lastDamageCause instanceof EntityDamageByEntityEvent event) {
-                if(event.getDamager() instanceof EntityFrog frog) {
-                    if(getVariant() == SIZE_SMALL) {
-                        return new Item[]{Item.get(frog.getVariant() == 0 ? Block.OCHRE_FROGLIGHT : frog.getVariant() == 1 ? Block.VERDANT_FROGLIGHT : Block.PEARLESCENT_FROGLIGHT)};
-                    }
-                }
+    public Set<String> typeFamily() {
+        return Set.of("magmacube", "monster", "mob");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (getVariant() == SIZE_SMALL
+                && lastDamageCause instanceof EntityDamageByEntityEvent event
+                && event.getDamager() instanceof EntityFrog frog) {
+
+            String froglight = switch (frog.getVariant()) {
+                case 0 -> Block.OCHRE_FROGLIGHT;
+                case 1 -> Block.VERDANT_FROGLIGHT;
+                default -> Block.PEARLESCENT_FROGLIGHT;
+            };
+
+            return new Item[]{Item.get(froglight)};
+        }
+
+        if (getVariant() != SIZE_SMALL && Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.MAGMA_CREAM, 0, amount));
             }
         }
-        if(getVariant() != SIZE_SMALL) {
-            if(Utils.rand(0, 4) == 0) {
-                return new Item[] {Item.get(Item.MAGMA_CREAM)};
-            }
-        }
-        return Item.EMPTY_ARRAY;
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

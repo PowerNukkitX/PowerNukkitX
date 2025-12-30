@@ -1,6 +1,8 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
+import cn.nukkit.resourcepacks.impl.ChemistryBehaviorPack;
+import cn.nukkit.resourcepacks.impl.ChemistryResourcePack;
 import cn.nukkit.resourcepacks.loader.ResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
 import com.google.common.collect.Sets;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 public class ResourcePackManager {
 
-    private int maxChunkSize = 1024 * 32;// 32kb is default
+    private int maxChunkSize = 1024 * 256; // 256kb is default
     
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
     private final Set<ResourcePack> resourcePacks = new HashSet<>();
@@ -33,8 +35,8 @@ public class ResourcePackManager {
     }
 
     /**
-     * 保留此方法仅仅为了向后兼容性以及测试<p/>
-     * 请不要使用它
+     * This method is retained only for backward compatibility and testing. <p>
+     * Please don't use it
      */
     public ResourcePackManager(File resourcePacksDir) {
         this(new ZippedResourcePackLoader(resourcePacksDir));
@@ -68,6 +70,21 @@ public class ResourcePackManager {
             loadedPacks.forEach(pack -> resourcePacksById.put(pack.getPackId(), pack));
             this.resourcePacks.addAll(loadedPacks);
         });
+
+        if (Server.getInstance().getSettings().gameplaySettings().enableEducation()) {
+            // Chemistry Resource Pack
+            ResourcePack resourcePack = new ChemistryResourcePack();
+            resourcePacks.add(resourcePack);
+            this.resourcePacksById.put(resourcePack.getPackId(), resourcePack);
+
+            // Chemistry Behavior Pack
+            ResourcePack behaviorPack = new ChemistryBehaviorPack();
+            resourcePacks.add(behaviorPack);
+            this.resourcePacksById.put(behaviorPack.getPackId(), behaviorPack);
+
+            Server.getInstance().getLogger().info(Server.getInstance().getLanguage()
+                    .tr("nukkit.resources.chemistry.success"));
+        }
 
         log.info(Server.getInstance().getLanguage()
                 .tr("nukkit.resources.success", String.valueOf(this.resourcePacks.size())));

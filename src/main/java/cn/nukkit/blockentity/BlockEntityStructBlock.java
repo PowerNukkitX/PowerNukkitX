@@ -5,14 +5,17 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.enums.StructureBlockType;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.StructBlockInventory;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.structure.Structure;
+import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
 import cn.nukkit.network.protocol.types.StructureAnimationMode;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
-import cn.nukkit.network.protocol.types.StructureRotation;
+import cn.nukkit.network.protocol.types.Rotation;
 import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +33,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private StructureMirror mirror;
     private StructureRedstoneSaveMode redstoneSaveMode;
     private boolean removeBlocks;
-    private StructureRotation rotation;
+    private Rotation rotation;
     private long seed;
     private boolean showBoundingBox;
     private String structureName;
@@ -103,9 +106,9 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
             this.removeBlocks = false;
         }
         if (this.namedTag.contains(TAG_ROTATION)) {
-            this.rotation = StructureRotation.from(this.namedTag.getByte(TAG_ROTATION));
+            this.rotation = Rotation.from(this.namedTag.getByte(TAG_ROTATION));
         } else {
-            this.rotation = StructureRotation.from(0);
+            this.rotation = Rotation.from(0);
         }
         if (this.namedTag.contains(TAG_SEED)) {
             this.seed = this.namedTag.getLong(TAG_SEED);
@@ -236,7 +239,6 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         this.ignoreEntities = editorData.getSettings().isIgnoringEntities();
         this.includePlayers = editorData.isIncludingPlayers();
         this.integrity = editorData.getSettings().getIntegrityValue();
-        this.isPowered = packet.powered;
         this.mirror = editorData.getSettings().getMirror();
         this.redstoneSaveMode = editorData.getRedstoneSaveMode();
         this.removeBlocks = editorData.getSettings().isIgnoringBlocks();
@@ -246,5 +248,46 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
         this.structureName = editorData.getName();
         this.offset = editorData.getSettings().getOffset();
         this.size = editorData.getSettings().getSize();
+
+        if(packet.powered) onPower();
+    }
+
+    public void onPower() {
+        if(data == StructureBlockType.LOAD) placeStructure();
+        else if(data == StructureBlockType.SAVE) saveStructure();
+    }
+
+    public void placeStructure() {
+        if (structureName.isEmpty()) return;
+        Structure structure = StructureAPI.load(structureName);
+
+        if (structure == null) return;
+
+        if(rotation != Rotation.NONE)
+            structure = structure.rotate(rotation);
+
+        if(mirror != StructureMirror.NONE)
+            structure = structure.mirror(mirror);
+
+        BlockVector3 pos = this.getBlock().asBlockVector3().add(offset);
+        structure.place(Position.fromObject(pos.asVector3(), this.getLevel()), !ignoreEntities);
+    }
+
+    public void saveStructure() {
+        int structureStartX = (int) this.getBlock().getX() + offset.x;
+        int structureStartY = (int) this.getBlock().getY() + offset.y;
+        int structureStartZ = (int) this.getBlock().getZ() + offset.z;
+
+        int sizeX = size.x;
+        int sizeY = size.y;
+        int sizeZ = size.z;
+
+        Structure structure = Structure.create(getLevel(),
+                structureStartX, structureStartY, structureStartZ,
+                sizeX, sizeY, sizeZ,
+                !ignoreEntities
+        );
+
+        StructureAPI.save(structure, structureName);
     }
 }

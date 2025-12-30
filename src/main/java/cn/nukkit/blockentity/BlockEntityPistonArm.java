@@ -24,10 +24,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * @author CreeperFace
  */
-
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public static final float MOVE_STEP = Utils.dynamic(0.25f);
@@ -67,19 +67,19 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.x + (pushDirection.getXOffset() * progress),
                 this.y + (pushDirection.getYOffset() * progress),
                 this.z + (pushDirection.getZOffset() * progress)
-                //带动站在移动方块上的实体
+                // Moves entities standing on moving blocks
         ).addCoord(0, pushDirection.getAxis().isHorizontal() ? 0.25 : 0, 0);
         for (var entity : this.level.getCollidingEntities(bb))
             moveEntity(entity, pushDirection);
     }
 
     void moveEntity(Entity entity, BlockFace moveDirection) {
-        //不需要给予向下的力
+        // No downward force is required
         if (moveDirection == BlockFace.DOWN)
             return;
         var diff = Math.abs(this.progress - this.lastProgress);
-        //玩家客户端会自动处理移动
-        if (diff == 0 || !entity.canBePushed() || entity instanceof Player)
+        // Player clients automatically handle movement
+        if (diff == 0 || !entity.canBePushedByPiston() || entity instanceof Player)
             return;
         EntityMoveByPistonEvent event = new EntityMoveByPistonEvent(entity, entity.getPosition());
         this.level.getServer().getPluginManager().callEvent(event);
@@ -88,7 +88,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         entity.onPushByPiston(this);
         if (entity.closed)
             return;
-        //需要抵消重力
+        // Need to counteract gravity
         entity.move(
                 diff * moveDirection.getXOffset(),
                 diff * moveDirection.getYOffset() * (moveDirection == BlockFace.UP ? 2 : 1),
@@ -116,26 +116,24 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
 
-    //需要先调用preMove
+    // You need to call preMove first
     public void move() {
         if (this.closed || this.level == null) {
             return;
         }
 
-        //开始推动
+        // Start pushing
         this.lastProgress = this.extending ? 0 : 1;
         this.moveCollidedEntities();
         this.scheduleUpdate();
     }
 
-    /**
-     * The piston extension process lasts 2gt.
-     */
+    /** The piston extension process lasts 2gt. */
     @Override
     public boolean onUpdate() {
-        //此bool标记下一gt是否需要继续更新
+        // This bool marks whether the next gt needs to continue updating
         var hasUpdate = true;
-        //推动过程
+        // Promotion process
         if (this.extending) {
             this.progress = Math.min(1, this.progress + MOVE_STEP);
             this.lastProgress = Math.min(1, this.lastProgress + MOVE_STEP);
@@ -145,7 +143,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
         moveCollidedEntities();
         if (this.progress == this.lastProgress) {
-            //结束推动
+            // End Push
             this.state = this.newState = (byte) (extending ? 2 : 0);
             var pushDirection = this.extending ? facing : facing.getOpposite();
             var redstoneUpdateList = new ArrayList<BlockVector3>();
@@ -158,7 +156,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     var moved = movingBlockBlockEntity.getMovingBlock();
                     moved.position(movingBlock);
                     this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
-                    //普通方块更新
+                    // Common Block Updates
                     this.level.setBlock(movingBlock, moved, true, true);
                     var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                     if (movedBlockEntity != null) {
@@ -167,27 +165,27 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
                         BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
-                    //活塞更新
+                    // Piston Update
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
                 }
             }
             for (var update : redstoneUpdateList) {
-                //红石更新
+                // Redstone Update
                 RedstoneComponent.updateAllAroundRedstone(new Position(update.x, update.y, update.z, this.level));
             }
             var pos = getSide(facing);
             if (!extending) {
-                //未伸出的活塞可以被推动
+                // The unextended piston can be pushed
                 this.movable = true;
                 if (this.level.getBlock(pos) instanceof BlockPistonArmCollision) {
                     this.level.setBlock(pos, 1, Block.get(Block.AIR), true, false);
-                    //方块更新
+                    // Block Updates
                     this.level.setBlock(pos, Block.get(Block.AIR), true);
                 }
             }
-            //对和活塞直接接触的观察者进行更新
+            // Updates observers that are in direct contact with the piston
             this.level.updateAroundObserver(this);
-            //下一计划刻再自检一遍，防止出错
+            // Check again at the next moment to prevent mistakes
             this.level.scheduleUpdate(this.getLevelBlock(), 1);
             this.attachedBlocks.clear();
             this.finished = true;

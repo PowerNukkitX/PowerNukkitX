@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityWarden;

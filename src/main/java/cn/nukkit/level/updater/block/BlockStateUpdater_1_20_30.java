@@ -4,7 +4,9 @@ import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.OrderedUpdater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 
-import static cn.nukkit.level.updater.util.OrderedUpdater.*;
+import static cn.nukkit.level.updater.util.OrderedUpdater.DIRECTION_TO_CARDINAL;
+import static cn.nukkit.level.updater.util.OrderedUpdater.FACING_TO_BLOCK;
+import static cn.nukkit.level.updater.util.OrderedUpdater.FACING_TO_CARDINAL;
 
 public class BlockStateUpdater_1_20_30 implements Updater {
 

@@ -97,6 +97,16 @@ public class BlockUpdateScheduler {
         return tmpUpdates.contains(new BlockUpdateEntry(pos, block));
     }
 
+    public boolean isConcurrentSchedule(Vector3 pos, Block block, long targetTick, int delay) {
+        for (Map.Entry<Long, Set<BlockUpdateEntry>> entry : queuedUpdates.entrySet()) {
+            long scheduledTick = entry.getKey();
+            if (entry.getValue().contains(new BlockUpdateEntry(pos, block)) && targetTick <= scheduledTick + delay) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private long getMinTime(BlockUpdateEntry entry) {
         return Math.max(entry.delay, lastTick + 1);
     }

@@ -1,15 +1,11 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.DoublePlantType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.particle.BoneMealParticle;
-import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -73,6 +69,11 @@ public class BlockTallGrass extends BlockDoublePlant {
         }
 
         return drops.toArray(Item.EMPTY_ARRAY);
+    }
+
+    @Override
+    public boolean canBeReplaced() {
+        return true;
     }
 
     @Override

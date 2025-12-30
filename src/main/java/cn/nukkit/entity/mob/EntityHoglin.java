@@ -35,18 +35,20 @@ import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,7 +76,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                                 all(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                ),1, 1
+                                ),1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -163,8 +165,34 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_PORKCHOP : Item.PORKCHOP), 0, Utils.rand(1, 3))};
+    public Set<String> typeFamily() {
+        if (this.isBaby()) {
+            return Set.of("hoglin", "hoglin_baby", "mob");
+        }
+        return Set.of("hoglin", "hoglin_adult", "mob");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int porkAmount = Utils.rand(2, 4 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_PORKCHOP : Item.PORKCHOP,
+                0,
+                porkAmount
+        ));
+
+        if (Utils.rand(0, 1) == 1) {
+            int leatherAmount = Utils.rand(0, 1 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
@@ -219,7 +247,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
             super.onStart(entity);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ANGRY, -1, Entity.HOGLIN, false, false);
+            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.HOGLIN, false, false);
         }
 
         @Override

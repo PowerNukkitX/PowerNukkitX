@@ -1,10 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.mob.EntitySlime;
-import cn.nukkit.entity.passive.EntityRabbit;
-import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import lombok.AllArgsConstructor;
 

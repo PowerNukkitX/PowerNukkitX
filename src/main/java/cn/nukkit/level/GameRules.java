@@ -60,6 +60,8 @@ public class GameRules {
 
         gameRules.gameRules.put(SPAWN_RADIUS, new Value<>(Type.INTEGER, 5));
         gameRules.gameRules.put(TNT_EXPLODES, new Value<>(Type.BOOLEAN, true));
+        gameRules.gameRules.put(PROJECTILES_CAN_BREAK_BLOCKS, new Value<>(Type.BOOLEAN, true));
+        gameRules.gameRules.put(TNT_EXPLOSION_DROP_DECAY, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_TAGS, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(EXPERIMENTAL_GAMEPLAY, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(PLAYERS_SLEEPING_PERCENTAGE, new Value<>(Type.INTEGER, 100));
@@ -67,6 +69,7 @@ public class GameRules {
         gameRules.gameRules.put(RESPAWN_BLOCKS_EXPLODE, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_BORDER_EFFECT, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_DAYS_PLAYED, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(LOCATOR_BAR, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(RECIPES_UNLOCK, new Value<>(Type.BOOLEAN, false));
 
         return gameRules;
@@ -183,17 +186,28 @@ public class GameRules {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
             }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+            }
         },
         BOOLEAN {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeBoolean(value.getValueAsBoolean());
             }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+                write(pk, value);
+            }
         },
         INTEGER {
             @Override
             void write(HandleByteBuf pk, Value<?> value) {
-                pk.writeUnsignedVarInt(value.getValueAsInteger());
+                pk.writeIntLE(value.getValueAsInteger());
+            }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+                pk.writeVarInt(value.getValueAsInteger());
             }
         },
         FLOAT {
@@ -201,9 +215,14 @@ public class GameRules {
             void write(HandleByteBuf pk, Value<?> value) {
                 pk.writeFloatLE(value.getValueAsFloat());
             }
+            @Override
+            void writeStartGame(HandleByteBuf pk, Value<?> value) {
+                write(pk, value);
+            }
         };
 
         abstract void write(HandleByteBuf pk, Value<?> value);
+        abstract void writeStartGame(HandleByteBuf pk, Value<?> value);
     }
 
     public static class Value<T> {
@@ -269,6 +288,12 @@ public class GameRules {
             stream.writeBoolean(this.canBeChanged);
             stream.writeUnsignedVarInt(type.ordinal());
             type.write(stream, this);
+        }
+
+        public void writeStartGame(HandleByteBuf stream) {
+            stream.writeBoolean(this.canBeChanged);
+            stream.writeUnsignedVarInt(type.ordinal());
+            type.writeStartGame(stream, this);
         }
     }
 }

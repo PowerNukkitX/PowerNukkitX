@@ -174,7 +174,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 block = collisionBlock;
             }
             this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));
-            onCollideWithBlock(getPosition(), getMotion());
+            onCollideWithBlock(getPosition(), getMotion(), block);
             addHitEffect();
         }
         return true;

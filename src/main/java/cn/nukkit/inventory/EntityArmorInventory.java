@@ -19,13 +19,14 @@ public class EntityArmorInventory extends BaseInventory {
     public static final int SLOT_CHEST = 1;
     public static final int SLOT_LEGS = 2;
     public static final int SLOT_FEET = 3;
+    public static final int SLOT_BODY = 4; // This is not part of the armor inventory, but its used for happy ghasts
 
     /**
      * @param holder an Entity which implements {@link InventoryHolder}.
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
     public EntityArmorInventory(InventoryHolder holder) {
-        super(holder, InventoryType.INVENTORY, 4);
+        super(holder, InventoryType.INVENTORY, 5);
         this.entity = (Entity) holder;
     }
 
@@ -36,7 +37,7 @@ public class EntityArmorInventory extends BaseInventory {
 
     @Override
     public int getSize() {
-        return 4;
+        return 5;
     }
 
 
@@ -59,6 +60,10 @@ public class EntityArmorInventory extends BaseInventory {
         return this.getItem(SLOT_FEET);
     }
 
+    public Item getBody() {
+        return this.getItem(SLOT_BODY);
+    }
+
 
     public boolean setHelmet(Item item) {
         return this.setItem(SLOT_HEAD, item);
@@ -79,6 +84,10 @@ public class EntityArmorInventory extends BaseInventory {
         return this.setItem(SLOT_FEET, item);
     }
 
+    public boolean setBody(Item item) {
+        return this.setItem(SLOT_BODY, item);
+    }
+
     @Override
     public void sendSlot(int index, Player... players) {
         for (Player player : players) {
@@ -88,10 +97,6 @@ public class EntityArmorInventory extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Player player) {
-        MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-        mobArmorEquipmentPacket.eid = this.entity.getId();
-        mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
-
         if (player == this.holder) {
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
             int id = player.getWindowId(this);
@@ -104,6 +109,10 @@ public class EntityArmorInventory extends BaseInventory {
             );
             player.dataPacket(inventorySlotPacket);
         } else {
+            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.eid = this.entity.getId();
+            mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
+            mobArmorEquipmentPacket.body = this.getBody();
             player.dataPacket(mobArmorEquipmentPacket);
         }
     }
@@ -117,10 +126,6 @@ public class EntityArmorInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player player) {
-        MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-        mobArmorEquipmentPacket.eid = this.entity.getId();
-        mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
-
         if (player == this.holder) {
             InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
             int id = player.getWindowId(this);
@@ -132,6 +137,10 @@ public class EntityArmorInventory extends BaseInventory {
             );
             player.dataPacket(inventoryContentPacket);
         } else {
+            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.eid = this.entity.getId();
+            mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
+            mobArmorEquipmentPacket.body = this.getBody();
             player.dataPacket(mobArmorEquipmentPacket);
         }
     }

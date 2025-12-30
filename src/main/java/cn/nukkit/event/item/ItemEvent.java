@@ -2,7 +2,6 @@ package cn.nukkit.event.item;
 
 import cn.nukkit.event.Event;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
 
 /**
  * @author MagicDroidX (Nukkit Project)

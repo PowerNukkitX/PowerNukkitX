@@ -1,14 +1,11 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
-import cn.nukkit.entity.ai.controller.HoppingController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.evaluator.DistanceEvaluator;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
@@ -28,12 +25,13 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -153,17 +151,38 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.SHULKER_SHELL, 0, Utils.rand(0, 2))};
+    public Set<String> typeFamily() {
+        return Set.of("shulker", "monster", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 1) == 0) {
+            int amount = Utils.rand(0, 1 + looting);
+            if (amount > 0) {
+                return new Item[]{
+                        Item.get(Item.SHULKER_SHELL, 0, amount)
+                };
+            }
+        }
+
+        return Item.EMPTY_ARRAY;
     }
 
     public void teleport() {
         Arrays.stream(getLevel().getCollisionBlocks(getBoundingBox().grow(7, 7, 7))).filter(block -> block.isFullBlock() && block.up().isAir()).findAny().ifPresent(
                 block -> {
                     Location location = block.up().getLocation();
-                    getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_TELEPORT, -1, getIdentifier(), false, false);
+                    getLevel().addLevelSoundEvent(this, LevelSoundEvent.TELEPORT, -1, getIdentifier(), false, false);
                     teleport(location, PlayerTeleportEvent.TeleportCause.SHULKER);
-                    getLevel().addLevelSoundEvent(location, LevelSoundEventPacket.SOUND_SPAWN, -1, getIdentifier(), false, false);
+                    getLevel().addLevelSoundEvent(location, LevelSoundEvent.SPAWN, -1, getIdentifier(), false, false);
                 }
         );
     }

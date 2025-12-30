@@ -19,7 +19,11 @@ import cn.nukkit.event.entity.EntityExplodeEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.math.*;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Hash;
@@ -27,7 +31,11 @@ import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -163,7 +171,7 @@ public class Explosion {
                             }
                             Block block = this.level.getBlock(vBlock);
 
-                            if (!block.isAir()) {
+                            if (!block.isAir() && block.canBeExploded()) {
                                 Block layer1 = block.getLevelBlockAtLayer(1);
                                 double resistance = Math.max(block.getResistance(), layer1.getResistance());
                                 blastForce -= (resistance / 5 + 0.3d) * this.STEP_LEN;

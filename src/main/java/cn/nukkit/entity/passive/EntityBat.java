@@ -15,7 +15,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
@@ -65,6 +64,11 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
     @Override
     public String getOriginalName() {
         return "Bat";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("bat", "mob");
     }
 
     @Override

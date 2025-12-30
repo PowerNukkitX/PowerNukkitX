@@ -118,16 +118,6 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     @Override
-    public boolean isAddonPack() {
-        return false;
-    }
-
-    @Override
-    public String cdnUrl() {
-        return "";
-    }
-
-    @Override
     public int getPackSize() {
         return (int) this.file.length();
     }

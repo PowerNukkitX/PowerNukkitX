@@ -201,12 +201,13 @@ public class FuelRegistry implements IRegistry<Item, Integer, Integer> {
         register0(BlockID.BAMBOO_SLAB, 300);
         register0(BlockID.CHERRY_SLAB, 300);
         register0(BlockID.MANGROVE_SLAB, 300);
-        register0(BlockAcaciaSlab.PROPERTIES.getDefaultState().toItem(), 300);
-        register0(BlockJungleSlab.PROPERTIES.getDefaultState().toItem(), 300);
-        register0(BlockSpruceSlab.PROPERTIES.getDefaultState().toItem(), 300);
-        register0(BlockBirchSlab.PROPERTIES.getDefaultState().toItem(), 300);
-        register0(BlockDarkOakSlab.PROPERTIES.getDefaultState().toItem(), 300);
-        register0(BlockPaleOakSlab.PROPERTIES.getDefaultState().toItem(), 300);
+        register0(BlockID.ACACIA_SLAB, 300);
+        register0(BlockID.OAK_SLAB, 300);
+        register0(BlockID.JUNGLE_SLAB, 300);
+        register0(BlockID.SPRUCE_SLAB, 300);
+        register0(BlockID.BIRCH_SLAB, 300);
+        register0(BlockID.DARK_OAK_SLAB, 300);
+        register0(BlockID.PALE_OAK_SLAB, 300);
 
         register0(BlockID.ACACIA_DOUBLE_SLAB,300);
         register0(BlockID.OAK_DOUBLE_SLAB,300);

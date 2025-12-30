@@ -11,6 +11,7 @@ import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.inventory.RecipeInventoryHolder;
 import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.ItemLavaBucket;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -253,7 +254,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
                 if (fuel instanceof ItemLavaBucket) {
-                    fuel.setDamage(0);
+                    fuel = new ItemBucket();
                     fuel.setCount(1);
                 } else {
                     fuel = Item.AIR;

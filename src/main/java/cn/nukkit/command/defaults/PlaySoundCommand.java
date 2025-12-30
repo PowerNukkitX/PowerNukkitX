@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class PlaySoundCommand extends VanillaCommand {
@@ -39,7 +40,7 @@ public class PlaySoundCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         String sound = list.getResult(0);
-        List<Player> targets = null;
+        List<Player> targets = List.of();
         Position position = null;
         float volume = 1;
         float pitch = 1;
@@ -54,7 +55,8 @@ public class PlaySoundCommand extends VanillaCommand {
             return 0;
         }
 
-        if (targets == null || targets.isEmpty()) {
+        targets = targets.stream().filter(Objects::nonNull).toList();
+        if (targets.isEmpty()) {
             if (sender.isPlayer()) {
                 targets = Lists.newArrayList(sender.asPlayer());
             } else {

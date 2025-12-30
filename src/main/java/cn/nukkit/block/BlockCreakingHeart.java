@@ -10,8 +10,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCreakingHeart> {
 
@@ -49,7 +51,6 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if(BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null) {
             this.setPillarAxis(face.getAxis());
-            testAxis();
             return true;
         }
         return false;
@@ -139,4 +140,12 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
     public boolean isSilkTouch(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
+
+    @Override
+    public @NotNull BlockEntityCreakingHeart createBlockEntity(@Nullable CompoundTag initialData, @Nullable Object... args) {
+        var be = BlockEntityHolder.super.createBlockEntity(initialData, args);
+        testAxis();
+        return be;
+    }
+
 }

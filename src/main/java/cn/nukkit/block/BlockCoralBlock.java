@@ -10,8 +10,6 @@ import cn.nukkit.math.BlockFace;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.CORAL_COLOR;
-
 
 public abstract class BlockCoralBlock extends BlockSolid {
     public BlockCoralBlock(BlockState blockstate) {

@@ -1,6 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBubbleColumn;
@@ -13,6 +14,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
+import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.entity.data.EntityDataTypes;
@@ -41,6 +44,7 @@ import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentWindBurst;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -65,11 +69,14 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.network.protocol.types.SwingSource;
 import cn.nukkit.plugin.Plugin;
+import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.tags.ItemTags;
@@ -78,6 +85,7 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +99,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author MagicDroidX
  */
+@Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID, EntityDataTypes {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
     protected final EntityDataMap entityDataMap = new EntityDataMap();
@@ -108,6 +117,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public IChunk chunk;
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
+    public List<Block> stepOnBlocks = new ArrayList<>();
+    protected Set<Vector3> lastStepOnBlocks = new HashSet<>();
     public double lastX;
     public double lastY;
     public double lastZ;
@@ -149,6 +160,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean justCreated;
     public boolean fireProof;
     public boolean invulnerable;
+    public boolean despawnable;
+    protected int lastPlayerNearbyTick = 0;
     public double highestPosition;
     public boolean closed = false;
     public boolean noClip = false;
@@ -180,6 +193,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private final Map<String, Integer> intProperties = new LinkedHashMap<>();
     private final Map<String, Float> floatProperties = new LinkedHashMap<>();
     protected final Map<Integer, Attribute> attributes = new HashMap<>();
+
+    protected static final int DEFAULT_SOFT_DESPAWN_DISTANCE = 74;
+    protected static final int DEFAULT_HARD_DESPAWN_DISTANCE = 128;
+    protected static final int DEFAULT_SOFT_DESPAWN_GRACE_TICKS = 20 * 45;
 
     private String idConvertToName() {
         var path = getIdentifier().split(":")[1];
@@ -372,21 +389,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     @NotNull
     public abstract String getIdentifier();
 
-    /**
-     * 实体高度
-     * <p>
-     * entity Height
-     *
-     * @return the height
-     */
-    public float getHeight() {
-        return 0;
-    }
-
-
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
+        } else if(isSneaking()) {
+            return getSneakingHeight();
+        } else if (isCrawling()) {
+            return getCrawlingHeight();
         } else {
             return getHeight();
         }
@@ -396,8 +405,35 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return getCurrentHeight() / 2 + 0.1f;
     }
 
+    /**
+     * Entity Width
+     * @return the width
+     */
     public float getWidth() {
+        if (!hasCollision()) return 0f;
+        if (isCustomEntity()) {
+            return meta().getCollisionBox(CustomEntityComponents.COLLISION_BOX).width();
+        }
         return 0;
+    }
+
+    /**
+     * Entity Height
+     * @return the height
+     */
+    public float getHeight() {
+        if (!hasCollision()) return 0f;
+        if (isCustomEntity()) {
+            return meta().getCollisionBox(CustomEntityComponents.COLLISION_BOX).height();
+        }
+        return 0;
+    }
+
+    public float getKnockbackResistance() {
+        if (isCustomEntity()) {
+            return meta().getFloat(CustomEntityComponents.KNOCKBACK_RESISTANCE, 0f);
+        }
+        return 0f;
     }
 
     public float getLength() {
@@ -405,6 +441,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     protected double getStepHeight() {
+        return 0;
+    }
+
+    protected double getStepHeightControlled() {
+        return 0;
+    }
+
+    protected double getStepHeightJumpPrevented() {
         return 0;
     }
 
@@ -426,6 +470,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public int getFrostbiteInjury() {
         return 1;
+    }
+
+    public boolean isPersistent() {
+        return true;
+    }
+
+    public void setPersistent(boolean persistent) {
+        namedTag.putBoolean("Persistent", persistent);
     }
 
     /**
@@ -499,6 +551,28 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.temporalVector = new Vector3();
         this.justCreated = true;
         this.namedTag = nbt;
+
+        // Restore entity properties from NBT (overwriting defaults)
+        if (this.namedTag.contains("IntProperties")) {
+            CompoundTag intProps = this.namedTag.getCompound("IntProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : intProps.getTags().entrySet()) {
+                String key = entry.getKey();
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.intProperties.put(key, numTag.getData().intValue());
+                }
+            }
+        }
+
+        if (this.namedTag.contains("FloatProperties")) {
+            CompoundTag floatProps = this.namedTag.getCompound("FloatProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : floatProps.getTags().entrySet()) {
+                String key = entry.getKey();
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.floatProperties.put(key, numTag.getData().floatValue());
+                }
+            }
+        }
+
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
         this.server = chunk.getProvider().getLevel().getServer();
@@ -551,7 +625,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.namedTag.putFloat("Scale", 1);
         }
         this.scale = this.namedTag.getFloat("Scale");
+        if (!this.namedTag.contains("Despawnable")) {
+            boolean persistent =
+                    (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
+                            this.namedTag.getBoolean("Persistent");
 
+            this.namedTag.putBoolean("Despawnable", !persistent);
+        }
+        this.despawnable = this.namedTag.getBoolean("Despawnable");
         try {
             this.initEntity();
             if (this.initialized) {
@@ -605,6 +686,28 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, value ? 1 : 0);
     }
 
+    public Set<String> typeFamily() {
+        if (isCustomEntity()) {
+            return meta().getStringSet(CustomEntityComponents.TYPE_FAMILY);
+        }
+        return Set.of();
+    }
+
+    public final boolean isFamily(String family) {
+        return family != null && !family.isEmpty() && typeFamily().contains(family);
+    }
+
+    public final boolean isAnyFamily(Collection<String> families) {
+        if (families == null || families.isEmpty()) return false;
+        Set<String> mine = typeFamily();
+        for (String f : families) if (mine.contains(f)) return true;
+        return false;
+    }
+
+    public final boolean isAllFamilies(Collection<String> families) {
+        return families == null || families.isEmpty() || typeFamily().containsAll(families);
+    }
+
     public String getScoreTag() {
         return this.getDataProperty(SCORE, "");
     }
@@ -641,6 +744,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void setSprinting(boolean value) {
         this.setDataFlag(EntityFlag.SPRINTING, value);
+    }
+
+    public boolean isCrawling() {
+        return this.getDataFlag(EntityFlag.CRAWLING);
+    }
+
+    public void setCrawling(boolean value) {
+        this.setDataFlag(EntityFlag.CRAWLING, value);
     }
 
     public boolean isGliding() {
@@ -686,6 +797,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public float getSwimmingHeight() {
+        return getHeight();
+    }
+
+    public float getSneakingHeight() {
+        return getHeight();
+    }
+
+    public float getCrawlingHeight() {
         return getHeight();
     }
 
@@ -747,6 +866,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             effects.remove(type);
 
             this.recalculateEffectColor();
+            this.setDataProperty(EntityDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
+            if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
         }
     }
 
@@ -800,6 +921,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         effects.put(effect.getType(), effect);
 
         this.recalculateEffectColor();
+        this.setDataProperty(EntityDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
+        if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
     }
 
     public void recalculateBoundingBox() {
@@ -867,6 +990,34 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
+    private long computeVisibleMobEffects() {
+        if (effects == null || effects.isEmpty()) return 0L;
+
+        ArrayList<Effect> list = new ArrayList<>(effects.values());
+        list.sort((a, b) -> Integer.compare(
+                a.getType() != null && a.getType().id() != null ? a.getType().id() : -1,
+                b.getType() != null && b.getType().id() != null ? b.getType().id() : -1
+        ));
+
+        long data = 0L;
+        int packed = 0;
+
+        for (Effect e : list) {
+            if (packed >= 8) break;
+            if (e == null || e.getType() == null || e.getType().id() == null) continue;
+            if (!e.isVisible()) continue;
+
+            int id = e.getType().id();
+            if (id < 0 || id > 63) continue;
+
+            int ambient = e.isAmbient() ? 1 : 0;
+            int slotByte = (id & 0x3F) | (ambient << 6);
+            data |= ((long)(slotByte & 0xFF)) << (packed * 8);
+            packed++;
+        }
+        return data;
+    }
+
     public void saveNBT() {
         if (!(this instanceof Player)) {
             this.namedTag.putString("identifier", this.getIdentifier());
@@ -907,6 +1058,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.namedTag.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
+        this.namedTag.putBoolean("Despawnable", this.despawnable);
         this.namedTag.putFloat("Scale", this.scale);
 
         if (!this.effects.isEmpty()) {
@@ -936,12 +1088,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         } else {
             this.namedTag.remove("Attributes");
         }
+
+        // Save intProperties & boolProperties
+        CompoundTag intProps = new CompoundTag();
+        for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
+            intProps.putInt(entry.getKey(), entry.getValue());
+        }
+        this.namedTag.putCompound("IntProperties", intProps);
+
+        // Save floatProperties
+        CompoundTag floatProps = new CompoundTag();
+        for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
+            floatProps.putFloat(entry.getKey(), entry.getValue());
+        }
+        this.namedTag.putCompound("FloatProperties", floatProps);
     }
 
     /**
-     * The name that English name of the type of this entity.
+     * The pretty name of this entity.
      */
     public String getOriginalName() {
+        if (isCustomEntity()) {
+            String n = meta().getString(CustomEntityComponents.ORIGINAL_NAME, "");
+            if (!n.isEmpty()) return n;
+        }
         return name == null ? idConvertToName() : name;
     }
 
@@ -977,7 +1147,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param player the player
      */
     public void spawnTo(Player player) {
-
+        if(this.closed) return;
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(createAddEntityPacket());
@@ -1019,6 +1189,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         for (int i = 0; i < addEntity.links.length; i++) {
             addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false);
         }
+        addEntity.syncedProperties = this.getClientSyncProperties();
 
         return addEntity;
     }
@@ -1086,15 +1257,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 当一个实体被攻击时(即接受一个实体伤害事件 这个事件可以是由其他实体攻击导致，也可能是自然伤害)调用.
-     * <p>
      * Called when an entity is attacked (i.e. receives an entity damage event. This event can be caused by an attack by another entity, or it can be a natural damage).
-     *
-     * @param source 记录伤害源的事件<br>Record the event of the source of the attack
-     * @return 是否攻击成功<br>Whether the attack was successful
+     * @param source Record the event of the source of the attack
+     * @return Whether the attack was successful
      */
     public boolean attack(EntityDamageEvent source) {
-        //火焰保护附魔实现
+        // Fire Protection enchantment implemented
         if (hasEffect(EffectType.FIRE_RESISTANCE)
                 && (source.getCause() == DamageCause.FIRE
                 || source.getCause() == DamageCause.FIRE_TICK
@@ -1102,15 +1270,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return false;
         }
 
-        //水生生物免疫溺水
+        // Aquatic creatures are immune to drowning
         if (this instanceof EntitySwimmable swimmable && !swimmable.canDrown() && source.getCause() == DamageCause.DROWNING)
             return false;
 
-        //飞行生物免疫摔伤
+        // Flying creatures are immune to falls
         if (this instanceof EntityFlyable flyable && !flyable.hasFallingDamage() && source.getCause() == DamageCause.FALL)
             return false;
 
-        //事件回调函数
+        // Event callback function
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {
             return false;
@@ -1126,18 +1294,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        //吸收伤害实现
-        if (this.absorption > 0) {  // Damage Absorption
+        // Damage absorption implementation
+        if (this.absorption > 0) {
             this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
         }
 
-        //修改最后一次伤害
+        // Modify the last damage
         setLastDamageCause(source);
 
-        //计算血量
+        // Calculating blood volume
         float newHealth = getHealth() - source.getFinalDamage();
 
-        //only player
+        // Only player
         if (newHealth < 1 && this instanceof Player player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
                 boolean totem = false;
@@ -1148,7 +1316,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 } else if (player.getInventory().getItemInHand() instanceof ItemTotemOfUndying) {
                     totem = true;
                 }
-                //复活图腾实现
+                // Resurrection Totem Implementation
                 if (totem) {
                     this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM_USED);
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
@@ -1253,6 +1421,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public int getMaxHealth() {
+        if (isCustomEntity()) {
+            return meta().getInt(CustomEntityComponents.MAX_HEALTH, 20);
+        }
         return maxHealth;
     }
 
@@ -1414,9 +1585,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.collisionBlocks = null;
         }
         this.justCreated = false;
+        this.stepOnBlocks = null;
 
-        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable entityRideable) {
-            entityRideable.dismountEntity(this);
+        if (riding != null && !riding.isAlive() && riding.isRideable()) {
+            riding.dismountEntity(this);
         }
         updatePassengers();
 
@@ -1436,6 +1608,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         boolean hasUpdate = false;
 
         this.checkBlockCollision();
+        this.checkBlockStepOn();
 
         if (this.y < (level.getMinHeight() - 18) && this.isAlive()) {
             if (this instanceof Player player) {
@@ -1478,24 +1651,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             getServer().getPluginManager().callEvent(ev);//call event
 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
+
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
-                if (newPos != null) {
-                    Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
-                    if (nearestPortal != null) {
-                        teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                    } else {
-                        final Position finalPos = newPos.add(1.5, 1, 1.5);
-                        if (teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)) {
-                            level.getScheduler().scheduleDelayedTask(new Task() {
-                                @Override
-                                public void onRun(int currentTick) {
-                                    // dirty hack to make sure chunks are loaded and generated before spawning
-                                    // player
-                                    inPortalTicks = 81;
-                                    teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
-                                    PortalHelper.spawnPortal(newPos);
-                                }
-                            }, 5);
+                if(newPos != null) {
+                    IChunk destChunk = newPos.getChunk();
+                    if (!destChunk.isGenerated()) {
+                        newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
+                        newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
+                    }
+                    if (newPos != null) {
+                        Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
+                        if (nearestPortal != null) {
+                            teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                        } else {
+                            final Position finalPos = newPos.add(1.5, 1, 1.5);
+                            inPortalTicks = 81;
+                            PortalHelper.spawnPortal(newPos);
+                            teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                         }
                     }
                 }
@@ -1504,11 +1676,54 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.age += tickDiff;
         this.ticksLived += tickDiff;
 
+        // Auto-despawn mobs
+        if (!this.isPersistent() && this.isAlive()) {
+            final int tickNow = this.level.getTick();
+            final int softDistSq = DEFAULT_SOFT_DESPAWN_DISTANCE * DEFAULT_SOFT_DESPAWN_DISTANCE;
+            final int hardDistSq = DEFAULT_HARD_DESPAWN_DISTANCE * DEFAULT_HARD_DESPAWN_DISTANCE;
+
+            Player nearest = null;
+            double nearestSq = Double.MAX_VALUE;
+
+            if (!this.level.getPlayers().isEmpty()) {
+                for (Player p : this.level.getPlayers().values()) {
+                    if (!p.isOnline() || p.isSpectator()) continue;
+                    double dsq = p.distanceSquared(this);
+                    if (dsq < nearestSq) {
+                        nearestSq = dsq;
+                        nearest = p;
+                    }
+                }
+            }
+
+            // Hard distance -> immediate despawn
+            if (nearest == null || nearestSq > hardDistSq) {
+                this.despawnFromAll();
+                this.close();
+                return hasUpdate;
+            }
+
+            // Soft distance -> start/consume grace
+            if (nearestSq <= softDistSq) {
+                this.lastPlayerNearbyTick = tickNow;
+            } else {
+                if (this.lastPlayerNearbyTick == 0) {
+                    this.lastPlayerNearbyTick = tickNow;
+                } else if ((tickNow - this.lastPlayerNearbyTick) >= DEFAULT_SOFT_DESPAWN_GRACE_TICKS) {
+                    this.despawnFromAll();
+                    this.close();
+                    return hasUpdate;
+                }
+            }
+        }
+
         return hasUpdate;
     }
 
     public void updateMovement() {
-        //这样做是为了向后兼容旧插件
+        // This is done for backward compatibility with older plugins.
+        if(isImmobile()) return; //Do not move when immobile
+
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
@@ -1788,8 +2003,47 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
-
+    /**
+     * @deprecated Use {@link #canBePushedByEntities()} and/or {@link #canBePushedByPiston()} instead. <p>
+     * If custom entitye use simpleBuilder.pusable() to define.
+     */
+    @Deprecated
     public boolean canBePushed() {
+        return canBePushedByPiston();
+    }
+
+    public boolean canBePushedByEntities() {
+        if (isCustomEntity()) {
+            return meta().getPushable(CustomEntityComponents.PUSHABLE).isPushable();
+        }
+        return true;
+    }
+
+    public boolean canBePushedByPiston() {
+        if (isCustomEntity()) {
+            return meta().getPushable(CustomEntityComponents.PUSHABLE).isPushableByPiston();
+        }
+        return true;
+    }
+
+    public boolean hasCollision() {
+        if (isCustomEntity()) {
+            return meta().getPhysics(CustomEntityComponents.PHYSICS).hasCollision();
+        }
+        return true;
+    }
+
+    public boolean hasGravity() {
+        if (isCustomEntity()) {
+            return meta().getPhysics(CustomEntityComponents.PHYSICS).hasGravity();
+        }
+        return true;
+    }
+
+    public boolean pushTowardsClosestSpace() {
+        if (isCustomEntity()) {
+            return meta().getPhysics(CustomEntityComponents.PHYSICS).pushTowardsClosestSpace();
+        }
         return true;
     }
 
@@ -1828,10 +2082,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
+    public void updateFallDistance() {
+        this.fallDistance = (float) (this.highestPosition - this.y);
+    }
+
     protected void updateFallState(boolean onGround) {
         if (onGround) {
-            fallDistance = (float) (this.highestPosition - this.y);
-
+            this.updateFallDistance();
             if (fallDistance > 0) {
                 // check if we fell into at least 1 block of water
                 var lb = this.getLevelBlock();
@@ -1920,6 +2177,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         ev.setCancelled(cancelled);
 
         this.server.getPluginManager().callEvent(ev);
+        if(this instanceof Player player) new PlayerHandle(player).setInteract();
         return ev.isCancelled();
     }
 
@@ -1996,7 +2254,33 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        return false; //if false, normal player movement will proceed
+    }
+
+    public boolean isRideable() {
+        if (isCustomEntity()) {
+            return meta().getBoolean(CustomEntityComponents.RIDEABLE, false);
+        }
+
+        return false;
+    }
+
+    public boolean isRiderControl() {
+        if (isCustomEntity()) {
+            return meta().getBoolean(CustomEntityComponents.RIDE_CONTROL, false);
+        }
+
+        return false;
+    }
+
+    public boolean openInventory(Player player) {
+        return false; //return true if opening inventory, otherwise players inventory will be opnened
+    }
+
     public boolean onInteract(Player player, Item item) {
+        this.despawnable = false;
+        this.setPersistent(true);
         return false;
     }
 
@@ -2136,44 +2420,37 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * Player do not use
      */
+    private static final float Y_SIZE_DAMPING = 0.4F;
+    private static final float Y_SIZE_THRESHOLD = 0.05F;
+    private static final float Y_SIZE_BOOST = 0.5F;
     public boolean move(double dx, double dy, double dz) {
+        if(isImmobile()) return true; //Do not move when immobile
+
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
             return true;
         }
 
-
-        this.ySize *= 0.4F;
+        this.ySize *= Y_SIZE_DAMPING;
 
         double movX = dx;
         double movY = dy;
         double movZ = dz;
 
-        AxisAlignedBB axisalignedbb = this.boundingBox.clone();
+        AxisAlignedBB originalBB = this.boundingBox.clone();
 
         var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
-        for (AxisAlignedBB bb : list) {
-            dy = bb.calculateYOffset(this.boundingBox, dy);
-        }
-
-        this.boundingBox.offset(0, dy, 0);
+        Vec3 collisionOffsets = applyCollisionOffsets(dx, dy, dz, this.boundingBox, list);
+        dx = collisionOffsets.x;
+        dy = collisionOffsets.y;
+        dz = collisionOffsets.z;
 
         boolean fallingFlag = (this.onGround || (dy != movY && movY < 0));
 
-        for (AxisAlignedBB bb : list) {
-            dx = bb.calculateXOffset(this.boundingBox, dx);
-        }
+        boolean tryStep = this.getStepHeight() > 0 && fallingFlag && this.ySize < Y_SIZE_THRESHOLD && (movX != dx || movZ != dz);
 
-        this.boundingBox.offset(dx, 0, 0);
-
-        for (AxisAlignedBB bb : list) {
-            dz = bb.calculateZOffset(this.boundingBox, dz);
-        }
-
-        this.boundingBox.offset(0, 0, dz);
-
-        if (this.getStepHeight() > 0 && fallingFlag && this.ySize < 0.05 && (movX != dx || movZ != dz)) {
+        if (tryStep) {
             double cx = dx;
             double cy = dy;
             double cz = dz;
@@ -2181,41 +2458,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             dy = this.getStepHeight();
             dz = movZ;
 
-            AxisAlignedBB axisalignedbb1 = this.boundingBox.clone();
-
-            this.boundingBox.setBB(axisalignedbb);
+            AxisAlignedBB steppedBB = this.boundingBox.clone();
+            this.boundingBox.setBB(originalBB);
 
             list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+            Vec3 stepOffsets = applyCollisionOffsets(dx, dy, dz, this.boundingBox, list);
+            dx = stepOffsets.x;
+            dy = stepOffsets.y;
+            dz = stepOffsets.z;
 
-            for (AxisAlignedBB bb : list) {
-                dy = bb.calculateYOffset(this.boundingBox, dy);
-            }
+            double movedLenOld = cx * cx + cz * cz;
+            double movedLenNew = dx * dx + dz * dz;
 
-            this.boundingBox.offset(0, dy, 0);
-
-            for (AxisAlignedBB bb : list) {
-                dx = bb.calculateXOffset(this.boundingBox, dx);
-            }
-
-            this.boundingBox.offset(dx, 0, 0);
-
-            for (AxisAlignedBB bb : list) {
-                dz = bb.calculateZOffset(this.boundingBox, dz);
-            }
-
-            this.boundingBox.offset(0, 0, dz);
-
-            this.boundingBox.offset(0, 0, dz);
-
-            if ((cx * cx + cz * cz) >= (dx * dx + dz * dz)) {
+            if (movedLenOld >= movedLenNew) {
                 dx = cx;
                 dy = cy;
                 dz = cz;
-                this.boundingBox.setBB(axisalignedbb1);
+                this.boundingBox.setBB(steppedBB);
             } else {
-                this.ySize += 0.5F;
+                this.ySize += Y_SIZE_BOOST;
             }
-
         }
 
         this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
@@ -2223,7 +2485,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
 
         this.checkChunks();
-
         this.checkGroundState(movX, movY, movZ, dx, dy, dz);
         this.updateFallState(this.onGround);
 
@@ -2242,6 +2503,38 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         // TODO: vehicle collision events (first we need to spawn them!)
         return true;
     }
+
+    private Vec3 applyCollisionOffsets(double dx, double dy, double dz, AxisAlignedBB box, List<AxisAlignedBB> list) {
+        for (AxisAlignedBB bb : list) {
+            dy = bb.calculateYOffset(box, dy);
+        }
+        box.offset(0, dy, 0);
+
+        for (AxisAlignedBB bb : list) {
+            dx = bb.calculateXOffset(box, dx);
+        }
+        box.offset(dx, 0, 0);
+
+        for (AxisAlignedBB bb : list) {
+            dz = bb.calculateZOffset(box, dz);
+        }
+        box.offset(0, 0, dz);
+
+        return new Vec3(dx, dy, dz);
+    }
+
+    private static class Vec3 {
+        public double x;
+        public double y;
+        public double z;
+
+        public Vec3(double x, double y, double z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
 
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (this.noClip) {
@@ -2334,6 +2627,60 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return this.collisionBlocks;
     }
 
+    protected List<Block> getBlocksUnderEntity() {
+        List<Block> blocks = new ArrayList<>();
+        if (!this.isOnGround()) {
+            return blocks;
+        }
+
+        double x = this.getX();
+        double y = this.getY();
+        double z = this.getZ();
+        double epsilon = 0.01;
+        int blockX = NukkitMath.floorDouble(x);
+        int blockY = NukkitMath.floorDouble(y - epsilon);
+        int blockZ = NukkitMath.floorDouble(z);
+
+        Block blockBelow = this.level.getBlock(blockX, blockY, blockZ);
+
+        if (blockBelow.hasEntityStepSensor()) {
+            blocks.add(blockBelow);
+        }
+
+        return blocks;
+    }
+
+    public List<Block> getTickCachedStepOnBlocks() {
+        if (this.stepOnBlocks == null) {
+            this.stepOnBlocks = this.getBlocksUnderEntity();
+        }
+        return this.stepOnBlocks;
+    }
+
+    protected void checkBlockStepOn() {
+        List<Block> currentStepOnBlocks = this.getTickCachedStepOnBlocks();
+        Set<Vector3> currentPositions = new HashSet<>();
+
+        // On Step ON
+        for (Block block : currentStepOnBlocks) {
+            Vector3 pos = new Vector3(block.getX(), block.getY(), block.getZ());
+            currentPositions.add(pos);
+
+            if (!lastStepOnBlocks.contains(pos)) {
+                block.onEntityStepOn(this);
+            }
+        }
+        // On Step OFF
+        for (Vector3 oldPos : lastStepOnBlocks) {
+            if (!currentPositions.contains(oldPos)) {
+                Block oldBlock = this.level.getBlock(oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ());
+                oldBlock.onEntityStepOff(this);
+            }
+        }
+
+        lastStepOnBlocks = currentPositions;
+    }
+
     /**
      * Returns whether this entity can be moved by currents in liquids.
      *
@@ -2399,7 +2746,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     getServer().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
-                        final Position newPos = PortalHelper.moveToTheEnd(this);
+                        final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
                             if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
@@ -2810,11 +3157,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setDataFlag(EntityFlag entityFlag, boolean value) {
+        setDataFlag(entityFlag, value, true);
+    }
+
+    public void setDataFlag(EntityFlag entityFlag, boolean value, boolean send) {
         if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
             this.getEntityDataMap().setFlag(entityFlag, value);
-            EntityDataMap entityDataMap = new EntityDataMap();
-            entityDataMap.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+            if(send) {
+                EntityDataMap entityDataMap = new EntityDataMap();
+                entityDataMap.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+            }
         }
     }
 
@@ -2824,10 +3177,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setDataFlagExtend(EntityFlag entityFlag) {
-        this.setDataFlag(entityFlag, true);
+        this.setDataFlagExtend(entityFlag, true);
     }
 
     public void setDataFlagExtend(EntityFlag entityFlag, boolean value) {
+        setDataFlagExtend(entityFlag, value, true);
+    }
+
+    public void setDataFlagExtend(EntityFlag entityFlag, boolean value, boolean send) {
         if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
             EnumSet<EntityFlag> entityFlags = this.getEntityDataMap().getOrDefault(EntityDataTypes.FLAGS_2, EnumSet.noneOf(EntityFlag.class));
             if (value) {
@@ -2836,9 +3193,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 entityFlags.remove(entityFlag);
             }
             this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, entityFlags);
-            EntityDataMap entityDataMap = new EntityDataMap();
-            entityDataMap.put(EntityDataTypes.FLAGS_2, entityFlags);
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+            if(send) {
+                EntityDataMap entityDataMap = new EntityDataMap();
+                entityDataMap.put(EntityDataTypes.FLAGS_2, entityFlags);
+                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+            }
         }
     }
 
@@ -2891,16 +3250,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return server;
     }
 
-
     public boolean isUndead() {
         return false;
     }
 
-
     public boolean isInEndPortal() {
         return inEndPortal;
     }
-
 
     public boolean isPreventingSleep(Player player) {
         return false;
@@ -2925,64 +3281,72 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return hash;
     }
 
-
     public boolean isSpinAttacking() {
         return this.getDataFlag(EntityFlag.DAMAGE_NEARBY_MOBS);
     }
-
 
     public void setSpinAttacking(boolean value) {
         this.setDataFlag(EntityFlag.DAMAGE_NEARBY_MOBS, value);
     }
 
-
     public void setSpinAttacking() {
         this.setSpinAttacking(true);
     }
 
-
     public boolean isNoClip() {
         return noClip;
     }
-
 
     public void setNoClip(boolean noClip) {
         this.noClip = noClip;
         this.setDataFlag(EntityFlag.HAS_COLLISION, noClip);
     }
 
-
     public boolean isBoss() {
         return this instanceof EntityBoss;
     }
 
-
+    /**
+     * Add a tag to the entity
+     */
     public void addTag(String tag) {
         this.namedTag.putList("Tags", this.namedTag.getList("Tags", StringTag.class).add(new StringTag(tag)));
     }
 
-
+    /**
+     * Remove tag from entity if exist
+     */
     public void removeTag(String tag) {
         ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
         tags.remove(new StringTag(tag));
         this.namedTag.putList("Tags", tags);
     }
 
-
+    /**
+     * @deprecated Use {@link #hasTag(String)} instead.
+     */
+    @Deprecated
     public boolean containTag(String tag) {
+        return hasTag(tag);
+    }
+
+    /**
+     * @return true if entity has a string tag
+     */
+    public boolean hasTag(String tag) {
         return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
-
+    /**
+     * @return List of tags for the entity
+     */
     public List<StringTag> getAllTags() {
         return this.namedTag.getList("Tags", StringTag.class).getAll();
     }
 
-
     public float getFreezingEffectStrength() {
         return this.getDataProperty(FREEZING_EFFECT_STRENGTH);
     }
-
 
     public void setFreezingEffectStrength(float strength) {
         if (strength < 0 || strength > 1)
@@ -2990,17 +3354,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataProperty(FREEZING_EFFECT_STRENGTH, strength);
     }
 
-
     public int getFreezingTicks() {
         return this.freezingTicks;
     }
-
 
     public void setFreezingTicks(int ticks) {
         this.freezingTicks = Math.max(0, Math.min(ticks, 140));
         setFreezingEffectStrength(ticks / 140f);
     }
-
 
     public void addFreezingTicks(int increments) {
         if (freezingTicks + increments < 0) this.freezingTicks = 0;
@@ -3009,26 +3370,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         setFreezingEffectStrength(this.freezingTicks / 140f);
     }
 
-
     public void setAmbientSoundInterval(float interval) {
         this.setDataProperty(AMBIENT_SOUND_INTERVAL, interval);
     }
-
 
     public void setAmbientSoundIntervalRange(float range) {
         this.setDataProperty(AMBIENT_SOUND_INTERVAL, range);
     }
 
-
     public void setAmbientSoundEvent(Sound sound) {
         this.setAmbientSoundEventName(sound.getSound());
     }
 
-
     public void setAmbientSoundEventName(String eventName) {
         this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, eventName);
     }
-
 
     public void playAnimation(AnimateEntityPacket.Animation animation) {
         var viewers = new HashSet<>(this.getViewers().values());
@@ -3051,11 +3407,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Server.broadcastPacket(players, pk);
     }
 
-
-    public void playActionAnimation(AnimatePacket.Action action, float rowingTime) {
+    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
-        playActionAnimation(action, rowingTime, viewers);
+        playActionAnimation(action, swingSource, viewers);
     }
 
     /**
@@ -3064,14 +3419,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * 向指定玩家群体播放此实体的action动画
      *
      * @param action     the action
-     * @param rowingTime the rowing time
+     * @param swingSource the swing source
      * @param players    可视玩家 Visible Player
      */
-    public void playActionAnimation(AnimatePacket.Action action, float rowingTime, Collection<Player> players) {
+    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
         pk.action = action;
-        pk.rowingTime = rowingTime;
         pk.eid = this.getId();
+        pk.setSwingSource(swingSource);
         Server.broadcastPacket(players, pk);
     }
 
@@ -3093,43 +3448,155 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     private boolean validateAndSetIntProperty(String identifier, int value) {
         if (!intProperties.containsKey(identifier)) return false;
+
+        IntEntityProperty intProperty = getTypedEntityProperty(identifier, IntEntityProperty.class);
+        if (intProperty == null) return false;
+
+        if (value < intProperty.getMinValue() || value > intProperty.getMaxValue()) {
+            return false;
+        }
+
         intProperties.put(identifier, value);
         return true;
     }
 
-    public final boolean setIntEntityProperty(String identifier, int value) {
-        return validateAndSetIntProperty(identifier, value);
+    private boolean validateAndSetBooleanProperty(String identifier, boolean value) {
+        if (!intProperties.containsKey(identifier)) return false;
+
+        BooleanEntityProperty booleanProperty = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+        if (booleanProperty == null) return false;
+
+        intProperties.put(identifier, value ? 1 : 0);
+        return true;
     }
 
-
-    public final boolean setBooleanEntityProperty(String identifier, boolean value) {
-        return validateAndSetIntProperty(identifier, value ? 1 : 0);
-    }
-
-    public final boolean setFloatEntityProperty(String identifier, float value) {
+    private boolean validateAndSetFloatProperty(String identifier, float value) {
         if (!floatProperties.containsKey(identifier)) return false;
+
+        FloatEntityProperty floatProperty = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+        if (floatProperty == null) return false;
+
+        if (value < floatProperty.getMinValue() || value > floatProperty.getMaxValue()) {
+            return false;
+        }
+
         floatProperties.put(identifier, value);
         return true;
     }
 
+    public final boolean setIntEntityProperty(String identifier, int value) {
+        boolean change = validateAndSetIntProperty(identifier, value);
+
+        if (change) {
+            IntEntityProperty prop = getTypedEntityProperty(identifier, IntEntityProperty.class);
+            if (prop != null && prop.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+        return change;
+    }
+
+    public final boolean setBooleanEntityProperty(String identifier, boolean value) {
+        boolean change = validateAndSetBooleanProperty(identifier, value);
+
+        if (change) {
+            BooleanEntityProperty property = getTypedEntityProperty(identifier, BooleanEntityProperty.class);
+            if (property != null && property.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+        return change;
+    }
+
+    public final boolean setFloatEntityProperty(String identifier, float value) {
+        boolean change = validateAndSetFloatProperty(identifier, value);
+
+        if (change) {
+            FloatEntityProperty property = getTypedEntityProperty(identifier, FloatEntityProperty.class);
+            if (property != null && property.isClientSync()) {
+                this.sendData(this.getViewers().values().toArray(new Player[0]));
+            }
+        }
+
+        return change;
+    }
+
     public final boolean setEnumEntityProperty(String identifier, String value) {
         if (!intProperties.containsKey(identifier)) return false;
-        List<EntityProperty> entityPropertyList = EntityProperty.getEntityProperty(this.getIdentifier());
 
-        for (EntityProperty property : entityPropertyList) {
-            if (!identifier.equals(property.getIdentifier()) ||
-                    !(property instanceof EnumEntityProperty enumProperty)) {
-                continue;
-            }
-            int index = enumProperty.findIndex(value);
-
+        EnumEntityProperty property = getTypedEntityProperty(identifier, EnumEntityProperty.class);
+        if (property != null) {
+            int index = property.findIndex(value);
             if (index >= 0) {
                 intProperties.put(identifier, index);
+                if (property.isClientSync()) {
+                    this.sendData(this.getViewers().values().toArray(new Player[0]));
+                }
                 return true;
             }
             return false;
         }
         return false;
+    }
+
+    public PropertySyncData getClientSyncProperties() {
+        List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
+
+        int[] intArray = propertyDefs.stream()
+                .filter(this::shouldSyncIntProperty)
+                .map(this::getIntPropertyValue)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .toArray();
+
+        double[] doubleArray = propertyDefs.stream()
+                .filter(this::shouldSyncFloatProperty)
+                .map(this::getFloatPropertyValue)
+                .filter(Objects::nonNull)
+                .mapToDouble(Float::doubleValue)
+                .toArray();
+
+        float[] floatArray = new float[doubleArray.length];
+        for (int i = 0; i < doubleArray.length; i++) {
+            floatArray[i] = (float) doubleArray[i];
+        }
+
+        return new PropertySyncData(intArray, floatArray);
+    }
+
+    private boolean shouldSyncIntProperty(EntityProperty prop) {
+        if (!prop.isClientSync()) return false;
+        return (prop instanceof IntEntityProperty)
+                || (prop instanceof BooleanEntityProperty)
+                || (prop instanceof EnumEntityProperty);
+    }
+
+    private Integer getIntPropertyValue(EntityProperty prop) {
+        Integer val = this.intProperties.get(prop.getIdentifier());
+        if (prop instanceof BooleanEntityProperty && val == null) return 0;
+        return val;
+    }
+
+    private boolean shouldSyncFloatProperty(EntityProperty prop) {
+        return prop.isClientSync() && (prop instanceof FloatEntityProperty);
+    }
+
+    private Float getFloatPropertyValue(EntityProperty prop) {
+        return this.floatProperties.get(prop.getIdentifier());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T extends EntityProperty> T getTypedEntityProperty(String identifier, Class<T> type) {
+        List<EntityProperty> propertyList = EntityProperty.getEntityProperty(this.getIdentifier());
+        if (propertyList == null) return null;
+
+        for (EntityProperty property : propertyList) {
+            if (identifier.equals(property.getIdentifier()) && type.isInstance(property)) {
+                return (T) property;
+            }
+        }
+
+        return null;
     }
 
     public final int getIntEntityProperty(String identifier) {
@@ -3165,19 +3632,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             final String identifier = property.getIdentifier();
 
             switch (property) {
-                case FloatEntityProperty floatProperty ->
+                case FloatEntityProperty floatProperty -> {
+                    if (!floatProperties.containsKey(identifier)) {
                         floatProperties.put(identifier, floatProperty.getDefaultValue());
-                case IntEntityProperty intProperty ->
+                    }
+                }
+                case IntEntityProperty intProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
                         intProperties.put(identifier, intProperty.getDefaultValue());
-                case BooleanEntityProperty booleanProperty ->
+                    }
+                }
+                case BooleanEntityProperty booleanProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
                         intProperties.put(identifier, booleanProperty.getDefaultValue() ? 1 : 0);
-                case EnumEntityProperty enumProperty ->
+                    }
+                }
+                case EnumEntityProperty enumProperty -> {
+                    if (!intProperties.containsKey(identifier)) {
                         intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
+                    }
+                }
                 default -> {}
             }
         }
     }
-
 
     private PropertySyncData propertySyncData() {
         Collection<Integer> intValues = intProperties.values();
@@ -3203,5 +3681,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public boolean isCustomEntity() {
+        return this instanceof CustomEntity;
+    }
+
+    @Nullable
+    public CustomEntityDefinition getCustomEntityDefinition() {
+        if (!isCustomEntity()) return null;
+        return EntityRegistry.getCustomEntityDefinitionById(getIdentifier());
+    }
+
+    @NotNull
+    protected CustomEntityDefinition.Meta meta() {
+        CustomEntityDefinition def = getCustomEntityDefinition();
+        return def == null ? new CustomEntityDefinition.Meta() : CustomEntityDefinition.metaOf(def.id());
     }
 }

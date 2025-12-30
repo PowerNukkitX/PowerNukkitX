@@ -86,7 +86,6 @@ public class GameMockExtension extends MockitoExtension {
             Registries.ENTITY.init();
             Profession.init();
             Registries.BLOCKENTITY.init();
-            Registries.BLOCKSTATE_ITEMMETA.init();
             Registries.BLOCK.init();
             Enchantment.init();
             Registries.ITEM_RUNTIMEID.init();
@@ -126,15 +125,15 @@ public class GameMockExtension extends MockitoExtension {
             pluginManager.loadInternalPlugin();
 
             freezableArrayManager = new FreezableArrayManager(
-                    server.getSettings().freezeArraySettings().enable(),
-                    server.getSettings().freezeArraySettings().slots(),
-                    server.getSettings().freezeArraySettings().defaultTemperature(),
-                    server.getSettings().freezeArraySettings().freezingPoint(),
-                    server.getSettings().freezeArraySettings().absoluteZero(),
-                    server.getSettings().freezeArraySettings().boilingPoint(),
-                    server.getSettings().freezeArraySettings().melting(),
-                    server.getSettings().freezeArraySettings().singleOperation(),
-                    server.getSettings().freezeArraySettings().batchOperation());
+                    server.getSettings().performanceSettings().enable(),
+                    server.getSettings().performanceSettings().slots(),
+                    server.getSettings().performanceSettings().defaultTemperature(),
+                    server.getSettings().performanceSettings().freezingPoint(),
+                    server.getSettings().performanceSettings().absoluteZero(),
+                    server.getSettings().performanceSettings().boilingPoint(),
+                    server.getSettings().performanceSettings().melting(),
+                    server.getSettings().performanceSettings().singleOperation(),
+                    server.getSettings().performanceSettings().batchOperation());
             when(server.getFreezableArrayManager()).thenReturn(freezableArrayManager);
 
             when(server.getMotd()).thenReturn("PNX");

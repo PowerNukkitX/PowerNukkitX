@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -30,6 +31,9 @@ public abstract class ContainerInventory extends BaseInventory {
         pk.x = (int) holder.getX();
         pk.y = (int) holder.getY();
         pk.z = (int) holder.getZ();
+        if(holder instanceof Entity entity) {
+            pk.entityId = entity.getId();
+        }
         who.dataPacket(pk);
 
         this.sendContents(who);

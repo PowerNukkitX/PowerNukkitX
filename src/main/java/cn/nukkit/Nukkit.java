@@ -1,6 +1,8 @@
 package cn.nukkit;
 
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
+import cn.nukkit.wizard.SetupWizard;
+import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -15,11 +17,10 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,7 +44,6 @@ import static cn.nukkit.utils.Utils.dynamic;
  */
 
 /**
- * Nukkit启动类，包含{@code main}函数。<br>
  * The launcher class of Nukkit, including the {@code main} function.
  *
  * @author MagicDroidX(code) @ Nukkit Project
@@ -67,7 +67,6 @@ public class Nukkit {
     public static int DEBUG = 1;
     public static int CHROME_DEBUG_PORT = -1;
     public static List<String> JS_DEBUG_LIST = new LinkedList<>();
-    public static String LANGUAGE = null;
 
     public static void main(String[] args) {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
@@ -106,45 +105,20 @@ public class Nukkit {
         InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
 
         // Define args
-        if (!loadOptions(args)) {
-            return;
-        }
-
-        try {
-            if (TITLE) {
-                System.out.print((char) 0x1b + "]0;PowerNukkitX is starting up..." + (char) 0x07);
-            }
-            new Server(PATH, DATA_PATH, PLUGIN_PATH, LANGUAGE);
-        } catch (Throwable t) {
-            log.error("", t);
-        }
-
-        Nukkit.onShutdown();
-    }
-
-    private static boolean loadOptions(String[] args) {
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
-
-        OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page")
-                .forHelp();
+        OptionSpec<Void> helpSpec = parser.accepts("help", "Shows this page").forHelp();
         OptionSpec<Void> ansiSpec = parser.accepts("disable-ansi", "Disables console coloring");
         OptionSpec<Void> titleSpec = parser.accepts("enable-title", "Enables title at the top of the window");
-        OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging")
-                .withRequiredArg()
-                .ofType(String.class);
-        OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging")
-                .withRequiredArg()
-                .ofType(String.class);
-        OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language")
-                .withOptionalArg()
-                .ofType(String.class);
-        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.")
-                .withRequiredArg()
-                .ofType(Integer.class);
-        OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.")
-                .withRequiredArg()
-                .ofType(String.class);
+        OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging").withRequiredArg().ofType(String.class);
+        OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging").withRequiredArg().ofType(String.class);
+        OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language").withOptionalArg().ofType(String.class);
+        OptionSpec<Void> skipSetupSpec = parser.accepts("skip-setup", "Skip the setup wizard and use default values");
+        OptionSpec<Void> acceptLicense = parser.accepts("accept-license", "Accept the license automatically");
+        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
+        OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
+        OptionSpec<String> serverNameSpec = parser.accepts("server-name", "Set the server name (MOTD)").withRequiredArg().ofType(String.class);
+        OptionSpec<Integer> portSpec = parser.accepts("port", "Set the server port").withRequiredArg().ofType(Integer.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -156,7 +130,7 @@ public class Nukkit {
             } catch (IOException e) {
                 // ignore
             }
-            return false;
+            return;
         }
 
         ANSI = !options.has(ansiSpec);
@@ -174,7 +148,9 @@ public class Nukkit {
             }
         }
 
-        LANGUAGE = options.valueOf(languageSpec);
+        String language = options.valueOf(languageSpec);
+        boolean skipSetup = options.has(skipSetupSpec);
+        boolean autoAcceptLicense = options.has(acceptLicense);
 
         if (options.has(chromeDebugPortSpec)) {
             CHROME_DEBUG_PORT = options.valueOf(chromeDebugPortSpec);
@@ -184,14 +160,63 @@ public class Nukkit {
             JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(","))
                     .toList();
         }
-        return true;
-    }
 
-    private static void onShutdown() {
+        String serverName = options.valueOf(serverNameSpec);
+        Integer port = options.valueOf(portSpec);
+
+        File configFile = new File(DATA_PATH + "pnx.yml");
+        WizardConfig wizardConfig = null;
+
+        if (!configFile.exists() && !skipSetup) {
+            log.info("First-time setup detected. Running setup wizard...");
+            try (SetupWizard wizard = new SetupWizard()) {
+                wizardConfig = wizard.run(language, false, autoAcceptLicense, serverName, port);
+                if (wizardConfig != null && wizardConfig.getLanguage() != null) {
+                    language = wizardConfig.getLanguage();
+                }
+            } catch (Exception e) {
+                log.error("Failed to run setup wizard", e);
+                log.info("Continuing with default configuration...");
+                if (language == null) {
+                    language = "eng";
+                }
+            }
+        } else if (!configFile.exists() && skipSetup) {
+            try (SetupWizard wizard = new SetupWizard()) {
+                String lang = (language != null && !language.isEmpty()) ? language : "eng";
+                wizard.setBaseLang(new cn.nukkit.lang.BaseLang(lang));
+                if (!autoAcceptLicense) {
+                    boolean accepted = wizard.acceptLicense(false);
+                    if (!accepted) {
+                        System.out.println("License not accepted. Exiting.");
+                        System.exit(1);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed to display license acceptance dialog", e);
+                System.exit(1);
+            }
+            wizardConfig = new WizardConfig();
+            if (serverName != null && !serverName.isEmpty()) {
+                wizardConfig.setMotd(serverName);
+            }
+            if (port != null) {
+                wizardConfig.setPort(port);
+            }
+        }
+
+        try {
+            if (TITLE) {
+                System.out.print((char) 0x1b + "]0;PowerNukkitX is starting up..." + (char) 0x07);
+            }
+            new Server(PATH, DATA_PATH, PLUGIN_PATH, language, wizardConfig);
+        } catch (Throwable t) {
+            log.error("", t);
+        }
+
         if (TITLE) {
             System.out.print((char) 0x1b + "]0;Stopping Server..." + (char) 0x07);
         }
-
         log.info("Stopping other threads");
 
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
@@ -219,34 +244,32 @@ public class Nukkit {
     }
 
     private static Properties getGitInfo() {
-        try (InputStream gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties")){
-            Properties properties = new Properties();
-            try {
-                properties.load(gitFileStream);
-                return properties;
-            } catch (IOException e) {
+        try {
+            InputStream gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
+            if (gitFileStream == null) {
                 return null;
             }
+            Properties properties = new Properties();
+            try (InputStream in = gitFileStream) {
+                properties.load(in);
+            }
+            return properties;
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
     private static String getVersion() {
-        Properties properties = new Properties();
-        try (InputStream is = Nukkit.class.getModule().getResourceAsStream("git.properties");
-             InputStreamReader reader = new InputStreamReader(is);
-             BufferedReader buffered = new BufferedReader(reader)) {
-            properties.load(buffered);
-            String line = properties.getProperty("git.build.version");
-            if ("${project.version}".equalsIgnoreCase(line)) {
-                return "Unknown-PNX-SNAPSHOT";
-            } else {
-                return line;
-            }
-        } catch (IOException e) {
-            return "Unknown-PNX-SNAPSHOT";
+        if (GIT_INFO == null) {
+            return "2.0.0-SNAPSHOT";
         }
+
+        String version = GIT_INFO.getProperty("git.build.version");
+        if (version == null || version.isEmpty()) {
+            version = GIT_INFO.getProperty("git.commit.id.describe");
+        }
+
+        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "2.0.0-SNAPSHOT";
     }
 
     private static String getGitCommit() {

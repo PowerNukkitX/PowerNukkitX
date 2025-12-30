@@ -129,6 +129,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if(isNotActivate(player)) return false;
         // lava
         if (getCauldronLiquid() == CauldronLiquid.LAVA) {
             return onLavaActivate(item, player, blockFace, fx, fy, fz);
@@ -232,6 +233,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 this.level.addSound(this.add(0.5, 0.5, 0.5), Sound.CAULDRON_ADDDYE);
 
                 break;
+            case ItemID.WOLF_ARMOR:
             case ItemID.LEATHER_HELMET:
             case ItemID.LEATHER_CHESTPLATE:
             case ItemID.LEATHER_LEGGINGS:
@@ -547,7 +549,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

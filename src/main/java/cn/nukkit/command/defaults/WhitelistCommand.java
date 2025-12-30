@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.StringNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Locale;
@@ -63,12 +62,12 @@ public class WhitelistCommand extends VanillaCommand {
                         return 1;
                     }
                     case "on" -> {
-                        sender.getServer().getProperties().set(ServerPropertiesKeys.WHITE_LIST.toString(), true);
+                        sender.getServer().getSettings().baseSettings().allowList(true);
                         log.addSuccess("commands.allowlist.enabled").output(true);
                         return 1;
                     }
                     case "off" -> {
-                        sender.getServer().getProperties().set(ServerPropertiesKeys.WHITE_LIST.toString(), false);
+                        sender.getServer().getSettings().baseSettings().allowList(false);
                         log.addSuccess("commands.allowlist.disabled").output(true);
                         return 1;
                     }

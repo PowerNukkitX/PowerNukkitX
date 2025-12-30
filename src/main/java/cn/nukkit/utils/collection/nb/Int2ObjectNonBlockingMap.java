@@ -947,10 +947,9 @@ public class Int2ObjectNonBlockingMap<TypeV>
                 // algorithm) or do the copy work ourselves.  Tiny tables with huge
                 // thread counts trying to copy the table often 'panic'.
                 if (panic_start == -1) { // No panic?
-                    copyidx = (int) _copyIdx;
+                    do copyidx = (int) _copyIdx;     // Re-read
                     while (copyidx < (oldlen << 1) && // 'panic' check
-                            !_copyIdxUpdater.compareAndSet(this, copyidx, copyidx + MIN_COPY_WORK))
-                        copyidx = (int) _copyIdx;     // Re-read
+                            !_copyIdxUpdater.compareAndSet(this, copyidx, copyidx + MIN_COPY_WORK));
                     if (!(copyidx < (oldlen << 1))) // Panic!
                         panic_start = copyidx;       // Record where we started to panic-copy
                 }

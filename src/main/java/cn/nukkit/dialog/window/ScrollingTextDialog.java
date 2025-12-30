@@ -4,7 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.Task;
 
-
+/**
+ * Represents a dialog window that displays scrolling text to a player.
+ * The text is revealed progressively at a configurable speed.
+ */
 public class ScrollingTextDialog implements Dialog {
 
     private Player player;
@@ -14,10 +17,21 @@ public class ScrollingTextDialog implements Dialog {
     private int cursor = 0;
     private Task scrollingTask;
 
+    /**
+     * Constructs a ScrollingTextDialog for a player and dialog window with default speed.
+     * @param player The player
+     * @param dialog The dialog window
+     */
     public ScrollingTextDialog(Player player, FormWindowDialog dialog) {
         this(player, dialog,2);
     }
 
+    /**
+     * Constructs a ScrollingTextDialog for a player, dialog window, and scrolling speed.
+     * @param player The player
+     * @param dialog The dialog window
+     * @param scrollingSpeed The scrolling speed (in game ticks)
+     */
     public ScrollingTextDialog(Player player, FormWindowDialog dialog, int scrollingSpeed) {
         this.player = player;
         this.dialog = dialog;
@@ -76,6 +90,10 @@ public class ScrollingTextDialog implements Dialog {
         Server.getInstance().getScheduler().scheduleRepeatingTask(this.scrollingTask,this.scrollingSpeed);
     }
 
+    /**
+     * Starts the scrolling effect and sends the dialog to the player.
+     * @param p The player
+     */
     @Override
     public void send(Player p){
         this.startScrolling();

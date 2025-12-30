@@ -5,7 +5,9 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,8 @@ import java.util.Locale;
 @Slf4j
 @UtilityClass
 public class NetworkMapping {
-    public Inventory getInventory(Player player, ContainerSlotType containerSlotType) {
+
+    public Inventory getInventory(Player player, ContainerSlotType containerSlotType, Integer dynamicId) {
         return switch (containerSlotType) {
             case HORSE_EQUIP -> {
                 Entity riding = player.getRiding();
@@ -59,6 +62,19 @@ public class NetworkMapping {
                     yield player.getTopWindow().get();
                 } else {
                     yield player.getCraftingGrid();
+                }
+            }
+            case DYNAMIC_CONTAINER -> {
+                //If player is looking in container. If not, check the players inventory.
+                var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                if(item.isPresent()) {
+                    yield ((ItemBundle) item.get()).getInventory();
+                } else {
+                    //If player is looking in container, but bundle is not inside the container.
+                    item = player.getInventory().getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                    if(item.isPresent()) {
+                        yield ((ItemBundle) item.get()).getInventory();
+                    } else yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
                 }
             }
             default -> {

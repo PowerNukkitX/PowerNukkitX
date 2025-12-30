@@ -6,15 +6,18 @@ import cn.nukkit.TestEventHandler;
 import cn.nukkit.TestPlayer;
 import cn.nukkit.TestPluginManager;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
-import cn.nukkit.form.element.Element;
+import cn.nukkit.form.element.ElementDivider;
+import cn.nukkit.form.element.ElementHeader;
+import cn.nukkit.form.element.custom.ElementCustom;
 import cn.nukkit.form.element.simple.ElementButton;
 import cn.nukkit.form.element.simple.ButtonImage;
 import cn.nukkit.form.element.custom.ElementDropdown;
 import cn.nukkit.form.element.custom.ElementInput;
-import cn.nukkit.form.element.custom.ElementLabel;
+import cn.nukkit.form.element.ElementLabel;
 import cn.nukkit.form.element.custom.ElementSlider;
 import cn.nukkit.form.element.custom.ElementStepSlider;
 import cn.nukkit.form.element.custom.ElementToggle;
+import cn.nukkit.form.element.simple.ElementSimple;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
 import cn.nukkit.form.response.ModalResponse;
@@ -37,12 +40,14 @@ public class FormTest {
     @Test
     void test_FormWindowCustom(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        ElementDropdown test1 = new ElementDropdown("test1", List.of("1", "2", "3"), 1);//default 2
+        ElementDropdown test1 = new ElementDropdown("test1", List.of("1", "2", "3"), 1, "This is a test tooltip!");//default 2
         ElementInput test2 = new ElementInput("test2", "placeholder", "defaultText");
         ElementLabel test3 = new ElementLabel("test3");
         ElementSlider test4 = new ElementSlider("test4", 0, 100, 1, 50);
         ElementStepSlider test5 = new ElementStepSlider("test5", List.of("step1", "step2"), 1);//default step2
         ElementToggle test6 = new ElementToggle("test6", true);
+        ElementHeader test7 = new ElementHeader("test7");
+        ElementDivider test8 = new ElementDivider("test8");
         CustomForm test = new CustomForm("test")
                 .elements(ObjectArrayList.of(
                         test1,
@@ -50,7 +55,9 @@ public class FormTest {
                         test3,
                         test4,
                         test5,
-                        test6));
+                        test6,
+                        test7,
+                        test8));
 
         test.send(player, 1);
         DataPacketManager dataPacketManager = player.getSession().getDataPacketManager();
@@ -58,7 +65,7 @@ public class FormTest {
 
         ModalFormResponsePacket modalFormResponsePacket = new ModalFormResponsePacket();
         modalFormResponsePacket.formId = 1;
-        modalFormResponsePacket.data = "[\"1\",\"input\",\"\",\"6\",\"0\",\"false\"]";
+        modalFormResponsePacket.data = "[\"1\",\"input\",\"test3\",\"6\",\"0\",\"false\", \"test7\",\"test8\"]";
         assert dataPacketManager != null;
 
         testPluginManager.registerTestEventHandler(List.of(
@@ -78,15 +85,19 @@ public class FormTest {
                         Assertions.assertEquals("step1", stepSliderResponse.elementText());
                         boolean toggleResponse = response.getToggleResponse(5);
                         Assertions.assertFalse(toggleResponse);
+                        String headerResponse = response.getHeaderResponse(6);
+                        Assertions.assertEquals("test7", headerResponse);
+                        String dividerResponse = response.getDividerResponse(7);
+                        Assertions.assertEquals("test8", dividerResponse);
 
                         ElementResponse genericDropdownResponse = response.getResponse(0);
                         Assertions.assertEquals(dropdownResponse.elementId(), genericDropdownResponse.elementId());
 
                         Int2ObjectOpenHashMap<Object> responses = response.getResponses();
-                        Assertions.assertEquals(6, responses.size());
+                        Assertions.assertEquals(8, responses.size());
 
                         Assertions.assertEquals("test", test.title());
-                        Assertions.assertEquals(test1, test.elements().toArray(Element[]::new)[0]);
+                        Assertions.assertEquals(test1, test.elements().toArray(ElementCustom[]::new)[0]);
                     }
                 }
         ));
@@ -103,8 +114,8 @@ public class FormTest {
                 "123456"
         );
 
-        test.addButton(new ElementButton("button1", ButtonImage.Type.PATH.of("textures/items/compass")))
-                .addButton("button2", ButtonImage.Type.URL.of("https://static.wikia.nocookie.net/minecraft_gamepedia/images/9/94/Oak_Button_%28S%29_JE4.png"))
+        test.addElement(new ElementButton("button1", ButtonImage.Type.PATH.of("textures/items/compass")))
+                .addButton("button2", ButtonImage.Type.URL.of("https://minecraft.wiki/images/Oak_Button_JE5.png"))
                 .addButton("button3");
 
         test.send(player, 1);
@@ -127,12 +138,12 @@ public class FormTest {
                         int buttonId = response.buttonId();
                         Assertions.assertEquals(1, buttonId);
 
-                        ElementButton[] buttons = test.buttons().keySet().toArray(ElementButton.EMPTY_LIST);
+                        ElementSimple[] buttons = test.elements().keySet().toArray(ElementSimple.EMPTY_LIST);
 
                         Assertions.assertEquals("test_FormWindowSimple", test.title());
-                        Assertions.assertEquals("button1", buttons[0].text());
-                        Assertions.assertEquals("button3", buttons[2].text());
-                        Assertions.assertEquals("textures/items/compass", buttons[0].image().data());
+                        Assertions.assertEquals("button1", ((ElementButton) buttons[0]).text());
+                        Assertions.assertEquals("button3", ((ElementButton) buttons[2]).text());
+                        Assertions.assertEquals("textures/items/compass", ((ElementButton) buttons[0]).image().data());
                     }
                 }
         ));

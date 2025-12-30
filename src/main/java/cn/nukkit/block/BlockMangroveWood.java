@@ -2,10 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
-import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
-
-import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
 
 public class BlockMangroveWood extends BlockWood {
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_WOOD, CommonBlockProperties.PILLAR_AXIS);

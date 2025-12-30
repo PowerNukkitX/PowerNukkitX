@@ -98,7 +98,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         LeverDirection orientation = getLeverOrientation();
         BlockFace face = orientation.getFacing();
 
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             updateAroundRedstone();
             RedstoneComponent.updateAroundRedstone(getSide(face.getOpposite()), face);
         }
@@ -170,7 +170,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
             BlockFace face = getLeverOrientation().getFacing();
             this.level.updateAround(this.getLocation().getSide(face.getOpposite()));
 
-            if (level.getServer().getSettings().levelSettings().enableRedstone()) {
+            if (level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 updateAroundRedstone();
                 RedstoneComponent.updateAroundRedstone(getSide(face.getOpposite()), face);
             }

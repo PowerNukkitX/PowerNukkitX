@@ -2,6 +2,7 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.form.response.Response;
+import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
@@ -35,6 +36,8 @@ public abstract class Form<T extends Response> {
     protected Consumer<Player> closed = player -> {};
     @Setter(AccessLevel.NONE)
     protected BiConsumer<Player, T> submitted = (player, response) -> {};
+    @Setter(AccessLevel.NONE)
+    protected BiConsumer<Player, ModalFormCancelReason> cancelled = (player, reason) -> {};
 
     @Getter
     protected T response;
@@ -64,6 +67,16 @@ public abstract class Form<T extends Response> {
     }
 
     /**
+     * Internally used to accept the consumer to execute when the form was cancelled
+     * @param player The player who submitted the form
+     * @param data The reason why the form was cancelled
+     */
+    public void supplyCancelled(Player player, ModalFormCancelReason data) {
+        if (this.cancelled != null)
+            this.cancelled.accept(player, data);
+    }
+
+    /**
      * @param closed The consumer executed when a player closes the form
      * @return The form
      */
@@ -78,6 +91,15 @@ public abstract class Form<T extends Response> {
      */
     public Form<T> onSubmit(BiConsumer<Player, T> submitted) {
         this.submitted = submitted;
+        return this;
+    }
+
+    /**
+     * @param cancel The consumer executed when form opening got cancelled
+     * @return The form
+     */
+    public Form<T> onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        this.cancelled = cancel;
         return this;
     }
 
@@ -138,7 +160,7 @@ public abstract class Form<T extends Response> {
         return formData != null && !formData.equals("null");
     }
 
-    public abstract Response respond(Player player, String formData);
+    public abstract Response respond(Player player, String formData, ModalFormCancelReason cancelReason);
 
     public boolean isViewer(Player player) {
         return this.viewers.contains(player);

@@ -7,7 +7,9 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EnchantmentLootWeapon extends EnchantmentLoot {
+
     public EnchantmentLootWeapon() {
         super(Enchantment.ID_LOOTING, "lootBonus", Rarity.RARE, EnchantmentType.SWORD);
     }
+
 }

@@ -5,8 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
 
 public class CompoundTag extends Tag {
     protected final Map<String, Tag> tags;
@@ -252,7 +258,8 @@ public class CompoundTag extends Tag {
     }
 
     public boolean getBoolean(String name) {
-        return getByte(name) != 0;
+        if (!tags.containsKey(name)) return false;
+        return ((ByteTag) tags.get(name)).getData() != 0;
     }
 
     @Override

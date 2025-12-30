@@ -9,10 +9,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.AddPlayerPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.PlayerListPacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
 import cn.nukkit.utils.SerializedImage;
 import com.google.common.base.Strings;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -128,7 +133,7 @@ public class FloatingTextParticle extends Particle {
 
         if (!this.invisible) {
             PlayerListPacket.Entry[] entry = {
-                    new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN)
+                    new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN, Color.WHITE)
             };
             PlayerListPacket playerAdd = new PlayerListPacket();
             playerAdd.entries = entry;

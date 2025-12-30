@@ -5,7 +5,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
-import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;

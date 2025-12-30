@@ -41,7 +41,7 @@ public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
             return false;
         }
 
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             if (shouldBePowered()) {
                 this.level.scheduleUpdate(this, 1);
             }

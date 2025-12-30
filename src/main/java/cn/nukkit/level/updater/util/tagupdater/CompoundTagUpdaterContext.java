@@ -2,7 +2,6 @@ package cn.nukkit.level.updater.util.tagupdater;
 
 import cn.nukkit.level.updater.util.TagUtils;
 import cn.nukkit.nbt.tag.CompoundTag;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,9 @@ public class CompoundTagUpdaterContext {
     }
 
     public static int makeVersion(int major, int minor, int patch) {
-        return (patch << 8) | (minor << 16) | (major << 24);
+        return (major << 24) | //major
+                (minor << 16) | //minor
+                (patch << 8); //patch
     }
 
     public CompoundTagUpdater.Builder addUpdater(int major, int minor, int patch) {

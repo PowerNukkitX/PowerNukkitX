@@ -1,10 +1,21 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.*;
+import cn.nukkit.block.copper.bars.*;
+import cn.nukkit.block.copper.bulb.*;
+import cn.nukkit.block.copper.chain.*;
+import cn.nukkit.block.copper.chest.*;
+import cn.nukkit.block.copper.golem.*;
+import cn.nukkit.block.copper.lantern.*;
+import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.shelf.*;
+import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +27,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Cool_Loong | Mcayear | KoshakMineDEV | WWMB | Draglis
@@ -33,182 +47,18 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Block>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
+    private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
 
-    public static final Set<String> skipBlockSet = Set.of(
-            "minecraft:camera",
-            "minecraft:chalkboard",
-            "minecraft:chemical_heat",
-            "minecraft:compound_creator",
-            "minecraft:element_constructor",
-            "minecraft:lab_table",
-            "minecraft:material_reducer",
-            "minecraft:colored_torch_purple",
-            "minecraft:colored_torch_blue",
-            "minecraft:colored_torch_red",
-            "minecraft:colored_torch_green",
+    public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2",
-            "minecraft:element_0",
-            "minecraft:element_1",
-            "minecraft:element_10",
-            "minecraft:element_100",
-            "minecraft:element_101",
-            "minecraft:element_102",
-            "minecraft:element_103",
-            "minecraft:element_104",
-            "minecraft:element_105",
-            "minecraft:element_106",
-            "minecraft:element_107",
-            "minecraft:element_108",
-            "minecraft:element_109",
-            "minecraft:element_11",
-            "minecraft:element_110",
-            "minecraft:element_111",
-            "minecraft:element_112",
-            "minecraft:element_113",
-            "minecraft:element_114",
-            "minecraft:element_115",
-            "minecraft:element_116",
-            "minecraft:element_117",
-            "minecraft:element_118",
-            "minecraft:element_12",
-            "minecraft:element_13",
-            "minecraft:element_14",
-            "minecraft:element_15",
-            "minecraft:element_16",
-            "minecraft:element_17",
-            "minecraft:element_18",
-            "minecraft:element_19",
-            "minecraft:element_2",
-            "minecraft:element_20",
-            "minecraft:element_21",
-            "minecraft:element_22",
-            "minecraft:element_23",
-            "minecraft:element_24",
-            "minecraft:element_25",
-            "minecraft:element_26",
-            "minecraft:element_27",
-            "minecraft:element_28",
-            "minecraft:element_29",
-            "minecraft:element_3",
-            "minecraft:element_30",
-            "minecraft:element_31",
-            "minecraft:element_32",
-            "minecraft:element_33",
-            "minecraft:element_34",
-            "minecraft:element_35",
-            "minecraft:element_36",
-            "minecraft:element_37",
-            "minecraft:element_38",
-            "minecraft:element_39",
-            "minecraft:element_4",
-            "minecraft:element_40",
-            "minecraft:element_41",
-            "minecraft:element_42",
-            "minecraft:element_43",
-            "minecraft:element_44",
-            "minecraft:element_45",
-            "minecraft:element_46",
-            "minecraft:element_47",
-            "minecraft:element_48",
-            "minecraft:element_49",
-            "minecraft:element_5",
-            "minecraft:element_50",
-            "minecraft:element_51",
-            "minecraft:element_52",
-            "minecraft:element_53",
-            "minecraft:element_54",
-            "minecraft:element_55",
-            "minecraft:element_56",
-            "minecraft:element_57",
-            "minecraft:element_58",
-            "minecraft:element_59",
-            "minecraft:element_6",
-            "minecraft:element_60",
-            "minecraft:element_61",
-            "minecraft:element_62",
-            "minecraft:element_63",
-            "minecraft:element_64",
-            "minecraft:element_65",
-            "minecraft:element_66",
-            "minecraft:element_67",
-            "minecraft:element_68",
-            "minecraft:element_69",
-            "minecraft:element_7",
-            "minecraft:element_70",
-            "minecraft:element_71",
-            "minecraft:element_72",
-            "minecraft:element_73",
-            "minecraft:element_74",
-            "minecraft:element_75",
-            "minecraft:element_76",
-            "minecraft:element_77",
-            "minecraft:element_78",
-            "minecraft:element_79",
-            "minecraft:element_8",
-            "minecraft:element_80",
-            "minecraft:element_81",
-            "minecraft:element_82",
-            "minecraft:element_83",
-            "minecraft:element_84",
-            "minecraft:element_85",
-            "minecraft:element_86",
-            "minecraft:element_87",
-            "minecraft:element_88",
-            "minecraft:element_89",
-            "minecraft:element_9",
-            "minecraft:element_90",
-            "minecraft:element_91",
-            "minecraft:element_92",
-            "minecraft:element_93",
-            "minecraft:element_94",
-            "minecraft:element_95",
-            "minecraft:element_96",
-            "minecraft:element_97",
-            "minecraft:element_98",
-            "minecraft:element_99",
-            "minecraft:hard_black_stained_glass",
-            "minecraft:hard_black_stained_glass_pane",
-            "minecraft:hard_blue_stained_glass",
-            "minecraft:hard_blue_stained_glass_pane",
-            "minecraft:hard_brown_stained_glass",
-            "minecraft:hard_brown_stained_glass_pane",
-            "minecraft:hard_cyan_stained_glass",
-            "minecraft:hard_cyan_stained_glass_pane",
-            "minecraft:hard_glass",
-            "minecraft:hard_glass_pane",
-            "minecraft:hard_gray_stained_glass",
-            "minecraft:hard_gray_stained_glass_pane",
-            "minecraft:hard_green_stained_glass",
-            "minecraft:hard_green_stained_glass_pane",
-            "minecraft:hard_light_blue_stained_glass",
-            "minecraft:hard_light_blue_stained_glass_pane",
-            "minecraft:hard_light_gray_stained_glass",
-            "minecraft:hard_light_gray_stained_glass_pane",
-            "minecraft:hard_lime_stained_glass",
-            "minecraft:hard_lime_stained_glass_pane",
-            "minecraft:hard_magenta_stained_glass",
-            "minecraft:hard_magenta_stained_glass_pane",
-            "minecraft:hard_orange_stained_glass",
-            "minecraft:hard_orange_stained_glass_pane",
-            "minecraft:hard_pink_stained_glass",
-            "minecraft:hard_pink_stained_glass_pane",
-            "minecraft:hard_purple_stained_glass",
-            "minecraft:hard_purple_stained_glass_pane",
-            "minecraft:hard_red_stained_glass",
-            "minecraft:hard_red_stained_glass_pane",
-            "minecraft:hard_white_stained_glass",
-            "minecraft:hard_white_stained_glass_pane",
-            "minecraft:hard_yellow_stained_glass",
-            "minecraft:hard_yellow_stained_glass_pane",
-            "minecraft:underwater_torch",
-            "minecraft:underwater_tnt"
+            "minecraft:deprecated_purpur_block_2"
     );
 
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
+
         try {
             register(ACACIA_BUTTON, BlockAcaciaButton.class);
             register(ACACIA_DOOR, BlockAcaciaDoor.class);
@@ -354,7 +204,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(BUBBLE_CORAL_FAN, BlockBubbleCoralFan.class);
             register(BUBBLE_CORAL_WALL_FAN, BlockBubbleCoralWallFan.class);
             register(BUDDING_AMETHYST, BlockBuddingAmethyst.class);
+            register(BUSH, BlockBush.class);
             register(CACTUS, BlockCactus.class);
+            register(CACTUS_FLOWER, BlockCactusFlower.class);
             register(CAKE, BlockCake.class);
             register(CALCITE, BlockCalcite.class);
             register(CALIBRATED_SCULK_SENSOR, BlockCalibratedSculkSensor.class);
@@ -368,7 +220,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(CAVE_VINES, BlockCaveVines.class);
             register(CAVE_VINES_BODY_WITH_BERRIES, BlockCaveVinesBodyWithBerries.class);
             register(CAVE_VINES_HEAD_WITH_BERRIES, BlockCaveVinesHeadWithBerries.class);
-            register(CHAIN, BlockChain.class);
+            register(IRON_CHAIN, BlockIronChain.class);
             register(CHAIN_COMMAND_BLOCK, BlockChainCommandBlock.class);
             register(CHERRY_BUTTON, BlockCherryButton.class);
             register(CHERRY_DOOR, BlockCherryDoor.class);
@@ -588,6 +440,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(FENCE_GATE, BlockFenceGate.class);
             register(FERN, BlockFern.class);
             register(FIRE, BlockFire.class);
+            register(FIREFLY_BUSH, BlockFireflyBush.class);
             register(FIRE_CORAL, BlockFireCoral.class);
             register(FIRE_CORAL_BLOCK, BlockFireCoralBlock.class);
             register(FIRE_CORAL_FAN, BlockFireCoralFan.class);
@@ -697,6 +550,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(LARGE_AMETHYST_BUD, BlockLargeAmethystBud.class);
             register(LARGE_FERN, BlockLargeFern.class);
             register(LAVA, BlockLava.class);
+            register(LEAF_LITTER, BlockLeafLitter.class);
             register(LECTERN, BlockLectern.class);
             register(LEVER, BlockLever.class);
             register(LIGHT_BLOCK_0, BlockLightBlock0.class);
@@ -737,7 +591,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(LIGHT_GRAY_TERRACOTTA, BlockLightGrayTerracotta.class);
             register(LIGHT_GRAY_WOOL, BlockLightGrayWool.class);
             register(LIGHT_WEIGHTED_PRESSURE_PLATE, BlockLightWeightedPressurePlate.class);
-            register(LIGHTNING_ROD, BlockLightningRod.class);
             register(LILAC, BlockLilac.class);
             register(LILY_OF_THE_VALLEY, BlockLilyOfTheValley.class);
             register(LIME_CANDLE, BlockLimeCandle.class);
@@ -1055,6 +908,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SEA_LANTERN, BlockSeaLantern.class);
             register(SEA_PICKLE, BlockSeaPickle.class);
             register(SEAGRASS, BlockSeagrass.class);
+            register(SHORT_DRY_GRASS, BlockShortDryGrass.class);
             register(SHORT_GRASS, BlockShortGrass.class);
             register(SHROOMLIGHT, BlockShroomlight.class);
             register(SILVER_GLAZED_TERRACOTTA, BlockSilverGlazedTerracotta.class);
@@ -1153,6 +1007,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(SUSPICIOUS_SAND, BlockSuspiciousSand.class);
             register(SWEET_BERRY_BUSH, BlockSweetBerryBush.class);
             register(TALL_GRASS, BlockTallGrass.class);
+            register(TALL_DRY_GRASS, BlockTallDryGrass.class);
             register(TARGET, BlockTarget.class);
             register(TINTED_GLASS, BlockTintedGlass.class);
             register(TNT, BlockTnt.class);
@@ -1277,6 +1132,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(WHITE_TERRACOTTA, BlockWhiteTerracotta.class);
             register(WHITE_TULIP, BlockWhiteTulip.class);
             register(WHITE_WOOL, BlockWhiteWool.class);
+            register(WILDFLOWERS, BlockWildflowers.class);
             register(WITHER_ROSE, BlockWitherRose.class);
             register(WITHER_SKELETON_SKULL, BlockWitherSkeletonSkull.class);
             register(WOODEN_BUTTON, BlockWoodenButton.class);
@@ -1295,6 +1151,80 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(YELLOW_TERRACOTTA, BlockYellowTerracotta.class);
             register(YELLOW_WOOL, BlockYellowWool.class);
             register(ZOMBIE_HEAD, BlockZombieHead.class);
+            register(DRIED_GHAST, BlockDriedGhast.class);
+
+            /**
+             * @since 1.21.110
+             */
+
+            register(COPPER_BARS, BlockCopperBars.class);
+            register(EXPOSED_COPPER_BARS, BlockExposedCopperBars.class);
+            register(WEATHERED_COPPER_BARS, BlockWeatheredCopperBars.class);
+            register(OXIDIZED_COPPER_BARS, BlockOxidizedCopperBars.class);
+            register(WAXED_COPPER_BARS, BlockWaxedCopperBars.class);
+            register(WAXED_EXPOSED_COPPER_BARS, BlockWaxedExposedCopperBars.class);
+            register(WAXED_WEATHERED_COPPER_BARS, BlockWaxedWeatheredCopperBars.class);
+            register(WAXED_OXIDIZED_COPPER_BARS, BlockWaxedOxidizedCopperBars.class);
+
+            register(COPPER_CHAIN, BlockCopperChain.class);
+            register(EXPOSED_COPPER_CHAIN, BlockExposedCopperChain.class);
+            register(WEATHERED_COPPER_CHAIN, BlockWeatheredCopperChain.class);
+            register(OXIDIZED_COPPER_CHAIN, BlockOxidizedCopperChain.class);
+            register(WAXED_COPPER_CHAIN, BlockWaxedCopperChain.class);
+            register(WAXED_EXPOSED_COPPER_CHAIN, BlockWaxedExposedCopperChain.class);
+            register(WAXED_WEATHERED_COPPER_CHAIN, BlockWaxedWeatheredCopperChain.class);
+            register(WAXED_OXIDIZED_COPPER_CHAIN, BlockWaxedOxidizedCopperChain.class);
+
+            register(COPPER_CHEST, BlockCopperChest.class);
+            register(EXPOSED_COPPER_CHEST, BlockExposedCopperChest.class);
+            register(WEATHERED_COPPER_CHEST, BlockWeatheredCopperChest.class);
+            register(OXIDIZED_COPPER_CHEST, BlockOxidizedCopperChest.class);
+            register(WAXED_COPPER_CHEST, BlockWaxedCopperChest.class);
+            register(WAXED_EXPOSED_COPPER_CHEST, BlockWaxedExposedCopperChest.class);
+            register(WAXED_WEATHERED_COPPER_CHEST, BlockWaxedWeatheredCopperChest.class);
+            register(WAXED_OXIDIZED_COPPER_CHEST, BlockWaxedOxidizedCopperChest.class);
+
+            register(COPPER_GOLEM_STATUE, BlockCopperGolemStatue.class);
+            register(EXPOSED_COPPER_GOLEM_STATUE, BlockExposedCopperGolemStatue.class);
+            register(WEATHERED_COPPER_GOLEM_STATUE, BlockWeatheredCopperGolemStatue.class);
+            register(OXIDIZED_COPPER_GOLEM_STATUE, BlockOxidizedCopperGolemStatue.class);
+            register(WAXED_COPPER_GOLEM_STATUE, BlockWaxedCopperGolemStatue.class);
+            register(WAXED_EXPOSED_COPPER_GOLEM_STATUE, BlockWaxedExposedCopperGolemStatue.class);
+            register(WAXED_WEATHERED_COPPER_GOLEM_STATUE, BlockWaxedWeatheredCopperGolemStatue.class);
+            register(WAXED_OXIDIZED_COPPER_GOLEM_STATUE, BlockWaxedOxidizedCopperGolemStatue.class);
+
+            register(COPPER_LANTERN, BlockCopperLantern.class);
+            register(EXPOSED_COPPER_LANTERN, BlockExposedCopperLantern.class);
+            register(WEATHERED_COPPER_LANTERN, BlockWeatheredCopperLantern.class);
+            register(OXIDIZED_COPPER_LANTERN, BlockOxidizedCopperLantern.class);
+            register(WAXED_COPPER_LANTERN, BlockWaxedCopperLantern.class);
+            register(WAXED_EXPOSED_COPPER_LANTERN, BlockWaxedExposedCopperLantern.class);
+            register(WAXED_WEATHERED_COPPER_LANTERN, BlockWaxedWeatheredCopperLantern.class);
+            register(WAXED_OXIDIZED_COPPER_LANTERN, BlockWaxedOxidizedCopperLantern.class);
+
+            register(COPPER_TORCH, BlockCopperTorch.class);
+
+            register(LIGHTNING_ROD, BlockLightningRod.class);
+            register(EXPOSED_LIGHTNING_ROD, BlockExposedLightningRod.class);
+            register(WEATHERED_LIGHTNING_ROD, BlockWeatheredLightningRod.class);
+            register(OXIDIZED_LIGHTNING_ROD, BlockOxidizedLightningRod.class);
+            register(WAXED_LIGHTNING_ROD, BlockWaxedLightningRod.class);
+            register(WAXED_EXPOSED_LIGHTNING_ROD, BlockWaxedExposedLightningRod.class);
+            register(WAXED_WEATHERED_LIGHTNING_ROD, BlockWaxedWeatheredLightningRod.class);
+            register(WAXED_OXIDIZED_LIGHTNING_ROD, BlockWaxedOxidizedLightningRod.class);
+
+            register(OAK_SHELF, BlockOakShelf.class);
+            register(SPRUCE_SHELF, BlockSpruceShelf.class);
+            register(BIRCH_SHELF, BlockBirchShelf.class);
+            register(JUNGLE_SHELF, BlockJungleShelf.class);
+            register(ACACIA_SHELF, BlockAcaciaShelf.class);
+            register(DARK_OAK_SHELF, BlockDarkOakShelf.class);
+            register(MANGROVE_SHELF, BlockMangroveShelf.class);
+            register(CHERRY_SHELF, BlockCherryShelf.class);
+            register(PALE_OAK_SHELF, BlockPaleOakShelf.class);
+            register(CRIMSON_SHELF, BlockCrimsonShelf.class);
+            register(WARPED_SHELF, BlockWarpedShelf.class);
+            register(BAMBOO_SHELF, BlockBambooShelf.class);
         } catch (RegisterException ignore) {
         }
     }
@@ -1311,7 +1241,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     @Override
     public void register(String key, Class<? extends Block> value) throws RegisterException {
-        if (skipBlockSet.contains(key)) return;// skip for experimental or educational blocks
+        if(shouldSkip(key)) return; //Skip blocks
         if (Modifier.isAbstract(value.getModifiers())) {
             throw new RegisterException("You can't register a abstract block class!");
         }
@@ -1394,13 +1324,17 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                 if (CustomBlock.class.isAssignableFrom(value)) {
                     CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
                     List<CustomBlockDefinition> customBlockDefinitions = CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, (p) -> new ArrayList<>());
-                    customBlockDefinitions.add(customBlock.getDefinition());
+                    CustomBlockDefinition def = customBlock.getDefinition();
+                    customBlockDefinitions.add(def);
+                    CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), customBlock.getDefinition());
                     int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
                     Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
-                    if (customBlock.shouldBeRegisteredInCreative()) {
+                    CompoundTag nbt = def.nbt();
+                    if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
                         ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
                         itemBlock.setNetId(null);
-                        Registries.CREATIVE.addCreativeItem(itemBlock);
+                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(key, nbt);
+                        Registries.CREATIVE.addCreativeItem(itemBlock, groupIndex);
                     }
                     KEYSET.add(key);
                     PROPERTIES.put(key, blockProperties);
@@ -1418,17 +1352,13 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    private void register0(String key, Class<? extends Block> value) {
-        try {
-            register(key, value);
-        } catch (Exception e) {
-            log.error("", e);
-        }
-    }
-
     @UnmodifiableView
     public List<CustomBlockDefinition> getCustomBlockDefinitionList() {
         return CUSTOM_BLOCK_DEFINITIONS.values().stream().flatMap(List::stream).toList();
+    }
+
+    public static @Nullable CustomBlockDefinition getCustomBlockDefinitionByIdStatic(String id) {
+        return CUSTOM_BLOCK_DEFINITION_BY_ID.get(id);
     }
 
     public void reload() {
@@ -1562,5 +1492,13 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean shouldSkip(String bid) {
+        return (!Education.isEnabled() && Education.eduBlocks.contains(bid)) || skipBlocks.contains(bid);
+    }
+
+    public static CustomBlockDefinition getCustomBlockDefinition(String identifier) {
+        return CUSTOM_BLOCK_DEFINITION_BY_ID.get(identifier);
     }
 }

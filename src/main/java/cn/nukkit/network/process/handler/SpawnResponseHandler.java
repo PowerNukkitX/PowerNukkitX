@@ -5,7 +5,6 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
-import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
 import cn.nukkit.network.protocol.ItemRegistryPacket;
 import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
 import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
@@ -19,7 +18,6 @@ import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Slf4j
@@ -56,14 +54,14 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         player.dataPacket(new AvailableEntityIdentifiersPacket());
 
         // 注册实体属性
-        // Register entity attributes
+        // Register entity properties
         log.debug("Sending actor properties");
-        for (SyncEntityPropertyPacket pk : EntityProperty.getPacketCache()) {
+        for (SyncEntityPropertyPacket pk : EntityProperty.getEntityPropertyCache()) {
             player.dataPacket(pk);
         }
 
         log.debug("Sending biome definitions");
-        player.dataPacket(new BiomeDefinitionListPacket());
+        player.dataPacket(Registries.BIOME.getBiomeDefinitionListPacket());
 
         log.debug("Sending attributes");
         player.syncAttributes();
@@ -99,8 +97,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         trimDataPacket.patterns.addAll(TrimData.trimPatterns);
         this.session.sendPacket(trimDataPacket);
 
-        player.setNameTagVisible(true);
-        player.setNameTagAlwaysVisible(true);
         player.setCanClimb(true);
         player.sendMovementSpeed(player.getMovementSpeed());
         log.debug("Sending player list");
@@ -150,12 +146,13 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         // Write custom block data
         startPk.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
         startPk.playerPropertyData = EntityProperty.getPlayerPropertyCache();
+        startPk.setExperiments(server.getExperiments());
         player.dataPacketImmediately(startPk);
     }
 
     @Override
     public void handle(RequestChunkRadiusPacket pk) {
-        player.setViewDistance(Math.max(2, Math.min(pk.radius, player.getViewDistance())));
+        player.setViewDistance(Math.max(2, player.getViewDistance()));
     }
 
     @Override

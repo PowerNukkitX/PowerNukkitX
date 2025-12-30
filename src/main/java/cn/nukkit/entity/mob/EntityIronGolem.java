@@ -25,11 +25,8 @@ import cn.nukkit.block.BlockIronBlock;
 import cn.nukkit.block.BlockPumpkin;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityOwnable;
-import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -42,7 +39,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -115,6 +111,16 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("irongolem", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public float getWidth() {
         return 1.4f;
     }
@@ -148,7 +154,7 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         // Item drops
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int flowerAmount = random.nextInt(3);

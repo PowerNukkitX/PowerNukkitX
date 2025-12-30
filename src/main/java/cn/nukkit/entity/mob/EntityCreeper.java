@@ -21,18 +21,18 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.passive.EntityAxolotl;
 import cn.nukkit.entity.passive.EntityCat;
 import cn.nukkit.entity.passive.EntityOcelot;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.apache.logging.log4j.core.Core;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -166,12 +166,28 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     @Override
-    public Item[] getDrops() {
-        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            return new Item[]{Item.get(Item.GUNPOWDER, 0, ThreadLocalRandom.current().nextInt(2) + 1)};
-        }
-        return Item.EMPTY_ARRAY;
+    public Set<String> typeFamily() {
+        return Set.of("creeper", "monster", "mob");
     }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (!(this.lastDamageCause instanceof EntityDamageByEntityEvent)) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int gunpowder = Utils.rand(0, 2 + looting);
+        if (gunpowder <= 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{
+                Item.get(Item.GUNPOWDER, 0, gunpowder)
+        };
+    }
+
 
     @Override
     public boolean isPreventingSleep(Player player) {

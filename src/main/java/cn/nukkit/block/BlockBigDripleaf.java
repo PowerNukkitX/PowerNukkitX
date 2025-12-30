@@ -21,10 +21,11 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
 import java.util.Objects;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.BIG_DRIPLEAF_HEAD;
+import static cn.nukkit.block.property.CommonBlockProperties.BIG_DRIPLEAF_TILT;
+import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(BIG_DRIPLEAF, BIG_DRIPLEAF_HEAD, BIG_DRIPLEAF_TILT, MINECRAFT_CARDINAL_DIRECTION);
 
@@ -223,7 +224,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             setTilt(BigDripleafTilt.NONE);
             level.setBlock(this, this, true, false);
 
-            level.cancelSheduledUpdate(this, this);
+            level.cancelScheduledUpdate(this, this);
             return Level.BLOCK_UPDATE_SCHEDULED;
         }
 

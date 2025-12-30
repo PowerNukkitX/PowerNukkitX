@@ -14,7 +14,6 @@ import static cn.nukkit.entity.data.EntityDataTypes.FLAGS;
 import static cn.nukkit.entity.data.EntityDataTypes.FLAGS_2;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-
 public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     private final Map<EntityDataType<?>, Object> map = new LinkedHashMap<>();
 
@@ -43,7 +42,6 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
         } else {
             flags.remove(flag);
         }
-
         return flag;
     }
 
@@ -111,9 +109,11 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     public Object put(EntityDataType<?> key, Object value) {
         checkNotNull(key, "type");
         checkNotNull(value, "value was null for %s", key);
+
         if (key == FLAGS || key == FLAGS_2) {
             return this.putFlags((EnumSet<EntityFlag>) value);
         }
+
         if (Number.class.isAssignableFrom(value.getClass())) {
             Class<?> type = key.getType();
             Number number = (Number) value;
@@ -179,6 +179,17 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     @Override
     public int hashCode() {
         return this.map.hashCode();
+    }
+
+    public EntityDataMap copy() {
+        EntityDataMap entityDataMap = new EntityDataMap();
+        for (var t : keySet()) {
+            Object o = this.get(t);
+            if (o != null) {
+                entityDataMap.put(t, o);
+            }
+        }
+        return entityDataMap;
     }
 
     public EntityDataMap copy(EntityDataType<?>... entityDataTypes) {

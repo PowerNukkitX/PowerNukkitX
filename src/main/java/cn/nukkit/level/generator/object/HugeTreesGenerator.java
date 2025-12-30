@@ -64,7 +64,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
                 for (int k = -j; k <= j && flag; ++k) {
                     for (int l = -j; l <= j && flag; ++l) {
                         Vector3 blockPos = leavesPos.add(k, i, l);
-                        if (leavesPos.getY() + i < 0 || leavesPos.getY() + i >= 256 || !this.canGrowInto(worldIn.getBlockIdAt((int) blockPos.x, (int) blockPos.y, (int) blockPos.z))) {
+                        if (leavesPos.getY() + i < 0 || leavesPos.getY() + i >= 256 || !this.canGrowInto(worldIn.getBlockIdIfCachedOrLoaded((int) blockPos.x, (int) blockPos.y, (int) blockPos.z))) {
                             flag = false;
                         }
                     }
@@ -83,7 +83,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
      */
     private boolean ensureDirtsUnderneath(Vector3 pos, BlockManager worldIn) {
         Vector3 blockpos = pos.down();
-        String block = worldIn.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
+        String block = worldIn.getBlockIdIfCachedOrLoaded((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
 
         if ((Objects.equals(block, Block.GRASS_BLOCK) || Objects.equals(block, Block.DIRT)) && pos.getY() >= 2) {
             this.setDirtAt(worldIn, blockpos);
@@ -117,7 +117,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
 
                 if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i) {
                     Vector3 blockpos = layerCenter.add(j, 0, k);
-                    Block block = worldIn.getBlockAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
+                    Block block = worldIn.getBlockIfCachedOrLoaded((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
 
                     if (block.isAir() || block instanceof BlockLeaves) {
                         worldIn.setBlockStateAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
@@ -137,7 +137,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
             for (int k = -width; k <= width; ++k) {
                 if (j * j + k * k <= i) {
                     Vector3 blockpos = layerCenter.add(j, 0, k);
-                    Block block = worldIn.getBlockAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
+                    Block block = worldIn.getBlockIfCachedOrLoaded((int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
                     if (block.isAir() || block instanceof BlockLeaves) {
                         worldIn.setBlockStateAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ(), this.leavesMetadata);
                     }

@@ -9,9 +9,34 @@ import java.util.Set;
 
 
 /**
- * 解析为{@link String}值
+ * Parses a command parameter as a {@link String} value from an enum for PowerNukkitX command trees.
  * <p>
- * 所有命令枚举类型如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * This node is used for all command enum types if no custom {@link IParamNode} is specified. It validates the argument
+ * against the allowed enum values, supports soft enums (accepts any value), and sets the parsed value or triggers an error if invalid.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Validates argument against allowed enum values from {@link CommandEnum}.</li>
+ *   <li>Supports soft enums (accepts any value).</li>
+ *   <li>Initializes enum values from the provided {@link CommandEnum}.</li>
+ *   <li>Used as the default node for enum command parameters.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for enum parameter parsing.</li>
+ *   <li>Automatically selected for enum parameters if no custom node is provided.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses: "day", "night", "rain" as enum values
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see CommandEnum
+ * @see IParamNode
+ * @since PowerNukkitX 1.19.50
  */
 public class EnumNode extends ParamNode<String> {
     protected CommandEnum commandEnum;

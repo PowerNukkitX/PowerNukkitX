@@ -225,35 +225,24 @@ public final class PlayerHandle {
         player.dialogWindows = dialogWindows;
     }
 
+    public void setInteract() {
+        player.previousInteractTick = player.getServer().getTick();
+    }
+
     public void setDummyBossBars(Map<Long, DummyBossBar> dummyBossBars) {
         player.dummyBossBars = dummyBossBars;
-    }
-    public double getLastRightClickTime() {
-        return player.lastRightClickTime;
-    }
-
-    public void setLastRightClickTime(double lastRightClickTime) {
-        player.lastRightClickTime = lastRightClickTime;
-    }
-
-    public Vector3 getLastRightClickPos() {
-        return player.lastRightClickPos;
-    }
-
-    public void setLastRightClickPos(Vector3 lastRightClickPos) {
-        player.lastRightClickPos = lastRightClickPos;
     }
 
     public void setLastInAirTick(int lastInAirTick) {
         player.lastInAirTick = lastInAirTick;
     }
 
-    public int getLastPlayerdLevelUpSoundTime() {
-        return player.lastPlayerdLevelUpSoundTime;
+    public int getLastPlayedLevelUpSoundTime() {
+        return player.lastPlayedLevelUpSoundTime;
     }
 
-    public void setLastPlayerdLevelUpSoundTime(int lastPlayerdLevelUpSoundTime) {
-        player.lastPlayerdLevelUpSoundTime = lastPlayerdLevelUpSoundTime;
+    public void setLastPlayedLevelUpSoundTime(int lastPlayedLevelUpSoundTime) {
+        player.lastPlayedLevelUpSoundTime = lastPlayedLevelUpSoundTime;
     }
 
     public void setLastAttackEntity(Entity lastAttackEntity) {

@@ -4,6 +4,9 @@
         <TerminalConsole name="Console">
             <PatternLayout
                     pattern="%cyan{%d{HH:mm:ss}} [%yellow{%t}] [%style{%highlight{%level}{STYLE=Logback}}] %minecraftFormatting{%msg}%n"/>
+            <Filters>
+                <RegexFilter regex=".*Reading file /sys/class/net/.*" onMatch="DENY" onMismatch="ACCEPT"/>
+            </Filters>
         </TerminalConsole>
         <RollingRandomAccessFile name="File" fileName="logs/server.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss} [%t] %level - %msg%n"/>
@@ -11,19 +14,23 @@
                 <TimeBasedTriggeringPolicy/>
                 <OnStartupTriggeringPolicy/>
             </Policies>
+            <Filters>
+                <RegexFilter regex=".*Reading file /sys/class/net/.*" onMatch="DENY" onMismatch="ACCEPT"/>
+            </Filters>
         </RollingRandomAccessFile>
-        <Sentry name="Sentry"
-                dsn="https://2178d5db8ba6018776c15585eb511c0c@o4506530477965312.ingest.sentry.io/4506530494283776"/>
     </Appenders>
     <Loggers>
         <AsyncRoot level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
-            <AppenderRef ref="Sentry"/>
         </AsyncRoot>
         <!--    disable useless debug log foreign library    -->
         <Logger name="oshi.hardware" level="info"/>
+        <Logger name="oshi" level="info"/>
         <Logger name="org.jose4j" level="info"/>
         <Logger name="io.netty.channel.nio" level="info"/>
+        <!-- Filter out "Reading file" messages specifically -->
+        <Logger name="oshi.software.os.linux" level="info"/>
+        <Logger name="oshi.hardware.platform.linux" level="info"/>
     </Loggers>
 </Configuration>

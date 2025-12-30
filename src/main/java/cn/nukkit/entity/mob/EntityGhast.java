@@ -1,6 +1,5 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -11,25 +10,25 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
-import cn.nukkit.entity.ai.executor.BlazeShootExecutor;
 import cn.nukkit.entity.ai.executor.GhastShootExecutor;
-import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityFireball;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -52,7 +51,7 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
                 this.tickSpread,
                 Set.of(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_GHAST_MOAN), new RandomSoundEvaluator(), 2, 1),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), none(), 1, 1)
+                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 200, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(
                         new Behavior(new GhastShootExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 64, true, 60, 10), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 2, 1),
@@ -98,15 +97,31 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{
-                Item.get(Item.GHAST_TEAR, 0, Utils.rand(0, 1)),
-                Item.get(Item.GUNPOWDER, 0, Utils.rand(0, 2))
-        };
+    public Set<String> typeFamily() {
+        return Set.of("ghast", "monster", "mob");
     }
 
     @Override
-    public Integer getExperienceDrops() {
-        return 5;
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 1) == 1) {
+            int amount = Utils.rand(0, 1 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.GHAST_TEAR, 0, amount));
+            }
+        }
+
+        if (Utils.rand(0, 2) != 0) {
+            int amount = Utils.rand(0, 2 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.GUNPOWDER, 0, amount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
+
 }

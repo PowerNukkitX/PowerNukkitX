@@ -60,16 +60,6 @@ public class CustomResponse extends Response {
     }
 
     /**
-     * Get a label
-     *
-     * @param index The index of the label
-     * @return The label
-     */
-    public String getLabelResponse(int index) {
-        return this.getResponse(index);
-    }
-
-    /**
      * Get a slider's response
      *
      * @param index The index of the slider
@@ -96,6 +86,36 @@ public class CustomResponse extends Response {
      * @return Whether the toggle was turned on or not
      */
     public boolean getToggleResponse(int index) {
+        return this.getResponse(index);
+    }
+
+    /**
+     * Get a label
+     *
+     * @param index The index of the label
+     * @return The label
+     */
+    public String getLabelResponse(int index) {
+        return this.getResponse(index);
+    }
+
+    /**
+     * Get a label
+     *
+     * @param index The index of the divider
+     * @return The divider
+     */
+    public String getDividerResponse(int index) {
+        return this.getResponse(index);
+    }
+
+    /**
+     * Get a label
+     *
+     * @param index The index of the header
+     * @return The header
+     */
+    public String getHeaderResponse(int index) {
         return this.getResponse(index);
     }
 }

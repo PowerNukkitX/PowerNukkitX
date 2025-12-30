@@ -51,6 +51,5 @@ public interface LoginChainData {
 
     int getMemoryTier();
 
-
     JsonObject getRawData();
 }

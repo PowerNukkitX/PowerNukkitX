@@ -19,28 +19,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public abstract class EntityPhysical extends EntityCreature implements EntityAsyncPrepare {
-    /**
-     * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
-     */
+    /** Movement accuracy threshold. Movements with an absolute value less than this threshold are considered as no movement. */
     public static final float PRECISION = 0.00001f;
-
     public static final AtomicInteger globalCycleTickSpread = new AtomicInteger();
-    /**
-     * 时间泛播延迟，用于缓解在同一时间大量提交任务挤占cpu的情况
-     */
+    /** Time flooding delay is used to alleviate the situation where a large number of tasks are submitted at the same time and occupy the CPU. */
     public final int tickSpread;
-    /**
-     * 提供实时最新碰撞箱位置
-     */
+    /** Provide real-time latest collision box position */
     protected final AxisAlignedBB offsetBoundingBox;
     protected final Vector3 previousCollideMotion;
     protected final Vector3 previousCurrentMotion;
-    /**
-     * 实体自由落体运动的时间
-     */
+    /** The time of free fall of an object */
     protected int fallingTick = 0;
     protected boolean needsRecalcMovement = true;
     private boolean needsCollisionDamage = false;
+    private static final double GROUND_FRICTION_EXPONENT = 0.5574929506502402;
+
 
     public EntityPhysical(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -52,15 +45,15 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public void asyncPrepare(int currentTick) {
-        // 计算是否需要重新计算高开销实体运动
+        // Calculates whether expensive entity motion needs to be recalculated
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
-        // 重新计算绝对位置碰撞箱
+        // Recalculate absolute position collision box
         this.calculateOffsetBoundingBox();
         if (!this.isImmobile()) {
-            // 处理重力
+            // Dealing with gravity
             handleGravity();
             if (needsRecalcMovement) {
-                // 处理碰撞箱挤压运动
+                // Handling collision box extrusion movement
                 handleCollideMovement(currentTick);
             }
             addTmpMoveMotionXZ(previousCollideMotion);
@@ -72,11 +65,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public boolean onUpdate(int currentTick) {
-        // 记录最大高度，用于计算坠落伤害
+        // Record the maximum height for calculating fall damage
         if (!this.onGround && this.y > highestPosition) {
             this.highestPosition = this.y;
         }
-        // 添加挤压伤害
+        // Added crush damage
         if (needsCollisionDamage) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
         }
@@ -98,7 +91,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             EntityFreezeEvent event = new EntityFreezeEvent(this);
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                //this.setMovementSpeed(); //todo 给物理实体添加freeze减速
+                //this.setMovementSpeed(); // TODO: Add freeze deceleration to physics entities
             }
         } else if (this.getFreezingTicks() > 0 && !collidedWithPowderSnow) {
             this.addFreezingTicks(-1);
@@ -117,8 +110,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public void updateMovement() {
-        // 检测自由落体时间
-        if (isFalling()) {
+        // Detection of free fall time
+        if (this.hasGravity() && isFalling()) {
             this.fallingTick++;
         }
         super.updateMovement();
@@ -141,74 +134,74 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleGravity() {
-        //重力一直存在
+        if (!this.hasGravity()) {
+            resetFallDistance();
+            this.fallingTick = 0;
+            return;
+        }
+        // Gravity is always there
         this.motionY -= this.getGravity();
         if (!this.onGround && this.hasWaterAt(getFootHeight())) {
-            //落地水
+            // Landing water
             resetFallDistance();
         }
     }
 
-    /**
-     * 计算地面摩擦力
-     */
-
+    /** Calculating ground friction */
     protected void handleGroundFrictionMovement() {
-        //未在地面就没有地面阻力
+        // No ground resistance
         if (!this.onGround) return;
-        //小于精度
+        // Less than precision
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) return;
-        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double factor = getGroundFrictionFactor();
+
+        // Reduce movement vector (calculate friction coefficient, slide further on ice)
+        double factor = getGroundFrictionFactor();
+        if (factor > 0.0 && factor < 1.0) {
+            factor = Math.pow(factor, GROUND_FRICTION_EXPONENT);
+        }
+
         this.motionX *= factor;
         this.motionZ *= factor;
+
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
         if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
     }
 
-    /**
-     * 计算流体阻力（空气/液体）
-     */
-
+    /** Calculate fluid resistance (air/liquid) */
     protected void handlePassableBlockFrictionMovement() {
-        //小于精度
+        // Less than precision
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION && Math.abs(this.motionY) < PRECISION)
             return;
         final double factor = getPassableBlockFrictionFactor();
         this.motionX *= factor;
         this.motionY *= factor;
         this.motionZ *= factor;
+
         if (Math.abs(this.motionX) < PRECISION) this.motionX = 0;
         if (Math.abs(this.motionY) < PRECISION) this.motionY = 0;
         if (Math.abs(this.motionZ) < PRECISION) this.motionZ = 0;
     }
 
     /**
-     * 计算当前位置的地面摩擦因子
-     *
-     * @return 当前位置的地面摩擦因子
+     * Calculate the ground friction factor at the current location
+     * @return The ground friction factor at the current location
      */
-
     public double getGroundFrictionFactor() {
         if (!this.onGround) return 1.0;
         return this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
     }
 
     /**
-     * 计算当前位置的流体阻力因子（空气/水）
-     *
-     * @return 当前位置的流体阻力因子
+     * Calculate the fluid resistance factor (air/water) at the current location
+     * @return The fluid resistance factor at the current location
      */
-
     public double getPassableBlockFrictionFactor() {
         var block = this.getTickCachedLevelBlock();
         if (block.collidesWithBB(this.getBoundingBox(), true)) return block.getPassableBlockFrictionFactor();
         return Block.DEFAULT_AIR_FLUID_FRICTION;
     }
 
-    /**
-     * 默认使用nk内置实现，这只是个后备算法
-     */
+    /** By default, the built-in implementation of nk is used, which is just a fallback algorithm. */
     protected void handleLiquidMovement() {
         final var tmp = new Vector3();
         BlockLiquid blockLiquid = null;
@@ -243,14 +236,14 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     /**
-     * 浮力系数<br>
-     * 示例:
+     * Buoyancy coefficient<br>
+     * Example:
      * <pre>
-     * if (hasWaterAt(this.getFloatingHeight())) {//实体指定高度进入水中后实体上浮
-     *     return 1.3;//因为浮力系数>1,该值越大上浮越快
+     * if (hasWaterAt(this.getFloatingHeight())) { // The entity floats up after entering the water at a specified height
+     *     return 1.3;// Because the buoyancy coefficient > 1, the larger the value, the faster the float
      * }
-     * return 0.7;//实体指定高度没进入水中，实体存在浮力会抵抗部分重力，但是不会上浮。
-     *            //因为浮力系数<1,该值最好和上值相加等于2，例 1.3+0.7=2
+     * return 0.7; // The entity does not enter the water at the specified height. The entity's buoyancy will resist part of the gravity, but it will not float.
+     *             // Because the buoyancy coefficient is less than 1, it is best to add this value to the previous value to equal 2, for example 1.3+0.7=2
      * </pre>
      *
      * @return the floating force factor
@@ -264,9 +257,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     /**
-     * 获得浮动到的实体高度 , 0为实体底部 {@link Entity#getCurrentHeight()}为实体顶部<br>
-     * 例：<br>值为0时，实体的脚接触水平面<br>值为getCurrentHeight/2时，实体的中间部分接触水平面<br>值为getCurrentHeight时，实体的头部接触水平面
-     *
+     * Get the height of the entity to float to, 0 is the bottom of the entity {@link Entity#getCurrentHeight()} For the top of the entity<br>
+     * Example: <br>When the value is 0, the entity's feet touch the horizontal plane<br>When the value is getCurrentHeight/2, the entity's middle 
+     * part touches the horizontal plane<br>When the value is getCurrentHeight, the entity's head touches the horizontal plane
      * @return the float
      */
     public float getFloatingHeight() {
@@ -274,9 +267,16 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleCollideMovement(int currentTick) {
+        if (!this.canBePushedByEntities()) {
+            this.previousCollideMotion.setX(0);
+            this.previousCollideMotion.setZ(0);
+            return;
+        }
+
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
         var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
         collidingEntities.removeIf(entity -> !(entity.canCollide() && (entity instanceof EntityPhysical || entity instanceof Player)));
+
         var size = collidingEntities.size();
         if (size == 0) {
             this.previousCollideMotion.setX(0);
@@ -284,9 +284,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return;
         } else {
             if (!onCollide(currentTick, collidingEntities)) {
+                this.previousCollideMotion.setX(0);
+                this.previousCollideMotion.setZ(0);
                 return;
             }
         }
+
         var dxPositives = new DoubleArrayList(size);
         var dxNegatives = new DoubleArrayList(size);
         var dzPositives = new DoubleArrayList(size);
@@ -296,6 +299,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (size > 4) {
             stream = stream.parallel();
         }
+
         stream.forEach(each -> {
             AxisAlignedBB targetAABB;
             if (each instanceof EntityPhysical entityPhysical) {
@@ -305,30 +309,44 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             } else {
                 return;
             }
-            // 计算碰撞箱
+
             double centerXWidth = (targetAABB.getMaxX() + targetAABB.getMinX() - selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5;
             double centerZWidth = (targetAABB.getMaxZ() + targetAABB.getMinZ() - selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5;
+
             if (centerXWidth > 0) {
-                dxPositives.add((targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth);
+                double value = (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth;
+                dxPositives.add(value);
             } else {
-                dxNegatives.add((targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 + centerXWidth);
+                double value = (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 + centerXWidth;
+                dxNegatives.add(value);
             }
+
             if (centerZWidth > 0) {
-                dzPositives.add((targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 - centerZWidth);
+                double value = (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 - centerZWidth;
+                dzPositives.add(value);
             } else {
-                dzNegatives.add((targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth);
+                double value = (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth;
+                dzNegatives.add(value);
             }
         });
-        double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0) - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
-        double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0) - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
+
+        double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0)
+                       - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
+        double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0)
+                       - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
-        this.previousCollideMotion.setX(-(resultX / len * 0.2 * 0.32));
-        this.previousCollideMotion.setZ(-(resultZ / len * 0.2 * 0.32));
+
+        double finalX = -(resultX / len * 0.2 * 0.32);
+        double finalZ = -(resultZ / len * 0.2 * 0.32);
+
+        this.previousCollideMotion.setX(finalX);
+        this.previousCollideMotion.setZ(finalZ);
     }
 
+
     /**
-     * @param collidingEntities 碰撞的实体
-     * @return false以拦截实体碰撞运动计算
+     * @param collidingEntities Colliding Entities
+     * @return false to intercept entity collision motion calculation
      */
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
         if (currentTick % 10 == 0) {
@@ -351,16 +369,14 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void calculateOffsetBoundingBox() {
-        //由于是asyncPrepare,this.offsetBoundingBox有几率为null，需要判空
         if (this.offsetBoundingBox == null) return;
-        final double dx = this.getWidth() * 0.5;
-        final double dz = this.getHeight() * 0.5;
-        this.offsetBoundingBox.setMinX(this.x - dx);
-        this.offsetBoundingBox.setMaxX(this.x + dz);
+        final double half = this.getWidth() * 0.5;
+        this.offsetBoundingBox.setMinX(this.x - half);
+        this.offsetBoundingBox.setMaxX(this.x + half);
         this.offsetBoundingBox.setMinY(this.y);
         this.offsetBoundingBox.setMaxY(this.y + this.getHeight());
-        this.offsetBoundingBox.setMinZ(this.z - dz);
-        this.offsetBoundingBox.setMaxZ(this.z + dz);
+        this.offsetBoundingBox.setMinZ(this.z - half);
+        this.offsetBoundingBox.setMaxZ(this.z + half);
     }
 
     public AxisAlignedBB getOffsetBoundingBox() {
@@ -374,7 +390,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public float getGravity() {
-        return super.getGravity();
+        return this.hasGravity() ? super.getGravity() : 0f;
     }
 
     public int getFallingTick() {

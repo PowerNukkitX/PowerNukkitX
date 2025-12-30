@@ -1,9 +1,11 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SoleInventory;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
@@ -20,24 +22,33 @@ import static cn.nukkit.inventory.request.CraftCreativeActionProcessor.CRAFT_CRE
 public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction> implements ItemStackRequestActionProcessor<T> {
     @Override
     public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
-        ContainerSlotType sourceSlotType = action.getSource().getContainer();
-        ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Inventory source = NetworkMapping.getInventory(player, sourceSlotType);
-        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType);
+        var srcFCN = action.getSource().getContainerName();
+        var dstFCN = action.getDestination().getContainerName();
+
+        ContainerSlotType sourceSlotType      = srcFCN.getContainer();
+        ContainerSlotType destinationSlotType = dstFCN.getContainer();
+        Integer dynamicSrc = srcFCN.getDynamicId();
+        Integer dynamicDst = dstFCN.getDynamicId();
+
+        Inventory source      = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
+        Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
+
         int sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
         int sourceStackNetworkId = action.getSource().getStackNetworkId();
         int destinationSlot = destination.fromNetworkSlot(action.getDestination().getSlot());
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
+        var sourItem = source.getUnclonedItem(sourceSlot);
 
-        var sourItem = source.getItem(sourceSlot);
         if (sourItem.isNull()) {
-            log.warn("transfer an air item is not allowed");
+            log.debug("transfer an air item is not allowed");
             return context.error();
         }
-        if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
-            log.warn("mismatch source stack network id!");
-            return context.error();
+        if(sourItem.isUsingNetId()) {
+            if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
+                log.warn("mismatch source stack network id!");
+                return context.error();
+            }
         }
         if (sourItem.getCount() < count) {
             log.warn("transfer an item that has not enough count is not allowed. Expected: {}, Actual: {}", sourItem.getCount(), count);
@@ -47,6 +58,10 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {//If the player takes an item from creative mode, the destination is overridden directly
             if (source instanceof CreativeOutputInventory) {
                 sourItem = sourItem.clone().autoAssignStackNetworkId();
+                if(sourItem instanceof INBT inbt) {
+                    inbt.onChange(destination);
+                    Server.getInstance().getScheduler().scheduleTask(() -> destination.sendSlot(destinationSlot, player)); //sending the player the slot
+                }
                 destination.setItem(destinationSlot, sourItem, false);
                 return context.success(List.of(new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
@@ -65,7 +80,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             }
         }
 
-        var destItem = destination.getItem(destinationSlot);
+        var destItem = destination.getUnclonedItem(destinationSlot);
         if (!destItem.isNull() && !destItem.equals(sourItem, true, true)) {
             log.warn("transfer an item to a slot that has a different item is not allowed");
             return context.error();
@@ -81,39 +96,58 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
         Item resultSourItem;
         Item resultDestItem;
-        boolean sendSource = false; //Previous "!(source instanceof SoleInventory);", Not sending the source fixes the drag item distribution. Shouldn't cause any problems because inventory management is serversided.
+        // Not sending the source helps avoid drag distribution glitches for normal inventories.
+        // HOWEVER: equipment containers (OFFHAND/ARMOR) must be sent, otherwise viewers won't get MobEquipment/MobArmor updates.
+        boolean sendSource = sourceSlotType == ContainerSlotType.OFFHAND || sourceSlotType == ContainerSlotType.ARMOR;
         boolean sendDest = !(destination instanceof SoleInventory);
-        //first case：transfer all item
-        if (sourItem.getCount() == count) {
-            source.clear(sourceSlot, sendSource);
-            resultSourItem = source.getItem(sourceSlot);
+
+        if (sourItem.getCount() == count) { // first case：transfer all item
+            Item newDest;
             if (!destItem.isNull()) {
-                //目标物品不为空，直接添加数量，目标物品网络堆栈id不变
-                resultDestItem = destItem;
-                resultDestItem.setCount(destItem.getCount() + count);
-                destination.setItem(destinationSlot, resultDestItem, sendDest);
+                newDest = destItem.clone();
+                newDest.setCount(destItem.getCount() + count);
             } else {
-                //目标物品为空，直接移动原有堆栈到新位置，网络堆栈id使用源物品的网络堆栈id（相当于换个位置）
                 if (source instanceof CreativeOutputInventory) {
-                    //HACK: 若是从CREATED_OUTPUT拿出的，需要服务端自行新建个网络堆栈id
                     sourItem = sourItem.clone().autoAssignStackNetworkId();
                 }
-                resultDestItem = sourItem;
-                destination.setItem(destinationSlot, resultDestItem, sendDest);
+                newDest = sourItem;
             }
-        } else {//second case：transfer a part of item
-            resultSourItem = sourItem;
+
+            if (!destination.setItem(destinationSlot, newDest, sendDest)) {
+                return context.error();
+            }
+
+            if (!source.clear(sourceSlot, sendSource)) {
+                destination.setItem(destinationSlot, destItem, sendDest);
+                return context.error();
+            }
+
+            resultDestItem = destination.getItem(destinationSlot);
+            resultSourItem = source.getItem(sourceSlot);
+
+        } else {// second case：transfer a part of item
+            Item newDest;
+            if (!destItem.isNull()) {
+                newDest = destItem.clone();
+                newDest.setCount(destItem.getCount() + count);
+            } else {
+                newDest = sourItem.clone().autoAssignStackNetworkId();
+                newDest.setCount(count);
+            }
+
+            if (!destination.setItem(destinationSlot, newDest, sendDest)) {
+                return context.error();
+            }
+
+            resultSourItem = sourItem.clone();
             resultSourItem.setCount(resultSourItem.getCount() - count);
-            source.setItem(sourceSlot, resultSourItem, sendSource);//减少源库存数量
-            if (!destItem.isNull()) {//目标物品不为空
-                resultDestItem = destItem;
-                resultDestItem.setCount(destItem.getCount() + count);//增加目的库存数量
-                destination.setItem(destinationSlot, resultDestItem, sendDest);
-            } else {//目标物品为空，为分出来的子物品堆栈新建网络堆栈id
-                resultDestItem = sourItem.clone().autoAssignStackNetworkId();
-                resultDestItem.setCount(count);
-                destination.setItem(destinationSlot, resultDestItem, sendDest);
+
+            if (!source.setItem(sourceSlot, resultSourItem, sendSource)) {
+                destination.setItem(destinationSlot, destItem, sendDest);
+                return context.error();
             }
+
+            resultDestItem = destination.getItem(destinationSlot);
         }
         var destItemStackResponseSlot =
                 new ItemStackResponseContainer(
@@ -130,7 +164,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                         ),
                         action.getDestination().getContainerName()
                 );
-        //CREATED_OUTPUT不需要发source响应
+        // CREATED_OUTPUT does not require a source response
         if (source instanceof CreativeOutputInventory) {
             return context.success(List.of(destItemStackResponseSlot));
         } else {
@@ -151,5 +185,4 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                     ), destItemStackResponseSlot));
         }
     }
-
 }

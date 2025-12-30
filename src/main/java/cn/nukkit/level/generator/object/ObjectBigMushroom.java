@@ -66,9 +66,9 @@ public class ObjectBigMushroom extends ObjectGenerator {
                     for (int i1 = position.getFloorZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
                         if (j >= 0 && j < 256) {
                             pos.setComponents(l, j, i1);
-                            Block material = level.getBlockAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+                            Block material = level.getBlockIfCachedOrLoaded(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 
-                            if (!material.getId().equals(Block.AIR) && !(material instanceof BlockLeaves)) {
+                            if (!material.canBeReplaced() && !(material instanceof BlockLeaves)) {
                                 flag = false;
                             }
                         } else {
@@ -82,7 +82,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
                 return false;
             } else {
                 Vector3 pos2 = position.down();
-                String block1 = level.getBlockIdAt(pos2.getFloorX(), pos2.getFloorY(), pos2.getFloorZ());
+                String block1 = level.getBlockIdIfCachedOrLoaded(pos2.getFloorX(), pos2.getFloorY(), pos2.getFloorZ());
 
                 if (!block1.equals(Block.DIRT) && !block1.equals(Block.GRASS_BLOCK) && !block1.equals(Block.MYCELIUM)) {
                     return false;
@@ -172,7 +172,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
                                 if (position.getY() >= position.getY() + i - 1 || meta != ALL_INSIDE) {
                                     Vector3 blockPos = new Vector3(l1, l2, i2);
 
-                                    if (!(Block.get(level.getBlockIdAt(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ())) instanceof BlockSolid)) {
+                                    if (!(Block.get(level.getBlockIdIfCachedOrLoaded(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ())) instanceof BlockSolid)) {
                                         mushroom.setPropertyValue(CommonBlockProperties.HUGE_MUSHROOM_BITS, meta);
                                         level.setBlockStateAt(blockPos, mushroom.getBlockState());
                                     }
@@ -183,7 +183,7 @@ public class ObjectBigMushroom extends ObjectGenerator {
 
                     for (int i3 = 0; i3 < i; ++i3) {
                         Vector3 pos = position.up(i3);
-                        String identifier = level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+                        String identifier = level.getBlockIdIfCachedOrLoaded(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 
                         if (!(Block.get(identifier) instanceof BlockSolid)) {
                             mushroom.setPropertyValue(CommonBlockProperties.HUGE_MUSHROOM_BITS, STEM);

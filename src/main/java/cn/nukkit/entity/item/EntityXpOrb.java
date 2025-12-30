@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author xtypr
@@ -266,5 +267,10 @@ public class EntityXpOrb extends Entity {
     @Override
     public String getOriginalName() {
         return "Experience Orb";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("inanimate");
     }
 }

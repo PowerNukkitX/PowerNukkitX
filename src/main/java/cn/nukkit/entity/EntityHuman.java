@@ -16,6 +16,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.UUID;
 
 /**
@@ -48,6 +49,16 @@ public class EntityHuman extends EntityHumanType {
     @Override
     public float getSwimmingHeight() {
         return 0.6f;
+    }
+
+    @Override
+    public float getCrawlingHeight() {
+        return 0.625f;
+    }
+
+    @Override
+    public float getSneakingHeight() {
+        return 1.5f;
     }
 
     @Override
@@ -159,9 +170,9 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (this instanceof Player)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getLoginChainData().getXUID(), new Player[]{player});
+                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getLoginChainData().getXUID(), ((Player) this).getLocatorBarColor(), new Player[]{player});
             else
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, new Player[]{player});
+                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();

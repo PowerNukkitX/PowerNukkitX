@@ -1,7 +1,6 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
-
 import cn.nukkit.entity.mob.EntityShulker;
 import cn.nukkit.level.Sound;
 import cn.nukkit.utils.Utils;

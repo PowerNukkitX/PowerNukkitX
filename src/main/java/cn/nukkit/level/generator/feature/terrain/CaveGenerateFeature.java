@@ -1,0 +1,273 @@
+package cn.nukkit.level.generator.feature.terrain;
+
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockFlowingLava;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.generator.ChunkGenerateContext;
+import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.BlockTags;
+import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
+
+public class CaveGenerateFeature extends GenerateFeature {
+
+    public static final String NAME = "minecraft:overworld_cave";
+
+    protected final NukkitRandom random = new NukkitRandom();
+
+    public static int caveRarity = 7;//7
+    public static int caveFrequency = 40;//40
+    public static int caveMinAltitude = -56;
+    public static int caveMaxAltitude = 256;
+    public static int individualCaveRarity = 25;//25
+    public static int caveSystemFrequency = 1;
+    public static int caveSystemPocketChance = 5;
+    public static int caveSystemPocketMinSize = 0;
+    public static int caveSystemPocketMaxSize = 4;
+    public static boolean evenCaveDistribution = false;
+    protected int checkAreaSize = 8;
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+
+    @Override
+    public void apply(ChunkGenerateContext context) {
+        IChunk chunk = context.getChunk();
+        int chunkX = chunk.getX();
+        int chunkZ = chunk.getZ();
+        Level level = chunk.getLevel();
+        random.setSeed(level.getSeed());
+        long worldLong1 = random.nextLong();
+        long worldLong2 = random.nextLong();
+
+        int size = this.checkAreaSize;
+
+        for (int x = chunkX - size; x <= chunkX + size; x++)
+            for (int z = chunkZ - size; z <= chunkZ + size; z++) {
+                long randomX = x * worldLong1;
+                long randomZ = z * worldLong2;
+                random.setSeed(randomX ^ randomZ ^ level.getSeed());
+                this.carveChunk(random, x, z, chunk);
+            }
+        chunk.recalculateHeightMap();
+    }
+
+    protected void generateLargeCaveNode(RandomSourceProvider random, IChunk chunk, double x, double y, double z) {
+        generateCaveNode(random, chunk, x, y, z, 1.0F + random.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+    }
+
+    protected void generateCaveNode(RandomSourceProvider random, IChunk chunk, double x, double y, double z, float radius, float angelOffset, float angel, int angle, int maxAngle, double scale) {
+        int chunkX = chunk.getX();
+        int chunkZ = chunk.getZ();
+
+        double realX = chunkX * 16 + 8;
+        double realZ = chunkZ * 16 + 8;
+
+        float f1 = 0.0F;
+        float f2 = 0.0F;
+
+        if (maxAngle <= 0) {
+            int checkAreaSize = this.checkAreaSize * 16 - 16;
+            maxAngle = checkAreaSize - random.nextInt(checkAreaSize / 4);
+        }
+        boolean isLargeCave = false;
+
+        if (angle == -1) {
+            angle = maxAngle / 2;
+            isLargeCave = true;
+        }
+
+        int randomAngel = random.nextInt(maxAngle / 2) + maxAngle / 4;
+        boolean bigAngel = random.nextInt(6) == 0;
+
+        for (; angle < maxAngle; angle++) {
+            double offsetXZ = 1.5D + MathHelper.sin(angle * 3.141593F / maxAngle) * radius * 1.0F;
+            double offsetY = offsetXZ * scale;
+
+            float cos = MathHelper.cos(angel);
+            float sin = MathHelper.sin(angel);
+            x += MathHelper.cos(angelOffset) * cos;
+            y += sin;
+            z += MathHelper.sin(angelOffset) * cos;
+
+            if (bigAngel)
+                angel *= 0.92F;
+            else {
+                angel *= 0.7F;
+            }
+            angel += f2 * 0.1F;
+            angelOffset += f1 * 0.1F;
+
+            f2 *= 0.9F;
+            f1 *= 0.75F;
+            f2 += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
+            f1 += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
+
+            if ((!isLargeCave) && (angle == randomAngel) && (radius > 1.0F) && (maxAngle > 0)) {
+                long seed = random.getSeed();
+                random.setSeed(random.nextLong());
+                generateCaveNode(random, chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset - 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
+                random.setSeed(seed);
+                seed = random.getSeed();
+                random.setSeed(random.nextLong());
+                generateCaveNode(random, chunk, x, y, z, random.nextFloat() * 0.5F + 0.5F, angelOffset + 1.570796F, angel / 3.0F, angle, maxAngle, 1.0D);
+                random.setSeed(seed);
+                return;
+            }
+            if ((!isLargeCave) && (random.nextInt(4) == 0)) {
+                continue;
+            }
+
+            // Check if distance to working point (x and z) too larger than working radius (maybe ??)
+            double distanceX = x - realX;
+            double distanceZ = z - realZ;
+            double angelDiff = maxAngle - angle;
+            double newRadius = radius + 2.0F + 16.0F;
+            if (distanceX * distanceX + distanceZ * distanceZ - angelDiff * angelDiff > newRadius * newRadius) {
+                return;
+            }
+
+            //Boundaries check.
+            if ((x < realX - 16.0D - offsetXZ * 2.0D) || (z < realZ - 16.0D - offsetXZ * 2.0D) || (x > realX + 16.0D + offsetXZ * 2.0D) || (z > realZ + 16.0D + offsetXZ * 2.0D))
+                continue;
+
+
+            int xFrom = MathHelper.floor(x - offsetXZ) - chunkX * 16 - 1;
+            int xTo = MathHelper.floor(x + offsetXZ) - chunkX * 16 + 1;
+
+            int yFrom = MathHelper.floor(y - offsetY) - 1;
+            int yTo = MathHelper.floor(y + offsetY) + 1;
+
+            int zFrom = MathHelper.floor(z - offsetXZ) - chunkZ * 16 - 1;
+            int zTo = MathHelper.floor(z + offsetXZ) - chunkZ * 16 + 1;
+
+            if (xFrom < 0)
+                xFrom = 0;
+            if (xTo > 16)
+                xTo = 16;
+
+            if (yFrom < -63)
+                yFrom = -63;
+            if (yTo > caveMaxAltitude - 8) {
+                yTo = caveMaxAltitude - 8;
+            }
+            if (zFrom < 0)
+                zFrom = 0;
+            if (zTo > 16)
+                zTo = 16;
+
+            // Search for water
+            boolean waterFound = false;
+            for (int xx = xFrom; (!waterFound) && (xx < xTo); xx++) {
+                for (int zz = zFrom; (!waterFound) && (zz < zTo); zz++) {
+                    for (int yy = yTo + 1; (!waterFound) && (yy >= yFrom - 1); yy--) {
+                        if (yy >= -64 && yy < caveMaxAltitude) {
+                            BlockState block = chunk.getBlockState(xx, yy, zz);
+                            if (block.toBlock().is(BlockTags.WATER)) {
+                                waterFound = true;
+                            }
+                            if ((yy != yFrom - 1) && (xx != xFrom) && (xx != xTo - 1) && (zz != zFrom) && (zz != zTo - 1))
+                                yy = yFrom;
+                        }
+                    }
+                }
+            }
+
+            if (waterFound) {
+                continue;
+            }
+
+            // Generate cave
+            for (int xx = xFrom; xx < xTo; xx++) {
+                double modX = (xx + chunkX * 16 + 0.5D - x) / offsetXZ;
+                for (int zz = zFrom; zz < zTo; zz++) {
+                    double modZ = (zz + chunkZ * 16 + 0.5D - z) / offsetXZ;
+
+                    boolean grassFound = false;
+                    if (modX * modX + modZ * modZ < 1.0D) {
+                        for (int yy = yTo; yy > yFrom; yy--) {
+                            double modY = ((yy - 1) + 0.5D - y) / offsetY;
+                            if ((modY > -0.7D) && (modX * modX + modY * modY + modZ * modZ < 1.0D)) {
+
+                                Block material = chunk.getBlockState(xx, yy, zz).toBlock();
+                                if (material.is(BlockTags.GRASS)) {
+                                    grassFound = true;
+                                }
+                                {
+                                    if (yy - 1 < -58) {
+                                        chunk.setBlockState(xx, yy, zz, BlockFlowingLava.PROPERTIES.getDefaultState());
+                                    } else {
+                                        chunk.setBlockState(xx, yy, zz, BlockAir.STATE);
+
+                                        if (grassFound && (chunk.getBlockState(xx, yy - 1, zz).toBlock().is(BlockTags.DIRT))) {
+                                            BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(xx, yy-1, zz));
+                                            BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceMaterial.get().topBlock);
+                                            chunk.setBlockState(xx, yy - 1, zz, topBlock);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (isLargeCave) {
+                break;
+            }
+        }
+    }
+
+    protected void carveChunk(RandomSourceProvider random, int chunkX, int chunkZ, IChunk generatingChunkBuffer) {
+        int i = random.nextInt(random.nextInt(random.nextInt(caveFrequency) + 1) + 1);
+        if (evenCaveDistribution)
+            i = caveFrequency;
+        if (random.nextInt(100) >= caveRarity)
+            i = 0;
+
+        for (int j = 0; j < i; j++) {
+            double x = chunkX * 16 + random.nextInt(16);
+
+            double y;
+
+            if (evenCaveDistribution)
+                y = NukkitMath.randomRange(random, caveMinAltitude, caveMaxAltitude);
+            else
+                y = random.nextInt(random.nextInt(caveMaxAltitude - caveMinAltitude + 1) + 1) + caveMinAltitude;
+
+            double z = chunkZ * 16 + random.nextInt(16);
+
+            int count = caveSystemFrequency;
+            boolean largeCaveSpawned = false;
+            if (random.nextInt(100) <= individualCaveRarity) {
+                long seed = random.getSeed();
+                random.setSeed(random.nextLong());
+                generateLargeCaveNode(random, generatingChunkBuffer, x, y, z);
+                random.setSeed(seed);
+                largeCaveSpawned = true;
+            }
+
+            if ((largeCaveSpawned) || (random.nextInt(100) <= caveSystemPocketChance - 1)) {
+                count += NukkitMath.randomRange(random, caveSystemPocketMinSize, caveSystemPocketMaxSize);
+            }
+            while (count > 0) {
+                count--;
+                float f1 = random.nextFloat() * 3.141593F * 2.0F;
+                float f2 = (random.nextFloat() - 0.5F) * 2.0F / 8.0F;
+                float f3 = random.nextFloat() * 2.0F + random.nextFloat();
+                long seed = random.getSeed();
+                random.setSeed(random.nextLong());
+                generateCaveNode(random, generatingChunkBuffer, x, y, z, f3, f1, f2, 0, 0, 1.0D);
+                random.setSeed(seed);
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.entity.effect.PotionType;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 public class ItemSplashPotion extends ProjectileItem {
     public ItemSplashPotion() {

@@ -9,7 +9,9 @@ import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.DataPacketDecodeEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBundle;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
@@ -30,13 +32,13 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ByteBufVarInt;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.PlatformDependent;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,13 +49,13 @@ import javax.crypto.SecretKey;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -74,6 +76,11 @@ public class BedrockSession {
     @Getter
     protected boolean authenticated = false;
 
+    /* ---------------- Pacing heavy packets, reduce bursting and esure client sync ------------- */
+    private final boolean pacingEnabled;
+    private final int pacingFlushIntervalMillis;
+    private final int pacingMaxBytesPerSecond;
+    private final OutboundScheduler scheduler;
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
         this.peer = peer;
@@ -91,6 +98,19 @@ public class BedrockSession {
 
         this.address = (InetSocketAddress) this.getSocketAddress();
         log.debug("creating session {}", getPeer().getSocketAddress().toString());
+
+        /* ---- Load pacing settings safely ---- */
+        PacingConfig pc = loadPacingConfigSafely();
+        this.pacingEnabled = pc.enabled;
+        this.pacingFlushIntervalMillis = pc.flushMs;
+        this.pacingMaxBytesPerSecond = pc.maxBytesPerSec;
+        this.scheduler = new OutboundScheduler(
+                this.pacingMaxBytesPerSecond,
+                1200,
+                256,
+                this.pacingFlushIntervalMillis
+        );
+
         var cfg = new StateMachineConfig<SessionState, SessionState>();
 
         cfg.configure(SessionState.START)
@@ -182,8 +202,22 @@ public class BedrockSession {
         if (ev.isCancelled()) {
             return;
         }
-        this.peer.sendPacket(this.subClientId, 0, packet);
-        this.logOutbound(packet);
+
+        // If pacing is off or this packet is not one of the critical bulk types, behave as usual
+        if (!this.pacingEnabled || !isPacedBulk(packet)) {
+            this.peer.sendPacket(this.subClientId, 0, packet);
+            this.logOutbound(packet);
+            return;
+        }
+
+        // Only pace critical bulk (RP chunks, creative/item registry).
+        int est = estimateBytes(packet);
+        if (packet.pid() == ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET) {
+            this.scheduler.enqueueResourcePackChunk(packet, est);
+        } else {
+            this.scheduler.enqueueRegistryBulk(packet, est);
+        }
+        this.scheduler.tryPump(this.peer, this.subClientId, this);
     }
 
     public void sendPlayStatus(int status, boolean immediate) {
@@ -200,7 +234,8 @@ public class BedrockSession {
         if (isDisconnected()) {
             return;
         }
-        BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
+        BedrockPacketCodec bedrockPacketCodec = getPacketCodec();
+
         ByteBuf buf1 = ByteBufAllocator.DEFAULT.ioBuffer(4);
         BedrockPacketWrapper msg = new BedrockPacketWrapper(pid, this.subClientId, 0, null, null);
         bedrockPacketCodec.encodeHeader(buf1, msg);
@@ -242,7 +277,7 @@ public class BedrockSession {
         ByteBuf header = alloc.ioBuffer(5);
         BedrockPacketWrapper msg = new BedrockPacketWrapper(0, subClientId, 0, pk, null);
         try {
-            BedrockPacketCodec bedrockPacketCodec = this.peer.channel.pipeline().get(BedrockPacketCodec.class);
+            BedrockPacketCodec bedrockPacketCodec = getPacketCodec();
             DataPacket packet = msg.getPacket();
             msg.setPacketId(packet.pid());
             bedrockPacketCodec.encodeHeader(buf1, msg);
@@ -299,7 +334,7 @@ public class BedrockSession {
             case ProtocolInfo.PLAYER_SKIN_PACKET -> 5_000_000;
             default -> 25_000;
         };
-        if(ev.getPacketBuffer().length() > predictMaxBuffer) {
+        if (ev.getPacketBuffer().length() > predictMaxBuffer) {
             ev.setCancelled();
         }
 
@@ -475,6 +510,13 @@ public class BedrockSession {
         } else {
             this.inbound.clear();
         }
+
+        if (this.pacingEnabled) {
+            boolean sent = this.scheduler.pump(this.peer, this.subClientId, this);
+            if (sent) {
+                this.peer.flushSendQueue();
+            }
+        }
     }
 
     public InetSocketAddress getAddress() {
@@ -530,6 +572,20 @@ public class BedrockSession {
             player.getCursorInventory().sendContents(player);
             player.getOffhandInventory().sendContents(player);
             player.getEnderChestInventory().sendContents(player);
+
+            //Send bundle content
+            PlayerHandle handle = new PlayerHandle(player);
+            handle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
+                for (int index : inventory.getContents().keySet()) {
+                    Item item = inventory.getUnclonedItem(index);
+                    if (item instanceof ItemBundle bundle) {
+                        if (bundle.hasCompoundTag()) {
+                            bundle.onChange(inventory);
+                            inventory.sendSlot(index, player);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -574,5 +630,188 @@ public class BedrockSession {
         } else {
             return null;
         }
+    }
+
+    /* --------------------- Helpers (only pace critical bulk) --------------------- */
+    private static boolean isPacedBulk(DataPacket pk) {
+        int id = pk.pid();
+        return  id == ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET     // RP zip chunks (big)
+            ||  id == ProtocolInfo.CREATIVE_CONTENT_PACKET             // creative items list
+            ||  id == ProtocolInfo.ITEM_REGISTRY_PACKET;               // item components/registry
+    }
+
+    private static int estimateBytes(DataPacket pk) {
+        if (pk instanceof ResourcePackChunkDataPacket rp) {
+            return (rp.data != null ? rp.data.length : 64 * 1024);
+        }
+        switch (pk.pid()) {
+            case ProtocolInfo.CREATIVE_CONTENT_PACKET:        return 192 * 1024;
+            case ProtocolInfo.ITEM_REGISTRY_PACKET:           return 8 * 1024;
+            default:                                          return 256;
+        }
+    }
+
+    private static final class PacingConfig {
+        final boolean enabled;
+        final int flushMs;
+        final int maxBytesPerSec;
+        PacingConfig(boolean en, int f, int bps) {
+            this.enabled = en;
+            this.flushMs = f;
+            this.maxBytesPerSec = bps;
+        }
+    }
+
+    private PacingConfig loadPacingConfigSafely() {
+        var net = Server.getInstance().getSettings().networkSettings();
+
+        boolean en = net.pacingEnabled();
+        int flush = clamp(net.pacingFlushIntervalMillis(), 1, 20);
+        int bps = clamp(net.pacingMaxBytesPerSecond(), 64 * 1024, 64 * 1024 * 1024); // allow up to 64 MiB/s
+
+        return new PacingConfig(en, flush, bps);
+    }
+
+    private static int clamp(int v, int lo, int hi) {
+        return Math.max(lo, Math.min(hi, v));
+    }
+
+    /**
+     * Minimal per-session outbound scheduler (bytes-only):
+     * - token bucket for bytes/sec
+     * - micro-batching on a short flush interval
+     * - two bulk lanes: RP chunks (highest) and registry/creative (next)
+     */
+    private static final class OutboundScheduler {
+        private final int maxBytesPerSec;
+        private final int burstBytes;
+        private final int coalesceTargetBytes;
+        private final int coalesceMinBytes;
+        private final int flushIntervalMillis;
+        private boolean reschedulePending = false;
+
+        private double byteTokens;
+        private long lastRefillNs = System.nanoTime();
+        private long nextFlushNs = lastRefillNs;
+
+        private final Deque<DataPacket> rpQ = new ArrayDeque<>();
+        private final Deque<DataPacket> registryQ = new ArrayDeque<>();
+
+        private int headBytes = 0;
+
+        OutboundScheduler(int maxBytesPerSec,
+                          int coalesceTargetBytes,
+                          int coalesceMinBytes,
+                          int flushIntervalMillis) {
+            this.maxBytesPerSec = Math.max(1024, maxBytesPerSec);
+            this.burstBytes = this.maxBytesPerSec; // burst = 1 second budget
+            this.coalesceTargetBytes = coalesceTargetBytes;
+            this.coalesceMinBytes = coalesceMinBytes;
+            this.flushIntervalMillis = Math.max(1, flushIntervalMillis);
+            this.byteTokens = this.burstBytes;
+        }
+
+        synchronized void enqueueResourcePackChunk(DataPacket pk, int estimatedBytes) {
+            this.rpQ.addLast(pk);
+            this.headBytes += Math.max(estimatedBytes, 32);
+        }
+
+        synchronized void enqueueRegistryBulk(DataPacket pk, int estimatedBytes) {
+            this.registryQ.addLast(pk);
+            this.headBytes += Math.max(estimatedBytes, 32);
+        }
+
+        synchronized void tryPump(BedrockPeer peer, int subClientId, BedrockSession session) {
+            long now = System.nanoTime();
+            boolean haveBulk = !this.rpQ.isEmpty() || !this.registryQ.isEmpty();
+            if (this.headBytes >= this.coalesceTargetBytes || now >= this.nextFlushNs || haveBulk) {
+                if (pump(peer, subClientId, session)) {
+                    peer.flushSendQueue();
+                } else if (!reschedulePending) {
+                    reschedulePending = true;
+                    peer.channel.eventLoop().schedule(() -> {
+                        synchronized (OutboundScheduler.this) {
+                            reschedulePending = false;
+                            if (pump(peer, subClientId, session)) {
+                                peer.flushSendQueue();
+                            }
+                        }
+                    }, this.flushIntervalMillis, TimeUnit.MILLISECONDS);
+                }
+            }
+        }
+
+        synchronized boolean pump(BedrockPeer peer, int subClientId, BedrockSession session) {
+            refill();
+            long now = System.nanoTime();
+
+            int allowBytes = (int) Math.floor(this.byteTokens);
+            if (allowBytes <= 0) return false;
+
+            boolean haveBulk = !this.rpQ.isEmpty() || !this.registryQ.isEmpty();
+            if (haveBulk) {
+                if (now < nextFlushNs && headBytes < coalesceMinBytes) {
+                    return false;
+                }
+            }
+            nextFlushNs = now + (long) flushIntervalMillis * 1_000_000L;
+
+            int sentBytes = 0;
+
+            while (sentBytes < allowBytes) {
+                DataPacket next;
+
+                if (!this.rpQ.isEmpty()) {
+                    next = this.rpQ.peekFirst();
+                } else if (!this.registryQ.isEmpty()) {
+                    next = this.registryQ.peekFirst();
+                } else {
+                    break;
+                }
+
+                int est = BedrockSession.estimateBytes(next);
+                if (est + sentBytes > allowBytes) break;
+
+                peer.sendPacket(subClientId, 0, next);
+                session.logOutbound(next);
+
+                if (!this.rpQ.isEmpty() && next == this.rpQ.peekFirst()) {
+                    this.rpQ.removeFirst();
+                } else if (!this.registryQ.isEmpty() && next == this.registryQ.peekFirst()) {
+                    this.registryQ.removeFirst();
+                }
+
+                sentBytes += est;
+            }
+
+            this.byteTokens -= sentBytes;
+            this.headBytes = Math.max(0, this.headBytes - sentBytes);
+            return sentBytes > 0;
+        }
+
+        private void refill() {
+            long now = System.nanoTime();
+            double secs = (now - lastRefillNs) / 1_000_000_000.0;
+            this.byteTokens = Math.min(burstBytes, this.byteTokens + secs * maxBytesPerSec);
+            this.lastRefillNs = now;
+        }
+    }
+
+    private BedrockPacketCodec getPacketCodec() {
+        io.netty.channel.ChannelHandler h = this.peer.channel.pipeline().get(BedrockPacketCodec.NAME);
+        if (h instanceof BedrockPacketCodec) {
+            return (BedrockPacketCodec) h;
+        }
+        for (java.util.Map.Entry<String, io.netty.channel.ChannelHandler> e : this.peer.channel.pipeline()) {
+            if (e.getValue() instanceof BedrockPacketCodec) {
+                return (BedrockPacketCodec) e.getValue();
+            }
+        }
+        throw new IllegalStateException("BedrockPacketCodec not found in channel pipeline");
+    }
+
+    public void nudgePacer() {
+        if (!this.pacingEnabled) return;
+        this.scheduler.tryPump(this.peer, this.subClientId, this);
     }
 }

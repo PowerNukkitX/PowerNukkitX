@@ -85,12 +85,11 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
             }
         }
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
-        // TODO: 2016/2/3 SPAWN WITHER
     }
 
     @Override
     public int onUpdate(int type) {
-        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 

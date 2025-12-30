@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBeeNest extends BlockBeehive {

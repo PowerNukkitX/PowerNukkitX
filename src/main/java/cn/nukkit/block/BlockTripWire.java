@@ -129,7 +129,7 @@ public class BlockTripWire extends BlockTransparent {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return;
         }
         if (!entity.doesTriggerPressurePlate()) {
@@ -148,7 +148,7 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     private void updateHook(boolean scheduleUpdate) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return;
         }
 
@@ -176,7 +176,7 @@ public class BlockTripWire extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 

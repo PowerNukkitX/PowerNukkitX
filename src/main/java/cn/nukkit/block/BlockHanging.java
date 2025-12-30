@@ -28,7 +28,7 @@ public abstract class BlockHanging extends BlockFlowable {
     }
 
     protected boolean isSupportValid() {
-        return down().is(BlockTags.DIRT) || switch (down().getId()) {
+        return down().hasTag(BlockTags.DIRT) || switch (down().getId()) {
             case WARPED_NYLIUM, CRIMSON_NYLIUM, SOUL_SOIL -> true;
             default -> false;
         };

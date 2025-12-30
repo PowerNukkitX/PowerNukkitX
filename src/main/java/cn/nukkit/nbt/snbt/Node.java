@@ -4,7 +4,13 @@ package cn.nukkit.nbt.snbt;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
@@ -633,10 +639,6 @@ public interface Node extends Comparable<Node> {
             output = toString().trim();
         } else {
             output = String.format("<%s (%d, %d)-(%d, %d)>", getClass().getSimpleName(), getBeginLine(), getBeginColumn(), getEndLine(), getEndColumn());
-        }
-        // String output = (this instanceof Token) ? toString().trim() : getClass().getSimpleName();
-        if (output.length() > 0) {
-            System.out.println(prefix + output);
         }
         for (Iterator<Node> it = iterator(); it.hasNext(); ) {
             Node child = it.next();

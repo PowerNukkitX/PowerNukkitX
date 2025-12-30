@@ -91,7 +91,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
         setBlockFace(facing);
 
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             boolean powered = this.isGettingPower();
 
             if (powered == this.isEnabled()) {
@@ -100,7 +100,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         }
 
         CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 
@@ -273,6 +273,9 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
 
             for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
                 if (entity.isClosed() || !(entity instanceof EntityItem itemEntity))
+                    continue;
+
+                if (itemEntity.isDisplayOnly())
                     continue;
 
                 Item item = itemEntity.getItem();

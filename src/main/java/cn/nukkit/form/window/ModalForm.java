@@ -2,6 +2,7 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.form.response.ModalResponse;
+import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -87,6 +88,11 @@ public class ModalForm extends Form<ModalResponse> {
     }
 
     @Override
+    public ModalForm onCancel(BiConsumer<Player, ModalFormCancelReason> cancel) {
+        return (ModalForm) super.onCancel(cancel);
+    }
+
+    @Override
     public ModalForm send(Player player) {
         return (ModalForm) super.send(player);
     }
@@ -118,7 +124,13 @@ public class ModalForm extends Form<ModalResponse> {
     }
 
     @Override
-    public ModalResponse respond(Player player, String formData) {
+    public ModalResponse respond(Player player, String formData, ModalFormCancelReason cancelReason) {
+        if(cancelReason != null) {
+            if(cancelReason == ModalFormCancelReason.USER_CLOSED) this.supplyClosed(player);
+            else this.supplyCancelled(player, cancelReason);
+            return null;
+        }
+
         boolean yes;
         if (!super.handle(player, formData)) {
             this.supplyClosed(player);

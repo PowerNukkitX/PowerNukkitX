@@ -3,64 +3,108 @@ package cn.nukkit.command;
 import java.util.List;
 
 /**
+ * Represents the command registry and execution system for the server.
+ * <p>
+ * The CommandMap interface defines methods for registering, executing, retrieving, and unregistering commands.
+ * It supports registering multiple commands at once, handling label conflicts, annotation-based command registration,
+ * and clearing plugin commands. Implementations manage the mapping between command names/aliases and Command objects.
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Register commands using {@link #registerAll(String, List)}, {@link #register(String, Command)}, or {@link #register(String, Command, String)}.</li>
+ *   <li>Register annotation-based commands with {@link #registerSimpleCommands(Object)}.</li>
+ *   <li>Execute commands using {@link #executeCommand(CommandSender, String)}.</li>
+ *   <li>Retrieve commands with {@link #getCommand(String)}.</li>
+ *   <li>Unregister commands using {@link #unregister(String...)}.</li>
+ *   <li>Clear all plugin commands with {@link #clearCommands()}.</li>
+ * </ul>
+ * <p>
+ * Label conflicts: If a command label is already registered, registration returns false and the command can only be accessed
+ * using the fallback prefix (e.g., fallbackPrefix:label).
+ * <p>
+ * Thread safety and implementation details depend on the concrete implementation.
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public interface CommandMap {
-
     /**
-     * 注册全部命令
+     * Registers all commands in the provided list with the given fallback prefix.
+     * <p>
+     * The fallback prefix is used to distinguish commands when labels conflict.
      *
-     * @param fallbackPrefix 命令标签前缀，当命令label重复时用于区分
-     * @param commands       the commands
+     * @param fallbackPrefix the prefix to use for label conflicts
+     * @param commands the list of commands to register
      */
     void registerAll(String fallbackPrefix, List<? extends Command> commands);
 
     /**
-     * 注册命令
+     * Registers a command with the given fallback prefix.
+     * <p>
+     * Returns false if the label is already registered; in that case, the command can only be accessed
+     * using fallbackPrefix:label.
      *
-     * @param fallbackPrefix 命令标签前缀，当命令label重复时用于区分
-     * @param command        the command
-     * @return 当命令label重复时返回false, 此时你无法使用label来获取和执行命令，不过你仍然可以使用fallbackPrefix:label来获取命令
+     * @param fallbackPrefix the prefix to use for label conflicts
+     * @param command the command to register
+     * @return true if registration succeeded, false if the label is already registered
      */
     boolean register(String fallbackPrefix, Command command);
 
     /**
-     * 注册命令
+     * Registers a command with the given fallback prefix and label.
+     * <p>
+     * Returns false if the label is already registered; in that case, the command can only be accessed
+     * using fallbackPrefix:label.
      *
-     * @param fallbackPrefix 命令标签前缀，当命令label重复时用于区分
-     * @param command        the command
-     * @param label          the label
-     * @return the boolean
+     * @param fallbackPrefix the prefix to use for label conflicts
+     * @param command the command to register
+     * @param label the label to register the command under
+     * @return true if registration succeeded, false if the label is already registered
      */
     boolean register(String fallbackPrefix, Command command, String label);
 
     /**
-     * 注册一个基于注解开发的命令
+     * Registers annotation-based commands from the given object.
+     * <p>
+     * Scans the object for command annotations and registers the corresponding commands.
      *
-     * @param object the object
+     * @param object the object containing annotated command methods
      */
     void registerSimpleCommands(Object object);
 
     /**
-     * 执行命令
+     * Executes a command from the given sender and command line.
+     * <p>
+     * Returns 0 for failed execution, 1 or greater for successful execution.
      *
-     * @param sender  the sender
-     * @param cmdLine the cmd line
-     * @return the int 返回0代表执行失败, 返回大于等于1代表执行成功<br>Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @param sender the sender executing the command
+     * @param cmdLine the full command line to execute
+     * @return 0 if execution failed, >=1 if successful
      */
     int executeCommand(CommandSender sender, String cmdLine);
 
     /**
-     * 清理全部的插件命令
+     * Clears all plugin commands from the registry.
+     * <p>
+     * Typically used when unloading plugins or resetting the command map.
      */
     void clearCommands();
 
     /**
-     * 从给定命令名称或者别名获取命令对象
+     * Retrieves a command by its name or alias.
+     * <p>
+     * Returns the Command object if found, or null otherwise.
      *
-     * @param name the name
-     * @return the command
+     * @param name the name or alias of the command
+     * @return the Command object, or null if not found
      */
     Command getCommand(String name);
 
+    /**
+     * Unregisters the specified commands by name.
+     * <p>
+     * Removes the commands from the registry so they can no longer be executed.
+     *
+     * @param commands the names of commands to unregister
+     */
+    void unregister(String... commands);
 }

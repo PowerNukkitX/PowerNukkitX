@@ -15,13 +15,33 @@ import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_10;
-import static cn.nukkit.math.BlockFace.*;
-import static cn.nukkit.utils.Rail.Orientation.*;
+import static cn.nukkit.math.BlockFace.EAST;
+import static cn.nukkit.math.BlockFace.NORTH;
+import static cn.nukkit.math.BlockFace.SOUTH;
+import static cn.nukkit.math.BlockFace.UP;
+import static cn.nukkit.math.BlockFace.WEST;
+import static cn.nukkit.utils.Rail.Orientation.CURVED_NORTH_EAST;
+import static cn.nukkit.utils.Rail.Orientation.CURVED_NORTH_WEST;
+import static cn.nukkit.utils.Rail.Orientation.CURVED_SOUTH_EAST;
+import static cn.nukkit.utils.Rail.Orientation.CURVED_SOUTH_WEST;
+import static cn.nukkit.utils.Rail.Orientation.STRAIGHT_NORTH_SOUTH;
+import static cn.nukkit.utils.Rail.Orientation.ascending;
+import static cn.nukkit.utils.Rail.Orientation.curved;
+import static cn.nukkit.utils.Rail.Orientation.straight;
+import static cn.nukkit.utils.Rail.Orientation.straightOrCurved;
 
 /**
  * @author Snake1999

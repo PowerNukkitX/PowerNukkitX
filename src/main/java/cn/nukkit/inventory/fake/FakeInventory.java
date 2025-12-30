@@ -2,6 +2,10 @@ package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFakeInventory;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.InputInventory;
@@ -9,10 +13,11 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.request.NetworkMapping;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
 import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
@@ -29,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class FakeInventory extends BaseInventory implements InputInventory {
     private final Map<Integer, ItemHandler> handlers = new HashMap<>();
@@ -36,20 +42,32 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     private final FakeInventoryType fakeInventoryType;
     private String title;
     private ItemHandler defaultItemHandler;
+    private Consumer<Player> onCloseHandler;
 
     public FakeInventory(FakeInventoryType fakeInventoryType) {
-        this(fakeInventoryType, fakeInventoryType.name());
+        this(fakeInventoryType, fakeInventoryType.name(), fakeInventoryType.size);
     }
 
     public FakeInventory(FakeInventoryType fakeInventoryType, @NotNull String title) {
-        super(null, fakeInventoryType.inventoryType, fakeInventoryType.size);
+        this(fakeInventoryType, title, fakeInventoryType.size);
+    }
+
+    public FakeInventory(FakeInventoryType fakeInventoryType, @NotNull String title, int size) {
+        super(null, fakeInventoryType.inventoryType,
+                fakeInventoryType == FakeInventoryType.ENTITY ? size : fakeInventoryType.size);
+
         this.title = title;
         this.fakeInventoryType = fakeInventoryType;
-        this.fakeBlock = fakeInventoryType.fakeBlock;
-        this.defaultItemHandler = (a, b, c, d, e) -> {
-        };
+        this.fakeBlock = fakeInventoryType.builder != null ? fakeInventoryType.builder.create(this) : fakeInventoryType.fakeBlock;
+        this.defaultItemHandler = (a, b, c, d, e) -> {};
 
         switch (fakeInventoryType) {
+            case ENTITY -> {
+                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                for (int i = 0; i < getSize(); i++) {
+                    map.put(i, ContainerSlotType.LEVEL_ENTITY);
+                }
+            }
             case CHEST, DOUBLE_CHEST, HOPPER, DISPENSER, DROPPER, ENDER_CHEST -> {
                 Map<Integer, ContainerSlotType> map = super.slotTypeMap();
                 for (int i = 0; i < getSize(); i++) {
@@ -101,26 +119,41 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     @Override
     public void onOpen(Player player) {
         player.setFakeInventoryOpen(true);
-        this.fakeBlock.create(player, this.getTitle());
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            ContainerOpenPacket packet = new ContainerOpenPacket();
-            packet.windowId = player.getWindowId(this);
-            packet.type = this.getType().getNetworkType();
 
-            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().findFirst();
+        if (this.fakeBlock != null) {
+            this.fakeBlock.create(player, this.getTitle());
+        }
+
+        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+            if (this.fakeBlock == null) {
+                player.setFakeInventoryOpen(false);
+                return;
+            }
+
+            Optional<Vector3> first = this.fakeBlock.getLastPositions(player).stream().filter(v -> !(v instanceof BlockEntity)).findAny();
             if (first.isPresent()) {
                 Vector3 position = first.get();
-                packet.x = position.getFloorX();
-                packet.y = position.getFloorY();
-                packet.z = position.getFloorZ();
-                player.dataPacket(packet);
+                long entityId = this.fakeBlock.getEntityId(player);
+                sendOpenContainerPacket(player, position.getFloorX(), position.getFloorY(), position.getFloorZ(), entityId);
 
                 super.onOpen(player);
                 this.sendContents(player);
             } else {
                 this.fakeBlock.remove(player);
+                player.setFakeInventoryOpen(false);
             }
         }, 5);
+    }
+
+    private void sendOpenContainerPacket(Player player, int x, int y, int z, long entityId) {
+        ContainerOpenPacket packet = new ContainerOpenPacket();
+        packet.windowId = player.getWindowId(this);
+        packet.type = this.getType().getNetworkType();
+        packet.x = x;
+        packet.y = y;
+        packet.z = z;
+        if (entityId != 0) packet.entityId = entityId;
+        player.dataPacket(packet);
     }
 
     @Override
@@ -130,12 +163,25 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         packet.wasServerInitiated = player.getClosingWindowId() != packet.windowId;
         packet.type = getType();
         player.dataPacket(packet);
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            this.fakeBlock.remove(player);
-        }, 5);
+
+        if (this.fakeBlock != null) {
+            if (this.fakeInventoryType == FakeInventoryType.ENTITY) {
+                this.fakeBlock.remove(player);
+            } else {
+                player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+                    this.fakeBlock.remove(player);
+                }, 5);
+            }
+        }
+
         super.onClose(player);
         player.setFakeInventoryOpen(false);
+
+        if (this.onCloseHandler != null) {
+            this.onCloseHandler.accept(player);
+        }
     }
+
 
     public String getTitle() {
         return this.title;
@@ -151,6 +197,10 @@ public class FakeInventory extends BaseInventory implements InputInventory {
 
     public void setDefaultItemHandler(ItemHandler defaultItemHandler) {
         this.defaultItemHandler = defaultItemHandler;
+    }
+
+    public void setOnCloseHandler(Consumer<Player> onCloseHandler) {
+        this.onCloseHandler = onCloseHandler;
     }
 
     @ApiStatus.Internal
@@ -169,7 +219,8 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         }
         if (source != null) {
             ContainerSlotType sourceSlotType = source.getContainerName().getContainer();
-            Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType);
+            Integer dynamicSrc = source.getContainerName().getDynamicId();
+            Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType, dynamicSrc);
             int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
             Item sourItem = sourceI.getItem(sourceSlot);
             if (sourceI.equals(this)) {
@@ -177,7 +228,8 @@ public class FakeInventory extends BaseInventory implements InputInventory {
                 handler.handle(this, sourceSlot, sourItem, Item.AIR, event);
             } else if(destination != null) {
                 ContainerSlotType destinationSlotType = destination.getContainerName().getContainer();
-                Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType);
+                Integer dynamicDst = source.getContainerName().getDynamicId();
+                Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType, dynamicDst);
                 int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
                 Item destItem = destinationI.getItem(destinationSlot);
                 if (destinationI.equals(this)) {

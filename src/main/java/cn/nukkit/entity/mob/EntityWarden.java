@@ -13,11 +13,16 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.WardenMeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.WardenRangedAttackExecutor;
+import cn.nukkit.entity.ai.executor.WardenSniffExecutor;
+import cn.nukkit.entity.ai.executor.WardenViolentAnimationExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -30,8 +35,7 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -174,7 +178,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         this.setMaxHealth(500);
         super.initEntity();
         this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
-        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT);
+        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT.getId());
         //空闲声音
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
@@ -186,6 +190,16 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     @Override
     public String getOriginalName() {
         return "Warden";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("warden", "monster", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override

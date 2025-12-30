@@ -1,22 +1,14 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockCactus;
-import cn.nukkit.block.BlockClay;
-import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.Natural;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.mob.EntityEnderman;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Location;
-import cn.nukkit.level.Sound;
-import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class EndermanBlockExecutor implements IBehaviorExecutor {
 
@@ -27,7 +19,7 @@ public class EndermanBlockExecutor implements IBehaviorExecutor {
                 if(optionalBlock.isPresent()) {
                     Block block = optionalBlock.get();
                     enderman.setItemInHand(block.toItem());
-                    enderman.setDataProperty(EntityDataTypes.CARRY_BLOCK_STATE, block);
+                    enderman.setDataProperty(EntityDataTypes.DEPRECATED_CARRY_BLOCK_STATE, block);
                     enderman.getLevel().setBlock(block, Block.get(Block.AIR));
                 }
             } else {
@@ -37,7 +29,7 @@ public class EndermanBlockExecutor implements IBehaviorExecutor {
                         Block block = optionalBlock.get();
                         block.getLevel().setBlock(block.up(), enderman.getItemInHand().getBlock());
                         enderman.setItemInHand(Item.AIR);
-                        enderman.setDataProperty(EntityDataTypes.CARRY_BLOCK_STATE, Item.AIR.getBlock());
+                        enderman.setDataProperty(EntityDataTypes.DEPRECATED_CARRY_BLOCK_STATE, Item.AIR.getBlock());
                     }
                 }   
             }

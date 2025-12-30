@@ -2,7 +2,6 @@ package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 

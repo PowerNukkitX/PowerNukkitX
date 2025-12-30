@@ -11,6 +11,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.utils.RedstoneComponent;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -76,7 +77,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 
@@ -96,7 +97,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
             return false;
         }
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+            if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 updatePower();
             }
         }
@@ -105,12 +106,15 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
+
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             block.updatePower();
         }
+
         return true;
     }
 
@@ -141,31 +145,67 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     public void updatePower() {
         int i;
-        if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
-            i = getLevel().getBlockSkyLightAt((int) x, (int) y, (int) z) - getLevel().calculateSkylightSubtracted(1.0F);
-            float f = getLevel().getCelestialAngle(1.0F) * 6.2831855F;
+        Level level = this.getLevel();
 
-            if (this.isInverted()) {
-                i = 15 - i;
-            }
+        if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
+            int skylight = getEffectiveSkyLightSignalAround(level, getFloorX(), getFloorY(), getFloorZ());
+            i = skylight - level.calculateSkylightSubtracted(1.0F);
 
-            if (i > 0 && !this.isInverted()) {
+            float f = level.getCelestialAngle(1.0F) * 6.2831855F;
+
+            if (i > 0) {
                 float f1 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
                 f = f + (f1 - f) * 0.2F;
                 i = Math.round((float) i * MathHelper.cos(f));
             }
 
             i = MathHelper.clamp(i, 0, 15);
-        } else i = 0;
+        } else {
+            i = 0;
+        }
 
-        if (i != getLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ()).getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL)) {
-            BlockState blockState;
+        int current = level.getBlockStateAt(getFloorX(), getFloorY(), getFloorZ())
+                          .getPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL);
+
+        if (i != current) {
             this.setPropertyValue(CommonBlockProperties.REDSTONE_SIGNAL, i);
-            blockState = this.getBlockState();
-            getLevel().setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
+            BlockState blockState = this.getBlockState();
+            level.setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
             updateAroundRedstone();
         }
     }
+
+    public int getEffectiveSkyLightSignalAround(Level level, int x, int y, int z) {
+        int skyReduction = level.skyLightSubtracted;
+
+        int bestSignal = level.getBlockSkyLightAt(x, y + 1, z) - skyReduction;
+        if (bestSignal >= 15) {
+            return 15;
+        }
+
+        final int radius = 11;
+
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                int dist = Math.abs(dx) + Math.abs(dz);
+                if (dist == 0 || dist > radius) continue;
+
+                int cx = x + dx;
+                int cz = z + dz;
+
+                int skylight = level.getBlockSkyLightAt(cx, y + 1, cz);
+                int signal = skylight - skyReduction - dist;
+
+                if (signal > bestSignal) {
+                    bestSignal = signal;
+                    if (bestSignal >= 15) return 15;
+                }
+            }
+        }
+
+        return Math.max(0, bestSignal);
+    }
+
 
     @Override
     public boolean isSolid() {

@@ -5,20 +5,18 @@ import org.jetbrains.annotations.NotNull;
 
 
 /**
- * 继承这个类实现自定义物品,重写{@link Item}中的方法控制方块属性
- * <p>
- * Inherit this class to implement a custom item, override the methods in the {@link Item} to control the feature of the item.
- *
+ * @deprecated Extend Item directly and implement CustomItem; custom-item hooks are now in Item and <p>
+ * definitions use CustomItemDefinition.SimpleBuilder, so this wrapper is no longer needed. <p>
+ * Prefer to extend Item class {@link Item} while implementing {@link CustomItem} for customized items.
  * @author lt_name
  */
+@Deprecated
 public abstract class ItemCustom extends Item implements CustomItem {
     public ItemCustom(@NotNull String id) {
         super(id);
     }
 
     /**
-     * 该方法设置自定义物品的定义
-     * <p>
      * This method sets the definition of custom item
      */
     public abstract CustomItemDefinition getDefinition();

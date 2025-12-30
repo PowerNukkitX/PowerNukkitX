@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;

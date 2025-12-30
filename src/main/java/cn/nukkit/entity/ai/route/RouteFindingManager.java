@@ -5,7 +5,12 @@ import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
-import java.security.*;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.Permission;
+import java.security.Permissions;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.RecursiveAction;

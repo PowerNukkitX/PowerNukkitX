@@ -2,9 +2,18 @@ package cn.nukkit.command.tree.node;
 
 
 /**
- * 解析为{@link String}值
+ * Parses a command parameter as a {@link String} value for wildcard target parameters in PowerNukkitX command trees.
  * <p>
- * 所有命令参数类型为{@link cn.nukkit.command.data.CommandParamType#WILDCARD_TARGET WILDCARD_TARGET}如果没有手动指定{@link IParamNode},则会默认使用这个解析
+ * This node is used for all command parameters of type {@link cn.nukkit.command.data.CommandParamType#WILDCARD_TARGET WILDCARD_TARGET}
+ * if no custom {@link IParamNode} is specified. It simply sets the argument as the node value and does not perform validation.
+ *
+ * @author PowerNukkitX Project Team
+ * @see StringNode
+ * @since PowerNukkitX 1.19.50
+ * <p>
+ * Parsed as {@link String} value
+ * <p>
+ * All command parameters are of type {@link cn.nukkit.command.data.CommandParamType#WILDCARD_TARGET WILDCARD_TARGET}. If no {@link IParamNode} is manually specified, this parser is used by default.
  */
 public class WildcardTargetStringNode extends StringNode {
 

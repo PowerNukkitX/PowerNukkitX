@@ -5,6 +5,7 @@ import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class SimpleTickingAreaManager extends TickingAreaManager {
 
     @Override
     public void loadAllTickingArea() {
-        for (TickingArea area : areaMap.values())
+        for (TickingArea area : new ArrayList<>(areaMap.values()))
             if (!area.loadAllChunk()) removeTickingArea(area.getName());
     }
 }

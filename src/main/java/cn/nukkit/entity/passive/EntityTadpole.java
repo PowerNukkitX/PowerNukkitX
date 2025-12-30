@@ -63,4 +63,9 @@ public class EntityTadpole extends EntityAnimal implements EntitySwimmable {
     public String getOriginalName() {
         return "Tadpole";
     }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("tadpole", "mob");
+    }
 }

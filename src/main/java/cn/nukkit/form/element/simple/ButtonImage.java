@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 /**
- * The image of a {@link ElementButton}
+ * Represents an image used in a {@link ElementButton} for a simple form.
+ * Supports images from resource packs (PATH) or URLs (URL).
  */
 @Getter
 @Accessors(chain = true, fluent = true)
@@ -33,19 +34,28 @@ public class ButtonImage {
     }
 
     /**
-     * There are two types of images:
-     * - PATH (image located inside a resource pack)
-     * - URL (image accessed via the internet)
+     * Enum representing the type of image: PATH (resource pack) or URL (internet).
      */
     public enum Type {
+        /** Image located inside a resource pack. */
         PATH,
+        /** Image accessed via the internet. */
         URL;
 
+        /**
+         * Creates a ButtonImage of this type with the given path.
+         * @param path The image path or URL
+         * @return A new ButtonImage
+         */
         public ButtonImage of(String path) {
             return new ButtonImage(this, path);
         }
     }
 
+    /**
+     * Serializes the ButtonImage to JSON.
+     * @return The image as a JsonObject
+     */
     public JsonObject toJson() {
         return this.object;
     }

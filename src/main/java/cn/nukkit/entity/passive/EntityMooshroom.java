@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -12,27 +13,36 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.InLoveExecutor;
+import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.ParticleEffect;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
+public class EntityMooshroom extends EntityAnimal implements EntityWalkable, EntityShearable {
     @Override
     @NotNull public String getIdentifier() {
         return MOOSHROOM;
@@ -55,7 +65,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -94,11 +104,32 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), Item.get(Item.BEEF)};
+    public Set<String> typeFamily() {
+        return Set.of("mushroomcow", "mob");
     }
 
-    
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        int meatAmount = Utils.rand(1, 3 + looting);
+        drops.add(Item.get(
+                this.isOnFire() ? Item.COOKED_BEEF : Item.BEEF,
+                0,
+                meatAmount
+        ));
+
+        if (Utils.rand(0, 2) != 0) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
+    }
 
     @Override
     protected void initEntity() {
@@ -112,27 +143,34 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable {
             return true;
         }
 
-        if (item.getId() == Item.SHEARS && item.useOn(this)) {
-            this.close();
-            //TODO 不同颜色的牛掉落不同的蘑菇
-            this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
-            this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
-            EntityCow cow = new EntityCow(this.getChunk(), this.namedTag);
-            cow.setPosition(this);
-            cow.setRotation(this.yaw, this.pitch);
-            cow.spawnToAll();
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
+        if (item.getId().equals(Item.SHEARS) && item.useOn(this)) {
+            shear();
             return true;
-        } else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
+        } else if (item.getId().equals(Item.BUCKET) && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
             return true;
-        } else if (item.getId() == Item.BOWL && item.getDamage() == 0) {
+        } else if (item.getId().equals(Item.BOWL) && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
             return true;
         }
 
         return false;
+    }
+
+    @Override
+    public boolean shear() {
+        this.close();
+        this.level.dropItem(this, Item.get(BlockID.RED_MUSHROOM, 0, 5));
+        this.level.addSound(this, Sound.MOB_MOOSHROOM_CONVERT);
+        this.level.addParticleEffect(this.add(0, this.getHeight(), 0), ParticleEffect.LARGE_EXPLOSION_LEVEL);
+        EntityCow cow = new EntityCow(this.getChunk(), this.namedTag);
+        cow.setPosition(this);
+        cow.setHealth(this.health);
+        cow.setRotation(this.yaw, this.pitch);
+        cow.spawnToAll();
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.SHEAR));
+        return true;
     }
 }

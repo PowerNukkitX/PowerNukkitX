@@ -13,6 +13,7 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author xtypr
@@ -66,6 +67,8 @@ public class GamemodeCommand extends VanillaCommand {
         } else {
             players = sender.isPlayer() ? List.of(sender.asPlayer()) : List.of();
         }
+
+        players = players.stream().filter(Objects::nonNull).toList();
 
         if (players.isEmpty()) {
             log.addNoTargetMatch().output();

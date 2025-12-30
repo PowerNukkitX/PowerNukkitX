@@ -1,7 +1,5 @@
 package cn.nukkit.entity.projectile;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
@@ -10,13 +8,11 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.utils.RedstoneComponent;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -62,7 +58,7 @@ public class EntityWindCharge extends EntityProjectile {
                 }
             }
         }
-        level.addLevelSoundEvent(position.add(0, 1), LevelSoundEventPacket.SOUND_WIND_CHARGE_BURST);
+        level.addLevelSoundEvent(position.add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
         this.kill();
 
         return true;
@@ -74,7 +70,7 @@ public class EntityWindCharge extends EntityProjectile {
             if(directionChanged == entity) return;
         }
         entity.attack(new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, 1f));
-        level.addLevelSoundEvent(entity.getPosition().add(0, 1), LevelSoundEventPacket.SOUND_WIND_CHARGE_BURST);
+        level.addLevelSoundEvent(entity.getPosition().add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
         this.level.addParticle(new GenericParticle(this, Particle.TYPE_WIND_EXPLOSION));
         knockBack(entity);
         this.kill();

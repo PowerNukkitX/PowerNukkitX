@@ -9,16 +9,18 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
+
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Allay Project 12/15/2023
- *
- * @author Cool_Loong
+ * @author Cool_Loong (Allay Project)
+ * @since 12/15/2023
  */
+@Slf4j
 public record BlockStateImpl(String identifier,
                       int blockhash,
                       short specialValue,
@@ -98,7 +100,9 @@ public record BlockStateImpl(String identifier,
                 return (DATATYPE) property.getValue();
             }
         }
-        throw new IllegalArgumentException("Property " + p + " is not supported by this block " + this.identifier);
+
+        log.debug("Property {} is not supported by this block {}", p, this.identifier);
+        return null;
     }
 
     @Override

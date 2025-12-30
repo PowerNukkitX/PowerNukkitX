@@ -115,7 +115,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
             return type;
         }
 
-        if (type == Level.BLOCK_UPDATE_REDSTONE && level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.onRedstoneUpdate();
             return type;
         }
@@ -252,7 +252,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
         level.updateAround(block);
 
-        if (level.getServer().getSettings().levelSettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
+        if (level.getServer().getSettings().gameplaySettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
 

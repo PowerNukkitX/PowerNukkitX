@@ -8,12 +8,11 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.vibration.VibrationEvent;
-import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Pub4Game
@@ -56,6 +55,16 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
     public String getOriginalName() {
         return "Villager";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("villager", "peasant", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override

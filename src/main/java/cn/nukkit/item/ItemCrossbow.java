@@ -16,7 +16,6 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Utils;
 
 import java.util.Map;
@@ -66,8 +65,10 @@ public class ItemCrossbow extends ItemTool {
             else if(inventoryOptional.isPresent())  {
                 inventory = player.getInventory();
                 item = inventoryOptional.get().getValue();;
+            } else if(player.isCreative()) {
+                item = new ItemArrow();
             }
-            if(inventory == null) return false;
+            if(item == null) return false;
             if (!this.canLoad(item)) {
                 if (player.isCreative()) {
                     this.loadArrow(player, item);
@@ -166,10 +167,14 @@ public class ItemCrossbow extends ItemTool {
         player.getInventory().setItemInHand(this);
     }
 
+    @Override
+    public int getUsingTicks() {
+        return 72000;
+    }
+
     public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
-
 
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {

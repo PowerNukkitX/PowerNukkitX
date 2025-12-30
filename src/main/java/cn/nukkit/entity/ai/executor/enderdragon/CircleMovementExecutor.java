@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.executor.enderdragon;
 
-import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;

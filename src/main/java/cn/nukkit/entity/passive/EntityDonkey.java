@@ -21,8 +21,10 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -53,7 +55,7 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -93,13 +95,31 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+    public Item[] getDrops(@NotNull Item weapon) {
+        if (Utils.rand(0, 2) == 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(0, 2 + looting);
+
+        if (amount <= 0) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{
+                Item.get(Item.LEATHER, 0, amount)
+        };
     }
 
     @Override
     public String getOriginalName() {
-        return "Donkey";
+        return "donkey";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("xxxxxxx", "mob");
     }
 
     @Override

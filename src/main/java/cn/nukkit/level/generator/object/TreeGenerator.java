@@ -14,7 +14,6 @@ public abstract class TreeGenerator extends ObjectGenerator {
      * For example, a tree will not grow into stone
      */
     protected boolean canGrowInto(String id) {
-
         return switch (id) {
             case Block.AIR, BlockID.ACACIA_LEAVES,
                  BlockID.AZALEA_LEAVES,
@@ -40,7 +39,15 @@ public abstract class TreeGenerator extends ObjectGenerator {
                  BlockID.JUNGLE_SAPLING,
                  BlockID.DARK_OAK_SAPLING,
                  BlockID.PALE_OAK_SAPLING,
-                 BlockID.BIRCH_SAPLING -> true;
+                 BlockID.BIRCH_SAPLING,
+                 BlockID.FERN,
+                 BlockID.SHORT_GRASS,
+                 BlockID.TALL_GRASS,
+                 BlockID.PALE_HANGING_MOSS,
+                 BlockID.CLOSED_EYEBLOSSOM,
+                 BlockID.OPEN_EYEBLOSSOM,
+                 BlockID.LEAF_LITTER,
+                 BlockID.BAMBOO-> true;
             default -> false;
         };
     }

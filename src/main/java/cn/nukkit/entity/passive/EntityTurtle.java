@@ -13,19 +13,15 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
-import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -69,6 +65,14 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
+    public Set<String> typeFamily() {
+        if (this.isBaby()) {
+            return Set.of("turtle", "baby_turtle", "mob");
+        }
+        return Set.of("turtle", "mob");
+    }
+
+    @Override
     public float getWidth() {
         if (this.isBaby()) {
             return 0.6f;
@@ -88,6 +92,14 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     public void initEntity() {
         this.setMaxHealth(30);
         super.initEntity();
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(source.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && getLevelBlock().canPassThrough()) {
+            return false;
+        }
+        return super.attack(source);
     }
 
     public void setBreedingAge(int ticks) {

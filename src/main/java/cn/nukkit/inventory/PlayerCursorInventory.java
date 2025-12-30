@@ -31,6 +31,10 @@ public class PlayerCursorInventory extends BaseInventory {
         return getItem(0);
     }
 
+    public Item getUnclonedItem() {
+        return getUnclonedItem(0);
+    }
+
     @Override
     public void init() {
         Map<Integer, ContainerSlotType> slotTypeMap = super.slotTypeMap();

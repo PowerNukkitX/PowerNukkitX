@@ -8,6 +8,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.data.EntityDataType;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -26,6 +27,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.PlayerAuthInputPacket;
+import cn.nukkit.network.protocol.types.AuthInputAction;
 import cn.nukkit.network.protocol.types.EntityLink;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,10 +57,13 @@ public class EntityBoat extends EntityVehicle {
 
     public static final int RIDER_INDEX = 0;
     public static final int PASSENGER_INDEX = 1;
+    public static final double SINKING_DEPTH = 0.3;
+    private static final double EQUILIBRIUM = -0.02;
+    private double bobbingPhase = 0;
+    //paddle animation states
+    private float paddleTimeLeft = 0f;
+    private float paddleTimeRight = 0f;
 
-    public static final double SINKING_DEPTH = 0.07;
-    public static final double SINKING_SPEED = 0.0005;
-    public static final double SINKING_MAX_SPEED = 0.005;
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
     public int woodID;
     protected boolean sinking = true;
@@ -95,33 +101,16 @@ public class EntityBoat extends EntityVehicle {
         this.entityDataMap.put(AMBIENT_SOUND_INTERVAL_RANGE, 16F);
         this.entityDataMap.put(AMBIENT_SOUND_EVENT_NAME, "ambient");
         this.entityDataMap.put(FALL_DAMAGE_MULTIPLIER, 1F);
+        setDataFlag(EntityFlag.COLLIDABLE);
         entityCollisionReduction = -0.5;
     }
 
-    @Override
-    public float getHeight() {
-        return 0.455f;
-    }
 
-    @Override
-    public float getWidth() {
-        return 1.4f;
-    }
-
-    @Override
-    protected float getDrag() {
-        return 0.1f;
-    }
-
-    @Override
-    protected float getGravity() {
-        return 0.03999999910593033F;
-    }
-
-    @Override
-    public float getBaseOffset() {
-        return 0.375F;
-    }
+    @Override public float getHeight() { return 0.5f; }
+    @Override public float getWidth()  { return 1.3f; }
+    @Override protected float getDrag() { return 0.02f; }
+    @Override protected float getGravity() { return 0.04f; }
+    @Override public float getBaseOffset() { return 0.37f; }
 
 
     @Override
@@ -197,7 +186,7 @@ public class EntityBoat extends EntityVehicle {
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
-        if (this.isAlive() && this.passengers.isEmpty()) {
+        if (this.isAlive()) {
             hasUpdate = this.updateBoat(tickDiff) || hasUpdate;
         }
 
@@ -221,23 +210,17 @@ public class EntityBoat extends EntityVehicle {
             return false;
         }
 
-        boolean hasUpdated = false;
+        boolean hasUpdated;
         double waterDiff = getWaterLevel();
+
+        hasUpdated = computeBuoyancy(waterDiff);
         if (!hasControllingPassenger()) {
-            hasUpdated = computeBuoyancy(waterDiff);
-            Iterator<Entity> iterator = ignoreCollision.iterator();
-            while (iterator.hasNext()) {
-                Entity ignored = iterator.next();
-                if (!ignored.isValid() || ignored.isClosed() || !ignored.isAlive()
-                        || !ignored.getBoundingBox().intersectsWith(getBoundingBox().grow(0.5, 0.5, 0.5))) {
-                    iterator.remove();
-                    hasUpdated = true;
-                }
-            }
-            moveBoat(waterDiff);
-        } else {
-            updateMovement();
+            ignoreCollision.removeIf(ignored -> !ignored.isValid() || ignored.isClosed() || !ignored.isAlive() || !ignored.getBoundingBox().intersectsWith(getBoundingBox().grow(0.5, 0.5, 0.5)));
         }
+
+        moveBoat();
+        updateMovement();
+
         hasUpdated = hasUpdated || positionChanged;
         if (waterDiff >= -SINKING_DEPTH) {
             if (ticksInWater != 0) {
@@ -268,22 +251,35 @@ public class EntityBoat extends EntityVehicle {
         return passengers.size() < 2;
     }
 
-    private void moveBoat(double waterDiff) {
+    private void moveBoat() {
         checkObstruction(this.x, this.y, this.z);
         move(this.motionX, this.motionY, this.motionZ);
 
-        double friction = 1 - this.getDrag();
+        if (this.isCollidedHorizontally) {
+            this.motionX *= -0.3;
+            this.motionZ *= -0.3;
+        }
 
-        if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-            friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+        if (this.onGround) {
+            this.motionX *= 0.95;
+            this.motionZ *= 0.95;
+            if (this.motionY < 0) {
+                this.motionY *= 0.65;
+            }
+        }
+
+        double friction;
+        if (isBoatInWater()) {
+            friction = 0.94;
+            this.motionY *= 0.95;
+        } else {
+            friction = 1 - this.getDrag();
+            if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
+                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+            }
         }
 
         this.motionX *= friction;
-
-        if (!onGround || waterDiff > SINKING_DEPTH/* || sinking*/) {
-            this.motionY = waterDiff > 0.5 ? this.motionY - this.getGravity() : (this.motionY - SINKING_SPEED < -SINKING_MAX_SPEED ? this.motionY : this.motionY - SINKING_SPEED);
-        }
-
         this.motionZ *= friction;
 
         Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
@@ -292,9 +288,6 @@ public class EntityBoat extends EntityVehicle {
         if (!from.equals(to)) {
             this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
         }
-
-        //TODO: lily pad collision
-        this.updateMovement();
     }
 
     private boolean collectCollidingEntities() {
@@ -318,22 +311,31 @@ public class EntityBoat extends EntityVehicle {
     }
 
     private boolean computeBuoyancy(double waterDiff) {
-        boolean hasUpdated = false;
-        waterDiff -= getBaseOffset() / 4;
-        if (waterDiff > SINKING_DEPTH && !sinking) {
-            sinking = true;
-        } else if (waterDiff < -SINKING_DEPTH && sinking) {
-            sinking = false;
+        if (waterDiff == Double.MAX_VALUE) {
+            motionY -= getGravity();
+            return true;
         }
 
-        if (waterDiff < -SINKING_DEPTH / 1.7) {
-            this.motionY = Math.min(0.05 / 10, this.motionY + 0.005);
-            hasUpdated = true;
-        } else if (waterDiff < 0 || !sinking) {
-            this.motionY = this.motionY > (SINKING_MAX_SPEED / 2) ? Math.max(this.motionY - 0.02, (SINKING_MAX_SPEED / 2)) : this.motionY + SINKING_SPEED;
-            hasUpdated = true;
+        double oldMotionY = motionY;
+        sinking = waterDiff <= -SINKING_DEPTH;
+
+        if (sinking) {
+            motionY += 0.04;
+        } else {
+            double error = waterDiff - EQUILIBRIUM;
+            double kP = 0.08;
+            double kD = 0.6;
+
+            double correctionForce = -error * kP - motionY * kD;
+            motionY += correctionForce;
+            bobbingPhase += 0.08;
+            double waveForce = Math.sin(bobbingPhase) * 0.003;
+            motionY += waveForce;
+            motionY = Math.max(-0.08, Math.min(0.08, motionY));
         }
-        return hasUpdated;
+
+        fallDistance = 0;
+        return oldMotionY != motionY;
     }
 
     @Override
@@ -585,10 +587,122 @@ public class EntityBoat extends EntityVehicle {
         return "Boat";
     }
 
-    public void onInput(Location loc) {
-        this.move(loc.x - this.x, loc.y - this.y, loc.z - this.z);
-        this.yaw = loc.yaw;
-        this.headYaw = loc.headYaw;
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("boat", "inanimate");
+    }
+
+    @Override
+    public void onCollideWithPlayer(EntityHuman entityPlayer) {
+        super.onCollideWithPlayer(entityPlayer);
+        //TODO: Implement boat push mechanics when player collides
+    }
+
+    @Override
+    public boolean onRiderInput(Player player, PlayerAuthInputPacket pk) {
+        Block underBlock = this.level.getBlock(this.getPosition().add(0, -1, 0));
+        double accel, maxSpeed;
+        boolean inWater = isBoatInWater();
+
+        if (inWater) {
+            accel = 0.025;
+            maxSpeed = 0.50;
+        } else if (underBlock.getId().equals(Block.ICE) || underBlock.getId().equals(Block.FROSTED_ICE) || underBlock.getId().equals(Block.PACKED_ICE)) {
+            accel = 0.055;
+            maxSpeed = 1.10;
+        } else {
+            accel = 0.025;
+            maxSpeed = 0.30;
+        }
+
+        double yawRad = Math.toRadians(this.yaw);
+        double pz = Math.cos(yawRad);
+        double fz = Math.sin(yawRad);
+
+        boolean forward   = pk.inputData.contains(AuthInputAction.UP) || (pk.inputData.contains(AuthInputAction.PADDLE_LEFT) && pk.inputData.contains(AuthInputAction.PADDLE_RIGHT));
+        boolean backward  = pk.inputData.contains(AuthInputAction.DOWN);
+        boolean turnLeft  = pk.inputData.contains(AuthInputAction.PADDLE_LEFT);
+        boolean turnRight = pk.inputData.contains(AuthInputAction.PADDLE_RIGHT);
+
+        if (forward) {
+            this.motionX += pz * accel;
+            this.motionZ += fz * accel;
+        } else if (backward) {
+            this.motionX -= pz * (accel / 5.0);
+            this.motionZ -= fz * (accel / 5.0);
+        }
+
+        double speed = Math.sqrt(motionX * motionX + motionZ * motionZ);
+        if (speed > maxSpeed) {
+            double scale = maxSpeed / speed;
+            motionX *= scale;
+            motionZ *= scale;
+        }
+
+        float animationSpeed = (float) Math.max(0.01, Math.min(0.08,
+                Math.sqrt(motionX * motionX + motionZ * motionZ) * 0.05));
+        double turnRate = 4.0;
+
+        if (forward) {
+            paddleTimeLeft  += animationSpeed;
+            paddleTimeRight += animationSpeed;
+            if (turnLeft)  this.yaw -= turnRate;
+            if (turnRight) this.yaw += turnRate;
+        } else if (backward) {
+            paddleTimeLeft  -= animationSpeed;
+            paddleTimeRight -= animationSpeed;
+            if (turnLeft)  this.yaw -= turnRate;
+            if (turnRight) this.yaw += turnRate;
+        } else {
+            if (turnLeft && !turnRight) applyTurn(true,  turnRate, accel, pz, fz, animationSpeed);
+            if (turnRight && !turnLeft) applyTurn(false, turnRate, accel, pz, fz, animationSpeed);
+            if (!turnLeft)  paddleTimeLeft = 0;
+            if (!turnRight) paddleTimeRight = 0;
+        }
+
+        this.setDataProperty(EntityDataTypes.ROW_TIME_RIGHT, paddleTimeLeft);
+        this.setDataProperty(EntityDataTypes.ROW_TIME_LEFT,  paddleTimeRight);
+
+        this.headYaw = this.yaw;
         broadcastMovement(false);
+        this.sendData(this.getViewers().values().toArray(Player.EMPTY_ARRAY));
+        return true;
+    }
+
+    private boolean isWaterBlock(Block b) {
+        return b instanceof BlockFlowingWater
+                || b.getId().equals(Block.WATER)
+                || b.getId().equals(Block.FLOWING_WATER)
+                || (b.getLevelBlockAtLayer(1) instanceof BlockFlowingWater);
+    }
+
+    private boolean isBoatInWater() {
+        int minX = (int) Math.floor(this.boundingBox.getMinX());
+        int maxX = (int) Math.floor(this.boundingBox.getMaxX());
+        int minZ = (int) Math.floor(this.boundingBox.getMinZ());
+        int maxZ = (int) Math.floor(this.boundingBox.getMaxZ());
+        int y = (int) Math.floor(this.boundingBox.getMinY() + 0.05);
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                if (isWaterBlock(level.getBlock(x, y, z))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void applyTurn(boolean left, double turnRate, double accel, double pz, double fz, float animationSpeed) {
+        this.yaw += left ? -turnRate : turnRate;
+        this.motionX += pz * (accel * 0.6);
+        this.motionZ += fz * (accel * 0.6);
+        if (left) {
+            paddleTimeLeft += animationSpeed;
+            paddleTimeRight = 0f;
+        } else {
+            paddleTimeRight += animationSpeed;
+            paddleTimeLeft = 0f;
+        }
     }
 }

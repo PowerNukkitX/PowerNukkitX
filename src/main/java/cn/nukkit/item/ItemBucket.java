@@ -22,7 +22,7 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.utils.Identifier;
 
@@ -304,7 +304,7 @@ public class ItemBucket extends Item {
                     this.setDamage(0); // Empty bucket
                     player.getInventory().setItemInHand(this);
                 }
-                player.getLevel().addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_FIZZ);
+                player.getLevel().addLevelSoundEvent(target, LevelSoundEvent.FIZZ);
                 player.getLevel().addParticle(new ExplodeParticle(target.add(0.5, 1, 0.5)));
             } else {
                 player.getLevel().sendBlocks(new Player[]{player}, new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);

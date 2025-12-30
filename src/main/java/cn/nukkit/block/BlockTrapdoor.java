@@ -25,12 +25,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-/**
- * @author Pub4Game
- * @since 26.12.2015
- */
 public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent, Faceable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(TRAPDOOR, CommonBlockProperties.DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPSIDE_DOWN_BIT);
+    public static final BlockProperties PROPERTIES = new BlockProperties(TRAPDOOR,
+            CommonBlockProperties.DIRECTION,
+            CommonBlockProperties.OPEN_BIT,
+            CommonBlockProperties.UPSIDE_DOWN_BIT);
 
     private static final double THICKNESS = 0.1875;
 
@@ -39,58 +38,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     // previously the door always closed, when placing an unpowered redstone at the door, this fixes it
     // and gives the vanilla behavior; no idea how to make this better :d
     private static final Set<Location> manualOverrides = Sets.newConcurrentHashSet();
-
-    private static final AxisAlignedBB[] boundingBox2SpecialV = new AxisAlignedBB[0x1 << PROPERTIES.getSpecialValueBits()];
-
-    //<editor-fold desc="pre-computing the bounding boxes" defaultstate="collapsed">
-    static {
-        for (int specialValue = 0; specialValue < boundingBox2SpecialV.length; specialValue++) {
-            AxisAlignedBB bb;
-            if (PROPERTIES.getPropertyValue(specialValue, CommonBlockProperties.OPEN_BIT)) {
-                BlockFace face = CommonPropertyMap.EWSN_DIRECTION.inverse().get(PROPERTIES.getPropertyValue(specialValue, CommonBlockProperties.DIRECTION));
-                face = face.getOpposite();
-                if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
-                    bb = new SimpleAxisAlignedBB(
-                            0,
-                            0,
-                            0,
-                            1 + face.getXOffset() - (THICKNESS * face.getXOffset()),
-                            1,
-                            1 + face.getZOffset() - (THICKNESS * face.getZOffset())
-                    );
-                } else {
-                    bb = new SimpleAxisAlignedBB(
-                            face.getXOffset() - (THICKNESS * face.getXOffset()),
-                            0,
-                            face.getZOffset() - (THICKNESS * face.getZOffset()),
-                            1,
-                            1,
-                            1
-                    );
-                }
-            } else if (PROPERTIES.getPropertyValue(specialValue, CommonBlockProperties.UPSIDE_DOWN_BIT)) {
-                bb = new SimpleAxisAlignedBB(
-                        0,
-                        1 - THICKNESS,
-                        0,
-                        1,
-                        1,
-                        1
-                );
-            } else {
-                bb = new SimpleAxisAlignedBB(
-                        0,
-                        0,
-                        0,
-                        1,
-                        0 + THICKNESS,
-                        1
-                );
-            }
-            boundingBox2SpecialV[specialValue] = bb;
-        }
-    }
-    //</editor-fold>
 
     public BlockTrapdoor() {
         this(PROPERTIES.getDefaultState());
@@ -136,10 +83,6 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return 1;
     }
 
-    private AxisAlignedBB getRelativeBoundingBox() {
-        return boundingBox2SpecialV[this.blockstate.specialValue()];
-    }
-
     @Override
     public double getMinX() {
         return this.x + getRelativeBoundingBox().getMinX();
@@ -170,21 +113,59 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         return this.z + getRelativeBoundingBox().getMaxZ();
     }
 
+    private AxisAlignedBB getRelativeBoundingBox() {
+        int value = this.blockstate.specialValue();
+        BlockProperties props = getProperties();
+
+        boolean open = props.getPropertyValue(value, CommonBlockProperties.OPEN_BIT);
+        boolean top = props.getPropertyValue(value, CommonBlockProperties.UPSIDE_DOWN_BIT);
+
+        AxisAlignedBB aabb;
+
+        if (open) {
+            BlockFace face = CommonPropertyMap.EWSN_DIRECTION.inverse().get(
+                    props.getPropertyValue(value, CommonBlockProperties.DIRECTION)).getOpposite();
+
+            if (face.getAxisDirection() == AxisDirection.NEGATIVE) {
+                aabb = new SimpleAxisAlignedBB(
+                        0,
+                        0,
+                        0,
+                        1 + face.getXOffset() - (THICKNESS * face.getXOffset()),
+                        1,
+                        1 + face.getZOffset() - (THICKNESS * face.getZOffset())
+                );
+            } else {
+                aabb = new SimpleAxisAlignedBB(
+                        face.getXOffset() - (THICKNESS * face.getXOffset()),
+                        0,
+                        face.getZOffset() - (THICKNESS * face.getZOffset()),
+                        1,
+                        1,
+                        1
+                );
+            }
+        } else if (top) {
+            aabb = new SimpleAxisAlignedBB(0, 1 - THICKNESS, 0, 1, 1, 1);
+        } else {
+            aabb = new SimpleAxisAlignedBB(0, 0, 0, 1, THICKNESS, 1);
+        }
+
+        return aabb;
+    }
+
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
-                if (this.isOpen() != this.isGettingPower()) {
-                    level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
-
-                    this.setOpen(null, this.isGettingPower());
-                }
+                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this,
+                        this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));
+                this.setOpen(null, this.isGettingPower());
             } else if (this.getManualOverride() && (this.isGettingPower() == this.isOpen())) {
                 this.setManualOverride(false);
             }
             return type;
         }
-
         return 0;
     }
 
@@ -207,7 +188,8 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target,
+                         @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player == null ? face : player.getDirection().getOpposite());
         setTop(face.getAxis().isHorizontal() ? fy > 0.5 : face != BlockFace.UP);
 
@@ -215,7 +197,8 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
             return false;
         }
 
-        if (level.getServer().getSettings().levelSettings().enableRedstone() && !this.isOpen() && this.isGettingPower()) {
+        if (level.getServer().getSettings().gameplaySettings().enableRedstone() &&
+                !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
 
@@ -232,9 +215,8 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
     }
 
     public boolean toggle(Player player) {
-        if(player != null) {
-            if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
-                return false;
+        if (player != null && !player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED)) {
+            return false;
         }
         return this.setOpen(player, !this.isOpen());
     }
@@ -252,10 +234,9 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         }
 
         player = event.getPlayer();
-
         setPropertyValue(CommonBlockProperties.OPEN_BIT, open);
-        if (!level.setBlock(this, this, true, true))
-            return false;
+
+        if (!level.setBlock(this, this, true, true)) return false;
 
         if (player != null) {
             this.setManualOverride(this.isGettingPower() || isOpen());
@@ -264,7 +245,10 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
         playOpenCloseSound();
 
         var source = this.getVector3().add(0.5, 0.5, 0.5);
-        VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
+        VibrationEvent vibrationEvent = open
+                ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN)
+                : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
+
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }

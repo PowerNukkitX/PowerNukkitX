@@ -17,8 +17,7 @@ import java.util.Set;
 
 
 public final class ItemTags {
-    ItemTags() {
-    }
+    ItemTags() {}
 
     public final static String ARROW = "minecraft:arrow";
     public final static String BANNER = "minecraft:banner";
@@ -74,7 +73,7 @@ public final class ItemTags {
 
     static {
         try {
-            try (var stream = Server.class.getClassLoader().getResourceAsStream("item_tags.json")) {
+            try (var stream = Server.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_tags.json")) {
                 TypeToken<HashMap<String, HashSet<String>>> typeToken = new TypeToken<>() {
                 };
                 assert stream != null;

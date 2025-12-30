@@ -75,6 +75,10 @@ public interface LevelProvider {
 
     void setThunderTime(int thunderTime);
 
+    int getNoSleepNight();
+
+    void setNoSleepNight(int noSleepNight);
+
     long getCurrentTick();
 
     void setCurrentTick(long currentTick);

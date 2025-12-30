@@ -4,7 +4,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
 
-public interface EntityInventoryHolder extends InventoryHolder {
+public interface EntityInventoryHolder extends InventoryHolder, EntityHandItem {
 
     EntityArmorInventory getArmorInventory();
 

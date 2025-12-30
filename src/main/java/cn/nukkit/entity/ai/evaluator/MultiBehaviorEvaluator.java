@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.evaluator;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -12,13 +13,13 @@ import java.util.Set;
 
 
 public abstract class MultiBehaviorEvaluator implements IBehaviorEvaluator {
-    protected Set<IBehaviorEvaluator> evaluators;
+    protected ObjectArrayList<IBehaviorEvaluator> evaluators;
 
-    public MultiBehaviorEvaluator(@NotNull Set<IBehaviorEvaluator> evaluators) {
+    public MultiBehaviorEvaluator(@NotNull ObjectArrayList<IBehaviorEvaluator> evaluators) {
         this.evaluators = evaluators;
     }
 
     public MultiBehaviorEvaluator(@NotNull IBehaviorEvaluator... evaluators) {
-        this.evaluators = Set.of(evaluators);
+        this.evaluators = ObjectArrayList.of(evaluators);
     }
 }

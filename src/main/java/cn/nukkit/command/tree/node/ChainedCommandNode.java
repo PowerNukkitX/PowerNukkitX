@@ -9,7 +9,33 @@ import java.util.StringJoiner;
 
 
 /**
- * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令的链命令节点
+ * Represents a node for parsing chained subcommands in the context of the {@link cn.nukkit.command.defaults.ExecuteCommand}.
+ * <p>
+ * This node is used to parse and build chained command arguments (e.g., "execute as at run ...") for advanced command execution.
+ * It validates each segment against allowed chained keywords and accumulates them, joining the final result as a single command string.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Validates and accumulates chained command keywords (e.g., run, as, at, positioned, etc.).</li>
+ *   <li>Handles quoted arguments containing spaces.</li>
+ *   <li>Builds the final command string for execution.</li>
+ *   <li>Resets state between parses.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for parsing chained subcommands in execute-like commands.</li>
+ *   <li>Automatically selected for chained command parameters if no custom node is provided.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses: execute as Steve at ~ ~ ~ run say Hello
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see cn.nukkit.command.defaults.ExecuteCommand
+ * @since PowerNukkitX 1.19.50
  */
 
 

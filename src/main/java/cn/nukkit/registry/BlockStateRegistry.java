@@ -3,6 +3,7 @@ package cn.nukkit.registry;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.education.Education;
 import cn.nukkit.utils.BlockColor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -11,7 +12,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,14 +27,14 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
 
     @Override
     public void init() {
-        try (var stream = this.getClass().getClassLoader().getResourceAsStream("block_states.json")) {
+        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/endstone/block_states.json")) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             JsonArray blockStateData = JsonParser.parseReader(reader).getAsJsonArray();
             for(int i = 0; i < blockStateData.size(); i++) {
                 JsonObject entry = blockStateData.get(i).getAsJsonObject();
                 int hash = entry.get("blockStateHash").getAsInt();
                 String name = entry.get("name").getAsString();
-                if(BlockRegistry.skipBlockSet.contains(name)) continue;
+                if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
                     Server.getInstance().getLogger().alert(name + " (" + hash + ") was not a part of block_states.json.");
@@ -48,7 +48,8 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
                 int g = Integer.parseInt(hexString.substring(2,4), 16);
                 int b = Integer.parseInt(hexString.substring(4,6), 16);
                 int a = Integer.parseInt(hexString.substring(6,8), 16);
-                Block.VANILLA_BLOCK_COLOR_MAP.put(hash, new BlockColor(r, g, b, a));
+                BlockColor.Tint tint = BlockColor.Tint.get(entry.get("tintMethod").toString().replace("\"", ""));
+                Block.VANILLA_BLOCK_COLOR_MAP.put(hash, new BlockColor(r, g, b, a, tint));
             }
         } catch (IOException e) {
         }

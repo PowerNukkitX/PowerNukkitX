@@ -1,7 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -22,6 +21,7 @@ import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -100,6 +100,11 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("blaze", "monster", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
@@ -110,8 +115,18 @@ public class EntityBlaze extends EntityMob implements EntityFlyable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BLAZE_ROD, 0, Utils.rand(0, 1))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        float chance = 0.5f + (0.25f * looting);
+        chance = Math.min(chance, 1.0f);
+
+        if (Utils.rand(0f, 1f) < chance) {
+            int amount = Utils.rand(1, 1 + looting);
+            return new Item[]{Item.get(Item.BLAZE_ROD, 0, amount)};
+        }
+
+        return Item.EMPTY_ARRAY;
     }
 
     @Override

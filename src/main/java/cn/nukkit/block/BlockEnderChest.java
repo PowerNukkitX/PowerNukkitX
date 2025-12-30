@@ -6,7 +6,6 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.inventory.HumanEnderChestInventory;
-import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -127,15 +126,14 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
             }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if(isNotActivate(player)) return false;
 
-        Block top = this.up();
-        if (!top.isTransparent()) {
+        if (!this.hasFreeSpaceAbove()) {
             return false;
         }
 

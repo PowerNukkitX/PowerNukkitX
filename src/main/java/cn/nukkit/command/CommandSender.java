@@ -11,69 +11,73 @@ import cn.nukkit.permission.Permissible;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 能发送命令的对象.<br>
- * 可以是一个玩家或者一个控制台或者一个实体或者其他.
+ * Represents an entity capable of sending commands to the server, such as a player or the console.
  * <p>
- * Who sends commands.<br>
- * That can be a player or a console.
+ * The CommandSender interface provides methods for sending messages, retrieving sender information,
+ * and determining the sender's type and location. Implementations may represent players, the console,
+ * command blocks, or other entities capable of executing commands.
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Use {@link #sendMessage(String)} or {@link #sendMessage(TextContainer)} to send messages to the sender.</li>
+ *   <li>Use {@link #getName()} to get the sender's name ("CONSOLE" for the console).</li>
+ *   <li>Use {@link #isPlayer()} and {@link #isEntity()} to check the sender's type.</li>
+ *   <li>Use {@link #getPosition()} and {@link #getLocation()} to get the sender's coordinates.</li>
+ *   <li>Use {@link #sendCommandOutput(CommandOutputContainer)} to send command output containers.</li>
+ * </ul>
+ * <p>
+ * For entity-based senders, use {@link #asEntity()} and {@link #asPlayer()} to retrieve the underlying entity or player.
+ * <p>
+ * Default implementations for entity and player checks return false/null; override in concrete implementations as needed.
+ * <p>
+ * The default position and location are (0, 0, 0) in the server's default level if not overridden.
  *
- * @author MagicDroidX(code) @ Nukkit Project
- * @author 粉鞋大妈(javadoc) @ Nukkit Project
- * @author smartcmd(code) @ PowerNukkitX Project
+ * @author MagicDroidX (code) @ Nukkit Project
+ * @author 粉鞋大妈 (javadoc) @ Nukkit Project
+ * @author smartcmd (code) @ PowerNukkitX Project
  * @see cn.nukkit.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
 public interface CommandSender extends Permissible {
-
     /**
-     * 给命令发送者返回信息.<p>
-     * Sends a message to the command sender.
+     * Sends a plain text message to the command sender.
      *
-     * @param message 要发送的信息.<br>Message to send.
+     * @param message the message to send
      * @see cn.nukkit.utils.TextFormat
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     void sendMessage(String message);
 
     /**
-     * 给命令发送者返回信息.<p>
-     * Sends a message to the command sender.
+     * Sends a formatted or translatable message to the command sender.
      *
-     * @param message 要发送的信息.<br>Message to send.
+     * @param message the TextContainer message to send
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     void sendMessage(TextContainer message);
 
     /**
-     * Send command output.
+     * Sends a command output container to the sender, for advanced command feedback.
      *
-     * @param container the container
+     * @param container the command output container to send
      */
     void sendCommandOutput(CommandOutputContainer container);
 
     /**
-     * 返回命令发送者所在的服务器.<p>
-     * Returns the server of the command sender.
+     * Gets the server instance associated with this sender.
      *
-     * @return 命令发送者所在的服务器.<br>the server of the command sender.
+     * @return the server instance
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     Server getServer();
 
     /**
-     * 返回命令发送者的名称.<br>
-     * 如果命令发送者是一个玩家，将会返回他的玩家名字(name)不是显示名字(display name).<br>
-     * 如果命令发送者是控制台，将会返回{@code "CONSOLE"}.<br>
-     * 当你需要判断命令的执行者是不是控制台时，可以用这个：<br>
-     * {@code if(sender instanceof ConsoleCommandSender) .....;}
+     * Gets the name of the command sender.
      * <p>
-     * Returns the name of the command sender.<br>
-     * If this command sender is a player, will return his/her player name(not display name).<br>
-     * If it is a console, will return {@code "CONSOLE"}.<br>
-     * When you need to determine if the sender is a console, use this:<br>
-     * {@code if(sender instanceof ConsoleCommandSender) .....;}
+     * For players, returns the player name (not display name). For the console, returns "CONSOLE".
+     * To check if the sender is the console, use {@code if(sender instanceof ConsoleCommandSender)}.
      *
-     * @return 命令发送者的名称.<br>the name of the command sender.
+     * @return the name of the sender
      * @see cn.nukkit.Player#getName()
      * @see cn.nukkit.command.ConsoleCommandSender#getName()
      * @see cn.nukkit.plugin.PluginDescription
@@ -83,47 +87,48 @@ public interface CommandSender extends Permissible {
     String getName();
 
     /**
-     * @return 发送者是否为玩家<br>whether the sender is an player
+     * Checks if the sender is a player.
+     *
+     * @return true if the sender is a player, false otherwise
      */
     boolean isPlayer();
 
     /**
-     * 请使用这个方法来检查发送者是否是一个实体，而不是使用代码{@code "xxx instanceof Entity"}.<br>
-     * 因为发送者可能不是{@code "Entity"}的一个实例，但实际上它是以一个实体的身份执行命令(例如：{@code "ExecutorCommandSender"})
+     * Checks if the sender is an entity (not just a player).
      * <p>
-     * please use this method to check whether the sender is an entity instead of using code {@code "xxx instanceof Entity"} <br>
-     * because the sender may not an instance of {@code "Entity"} but in fact it is executing commands identity as an entity(eg: {@code "ExecutorCommandSender"})
+     * Prefer this method over {@code instanceof Entity} checks, as some senders may act as entities
+     * without being direct instances of Entity (e.g., ExecutorCommandSender).
      *
-     * @return 发送者是否为实体<br>whether the sender is an entity
+     * @return true if the sender is an entity, false otherwise
      */
     default boolean isEntity() {
         return false;
     }
 
     /**
-     * 如果发送者是一个实体，返回执行该命令的实体.
-     * <p>
-     * return the entity who execute the command if the sender is a entity.
+     * Gets the underlying entity if the sender is an entity.
      *
-     * @return 实体对象<br>Entity instance
+     * @return the Entity instance, or null if not applicable
      */
     default Entity asEntity() {
         return null;
     }
 
     /**
-     * 如果发送者是一个玩家，返回执行该命令的玩家.
-     * <p>
-     * return the player who execute the command if the sender is a player.
+     * Gets the underlying player if the sender is a player.
      *
-     * @return 玩家对象<br>Player instance
+     * @return the Player instance, or null if not applicable
      */
     default Player asPlayer() {
         return null;
     }
 
     /**
-     * @return 返回发送者的Position<br>return the sender's position.
+     * Gets the position of the sender in the world.
+     * <p>
+     * Default is (0, 0, 0) in the server's default level if not overridden.
+     *
+     * @return the sender's position
      */
     @NotNull
     default Position getPosition() {
@@ -131,7 +136,11 @@ public interface CommandSender extends Permissible {
     }
 
     /**
-     * @return 返回发送者克隆过的Location<br>return the sender's location.
+     * Gets the location of the sender in the world.
+     * <p>
+     * Default is (0, 0, 0) in the server's default level if not overridden.
+     *
+     * @return the sender's location
      */
     @NotNull
     default Location getLocation() {

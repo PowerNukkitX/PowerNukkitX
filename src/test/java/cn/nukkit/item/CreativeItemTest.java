@@ -24,7 +24,7 @@ public class CreativeItemTest {
         Registries.POTION.init();
         Registries.ITEM.init();
         Assertions.assertDoesNotThrow(() -> {
-            try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("creative_items.json")) {
+            try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json")) {
                 Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
                 List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
                 for (int i = 0; i < items.size(); i++) {

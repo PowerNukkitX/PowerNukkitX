@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeehive;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityBee;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -20,8 +18,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 import static cn.nukkit.block.property.CommonBlockProperties.HONEY_LEVEL;
 
@@ -95,19 +91,29 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
         int honeyLevel = item.hasCustomBlockData() ? item.getCustomBlockData().getByte("HoneyLevel") : 0;
         setHoneyLevel(honeyLevel);
-        BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, item.getCustomBlockData());
+        BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, item.getCustomBlockData());
         if (beehive == null) {
             return false;
         }
 
+        // Stagger their exit by giving each occupant a different ticksLeftToStay
+        // and let BlockEntityBeehive.onUpdate() handle spawning them over time.
         if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
-            List<BlockFace> validSpawnFaces = beehive.scanValidSpawnFaces(true);
-            for (BlockEntityBeehive.Occupant occupant : beehive.getOccupants()) {
-                beehive.spawnOccupant(occupant, validSpawnFaces);
+            BlockEntityBeehive.Occupant[] occupants = beehive.getOccupants();
+            int delayPerBee = 40; // 40 ticks
+            int baseDelay = 20;   // small initial delay so they dont pop instantly on place
+
+            int index = 0;
+            for (BlockEntityBeehive.Occupant occupant : occupants) {
+                int ticks = baseDelay + (index * delayPerBee);
+                occupant.setTicksLeftToStay(ticks);
+                index++;
             }
 
-            beehive.namedTag.putByte("ShouldSpawnBees", 0);
+            beehive.namedTag.putByte("ShouldSpawnBees", (byte) 0);
+            beehive.scheduleUpdate();
         }
+
         return true;
     }
 

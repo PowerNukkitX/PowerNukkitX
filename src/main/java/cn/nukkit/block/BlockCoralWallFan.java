@@ -4,11 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_DIRECTION;
-import static cn.nukkit.block.property.CommonBlockProperties.CORAL_HANG_TYPE_BIT;
-import static cn.nukkit.block.property.CommonBlockProperties.DEAD_BIT;
 
 public abstract class BlockCoralWallFan extends BlockCoralFan {
 

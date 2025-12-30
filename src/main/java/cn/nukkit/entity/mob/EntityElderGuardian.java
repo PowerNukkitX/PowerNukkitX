@@ -2,7 +2,6 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -12,7 +11,6 @@ import cn.nukkit.entity.ai.controller.DiveController;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
@@ -111,12 +109,22 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("guardian_elder", "monster", "mob");
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         int secondLoot = ThreadLocalRandom.current().nextInt(6);
         return new Item[]{
                 Item.get(Item.PRISMARINE_SHARD, 0, Utils.rand(0, 2)),

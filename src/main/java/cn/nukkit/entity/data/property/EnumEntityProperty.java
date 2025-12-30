@@ -11,8 +11,9 @@ public class EnumEntityProperty extends EntityProperty {
 
     private final String[] enums;
     private final String defaultValue;
+    private final boolean clientSync;
 
-    public EnumEntityProperty(String identifier, String[] enums, String defaultValue) {
+    public EnumEntityProperty(String identifier, String[] enums, String defaultValue, boolean clientSync) {
         super(identifier);
 
         boolean found = false;
@@ -28,6 +29,11 @@ public class EnumEntityProperty extends EntityProperty {
 
         this.enums = enums;
         this.defaultValue = defaultValue;
+        this.clientSync = clientSync;
+    }
+
+    public EnumEntityProperty(String identifier, String[] enums, String defaultValue) {
+        this(identifier, enums, defaultValue, false);
     }
 
     public String[] getEnums() {
@@ -46,6 +52,12 @@ public class EnumEntityProperty extends EntityProperty {
             enumList.add(new StringTag(enumValue));
         }
         tag.putList("enum", enumList);
+        tag.putBoolean("clientSync", isClientSync());
+    }
+
+    @Override
+    public boolean isClientSync() {
+        return clientSync;
     }
 
     public int findIndex(String value) {

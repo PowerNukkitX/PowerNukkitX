@@ -23,12 +23,12 @@ public class ItemRottenFlesh extends ItemFood {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 4;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 0.8F;
     }
 

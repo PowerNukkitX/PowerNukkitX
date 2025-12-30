@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.mob.EntityMob;
@@ -13,7 +12,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
 public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
@@ -103,7 +102,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     @Override
     public void onStop(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -115,7 +114,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setMovementSpeed(EntityLiving.DEFAULT_SPEED);
+        entity.setMovementSpeed(entity.getDefaultSpeed());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -126,7 +125,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
 
     private void startSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.level.addLevelSoundEvent(entity, LevelSoundEventPacketV2.SOUND_MOB_WARNING, -1, entity.getIdentifier(), false, false);
+        entity.level.addLevelSoundEvent(entity, LevelSoundEvent.MOB_WARNING, -1, entity.getIdentifier(), false, false);
     }
 
     private void endSequence(Entity entity) {

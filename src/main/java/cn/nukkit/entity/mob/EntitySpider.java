@@ -10,7 +10,6 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
@@ -24,11 +23,14 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.passive.EntityArmadillo;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -94,8 +96,32 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.STRING),Item.get(Item.SPIDER_EYE)};
+    public Set<String> typeFamily() {
+        return Set.of("spider", "monster", "mob", "arthropod");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        float stringChance = 0.70f + (0.10f * looting);
+        stringChance = Math.min(stringChance, 1.0f);
+
+        if (Utils.rand(0f, 1f) < stringChance) {
+            int amount = Utils.rand(1, 2 + looting);
+            drops.add(Item.get(Item.STRING, 0, amount));
+        }
+
+        float eyeChance = 0.50f + (0.05f * looting);
+        eyeChance = Math.min(eyeChance, 1.0f);
+
+        if (Utils.rand(0f, 1f) < eyeChance) {
+            int amount = Utils.rand(1, 1 + looting);
+            drops.add(Item.get(Item.SPIDER_EYE, 0, amount));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

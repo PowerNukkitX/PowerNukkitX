@@ -18,6 +18,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
@@ -99,6 +100,11 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("zoglin", "zoglin_baby", "undead", "monster", "mob");
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }
@@ -109,8 +115,13 @@ public class EntityZoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(1, 3))};
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        int amount = Utils.rand(1, 3 + looting);
+
+        return new Item[]{
+                Item.get(Item.ROTTEN_FLESH, 0, amount)
+        };
     }
 
     @Override

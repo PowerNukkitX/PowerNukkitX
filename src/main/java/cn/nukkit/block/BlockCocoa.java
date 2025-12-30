@@ -19,7 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.block.property.CommonBlockProperties.*;
+import static cn.nukkit.block.property.CommonBlockProperties.AGE_3;
+import static cn.nukkit.block.property.CommonBlockProperties.DIRECTION;
 
 /**
  * @author CreeperFace

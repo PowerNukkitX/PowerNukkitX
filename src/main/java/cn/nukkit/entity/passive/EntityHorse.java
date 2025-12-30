@@ -9,7 +9,6 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityMarkVariant;
 import cn.nukkit.entity.EntityOwnable;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
@@ -40,6 +39,7 @@ import cn.nukkit.event.entity.EntityFallEvent;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
@@ -48,41 +48,40 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.UpdateAttributesPacket;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityOwnable, InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {
         return HORSE;
     }
-    
+
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
     private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
-    private final AtomicBoolean jumping = new AtomicBoolean(false);
+    private final AtomicInteger jumping = new AtomicInteger(-1);
 
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    
 
     @Override
     public float getWidth() {
@@ -101,6 +100,26 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
+    }
+
+    @Override
+    public boolean openInventory(Player player) {
+        if (hasOwner(false) && getOwnerName().equals(player.getName())) {
+            player.addWindow(getInventory());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void initEntity() {
         attributeMap = new HashMap<>();
         if (this.namedTag.containsList("Attributes")) {
@@ -116,10 +135,13 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         super.initEntity();
 
         this.horseInventory = new HorseInventory(this);
+
         ListTag<CompoundTag> inventoryTag;
         if (this.namedTag.containsList("Inventory")) {
             inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
             Item item0 = NBTIO.getItemHelper(inventoryTag.get(0));
+            Item item1 = NBTIO.getItemHelper(inventoryTag.get(1));
+
             if (item0.isNull()) {
                 this.setDataFlag(EntityFlag.SADDLED, false);
                 this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -127,7 +149,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             } else {
                 this.getInventory().setItem(0, item0);
             }
-            this.getInventory().setItem(1, NBTIO.getItemHelper(inventoryTag.get(1)));
+
+            if (!item1.isNull()){
+                this.getInventory().setItem(1, item1);
+            }
         } else {
             this.setDataFlag(EntityFlag.SADDLED, false);
             this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
@@ -195,13 +220,44 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), getHorseArmor(), getSaddle()};
+    public Item[] getDrops(@NotNull Item weapon) {
+        List<Item> drops = new ArrayList<>();
+
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 2) != 0) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        Item armor = getHorseArmor();
+        if (!armor.isNull()) {
+            drops.add(armor);
+        }
+
+        Item saddle = getSaddle();
+        if (!saddle.isNull()) {
+            drops.add(saddle);
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override
     public String getOriginalName() {
         return "Horse";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("horse", "mob");
+    }
+
+    @Override
+    public int randomVariant() {
+        return getAllVariant()[new Random(System.currentTimeMillis()).nextInt(getAllVariant().length)];
     }
 
     @Override
@@ -214,7 +270,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return MARK_VARIANTS;
     }
 
-    public AtomicBoolean getJumping() {
+    public AtomicInteger getJumping() {
         return jumping;
     }
 
@@ -329,13 +385,17 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         }
     }
 
+    public boolean isJumping() {
+        return this.jumping.get() != -1;
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         boolean b = super.onUpdate(currentTick);
         if (currentTick % 2 == 0) {
-            if (this.jumping!=null && this.jumping.get() && this.isOnGround()) {
+            if (getJumping() != null && currentTick - getJumping().get() > 5 && this.isOnGround()) {
                 this.setDataFlag(EntityFlag.STANDING, false);
-                this.jumping.set(false);
+                this.jumping.set(-1);
             }
         }
         return b;
@@ -389,7 +449,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public boolean dismountEntity(Entity entity) {
-        this.getMemoryStorage().clear(CoreMemoryTypes.RIDER_NAME);
+        this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, null);
         return super.dismountEntity(entity);
     }
 
@@ -404,10 +464,10 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     public @Nullable Entity getRider() {
-        String name = getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
+        String name = this.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
         if (name != null) {
             return Server.getInstance().getPlayerExact(name);
-        } else return null;//todo other entity
+        } else return null;
     }
 
     public float getClientMaxJumpHeight() {
@@ -432,6 +492,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getSaddle()
      */
     public Item getSaddle() {
+        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getSaddle();
     }
 
@@ -439,6 +500,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * @see HorseInventory#getHorseArmor()
      */
     public Item getHorseArmor() {
+        if(this.getInventory() == null) return Item.AIR;
         return this.getInventory().getHorseArmor();
     }
 
@@ -448,7 +510,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * Play an animation of a failed tamer
      */
     public void playTameFailAnimation() {
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_MAD, -1, "minecraft:horse", this.isBaby(), false);
+        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
         this.setDataFlag(EntityFlag.STANDING);
     }
 
@@ -516,7 +578,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+        addEntity.entityData = this.entityDataMap.copy();
         addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
@@ -530,4 +592,5 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public boolean isBreedingItem(Item item) {
         return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);
     }
+
 }

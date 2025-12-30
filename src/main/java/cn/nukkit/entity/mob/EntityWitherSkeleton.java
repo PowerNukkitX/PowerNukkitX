@@ -2,14 +2,16 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.entity.*;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
@@ -17,16 +19,15 @@ import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -105,7 +106,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
         // 设置凋零骷髅空闲状态播放空闲声音
-        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEventPacket.SOUND_AMBIENT);
+        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
     }
 
     @Override
@@ -124,6 +125,11 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("wither", "monster", "undead", "skeleton", "mob");
+    }
+
+    @Override
     public boolean isUndead() {
         return true;
     }
@@ -135,7 +141,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     //掉落剑的概率为8.5% 掉落头的概率为2.5%
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
         List<Item> drops = new ArrayList<>();
         drops.add(Item.get(Item.BONE, 0, Utils.rand(0, 2)));
         if (Utils.rand(0, 2) == 0) {

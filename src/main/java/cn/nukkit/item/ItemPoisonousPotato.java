@@ -30,12 +30,12 @@ public class ItemPoisonousPotato extends ItemPotato {
     }
 
     @Override
-    public int getFoodRestore() {
+    public int getNutrition() {
         return 2;
     }
 
     @Override
-    public float getSaturationRestore() {
+    public float getSaturation() {
         return 1.2F;
     }
 }

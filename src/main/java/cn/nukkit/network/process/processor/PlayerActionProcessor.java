@@ -7,6 +7,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFrame;
 import cn.nukkit.block.BlockLectern;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerJumpEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
@@ -82,6 +83,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
             }
             case PlayerActionPacket.ACTION_DROP_ITEM -> {
                 //TODO
+            }
+            case PlayerActionPacket.ACTION_START_SLEEPING -> {
+
             }
             case PlayerActionPacket.ACTION_STOP_SLEEPING -> player.stopSleep();
             case PlayerActionPacket.ACTION_RESPAWN -> {
@@ -257,8 +261,11 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     return;
                 }
 
-                if (!player.getServer().getAllowFlight() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
-                    player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+                if (!player.getAllowFlight()) {
+                    PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.FLIGHT);
+                    Server.getInstance().getPluginManager().callEvent(detectedEvent);
+                    if(detectedEvent.isKick())
+                        player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                     break;
                 }
                 PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, true);

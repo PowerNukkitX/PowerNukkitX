@@ -7,6 +7,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
+import cn.nukkit.item.AliasItem;
+import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
@@ -15,7 +17,6 @@ import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
@@ -132,7 +133,20 @@ public abstract class BaseInventory implements Inventory {
         item = item.clone();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity entity) {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, this.getItem(index), item, index);
+            int held = -1;
+            ContainerSlotType type = ContainerSlotType.INVENTORY;
+
+
+            if (holder instanceof Player p) {
+                if (p.getOffhandInventory() == this) {
+                    type = ContainerSlotType.OFFHAND;
+                } else if (this instanceof HumanInventory) {
+                    held = ((HumanInventory) this).getHeldItemIndex();
+                    try { type = this.getSlotType(index); } catch (Throwable ignored) {}
+                }
+            }
+
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(entity, this.getItem(index), item, index, type, held);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -367,7 +381,19 @@ public abstract class BaseInventory implements Inventory {
             Item old = this.slots.get(index);
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index);
+                int held = -1;
+                ContainerSlotType type = ContainerSlotType.INVENTORY;
+
+                if (holder instanceof Player p) {
+                    if (p.getOffhandInventory() == this) {
+                        type = ContainerSlotType.OFFHAND;
+                    } else if (this instanceof HumanInventory) {
+                        held = ((HumanInventory) this).getHeldItemIndex();
+                        try { type = this.getSlotType(index); } catch (Throwable ignored) {}
+                    }
+                }
+
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent( (Entity) holder, old, item, index, type, held);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.sendSlot(index, this.getViewers());
@@ -441,6 +467,15 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
+
+        if(this.getUnclonedItem(index) instanceof AliasItem aliasItem) {
+            this.setItem(index, aliasItem.getItem());
+        }
+
+        if(this.getUnclonedItem(index) instanceof INBT nbtItem) {
+            nbtItem.onChange(this);
+        }
+
         if (send) {
             this.sendSlot(index, this.getViewers());
         }

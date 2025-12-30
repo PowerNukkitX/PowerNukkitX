@@ -18,7 +18,6 @@ import cn.nukkit.entity.ai.executor.DoNothingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.evocation.ColorConversionExecutor;
 import cn.nukkit.entity.ai.executor.evocation.FangCircleExecutor;
@@ -31,11 +30,13 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -185,6 +186,11 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return Set.of("evocation_illager", "monster", "illager", "mob");
+    }
+
+    @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
@@ -195,10 +201,11 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
     }
 
     @Override
-    public Item[] getDrops() {
+    public Item[] getDrops(@NotNull Item weapon) {
+        int lootingLevel = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
         return new Item[] {
                 Item.get(Item.TOTEM_OF_UNDYING),
-                Item.get(Item.EMERALD, 0, ThreadLocalRandom.current().nextInt(2))
+                Item.get(Item.EMERALD, 0, Utils.rand(0, 2 + lootingLevel))
         };
     }
 

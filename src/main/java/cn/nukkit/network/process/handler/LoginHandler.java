@@ -1,19 +1,17 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Server;
-import cn.nukkit.config.ServerPropertiesKeys;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
+import cn.nukkit.network.process.login.LoginData;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.LoginPacket;
-import cn.nukkit.network.protocol.PlayStatusPacket;
 import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
 import cn.nukkit.network.protocol.types.InputMode;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.utils.ClientChainData;
-import cn.nukkit.network.protocol.types.Platform;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,25 +41,26 @@ public class LoginHandler extends BedrockSessionPacketHandler {
     public void handle(LoginPacket pk) {
         var server = this.session.getServer();
 
+        LoginData loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
+
+        ClientChainData loginData = ClientChainData.of(loginDataRaw);
+
+        //TODO: re-implement if possible
         //check the player login time
-        if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
+        /*if (pk.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - pk.issueUnixTime > 20000) {
             var message = "disconnectionScreen.noReason";
             log.debug("disconnection due to noReason");
             session.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
             session.close(message);
             return;
-        }
+        }*/
 
-        var chainData = ClientChainData.read(pk);
-
-        //verify the player if enable the xbox-auth
-        if (!chainData.isXboxAuthed() && server.getProperties().get(ServerPropertiesKeys.XBOX_AUTH, true)) {
+        if (!loginData.isXboxAuthed() && server.getSettings().baseSettings().xboxAuth()) {
             log.debug("disconnection due to notAuthenticated");
             session.close("disconnectionScreen.notAuthenticated");
             return;
         }
 
-        //Verify the number of server player
         if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
             log.debug("disconnection due to serverFull");
             session.close("disconnectionScreen.serverFull");
@@ -69,74 +68,67 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         //set proxy ip
-        if (server.getSettings().baseSettings().waterdogpe() && chainData.getWaterdogIP() != null) {
+        if (server.getSettings().baseSettings().waterdogpe() && loginData.getWaterdogIP() != null) {
             InetSocketAddress oldAddress = session.getAddress();
-            session.setAddress(new InetSocketAddress(chainData.getWaterdogIP(), session.getAddress().getPort()));
+            session.setAddress(new InetSocketAddress(loginData.getWaterdogIP(), session.getAddress().getPort()));
             Server.getInstance().getNetwork().replaceSessionAddress(oldAddress, session.getAddress(), session);
         }
 
-        //Verify if the titleId match with DeviceOs
-        int predictedDeviceOS = getPredictedDeviceOS(chainData);
-        if(predictedDeviceOS != chainData.getDeviceOS()) {
-            session.close("§cPacket handling error");
-            return;
-        }
-
         //Verify if the language is valid
-        if(!isValidLanguage(chainData.getLanguageCode())) {
-            session.close("§cPacket handling error");
+        if(!isValidLanguage(loginData.getLanguageCode())) {
+            session.close("§cPacket handling error: lang check failed");
             return;
         }
 
         //Verify if the GameVersion has valid format
-        if(chainData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().debugSettings().allowBeta()) {
-            session.close("§cPacket handling error");
+        if(loginData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().gameplaySettings().allowBeta()) {
+            session.close("§cPacket handling error: no beta allowed");
             return;
         }
 
         //Verify if the CurrentInputMode is valid
-        int CurrentInputMode = chainData.getCurrentInputMode();
+        int CurrentInputMode = loginData.getCurrentInputMode();
         if(
                 CurrentInputMode <= InputMode.UNDEFINED.getOrdinal() ||
-                CurrentInputMode >= InputMode.COUNT.getOrdinal()
+                        CurrentInputMode >= InputMode.COUNT.getOrdinal()
         ) {
             log.debug("disconnection due to invalid input mode");
-            session.close("§cPacket handling error");
+            session.close("§cPacket handling error: invalid input mode");
             return;
         }
 
         //Verify if the DefaultInputMode is valid
-        int DefaultInputMode = chainData.getDefaultInputMode();
+        int DefaultInputMode = loginData.getDefaultInputMode();
         if(
                 DefaultInputMode <= InputMode.UNDEFINED.getOrdinal() ||
-                DefaultInputMode >= InputMode.COUNT.getOrdinal()
+                        DefaultInputMode >= InputMode.COUNT.getOrdinal()
         ) {
             log.debug("disconnection due to invalid input mode");
-            session.close("§cPacket handling error");
+            session.close("§cPacket handling error: invalid input mode");
             return;
         }
 
-        var uniqueId = pk.clientUUID;
-        var username = pk.username;
+        var uniqueId = loginData.getClientUUID();
+        var username = loginData.getUsername();
         Matcher usernameMatcher = playerNamePattern.matcher(username);
 
         if (
                 !usernameMatcher.matches() ||
-                username.equalsIgnoreCase("rcon") ||
-                username.equalsIgnoreCase("console")
+                        username.equalsIgnoreCase("rcon") ||
+                        username.equalsIgnoreCase("console")
         ) {
             log.debug("disconnection due to invalidName");
             session.close("disconnectionScreen.invalidName");
             return;
         }
 
-        if (!pk.skin.isValid()) {
+        if (!loginDataRaw.skin().isValid()) {
             log.debug("disconnection due to invalidSkin");
             session.close("disconnectionScreen.invalidSkin");
             return;
         }
 
-        Skin skin = pk.skin;
+        Skin skin = loginDataRaw.skin();
         if (server.getSettings().playerSettings().forceSkinTrusted()) {
             skin.setTrusted(true);
         }
@@ -145,16 +137,16 @@ public class LoginHandler extends BedrockSessionPacketHandler {
                 username,
                 uniqueId,
                 skin,
-                chainData
+                loginData
         );
 
-        if (chainData.isXboxAuthed()) {
+        if (loginData.isXboxAuthed()) {
             info = new XboxLivePlayerInfo(
                     username,
                     uniqueId,
                     skin,
-                    chainData,
-                    chainData.getXUID()
+                    loginData,
+                    loginData.getXUID()
             );
         }
 
@@ -176,30 +168,10 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         }
 
         if (server.enabledNetworkEncryption) {
-            this.enableEncryption(chainData);
+            this.enableEncryption(loginData);
         } else {
             session.getMachine().fire(SessionState.RESOURCE_PACK);
         }
-    }
-
-    private int getPredictedDeviceOS(ClientChainData chainData) {
-        String titleId = chainData.getTitleId();
-        return switch (titleId) {
-            case "896928775":
-                yield Platform.WINDOWS_10.getId();
-            case "2047319603":
-                yield Platform.SWITCH.getId();
-            case "1739947436":
-                yield Platform.ANDROID.getId();
-            case "2044456598":
-                yield Platform.PLAYSTATION.getId();
-            case "1828326430":
-                yield Platform.XBOX_ONE.getId();
-            case "1810924247":
-                yield Platform.IOS.getId();
-            default:
-                yield 0;
-        };
     }
 
     private boolean isValidLanguage(String language) {

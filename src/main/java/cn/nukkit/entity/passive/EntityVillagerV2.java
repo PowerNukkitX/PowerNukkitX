@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBed;
-import cn.nukkit.block.BlockCrops;
 import cn.nukkit.block.BlockDoor;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
@@ -21,7 +20,6 @@ import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
-import cn.nukkit.entity.ai.executor.DoNothingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
@@ -35,7 +33,6 @@ import cn.nukkit.entity.ai.executor.villager.WillingnessExecutor;
 import cn.nukkit.entity.ai.executor.villager.WorkExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
@@ -66,6 +63,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.network.protocol.UpdateTradePacket;
+import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -416,6 +414,27 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    public Set<String> typeFamily() {
+        return switch (profession) {
+            case 1 -> Set.of("villager", "peasant", "farmer", "mob");
+            case 2 -> Set.of("villager", "peasant", "fisherman", "mob");
+            case 3 -> Set.of("villager", "peasant", "shepherd", "mob");
+            case 4 -> Set.of("villager", "peasant", "fletcher", "mob");
+            case 5 -> Set.of("villager", "librarian", "mob");
+            case 6 -> Set.of("villager", "cartographer", "mob");
+            case 7 -> Set.of("villager", "priest", "cleric", "mob");
+            case 8 -> Set.of("villager", "blacksmith", "armorer", "mob");
+            case 9 -> Set.of("villager", "blacksmith", "weaponsmith", "mob");
+            case 10 -> Set.of("villager", "blacksmith", "toolsmith", "mob");
+            case 11 -> Set.of("villager", "artisan", "butcher", "mob");
+            case 12 -> Set.of("villager", "artisan", "leatherworker", "mob");
+            case 13 -> Set.of("villager", "artisan", "stone_mason", "mob");
+            case 14 -> Set.of("villager", "peasant", "nitwit", "mob");
+            default -> Set.of("villager", "peasant", "unskilled", "mob");
+        };
+    }
+
+    @Override
     public void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
@@ -528,7 +547,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void kill() {
         if(getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
             if(event.getEntity() instanceof Player player) {
-                System.out.println("1");
                 Arrays.stream(this.getLevel().getCollidingEntities(this.getBoundingBox().grow(16, 16, 16))).filter(entity -> entity instanceof EntityVillagerV2).forEach(entity -> ((EntityVillagerV2) entity).addGossip(player.getLoginChainData().getXUID(), Gossip.MAJOR_NEGATIVE, 25));
             }
         }
@@ -635,6 +653,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             case 11 -> "entity.villager.butcher";
             case 12 -> "entity.villager.leather";
             case 13 -> "entity.villager.mason";
+            case 14 -> "entity.villager.nitwit";
             default -> null;
         };
     }
@@ -909,8 +928,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         TAIGA;
 
         public static Clothing getClothing(int biomeId) {
-            BiomeRegistry.BiomeDefinition definition = Registries.BIOME.get(biomeId);
-            Set<String> tags = definition.tags();
+            BiomeDefinition definition = Registries.BIOME.get(biomeId);
+            Set<String> tags = definition.getTags();
             if(tags.contains("desert") || tags.contains("mesa")) return DESERT;
             if(tags.contains("jungle")) return JUNGLE;
             if(tags.contains("savanna")) return SAVANNA;

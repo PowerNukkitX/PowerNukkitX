@@ -3,9 +3,10 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.Server;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
-import cn.nukkit.event.player.PlayerIllegalFlightEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RequestAbilityPacket;
@@ -20,16 +21,15 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
         Player player = playerHandle.player;
         PlayerAbility ability = pk.ability;
         if (ability != PlayerAbility.FLYING) {
-            log.info("[" + player.getName() + "] has tried to trigger " + ability + " ability " + (pk.boolValue ? "on" : "off"));
+            log.info("[{}] has tried to trigger {} ability {}", player.getName(), ability, pk.boolValue ? "on" : "off");
             return;
         }
 
-        if (!player.getServer().getAllowFlight() && pk.boolValue && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
-            PlayerIllegalFlightEvent pife = new PlayerIllegalFlightEvent(player);
-            player.getServer().getPluginManager().callEvent(pife);
-            if (!pife.isKick())
-                return;
-            player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+        if (!pk.boolValue && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+            PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.FLIGHT);
+            Server.getInstance().getPluginManager().callEvent(detectedEvent);
+            if(detectedEvent.isKick())
+                player.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
             return;
         }
 

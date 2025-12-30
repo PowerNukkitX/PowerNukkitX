@@ -10,10 +10,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
 import java.io.IOException;
@@ -33,7 +31,7 @@ public class HorseInventory extends BaseInventory {
                 .putShort("Aux", Short.MAX_VALUE)
                 .putString("Name", ItemID.SADDLE)));
         ListTag<CompoundTag> horseArmor = new ListTag<>();
-        for (var h : List.of(ItemID.LEATHER_HORSE_ARMOR, ItemID.IRON_HORSE_ARMOR, ItemID.GOLDEN_HORSE_ARMOR, ItemID.DIAMOND_HORSE_ARMOR)) {
+        for (var h : List.of(ItemID.LEATHER_HORSE_ARMOR, ItemID.IRON_HORSE_ARMOR, ItemID.GOLDEN_HORSE_ARMOR, ItemID.DIAMOND_HORSE_ARMOR, ItemID.COPPER_HORSE_ARMOR, ItemID.NETHERITE_HORSE_ARMOR)) {
             horseArmor.add(new CompoundTag().putCompound("slotItem", new CompoundTag().putShort("Aux", Short.MAX_VALUE).putString("Name", h)));
         }
         slot0 = new CompoundTag().putList("acceptedItems", saddle).putInt("slotNumber", 0);
@@ -71,7 +69,7 @@ public class HorseInventory extends BaseInventory {
                 this.getHolder().setDataFlag(EntityFlag.WASD_CONTROLLED, false);
                 this.getHolder().setDataFlag(EntityFlag.CAN_POWER_JUMP, false);
             } else {
-                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEventPacket.SOUND_SADDLE, -1, this.getHolder().getIdentifier(), false, false);
+                this.getHolder().getLevel().addLevelSoundEvent(this.getHolder(), LevelSoundEvent.SADDLE, -1, this.getHolder().getIdentifier(), false, false);
                 this.getHolder().setDataFlag(EntityFlag.SADDLED);
                 this.getHolder().setDataFlag(EntityFlag.WASD_CONTROLLED);
                 this.getHolder().setDataFlag(EntityFlag.CAN_POWER_JUMP);
@@ -83,6 +81,8 @@ public class HorseInventory extends BaseInventory {
             MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.eid = this.getHolder().getId();
             mobArmorEquipmentPacket.slots = new Item[]{Item.AIR, this.getHorseArmor(), Item.AIR, Item.AIR};
+            mobArmorEquipmentPacket.body = this.getHorseArmor();
+
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
         }
     }

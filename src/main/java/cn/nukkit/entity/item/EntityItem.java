@@ -15,11 +15,17 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import lombok.extern.slf4j.Slf4j;
+
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author MagicDroidX
  */
+@Slf4j
 public class EntityItem extends Entity {
     @Override
     @NotNull
@@ -31,11 +37,13 @@ public class EntityItem extends Entity {
     protected String thrower;
     protected Item item;
     protected int pickupDelay;
+    private boolean mergeItems;
+    private boolean shouldDespawn;
+    private boolean isDisplayOnly;
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
 
     @Override
     public float getWidth() {
@@ -84,6 +92,14 @@ public class EntityItem extends Entity {
             this.age = this.namedTag.getShort("Age");
         }
 
+        if(this.namedTag.contains("ShouldDespawn")) {
+            this.shouldDespawn = this.namedTag.getBoolean("ShouldDespawn");
+        } else shouldDespawn = true;
+
+        if(this.namedTag.contains("DisplayOnly")) {
+            this.isDisplayOnly = this.namedTag.getBoolean("DisplayOnly");
+        } else isDisplayOnly = false;
+
         if (this.namedTag.contains("PickupDelay")) {
             this.pickupDelay = this.namedTag.getShort("PickupDelay");
         }
@@ -101,6 +117,10 @@ public class EntityItem extends Entity {
             return;
         }
 
+        if(this.namedTag.contains("Mergeable")) {
+            this.mergeItems = this.namedTag.getBoolean("Mergeable");
+        } else mergeItems = true;
+
         this.item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
         this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
 
@@ -114,6 +134,8 @@ public class EntityItem extends Entity {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
+        if (this.isDisplayOnly()) return false;
+
         if (item != null && item.isLavaResistant() && (
                 source.getCause() == DamageCause.LAVA ||
                         source.getCause() == DamageCause.FIRE ||
@@ -127,7 +149,7 @@ public class EntityItem extends Entity {
                 (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
                         source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
                         !this.isInsideOfWater() && (this.item == null ||
-                        this.item.getId() != Item.NETHER_STAR)) && super.attack(source);
+                        !Objects.equals(this.item.getId(), Item.NETHER_STAR))) && super.attack(source);
     }
 
     @Override
@@ -144,13 +166,14 @@ public class EntityItem extends Entity {
 
         this.lastUpdate = currentTick;
 
-        if (this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
+        if (this.mergeItems && this.age % 60 == 0 && this.onGround && this.getItem() != null && this.isAlive()) {
             if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
                 for (Entity entity : this.getLevel().getNearbyEntities(getBoundingBox().grow(1, 1, 1), this, false)) {
                     if (entity instanceof EntityItem) {
                         if (!entity.isAlive()) {
                             continue;
                         }
+                        if(!((EntityItem) entity).mergeItems) continue;
                         Item closeItem = ((EntityItem) entity).getItem();
                         if (!closeItem.equals(getItem(), true, true)) {
                             continue;
@@ -199,17 +222,17 @@ public class EntityItem extends Entity {
             }*/
 
             String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
-            if (bid == BlockID.FLOWING_WATER || bid == BlockID.WATER
-                    || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
-                    || bid == BlockID.WATER
+            if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
+                    || Objects.equals(bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER)
+                    || Objects.equals(bid, BlockID.WATER)
             ) {
                 //item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
             } else if (lavaResistant && (
-                    this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0) == BlockID.LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.FLOWING_LAVA
-                            || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1) == BlockID.LAVA
+                    Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.FLOWING_LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.LAVA)
             )) {
                 //item is fully in lava or in still lava
                 this.motionY -= this.getGravity() * -0.015;
@@ -241,11 +264,17 @@ public class EntityItem extends Entity {
 
             this.updateMovement();
 
-            if (this.age > 6000) {
+            if (!this.shouldDespawn) {
+                if (this.age > 0) this.age--;
+            } else if (this.isDisplayOnly && this.age > 5980) {
+                this.age = 0;
+                respawnToAll();
+            } else if (this.age > 6000) {
                 ItemDespawnEvent ev = new ItemDespawnEvent(this);
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.age = 0;
+                    respawnToAll();
                 } else {
                     this.kill();
                     hasUpdate = true;
@@ -258,6 +287,7 @@ public class EntityItem extends Entity {
 
     @Override
     public void setOnFire(int seconds) {
+        if (this.isDisplayOnly()) return;
         if (item != null && item.isLavaResistant()) {
             return;
         }
@@ -272,6 +302,9 @@ public class EntityItem extends Entity {
             this.namedTag.putShort("Health", (int) this.getHealth());
             this.namedTag.putShort("Age", this.age);
             this.namedTag.putShort("PickupDelay", this.pickupDelay);
+            this.namedTag.putBoolean("ShouldDespawn", this.shouldDespawn);
+            this.namedTag.putBoolean("DisplayOnly", this.isDisplayOnly);
+
             if (this.owner != null) {
                 this.namedTag.putString("Owner", this.owner);
             }
@@ -279,12 +312,19 @@ public class EntityItem extends Entity {
             if (this.thrower != null) {
                 this.namedTag.putString("Thrower", this.thrower);
             }
+
+            this.namedTag.putBoolean("Mergeable", this.mergeItems);
         }
     }
 
     @Override
     public String getOriginalName() {
         return "Item";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("item", "inanimate");
     }
 
     @Override
@@ -314,6 +354,14 @@ public class EntityItem extends Entity {
 
     public void setPickupDelay(int pickupDelay) {
         this.pickupDelay = pickupDelay;
+    }
+
+    public void setDisplayOnly(boolean isDisplayOnly) {
+        this.isDisplayOnly = isDisplayOnly;
+    }
+
+    public boolean isDisplayOnly() {
+        return isDisplayOnly;
     }
 
     public String getOwner() {

@@ -6,7 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -131,7 +131,7 @@ public class BlockCake extends BlockTransparent {
                 player.getFoodData().addFood(2, 0.4F);
                 getLevel().setBlock(this, this, true);
             }
-            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BURP );
+            this.level.addLevelSoundEvent(this, LevelSoundEvent.BURP );
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, this.add(0.5, 0.5, 0.5), VibrationType.EAT));
             return true;
         }

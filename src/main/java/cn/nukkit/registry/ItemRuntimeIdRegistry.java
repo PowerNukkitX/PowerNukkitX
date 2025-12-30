@@ -1,7 +1,7 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.block.Block;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -75,7 +75,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             return;
 
         // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
-        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("runtime_item_states.json")){
+        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/proxypass/runtime_item_states.json")){
             if (stream == null) {
                 throw new RuntimeException("Failed to load runtime_item_states.json");
             }
@@ -143,9 +143,26 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     public void registerCustomRuntimeItem(RuntimeEntry entry) throws RegisterException {
         if (CUSTOM_REGISTRY.putIfAbsent(entry.identifier, entry) == null) {
             ID2NAME.put(entry.runtimeId(), entry.identifier);
-            ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, 1, entry.isComponent));
+            int version = ItemVersionResolver.resolveItemVersion(entry.isComponent, ItemVersionResolver.isBlock(entry.identifier));
+            ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, version, entry.isComponent));
         } else {
             throw new RegisterException("The item: " + entry.identifier + " runtime id has been registered!");
+        }
+    }
+
+    public class ItemVersionResolver {
+        public static final int LEGACY = 0;
+        public static final int DATA_DRIVEN = 1;
+        public static final int NONE = 2;
+
+        public static int resolveItemVersion(boolean componentBased, boolean isBlock) {
+            if (isBlock) return NONE;
+            return componentBased ? DATA_DRIVEN : LEGACY;
+        }
+
+        public static boolean isBlock(String identifier) {
+            Block block = Registries.BLOCK.get(identifier);
+            return block != null && !block.isAir();
         }
     }
 

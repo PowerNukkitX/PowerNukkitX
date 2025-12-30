@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.evaluator;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.math.Vector3;
@@ -28,6 +29,7 @@ public class DistanceEvaluator implements IBehaviorEvaluator {
         } else {
             Vector3 location = entity.getMemoryStorage().get(type);
             if(location == null) return false;
+            if(location instanceof Block) location.add(0.5f, 0, 0.5f);
             double distance = entity.distance(location);
             return distance <= maxDistance && distance >= minDistance;
         }

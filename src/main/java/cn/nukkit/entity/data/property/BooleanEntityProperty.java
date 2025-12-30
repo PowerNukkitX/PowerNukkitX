@@ -8,10 +8,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BooleanEntityProperty extends EntityProperty {
 
     private final boolean defaultValue;
+    private final boolean clientSync;
 
-    public BooleanEntityProperty(String identifier, boolean defaultValue) {
+    public BooleanEntityProperty(String identifier, boolean defaultValue, boolean clientSync) {
         super(identifier);
         this.defaultValue = defaultValue;
+        this.clientSync = clientSync;
+    }
+
+    public BooleanEntityProperty(String identifier, boolean defaultValue) {
+        this(identifier, defaultValue, false);
     }
 
     public boolean getDefaultValue() {
@@ -19,7 +25,13 @@ public class BooleanEntityProperty extends EntityProperty {
     }
 
     @Override
+    public boolean isClientSync() {
+        return clientSync;
+    }
+
+    @Override
     public void populateTag(CompoundTag tag) {
         tag.putInt("type", 2);
+        tag.putBoolean("clientSync", isClientSync());
     }
 }

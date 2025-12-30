@@ -7,7 +7,6 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.HoppingController;
 import cn.nukkit.entity.ai.controller.LookController;
-import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
@@ -22,10 +21,14 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,7 +57,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         )
                 ),
                 Set.of(
@@ -93,8 +96,39 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(((this.isOnFire()) ? Item.COOKED_RABBIT : Item.RABBIT)), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
+    public Set<String> typeFamily() {
+        return Set.of("rabbit", "lightweight", "mob");
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        if (Utils.rand(0, 1) == 0) {
+            int amount = Utils.rand(0, 1 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(Item.RABBIT_HIDE, 0, amount));
+            }
+        }
+
+        if (Utils.rand(0, 1) == 0) {
+            int amount = Utils.rand(0, 1 + looting);
+            if (amount > 0) {
+                drops.add(Item.get(
+                        this.isOnFire() ? Item.COOKED_RABBIT : Item.RABBIT,
+                        0,
+                        amount
+                ));
+            }
+        }
+
+        float footChance = 0.10f + (0.03f * looting);
+        if (Utils.rand(0f, 1f) < footChance) {
+            drops.add(Item.get(Item.RABBIT_FOOT));
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

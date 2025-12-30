@@ -6,16 +6,7 @@ import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.HugeTreesGenerator;
-import cn.nukkit.level.generator.object.NewJungleTree;
-import cn.nukkit.level.generator.object.ObjectDarkOakTree;
-import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.level.generator.object.ObjectJungleBigTree;
-import cn.nukkit.level.generator.object.ObjectPaleOakTree;
-import cn.nukkit.level.generator.object.ObjectSavannaTree;
-import cn.nukkit.level.generator.object.ObjectSmallPaleOakTree;
-import cn.nukkit.level.generator.object.legacytree.LegacyBigSpruceTree;
+import cn.nukkit.level.generator.object.*;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -72,12 +63,16 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) { // BoneMeal
+            if (!BlockFlower.isSupportValid(down())) {
+                return false;
+            }
+
             if (player != null && !player.isCreative()) {
                 item.count--;
             }
 
             this.level.addParticle(new BoneMealParticle(this));
-            if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
+            if (ThreadLocalRandom.current().nextFloat() >= 0.45f) {
                 return true;
             }
 
@@ -96,6 +91,10 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
+            if (!BlockFlower.isSupportValid(down())) {
+                return Level.BLOCK_UPDATE_RANDOM;
+            }
+
             if (ThreadLocalRandom.current().nextInt(1, 8) == 1 && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
                 if (isAged()) {
                     this.grow();
@@ -122,15 +121,12 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 Vector2 vector2;
                 if ((vector2 = this.findSaplings(WoodType.JUNGLE)) != null) {
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
-                    generator = new ObjectJungleBigTree(10, 20,
-                            BlockJungleLog.PROPERTIES.getBlockState(CommonBlockProperties.PILLAR_AXIS, BlockFace.Axis.Y),
-                            BlockJungleLeaves.PROPERTIES.getDefaultState()
-                    );
+                    generator = new ObjectJungleBigTree(10, 20);
                     bigTree = true;
                 }
 
                 if (!bigTree) {
-                    generator = new NewJungleTree(4, 7);
+                    generator = new ObjectJungleTree(4, 7);
                     vector3 = this.add(0, 0, 0);
                 }
                 break;
@@ -164,19 +160,13 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
             case SPRUCE:
                 if ((vector2 = this.findSaplings(WoodType.SPRUCE)) != null) {
                     vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
-                    generator = new HugeTreesGenerator(0, 0, null, null) {
-                        @Override
-                        public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
-                            var object = new LegacyBigSpruceTree(0.75f, 4);
-                            object.setRandomTreeHeight(rand);
-                            if (!this.ensureGrowable(level, rand, position, object.getTreeHeight())) {
-                                return false;
-                            }
-                            object.placeObject(level, position.getFloorX(), position.getFloorY(), position.getFloorZ(), rand);
-                            return true;
-                        }
-                    };
+                    generator = new ObjectBigSpruceTree();
                     bigTree = true;
+                }
+
+                if (!bigTree) {
+                    generator = new ObjectSmallSpruceTree();
+                    vector3 = this.add(0, 0, 0);
                 }
 
                 if (bigTree) {

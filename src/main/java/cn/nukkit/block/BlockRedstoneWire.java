@@ -50,7 +50,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return false;
         }
 
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.getLevel().setBlock(block, this, true);
 
             this.updateSurroundingRedstone(true);
@@ -105,19 +105,25 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         int strength = 0;
 
         for (BlockFace face : Plane.HORIZONTAL) {
-            Vector3 v = pos.getSide(face);
+            Vector3 adjacentPos = pos.getSide(face);
 
-            if (v.getX() == this.getX() && v.getZ() == this.getZ()) {
+            if (adjacentPos.getX() == this.getX() && adjacentPos.getZ() == this.getZ()) {
                 continue;
             }
 
-            strength = this.getMaxCurrentStrength(v, strength);
+            strength = this.getMaxCurrentStrength(adjacentPos, strength);
 
-            if (this.getMaxCurrentStrength(v.up(), strength) > strength && !this.level.getBlock(pos.up()).isNormalBlock()) {
-                strength = this.getMaxCurrentStrength(v.up(), strength);
+            // Upward propagation do not allow to power from a wire UP and to the side when the wire is over a top slab
+            if (this.getMaxCurrentStrength(adjacentPos.up(), strength) > strength && !this.level.getBlock(pos.up()).isNormalBlock()) {
+                Block supportBelowUp = this.level.getBlock(adjacentPos);
+                if (!(supportBelowUp instanceof BlockSlab && ((BlockSlab) supportBelowUp).isOnTop())) {
+                    strength = this.getMaxCurrentStrength(adjacentPos.up(), strength);
+                }
             }
-            if (this.getMaxCurrentStrength(v.down(), strength) > strength && !this.level.getBlock(v).isNormalBlock()) {
-                strength = this.getMaxCurrentStrength(v.down(), strength);
+
+            // Downward propagation allows to pull power from a wire DOWN and to the side even if the wire is over a top slab
+            if (this.getMaxCurrentStrength(adjacentPos.down(), strength) > strength && !this.level.getBlock(adjacentPos).isNormalBlock()) {
+                strength = this.getMaxCurrentStrength(adjacentPos.down(), strength);
             }
         }
 
@@ -165,7 +171,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
         Position pos = getLocation();
 
-        if (this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.updateSurroundingRedstone(false);
             this.getLevel().setBlock(this, air, true, true);
 
@@ -197,7 +203,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return 0;
         }
 
-        if (!this.level.getServer().getSettings().levelSettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 
@@ -281,7 +287,6 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return block.isPowerSource() && side != null;
         }
     }
-    ///
 
     @Override
     public boolean isPowerSource() {
@@ -333,7 +338,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             }
         }
         return i;
-    }
+   }
 
     private int getStrongPower(Vector3 pos, BlockFace direction) {
         Block block = this.level.getBlock(pos);

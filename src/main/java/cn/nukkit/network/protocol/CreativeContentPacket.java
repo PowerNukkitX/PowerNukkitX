@@ -4,19 +4,14 @@ import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
 import cn.nukkit.registry.Registries;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.NoArgsConstructor;import lombok.*;
+import lombok.*;
 
-import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 public class CreativeContentPacket extends DataPacket {
-    private final List<CreativeItemGroup> groups = new ObjectArrayList<>();
-    private final List<CreativeItemData> contents = new ObjectArrayList<>();
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
 

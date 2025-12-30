@@ -1,9 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockFlowingWater;
-import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
@@ -85,7 +83,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                 ),
-                                1, 1
+                                1, 1, 1, false
                         ),
                         new Behavior(entity -> {
                             setMoveTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK));
@@ -187,6 +185,11 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     @Override
     public String getOriginalName() {
         return "Axolotl";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("axolotl", "mob");
     }
 
     @Override

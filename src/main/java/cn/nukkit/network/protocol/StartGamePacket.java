@@ -5,6 +5,7 @@ import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
 import cn.nukkit.registry.Registries;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +86,7 @@ public class StartGamePacket extends DataPacket {
     public boolean isTrial = false;
     public boolean isMovementServerAuthoritative;
     public Integer serverAuthoritativeMovement;
+    public Integer rewindHistorySize = 0;
     public boolean isInventoryServerAuthoritative;
     public long currentTick;
     public int enchantmentSeed;
@@ -130,6 +132,18 @@ public class StartGamePacket extends DataPacket {
      * @since v685
      */
     private String scenarioId = "";
+    /**
+     * @since v818
+     */
+    private String ownerIdentifier = "";
+    private List<ExperimentEntry> experiments = new ArrayList<>();
+
+    /**
+     * @since v827
+     */
+
+    private boolean tickDeathSystemsEnabled = false;
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -148,11 +162,10 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(this.worldName);
         byteBuf.writeString(this.premiumWorldTemplateId);
         byteBuf.writeBoolean(this.isTrial);
-        byteBuf.writeVarInt(Objects.requireNonNullElseGet(this.serverAuthoritativeMovement, () -> this.isMovementServerAuthoritative ? 1 : 0));// 2 - rewind
-        byteBuf.writeVarInt(0); // RewindHistorySize
+        byteBuf.writeVarInt(this.rewindHistorySize);
         if (this.serverAuthoritativeMovement != null) {
-            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
-        } else {//兼容nkx旧插件
+            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking 
+        } else { //兼容nkx旧插件
             byteBuf.writeBoolean(this.isMovementServerAuthoritative); // isServerAuthoritativeBlockBreaking
         }
         byteBuf.writeLongLE(this.currentTick);
@@ -196,7 +209,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeVarInt(this.difficulty);
         byteBuf.writeBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
         byteBuf.writeBoolean(this.hasAchievementsDisabled);
-        byteBuf.writeBoolean(this.worldEditor);
+        byteBuf.writeVarInt(0);
         byteBuf.writeBoolean(this.createdInEditor);
         byteBuf.writeBoolean(this.exportedFromEditor);
         byteBuf.writeVarInt(this.dayCycleStopTime);
@@ -212,24 +225,11 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeVarInt(this.platformBroadcastIntent);
         byteBuf.writeBoolean(this.commandsEnabled);
         byteBuf.writeBoolean(this.isTexturePacksRequired);
-        byteBuf.writeGameRules(this.gameRules);
+        byteBuf.writeGameRulesStartGame(this.gameRules);
 
-        byteBuf.writeIntLE(6); // Experiment count
-        {
-            byteBuf.writeString("data_driven_items");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("data_driven_biomes");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("upcoming_creator_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("gametest");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("experimental_molang_features");
-            byteBuf.writeBoolean(true);
-            byteBuf.writeString("cameras");
-            byteBuf.writeBoolean(true);
-        }
-        byteBuf.writeBoolean(true); // Were experiments previously toggled
+        byteBuf.writeIntLE(experiments.size()); // Experiment count
+        byteBuf.writeExperiments(experiments); // Write experiments
+        byteBuf.writeBoolean(!experiments.isEmpty()); // Were experiments previously toggled
 
         byteBuf.writeBoolean(this.bonusChest);
         byteBuf.writeBoolean(this.hasStartWithMapEnabled);
@@ -257,6 +257,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeString(serverId);
         byteBuf.writeString(worldId);
         byteBuf.writeString(scenarioId);
+        byteBuf.writeString(ownerIdentifier);
         /* Level settings end */
     }
 

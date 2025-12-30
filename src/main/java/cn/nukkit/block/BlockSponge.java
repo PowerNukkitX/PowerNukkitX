@@ -1,23 +1,15 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.property.enums.SpongeType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.block.property.CommonBlockProperties.SPONGE_TYPE;
-import static cn.nukkit.block.property.enums.SpongeType.DRY;
-import static cn.nukkit.block.property.enums.SpongeType.WET;
 
 public class BlockSponge extends BlockSolid {
 
@@ -97,7 +89,7 @@ public class BlockSponge extends BlockSolid {
                 Block layer1 = layer0.getLevelBlockAtLayer(1);
 
                 if (layer0 instanceof BlockFlowingWater) {
-                    this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(), BlockAir.PROPERTIES.getDefaultState());
+                    this.getLevel().setBlockStateAt(layer0.getFloorX(), layer0.getFloorY(), layer0.getFloorZ(), BlockAir.STATE);
                     this.getLevel().updateAround(layer0);
                     waterRemoved++;
                     if (entry.distance < 6) {
@@ -109,7 +101,7 @@ public class BlockSponge extends BlockSolid {
                             BlockID.SEA_PICKLE.equals(layer0.getId()) || layer0 instanceof BlockCoralFan) {
                         layer0.getLevel().useBreakOn(layer0);
                     }
-                    this.getLevel().setBlockStateAt(layer1.getFloorX(), layer1.getFloorY(), layer1.getFloorZ(), 1, BlockAir.PROPERTIES.getDefaultState());
+                    this.getLevel().setBlockStateAt(layer1.getFloorX(), layer1.getFloorY(), layer1.getFloorZ(), 1, BlockAir.STATE);
                     this.getLevel().updateAround(layer1);
                     waterRemoved++;
                     if (entry.distance < 6) {

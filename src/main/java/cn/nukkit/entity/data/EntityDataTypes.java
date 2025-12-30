@@ -35,14 +35,14 @@ public interface EntityDataTypes {
     EntityDataType<Float> ROW_TIME_RIGHT = new EntityDataType<>(0f, "ROW_TIME_RIGHT", 14);
     EntityDataType<Integer> VALUE = new EntityDataType<>(0, "VALUE", 15);
     // Same ID shares three different types -facepalm-
-    EntityDataType<Integer> HORSE_FLAGS = new EntityDataType<>(0, "HORSE_FLAGS", 16);//int (id | (data << 16))
+    EntityDataType<Integer> DISPLAY_TILE_RUNTIME_ID = new EntityDataType<>(0, "HORSE_FLAGS", 16);//int (id | (data << 16))
     EntityDataType<Integer> DISPLAY_OFFSET = new EntityDataType<>(0, "DISPLAY_OFFSET", 17);
     EntityDataType<Byte> CUSTOM_DISPLAY = new EntityDataType<>((byte) 0, "CUSTOM_DISPLAY", 18);
     EntityDataType<Byte> HORSE_TYPE = new EntityDataType<>((byte) 0, "HORSE_TYPE", 19);
     EntityDataType<Integer> OLD_SWELL = new EntityDataType<>(0, "OLD_SWELL", 20);
     EntityDataType<Integer> SWELL_DIRECTION = new EntityDataType<>(0, "SWELL_DIRECTION", 21);
     EntityDataType<Byte> CHARGE_AMOUNT = new EntityDataType<>((byte) 0, "CHARGE_AMOUNT", 22);
-    EntityDataType<Block> CARRY_BLOCK_STATE = new EntityDataType<>(Block.get(Block.AIR), "CARRY_BLOCK_STATE", 23, Transformers.BLOCK);
+    EntityDataType<Block> DEPRECATED_CARRY_BLOCK_STATE = new EntityDataType<>(Block.get(Block.AIR), "DEPRECATED_CARRY_BLOCK_STATE", 23, Transformers.BLOCK);
     EntityDataType<Byte> CLIENT_EVENT = new EntityDataType<>((byte) 0, "CLIENT_EVENT", 24);
     EntityDataType<Boolean> USING_ITEM = new EntityDataType<>(false, "USING_ITEM", 25, Transformers.BOOLEAN_TO_BYTE);
     EntityDataType<Byte> PLAYER_FLAGS = new EntityDataType<>((byte) 0, "PLAYER_FLAGS", 26);
@@ -246,4 +246,8 @@ public interface EntityDataTypes {
      * @since v594
      */
     EntityDataType<Vector3f> COLLISION_BOX = new EntityDataType<>(new Vector3f(), "COLLISION_BOX", 130);
+    /**
+     * @since v685
+     */
+    EntityDataType<Long> VISIBLE_MOB_EFFECTS = new EntityDataType<>(0L, "VISIBLE_MOB_EFFECTS", 131);
 }

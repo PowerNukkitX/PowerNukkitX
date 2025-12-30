@@ -25,7 +25,7 @@ public class BlockStateUpdaterBase implements Updater {
 
     static {
         JsonObject node;
-        try (InputStream stream = Updater.class.getClassLoader().getResourceAsStream("legacy_block_data_map.json")) {
+        try (InputStream stream = Updater.class.getClassLoader().getResourceAsStream("gamedata/legacy/legacy_block_data_map.json")) {
             assert stream != null;
             node = JSONUtils.fromAsJsonTree(stream, Map.class);
         } catch (IOException e) {

@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://powernukkitx.com">
-      <img src="https://www.powernukkitx.com/assets/image/PNX_LOGO_sm.png" width=20%>
+      <img src="https://docs.powernukkitx.org/img/PNX_LOGO_sm.png" width=20%>
     </a>
     <p align="center">
         <strong>
@@ -15,11 +15,11 @@
 
 <p align="center">
    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://feedback.minecraft.net/hc/en-us/articles/26247797084173--Minecraft-1-21-1-Bedrock">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.40%20(Bedrock)-56383E" />
+   <a href="https://www.minecraft.net/en-us/article/minecraft-1-21-130-bedrock-changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v1.21.130%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Minecraft" src="https://img.shields.io/badge/protocol-748-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-898-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
       <img alt="Action" src="https://github.com/PowerNukkitX/PowerNukkitX/actions/workflows/pnx.yml/badge.svg?branch=master" />
@@ -48,6 +48,9 @@
     <a href="README_FR.md">
         <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/fr.svg">
     </a>
+    <a href="README_TR.md">
+        <img src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/.github/img/lang/tr.svg">
+    </a>
 </p>
 
 <br>
@@ -63,14 +66,13 @@
 ## Установка
 
 1. Проверьте установлена ли `JDK21`, если нет, [скачайте отсюда](https://www.graalvm.org/downloads)
-2. Скачайте [`PowerNukkitX-Run.zip`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx-run.zip)
-3. Распакуйте `PowerNukkitX-Run.zip` в папку которую захотите
-4. Установите environment переменные Java, или распакуйте JDK в ту же папку, что и в предыдущем шаге
+2. Скачайте файл [`powernukkitx.jar`](https://github.com/PowerNukkitX/PowerNukkitX/releases/download/snapshot/powernukkitx.jar)
+3. Получите ваш скрипт запуска [здесь](https://github.com/PowerNukkitX/scripts/tree/master)
 
 ## Использование
 
 ```sh
-java -jar cli.jar
+java -jar --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED .\powernukkitx.jar
 ```
 
 ## Сообщество & Помощь
