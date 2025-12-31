@@ -32,7 +32,7 @@ public class Achievement {
         String translation = server.getLanguage()
                 .tr("chat.type.achievement", player.getDisplayName(), name);
 
-        if (Server.getInstance().getSettings().gameplaySettings().announceAchievements()) {
+        if (server.getSettings().gameplaySettings().announceAchievements()) {
             server.broadcastMessage(translation);
         } else {
             player.sendMessage(translation);
