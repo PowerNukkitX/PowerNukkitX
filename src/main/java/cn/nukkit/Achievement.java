@@ -10,44 +10,7 @@ import java.util.HashMap;
  */
 public class Achievement {
 
-    public static final HashMap<String, Achievement> achievements = new HashMap<>() {
-        {
-            put("mineWood", new Achievement("Getting Wood"));
-            put("buildWorkBench", new Achievement("Benchmarking", "mineWood"));
-            put("buildPickaxe", new Achievement("Time to Mine!", "buildWorkBench"));
-            put("buildFurnace", new Achievement("Hot Topic", "buildPickaxe"));
-            put("acquireIron", new Achievement("Acquire hardware", "buildFurnace"));
-            put("buildHoe", new Achievement("Time to Farm!", "buildWorkBench"));
-            put("makeBread", new Achievement("Bake Bread", "buildHoe"));
-            put("bakeCake", new Achievement("The Lie", "buildHoe"));
-            put("buildBetterPickaxe", new Achievement("Getting an Upgrade", "buildPickaxe"));
-            put("buildSword", new Achievement("Time to Strike!", "buildWorkBench"));
-            put("diamonds", new Achievement("DIAMONDS!", "acquireIron"));
-        }
-    };
-
-    public static boolean broadcast(Player player, String achievementId) {
-        if (!achievements.containsKey(achievementId)) {
-            return false;
-        }
-        String translation = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + achievements.get(achievementId).getMessage() + TextFormat.RESET);
-
-        if (Server.getInstance().getSettings().gameplaySettings().announceAchievements()) {
-            Server.getInstance().broadcastMessage(translation);
-        } else {
-            player.sendMessage(translation);
-        }
-        return true;
-    }
-
-    public static boolean add(String name, Achievement achievement) {
-        if (achievements.containsKey(name)) {
-            return false;
-        }
-
-        achievements.put(name, achievement);
-        return true;
-    }
+    public static final HashMap<String, Achievement> achievements;
 
     public final String message;
     public final String[] requires;
@@ -62,12 +25,52 @@ public class Achievement {
     }
 
     public void broadcast(Player player) {
-        String translation = Server.getInstance().getLanguage().tr("chat.type.achievement", player.getDisplayName(), TextFormat.GREEN + this.getMessage());
+        Server server = Server.getInstance();
 
-        if (Server.getInstance().getSettings().gameplaySettings().announceAchievements()) {
-            Server.getInstance().broadcastMessage(translation);
+        String name = TextFormat.GREEN + this.getMessage();
+
+        String translation = server.getLanguage()
+                .tr("chat.type.achievement", player.getDisplayName(), name);
+
+        if (server.getSettings().gameplaySettings().announceAchievements()) {
+            server.broadcastMessage(translation);
         } else {
             player.sendMessage(translation);
         }
+    }
+
+    static {
+        achievements = new HashMap<>();
+        achievements.put("mineWood", new Achievement("Getting Wood"));
+        achievements.put("buildWorkBench", new Achievement("Benchmarking", "mineWood"));
+        achievements.put("buildPickaxe", new Achievement("Time to Mine!", "buildWorkBench"));
+        achievements.put("buildFurnace", new Achievement("Hot Topic", "buildPickaxe"));
+        achievements.put("acquireIron", new Achievement("Acquire hardware", "buildFurnace"));
+        achievements.put("buildHoe", new Achievement("Time to Farm!", "buildWorkBench"));
+        achievements.put("makeBread", new Achievement("Bake Bread", "buildHoe"));
+        achievements.put("bakeCake", new Achievement("The Lie", "buildHoe"));
+        achievements.put("buildBetterPickaxe", new Achievement("Getting an Upgrade", "buildPickaxe"));
+        achievements.put("buildSword", new Achievement("Time to Strike!", "buildWorkBench"));
+        achievements.put("diamonds", new Achievement("DIAMONDS!", "acquireIron"));
+    }
+
+    public static boolean broadcast(Player player, String achievementId) {
+        if (!achievements.containsKey(achievementId)) {
+            return false;
+        }
+
+        Achievement achievement = achievements.get(achievementId);
+        achievement.broadcast(player);
+
+        return true;
+    }
+
+    public static boolean add(String name, Achievement achievement) {
+        if (achievements.containsKey(name)) {
+            return false;
+        }
+
+        achievements.put(name, achievement);
+        return true;
     }
 }

@@ -20,10 +20,8 @@ public class ContainerRecipe extends MixRecipe {
 
     @Override
     public boolean fastCheck(Item... items) {
-        if(items.length == 2) {
-            if(items[1] instanceof ItemPotion) {
-                return items[0].equals(getIngredient());
-            }
+        if (items.length == 2 && items[1] instanceof ItemPotion) {
+            return items[0].equals(getIngredient());
         }
         return false;
     }

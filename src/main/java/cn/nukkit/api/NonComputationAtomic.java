@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
  * Use with caution in concurrent environments.
  */
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+        ElementType.TYPE, ElementType.FIELD, ElementType.PACKAGE})
 @Documented
 public @interface NonComputationAtomic {
 }

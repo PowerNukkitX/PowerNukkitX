@@ -7,14 +7,7 @@ package cn.nukkit.block.property.enums;
  * @author daoge_cmd
  */
 public enum CreakingHeartState {
-
-    UPROOTED("uprooted"),
-    DORMANT("dormant"),
-    AWAKE("awake");
-
-    private final String name;
-
-    CreakingHeartState(String name) {
-        this.name = name;
-    }
+    UPROOTED,
+    DORMANT,
+    AWAKE;
 }

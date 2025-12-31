@@ -74,16 +74,12 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (this.target == null) target = newTarget;
-        //some check
-        if (!target.isAlive()) return false;
-        else if (target instanceof Player player) {
-            if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
-                return false;
-            }
+
+        if (!target.isAlive() || (target instanceof Player player && (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())))) {
+            return false;
         }
 
         if (!this.target.getPosition().equals(newTarget.getPosition())) {
-            //更新目标
             target = newTarget;
         }
 
@@ -91,12 +87,10 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         Location clone = this.target.getLocation();
 
         if (entity.distanceSquared(target) > maxShootDistanceSquared) {
-            //更新寻路target
             setRouteTarget(entity, clone);
         } else {
             setRouteTarget(entity, null);
         }
-        //更新视线target
         setLookTarget(entity, clone);
 
         if (tick2 == 0 && tick1 > coolDownTick) {

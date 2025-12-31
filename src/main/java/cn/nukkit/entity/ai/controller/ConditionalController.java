@@ -19,11 +19,9 @@ public class ConditionalController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         boolean successful = false;
-        for(Object2ObjectMap.Entry<Predicate<EntityIntelligent>, IController> entry : controllers.object2ObjectEntrySet()) {
-            if(entry.getKey().test(entity)) {
-                if(entry.getValue().control(entity)) {
-                    successful = true;
-                }
+        for (Object2ObjectMap.Entry<Predicate<EntityIntelligent>, IController> entry : controllers.object2ObjectEntrySet()) {
+            if (entry.getKey().test(entity) && entry.getValue().control(entity)) {
+                successful = true;
             }
         }
         return successful;

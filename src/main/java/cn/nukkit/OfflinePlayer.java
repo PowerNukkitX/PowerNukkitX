@@ -38,24 +38,17 @@ public class OfflinePlayer implements IPlayer {
     public OfflinePlayer(Server server, UUID uuid, String name) {
         this.server = server;
 
-        CompoundTag nbt;
         if (uuid != null) {
-            nbt = this.server.getOfflinePlayerData(uuid, false);
-        } else if (name != null) {
-            nbt = this.server.getOfflinePlayerData(name, false);
-        } else {
-            throw new IllegalArgumentException("Name and UUID cannot both be null");
-        }
-        if (nbt == null) {
-            nbt = new CompoundTag();
-        }
-        this.namedTag = nbt;
+            this.namedTag = this.server.getOfflinePlayerData(uuid, false);
 
-        if (uuid != null) {
             this.namedTag.putLong("UUIDMost", uuid.getMostSignificantBits());
             this.namedTag.putLong("UUIDLeast", uuid.getLeastSignificantBits());
-        } else {
+        } else if (name != null) {
+            this.namedTag = this.server.getOfflinePlayerData(name, false);
+
             this.namedTag.putString("NameTag", name);
+        } else {
+            throw new IllegalArgumentException("Name and UUID cannot both be null");
         }
     }
 
@@ -74,15 +67,18 @@ public class OfflinePlayer implements IPlayer {
 
     @Override
     public UUID getUniqueId() {
-        if (namedTag != null) {
-            long least = namedTag.getLong("UUIDLeast");
-            long most = namedTag.getLong("UUIDMost");
-
-            if (least != 0 && most != 0) {
-                return new UUID(most, least);
-            }
+        if (namedTag == null) {
+            return null;
         }
-        return null;
+
+        long least = namedTag.getLong("UUIDLeast");
+        long most = namedTag.getLong("UUIDMost");
+
+        if (least == 0 || most == 0) {
+            return null;
+        }
+
+        return new UUID(most, least);
     }
 
     @Override
@@ -101,10 +97,12 @@ public class OfflinePlayer implements IPlayer {
             return;
         }
 
+        String name = this.getName().toLowerCase(Locale.ENGLISH);
+
         if (value) {
-            this.server.addOp(this.getName().toLowerCase(Locale.ENGLISH));
+            this.server.addOp(name);
         } else {
-            this.server.removeOp(this.getName().toLowerCase(Locale.ENGLISH));
+            this.server.removeOp(name);
         }
     }
 
@@ -185,5 +183,4 @@ public class OfflinePlayer implements IPlayer {
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
-
 }
