@@ -84,6 +84,10 @@ public class CustomForm extends Form<CustomResponse> {
         return this.addElement(new ElementDropdown(text, options));
     }
 
+    public CustomForm addDropdown(String text, List<String> options, int defaultOption) {
+        return this.addElement(new ElementDropdown(text, options, defaultOption));
+    }
+
     public CustomForm addDropdown(String text, List<String> options, String tooltip) {
         return this.addElement(new ElementDropdown(text, options, tooltip));
     }
