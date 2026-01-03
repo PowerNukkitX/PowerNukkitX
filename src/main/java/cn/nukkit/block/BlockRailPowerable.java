@@ -173,6 +173,7 @@ public class BlockRailPowerable extends BlockRail {
         this.setPropertyValue(RAIL_DIRECTION_6, orientation.metadata());
     }
 
+    @Override
     public Rail.Orientation getOrientation() {
         return Rail.Orientation.byMetadata(getPropertyValue(RAIL_DIRECTION_6));
     }
