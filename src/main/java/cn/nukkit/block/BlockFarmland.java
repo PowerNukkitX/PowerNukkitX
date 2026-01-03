@@ -157,7 +157,7 @@ public class BlockFarmland extends BlockTransparent {
                 this.y,
                 this.z,
                 this.x + 1,
-                this.y + (double) (15/16),
+                this.y + (15D/16D),
                 this.z + 1
         );
     }
