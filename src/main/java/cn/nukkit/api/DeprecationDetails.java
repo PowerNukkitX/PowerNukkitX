@@ -10,10 +10,10 @@ import java.lang.annotation.Target;
  * Provides detailed information about the deprecation of an element. This annotation is retained in the class file,
  * allowing tools to access deprecation details even without Javadocs.
  */
-@Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
 @Documented
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+        ElementType.TYPE, ElementType.FIELD, ElementType.PACKAGE})
 public @interface DeprecationDetails {
     /**
      * Specifies the version in which this element was marked as deprecated.

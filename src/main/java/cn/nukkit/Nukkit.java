@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -78,10 +79,12 @@ public class Nukkit {
             Properties properties = new Properties();
             try (FileReader reader = new FileReader(propertiesPath.toFile())) {
                 properties.load(reader);
+
                 String value = properties.getProperty("disable-auto-bug-report", "false");
                 if (value.equalsIgnoreCase("on") || value.equals("1")) {
                     value = "true";
                 }
+
                 disableSentry.set(Boolean.parseBoolean(value.toLowerCase(Locale.ENGLISH)));
             } catch (IOException e) {
                 log.error("Failed to load server.properties to check disable-auto-bug-report.", e);
@@ -91,7 +94,9 @@ public class Nukkit {
         // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
-        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
+
+        // Disable memory pooling unless specified
+        System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled");
 
         // Force Mapped ByteBuffers for LevelDB till fixed.
         System.setProperty("leveldb.mmap", "true");
@@ -131,15 +136,13 @@ public class Nukkit {
         ANSI = !options.has(ansiSpec);
         TITLE = options.has(titleSpec);
 
-        String verbosity = options.valueOf(vSpec);
-        if (verbosity == null) {
-            verbosity = options.valueOf(verbositySpec);
-        }
-        if (verbosity != null) {
+        String verbosity = Optional.ofNullable(options.valueOf(vSpec))
+                .orElse(options.valueOf(verbositySpec));
 
+        if (verbosity != null) {
             try {
                 Level level = Level.valueOf(verbosity);
-                setLogLevel(level);
+                Nukkit.setLogLevel(level);
             } catch (Exception e) {
                 // ignore
             }
@@ -154,7 +157,8 @@ public class Nukkit {
         }
 
         if (options.has(jsDebugPortSpec)) {
-            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
+            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(","))
+                    .toList();
         }
 
         String serverName = options.valueOf(serverNameSpec);
