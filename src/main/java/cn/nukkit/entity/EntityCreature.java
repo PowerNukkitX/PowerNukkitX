@@ -38,6 +38,8 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
         if (item.hasCustomName()) {
             this.setNameTag(item.getCustomName());
             this.setNameTagVisible(true);
+            this.despawnable = false;
+            this.setPersistent(true);
 
             if (!player.isCreative()) {
                 player.getInventory().removeItem(item);
