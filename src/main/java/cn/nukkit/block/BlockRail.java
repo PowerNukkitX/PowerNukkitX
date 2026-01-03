@@ -80,7 +80,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public double getResistance() {
-        return 3.5;
+        return 0.7;
     }
 
     @Override
