@@ -481,15 +481,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 实体初始化顺序，先初始化Entity类字段->Entity构造函数->进入init方法->调用initEntity方法->子类字段初始化->子类构造函数
-     * <p>
-     * 用于初始化实体的NBT和实体字段的方法
-     * <p>
      * Entity initialization order, first initialize the Entity class field->Entity constructor->Enter the init method->Call the init Entity method-> subclass field initialization-> subclass constructor
      * <p>
      * The method used to initialize the NBT and entity fields of the entity
      */
     protected void initEntity() {
+        // =========================================================
+        // Load or generate UUID for non-player entities
+        // =========================================================
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
@@ -498,37 +497,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if (this.namedTag.contains("ActiveEffects")) {
-            ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
-            for (CompoundTag e : effects.getAll()) {
-                Effect effect = Effect.get(e.getByte("Id"));
-                if (effect == null) {
-                    continue;
-                }
-
-                effect.setAmplifier(e.getByte("Amplifier")).setDuration(e.getInt("Duration")).setVisible(e.getBoolean("ShowParticles"));
-
-                this.addEffect(effect);
-            }
-        }
-
-        if (this.namedTag.contains("CustomName")) {
-            this.setNameTag(this.namedTag.getString("CustomName"));
-            if (this.namedTag.contains("CustomNameVisible")) {
-                this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
-            }
-            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
-                this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
-            }
-        }
-
-        if (this.namedTag.contains("Attributes")) {
-            ListTag<CompoundTag> attributes = this.namedTag.getList("Attributes", CompoundTag.class);
-            for (var nbt : attributes.getAll()) {
-                Attribute attribute = Attribute.fromNBT(nbt);
-                this.attributes.put(attribute.getId(), attribute);
-            }
-        }
+        // =========================================================
+        // Initialize entity data defaults first
+        // =========================================================
         this.entityDataMap.getOrCreateFlags();
         this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
         this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
@@ -538,8 +509,61 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+
+        // =========================================================
+        // Load Effects from NBT
+        // =========================================================
+        if (this.namedTag.contains("ActiveEffects")) {
+            ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
+            for (CompoundTag e : effects.getAll()) {
+                Effect effect = Effect.get(e.getByte("Id"));
+                if (effect == null) continue;
+
+                effect.setAmplifier(e.getByte("Amplifier"))
+                    .setDuration(e.getInt("Duration"))
+                    .setVisible(e.getBoolean("ShowParticles"));
+
+                this.addEffect(effect);
+            }
+        }
+
+        // =========================================================
+        // Load Custom name from NBT
+        // =========================================================
+        if (this.namedTag.contains("CustomName")) {
+            String name = this.namedTag.getString("CustomName");
+            if (name != null) {
+                this.setNameTag(name);
+            }
+            if (this.namedTag.contains("CustomNameVisible")) {
+                this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
+            }
+            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
+                this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
+            }
+        }
+
+        // =========================================================
+        // Load Attributes from NBT
+        // =========================================================
+        if (this.namedTag.contains("Attributes")) {
+            ListTag<CompoundTag> attributes = this.namedTag.getList("Attributes", CompoundTag.class);
+            for (var nbt : attributes.getAll()) {
+                Attribute attribute = Attribute.fromNBT(nbt);
+                this.attributes.put(attribute.getId(), attribute);
+            }
+        }
+
+        // =========================================================
+        // Send initial data + default flags
+        // =========================================================
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
+        this.setDataFlags(EnumSet.of(
+            EntityFlag.CAN_CLIMB,
+            EntityFlag.BREATHING,
+            EntityFlag.HAS_COLLISION,
+            EntityFlag.HAS_GRAVITY
+        ));
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
