@@ -5627,6 +5627,32 @@
       "growth": 7
     }
   ],
+  "minecraft:pitcher_crop": [
+    {
+      "growth": 0
+    },
+    {
+      "growth": 1
+    },
+    {
+      "growth": 2
+    },
+    {
+      "growth": 3
+    },
+    {
+      "growth": 4
+    },
+    {
+      "growth": 5
+    },
+    {
+      "growth": 6
+    },
+    {
+      "growth": 7
+    }
+  ],
   "minecraft:potatoes": [
     {
       "growth": 0
