@@ -348,17 +348,20 @@ public class Int2ObjectNonBlockingMap<TypeV>
 
     @SuppressWarnings("unchecked")
     private TypeV putIfMatch(int key, Object newVal, Object oldVal) {
-        if (oldVal == null || newVal == null) throw new NullPointerException();
+        if (oldVal == null || newVal == null) {
+            return null;
+        }
+
         if (key == NO_KEY) {
             Object curVal = _val_1;
-            if (oldVal == NO_MATCH_OLD || // Do we care about expected-Value at all?
-                    curVal == oldVal ||       // No instant match already?
+            if ((oldVal == NO_MATCH_OLD ||                                  // Do we care about expected-Value at all?
+                    curVal == oldVal ||                                     // No instant match already?
                     (oldVal == MATCH_ANY && curVal != TOMBSTONE) ||
-                    oldVal.equals(curVal)) { // Expensive equals check
-                if (!CAS(_val_1_handler, curVal, newVal)) // One shot CAS update attempt
-                    curVal = _val_1;                      // Failed; get failing witness
+                    oldVal.equals(curVal)) &&                               // Expensive equals check
+                    !CAS(_val_1_handler, curVal, newVal)) {                 // One shot CAS update attempt
+                curVal = _val_1;                                            // Failed; get failing witness
             }
-            return curVal == TOMBSTONE ? null : (TypeV) curVal; // Return the last value present
+            return curVal == TOMBSTONE ? null : (TypeV) curVal;             // Return the last value present
         }
         final Object res = _chm.putIfMatch(key, newVal, oldVal);
         assert !(res instanceof Prime);
@@ -950,7 +953,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
                     do copyidx = (int) _copyIdx;     // Re-read
                     while (copyidx < (oldlen << 1) && // 'panic' check
                             !_copyIdxUpdater.compareAndSet(this, copyidx, copyidx + MIN_COPY_WORK));
-                    if (!(copyidx < (oldlen << 1))) // Panic!
+                    if ((copyidx >= (oldlen << 1))) // Panic!
                         panic_start = copyidx;       // Record where we started to panic-copy
                 }
 
@@ -1373,7 +1376,10 @@ public class Int2ObjectNonBlockingMap<TypeV>
         }
 
         public TypeV setValue(final TypeV val) {
-            if (val == null) throw new NullPointerException();
+            if (val == null) {
+                return null;
+            }
+
             v = val;
             return put(k, val);
         }
