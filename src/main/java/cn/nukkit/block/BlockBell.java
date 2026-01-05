@@ -34,7 +34,8 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     public static final BlockProperties PROPERTIES = new BlockProperties(BELL, ATTACHMENT, DIRECTION, CommonBlockProperties.TOGGLE_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -52,12 +53,14 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityBell> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityBell> getBlockEntityClass() {
         return BlockEntityBell.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.BELL;
     }
 
@@ -139,13 +142,11 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
                 );
 
 
-                if (ring(entity, BellRingEvent.RingCause.DROPPED_ITEM)) {
-                    if(entity instanceof EntityItem) {
-                        Vector3 entityVector = entityPos.subtract(blockPos);
-                        entityVector = entityVector.normalize().multiply(0.4);
-                        entityVector.y = Math.max(0.15, entityVector.y);
-                        entity.setMotion(entityVector);
-                    }
+                if (ring(entity, BellRingEvent.RingCause.DROPPED_ITEM) && entity instanceof EntityItem) {
+                    Vector3 entityVector = entityPos.subtract(blockPos);
+                    entityVector = entityVector.normalize().multiply(0.4);
+                    entityVector.y = Math.max(0.15, entityVector.y);
+                    entity.setMotion(entityVector);
                 }
             }
         }
@@ -168,7 +169,7 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (player != null && isNotActivate(player)) return false;
         return ring(player, player != null ? BellRingEvent.RingCause.HUMAN_INTERACTION : BellRingEvent.RingCause.UNKNOWN);
     }
 
@@ -282,7 +283,8 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         if (attachmentFace == BlockFace.DOWN) {
             return switch (support.getId()) {
                 case IRON_CHAIN, HOPPER, IRON_BARS -> true;
-                default -> support instanceof BlockFence || support instanceof BlockWallBase || support instanceof AbstractBlockCopperChain;
+                default ->
+                        support instanceof BlockFence || support instanceof BlockWallBase || support instanceof AbstractBlockCopperChain;
             };
         }
 

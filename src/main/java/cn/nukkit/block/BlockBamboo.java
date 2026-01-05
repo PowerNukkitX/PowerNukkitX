@@ -132,7 +132,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
             if (!thick) {
                 boolean setThick = true;
                 for (int i = 2; i <= 3; i++) {
-                    if (getSide(BlockFace.DOWN, i).getId() != BAMBOO) {
+                    if (!getSide(BlockFace.DOWN, i).getId().equals(BAMBOO)) {
                         setThick = false;
                     }
                 }
@@ -298,7 +298,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
             boolean success = false;
 
             Block block = this.up(top - (int) y + 1);
-            if (block.getId() == BlockID.AIR) {
+            if (block.getId().equals(BlockID.AIR)) {
                 success = grow(block);
             }
 
