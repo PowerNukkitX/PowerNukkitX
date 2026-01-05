@@ -247,8 +247,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
             case Entity.WITHER_SKELETON, Entity.WITHER -> true;
             case Entity.HOGLIN -> {
                 if (entity instanceof EntityHoglin hoglin
-                        && !hoglin.isBaby()
-                        && hoglin.getHealth() - getDiffHandDamage(getServer().getDifficulty()) <= 0) {
+                        && !hoglin.isBaby()) {
                     if (hoglin.getHealth() - getDiffHandDamage(getServer().getDifficulty()) <= 0) {
                         List<Entity> entities = Arrays.stream(getLevel().getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin piglin && piglin.distance(this) < 16).toList();
                         AnimateEntityPacket.Animation.AnimationBuilder builder = AnimateEntityPacket.Animation.builder();
