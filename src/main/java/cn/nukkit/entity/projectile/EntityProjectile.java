@@ -247,15 +247,19 @@ public abstract class EntityProjectile extends Entity {
                 this.hadCollision = false;
             }
 
-            if (!this.hadCollision || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001) {
-                updateRotation();
-                hasUpdate = true;
-            }
-
+            hasUpdate = this.checkCollisionAndUpdateRotation();
             this.updateMovement();
         }
 
         return hasUpdate;
+    }
+
+    protected boolean checkCollisionAndUpdateRotation() {
+        if (!this.hadCollision || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001) {
+            updateRotation();
+            return true;
+        }
+        return false;
     }
 
     public void updateRotation() {

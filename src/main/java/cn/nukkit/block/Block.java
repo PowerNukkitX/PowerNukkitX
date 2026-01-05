@@ -483,7 +483,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             }
         }
 
-    return isSideFull(side);
+        return isSideFull(side);
     }
 
     // https://minecraft.wiki/w/Opacity#Lighting

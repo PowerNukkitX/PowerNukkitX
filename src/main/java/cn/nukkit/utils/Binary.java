@@ -31,46 +31,57 @@ import java.util.function.Function;
 public class Binary {
     /**
      * Converts a value to a signed byte.
+     *
      * @param value The value to convert
      * @return The signed byte value
      */
     public static int signByte(int value) {
         return value << 56 >> 56;
     }
+
     /**
      * Converts a value to an unsigned byte.
+     *
      * @param value The value to convert
      * @return The unsigned byte value
      */
     public static int unsignByte(int value) {
         return value & 0xff;
     }
+
     /**
      * Converts a value to a signed short.
+     *
      * @param value The value to convert
      * @return The signed short value
      */
     public static int signShort(int value) {
         return value << 48 >> 48;
     }
+
     /**
      * Converts a value to an unsigned short.
+     *
      * @param value The value to convert
      * @return The unsigned short value
      */
     public int unsignShort(int value) {
         return value & 0xffff;
     }
+
     /**
      * Converts a value to a signed int.
+     *
      * @param value The value to convert
      * @return The signed int value
      */
     public static int signInt(int value) {
         return value << 32 >> 32;
     }
+
     /**
      * Returns the value as an unsigned int (no conversion).
+     *
      * @param value The value
      * @return The value itself
      */
@@ -404,12 +415,12 @@ public class Binary {
 
     public static String bytesToHexString(byte[] src, boolean blank) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (src == null || src.length <= 0) {
+        if (src == null || src.length == 0) {
             return null;
         }
 
         for (byte b : src) {
-            if (!(stringBuilder.length() == 0) && blank) {
+            if (!stringBuilder.isEmpty() && blank) {
                 stringBuilder.append(" ");
             }
             int v = b & 0xFF;
@@ -423,7 +434,7 @@ public class Binary {
     }
 
     public static byte[] hexStringToBytes(String hexString) {
-        if (hexString == null || hexString.equals("")) {
+        if (hexString == null || hexString.isEmpty()) {
             return null;
         }
         String str = "0123456789ABCDEF";
@@ -507,5 +518,4 @@ public class Binary {
         }
         return appendedBytes;
     }
-
 }

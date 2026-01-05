@@ -22,8 +22,8 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Identifier;
 
 import javax.annotation.Nullable;
@@ -57,55 +57,28 @@ public class ItemBucket extends Item {
         super(id, 0, count, name);
     }
 
+    /**
+     * Adjusts the internal state of the bucket based on its damage value.
+     */
     @Override
     public void internalAdjust() {
         if (this.id.equals(BUCKET)) {
             switch (getDamage()) {
-                case 1 -> {
-                    this.id = MILK_BUCKET;
-                    this.identifier = new Identifier(MILK_BUCKET);
-                }
-                case 2 -> {
-                    this.id = COD_BUCKET;
-                    this.identifier = new Identifier(COD_BUCKET);
-                }
-                case 3 -> {
-                    this.id = SALMON_BUCKET;
-                    this.identifier = new Identifier(SALMON_BUCKET);
-                }
-                case 4 -> {
-                    this.id = TROPICAL_FISH_BUCKET;
-                    this.identifier = new Identifier(TROPICAL_FISH_BUCKET);
-                }
-                case 5 -> {
-                    this.id = PUFFERFISH_BUCKET;
-                    this.identifier = new Identifier(PUFFERFISH_BUCKET);
-                }
-                case 8 -> {
-                    this.id = WATER_BUCKET;
-                    this.identifier = new Identifier(WATER_BUCKET);
-                }
-                case 10 -> {
-                    this.id = LAVA_BUCKET;
-                    this.identifier = new Identifier(LAVA_BUCKET);
-                }
-                case 11 -> {
-                    this.id = POWDER_SNOW_BUCKET;
-                    this.identifier = new Identifier(POWDER_SNOW_BUCKET);
-                }
-                case 12 -> {
-                    this.id = AXOLOTL_BUCKET;
-                    this.identifier = new Identifier(AXOLOTL_BUCKET);
-                }
-                case 13 -> {
-                    this.id = TADPOLE_BUCKET;
-                    this.identifier = new Identifier(TADPOLE_BUCKET);
-                }
-                default -> {
-                    this.id = BUCKET;
-                    this.identifier = new Identifier(BUCKET);
-                }
+                case 1 -> this.id = MILK_BUCKET;
+                case 2 -> this.id = COD_BUCKET;
+                case 3 -> this.id = SALMON_BUCKET;
+                case 4 -> this.id = TROPICAL_FISH_BUCKET;
+                case 5 -> this.id = PUFFERFISH_BUCKET;
+                case 8 -> this.id = WATER_BUCKET;
+                case 10 -> this.id = LAVA_BUCKET;
+                case 11 -> this.id = POWDER_SNOW_BUCKET;
+                case 12 -> this.id = AXOLOTL_BUCKET;
+                case 13 -> this.id = TADPOLE_BUCKET;
+                default -> this.id = BUCKET;
             }
+
+            this.identifier = new Identifier(this.id);
+
             this.meta = 0;
             this.name = null;
         }
@@ -180,6 +153,7 @@ public class ItemBucket extends Item {
         if (player.isAdventure()) {
             return false;
         }
+
         if (player.isItemCoolDownEnd(BUCKET)) {
             player.setItemCoolDown(5, BUCKET);
         } else {
@@ -363,28 +337,27 @@ public class ItemBucket extends Item {
      * handle logic after use bucket.
      */
     protected void afterUse(Level level, Block block) {
-        if (isLava()) {
-            level.addSound(block, Sound.BUCKET_EMPTY_LAVA);
-        } else {
-            level.addSound(block, Sound.BUCKET_EMPTY_WATER);
-        }
+        Sound sound = this.isLava() ? Sound.BUCKET_EMPTY_LAVA : Sound.BUCKET_EMPTY_WATER;
+        level.addSound(block, sound);
 
-        spawnFishEntity(block.add(0.5, 0.5, 0.5));
+        this.spawnFishEntity(block.add(0.5, 0.5, 0.5));
     }
 
     public void spawnFishEntity(Position spawnPos) {
         var fishEntityId = getFishEntityId();
         if (fishEntityId != null) {
-            var fishEntity = Entity.createEntity(fishEntityId, spawnPos);
-            if (fishEntity != null)
-                if(fishEntity instanceof EntityVariant variant) {
-                    if(getNamedTag() != null) {
-                        if(getNamedTag().containsInt("Variant")) {
-                            variant.setVariant(getNamedTag().getInt("Variant"));
-                        }
-                    }
-                }
-                fishEntity.spawnToAll();
+            Entity fishEntity = Entity.createEntity(fishEntityId, spawnPos);
+            if (fishEntity == null) {
+                return;
+            }
+
+            if (fishEntity instanceof EntityVariant variant
+                    && this.getNamedTag() != null
+                    && this.getNamedTag().containsInt("Variant")) {
+                variant.setVariant(getNamedTag().getInt("Variant"));
+            }
+
+            fishEntity.spawnToAll();
         }
     }
 

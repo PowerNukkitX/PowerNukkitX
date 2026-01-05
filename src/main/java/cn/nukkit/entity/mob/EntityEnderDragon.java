@@ -149,7 +149,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
                 if (e instanceof EntityEnderCrystal) {
                     if (e.distance(this) <= 28) {
                         float health = this.getHealth();
-                        if (!(health > this.getMaxHealth()) && health != 0) {
+                        if (health < this.getMaxHealth() && health != 0) {
                             this.heal(0.2f);
                         }
                     }

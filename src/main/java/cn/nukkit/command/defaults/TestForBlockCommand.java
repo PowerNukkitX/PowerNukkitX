@@ -53,7 +53,7 @@ public class TestForBlockCommand extends VanillaCommand {
         String id = block.getId();
         int meta = block.getBlockState().specialValue();
 
-        if (id == tileId && meta == dataValue) {
+        if (id.equals(tileId) && meta == dataValue) {
             log.addSuccess("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())).output();
             return 1;
         } else {

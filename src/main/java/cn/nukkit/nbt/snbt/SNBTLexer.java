@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class SNBTLexer implements SNBTConstants {
-    static final private SNBTNfaData.NfaFunction[] nfaFunctions = SNBTNfaData.getFunctionTableMap(null);
+    static final private SNBTNfaData.NfaFunction[] nfaFunctions = SNBTNfaData.getFunctionTableMap();
     static final int DEFAULT_TAB_SIZE = 1;
     private int tabSize = DEFAULT_TAB_SIZE;
 
@@ -70,9 +70,6 @@ public class SNBTLexer implements SNBTConstants {
     // the current active NFA states in the core tokenization loop
     private BitSet nextStates = new BitSet(76), currentStates = new BitSet(76);
     EnumSet<TokenType> activeTokenTypes = EnumSet.allOf(TokenType.class);
-
-    {
-    }
 
     // Token types that are "regular" tokens that participate in parsing,
     // i.e. declared as TOKEN
