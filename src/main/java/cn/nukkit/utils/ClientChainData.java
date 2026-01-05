@@ -178,10 +178,7 @@ public final class ClientChainData implements LoginChainData {
 
     private JsonObject rawData;
 
-    private final JsonObject data;
-
     private ClientChainData(LoginData data) {
-        this.data = data.clientData();
         loadAuthData(data);
         loadClientData(data.clientData());
     }

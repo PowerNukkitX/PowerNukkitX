@@ -14,17 +14,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Timer;
 
 public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddressedQueryPacket> {
     private final QueryEventListener listener;
-    private final Timer timer;
-    private byte[] lastToken;
     private byte[] token;
 
     public QueryPacketHandler(QueryEventListener listener) {
         this.listener = listener;
-        this.timer = new Timer("QueryRegenerationTicker");
 
         this.token = this.generateToken();
     }
@@ -60,7 +56,6 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
     }
 
     public void refreshToken() {
-        this.lastToken = this.token;
         this.token = this.generateToken();
     }
 

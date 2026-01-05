@@ -52,6 +52,10 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable {
         return this.blockClicked;
     }
 
+    public Block getLiquid() {
+        return liquid;
+    }
+
     public BlockFace getBlockFace() {
         return this.blockFace;
     }

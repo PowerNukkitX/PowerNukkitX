@@ -15,7 +15,6 @@ import java.util.Iterator;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIterator implements Iterator<Block> {
-    private final Level level;
     private final int maxDistance;
 
     private static final int gridSize = 1 << 24;
@@ -25,7 +24,6 @@ public class BlockIterator implements Iterator<Block> {
     private final Block[] blockQueue;
     private int currentBlock = 0;
 
-    private Block currentBlockObject = null;
     private int currentDistance;
     private int maxDistanceInt = 0;
 
@@ -48,7 +46,6 @@ public class BlockIterator implements Iterator<Block> {
     }
 
     public BlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
-        this.level = level;
         this.maxDistance = maxDistance;
         this.blockQueue = new Block[3];
 
@@ -66,7 +63,7 @@ public class BlockIterator implements Iterator<Block> {
         double thirdPosition = 0;
 
         Vector3 pos = new Vector3(startClone.x, startClone.y, startClone.z);
-        Block startBlock = this.level.getBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
+        Block startBlock = level.getBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
 
         if (this.getXLength(direction) > mainDirection) {
             this.mainFace = this.getXFace(direction);
@@ -214,9 +211,8 @@ public class BlockIterator implements Iterator<Block> {
         if (this.currentBlock <= -1) {
             throw new IndexOutOfBoundsException();
         } else {
-            this.currentBlockObject = this.blockQueue[this.currentBlock--];
+            return this.blockQueue[this.currentBlock--];
         }
-        return this.currentBlockObject;
     }
 
     @Override

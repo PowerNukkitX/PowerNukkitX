@@ -7,7 +7,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public abstract class TestEventHandler<T extends Event> {
-    private final Type type;
     private final Class<T> actualType;
 
     protected TestEventHandler() {
@@ -17,8 +16,7 @@ public abstract class TestEventHandler<T extends Event> {
         ParameterizedType parameterizedType = (ParameterizedType) type;
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
         Preconditions.checkArgument(actualTypeArguments.length == 1, "Number of type arguments must be 1");    // 设置结果
-        this.type = actualTypeArguments[0];
-        Type actualTypeArgument = ((ParameterizedType) type).getActualTypeArguments()[0];
+        Type actualTypeArgument = actualTypeArguments[0];
         Preconditions.checkArgument(actualTypeArgument instanceof Class<?>, "Type must be a class type");
         this.actualType = (Class<T>) actualTypeArgument;
     }
