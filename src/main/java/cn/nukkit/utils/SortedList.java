@@ -1,5 +1,7 @@
 package cn.nukkit.utils;
 
+import com.google.common.base.Preconditions;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -502,9 +504,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
 
         // If it is a leaf node, remove the node and update the number of child nodes and height in the tree.
         private void detachFromParentIfLeaf() {
-            if (!isLeaf() || parent == null) {
-                throw new RuntimeException("Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
-            }
+            Preconditions.checkState(isLeaf() && parent != null, "Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
             if (isLeftChildOfParent()) {
                 parent.setLeftChild(null);
             } else {
@@ -523,9 +523,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
 
         // Move this node up one notch in the tree, update its value, and rebalance the tree.
         private void contractParent() {
-            if (parent == null || parent.hasTwoChildren()) {
-                throw new RuntimeException("Can not call contractParent on root node or when the parent has two children!");
-            }
+            Preconditions.checkState(parent != null && !parent.hasTwoChildren(), "Can not call contractParent on root node or when the parent has two children!");
             Node grandParent = getGrandParent();
             if (grandParent != null) {
                 if (isLeftChildOfParent()) {
@@ -693,9 +691,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         private void leftRotateAsPivot() {
-            if (parent == null || parent.rightChild != this) {
-                throw new RuntimeException("Can't left rotate as pivot has no valid parent node.");
-            }
+            Preconditions.checkState(parent != null && parent.rightChild == this, "Can't left rotate as pivot has no valid parent node.");
 
             Node oldParent = this.rotateGrandParentToParent();
 
@@ -723,9 +719,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         private void rightRotateAsPivot() {
-            if (parent == null || parent.leftChild != this) {
-                throw new RuntimeException("Can't right rotate as pivot has no valid parent node.");
-            }
+            Preconditions.checkState(parent != null && parent.leftChild == this, "Can't right rotate as pivot has no valid parent node.");
 
             Node oldParent = this.rotateGrandParentToParent();
 
@@ -809,16 +803,14 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         private void setLeftChild(Node leaf) {
-            if ((leaf != null && !leaf.isLeaf()) || (leftChild != null && !leftChild.isLeaf())) {
-                throw new RuntimeException("setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
-            }
+            boolean valid = (leaf == null || leaf.isLeaf()) && (leftChild == null || leftChild.isLeaf());
+            Preconditions.checkState(valid, "setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
             setChild(true, leaf);
         }
 
         private void setRightChild(Node leaf) {
-            if ((leaf != null && !leaf.isLeaf()) || (rightChild != null && !rightChild.isLeaf())) {
-                throw new RuntimeException("setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
-            }
+            boolean valid = (leaf == null || leaf.isLeaf()) && (rightChild == null || rightChild.isLeaf());
+            Preconditions.checkState(valid, "setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
             setChild(false, leaf);
         }
     }
