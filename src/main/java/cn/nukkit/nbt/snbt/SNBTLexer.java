@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 public class SNBTLexer implements SNBTConstants {
-    static final private SNBTNfaData.NfaFunction[] nfaFunctions = SNBTNfaData.getFunctionTableMap(null);
+    static final private SNBTNfaData.NfaFunction[] nfaFunctions = SNBTNfaData.getFunctionTableMap();
     static final int DEFAULT_TAB_SIZE = 1;
     private int tabSize = DEFAULT_TAB_SIZE;
 
