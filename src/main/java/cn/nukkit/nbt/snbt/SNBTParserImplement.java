@@ -122,7 +122,7 @@ public class SNBTParserImplement implements SNBTConstants {
 
     // If the next token is cached, it returns that
     // Otherwise, it goes to the token_source, i.e. the Lexer.
-    final private Token nextToken(final Token tok) {
+    private Token nextToken(final Token tok) {
         Token result = token_source.getNextToken(tok);
         while (result.isUnparsed()) {
             result = token_source.getNextToken(result);
@@ -157,7 +157,7 @@ public class SNBTParserImplement implements SNBTConstants {
         return t;
     }
 
-    private final TokenType nextTokenType() {
+    private TokenType nextTokenType() {
         if (nextTokenType == null) {
             nextTokenType = nextToken(lastConsumedToken).getType();
         }
@@ -381,7 +381,7 @@ public class SNBTParserImplement implements SNBTConstants {
                 }
                 // Code for ZeroOrMore specified at SNBT.javacc:84:55
                 while (true) {
-                    if (!(nextTokenType() == COMMA)) break;
+                    if (nextTokenType() != COMMA) break;
                     // Code for RegexpRef specified at SNBT.javacc:84:56
                     consumeToken(COMMA);
                     if (nextTokenType() == BYTE) {

@@ -29,7 +29,7 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, DirectAddressedQueryPacket packet) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, DirectAddressedQueryPacket packet) {
         if (packet.content() instanceof HandshakePacket) {
             HandshakePacket handshake = (HandshakePacket) packet.content();
             handshake.setToken(getTokenString(packet.sender()));
@@ -37,7 +37,7 @@ public class QueryPacketHandler extends SimpleChannelInboundHandler<DirectAddres
         }
         if (packet.content() instanceof StatisticsPacket) {
             StatisticsPacket statistics = (StatisticsPacket) packet.content();
-            if (!(statistics.getToken() == getTokenInt(packet.sender()))) {
+            if (statistics.getToken() != getTokenInt(packet.sender())) {
                 return;
             }
 
