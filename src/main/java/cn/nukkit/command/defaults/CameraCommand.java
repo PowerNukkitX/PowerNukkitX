@@ -66,9 +66,9 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newType("holdSeconds", false, CommandParamType.FLOAT),
                 CommandParameter.newType("fadeOutSeconds", false, CommandParamType.FLOAT),
                 CommandParameter.newEnum("color", false, new String[]{"color"}),
-                CommandParameter.newType("red", false, CommandParamType.FLOAT),
-                CommandParameter.newType("green", false, CommandParamType.FLOAT),
-                CommandParameter.newType("blue", false, CommandParamType.FLOAT)
+                CommandParameter.newType("red", false, CommandParamType.INT),
+                CommandParameter.newType("green", false, CommandParamType.INT),
+                CommandParameter.newType("blue", false, CommandParamType.INT)
         });
         this.commandParameters.put("set-default", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -184,7 +184,7 @@ public class CameraCommand extends VanillaCommand {
                 pk.setInstruction(FadeInstruction
                         .builder()
                         .time(new Time(list.get(3).get(), list.get(4).get(), list.get(5).get()))
-                        .color(new Color(getFloat(list, 7), getFloat(list, 8), getFloat(list, 9)))
+                        .color(new Color(getInteger(list, 7), getInteger(list, 8), getInteger(list, 9)))
                         .build());
             }
             case "set-default" -> {
