@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+    @author xRookieFight
+    @since 2026/5/1
+*/
 public class InputPermissionCommand extends VanillaCommand {
 
     public InputPermissionCommand(String name) {
