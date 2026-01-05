@@ -18,6 +18,7 @@ import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemPotion;
 import cn.nukkit.item.ItemSplashPotion;
+import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
@@ -217,6 +218,11 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
             return false;
         }
 
+        if(!isBlockEntityValid()) {
+            this.close();
+            return false;
+        }
+
         if (isOnTransferCooldown()) {
             this.transferCooldown--;
             return true;
@@ -371,6 +377,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         Block blockSide = sidePos.getLevelBlock(false);
         if (blockSide.isAir()) return false;
         BlockEntity be = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, side));
+
 
         //漏斗应该有主动向被锁住的漏斗推送物品的能力
         if (be instanceof BlockEntityHopper sideHopper && levelBlockState.isDefaultState() && !sideHopper.isDisabled() || !(be instanceof InventoryHolder) && !(blockSide instanceof BlockComposter)) {
