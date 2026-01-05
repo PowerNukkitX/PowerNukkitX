@@ -30,12 +30,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author daoge_cmd <br>
- * Date: 2023/6/11 <br>
- * PowerNukkitX Project <br>
- * TODO: 此命令的多语言文本似乎不能正常工作
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/6/11
  */
-
 
 public class CameraCommand extends VanillaCommand {
 
