@@ -196,7 +196,7 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         if (down.isPresent()) {
             BlockBamboo bambooDown = (BlockBamboo) down.get();
             int height = bambooDown.countHeight();
-            if (height < 15 && (height < 11 || !(ThreadLocalRandom.current().nextFloat() < 0.25F))) {
+            if (height < 15 && (height < 11 || ThreadLocalRandom.current().nextFloat() >= 0.25F)) {
                 bambooDown.setAge(0);
                 this.level.setBlock(bambooDown, bambooDown.layer, bambooDown, false, true);
             }
