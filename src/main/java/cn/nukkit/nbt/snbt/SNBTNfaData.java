@@ -103,8 +103,12 @@ class SNBTNfaData implements SNBTConstants {
             } else if (ch == '[') {
                 if (validTypes.contains(OPEN_BRACKET))
                     return OPEN_BRACKET;
-            } else if ((ch == ',' || ch == ':') && validTypes.contains(COMMA)) {
-                return COMMA;
+            } else if (ch == ',') {
+                if (validTypes.contains(COMMA))
+                    return COMMA;
+            } else if (ch == ':') {
+                if (validTypes.contains(COLON))
+                    return COLON;
             } else if ((ch == '\t' || ch == '\n' || ch == '\r' || ch == ' ')) {
                 nextStates.set(9);
                 if (validTypes.contains(WHITESPACE))
