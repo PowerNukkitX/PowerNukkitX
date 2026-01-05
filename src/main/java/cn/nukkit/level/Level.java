@@ -1419,7 +1419,7 @@ public class Level implements Metadatable {
         if (playerCount > 0 && sleepingPlayerCount / playerCount * 100 >= this.gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
             int time = this.getTime() % Level.TIME_FULL;
 
-            if (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE) {
+            if (isNight() || isThundering()) {
                 this.setTime(this.getTime() + Level.TIME_FULL - time);
 
                 for (Player p : this.getPlayers().values()) {

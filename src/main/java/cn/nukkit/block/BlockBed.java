@@ -160,11 +160,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         }
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
 
-        int time = this.getLevel().getTime() % Level.TIME_FULL;
-
-        boolean isNight = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);
-
-        if (!isNight) {
+        if (!(level.isNight() || level.isThundering())) {
             player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.noSleep"));
             return true;
         }
