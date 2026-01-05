@@ -692,27 +692,14 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                     ", numChildren: " + numChildren + "]\n";
         }
 
-        // Perform a left rotation around the current node.
         private void leftRotateAsPivot() {
             if (parent == null || parent.rightChild != this) {
                 throw new RuntimeException("Can't left rotate as pivot has no valid parent node.");
             }
 
-            // First, move this node upward to separate it from its parent node.
-            Node oldParent = parent;
-            Node grandParent = getGrandParent();
-            if (grandParent != null) {
-                if (parent.isLeftChildOfParent()) {
-                    grandParent.leftChild = this;
-                } else {
-                    grandParent.rightChild = this;
-                }
-            }
-
-            this.parent = grandParent;
+            Node oldParent = this.rotateGrandParentToParent();
 
             Node oldLeftChild = leftChild;
-            oldParent.parent = this;
             leftChild = oldParent;
             if (oldLeftChild != null) {
                 oldLeftChild.parent = oldParent;
@@ -740,6 +727,23 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                 throw new RuntimeException("Can't right rotate as pivot has no valid parent node.");
             }
 
+            Node oldParent = this.rotateGrandParentToParent();
+
+            Node oldRightChild = rightChild;
+            rightChild = oldParent;
+            if (oldRightChild != null) {
+                oldRightChild.parent = oldParent;
+            }
+            oldParent.leftChild = oldRightChild;
+
+            oldParent.updateCachedValues();
+        }
+
+        /**
+         * Sets the current grandparent node to as new parent
+         * @return The old parent node
+         */
+        protected final Node rotateGrandParentToParent() {
             Node oldParent = parent;
             Node grandParent = getGrandParent();
             if (grandParent != null) {
@@ -750,16 +754,8 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                 }
             }
             this.parent = grandParent;
-
             oldParent.parent = this;
-            Node oldRightChild = rightChild;
-            rightChild = oldParent;
-            if (oldRightChild != null) {
-                oldRightChild.parent = oldParent;
-            }
-            oldParent.leftChild = oldRightChild;
-
-            oldParent.updateCachedValues();
+            return oldParent;
         }
 
         /**
