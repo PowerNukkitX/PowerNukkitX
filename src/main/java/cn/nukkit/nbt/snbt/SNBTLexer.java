@@ -71,9 +71,6 @@ public class SNBTLexer implements SNBTConstants {
     private BitSet nextStates = new BitSet(76), currentStates = new BitSet(76);
     EnumSet<TokenType> activeTokenTypes = EnumSet.allOf(TokenType.class);
 
-    {
-    }
-
     // Token types that are "regular" tokens that participate in parsing,
     // i.e. declared as TOKEN
     static final EnumSet<TokenType> regularTokens = EnumSet.of(EOF, COLON, COMMA, OPEN_BRACKET, CLOSE_BRACKET, OPEN_BRACE, CLOSE_BRACE, BOOLEAN, FLOAT, DOUBLE, INTEGER, LONG, BYTE, SHORT, STRING, B, _TOKEN_17, I);

@@ -961,13 +961,9 @@ public class SNBTParserImplement implements SNBTConstants {
         } finally {
             passedPredicate = passedPredicate449;
         }
-        if (hitFailure) return false;
-        if (remainingLookahead <= 0) {
-            return true;
-        }
+
         // Lookahead Code for RegexpRef specified at SNBT.javacc:84:100
-        if (!scanToken(CLOSE_BRACKET)) return false;
-        return true;
+        return !hitFailure && remainingLookahead <= 0 && scanToken(CLOSE_BRACKET);
     }
 
     // BuildProductionLookaheadMethod macro

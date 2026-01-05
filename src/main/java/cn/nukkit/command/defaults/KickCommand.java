@@ -46,8 +46,8 @@ public class KickCommand extends VanillaCommand {
 
         for (Player player : players) {
             player.kick(PlayerKickEvent.Reason.KICKED_BY_ADMIN, reason);
-            if (reason.length() >= 1) {
-                log.addSuccess("commands.kick.success.reason", player.getName(), reason.toString());
+            if (!reason.isEmpty()) {
+                log.addSuccess("commands.kick.success.reason", player.getName(), reason);
             } else {
                 log.addSuccess("commands.kick.success", player.getName());
             }

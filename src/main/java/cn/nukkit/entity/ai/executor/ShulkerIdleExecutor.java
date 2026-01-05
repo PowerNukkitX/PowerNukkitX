@@ -14,9 +14,7 @@ public class ShulkerIdleExecutor implements IBehaviorExecutor {
     public ShulkerIdleExecutor() {}
     @Override
     public boolean execute(EntityIntelligent entity) {
-        tick++;
-        if(tick >= stayTicks) return false;
-        return true;
+        return ++tick < stayTicks;
     }
 
     @Override
