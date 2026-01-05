@@ -283,8 +283,9 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
         if (attachmentFace == BlockFace.DOWN) {
             return switch (support.getId()) {
                 case IRON_CHAIN, HOPPER, IRON_BARS -> true;
-                default ->
-                        support instanceof BlockFence || support instanceof BlockWallBase || support instanceof AbstractBlockCopperChain;
+                default -> support instanceof BlockFence
+                        || support instanceof BlockWallBase
+                        || support instanceof AbstractBlockCopperChain;
             };
         }
 
