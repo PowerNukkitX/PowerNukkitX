@@ -45,34 +45,29 @@ public abstract class IterableThreadLocal<T> extends ThreadLocal<T> implements I
 
     public static void clean(ThreadLocal<?> instance) {
         try {
-            ThreadGroup rootGroup = Thread.currentThread().getThreadGroup();
-            ThreadGroup parentGroup;
-            while ((parentGroup = rootGroup.getParent()) != null) {
-                rootGroup = parentGroup;
-            }
-            Thread[] threads = new Thread[rootGroup.activeCount()];
-            if (threads.length != 0) {
-                while (rootGroup.enumerate(threads, true) == threads.length) {
-                    threads = new Thread[threads.length * 2];
-                }
-            }
+            Thread[] threads = Thread.getAllStackTraces().keySet().toArray(new Thread[0]);
+
             Field tl = Thread.class.getDeclaredField("threadLocals");
             tl.setAccessible(true);
             Method methodRemove = null;
             for (Thread thread : threads) {
                 if (thread != null) {
-                    Object tlm = tl.get(thread);
-                    if (tlm != null) {
-                        if (methodRemove == null) {
-                            methodRemove = tlm.getClass().getDeclaredMethod("remove", ThreadLocal.class);
-                            methodRemove.setAccessible(true);
-                        }
-                        if (methodRemove != null) {
-                            try {
-                                methodRemove.invoke(tlm, instance);
-                            } catch (Throwable ignore) {
+                    try {
+                        Object tlm = tl.get(thread);
+                        if (tlm != null) {
+                            if (methodRemove == null) {
+                                methodRemove = tlm.getClass().getDeclaredMethod("remove", ThreadLocal.class);
+                                methodRemove.setAccessible(true);
+                            }
+                            if (methodRemove != null) {
+                                try {
+                                    methodRemove.invoke(tlm, instance);
+                                } catch (Throwable ignore) {
+                                }
                             }
                         }
+                    } catch (Throwable ignore) {
+                        // tolerate per-original behavior
                     }
                 }
             }
