@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
-    @author xRookieFight
-    @since 2026/5/1
-*/
+ * @author xRookieFight
+ * @since 2026/05/01
+ */
 public class InputPermissionCommand extends VanillaCommand {
 
     public InputPermissionCommand(String name) {
