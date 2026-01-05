@@ -20,11 +20,7 @@ public class NKServiceManager implements ServiceManager {
         Preconditions.checkNotNull(provider);
         Preconditions.checkNotNull(priority);
         Preconditions.checkNotNull(service);
-
-        // build-in service provider needn't plugin param
-        if (plugin == null && provider.getClass().getClassLoader() != Server.class.getClassLoader()) {
-            throw new NullPointerException("plugin");
-        }
+        Preconditions.checkArgument(plugin != null || provider.getClass().getClassLoader() == Server.class.getClassLoader(), "Not using built-in service provider requires a plugin to register");
 
         return provide(service, provider, plugin, priority);
     }

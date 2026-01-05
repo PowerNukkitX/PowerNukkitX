@@ -3,6 +3,12 @@
  * ======================================
  * Copyright (c) 2016 Mockito contributors
  * This program is made available under the terms of the MIT License.
+ *
+ *
+ * --------------------------------------------
+ * This file has been modified by PNX Team:
+ * - using more precise exception types
+ * - remove redundant explicit types
  */
 package cn.nukkit.utils.collection;
 
@@ -55,13 +61,14 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     @SuppressWarnings({"CollectionIncompatibleType", "SuspiciousMethodCalls"})
     public V get(K key) {
         if (key == null) {
-            throw new NullPointerException();
+            return null;
         }
-        V value = target.get((Object) new LatentKey<K>(key));
+
+        V value = target.get((Object) new LatentKey<>(key));
         if (value == null) {
             value = defaultValue(key);
             if (value != null) {
-                V previousValue = target.putIfAbsent(new WeakKey<K>(key, this), value);
+                V previousValue = target.putIfAbsent(new WeakKey<>(key, this), value);
                 if (previousValue != null) {
                     value = previousValue;
                 }
@@ -77,7 +84,7 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     @SuppressWarnings({"CollectionIncompatibleType", "SuspiciousMethodCalls"})
     public boolean containsKey(K key) {
         if (key == null) {
-            throw new NullPointerException();
+            return false;
         }
         return target.containsKey((Object) new LatentKey<K>(key));
     }
@@ -89,9 +96,9 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
      */
     public V put(K key, V value) {
         if (key == null || value == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("Expected a valid key and value, received null instead.");
         }
-        return target.put(new WeakKey<K>(key, this), value);
+        return target.put(new WeakKey<>(key, this), value);
     }
 
     /**
@@ -101,7 +108,7 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
     @SuppressWarnings({"CollectionIncompatibleType", "SuspiciousMethodCalls"})
     public V remove(K key) {
         if (key == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("Expected a non-null key to remove from the map, received null instead");
         }
         return target.remove((Object) new LatentKey<K>(key));
     }
@@ -381,7 +388,7 @@ public class WeakConcurrentMap<K, V> extends ReferenceQueue<K>
         @Override
         public V setValue(V value) {
             if (value == null) {
-                throw new NullPointerException();
+                throw new IllegalArgumentException("Expected a non-null value to set the entry to, received null instead.");
             }
             return entry.setValue(value);
         }

@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -373,9 +374,7 @@ public class ServerScheduler {
      * @param plugin the specific plugin.
      */
     public void cancelTask(Plugin plugin) {
-        if (plugin == null) {
-            throw new NullPointerException("Plugin cannot be null!");
-        }
+        Preconditions.checkNotNull(plugin);
         for (Map.Entry<Integer, TaskHandler> entry : taskMap.entrySet()) {
             TaskHandler taskHandler = entry.getValue();
             // TODO: Remove the "taskHandler.getPlugin() == null" check

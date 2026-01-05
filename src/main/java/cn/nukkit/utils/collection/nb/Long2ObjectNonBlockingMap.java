@@ -1,6 +1,7 @@
 package cn.nukkit.utils.collection.nb;
 
 import cn.nukkit.api.NonComputationAtomic;
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.AbstractLongSet;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -272,7 +273,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @param val a value to search for
      * @return <tt>true</tt> if this map maps one or more keys to the specified value
-     * @throws NullPointerException if the specified value is null
      */
     public boolean contains(Object val) {
         return containsValue(val);
@@ -287,7 +287,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * @param val value to be associated with the specified key
      * @return the previous value associated with <tt>key</tt>, or
      * <tt>null</tt> if there was no mapping for <tt>key</tt>
-     * @throws NullPointerException if the specified value is null
      */
     public TypeV put(long key, TypeV val) {
         return putIfMatch(key, val, NO_MATCH_OLD);
@@ -300,7 +299,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @return the previous value associated with the specified key,
      * or <tt>null</tt> if there was no mapping for the key
-     * @throws NullPointerException if the specified is value is null
      */
     public TypeV putIfAbsent(long key, TypeV val) {
         return putIfMatch(key, val, TOMBSTONE);
@@ -320,8 +318,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Atomically do a {@link #remove(long)} if-and-only-if the key is mapped
      * to a value which is <code>equals</code> to the given value.
-     *
-     * @throws NullPointerException if the specified value is null
      */
     public boolean remove(long key, Object val) {
         return putIfMatch(key, TOMBSTONE, val) == val;
@@ -330,8 +326,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Atomically do a <code>put(key,val)</code> if-and-only-if the key is
      * mapped to some value already.
-     *
-     * @throws NullPointerException if the specified value is null
      */
     public TypeV replace(long key, TypeV val) {
         return putIfMatch(key, val, MATCH_ANY);
@@ -340,8 +334,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
     /**
      * Atomically do a <code>put(key,newValue)</code> if-and-only-if the key is
      * mapped a value which is <code>equals</code> to <code>oldValue</code>.
-     *
-     * @throws NullPointerException if the specified value is null
      */
     public boolean replace(long key, TypeV oldValue, TypeV newValue) {
         return putIfMatch(key, newValue, oldValue) == oldValue;
@@ -392,7 +384,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
      *
      * @param val value whose presence in this map is to be tested
      * @return <tt>true</tt> if this Map maps one or more keys to the specified value
-     * @throws NullPointerException if the specified value is null
      */
     public boolean containsValue(Object val) {
         if (val == null) return false;
@@ -413,7 +404,6 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * returns {@code v}; otherwise it returns {@code null}.  (There can be at
      * most one such mapping.)
      *
-     * @throws NullPointerException if the specified key is null
      */
     // Never returns a Prime nor a Tombstone.
     @SuppressWarnings("unchecked")
