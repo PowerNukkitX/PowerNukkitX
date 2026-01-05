@@ -7,6 +7,7 @@ import cn.nukkit.entity.Entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
 
 /**
  * Parses all remaining command arguments as a single {@code String} value for PowerNukkitX command trees, supporting entity selector replacement.
@@ -50,11 +51,11 @@ public class MessageStringNode extends ParamNode<String> {
         else {
             TMP.add(arg);
 
-            var str = String.join(" ", TMP);
-            var match = EntitySelectorAPI.ENTITY_SELECTOR.matcher(str);
+            String str = String.join(" ", TMP);
+            Matcher match = EntitySelectorAPI.ENTITY_SELECTOR.matcher(str);
             this.value = match.replaceAll(r -> {
-                var start = Math.max(0, match.start() - 1);
-                var end = Math.min(str.length(), match.end());
+                int start = Math.max(0, match.start() - 1);
+                int end = Math.min(str.length(), match.end());
                 if (start != 0) {
                     char before = str.charAt(start);
                     if (before == '”' || before == '\'' || before == '\\' || before == ';') return match.group();
@@ -63,12 +64,12 @@ public class MessageStringNode extends ParamNode<String> {
                     char after = str.charAt(end);
                     if (after == '”' || after == '\'' || after == '\\' || after == ';') return match.group();
                 }
-                var m = match.group();
+                String m = match.group();
                 if (EntitySelectorAPI.getAPI().checkValid(m)) {
                     StringJoiner join = new StringJoiner(", ");
                     try {
                         for (Entity entity : EntitySelectorAPI.getAPI().matchEntities(paramList.getParamTree().getSender(), m)) {
-                            var name = entity.getName();
+                            String name = entity.getName();
                             if (name.isBlank()) name = entity.getOriginalName();
                             join.add(name);
                         }
