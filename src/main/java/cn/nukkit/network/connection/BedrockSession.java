@@ -78,8 +78,6 @@ public class BedrockSession {
 
     /* ---------------- Pacing heavy packets, reduce bursting and esure client sync ------------- */
     private final boolean pacingEnabled;
-    private final int pacingFlushIntervalMillis;
-    private final int pacingMaxBytesPerSecond;
     private final OutboundScheduler scheduler;
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
@@ -102,13 +100,13 @@ public class BedrockSession {
         /* ---- Load pacing settings safely ---- */
         PacingConfig pc = loadPacingConfigSafely();
         this.pacingEnabled = pc.enabled;
-        this.pacingFlushIntervalMillis = pc.flushMs;
-        this.pacingMaxBytesPerSecond = pc.maxBytesPerSec;
+        int pacingFlushIntervalMillis = pc.flushMs;
+        int pacingMaxBytesPerSecond = pc.maxBytesPerSec;
         this.scheduler = new OutboundScheduler(
-                this.pacingMaxBytesPerSecond,
+                pacingMaxBytesPerSecond,
                 1200,
                 256,
-                this.pacingFlushIntervalMillis
+                pacingFlushIntervalMillis
         );
 
         var cfg = new StateMachineConfig<SessionState, SessionState>();

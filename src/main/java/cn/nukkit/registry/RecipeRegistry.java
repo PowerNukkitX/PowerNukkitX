@@ -53,7 +53,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
      * 缓存着配方数据包
      */
     private static ByteBuf buffer = null;
-    private final VanillaRecipeParser vanillaRecipeParser = new VanillaRecipeParser(this);
+    private final VanillaRecipeParser vanillaRecipeParser = new VanillaRecipeParser();
     private final EnumMap<RecipeType, Int2ObjectArrayMap<Set<Recipe>>> recipeMaps = new EnumMap<>(RecipeType.class);
     private final Object2ObjectOpenHashMap<String, Recipe> allRecipeMaps = new Object2ObjectOpenHashMap<>();
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();

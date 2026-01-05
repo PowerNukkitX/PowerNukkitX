@@ -5,7 +5,6 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class SimplexNoise {
 
-    private final int firstOctave;
     private final float[] amplitudes;
     private final SimplexNoiseSampler[] noiseLevels;
     private final int levels;
@@ -15,7 +14,6 @@ public class SimplexNoise {
     private final float maxValue;
 
     public SimplexNoise(RandomSourceProvider random, int firstOctave, float[] amplitudes) {
-        this.firstOctave = firstOctave;
         this.amplitudes = amplitudes;
         this.levels = amplitudes.length;
         this.noiseLevels = new SimplexNoiseSampler[this.levels];
@@ -23,7 +21,7 @@ public class SimplexNoise {
         this.lowestFreqValueFactor = (float) (Math.pow(2, this.levels - 1) / (Math.pow(2, this.levels) - 1));
         for (int i = 0; i < this.levels; ++i) {
             if(this.amplitudes[i] != 0.0f) {
-                this.noiseLevels[i] = new SimplexNoiseSampler(new NukkitRandom(random.nextLong() + ("octave_" + (this.firstOctave + i)).hashCode()));
+                this.noiseLevels[i] = new SimplexNoiseSampler(new NukkitRandom(random.nextLong() + ("octave_" + (firstOctave + i)).hashCode()));
             }
         }
         this.maxValue = this.edgeValue(2d);

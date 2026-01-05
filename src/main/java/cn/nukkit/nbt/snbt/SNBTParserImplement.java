@@ -444,7 +444,7 @@ public class SNBTParserImplement implements SNBTConstants {
                 consumeToken(INTEGER);
                 // Code for ZeroOrMore specified at SNBT.javacc:87:43
                 while (true) {
-                    if (!(nextTokenType() == COMMA)) break;
+                    if (nextTokenType() != COMMA) break;
                     // Code for RegexpRef specified at SNBT.javacc:87:44
                     consumeToken(COMMA);
                     // Code for RegexpRef specified at SNBT.javacc:87:52
@@ -1010,13 +1010,8 @@ public class SNBTParserImplement implements SNBTConstants {
         } finally {
             passedPredicate = passedPredicate456;
         }
-        if (hitFailure) return false;
-        if (remainingLookahead <= 0) {
-            return true;
-        }
         // Lookahead Code for RegexpRef specified at SNBT.javacc:87:77
-        if (!scanToken(CLOSE_BRACKET)) return false;
-        return true;
+        return !hitFailure && remainingLookahead <= 0 && scanToken(CLOSE_BRACKET);
     }
 
     ArrayList<NonTerminalCall> parsingStack = new ArrayList<>();
