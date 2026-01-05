@@ -119,10 +119,10 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
                 }
             }
 
-            if (brewing.namedTag.contains("Lock") && brewing.namedTag.get("Lock") instanceof StringTag) {
-                if (!brewing.namedTag.getString("Lock").equals(item.getCustomName())) {
-                    return false;
-                }
+            if (brewing.namedTag.contains("Lock")
+                    && brewing.namedTag.get("Lock") instanceof StringTag tag
+                    && !tag.data.equals(item.getCustomName())) {
+                return false;
             }
 
             player.addWindow(brewing.getInventory());
