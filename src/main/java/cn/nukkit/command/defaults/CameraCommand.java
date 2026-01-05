@@ -57,9 +57,9 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
                 CommandParameter.newEnum("fade", false, new String[]{"fade"}),
                 CommandParameter.newEnum("color", false, new String[]{"color"}),
-                CommandParameter.newType("red", false, CommandParamType.FLOAT),
-                CommandParameter.newType("green", false, CommandParamType.FLOAT),
-                CommandParameter.newType("blue", false, CommandParamType.FLOAT)
+                CommandParameter.newType("red", false, CommandParamType.INT),
+                CommandParameter.newType("green", false, CommandParamType.INT),
+                CommandParameter.newType("blue", false, CommandParamType.INT)
         });
         this.commandParameters.put("fade-time-color", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -150,7 +150,11 @@ public class CameraCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    private static float getFloat(ParamList list, int index) {
+    private float getFloat(ParamList list, int index) {
+        return list.get(index).get();
+    }
+
+    private int getInteger(ParamList list, int index) {
         return list.get(index).get();
     }
 
@@ -176,7 +180,7 @@ public class CameraCommand extends VanillaCommand {
             case "fade-color" -> {
                 pk.setInstruction(FadeInstruction
                         .builder()
-                        .color(new Color(getFloat(list, 3), getFloat(list, 4), getFloat(list, 5)))
+                        .color(new Color(getInteger(list, 3), getInteger(list, 4), getInteger(list, 5)))
                         .build());
             }
             case "fade-time-color" -> {
