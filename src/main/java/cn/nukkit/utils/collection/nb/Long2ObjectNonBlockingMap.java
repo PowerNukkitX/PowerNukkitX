@@ -944,7 +944,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
                     do copyidx = (int) _copyIdx;     // Re-read
                     while (copyidx < (oldlen << 1) && // 'panic' check
                             !_copyIdxUpdater.compareAndSet(this, copyidx, copyidx + MIN_COPY_WORK));
-                    if ((copyidx >= (oldlen << 1))) // Panic!
+                    if (copyidx >= (oldlen << 1)) // Panic!
                         panic_start = copyidx;       // Record where we started to panic-copy
                 }
 
