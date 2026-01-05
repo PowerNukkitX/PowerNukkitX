@@ -29,13 +29,13 @@ public class UpdateClientInputLocksPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.lockComponentId = byteBuf.readVarInt();
+        this.lockComponentId = byteBuf.readUnsignedVarInt();
         this.serverPosition = byteBuf.readVector3f();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeVarInt(lockComponentId);
+        byteBuf.writeUnsignedVarInt(lockComponentId);
         byteBuf.writeVector3f(serverPosition);
     }
 
