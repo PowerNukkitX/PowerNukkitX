@@ -48,13 +48,10 @@ public class NetherTerrainStage extends GenerateStage {
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
         if (surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
-        if (patchNoise == null)
-            patchNoise = new SimplexNoise(random.identical(), -5, new float[]{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
-        if (soulsandNoise == null)
-            soulsandNoise = new SimplexNoise(random.identical(), -8, new float[]{1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
+        if (patchNoise == null) patchNoise = new SimplexNoise(random.identical(), -5, new float[]{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
+        if (soulsandNoise == null) soulsandNoise = new SimplexNoise(random.identical(), -8, new float[]{1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
         if (netherStateNoise == null) netherStateNoise = new SimplexNoise(random.identical(), -4, new float[]{1.0f});
-        if (netherwartNoise == null)
-            netherwartNoise = new SimplexNoise(random.identical(), -3, new float[]{1.0f, 0.0f, 0.0f, 0.9f});
+        if (netherwartNoise == null) netherwartNoise = new SimplexNoise(random.identical(), -3, new float[]{1.0f, 0.0f, 0.0f, 0.9f});
 
 
         try {
