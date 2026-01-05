@@ -47,11 +47,14 @@ public class NetherTerrainStage extends GenerateStage {
         Level level = chunk.getLevel();
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
-        if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
-        if(patchNoise == null) patchNoise = new SimplexNoise(random.identical(), -5, new float[]{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f });
-        if(soulsandNoise == null) soulsandNoise = new SimplexNoise(random.identical(), -8, new float[]{  1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f });
-        if(netherStateNoise == null) netherStateNoise = new SimplexNoise(random.identical(), -4, new float[]{ 1.0f });
-        if(netherwartNoise == null) netherwartNoise = new SimplexNoise(random.identical(), -3, new float[]{ 1.0f, 0.0f, 0.0f, 0.9f });
+        if (surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
+        if (patchNoise == null)
+            patchNoise = new SimplexNoise(random.identical(), -5, new float[]{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
+        if (soulsandNoise == null)
+            soulsandNoise = new SimplexNoise(random.identical(), -8, new float[]{1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
+        if (netherStateNoise == null) netherStateNoise = new SimplexNoise(random.identical(), -4, new float[]{1.0f});
+        if (netherwartNoise == null)
+            netherwartNoise = new SimplexNoise(random.identical(), -3, new float[]{1.0f, 0.0f, 0.0f, 0.9f});
 
 
         try {
@@ -82,13 +85,13 @@ public class NetherTerrainStage extends GenerateStage {
                                     if (isCeil(chunk, x, y, z)) {
                                         chunk.setBlockState(x, y, z, BASALT);
                                         continue;
-                                    } else if (chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
-                                        if (netherStateNoise.getValue(nx, y, nz) >= 0 || (y <= 35 && y >= 30 && patchNoise.getValue(nx, y, nz) >= -0.012f)) {
-                                            chunk.setBlockState(x, y, z, GRAVEL);
-                                            continue;
-                                        }
+                                    } else if (chunk.getBlockState(x, y + 1, z) == BlockAir.STATE
+                                            && (netherStateNoise.getValue(nx, y, nz) >= 0
+                                            || y <= 35 && y >= 30 && patchNoise.getValue(nx, y, nz) >= -0.012f)) {
+                                        chunk.setBlockState(x, y, z, GRAVEL);
+                                        continue;
                                     }
-                                    if(isTop(chunk, x, y, z) || isCeil(chunk, x, y, z))
+                                    if (isTop(chunk, x, y, z) || isCeil(chunk, x, y, z))
                                         chunk.setBlockState(x, y, z, BLACKSTONE);
                                 }
                             }
@@ -104,33 +107,29 @@ public class NetherTerrainStage extends GenerateStage {
                                 }
                             }
                             case BiomeID.WARPED_FOREST -> {
-                                if (chunk.getBlockState(x, y, z) == NETHERRACK) {
-                                    if (chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
-                                        if (y > 31 && netherStateNoise.getValue(nx, y, nz) <= 0f) {
-                                            chunk.setBlockState(x, y, z, netherwartNoise.getValue(nx, y, nz) >= 1.17f ? WARPED_WART : WARPED_NYLIUM);
-                                        }
-                                    }
+                                if (chunk.getBlockState(x, y, z) == NETHERRACK
+                                        && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE
+                                        && y > 31
+                                        && netherStateNoise.getValue(nx, y, nz) <= 0f) {
+                                    chunk.setBlockState(x, y, z, netherwartNoise.getValue(nx, y, nz) >= 1.17f ? WARPED_WART : WARPED_NYLIUM);
                                 }
                             }
                             case BiomeID.CRIMSON_FOREST -> {
-                                if (chunk.getBlockState(x, y, z) == NETHERRACK) {
-                                    if (chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
-                                        if (y > 31 && netherStateNoise.getValue(nx, y, nz) <= 0.54f) {
-                                            chunk.setBlockState(x, y, z, netherwartNoise.getValue(nx, y, nz) >= 1.17f ? NETHERWART_BLOCK : CRIMSON_NYLIUM);
-                                        }
-                                    }
+                                if (chunk.getBlockState(x, y, z) == NETHERRACK
+                                        && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE
+                                        && y > 31
+                                        && netherStateNoise.getValue(nx, y, nz) <= 0.54f) {
+                                    chunk.setBlockState(x, y, z, netherwartNoise.getValue(nx, y, nz) >= 1.17f ? NETHERWART_BLOCK : CRIMSON_NYLIUM);
                                 }
                             }
                             case BiomeID.HELL -> {
-                                if (chunk.getBlockState(x, y, z) == NETHERRACK) {
-                                    if (isTop(chunk, x, y, z)) {
-                                        if (y > 31 && y < 35 && soulsandNoise.getValue(nx, y, nz) >= -0.012f) {
-                                            chunk.setBlockState(x, y, z, GRAVEL);
-                                            continue;
-                                        }
-                                        if (y <= 35 && y >= 30 && soulsandNoise.getValue(nx, y, nz) >= -0.012f) {
-                                            chunk.setBlockState(x, y, z, SOULSAND);
-                                        }
+                                if (chunk.getBlockState(x, y, z) == NETHERRACK && isTop(chunk, x, y, z)) {
+                                    if (y > 31 && y < 35 && soulsandNoise.getValue(nx, y, nz) >= -0.012f) {
+                                        chunk.setBlockState(x, y, z, GRAVEL);
+                                        continue;
+                                    }
+                                    if (y <= 35 && y >= 30 && soulsandNoise.getValue(nx, y, nz) >= -0.012f) {
+                                        chunk.setBlockState(x, y, z, SOULSAND);
                                     }
                                 }
                             }
@@ -152,7 +151,7 @@ public class NetherTerrainStage extends GenerateStage {
     private boolean isTop(IChunk chunk, int x, int y, int z) {
         for (int i = 0; i < 5; i++) {
             int yy = y + i;
-            if(NukkitMath.clamp(yy, 1, 127) != yy) continue;
+            if (NukkitMath.clamp(yy, 1, 127) != yy) continue;
             if (chunk.getBlockState(x, yy, z) == BlockAir.STATE) {
                 return true;
             }
@@ -163,7 +162,7 @@ public class NetherTerrainStage extends GenerateStage {
     private boolean isCeil(IChunk chunk, int x, int y, int z) {
         for (int i = 0; i < 5; i++) {
             int yy = y - i;
-            if(NukkitMath.clamp(yy, 1, 127) != yy) continue;
+            if (NukkitMath.clamp(yy, 1, 127) != yy) continue;
             if (chunk.getBlockState(x, yy, z) == BlockAir.STATE) {
                 return true;
             }
@@ -173,7 +172,7 @@ public class NetherTerrainStage extends GenerateStage {
 
     public float getNoise(int x, int y, int z) {
         //Those "magic numbers" are vanilla numbers without a description.
-        float density = surfaceNoise.getValue(x * 0.25f,  y * 0.375f, z * 0.25f);
+        float density = surfaceNoise.getValue(x * 0.25f, y * 0.375f, z * 0.25f);
         density -= 0.9375f;
         density *= NukkitMath.remap(NukkitMath.clamp(y, 104, 128), 104, 108, 1, 0);
         density += 0.9375f;
@@ -182,7 +181,7 @@ public class NetherTerrainStage extends GenerateStage {
         density += 2.5f;
         density *= 0.64f;
         density = NukkitMath.clamp(density, -1, 1);
-        density = density /2 - density*density*density / 24f;
+        density = density / 2 - density * density * density / 24f;
         return density;
     }
 
