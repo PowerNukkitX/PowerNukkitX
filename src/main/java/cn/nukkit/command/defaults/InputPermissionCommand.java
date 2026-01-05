@@ -64,7 +64,7 @@ public class InputPermissionCommand extends VanillaCommand {
 
         String permission = list.get(2).get();
 
-        ClientInputLocksFlag flag = switch (permission) {
+        ClientInputLocksFlag flag = switch (permission.toLowerCase()) {
             case "camera" -> ClientInputLocksFlag.CAMERA;
             case "movement" -> ClientInputLocksFlag.MOVEMENT;
             case "jump" -> ClientInputLocksFlag.JUMP;
@@ -99,13 +99,13 @@ public class InputPermissionCommand extends VanillaCommand {
                 String state = list.get(3).get();
                 boolean enable;
 
-                if ("enabled".equalsIgnoreCase(state)) {
-                    enable = true;
-                } else if ("disabled".equalsIgnoreCase(state)) {
-                    enable = false;
-                } else {
-                    log.addError("commands.inputpermission.set.missingstate").output();
-                    return 0;
+                switch (state.toLowerCase()) {
+                    case "enabled" -> enable = true;
+                    case "disabled" -> enable = false;
+                    default -> {
+                        log.addError("commands.inputpermission.set.missingstate").output();
+                        return 0;
+                    }
                 }
 
                 for (Player player : players) {
