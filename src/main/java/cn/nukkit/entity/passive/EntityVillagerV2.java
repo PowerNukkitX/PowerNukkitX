@@ -91,7 +91,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     private final List<Integer> tradeNetId = new ArrayList<>();
 
     public List<Integer> getTradeNetIds() {
-        if (tradeNetId == null) return new ArrayList<>();
         return tradeNetId;
     }
 
