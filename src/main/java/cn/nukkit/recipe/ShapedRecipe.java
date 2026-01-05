@@ -69,7 +69,7 @@ public class ShapedRecipe extends CraftingRecipe {
         Preconditions.checkArgument(this.row <= 3 && 1 <= this.row, "Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
 
         this.col = shape[0].length();
-        Preconditions.checkArgument(this.col <= 3 && 1 <= this.col, "Shaped recipes may only have 1, 2 or 3 colums, not " + this.col);
+        Preconditions.checkArgument(this.col <= 3 && 1 <= this.col, "Shaped recipes may only have 1, 2 or 3 columns, not " + this.col);
 
         for (int i = 0, shapeLength = shape.length; i < shapeLength; i++) {
             String row = getShape(ingredients, shape[i]);
