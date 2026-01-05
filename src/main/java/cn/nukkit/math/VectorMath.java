@@ -37,7 +37,7 @@ public abstract class VectorMath {
     }
 
     public static List<Vector3> getPassByVector3(Vector3 from, Vector3 to) {
-        Preconditions.checkArgument(Objects.equals(from, to), "from == to");
+        Preconditions.checkArgument(!Objects.equals(from, to), "from == to");
 
         LinkedList<FixedVector3> xCuts = new LinkedList<>();
         Vector3 lastXCut = from.x < to.x ? from : to;
