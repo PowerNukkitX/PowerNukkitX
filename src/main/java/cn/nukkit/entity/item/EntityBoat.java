@@ -20,7 +20,9 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -29,12 +31,13 @@ import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerAuthInputPacket;
 import cn.nukkit.network.protocol.types.AuthInputAction;
+import cn.nukkit.network.protocol.types.AuthInteractionModel;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.InputMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -600,66 +603,58 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public boolean onRiderInput(Player player, PlayerAuthInputPacket pk) {
-        Block underBlock = this.level.getBlock(this.getPosition().add(0, -1, 0));
-        double accel, maxSpeed;
-        boolean inWater = isBoatInWater();
+        float acceleration = 0.0F;
 
-        if (inWater) {
-            accel = 0.025;
-            maxSpeed = 0.50;
-        } else if (underBlock.getId().equals(Block.ICE) || underBlock.getId().equals(Block.FROSTED_ICE) || underBlock.getId().equals(Block.PACKED_ICE)) {
-            accel = 0.055;
-            maxSpeed = 1.10;
+        boolean isMobileAndClassicMovement = pk.getInputMode() == InputMode.TOUCH && pk.getInteractionModel() == AuthInteractionModel.CLASSIC;
+        Vector2 input;
+        if (isMobileAndClassicMovement) {
+            // Press both left and right to move forward and press 1 to turn the boat.
+            boolean left = pk.getInputData().contains(AuthInputAction.PADDLE_LEFT), right = pk.getInputData().contains(AuthInputAction.PADDLE_RIGHT);
+            if (left && right) {
+                input = new Vector2(0, 1);
+            } else {
+                input = new Vector2(1,0).multiply(left ? -1 : right ? 1 : 0);
+            }
         } else {
-            accel = 0.025;
-            maxSpeed = 0.30;
+            input = pk.motion;
         }
+        boolean up = input.getY() > 0;
+        boolean down = input.getY() < 0;
+        boolean left = input.getX() > 0;
+        boolean right = input.getX() < 0;
 
-        double yawRad = Math.toRadians(this.yaw);
-        double pz = Math.cos(yawRad);
-        double fz = Math.sin(yawRad);
+        if (right != left && !up && !down) acceleration += 0.005F;
 
-        boolean forward   = pk.inputData.contains(AuthInputAction.UP) || (pk.inputData.contains(AuthInputAction.PADDLE_LEFT) && pk.inputData.contains(AuthInputAction.PADDLE_RIGHT));
-        boolean backward  = pk.inputData.contains(AuthInputAction.DOWN);
-        boolean turnLeft  = pk.inputData.contains(AuthInputAction.PADDLE_LEFT);
-        boolean turnRight = pk.inputData.contains(AuthInputAction.PADDLE_RIGHT);
+        if (up) acceleration += 0.04F;
+        if (down) acceleration -= 0.005F;
 
-        if (forward) {
-            this.motionX += pz * accel;
-            this.motionZ += fz * accel;
-        } else if (backward) {
-            this.motionX -= pz * (accel / 5.0);
-            this.motionZ -= fz * (accel / 5.0);
-        }
+        double yaw = this.getYaw() - 90;
+        Vector3 motion = new Vector3(MathHelper.sin((-yaw * 0.017453292F)) * acceleration, 0, MathHelper.cos((yaw * 0.017453292F)) * acceleration);
 
-        double speed = Math.sqrt(motionX * motionX + motionZ * motionZ);
-        if (speed > maxSpeed) {
-            double scale = maxSpeed / speed;
-            motionX *= scale;
-            motionZ *= scale;
-        }
-
+        this.setMotion(this.getMotion().add(motion));
         float animationSpeed = (float) Math.max(0.01, Math.min(0.08,
                 Math.sqrt(motionX * motionX + motionZ * motionZ) * 0.05));
-        double turnRate = 4.0;
+        double turnRate = NukkitMath.min((Math.abs(Math.toDegrees(Math.atan2(pk.motion.y, pk.motion.x)) - 90) / 90d) * 4, 4);
 
-        if (forward) {
+        if (up) {
             paddleTimeLeft  += animationSpeed;
             paddleTimeRight += animationSpeed;
-            if (turnLeft)  this.yaw -= turnRate;
-            if (turnRight) this.yaw += turnRate;
-        } else if (backward) {
+            if (left)  this.yaw -= turnRate;
+            if (right) this.yaw += turnRate;
+        } else if (down) {
             paddleTimeLeft  -= animationSpeed;
             paddleTimeRight -= animationSpeed;
-            if (turnLeft)  this.yaw -= turnRate;
-            if (turnRight) this.yaw += turnRate;
+            if (left)  this.yaw -= turnRate;
+            if (right) this.yaw += turnRate;
         } else {
-            if (turnLeft && !turnRight) applyTurn(true,  turnRate, accel, pz, fz, animationSpeed);
-            if (turnRight && !turnLeft) applyTurn(false, turnRate, accel, pz, fz, animationSpeed);
-            if (!turnLeft)  paddleTimeLeft = 0;
-            if (!turnRight) paddleTimeRight = 0;
+            double yawRad = Math.toRadians(pk.yaw);
+            double pz = Math.cos(yawRad);
+            double fz = Math.sin(yawRad);
+            if (left && !right) applyTurn(true,  turnRate, acceleration, pz, fz, animationSpeed);
+            if (right && !left) applyTurn(false, turnRate, acceleration, pz, fz, animationSpeed);
+            if (!left)  paddleTimeLeft = 0;
+            if (!right) paddleTimeRight = 0;
         }
-
         this.setDataProperty(EntityDataTypes.ROW_TIME_RIGHT, paddleTimeLeft);
         this.setDataProperty(EntityDataTypes.ROW_TIME_LEFT,  paddleTimeRight);
 
