@@ -10,39 +10,60 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? extends DataPacket>> {
     private final Int2ObjectOpenHashMap<FastConstructor<? extends DataPacket>> PACKET_POOL = new Int2ObjectOpenHashMap<>(256);
-    private final Int2ObjectOpenHashMap<FastConstructor<? extends DataPacket>> customPackets = new Int2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
-    public void init(){
+    public void init() {
         if (isLoad.getAndSet(true)) return;
         registerPackets();
     }
 
     /**
-     * Allows plugins to register a custom packet with a unique ID.
-     * This method is safe to use from an external plugin.
-     * @param id    The unique packet ID (avoid collisions with official IDs)
+     * Allows plugins or external code to register a custom packet with a unique ID.
+     * The user is responsible for avoiding ID collisions with official packets.
+     * @param id    The unique packet ID
      * @param clazz The custom packet class
      * @throws RegisterException if the ID is already used
      */
     public void registerCustomPacket(int id, Class<? extends DataPacket> clazz) throws RegisterException {
         try {
-            if (this.PACKET_POOL.containsKey(id) || this.customPackets.containsKey(id)) {
+            if (this.PACKET_POOL.containsKey(id)) {
                 throw new RegisterException("Packet ID is already used!");
             }
-            this.customPackets.put(id, FastConstructor.create(clazz.getConstructor()));
+            this.PACKET_POOL.put(id, FastConstructor.create(clazz.getConstructor()));
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
         }
     }
 
+    /**
+     * Registers or overwrites a packet for the given ID.
+     * If a packet is already registered with this ID, it will be replaced by the new class.
+     * This can be used to override standard or custom packets.
+     * @param id    The packet ID to register or overwrite
+     * @param clazz The packet class
+     * @throws RegisterException if the class does not have a public no-arg constructor
+     */
+    public void registerOrOverwritePacket(int id, Class<? extends DataPacket> clazz) throws RegisterException {
+        try {
+            this.PACKET_POOL.put(id, FastConstructor.create(clazz.getConstructor()));
+        } catch (NoSuchMethodException e) {
+            throw new RegisterException(e);
+        }
+    }
+
+    /**
+     * Unregisters a custom packet by its ID.
+     * @param id The custom packet ID
+     * @return true if removed, false otherwise
+     */
+    public boolean unregisterCustomPacket(int id) {
+        return this.PACKET_POOL.remove(id) != null;
+    }
+
     @Override
     public DataPacket get(Integer key) {
-        FastConstructor<? extends DataPacket> fastConstructor = PACKET_POOL.get(key);
-        if (fastConstructor == null) {
-            fastConstructor = customPackets.get(key);
-        }
+        FastConstructor<? extends DataPacket> fastConstructor = PACKET_POOL.get(key.intValue());
         if (fastConstructor == null) {
             return null;
         } else {
@@ -57,15 +78,12 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     public DataPacket get(int key) {
         FastConstructor<? extends DataPacket> fastConstructor = PACKET_POOL.get(key);
         if (fastConstructor == null) {
-            fastConstructor = customPackets.get(key);
-        }
-        if (fastConstructor == null) {
             return null;
         } else {
             try {
                 return (DataPacket) fastConstructor.invoke();
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                throw new PacketInstantiationException("Failed to instantiate packet", e);
             }
         }
     }
@@ -73,7 +91,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     @Override
     public void trim() {
         PACKET_POOL.trim();
-        customPackets.trim();
     }
 
     public void reload() {
@@ -83,8 +100,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     }
 
     /**
-     * Register a packet to the pool. Using from 1.19.70.
-     *
+     * Register a packet to the pool. Used for both standard and custom packets.
      * @param id    The packet id, non-negative int
      * @param clazz The packet class
      */
