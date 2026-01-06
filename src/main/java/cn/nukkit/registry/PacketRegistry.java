@@ -20,10 +20,10 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
 
     /**
      * Allows plugins or external code to register a custom packet with a unique ID.
-     * The user is responsible for avoiding ID collisions with official packets.
+     * Custom packets share the same ID space as official packets. Any collision (official or custom) is rejected.
      * @param id    The unique packet ID
      * @param clazz The custom packet class
-     * @throws RegisterException if the ID is already used
+     * @throws RegisterException if the ID is already used (by any packet)
      */
     public void registerCustomPacket(int id, Class<? extends DataPacket> clazz) throws RegisterException {
         try {
@@ -84,7 +84,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     }
 
     /**
-     * Register a packet to the pool. Used for both standard and custom packets.
+     * Register a packet to the pool. This method is primarily intended for standard/internal packet registration.
+     * Custom packet registration should use registerCustomPacket to avoid accidental collisions.
      * @param id    The packet id, non-negative int
      * @param clazz The packet class
      */
