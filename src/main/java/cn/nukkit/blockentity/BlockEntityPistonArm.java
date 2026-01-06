@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockPistonArmCollision;
 import cn.nukkit.entity.Entity;
@@ -131,6 +132,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     /** The piston extension process lasts 2gt. */
     @Override
     public boolean onUpdate() {
+
         // This bool marks whether the next gt needs to continue updating
         var hasUpdate = true;
         // Promotion process
@@ -155,16 +157,16 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     movingBlock.close();
                     var moved = movingBlockBlockEntity.getMovingBlock();
                     moved.position(movingBlock);
+                    moved.setLevel(this.level);
                     this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
                     // Common Block Updates
-                    this.level.setBlock(movingBlock, moved, true, true);
                     var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                     if (movedBlockEntity != null) {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
                         movedBlockEntity.putInt("y", movingBlock.getFloorY());
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
-                        BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
-                    }
+                        BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder) moved, false, true, movedBlockEntity);
+                    } else this.level.setBlock(movingBlock, moved, true, true);
                     // Piston Update
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
                 }
