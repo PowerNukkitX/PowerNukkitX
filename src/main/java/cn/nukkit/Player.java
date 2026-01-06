@@ -701,7 +701,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setHealth(0);
         } else setHealth(getHealth()); // Sends health to player
 
-        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        ServerScheduler scheduler = this.getServer().getSettings().levelSettings().levelThread() ? this.getLevel().getScheduler() : this.getServer().getScheduler();
+        scheduler.scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             this.session.getMachine().fire(SessionState.IN_GAME);
         }, 5);
     }
