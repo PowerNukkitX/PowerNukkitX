@@ -65,7 +65,11 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
+            if(!this.getChunk().isLoaded()) {
+                this.level.scheduleUpdate(this, 1);
+                return 1;
+            }
             if (!(getSide(getBlockFace().getOpposite()) instanceof BlockPistonBase)) {
                 level.setBlock(this, new BlockAir(), true, false);
             }

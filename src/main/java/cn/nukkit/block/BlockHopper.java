@@ -156,7 +156,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
             return 0;
         }
 
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED) {
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
             boolean disabled = this.level.isBlockPowered(this.getLocation());
 
             if (disabled == this.isEnabled()) {
@@ -251,7 +251,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
                 }
             } else if (blockSide instanceof BlockComposter blockComposter) {
                 if (blockComposter.isFull()) {
-                    //检查是否能输入
+                    //Check if input is possible
                     if (!hopperInv.canAddItem(blockComposter.getOutPutItem()))
                         return false;
 
