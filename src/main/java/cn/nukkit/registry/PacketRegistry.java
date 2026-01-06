@@ -49,7 +49,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
             try {
                 return (DataPacket) fastConstructor.invoke();
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                throw new PacketInstantiationException("Failed to instantiate packet", e);
             }
         }
     }
