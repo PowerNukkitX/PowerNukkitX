@@ -37,22 +37,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     }
 
     /**
-     * Registers or overwrites a packet for the given ID.
-     * If a packet is already registered with this ID, it will be replaced by the new class.
-     * This can be used to override standard or custom packets.
-     * @param id    The packet ID to register or overwrite
-     * @param clazz The packet class
-     * @throws RegisterException if the class does not have a public no-arg constructor
-     */
-    public void registerOrOverwritePacket(int id, Class<? extends DataPacket> clazz) throws RegisterException {
-        try {
-            this.PACKET_POOL.put(id, FastConstructor.create(clazz.getConstructor()));
-        } catch (NoSuchMethodException e) {
-            throw new RegisterException(e);
-        }
-    }
-
-    /**
      * Unregisters a custom packet by its ID.
      * @param id The custom packet ID
      * @return true if removed, false otherwise
