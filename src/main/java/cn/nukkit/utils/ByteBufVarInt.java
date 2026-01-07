@@ -5,6 +5,10 @@ import lombok.experimental.UtilityClass;
 
 import java.math.BigInteger;
 
+/**
+ * Utility class for reading and writing variable-length integers to Netty ByteBufs.
+ * Supports signed and unsigned int/long/bigint encoding and decoding.
+ */
 @UtilityClass
 public class ByteBufVarInt {
 

@@ -30,12 +30,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author daoge_cmd <br>
- * Date: 2023/6/11 <br>
- * PowerNukkitX Project <br>
- * TODO: 此命令的多语言文本似乎不能正常工作
+ * @author daoge_cmd (PowerNukkitX Project)
+ * @since 2023/6/11
  */
-
 
 public class CameraCommand extends VanillaCommand {
 
@@ -57,9 +54,9 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
                 CommandParameter.newEnum("fade", false, new String[]{"fade"}),
                 CommandParameter.newEnum("color", false, new String[]{"color"}),
-                CommandParameter.newType("red", false, CommandParamType.FLOAT),
-                CommandParameter.newType("green", false, CommandParamType.FLOAT),
-                CommandParameter.newType("blue", false, CommandParamType.FLOAT)
+                CommandParameter.newType("red", false, CommandParamType.INT),
+                CommandParameter.newType("green", false, CommandParamType.INT),
+                CommandParameter.newType("blue", false, CommandParamType.INT)
         });
         this.commandParameters.put("fade-time-color", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -69,9 +66,9 @@ public class CameraCommand extends VanillaCommand {
                 CommandParameter.newType("holdSeconds", false, CommandParamType.FLOAT),
                 CommandParameter.newType("fadeOutSeconds", false, CommandParamType.FLOAT),
                 CommandParameter.newEnum("color", false, new String[]{"color"}),
-                CommandParameter.newType("red", false, CommandParamType.FLOAT),
-                CommandParameter.newType("green", false, CommandParamType.FLOAT),
-                CommandParameter.newType("blue", false, CommandParamType.FLOAT)
+                CommandParameter.newType("red", false, CommandParamType.INT),
+                CommandParameter.newType("green", false, CommandParamType.INT),
+                CommandParameter.newType("blue", false, CommandParamType.INT)
         });
         this.commandParameters.put("set-default", new CommandParameter[]{
                 CommandParameter.newType("players", false, CommandParamType.TARGET, new PlayersNode()),
@@ -150,7 +147,11 @@ public class CameraCommand extends VanillaCommand {
         this.enableParamTree();
     }
 
-    private static float getFloat(ParamList list, int index) {
+    private float getFloat(ParamList list, int index) {
+        return list.get(index).get();
+    }
+
+    private int getInteger(ParamList list, int index) {
         return list.get(index).get();
     }
 
@@ -176,14 +177,14 @@ public class CameraCommand extends VanillaCommand {
             case "fade-color" -> {
                 pk.setInstruction(FadeInstruction
                         .builder()
-                        .color(new Color(getFloat(list, 3), getFloat(list, 4), getFloat(list, 5)))
+                        .color(new Color(getInteger(list, 3), getInteger(list, 4), getInteger(list, 5)))
                         .build());
             }
             case "fade-time-color" -> {
                 pk.setInstruction(FadeInstruction
                         .builder()
                         .time(new Time(list.get(3).get(), list.get(4).get(), list.get(5).get()))
-                        .color(new Color(getFloat(list, 7), getFloat(list, 8), getFloat(list, 9)))
+                        .color(new Color(getInteger(list, 7), getInteger(list, 8), getInteger(list, 9)))
                         .build());
             }
             case "set-default" -> {

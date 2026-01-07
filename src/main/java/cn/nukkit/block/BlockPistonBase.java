@@ -105,7 +105,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, player.getHorizontalFacing().getIndex());
             }
         }
-        this.level.setBlock(block, this, true, true);
+        this.level.setBlock(block, this, false, true);
         var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
                 .putInt("facing", this.getBlockFace().getIndex())
                 .putBoolean("Sticky", this.sticky)
@@ -153,14 +153,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 if (arm.chunk != null)
                     arm.chunk.setChanged();
                 if (powered && !isExtended())
-                    //推出未成功,下一个计划刻再次自检
-                    //TODO: 这里可以记录阻挡的方块并在阻挡因素移除后同步更新到活塞，而不是使用计划刻
+                    //Launch failed, self-check again on next plan cycle
                     level.scheduleUpdate(this, 2);
                 return type;
             }
-            //上一次推出未成功
-            if (type == Level.BLOCK_UPDATE_SCHEDULED && powered && !isExtended() && !checkState(true))
-                //依然不成功，下一个计划刻继续自检
+            //The previous launch was unsuccessful.
+            if (powered && !isExtended() && !checkState(true))
+                //Still unsuccessful. Proceed to the next plan and continue self-checking.
                 level.scheduleUpdate(this, 2);
             return type;
         }
@@ -249,11 +248,11 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         var nbtList = new ArrayList<CompoundTag>();
         if (canMove && (this.sticky || extending)) {
             var destroyBlocks = calculator.getBlocksToDestroy();
-            //破坏需要破坏的方块
+            //Destroy the blocks that need to be destroyed.
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
                 var block = destroyBlocks.get(i);
                 var item = ItemTool.getBestTool(block.getToolType());
-                //清除位置上所含的水等
+                //Remove water and other substances from the location.
                 this.level.setBlock(block, 1, Block.get(BlockID.AIR), true, false);
                 this.level.useBreakOn(block, item);
             }
@@ -263,7 +262,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
             for (Block blockToMove : blocksToMove) {
                 var oldPos = new Vector3(blockToMove.x, blockToMove.y, blockToMove.z);
                 var newPos = blockToMove.getSidePos(moveDirection);
-                //清除位置上所含的水等
+                //Remove water and other substances from the location.
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
                         .putBoolean("expanding", extending)
@@ -274,7 +273,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                         .putCompound("movingBlockExtra", level.getBlock(blockToMove, 1).getBlockState().getBlockStateTag())
                         .putBoolean("isMovable", true);
                 var blockEntity = this.level.getBlockEntity(oldPos);
-                //移动方块实体
+                //Moveable Block Entity
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
                     nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
@@ -292,7 +291,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         }
         final List<BlockVector3> finalToMoveBlockVec = toMoveBlockVec;
         blockEntity.preMove(extending, finalToMoveBlockVec);
-        //生成moving_block
+        //Generate moving_block
         if (!oldPosList.isEmpty()) {
             for (int i = 0; i < oldPosList.size(); i++) {
                 var oldPos = oldPosList.get(i);
@@ -304,10 +303,10 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 }
             }
         }
-        //创建活塞臂方块
+        //Create Piston Arm Block
         if (extending) {
             var pistonArmPos = this.getSide(pistonFace);
-            //清除位置上所含的水等
+            //Remove water and other substances from the location.
             level.setBlock(pistonArmPos, 1, Block.get(AIR), true, false);
             BlockFace blockFace = getBlockFace();
             if (blockFace.getAxis() == BlockFace.Axis.Y) {
@@ -316,7 +315,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 level.setBlock(pistonArmPos, createHead(blockFace.getOpposite()), true, false);
             }
         }
-        //开始移动
+        //Start moving
 
         blockEntity.move();
         if (extending) {
@@ -380,7 +379,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 return -1;
             }
 
-            @Override //以防万一
+            @Override //Just in case
             public boolean contains(Object o) {
                 return indexOf(o) >= 0;
             }

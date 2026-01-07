@@ -49,6 +49,14 @@ public class SimpleForm extends Form<SimpleResponse> {
         return this;
     }
 
+    public SimpleForm addElements(ElementSimple... elements) {
+        for (ElementSimple element : elements) {
+            this.addElement(element);
+        }
+
+        return this;
+    }
+
     public SimpleForm addButton(ElementButton element, Consumer<Player> callback) {
         this.elements.put(element, callback);
         return this;

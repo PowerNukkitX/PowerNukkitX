@@ -32,8 +32,49 @@ import static cn.nukkit.command.selector.SelectorType.SELF;
 import static cn.nukkit.command.selector.SelectorType.parseSelectorType;
 
 /**
- * Target Selector API<p/>
- * Pass{@code getAPI()} method to obtain API object
+ * Provides the API for parsing, registering, and matching Minecraft entity selectors in PowerNukkitX.
+ * <p>
+ * EntitySelectorAPI enables advanced command selector functionality, supporting Minecraft's target selector syntax
+ * (e.g., @p, @a, @e, @r, @s, @initiator) with argument parsing, caching, and extensible argument registration.
+ * It is used to resolve selectors to entity lists, validate selector syntax, and register custom selector arguments.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Parses and matches entity selectors with arguments (e.g., @e[type=zombie,tag=foo]).</li>
+ *   <li>Supports all vanilla selector types and custom NPC initiator.</li>
+ *   <li>Extensible argument system: register custom selector arguments implementing {@link ISelectorArgument}.</li>
+ *   <li>Efficient caching of parsed arguments and selector validity for performance.</li>
+ *   <li>Handles family/type exclusivity, argument validation, and error reporting via {@link SelectorSyntaxException}.</li>
+ *   <li>Supports random and nearest player/entity selection, as well as self and NPC initiator targeting.</li>
+ *   <li>Thread-safe, singleton access via {@link #getAPI()}.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Obtain the singleton instance using {@link #getAPI()}.</li>
+ *   <li>Call {@link #matchEntities(CommandSender, String)} to resolve a selector string to a list of entities.</li>
+ *   <li>Register custom selector arguments with {@link #registerArgument(ISelectorArgument)}.</li>
+ *   <li>Use {@link #checkValid(String)} to validate selector syntax.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * List<Entity> entities = EntitySelectorAPI.getAPI().matchEntities(sender, "@e[type=zombie,r=10]");
+ * boolean valid = EntitySelectorAPI.getAPI().checkValid("@p");
+ * EntitySelectorAPI.getAPI().registerArgument(new MyCustomSelectorArgument());
+ * </pre>
+ *
+ * <b>Selector Syntax:</b>
+ * <ul>
+ *   <li>Selectors: @a (all players), @e (all entities), @p (nearest player), @r (random player), @s (self), @initiator (NPC initiator)</li>
+ *   <li>Arguments: [key=value,...] (e.g., @e[type=zombie,tag=foo])</li>
+ *   <li>Supports custom arguments and advanced filtering.</li>
+ * </ul>
+ *
+ * <b>Thread Safety:</b> All caches and registries are thread-safe for concurrent command execution.
+ *
+ * @author PowerNukkitX Project Team
+ * @since PowerNukkitX 2.0.0
  */
 
 

@@ -12,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Represents a dialog window with a title, content, buttons, and optional entity binding.
+ * Used to display interactive dialogs to players.
+ */
 public class FormWindowDialog implements Dialog {
     private static long dialogId = 0;
 
@@ -32,10 +35,23 @@ public class FormWindowDialog implements Dialog {
 
     protected final transient List<FormDialogHandler> handlers = new ObjectArrayList<>();
 
+    /**
+     * Constructs a FormWindowDialog with title, content, and entity to bind.
+     * @param title The dialog title
+     * @param content The dialog content
+     * @param bindEntity The entity to bind (cannot be null)
+     */
     public FormWindowDialog(String title, String content, Entity bindEntity) {
         this(title, content, bindEntity, new ArrayList<>());
     }
 
+    /**
+     * Constructs a FormWindowDialog with title, content, entity, and buttons.
+     * @param title The dialog title
+     * @param content The dialog content
+     * @param bindEntity The entity to bind
+     * @param buttons The list of dialog buttons
+     */
     public FormWindowDialog(String title, String content, Entity bindEntity, List<ElementDialogButton> buttons) {
         this.title = title;
         this.content = content;
@@ -130,6 +146,10 @@ public class FormWindowDialog implements Dialog {
         this.sceneName = String.valueOf(dialogId++);
     }
 
+    /**
+     * Sends this dialog window to the specified player.
+     * @param player The player to send the dialog to
+     */
     @Override
     public void send(@NotNull Player player) {
         player.showDialogWindow(this);

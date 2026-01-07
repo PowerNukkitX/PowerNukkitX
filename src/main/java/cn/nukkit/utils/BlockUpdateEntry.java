@@ -6,6 +6,9 @@ import cn.nukkit.math.Vector3;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * Represents a scheduled block update entry with priority and delay.
+ * Used for managing block updates in the world tick system.
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockUpdateEntry implements Comparable<BlockUpdateEntry> {

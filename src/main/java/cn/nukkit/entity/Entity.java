@@ -481,15 +481,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 实体初始化顺序，先初始化Entity类字段->Entity构造函数->进入init方法->调用initEntity方法->子类字段初始化->子类构造函数
-     * <p>
-     * 用于初始化实体的NBT和实体字段的方法
-     * <p>
      * Entity initialization order, first initialize the Entity class field->Entity constructor->Enter the init method->Call the init Entity method-> subclass field initialization-> subclass constructor
      * <p>
      * The method used to initialize the NBT and entity fields of the entity
      */
     protected void initEntity() {
+        // =========================================================
+        // Load or generate UUID for non-player entities
+        // =========================================================
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
@@ -498,37 +497,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if (this.namedTag.contains("ActiveEffects")) {
-            ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
-            for (CompoundTag e : effects.getAll()) {
-                Effect effect = Effect.get(e.getByte("Id"));
-                if (effect == null) {
-                    continue;
-                }
-
-                effect.setAmplifier(e.getByte("Amplifier")).setDuration(e.getInt("Duration")).setVisible(e.getBoolean("ShowParticles"));
-
-                this.addEffect(effect);
-            }
-        }
-
-        if (this.namedTag.contains("CustomName")) {
-            this.setNameTag(this.namedTag.getString("CustomName"));
-            if (this.namedTag.contains("CustomNameVisible")) {
-                this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
-            }
-            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
-                this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
-            }
-        }
-
-        if (this.namedTag.contains("Attributes")) {
-            ListTag<CompoundTag> attributes = this.namedTag.getList("Attributes", CompoundTag.class);
-            for (var nbt : attributes.getAll()) {
-                Attribute attribute = Attribute.fromNBT(nbt);
-                this.attributes.put(attribute.getId(), attribute);
-            }
-        }
+        // =========================================================
+        // Initialize entity data defaults first
+        // =========================================================
         this.entityDataMap.getOrCreateFlags();
         this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
         this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
@@ -538,8 +509,61 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+
+        // =========================================================
+        // Load Effects from NBT
+        // =========================================================
+        if (this.namedTag.contains("ActiveEffects")) {
+            ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
+            for (CompoundTag e : effects.getAll()) {
+                Effect effect = Effect.get(e.getByte("Id"));
+                if (effect == null) continue;
+
+                effect.setAmplifier(e.getByte("Amplifier"))
+                    .setDuration(e.getInt("Duration"))
+                    .setVisible(e.getBoolean("ShowParticles"));
+
+                this.addEffect(effect);
+            }
+        }
+
+        // =========================================================
+        // Load Custom name from NBT
+        // =========================================================
+        if (this.namedTag.contains("CustomName")) {
+            String name = this.namedTag.getString("CustomName");
+            if (name != null) {
+                this.setNameTag(name);
+            }
+            if (this.namedTag.contains("CustomNameVisible")) {
+                this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
+            }
+            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
+                this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
+            }
+        }
+
+        // =========================================================
+        // Load Attributes from NBT
+        // =========================================================
+        if (this.namedTag.contains("Attributes")) {
+            ListTag<CompoundTag> attributes = this.namedTag.getList("Attributes", CompoundTag.class);
+            for (var nbt : attributes.getAll()) {
+                Attribute attribute = Attribute.fromNBT(nbt);
+                this.attributes.put(attribute.getId(), attribute);
+            }
+        }
+
+        // =========================================================
+        // Send initial data + default flags
+        // =========================================================
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-        this.setDataFlags(EnumSet.of(EntityFlag.CAN_CLIMB, EntityFlag.BREATHING, EntityFlag.HAS_COLLISION, EntityFlag.HAS_GRAVITY));
+        this.setDataFlags(EnumSet.of(
+            EntityFlag.CAN_CLIMB,
+            EntityFlag.BREATHING,
+            EntityFlag.HAS_COLLISION,
+            EntityFlag.HAS_GRAVITY
+        ));
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
@@ -626,9 +650,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
         this.scale = this.namedTag.getFloat("Scale");
         if (!this.namedTag.contains("Despawnable")) {
-            boolean persistent = 
-                (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
-                this.namedTag.getBoolean("Persistent");
+            boolean persistent =
+                    (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
+                            this.namedTag.getBoolean("Persistent");
 
             this.namedTag.putBoolean("Despawnable", !persistent);
         }
@@ -1587,8 +1611,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.justCreated = false;
         this.stepOnBlocks = null;
 
-        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable entityRideable) {
-            entityRideable.dismountEntity(this);
+        if (riding != null && !riding.isAlive() && riding.isRideable()) {
+            riding.dismountEntity(this);
         }
         updatePassengers();
 
@@ -2252,6 +2276,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         return onInteract(player, item);
+    }
+
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        return false; //if false, normal player movement will proceed
+    }
+
+    public boolean isRideable() {
+        if (isCustomEntity()) {
+            return meta().getBoolean(CustomEntityComponents.RIDEABLE, false);
+        }
+
+        return false;
+    }
+
+    public boolean isRiderControl() {
+        if (isCustomEntity()) {
+            return meta().getBoolean(CustomEntityComponents.RIDE_CONTROL, false);
+        }
+
+        return false;
+    }
+
+    public boolean openInventory(Player player) {
+        return false; //return true if opening inventory, otherwise players inventory will be opnened
     }
 
     public boolean onInteract(Player player, Item item) {
@@ -3043,7 +3091,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private void close(boolean despawn) {
         if (!this.closed) {
             this.closed = true;
-            
+
             if (despawn) {
                 try {
                     EntityDespawnEvent event = new EntityDespawnEvent(this);
@@ -3429,7 +3477,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (intProperty == null) return false;
 
         if (value < intProperty.getMinValue() || value > intProperty.getMaxValue()) {
-                return false;
+            return false;
         }
 
         intProperties.put(identifier, value);
@@ -3453,7 +3501,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (floatProperty == null) return false;
 
         if (value < floatProperty.getMinValue() || value > floatProperty.getMaxValue()) {
-                return false;
+            return false;
         }
 
         floatProperties.put(identifier, value);
@@ -3519,18 +3567,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
 
         int[] intArray = propertyDefs.stream()
-            .filter(this::shouldSyncIntProperty)
-            .map(this::getIntPropertyValue)
-            .filter(Objects::nonNull)
-            .mapToInt(Integer::intValue)
-            .toArray();
+                .filter(this::shouldSyncIntProperty)
+                .map(this::getIntPropertyValue)
+                .filter(Objects::nonNull)
+                .mapToInt(Integer::intValue)
+                .toArray();
 
         double[] doubleArray = propertyDefs.stream()
-            .filter(this::shouldSyncFloatProperty)
-            .map(this::getFloatPropertyValue)
-            .filter(Objects::nonNull)
-            .mapToDouble(Float::doubleValue)
-            .toArray();
+                .filter(this::shouldSyncFloatProperty)
+                .map(this::getFloatPropertyValue)
+                .filter(Objects::nonNull)
+                .mapToDouble(Float::doubleValue)
+                .toArray();
 
         float[] floatArray = new float[doubleArray.length];
         for (int i = 0; i < doubleArray.length; i++) {
@@ -3543,8 +3591,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private boolean shouldSyncIntProperty(EntityProperty prop) {
         if (!prop.isClientSync()) return false;
         return (prop instanceof IntEntityProperty)
-            || (prop instanceof BooleanEntityProperty)
-            || (prop instanceof EnumEntityProperty);
+                || (prop instanceof BooleanEntityProperty)
+                || (prop instanceof EnumEntityProperty);
     }
 
     private Integer getIntPropertyValue(EntityProperty prop) {

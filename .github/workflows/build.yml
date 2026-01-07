@@ -22,7 +22,7 @@ jobs:
 
       - name: Check for file changes
         id: check-changed-files
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # v47.0.1
 
       - name: Output list of changed files
         run: echo "${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}"

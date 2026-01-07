@@ -6,7 +6,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -146,5 +148,17 @@ public class BlockFarmland extends BlockTransparent {
 
     public void setMoistureAmount(int value) {
         setPropertyValue(CommonBlockProperties.MOISTURIZED_AMOUNT, value);
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return new SimpleAxisAlignedBB(
+                this.x,
+                this.y,
+                this.z,
+                this.x + 1,
+                this.y + (15D/16D),
+                this.z + 1
+        );
     }
 }

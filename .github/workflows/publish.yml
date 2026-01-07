@@ -39,7 +39,7 @@ jobs:
 
       - name: Check for file changes
         id: check-changed-files
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # v47.0.1
 
       - name: Output list of changed files
         run: echo "${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}"
@@ -89,13 +89,13 @@ jobs:
 
       - name: Upload test results to Codecov
         if: success() && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
-        uses: codecov/test-results-action@v1
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Read version
         id: read_version
-        uses: christian-draeger/read-properties@1.1.1
+        uses: christian-draeger/read-properties@908f99d3334be3802ec7cb528395a69d19914e7b # v1.1.1
         with:
           path: 'build/resources/main/git.properties'
           properties: 'git.build.version'
@@ -107,7 +107,7 @@ jobs:
           path: build/powernukkitx.jar
 
       - name: Release latest snapshot
-        uses: Xotl/cool-github-releases@v1
+        uses: xotl/cool-github-releases@7dcf348937ee2345e1b3a4bc80926d6cdb4a4492 # v1.1.10
         if: success() && contains(github.ref_name, 'master')
         with:
           mode: update

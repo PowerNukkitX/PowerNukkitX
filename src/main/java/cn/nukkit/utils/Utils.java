@@ -14,6 +14,10 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.reflect.Array;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -367,8 +371,6 @@ public class Utils {
     }
 
     /**
-     * 返回介于最小值(包含)和最大值(包含)之间的伪随机数
-     * <p>
      * Return a random number between the minimum (inclusive) and maximum (inclusive).
      *
      * @param min the min
@@ -462,8 +464,8 @@ public class Utils {
         return true;
     }
 
-    //used for commands /fill , /clone and so on
-    //todo: using other methods instead of this one
+    // Used for commands /fill, /clone and so on
+    // TODO: using other methods instead of this one
 
 
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
@@ -523,7 +525,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
                         return true;
                     }
@@ -546,7 +548,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         return true;
                     }
@@ -585,7 +587,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
-                    //判断是否和非空气方块有碰撞
+                    // Determine whether there is a collision with non-air blocks
                     if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         if (x < centerX) {
                             returnValue |= 0b010000;
@@ -642,5 +644,21 @@ public class Utils {
         byte[] payload = new byte[buf.readableBytes()];
         buf.readBytes(payload);
         return payload;
+    }
+
+    public static String getExternalIP() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI("https://api.ipify.org"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String ip = response.body().trim();
+            return ip.isEmpty() ? "unknown" : ip;
+        } catch (Exception e) {
+            return "unknown";
+        }
     }
 }

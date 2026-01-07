@@ -1,4 +1,3 @@
-
 package cn.nukkit.lang;
 
 import cn.nukkit.Server;
@@ -25,16 +24,65 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 
+/**
+ * Provides internationalization (i18n) support for plugins, enabling multi-language translation and management.
+ * <p>
+ * This class manages language files for plugins, allowing translation of keys into multiple languages, fallback handling,
+ * and dynamic reloading of language resources. It supports loading language data from files or streams, parameterized translations,
+ * and integration with the server's global language system as a final fallback.
+ * </p>
+ *
+ * <h2>Features:</h2>
+ * <ul>
+ *   <li>Translates keys to multiple languages using plugin-specific language files.</li>
+ *   <li>Supports parameterized and container-based translations.</li>
+ *   <li>Handles fallback language if a translation is missing.</li>
+ *   <li>Allows dynamic reloading and addition of language resources at runtime.</li>
+ *   <li>Integrates with the server's global language as a final fallback.</li>
+ * </ul>
+ *
+ * <h2>Usage Example:</h2>
+ * <pre>
+ *     PluginI18n i18n = new PluginI18n(plugin);
+ *     i18n.addLang(LangCode.fr_FR, "path/to/fr_FR.json");
+ *     String message = i18n.tr(LangCode.fr_FR, "welcome.message", "Player");
+ * </pre>
+ *
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * This class is not thread-safe. If used in a multi-threaded context, external synchronization is required.
+ * </p>
+ *
+ * @author PowerNukkitX Team
+ * @since 1.0
+ */
 @Slf4j
 public class PluginI18n {
     /**
-     * 插件多语言的默认备选语言
+     * The fallback language code used when a translation is missing for a specific language.
      */
     private LangCode fallback;
+
+    /**
+     * Pattern to extract strings starting with % followed by [a-zA-Z0-9_.-] characters.
+     */
     private final Pattern split = Pattern.compile("%[A-Za-z0-9_.-]+");
+
+    /**
+     * The plugin instance associated with this i18n manager.
+     */
     private final PluginBase plugin;
+
+    /**
+     * Stores all loaded language maps for this plugin, indexed by language code.
+     */
     private final Map<LangCode, Map<String, String>> MULTI_LANGUAGE;
 
+    /**
+     * Constructs a PluginI18n instance for the specified plugin.
+     *
+     * @param plugin the plugin instance to associate with this i18n manager
+     */
     public PluginI18n(PluginBase plugin) {
         this.plugin = plugin;
         this.MULTI_LANGUAGE = new HashMap<>();
@@ -42,27 +90,23 @@ public class PluginI18n {
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询
-     * <p>
-     * Translate a text key, the key is queried from the language file
+     * Translates a text key by looking it up in the language file for the specified language.
      *
-     * @param lang 要翻译的语言
-     * @param key  the key
-     * @return the string
+     * @param lang the language to translate to
+     * @param key  the translation key
+     * @return the translated string, or null if not found
      */
     public String tr(LangCode lang, String key) {
         return tr(lang, key, EmptyArrays.EMPTY_STRINGS);
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
-     * <p>
-     * Translate a text key, the key is queried from the language file and the parameters are filled according to the given parameters
+     * Translates a text key with parameters, replacing placeholders in the translation string for the specified language.
      *
-     * @param lang 要翻译的语言
-     * @param key  the key
-     * @param args the args
-     * @return the string
+     * @param lang the language to translate to
+     * @param key  the translation key
+     * @param args the parameters to replace in the translation string
+     * @return the translated string with parameters applied
      */
     public String tr(LangCode lang, String key, String... args) {
         String baseText = parseLanguageText(lang, key);
@@ -73,14 +117,12 @@ public class PluginI18n {
     }
 
     /**
-     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充其中参数
-     * <p>
-     * Translate a text key, the key is queried from the language file and the parameters are filled according to the given parameters
+     * Translates a text key with object parameters, replacing placeholders in the translation string for the specified language.
      *
-     * @param lang 要翻译的语言
-     * @param key  the key
-     * @param args the args
-     * @return the string
+     * @param lang the language to translate to
+     * @param key  the translation key
+     * @param args the parameters to replace in the translation string
+     * @return the translated string with parameters applied
      */
     public String tr(LangCode lang, String key, Object... args) {
         String baseText = parseLanguageText(lang, key);
@@ -91,13 +133,11 @@ public class PluginI18n {
     }
 
     /**
-     * 翻译文本容器
-     * <p>
-     * Tr string.
+     * Translates a TextContainer, supporting parameterized translations for the specified language.
      *
-     * @param lang 要翻译的语言
-     * @param c    the c
-     * @return the string
+     * @param lang the language to translate to
+     * @param c    the TextContainer to translate
+     * @return the translated string
      */
     public String tr(LangCode lang, TextContainer c) {
         String baseText = this.parseLanguageText(lang, c.getText());
@@ -110,12 +150,12 @@ public class PluginI18n {
     }
 
     /**
-     * 获取指定id对应的多语言文本，若不存在则返回null
-     * <p>
-     * Get the multilingual text corresponding to the specified id, or return null if it does not exist
+     * Gets the multilingual text corresponding to the specified id for the given language, or null if it does not exist.
+     * Falls back to the fallback language and then to the server's global language if not found.
      *
-     * @param id the id
-     * @return the string
+     * @param lang the language to use
+     * @param id   the translation key
+     * @return the translated string, or null if not found
      */
     public String get(LangCode lang, String id) {
         final var map = this.MULTI_LANGUAGE.get(lang);
@@ -130,12 +170,12 @@ public class PluginI18n {
     }
 
     /**
-     * 获取指定id对应的多语言文本，若不存在则返回id本身
-     * <p>
-     * Get the multilingual text corresponding to the specified id, or return the id itself if it does not exist
+     * Gets the multilingual text corresponding to the specified id for the given language, or returns the id itself if it does not exist.
+     * Falls back to the fallback language and then to the server's global language if not found.
      *
-     * @param id the id
-     * @return the string
+     * @param lang the language to use
+     * @param id   the translation key
+     * @return the translated string, or the id itself if not found
      */
     public String getOrOriginal(LangCode lang, String id) {
         final var map = this.MULTI_LANGUAGE.get(lang);
@@ -324,4 +364,3 @@ public class PluginI18n {
         });
     }
 }
-

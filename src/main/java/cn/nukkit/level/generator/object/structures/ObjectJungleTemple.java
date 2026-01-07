@@ -272,11 +272,8 @@ public class ObjectJungleTemple extends RuledObjectGenerator {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
-        if (biome != BiomeID.JUNGLE ||
-                !((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
-            return false;
-        }
-        return true;
+        return biome == BiomeID.JUNGLE && ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX
+                && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }
 
     protected static class ChestPopulator extends RandomizableContainer {

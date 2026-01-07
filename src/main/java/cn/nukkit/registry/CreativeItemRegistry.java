@@ -1,5 +1,6 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import cn.nukkit.utils.Config;
 import lombok.extern.slf4j.Slf4j;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +43,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     static final ObjectLinkedOpenHashSet<CreativeItemGroup> GROUPS = new ObjectLinkedOpenHashSet<>();
-    static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
+    public static final ObjectLinkedOpenHashSet<CreativeItemData> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
 
@@ -180,6 +183,43 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public int getCreativeItemGroupIndex(String id) {
+        if (id == null || id.isEmpty()) {
+            return CreativeItemRegistry.LAST_ITEMS_INDEX;
+        }
+
+        try {
+            // 1. If we already resolved a group name for this item, use it
+            String groupName = ITEM_GROUP_MAP.get(id);
+            if (groupName != null && !groupName.isEmpty()) {
+                for (Map<String, Integer> groupMap : CATEGORY_GROUP_INDEX_MAP.values()) {
+                    Integer index = groupMap.get(groupName);
+                    if (index != null) {
+                        return index;
+                    }
+                }
+            }
+
+            // 2. Try resolving by direct group-name match (id == group)
+            for (Map<String, Integer> groupMap : CATEGORY_GROUP_INDEX_MAP.values()) {
+                Integer index = groupMap.get(id);
+                if (index != null) {
+                    return index;
+                }
+            }
+
+        } catch (Exception e) {
+            log.warn(
+                    "Failed to resolve creative group index for '{}': {}",
+                    id,
+                    e.getMessage()
+            );
+        }
+
+        // 3. Final fallback (items tab tail)
+        return CreativeItemRegistry.LAST_ITEMS_INDEX;
     }
 
     /**
@@ -333,6 +373,36 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
         return CreativeItemRegistry.LAST_CONSTRUCTION_INDEX;
     }
+
+    public int resolveGroupIndexFromGroupName(String identifier) {
+        if (identifier == null || identifier.isEmpty()) {
+            return CreativeItemRegistry.LAST_CONSTRUCTION_INDEX;
+        }
+
+        try {
+            String groupName = identifier;
+
+            // Search all categories for this group
+            for (Map<String, Integer> groupMap : CATEGORY_GROUP_INDEX_MAP.values()) {
+                Integer index = groupMap.get(groupName);
+                if (index != null) {
+                    return index;
+                }
+            }
+
+            log.warn("Unknown creative group '{}'", groupName);
+        } catch (Exception e) {
+            log.warn(
+                    "Failed to resolve creative group index from group name '{}': {}",
+                    identifier,
+                    e.getMessage()
+            );
+        }
+
+        return CreativeItemRegistry.LAST_CONSTRUCTION_INDEX;
+    }
+
+
 
     public int resolveGroupIndexFromItemDefinition(String identifier, CompoundTag nbt) {
         if (nbt != null && nbt.contains("components")) {

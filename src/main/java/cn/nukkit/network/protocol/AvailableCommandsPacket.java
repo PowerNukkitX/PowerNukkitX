@@ -17,7 +17,6 @@ import lombok.*;
 
 import java.util.*;
 import java.util.function.ObjIntConsumer;
-import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -97,12 +96,12 @@ public class AvailableCommandsPacket extends DataPacket {
 
                 subCommandData.add(subcommand);
                 for (ChainedSubCommandData.Value value : subcommand.getValues()) {
-                    if (subCommandValues.contains(value.getFirst())) {
-                        subCommandValues.add(value.getFirst());
+                    if (subCommandValues.contains(value.first())) {
+                        subCommandValues.add(value.first());
                     }
 
-                    if (subCommandValues.contains(value.getSecond())) {
-                        subCommandValues.add(value.getSecond());
+                    if (subCommandValues.contains(value.second())) {
+                        subCommandValues.add(value.second());
                     }
                 }
             }
@@ -166,11 +165,11 @@ public class AvailableCommandsPacket extends DataPacket {
             byteBuf.writeString(chainedSubCommandData.getName());
             byteBuf.writeUnsignedVarInt(chainedSubCommandData.getValues().size());
             for (ChainedSubCommandData.Value value : chainedSubCommandData.getValues()) {
-                int first = subCommandValues.indexOf(value.getFirst());
-                checkArgument(first > -1, "Invalid enum value detected: " + value.getFirst());
+                int first = subCommandValues.indexOf(value.first());
+                checkArgument(first > -1, "Invalid enum value detected: " + value.first());
 
-                int second = subCommandValues.indexOf(value.getSecond());
-                checkArgument(second > -1, "Invalid enum value detected: " + value.getSecond());
+                int second = subCommandValues.indexOf(value.second());
+                checkArgument(second > -1, "Invalid enum value detected: " + value.second());
 
                 byteBuf.writeShortLE(first);
                 byteBuf.writeShortLE(second);

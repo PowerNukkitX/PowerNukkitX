@@ -164,7 +164,7 @@ public class BlockFire extends BlockFlowable {
                             level.setBlock(this, event.getNewState(), true);
                         }
                     }
-                } else if (!forever && !(down.getBurnAbility() > 0) && meta == 15 && random.nextInt(4) == 0) {
+                } else if (!forever && down.getBurnAbility() == 0 && meta == 15 && random.nextInt(4) == 0) {
                     BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
                     level.getServer().getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {

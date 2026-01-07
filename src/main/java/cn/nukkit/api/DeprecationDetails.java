@@ -7,31 +7,39 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Describe the deprecation with more details. This is persisted to the class file, so it can be read without javadocs.
+ * Provides detailed information about the deprecation of an element. This annotation is retained in the class file,
+ * allowing tools to access deprecation details even without Javadocs.
  */
-
-@Retention(RetentionPolicy.CLASS)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
-        ElementType.FIELD, ElementType.PACKAGE})
 @Documented
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE,
+        ElementType.TYPE, ElementType.FIELD, ElementType.PACKAGE})
 public @interface DeprecationDetails {
     /**
-     * The version which marked this element as deprecated.
+     * Specifies the version in which this element was marked as deprecated.
+     *
+     * @return the version string
      */
     String since();
 
     /**
-     * Why it is deprecated.
+     * Explains the reason for deprecation.
+     *
+     * @return the reason for deprecation
      */
     String reason();
 
     /**
-     * What should be used or do instead.
+     * Suggests an alternative or replacement for the deprecated element.
+     *
+     * @return the recommended replacement, or an empty string if none
      */
     String replaceWith() default "";
 
     /**
-     * The maintainer party that has added this depreciation. For example: PowerNukkit, Cloudburst Nukkit, and Nukkit
+     * Identifies the maintainer or project that introduced the deprecation (e.g., PowerNukkit, Cloudburst Nukkit).
+     *
+     * @return the maintainer or project name, or an empty string if unspecified
      */
     String by() default "";
 }

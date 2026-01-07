@@ -10,7 +10,7 @@ import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Alias piston head
+ * The alias is piston head
  */
 public class BlockPistonArmCollision extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);
@@ -65,7 +65,11 @@ public class BlockPistonArmCollision extends BlockTransparent implements Faceabl
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
+            if(!this.getChunk().isLoaded()) {
+                this.level.scheduleUpdate(this, 1);
+                return 1;
+            }
             if (!(getSide(getBlockFace().getOpposite()) instanceof BlockPistonBase)) {
                 level.setBlock(this, new BlockAir(), true, false);
             }

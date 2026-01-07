@@ -40,7 +40,7 @@ public class FormTest {
     @Test
     void test_FormWindowCustom(TestPlayer player, TestPluginManager testPluginManager) {
         testPluginManager.resetAll();
-        ElementDropdown test1 = new ElementDropdown("test1", List.of("1", "2", "3"), 1);//default 2
+        ElementDropdown test1 = new ElementDropdown("test1", List.of("1", "2", "3"), 1, "This is a test tooltip!");//default 2
         ElementInput test2 = new ElementInput("test2", "placeholder", "defaultText");
         ElementLabel test3 = new ElementLabel("test3");
         ElementSlider test4 = new ElementSlider("test4", 0, 100, 1, 50);

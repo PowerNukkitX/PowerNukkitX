@@ -44,9 +44,7 @@ public final class StringUtils {
     }
 
     /**
-     * 在短字符串上(通常只有一个分割)处理比{@link String#split(String)}快
-     * <p>
-     * Processing on short strings(There is usually only one split) is faster than {@link String#split(String)}
+     * Processing on short strings (There is usually only one split) is faster than {@link String#split(String)}
      *
      * @param delimiter the delimiter
      * @param str       the str

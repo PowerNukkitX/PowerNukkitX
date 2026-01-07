@@ -22,17 +22,12 @@ public class CompoundTagUpdater implements Comparable<CompoundTagUpdater> {
     }
 
     private static String getTagValue(Object tag) {
-        if (tag == null) {
-            return "END";
-        } else if (tag instanceof Byte || tag instanceof Short || tag instanceof Integer || tag instanceof Long ||
-                tag instanceof Float || tag instanceof Double) {
-            return String.valueOf(tag);
-        } else if (tag instanceof String) {
-            return (String) tag;
-        } else if (tag instanceof Boolean) {
-            return tag == Boolean.TRUE ? "1" : "0";
-        }
-        throw new IllegalArgumentException("Invalid tag " + tag.getClass().getSimpleName());
+        return switch (tag) {
+            case Boolean bool -> bool ? "1" : "0";
+            case String str -> str;
+            case null -> "END";
+            default -> String.valueOf(tag);
+        };
     }
 
     public int getVersion() {
