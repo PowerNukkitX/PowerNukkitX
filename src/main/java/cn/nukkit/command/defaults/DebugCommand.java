@@ -86,277 +86,260 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     }
 
     @Override
-    public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
-        switch (result.getKey()) {
-            case "structure" -> {
-                if (!sender.isPlayer())
-                    return 0;
-                String structureName = list.getResult(2);
-                Player player = sender.asPlayer();
-                Location loc = player.getLocation();
+    public int execute(CommandSender sender, String label, Map.Entry<String, ParamList> result, CommandLogger log) {
+        return switch (result.getKey()) {
+            case "structure" -> handleStructure(sender, result.getValue(), log);
+            case "entity" -> handleEntity(result.getValue(), log);
+            case "rendermap" -> handleRenderMap(sender, result.getValue(), log);
+            case "biome" -> handleBiome(sender, result.getValue());
+            case "light" -> handleLight(sender);
+            case "chunk" -> handleChunk(sender, result.getValue());
+            case "item" -> handleItem(sender, result.getValue());
+            case "reload" -> handleReload(sender, result.getValue(), log);
+            default -> 0;
+        };
+    }
 
-                AbstractStructure structure = null;
-                switch (list.getResult(1).toString()) {
-                    case "placejava" -> {
-                        try (var stream = DebugCommand.class.getClassLoader().getResourceAsStream("structures/" + structureName + ".nbt")) {
-                            CompoundTag root = NBTIO.readCompressed(stream);
-                            structure = JeStructure.fromNbt(root);
-                        } catch (Exception e) {
-                            sender.sendMessage(e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
+    private int handleStructure(CommandSender sender, ParamList list, CommandLogger log) {
+        if (!sender.isPlayer()) return 0;
+        Player player = sender.asPlayer();
+        String structureName = list.getResult(2);
+        Location loc = player.getLocation();
 
-                    case "place" -> structure = StructureAPI.load(structureName);
-                    case "registry" -> structure = Registries.STRUCTURE.get(structureName);
+        AbstractStructure structure = switch (list.getResult(1).toString()) {
+            case "placejava" -> loadJavaStructure(structureName, sender);
+            case "place" -> StructureAPI.load(structureName);
+            case "registry" -> Registries.STRUCTURE.get(structureName);
+            default -> null;
+        };
+
+        if (structure == null) {
+            log.addError("Structure " + structureName + " not found").output();
+            return 0;
+        }
+
+        structure.place(loc);
+        log.addSuccess("Placed structure " + structureName + " at " + loc).output();
+        return 1;
+    }
+
+    private AbstractStructure loadJavaStructure(String name, CommandSender sender) {
+        try (var stream = getClass().getClassLoader().getResourceAsStream("structures/" + name + ".nbt")) {
+            if (stream == null) return null;
+            CompoundTag root = NBTIO.readCompressed(stream);
+            return JeStructure.fromNbt(root);
+        } catch (Exception e) {
+            sender.sendMessage(e.getMessage());
+            return null;
+        }
+    }
+
+    private int handleEntity(ParamList list, CommandLogger log) {
+        String str = list.getResult(1);
+        var option = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
+        boolean value = list.getResult(2);
+        EntityAI.setDebugOption(option, value);
+        log.addSuccess("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option)).output();
+        return 1;
+    }
+
+    private int handleRenderMap(CommandSender sender, ParamList list, CommandLogger log) {
+        if (!sender.isPlayer()) return 0;
+        int zoom = list.getResult(1);
+        if (zoom < 1) {
+            log.addError("Zoom must bigger than one").output();
+            return 0;
+        }
+
+        Player player = sender.asPlayer();
+        if (player.getInventory().getItemInHand() instanceof ItemFilledMap map) {
+            player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
+                @Override
+                public void onRun() {
+                    map.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
+                    player.getInventory().setItemInHand(map);
+                    map.sendImage(player);
+                    player.sendMessage("Successfully rendered the map in your hand");
                 }
-                if (structure == null) {
-                    log.addError("Structure " + structureName + " not found").output();
-                    return 0;
-                }
-                structure.place(loc);
-                log.addSuccess("Placed structure " + structureName + " at " + loc).output();
-                return 1;
+            });
+            log.addSuccess("Start rendering the map in your hand. Zoom: " + zoom).output();
+            return 1;
+        }
+        return 0;
+    }
+
+    private int handleBiome(CommandSender sender, ParamList list) {
+        if (!sender.isPlayer()) return 0;
+        Location loc = sender.getLocation();
+
+        if (!list.hasResult(1)) {
+            var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+            sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+            return 1;
+        }
+
+        switch (list.getResult(1).toString()) {
+            case "parameter" -> {
+                BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                sender.sendMessage("Scale: " + biome.data.scale);
+                sender.sendMessage("Depth: " + biome.data.depth);
             }
-            case "entity" -> {
-                String str = list.getResult(1);
-                var option = EntityAI.DebugOption.valueOf(str.toUpperCase(Locale.ENGLISH));
-                boolean value = list.getResult(2);
-                EntityAI.setDebugOption(option, value);
-                log.addSuccess("Entity AI framework " + option.name() + " debug mode have been set to: " + EntityAI.checkDebugOption(option)).output();
-                return 1;
-            }
-            case "rendermap" -> {
-                if (!sender.isPlayer())
-                    return 0;
-                int zoom = list.getResult(1);
-                if (zoom < 1) {
-                    log.addError("Zoom must bigger than one").output();
-                    return 0;
-                }
-                var player = sender.asPlayer();
-                if (player.getInventory().getItemInHand() instanceof ItemFilledMap itemFilledMap) {
-                    player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
-                        @Override
-                        public void onRun() {
-                            itemFilledMap.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
-                            player.getInventory().setItemInHand(itemFilledMap);
-                            itemFilledMap.sendImage(player);
-                            player.sendMessage("Successfully rendered the map in your hand");
-                        }
-                    });
-                    log.addSuccess("Start rendering the map in your hand. Zoom: " + zoom).output();
-                    return 1;
-                }
-                return 0;
-            }
-            case "biome" -> {
-                if (!sender.isPlayer())
-                    return 0;
-                Location loc = sender.getLocation();
-                if(!list.hasResult(1)) {
-                    var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                    sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
-                } else {
-                    switch (list.getResult(1).toString()) {
-                        case "parameter" -> {
-                            BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                            sender.sendMessage("Scale: " + biome.data.scale);
-                            sender.sendMessage("Depth: " + biome.data.depth);
-                        }
-                        case "pick" -> {
-                            BiomePicker picker = loc.getLevel().getBiomePicker();
-                            if(picker instanceof OverworldBiomePicker p) {
-                                OverworldBiomeResult res = p.pick(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ());
-                                sender.sendMessage("Continental: " + res.getContinental());
-                                sender.sendMessage("Temperature: " + res.getTemperature());
-                                sender.sendMessage("Humidity: " + res.getHumidity());
-                                sender.sendMessage("Erosion: " + res.getErosion());
-                                sender.sendMessage("Weirdness: " + res.getWeirdness());
-                                sender.sendMessage("Peaks: " + res.getPv());
-                                sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
-                            }
-                        }
-                        case "features" -> {
-                            BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ()));
-                            BiomeDefinitionData biome = definition.data;
-                            OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
-                            if(chunkGenDataOptional.isPresent()) {
-                                BiomeDefinitionChunkGenData chunkGenData = chunkGenDataOptional.get();
-                                OptionalValue<BiomeConsolidatedFeatureData[]> consolidatedFeatureDataOptional = chunkGenData.consolidatedFeatures;
-                                if(consolidatedFeatureDataOptional.isPresent()) {
-                                    BiomeConsolidatedFeatureData[] consolidatedFeatureDataArray = consolidatedFeatureDataOptional.get();
-                                    sender.sendMessage("§eFeatures of " + definition.getName() + " [" + consolidatedFeatureDataArray.length + "]");
-                                    for(BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeatureDataArray) {
-                                        String featureIdentifier = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier);
-                                        String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature);
-                                        int evalOrder = consolidatedFeatureData.scatter.evalOrder;
-                                        boolean registered = Registries.GENERATE_FEATURE.has(featureName) || Registries.GENERATE_FEATURE.has(featureIdentifier);
-                                        sender.sendMessage((registered ? "§a" : "§c") + featureName + " (" + featureIdentifier + ") §e[" + evalOrder + "]");
-                                    }
-                                }
-                            }
-                        }
-                        default -> {
-                            return 0;
-                        }
-                    }
-                }
-                return 0;
-            }
-            case "light" -> {
-                if (!sender.isPlayer())
-                    return 0;
-                Location loc = sender.getLocation();
-                sender.sendMessage("light level: " + loc.getLevel().getFullLight(loc));
-                return 0;
-            }
-            case "chunk" -> {
-                if (!sender.isPlayer())
-                    return 0;
-                Player player = sender.asPlayer();
-                IChunk chunk = player.getChunk();
-                Level level = chunk.getProvider().getLevel();
-                switch (list.getResult(1).toString()) {
-                    case "info" -> {
-                        player.sendMessage("Chunk: X: " + chunk.getX() + ", Z: " + chunk.getZ());
-                        player.sendMessage("Stage: " + chunk.getChunkState().name());
-                        player.sendMessage("Loaded: " + chunk.isLoaded());
-                        player.sendMessage("Current Block: " + player.getLevelBlock().getId());
-                        player.sendMessage("Pending block updates: " + level.getPendingBlockUpdates(chunk).size());
-                        player.sendMessage("Changes: " + chunk.getChanges());
-                        int blocks = 0;
-                        for(int x = 0; x < 16; x++)
-                            for(int z = 0; z < 16; z++)
-                                for(int y = level.getMinHeight(); y < level.getMaxHeight(); y++)
-                                    if(chunk.getBlockState(x,y,z, 0).getIdentifier().equals(BlockAir.STATE.getIdentifier())) blocks++;
-                        player.sendMessage("Blocks: " + blocks);
-                        return 0;
-                    }
-                    case "regenerate" -> {
-                        level.regenerateChunk(chunk.getX(), chunk.getZ());
-                        return 0;
-                    }
-                    case "resend" -> {
-                        level.requestChunk(chunk.getX(), chunk.getZ(), player);
-                        return 0;
-                    }
-                    case "queue" -> {
-                        CompoundTag chunkExtra = chunk.getExtraData();
-                        if(chunkExtra.containsList("structureAnchor")) {
-                            var chunks = chunkExtra.getList("structureAnchor", LongTag.class);
-                            for (LongTag longTag : chunks.getAll()) {
-                                long hash = longTag.getData();
-                                IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
-                                if (target != null && target != chunk) {
-                                    player.sendMessage(target.getX() + " " + target.getZ());
-                                }
-                            }
-                        }
-                        return 0;
-                    }
-                    case "extras" -> {
-                        player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
-                        return 0;
-                    }
-                    default -> {
-                        return 0;
-                    }
+            case "pick" -> {
+                BiomePicker picker = loc.getLevel().getBiomePicker();
+                if (picker instanceof OverworldBiomePicker p) {
+                    OverworldBiomeResult res = p.pick(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ());
+                    sender.sendMessage("Continental: " + res.getContinental());
+                    sender.sendMessage("Temperature: " + res.getTemperature());
+                    sender.sendMessage("Humidity: " + res.getHumidity());
+                    sender.sendMessage("Erosion: " + res.getErosion());
+                    sender.sendMessage("Weirdness: " + res.getWeirdness());
+                    sender.sendMessage("Peaks: " + res.getPv());
+                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
                 }
             }
-            case "item" -> {
-                if (!sender.isPlayer())
-                    return 0;
-                Player player = sender.asPlayer();
-                switch (list.getResult(1).toString()) {
-                    case "nbt" -> {
-                        player.sendMessage(player.getInventory().getItemInHand().getNamedTag().toSNBT());
-                        return 0;
-                    }
-                    case "bundle" -> {
-                        Item item = player.getInventory().getItemInHand();
-                        if(item instanceof ItemBundle bundle) {
-                            for(Item item1 : bundle.getInventory().getContents().values()) player.sendMessage(item1.toString());
-                        }
-                        return 0;
-                    }
-                    case "meta" -> {
-                        Item item = player.getInventory().getItemInHand();
-                        player.sendMessage(item.getId() + "#" + item.getDamage());
-                        return 0;
-                    }
-                    case "data" -> {
-                        Item item = player.getInventory().getItemInHand();
-                        CompoundTag nbt = NBTIO.putItemHelper(item);
-                        player.sendMessage(nbt.toSNBT(2));
-                        return 0;
-                    }
-                }
-                return 0;
-            }
-            case "reload" -> {
-                var server = sender.getServer();
-                if (!list.hasResult(1)) {
-                    log.addMessage(TextFormat.YELLOW + "%nukkit.command.debug.reloading" + TextFormat.WHITE).output(true);
-                    server.reload();
-                } else {
-                    switch (list.getResult(1).toString()) {
-                        case "function" -> {
-                            log.addSuccess("§eReloading functions...").output(true);
-                            server.getFunctionManager().reload();
-                        }
-                        case "plugin" -> {
-                            if (!list.hasResult(2)) {
-                                log.addError("Plugin name required").output(true);
-                                return 0;
-                            }
-
-                            String pluginName = list.getResult(2);
-
-                            PluginManager pluginManager = server.getPluginManager();
-                            Plugin plugin = pluginManager.getPlugin(pluginName);
-
-                            if (plugin == null) {
-                                log.addError("Plugin not found: " + pluginName).output(true);
-                                return 0;
-                            }
-
-                            log.addSuccess("§eReloading plugin...").output(true);
-                            pluginManager.reloadPlugin(plugin);
-                        }
-                        case "chunk" -> {
-                            if (!sender.isPlayer())
-                                return 0;
-                            Player player = sender.asPlayer();
-                            log.addSuccess("§eReloading chunk...").output(true);
-
-                            Level level = player.getLevel();
-                            int chunkX = player.getChunkX();
-                            int chunkZ = player.getChunkZ();
-
-                            int radius = 1; // TODO: We can make this argument
-
-                            for (int x = chunkX - radius; x <= chunkX + radius; x++) {
-                                for (int z = chunkZ - radius; z <= chunkZ + radius; z++) {
-                                    IChunk chunk = level.getChunk(x, z);
-                                    if (chunk != null) {
-                                        level.unloadChunk(x, z, true);
-                                        level.loadChunk(x, z, true);
-                                        level.requestChunk(x, z, player);
-                                    }
-                                }
-                            }
-
+            case "features" -> {
+                BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ()));
+                BiomeDefinitionData biome = definition.data;
+                OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
+                if (chunkGenDataOptional.isPresent()) {
+                    OptionalValue<BiomeConsolidatedFeatureData[]> featuresOpt = chunkGenDataOptional.get().consolidatedFeatures;
+                    if (featuresOpt.isPresent()) {
+                        BiomeConsolidatedFeatureData[] features = featuresOpt.get();
+                        sender.sendMessage("§eFeatures of " + definition.getName() + " [" + features.length + "]");
+                        for (BiomeConsolidatedFeatureData f : features) {
+                            String id = Registries.BIOME.getFromBiomeStringList(f.identifier);
+                            String name = Registries.BIOME.getFromBiomeStringList(f.feature);
+                            int order = f.scatter.evalOrder;
+                            boolean registered = Registries.GENERATE_FEATURE.has(name) || Registries.GENERATE_FEATURE.has(id);
+                            sender.sendMessage((registered ? "§a" : "§c") + name + " (" + id + ") §e[" + order + "]");
                         }
                     }
                 }
-
-                return 1;
-            }
-            default -> {
-                return 0;
             }
         }
+        return 1;
+    }
+
+    private int handleLight(CommandSender sender) {
+        if (!sender.isPlayer()) return 0;
+        Location loc = sender.getLocation();
+        sender.sendMessage("light level: " + loc.getLevel().getFullLight(loc));
+        return 1;
+    }
+
+    private int handleChunk(CommandSender sender, ParamList list) {
+        if (!sender.isPlayer()) return 0;
+        Player player = sender.asPlayer();
+        IChunk chunk = player.getChunk();
+        Level level = chunk.getProvider().getLevel();
+
+        switch (list.getResult(1).toString()) {
+            case "info" -> {
+                player.sendMessage("Chunk: X: " + chunk.getX() + ", Z: " + chunk.getZ());
+                player.sendMessage("Stage: " + chunk.getChunkState().name());
+                player.sendMessage("Loaded: " + chunk.isLoaded());
+                player.sendMessage("Current Block: " + player.getLevelBlock().getId());
+                player.sendMessage("Pending block updates: " + level.getPendingBlockUpdates(chunk).size());
+                player.sendMessage("Changes: " + chunk.getChanges());
+                int blocks = 0;
+                for (int x = 0; x < 16; x++)
+                    for (int z = 0; z < 16; z++)
+                        for (int y = level.getMinHeight(); y < level.getMaxHeight(); y++)
+                            if (chunk.getBlockState(x, y, z, 0).getIdentifier().equals(BlockAir.STATE.getIdentifier()))
+                                blocks++;
+                player.sendMessage("Blocks: " + blocks);
+            }
+            case "regenerate" -> level.regenerateChunk(chunk.getX(), chunk.getZ());
+            case "resend" -> level.requestChunk(chunk.getX(), chunk.getZ(), player);
+            case "queue" -> {
+                CompoundTag extra = chunk.getExtraData();
+                if (extra.containsList("structureAnchor")) {
+                    for (LongTag tag : extra.getList("structureAnchor", LongTag.class).getAll()) {
+                        long hash = tag.getData();
+                        IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
+                        if (target != null && target != chunk)
+                            player.sendMessage(target.getX() + " " + target.getZ());
+                    }
+                }
+            }
+            case "extras" -> player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
+        }
+        return 1;
+    }
+
+    private int handleItem(CommandSender sender, ParamList list) {
+        if (!sender.isPlayer()) return 0;
+        Player player = sender.asPlayer();
+
+        switch (list.getResult(1).toString()) {
+            case "nbt" -> player.sendMessage(player.getInventory().getItemInHand().getNamedTag().toSNBT());
+            case "bundle" -> {
+                Item item = player.getInventory().getItemInHand();
+                if (item instanceof ItemBundle bundle)
+                    for (Item it : bundle.getInventory().getContents().values())
+                        player.sendMessage(it.toString());
+            }
+            case "meta" -> {
+                Item item = player.getInventory().getItemInHand();
+                player.sendMessage(item.getId() + "#" + item.getDamage());
+            }
+            case "data" -> {
+                Item item = player.getInventory().getItemInHand();
+                CompoundTag nbt = NBTIO.putItemHelper(item);
+                player.sendMessage(nbt.toSNBT(2));
+            }
+        }
+        return 1;
+    }
+
+    private int handleReload(CommandSender sender, ParamList list, CommandLogger log) {
+        var server = sender.getServer();
+
+        if (!list.hasResult(1)) {
+            log.addMessage(TextFormat.YELLOW + "%nukkit.command.debug.reloading" + TextFormat.WHITE).output(true);
+            server.reload();
+            return 1;
+        }
+
+        switch (list.getResult(1).toString()) {
+            case "function" -> {
+                log.addSuccess("§eReloading functions...").output(true);
+                server.getFunctionManager().reload();
+            }
+            case "plugin" -> {
+                if (!list.hasResult(2)) {
+                    log.addError("Plugin name required").output(true);
+                    return 0;
+                }
+                String name = list.getResult(2);
+                PluginManager pm = server.getPluginManager();
+                Plugin plugin = pm.getPlugin(name);
+                if (plugin == null) {
+                    log.addError("Plugin not found: " + name).output(true);
+                    return 0;
+                }
+                log.addSuccess("§eReloading plugin...").output(true);
+                pm.reloadPlugin(plugin);
+            }
+            case "chunk" -> {
+                if (!sender.isPlayer()) return 0;
+                Player player = sender.asPlayer();
+                log.addSuccess("§eReloading chunk...").output(true);
+                Level level = player.getLevel();
+                int cx = player.getChunkX();
+                int cz = player.getChunkZ();
+                int radius = 1;
+                for (int x = cx - radius; x <= cx + radius; x++)
+                    for (int z = cz - radius; z <= cz + radius; z++) {
+                        IChunk c = level.getChunk(x, z);
+                        if (c != null) {
+                            level.unloadChunk(x, z, true);
+                            level.loadChunk(x, z, true);
+                            level.requestChunk(x, z, player);
+                        }
+                    }
+            }
+        }
+        return 1;
     }
 }
