@@ -515,6 +515,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             pk.z = (float) pos.z;
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+            this.getLevel().sendBlocks(new Player[]{this}, new Vector3[]{pos}, UpdateBlockPacket.FLAG_NOGRAPHIC);
         }
         this.blockBreakProgress = 0;
         this.breakingBlock = null;
