@@ -430,7 +430,7 @@ public class Education implements BlockID, ItemID {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
         }
     }
 }
