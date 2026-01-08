@@ -66,7 +66,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("chunk", new CommandParameter[]{
                 CommandParameter.newEnum("chunk", new String[]{"chunk"}),
-                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "queue", "extras"})
+                CommandParameter.newEnum("options", new String[]{"info", "regenerate", "resend", "queue", "extras", "reload"})
         });
         this.commandParameters.put("item", new CommandParameter[]{
                 CommandParameter.newEnum("item", new String[]{"item"}),
@@ -79,7 +79,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         });
         this.commandParameters.put("reload", new CommandParameter[]{
                 CommandParameter.newEnum("reload", new String[]{"reload"}),
-                CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin", "chunk"}),
+                CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin"}),
                 CommandParameter.newType("plugin", true, CommandParamType.STRING)
         });
         this.enableParamTree();
@@ -263,6 +263,21 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 }
             }
             case "extras" -> player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
+            case "reload" -> {
+                player.sendMessage("§eReloading chunk...");
+                int cx = player.getChunkX();
+                int cz = player.getChunkZ();
+                int radius = 1;
+                for (int x = cx - radius; x <= cx + radius; x++)
+                    for (int z = cz - radius; z <= cz + radius; z++) {
+                        IChunk c = level.getChunk(x, z);
+                        if (c != null) {
+                            level.unloadChunk(x, z, true);
+                            level.loadChunk(x, z, true);
+                            level.requestChunk(x, z, player);
+                        }
+                    }
+            }
         }
         return 1;
     }
@@ -320,24 +335,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 }
                 log.addSuccess("§eReloading plugin...").output(true);
                 pm.reloadPlugin(plugin);
-            }
-            case "chunk" -> {
-                if (!sender.isPlayer()) return 0;
-                Player player = sender.asPlayer();
-                log.addSuccess("§eReloading chunk...").output(true);
-                Level level = player.getLevel();
-                int cx = player.getChunkX();
-                int cz = player.getChunkZ();
-                int radius = 1;
-                for (int x = cx - radius; x <= cx + radius; x++)
-                    for (int z = cz - radius; z <= cz + radius; z++) {
-                        IChunk c = level.getChunk(x, z);
-                        if (c != null) {
-                            level.unloadChunk(x, z, true);
-                            level.loadChunk(x, z, true);
-                            level.requestChunk(x, z, player);
-                        }
-                    }
             }
         }
         return 1;
