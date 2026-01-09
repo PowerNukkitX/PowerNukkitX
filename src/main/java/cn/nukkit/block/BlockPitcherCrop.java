@@ -3,10 +3,11 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemPitcherPod;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitMath;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,23 +40,11 @@ public class BlockPitcherCrop extends BlockCrops {
     }
 
     private int getLogicalAge() {
-        int g = getGrowth();
-        if (g <= 0) return 0;
-        if (g == 1) return 1;
-        if (g == 2) return 2;
-        if (g == 3) return 3;
-        return 4;
+        return NukkitMath.clamp(getGrowth(), 0, 4);
     }
 
     private void setLogicalAge(int stage) {
-        int g = switch (stage) {
-            case 1 -> 1;
-            case 2 -> 2;
-            case 3 -> 3;
-            case 4 -> 4;
-            default -> 0;
-        };
-        setGrowth(g);
+        setGrowth(NukkitMath.clamp(stage, 0, 4));
     }
 
     @Override
@@ -84,13 +73,22 @@ public class BlockPitcherCrop extends BlockCrops {
 
     @Override
     public Item[] getDrops(Item item) {
-        return Item.EMPTY_ARRAY;
+
+        int stage = getLogicalAge();
+
+        if (!isUpper()) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        if (stage < 4) {
+            return new Item[]{Item.get(ItemID.PITCHER_POD)};
+        } else {
+            return new Item[]{Item.get(PITCHER_PLANT)};
+        }
     }
 
     @Override
     public boolean onBreak(Item item) {
-        int stage = getLogicalAge();
-
         if (!isUpper()) {
             Block above = up();
             if (above instanceof BlockPitcherCrop upper && upper.isUpper()) {
@@ -105,14 +103,9 @@ public class BlockPitcherCrop extends BlockCrops {
             level.setBlock(below.getPosition(), Block.get(AIR), true, true);
         }
 
-        if (stage < 4) {
-            this.level.dropItem(this, new ItemPitcherPod());
-        } else {
-            this.level.dropItem(this, Item.get(PITCHER_PLANT, 0, 1));
-        }
-
         return super.onBreak(item);
     }
+
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
@@ -160,7 +153,7 @@ public class BlockPitcherCrop extends BlockCrops {
     private void updateUpperBlock(int newStage) {
         Block above = this.up();
 
-        if (above.getId().equals(AIR)) {
+        if (above.isAir()) {
             BlockPitcherCrop upper = new BlockPitcherCrop();
             upper.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, true);
             upper.setLogicalAge(newStage);

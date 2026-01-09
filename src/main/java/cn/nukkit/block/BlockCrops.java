@@ -58,11 +58,6 @@ public abstract class BlockCrops extends BlockFlowable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
-        return super.onBreak(item);
-    }
-
-    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         //Bone meal
         if (item.isFertilizer()) {
