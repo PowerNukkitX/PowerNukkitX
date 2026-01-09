@@ -38,20 +38,13 @@ public class BlockPitcherCrop extends BlockCrops {
         return this.getPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT);
     }
 
-    // Raw Bedrock growth (0–7)
-    public int getGrowth() {
-        return this.getPropertyValue(CommonBlockProperties.GROWTH);
-    }
-
-    // Logical vanilla age (0–3)
-    // 0–4, directly mirroring the five visual stages
     private int getLogicalAge() {
         int g = getGrowth();
         if (g <= 0) return 0;
         if (g == 1) return 1;
         if (g == 2) return 2;
         if (g == 3) return 3;
-        return 4; // g >= 4
+        return 4;
     }
 
     private void setLogicalAge(int stage) {
@@ -71,7 +64,7 @@ public class BlockPitcherCrop extends BlockCrops {
             if (!isUpper()) {
                 int stage = getLogicalAge();
 
-                if (stage < 4) { // 0–3 can grow
+                if (stage < 4) {
                     if (ThreadLocalRandom.current().nextInt(5) == 0) {
                         int newStage = stage + 1;
                         setLogicalAge(newStage);
@@ -91,45 +84,33 @@ public class BlockPitcherCrop extends BlockCrops {
 
     @Override
     public Item[] getDrops(Item item) {
-        int stage = getLogicalAge();
-
-        // Bottom block NEVER drops anything in vanilla
-        if (!isUpper()) {
-            return Item.EMPTY_ARRAY;
-        }
-
-        // Upper block:
-        // - If not fully grown → drop 1 pod
-        // - If fully grown → drop 1 plant
-        if (stage < 4) {
-            return new Item[]{ new ItemPitcherPod() };
-        }
-
-        return new Item[]{ Item.get(PITCHER_PLANT, 0, 1) };
+        return Item.EMPTY_ARRAY;
     }
 
     @Override
     public boolean onBreak(Item item) {
-        // Always break the whole plant
+        int stage = getLogicalAge();
+
         if (!isUpper()) {
-            // Breaking bottom: remove upper if present
             Block above = up();
             if (above instanceof BlockPitcherCrop upper && upper.isUpper()) {
                 level.setBlock(above.getPosition(), Block.get(AIR), true, true);
             }
 
-            // Bottom block NEVER drops anything
             return super.onBreak(item);
         }
 
-        // Breaking upper block
-        // Remove lower block
         Block below = down();
         if (below instanceof BlockPitcherCrop lower && !lower.isUpper()) {
             level.setBlock(below.getPosition(), Block.get(AIR), true, true);
         }
 
-        // DO NOT drop items here — getDrops() handles it
+        if (stage < 4) {
+            this.level.dropItem(this, new ItemPitcherPod());
+        } else {
+            this.level.dropItem(this, Item.get(PITCHER_PLANT, 0, 1));
+        }
+
         return super.onBreak(item);
     }
 
@@ -137,47 +118,40 @@ public class BlockPitcherCrop extends BlockCrops {
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (!item.isFertilizer()) return false;
 
-        // Always apply bone meal to the LOWER block
         BlockPitcherCrop lower = this;
         if (isUpper()) {
             Block below = down();
             if (!(below instanceof BlockPitcherCrop crop) || crop.isUpper()) {
-                return false; // invalid structure
+                return false;
             }
             lower = crop;
         }
 
         int stage = lower.getLogicalAge();
 
-        // Already fully grown
         if (stage >= 4) {
             return false;
         }
 
-        // Grow by 1 stage
         int newStage = stage + 1;
         lower.setLogicalAge(newStage);
         lower.setPropertyValue(CommonBlockProperties.UPPER_BLOCK_BIT, false);
         level.setBlock(lower.getPosition(), lower, true, true);
 
-        // Handle upper block creation/update
         Block above = lower.up();
 
         if (newStage >= 2) {
             updateUpperBlock(newStage);
         } else {
-            // Stage 0–1: ensure no upper block exists
             if (above instanceof BlockPitcherCrop upper && upper.isUpper()) {
                 level.setBlock(above.getPosition(), Block.get(AIR), true, true);
             }
         }
 
-        // Consume bone meal (unless creative)
         if (player != null && (player.gamemode & 0x01) == 0) {
             item.count--;
         }
 
-        // Bone meal particles
         this.level.addParticle(new BoneMealParticle(lower));
 
         return true;
