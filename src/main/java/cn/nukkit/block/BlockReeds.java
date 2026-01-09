@@ -131,10 +131,10 @@ public class BlockReeds extends BlockFlowable {
             }
 
             int height = 0;
-            for (Block current = this; height < 2 && current.getId().equals(REEDS); height++) {
+            for (Block current = this; height < 3 && current.getId().equals(REEDS); height++) {
                 current = current.down();
             }
-            if (height >= 2) {
+            if (height >= 3) {
                 return type;
             }
 
