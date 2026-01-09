@@ -19,35 +19,23 @@ public class BlockWeepingVines extends BlockVinesNether {
 
     private static final int MAX_AGE = WEEPING_VINES_AGE.getMax(); // expected 25
 
-    public BlockWeepingVines() {
-        this(PROPERTIES.getDefaultState());
-    }
+    public BlockWeepingVines() { this(PROPERTIES.getDefaultState()); }
 
-    public BlockWeepingVines(BlockState blockstate) {
-        super(blockstate);
-    }
+    public BlockWeepingVines(BlockState blockstate) { super(blockstate); }
 
     @Override
     @NotNull
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
+    public BlockProperties getProperties() { return PROPERTIES; }
 
     @Override
-    public String getName() {
-        return "Weeping Vines";
-    }
+    public String getName() { return "Weeping Vines"; }
 
     @Override
     @NotNull
-    public BlockFace getGrowthDirection() {
-        return BlockFace.DOWN;
-    }
+    public BlockFace getGrowthDirection() { return BlockFace.DOWN; }
 
     @Override
-    public int getVineAge() {
-        return getPropertyValue(WEEPING_VINES_AGE);
-    }
+    public int getVineAge() { return getPropertyValue(WEEPING_VINES_AGE); }
 
     @Override
     public void setVineAge(int vineAge) {
@@ -55,9 +43,7 @@ public class BlockWeepingVines extends BlockVinesNether {
     }
 
     @Override
-    public int getMaxVineAge() {
-        return MAX_AGE;
-    }
+    public int getMaxVineAge() { return MAX_AGE; }
 
     private boolean isTip() {
         Block up = this.up();
@@ -65,13 +51,7 @@ public class BlockWeepingVines extends BlockVinesNether {
     }
 
     private int countChainLength() {
-        int len = 1;
-        Block b = getTopBlock().down();
-        while (b instanceof BlockWeepingVines) {
-            len++;
-            b = b.down();
-        }
-        return len;
+        return (int) (getTopBlock().y - getBottomBlock().y);
     }
 
     @Override
@@ -99,19 +79,19 @@ public class BlockWeepingVines extends BlockVinesNether {
     }
 
     private BlockWeepingVines getTopBlock() {
-        Block b = this;
-        while (b.up() instanceof BlockWeepingVines) {
-            b = b.up();
+        BlockWeepingVines block = this;
+        while (block.up() instanceof BlockWeepingVines up) {
+            block = up;
         }
-        return (BlockWeepingVines) b;
+        return block;
     }
 
     private BlockWeepingVines getBottomBlock() {
-        Block b = this;
-        while (b.down() instanceof BlockWeepingVines) {
-            b = b.down();
+        BlockWeepingVines block = this;
+        while (block.down() instanceof BlockWeepingVines down) {
+            block = down;
         }
-        return (BlockWeepingVines) b;
+        return block;
     }
 
     private int getBottomAge() {
@@ -157,20 +137,11 @@ public class BlockWeepingVines extends BlockVinesNether {
 
     @Override
     public Item[] getDrops(Item item) {
-
         Block above = this.up();
         boolean unsupported = !(above instanceof BlockWeepingVines) && !above.isSolid();
 
-        // If unsupported, apply base 33% chance regardless of tool/enchantments.
-        if (unsupported) {
-            if (ThreadLocalRandom.current().nextDouble() < 0.33) {
-                return new Item[]{ Item.get(WEEPING_VINES, 0, 1) };
-            }
-            return Item.EMPTY_ARRAY;
-        }
-
         // 33% chance to drop a vine https://minecraft.fandom.com/wiki/Weeping_Vines
-        if (item == null) {
+        if (unsupported || item == null) {
             if (ThreadLocalRandom.current().nextDouble() < 0.33) {
                 return new Item[]{ Item.get(WEEPING_VINES, 0, 1) };
             }
@@ -183,30 +154,25 @@ public class BlockWeepingVines extends BlockVinesNether {
         }
 
         int fortune = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING);
-        double chance;
-        switch (fortune) {
-            case 1 -> chance = 0.55;
-            case 2 -> chance = 0.77;
-            case 3 -> chance = 1.0;
-            default -> chance = 0.33;
-        }
+        double chance = switch (fortune) {
+            case 1 -> 0.55;
+            case 2 -> 0.77;
+            case 3 -> 1.0;
+            default -> 0.33;
+        };
 
-        if (ThreadLocalRandom.current().nextDouble() < chance) {
-            return new Item[]{ Item.get(WEEPING_VINES, 0, 1) };
-        }
-        return Item.EMPTY_ARRAY;
+        return ThreadLocalRandom.current().nextDouble() < chance ? new Item[]{ Item.get(WEEPING_VINES, 0, 1) } : Item.EMPTY_ARRAY;
     }
 
     @Override
     public boolean onBreak(Item item) {
         Block block = this.down();
         while (block instanceof BlockWeepingVines) {
-            Block current = block;
-            block = block.down();
             if (ThreadLocalRandom.current().nextDouble() < 0.33) {
-                this.level.dropItem(current, Item.get(WEEPING_VINES, 0, 1));
+                this.level.dropItem(block, Item.get(WEEPING_VINES, 0, 1));
             }
-            level.setBlock(current.getPosition(), Block.get(AIR), true, true);
+            level.setBlock(block.getPosition(), Block.get(AIR), true, true);
+            block = block.down();
         }
 
         return super.onBreak(item);
