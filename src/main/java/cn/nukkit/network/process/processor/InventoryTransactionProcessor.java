@@ -138,6 +138,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
             return;
         }
         int type = useItemOnEntityData.actionType;
+        if(player.getInventory().getHeldItemIndex() != useItemOnEntityData.hotbarSlot) {
+            player.getInventory().equipItem(useItemOnEntityData.hotbarSlot);
+        }
         if (!useItemOnEntityData.itemInHand.equalsExact(player.getInventory().getItemInHand())) {
             player.getInventory().sendHeldItem(player);
         }

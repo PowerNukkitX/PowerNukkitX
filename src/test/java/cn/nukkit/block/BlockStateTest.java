@@ -21,7 +21,7 @@ public class BlockStateTest {
 
     @Test
     @SneakyThrows
-    void BlockStateTest() {
+    void BlockStateTest_initStates() {
         Registries.BLOCK.init();
         int blocks = 0;
         try (var stream = new FileInputStream("src/main/resources/gamedata/endstone/block_states.json")) {
@@ -54,6 +54,6 @@ public class BlockStateTest {
                 CommonBlockProperties.OPEN_BIT.createValue(false),//1bit
                 CommonBlockProperties.UPSIDE_DOWN_BIT.createValue(false)//1bit
         });
-        Assertions.assertEquals((1 << 2 | 0 << 1 | 0), i1);
+        Assertions.assertEquals((1 << 2), i1);
     }
 }

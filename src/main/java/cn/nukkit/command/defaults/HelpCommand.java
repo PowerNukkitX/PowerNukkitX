@@ -51,7 +51,7 @@ public class HelpCommand extends VanillaCommand {
                     args = new String[0];
                 }*/
                 for (String arg : args) {
-                    if (!command.toString().equals("")) {
+                    if (!command.isEmpty()) {
                         command.append(" ");
                     }
                     command.append(arg);
@@ -59,7 +59,7 @@ public class HelpCommand extends VanillaCommand {
             } catch (NumberFormatException e) {
                 pageNumber = 1;
                 for (String arg : args) {
-                    if (!command.toString().equals("")) {
+                    if (!command.isEmpty()) {
                         command.append(" ");
                     }
                     command.append(arg);
@@ -71,7 +71,7 @@ public class HelpCommand extends VanillaCommand {
             pageHeight = Integer.MAX_VALUE;
         }
 
-        if (command.toString().equals("")) {
+        if (command.isEmpty()) {
             Map<String, Command> commands = new TreeMap<>();
             for (Command cmd : sender.getServer().getCommandMap().getCommands().values()) {
                 if (cmd.testPermissionSilent(sender)) {

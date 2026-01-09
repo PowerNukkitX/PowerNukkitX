@@ -96,13 +96,12 @@ public class FormattedCommandAlias extends Command {
         for (String formatString : formatStrings) {
             try {
                 commands.add(buildCommand(formatString, args));
+            } catch (IllegalArgumentException e) {
+                sender.sendMessage(TextFormat.RED + e.getMessage());
+                return false;
             } catch (Exception e) {
-                if (e instanceof IllegalArgumentException) {
-                    sender.sendMessage(TextFormat.RED + e.getMessage());
-                } else {
-                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
-                    log.warn("An error has occurred while executing the formatted command alias {} by the sender {}", commandLabel, sender.getName(), e);
-                }
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
+                log.warn("An error has occurred while executing the formatted command alias {} by the sender {}", commandLabel, sender.getName(), e);
                 return false;
             }
         }

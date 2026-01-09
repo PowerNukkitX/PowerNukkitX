@@ -100,12 +100,10 @@ public class BlockCake extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (down().isAir()) {
-                getLevel().setBlock(this, Block.get(BlockID.AIR), true);
+        if (type == Level.BLOCK_UPDATE_NORMAL && down().isAir()) {
+            getLevel().setBlock(this, Block.get(BlockID.AIR), true);
 
-                return Level.BLOCK_UPDATE_NORMAL;
-            }
+            return Level.BLOCK_UPDATE_NORMAL;
         }
 
         return 0;
@@ -123,7 +121,7 @@ public class BlockCake extends BlockTransparent {
             return false;
         }
         int damage = getBiteCount();
-        if (player != null && (player.getFoodData().isHungry() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+        if ((player.getFoodData().isHungry() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
             if (damage < BITE_COUNTER.getMax()) setBiteCount(damage + 1);
             if (damage >= BITE_COUNTER.getMax()) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);

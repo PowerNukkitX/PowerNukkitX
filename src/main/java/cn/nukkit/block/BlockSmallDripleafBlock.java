@@ -150,16 +150,10 @@ public class BlockSmallDripleafBlock extends BlockFlowable implements Faceable {
         Block blockDown = this.level.getBlock(pos.getSide(BlockFace.DOWN));
         Block blockHere = this.level.getBlock(pos, 1);
         Block blockUp = this.level.getBlock(pos.getSide(BlockFace.UP));
-        if (this.level.getBlock(blockDown) instanceof BlockClay) {
-            return true;
-        }
-        if (this.level.getBlock(blockDown) instanceof BlockSmallDripleafBlock && !((BlockSmallDripleafBlock) this.level.getBlock(blockDown)).isUpperBlock()) {
-            return true;
-        }
-        if (blockHere instanceof BlockFlowingWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleafBlock) && (blockDown instanceof BlockGrassBlock || blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMossBlock)) {
-            return true;
-        }
-        return false;
+
+        return blockDown instanceof BlockClay
+                || blockDown instanceof BlockSmallDripleafBlock dripLeaf && !dripLeaf.isUpperBlock()
+                || blockHere instanceof BlockFlowingWater && (blockUp instanceof BlockAir || blockUp instanceof BlockSmallDripleafBlock) && (blockDown instanceof BlockDirt || blockDown instanceof BlockMossBlock);
     }
 
     @Override

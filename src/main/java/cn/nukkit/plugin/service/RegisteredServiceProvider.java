@@ -59,7 +59,7 @@ public class RegisteredServiceProvider<T> implements Comparable<RegisteredServic
 
         RegisteredServiceProvider<?> that = (RegisteredServiceProvider<?>) o;
 
-        return provider == that.provider || provider.equals(that.provider);
+        return this.provider.equals(that.provider);
     }
 
     @Override

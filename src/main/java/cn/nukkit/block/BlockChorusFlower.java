@@ -237,10 +237,8 @@ public class BlockChorusFlower extends BlockTransparent {
 
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
-            if (face != except) {
-                if (!block.getSide(face).isAir()) {
-                    return false;
-                }
+            if (face != except && !block.getSide(face).isAir()) {
+                return false;
             }
         }
         return true;

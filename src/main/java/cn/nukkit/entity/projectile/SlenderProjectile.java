@@ -1,6 +1,5 @@
 package cn.nukkit.entity.projectile;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.ProjectileHitEvent;
@@ -13,12 +12,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.function.Predicate;
 
 /**
- * 这个抽象类代表较为细长的投射物实体(例如弓箭,三叉戟),它通过重写{@link Entity#move}方法实现这些实体较为准确的碰撞箱计算。
- * <p>
- * This abstract class represents slender projectile entities (e.g.arrow, trident), and it realized a more accurate collision box calculation for these entities by overriding the {@link Entity#move} method.
+ * This abstract class represents slender projectile entities (e.g. arrows, tridents), and it realized a more accurate collision box calculation for these entities by overriding the {@link Entity#move} method.
  */
 public abstract class SlenderProjectile extends EntityProjectile {
     private static final int SPLIT_NUMBER = 10;
@@ -32,36 +28,38 @@ public abstract class SlenderProjectile extends EntityProjectile {
         super(chunk, nbt, shootingEntity);
     }
 
-    //对于SlenderProjectile你不应该把Width设置太大,如果没必要请使用默认值.
+    /**
+     * You should not set the width to a larger amount under normal circumstances. Use the default value if changing the width is not absolutely necessary.
+     * @return The width of the projectile
+     */
     @Override
     public float getWidth() {
         return 0.1f;
     }
 
-    //对于SlenderProjectile你不应该把Height设置太大,如果没必要请使用默认值.
+    /**
+     * You should not set the height to a larger amount under normal circumstances. Use the default value if changing the height is not absolutely necessary.
+     * @return The height of the projectile
+     */
     @Override
     public float getHeight() {
         return 0.1f;
     }
 
-    /*
-     * 经过测试这个算法在大多数情况下效果不错。
-     */
+    // Testing has shown that this algorithm performs well in most cases.
     @Override
     public boolean move(double dx, double dy, double dz) {
         if (dx == 0 && dz == 0 && dy == 0) {
             return true;
         }
 
-        this.ySize *= 0.4;
+        this.ySize *= 0.4F;
 
         double movX = dx;
         double movY = dy;
         double movZ = dz;
 
         final SlenderProjectile projectile = this;
-        final Entity shootEntity = shootingEntity;
-        final int ticks = ticksLived;
 
         var currentAABB = this.boundingBox.clone();
         var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) SPLIT_NUMBER);
@@ -84,56 +82,49 @@ public abstract class SlenderProjectile extends EntityProjectile {
                 break;
             }
         }
+
         Vector3 centerPoint1 = new Vector3((currentAABB.getMinX() + currentAABB.getMaxX()) / 2,
                 (currentAABB.getMinY() + currentAABB.getMaxY()) / 2,
                 (currentAABB.getMinZ() + currentAABB.getMaxZ()) / 2);
-        //collide with entity
+
+        // Collide with entity
         if (collisionEntity != null) {
             MovingObjectPosition movingObject = new MovingObjectPosition();
             movingObject.typeOfHit = 1;
             movingObject.entityHit = collisionEntity;
             movingObject.hitVector = centerPoint1;
-            onCollideWithEntity(movingObject.entityHit);
-            return true;
+            ProjectileHitEvent event = new ProjectileHitEvent(this, movingObject);
+            this.server.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                onCollideWithEntity(movingObject.entityHit);
+                return true;
+            }
         }
 
         Vector3 centerPoint2 = new Vector3((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2,
                 (this.boundingBox.getMinY() + this.boundingBox.getMaxY()) / 2,
                 (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2);
+
         Vector3 diff = centerPoint1.subtract(centerPoint2);
-        if (dy > 0) {
-            if (diff.getY() + 0.001 < dy) {
-                dy = diff.getY();
-            }
+        double diffY = diff.getY();
+        if (dy > 0 && diffY + 0.001 < dy
+                || dy < 0 && diffY - 0.001 > dy) {
+            dy = diffY;
         }
-        if (dy < 0) {
-            if (diff.getY() - 0.001 > dy) {
-                dy = diff.getY();
-            }
+
+        double diffX = diff.getX();
+        if (dx > 0 && diffX + 0.001 < dx
+                || dx < 0 && diffX - 0.001 > dx) {
+            dx = diffX;
         }
-        if (dx > 0) {
-            if (diff.getX() + 0.001 < dx) {
-                dx = diff.getX();
-            }
+
+        double diffZ = diff.getZ();
+        if (dz > 0 && diffZ + 0.001 < dz
+                || dz < 0 && diffZ - 0.001 > dz) {
+            dz = diffZ;
         }
-        if (dx < 0) {
-            if (diff.getX() - 0.001 > dx) {
-                dx = diff.getX();
-            }
-        }
-        if (dz > 0) {
-            if (diff.getZ() + 0.001 < dz) {
-                dz = diff.getZ();
-            }
-        }
-        if (dz < 0) {
-            if (diff.getZ() - 0.001 > dz) {
-                dz = diff.getZ();
-            }
-        }
-        this.boundingBox.offset(0, dy, 0);
-        this.boundingBox.offset(dx, 0, 0);
-        this.boundingBox.offset(0, 0, dz);
+
+        this.boundingBox.offset(dx, dy, dz);
         this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
         this.y = this.boundingBox.getMinY() - this.ySize;
         this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
@@ -153,29 +144,34 @@ public abstract class SlenderProjectile extends EntityProjectile {
             this.motionZ = 0;
         }
 
-        //collide with block
+        // Collide with block
         if (this.isCollided && !this.hadCollision) {
             this.hadCollision = true;
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
+
             BVector3 bVector3 = BVector3.fromPos(new Vector3(dx, dy, dz));
             BlockFace blockFace = BlockFace.fromHorizontalAngle(bVector3.getYaw());
             Block block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).getSide(blockFace);
-            if (block.isAir()) {
+            if (block.isAir()) { // If the block is air, search below instead
                 blockFace = BlockFace.DOWN;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).down();
             }
-            if (block.isAir()) {
+            if (block.isAir()) { // If the block is air, search above instead
                 blockFace = BlockFace.UP;
                 block = level.getBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ()).up();
             }
             if (block.isAir() && collisionBlock != null) {
                 block = collisionBlock;
             }
-            this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this)));
-            onCollideWithBlock(getPosition(), getMotion(), block);
-            addHitEffect();
+
+            ProjectileHitEvent event = new ProjectileHitEvent(this, lastHitBlock = MovingObjectPosition.fromBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), blockFace, this));
+            this.server.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                onCollideWithBlock(getPosition(), getMotion(), block);
+                addHitEffect();
+            }
         }
         return true;
     }
@@ -208,10 +204,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
             if (!this.isCollided) {
                 updateMotion();
             }
-            if (!this.hadCollision || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001) {
-                updateRotation();
-                hasUpdate = true;
-            }
+            hasUpdate = this.checkCollisionAndUpdateRotation();
             this.move(this.motionX, this.motionY, this.motionZ);
             this.updateMovement();
         }

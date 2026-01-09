@@ -27,11 +27,6 @@ public abstract class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
@@ -68,12 +63,10 @@ public abstract class BlockCarpet extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().isAir()) {
-                this.getLevel().useBreakOn(this);
+        if (type == Level.BLOCK_UPDATE_NORMAL && this.down().isAir()) {
+            this.getLevel().useBreakOn(this);
 
-                return Level.BLOCK_UPDATE_NORMAL;
-            }
+            return Level.BLOCK_UPDATE_NORMAL;
         }
         return 0;
     }

@@ -26,12 +26,6 @@ public class Scoreboard implements IScoreboard{
     protected Map<DisplaySlot, Set<IScoreboardViewer>> viewers = new HashMap<>();
     protected Map<IScorer, IScoreboardLine> lines = new HashMap<>();
 
-    {
-        for (var slot : DisplaySlot.values()) {
-            viewers.put(slot, new HashSet<>());
-        }
-    }
-
     public Scoreboard(String objectiveName, String displayName) {
         this(objectiveName, displayName, "dummy");
     }
@@ -45,6 +39,10 @@ public class Scoreboard implements IScoreboard{
         this.displayName = displayName;
         this.criteriaName = criteriaName;
         this.sortOrder = sortOrder;
+
+        for (var slot : DisplaySlot.values()) {
+            this.viewers.put(slot, new HashSet<>());
+        }
     }
 
     @Override

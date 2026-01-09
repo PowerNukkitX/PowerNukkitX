@@ -705,7 +705,7 @@ public interface Node extends Comparable<Node> {
                 ;
     }
 
-    static abstract public class Visitor {
+    abstract class Visitor {
         static private Map<Class<? extends Visitor>, Map<Class<? extends Node>, Method>> mapLookup;
         static private final Method DUMMY_METHOD;
 
@@ -717,15 +717,15 @@ public interface Node extends Comparable<Node> {
                 throw new RuntimeException(e);
             }
             // Never happens anyway.
-            mapLookup = Collections.synchronizedMap(new HashMap<Class<? extends Visitor>, Map<Class<? extends Node>, Method>>());
+            mapLookup = Collections.synchronizedMap(new HashMap<>());
         }
 
         private Map<Class<? extends Node>, Method> methodCache;
 
-        {
+        public Visitor() {
             this.methodCache = mapLookup.get(this.getClass());
             if (methodCache == null) {
-                methodCache = new ConcurrentHashMap<Class<? extends Node>, Method>();
+                methodCache = new ConcurrentHashMap<>();
                 mapLookup.put(this.getClass(), methodCache);
             }
         }
@@ -752,8 +752,7 @@ public interface Node extends Comparable<Node> {
                     m.setAccessible(true);
                 }
                 return m;
-            } catch (NoSuchMethodException e) {
-            }
+            } catch (NoSuchMethodException ignored) {}
             for (Class<?> interf : nodeClass.getInterfaces()) {
                 if (Node.class.isAssignableFrom(interf) && !Node.class.equals(interf)) try {
                     Method m = this.getClass().getDeclaredMethod("visit", interf);
@@ -761,8 +760,7 @@ public interface Node extends Comparable<Node> {
                         m.setAccessible(true);
                     }
                     return m;
-                } catch (NoSuchMethodException e) {
-                }
+                } catch (NoSuchMethodException ignored) {}
             }
             return getVisitMethodImpl(nodeClass.getSuperclass());
         }

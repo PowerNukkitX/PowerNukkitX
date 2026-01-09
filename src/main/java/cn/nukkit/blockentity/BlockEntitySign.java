@@ -88,9 +88,8 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         this.namedTag.getCompound(TAG_BACK_TEXT)
                 .putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", backText))
                 .putByte(TAG_PERSIST_FORMATTING, 1);
-        this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
-                .putByte(TAG_WAXED, 0)
-                .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
+       this.namedTag.putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
+               .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
     }
 
     /**
@@ -294,7 +293,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                         .putString(TAG_TEXT_OWNER, "")
                 )
                 .putBoolean(TAG_LEGACY_BUG_RESOLVE, true)
-                .putByte(TAG_WAXED, 0)
+                .putByte(TAG_WAXED, this.namedTag.getByte(TAG_WAXED))
                 .putLong(TAG_LOCKED_FOR_EDITING_BY, getEditorEntityRuntimeId());
     }
 

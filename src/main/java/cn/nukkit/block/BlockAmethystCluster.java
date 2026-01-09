@@ -41,40 +41,25 @@ public class BlockAmethystCluster extends BlockAmethystBud {
         return ItemTool.TIER_WOODEN;
     }
 
+    private static final int[][] FORTUNE_DROPS = {
+            {4},
+            {8, 4, 4},
+            {12, 8, 4, 4},
+            {16, 12, 8, 4, 4}
+    };
+
     @Override
     public Item[] getDrops(Item item) {
-        if(item.isPickaxe()){
-            final int fortuneLvl = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING);
-            switch (fortuneLvl) {
-                case 1:
-                    if (RANDOM.nextInt(3) == 0) {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 8)};
-                    } else {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 4)};
-                    }
-                case 2:
-                    final int bound = RANDOM.nextInt(4);
-                    if (bound == 0) {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 12)};
-                    } else if (bound == 1) {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 8)};
-                    } else  {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 4)};
-                    }
-                case 3:
-                    final int bound2 = RANDOM.nextInt(5);
-                    if (bound2 == 0) {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 16)};
-                    } else if (bound2 == 1) {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 12)};
-                    } else if (bound2 == 2) {
-                        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 8)};
-                    }
-                default:
-                    return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 4)};
-            }
-        } else {
+        if (!item.isPickaxe()) {
             return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 2)};
         }
+
+        int fortuneLevel = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING);
+        fortuneLevel = Math.max(0, Math.min(3, fortuneLevel));
+
+        int[] choices = FORTUNE_DROPS[fortuneLevel];
+        int amount = choices[RANDOM.nextInt(choices.length)];
+
+        return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, amount)};
     }
 }

@@ -89,6 +89,7 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -333,6 +334,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
     protected AtomicInteger shapeIds = new AtomicInteger(0);
+    /**
+     * Stores the current client input lock flags applied to this player.
+     *
+     * <p>
+     * This state is server-side only. The client does NOT send
+     * its input lock state back to the server, therefore, it must be cached
+     * and managed manually.
+     * </p>
+     */
+    protected EnumSet<ClientInputLocksFlag> clientInputLocks = EnumSet.noneOf(ClientInputLocksFlag.class);
 
     @UsedByReflection
     public Player(@NotNull BedrockSession session, @NotNull PlayerInfo info) {
@@ -504,6 +515,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             pk.z = (float) pos.z;
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+            this.getLevel().sendBlocks(new Player[]{this}, new Vector3[]{pos}, UpdateBlockPacket.FLAG_NOGRAPHIC);
         }
         this.blockBreakProgress = 0;
         this.breakingBlock = null;
@@ -690,7 +702,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setHealth(0);
         } else setHealth(getHealth()); // Sends health to player
 
-        getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
+        ServerScheduler scheduler = this.getServer().getSettings().levelSettings().levelThread() ? this.getLevel().getScheduler() : this.getServer().getScheduler();
+        scheduler.scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             this.session.getMachine().fire(SessionState.IN_GAME);
         }, 5);
     }
@@ -5454,4 +5467,79 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         shapeIds.set(0);
     }
+
+    /**
+     * Returns a copy of the active client input lock flags.
+     *
+     * @return a copy of currently active {@link ClientInputLocksFlag}s
+     */
+    public EnumSet<ClientInputLocksFlag> getClientInputLocks() {
+        return EnumSet.copyOf(this.clientInputLocks);
+    }
+
+    /**
+     * Adds a client input lock flag and sends an update packet to the client.
+     *
+     * <p>
+     * Adding a flag means the related input permission will be DISABLED.
+     * </p>
+     *
+     * @param flag the {@link ClientInputLocksFlag} to add
+     */
+    public void addClientInputLock(ClientInputLocksFlag flag) {
+        if (this.clientInputLocks.add(flag)) {
+            this.sendClientInputLocks();
+            log.debug("Adding client input lock {} for {}", flag.name(), name);
+        }
+    }
+
+    /**
+     * Removes a client input lock flag and sends an update packet to the client.
+     *
+     * <p>
+     * Removing a flag means the related input permission will be ENABLED.
+     * </p>
+     *
+     * @param flag the {@link ClientInputLocksFlag} to remove
+     */
+    public void removeClientInputLock(ClientInputLocksFlag flag) {
+        if (this.clientInputLocks.remove(flag)) {
+            this.sendClientInputLocks();
+            log.debug("Removing client input lock {} for {}", flag.name(), name);
+        }
+    }
+
+    /**
+     * Clears all client input locks and updates the client.
+     */
+    public void clearClientInputLocks() {
+        if (!this.clientInputLocks.isEmpty()) {
+            this.clientInputLocks.clear();
+            log.debug("Clearing client input locks for {}", name);
+            this.sendClientInputLocks();
+        }
+    }
+
+    /**
+     * Sends an {@link UpdateClientInputLocksPacket} to the client
+     * using the current input lock state.
+     *
+     * <p>
+     * The server position is mandatory for this packet and must NOT be null.
+     * </p>
+     */
+    protected void sendClientInputLocks() {
+        UpdateClientInputLocksPacket pk = new UpdateClientInputLocksPacket();
+        Vector3f pos = this.getPosition().asVector3f();
+        pos = new Vector3f(
+                pos.getX(),
+                pos.getY() + this.getEyeHeight(),
+                pos.getZ()
+        );
+
+        pk.setServerPosition(pos);
+        pk.setFlags(this.clientInputLocks);
+        this.dataPacket(pk);
+    }
+
 }
