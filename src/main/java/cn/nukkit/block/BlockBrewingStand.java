@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
@@ -12,6 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.ContainerSetDataPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -71,7 +73,6 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = new CompoundTag();
         if (item.hasCustomName()) {
@@ -85,8 +86,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
             }
         }
 
-        BlockEntityBrewingStand brewing = this.createBrewingStand(nbt);
-        return brewing != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -114,6 +114,14 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
             }
 
             player.addWindow(brewing.getInventory());
+            // Without this, the brewing stand starts brewing (visually) once opened.
+            if(brewing.brewTime == BlockEntityBrewingStand.MAX_BREW_TIME) {
+                ContainerSetDataPacket pk = new ContainerSetDataPacket();
+                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
+                pk.value = 0;
+                pk.windowId = player.getWindowId(brewing.getInventory());;
+                player.dataPacket(pk);
+            }
         }
 
         return true;

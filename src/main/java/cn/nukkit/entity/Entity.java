@@ -1578,6 +1578,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean entityBaseTick(int tickDiff) {
+        if(!getServer().isRunning()) return true;
         if (!this.isAlive()) {
             if (this instanceof EntityCreature) {
                 this.deadTicks += tickDiff;
@@ -1841,11 +1842,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         pk.teleport = tp;
         pk.onGround = this.onGround;
         Server.broadcastPacket(hasSpawned.values(), pk);
-    }
-
-    @Override
-    public Vector3 getDirectionVector() {
-        return super.getDirectionVector();
     }
 
     public Vector2 getDirectionPlane() {

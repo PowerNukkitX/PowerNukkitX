@@ -194,6 +194,7 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.BEETROOT);
         randomTickBlocks.add(BlockID.CARROTS);
         randomTickBlocks.add(BlockID.POTATOES);
+        randomTickBlocks.add(BlockID.PITCHER_CROP);
         randomTickBlocks.add(BlockID.MELON_STEM);
         randomTickBlocks.add(BlockID.PUMPKIN_STEM);
         randomTickBlocks.add(BlockID.WHEAT);
@@ -265,6 +266,7 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.TORCHFLOWER_CROP);
         randomTickBlocks.add(BlockID.CLOSED_EYEBLOSSOM);
         randomTickBlocks.add(BlockID.OPEN_EYEBLOSSOM);
+        randomTickBlocks.add(BlockID.WEEPING_VINES);
     }
 
     @NonComputationAtomic
