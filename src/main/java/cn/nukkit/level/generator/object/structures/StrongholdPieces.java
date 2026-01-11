@@ -1500,13 +1500,13 @@ public class StrongholdPieces {
         public CorridorChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()
                     .register(new ItemEntry(Item.ENDER_PEARL, 50))
-                    .register(new ItemEntry(Item.EMERALD, 1, 3, 15))
-                    .register(new ItemEntry(Item.DIAMOND, 1, 3, 15))
-                    .register(new ItemEntry(Item.IRON_INGOT, 1, 5, 50))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 1, 3, 25))
-                    .register(new ItemEntry(Item.REDSTONE, 4, 9, 25))
-                    .register(new ItemEntry(Item.BREAD, 1, 3, 75))
-                    .register(new ItemEntry(Item.APPLE, 1, 3, 75))
+                    .register(new ItemEntry(Item.EMERALD, 0, 1, 3, 15))
+                    .register(new ItemEntry(Item.DIAMOND, 0, 1, 3, 15))
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 1, 5, 50))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 1, 3, 25))
+                    .register(new ItemEntry(Item.REDSTONE, 0, 4, 9, 25))
+                    .register(new ItemEntry(Item.BREAD, 0, 1, 3, 75))
+                    .register(new ItemEntry(Item.APPLE, 0, 1, 3, 75))
                     .register(new ItemEntry(Item.IRON_PICKAXE, 25))
                     .register(new ItemEntry(Item.IRON_SWORD, 25))
                     .register(new ItemEntry(Item.IRON_CHESTPLATE, 25))
@@ -1514,12 +1514,12 @@ public class StrongholdPieces {
                     .register(new ItemEntry(Item.IRON_LEGGINGS, 25))
                     .register(new ItemEntry(Item.IRON_BOOTS, 25))
                     .register(new ItemEntry(Item.GOLDEN_APPLE, 5))
-                    .register(new ItemEntry(Item.LEATHER, 1, 5, 5))
+                    .register(new ItemEntry(Item.LEATHER, 0, 1, 5, 5))
                     .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.MUSIC_DISC_OTHERSIDE, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 1,1, 1, 6, getTreasure()));
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK,0,1, 1, 6, getTreasure()));
 
             this.pools.put(pool1.build(), new RollEntry(3, 2, pool1.getTotalWeight()));
 
@@ -1534,15 +1534,15 @@ public class StrongholdPieces {
     protected static class CrossingChestPopulator extends RandomizableContainer {
         public CrossingChestPopulator() {
             PoolBuilder pool = new PoolBuilder()
-                    .register(new ItemEntry(Item.IRON_INGOT, 1, 5, 50))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 1, 3, 25))
-                    .register(new ItemEntry(Item.REDSTONE, 4, 9, 25))
-                    .register(new ItemEntry(Item.COAL, 3, 8, 50))
-                    .register(new ItemEntry(Item.BREAD, 1, 3, 75))
-                    .register(new ItemEntry(Item.APPLE, 1, 3, 75))
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 1, 5, 50))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 1, 3, 25))
+                    .register(new ItemEntry(Item.REDSTONE, 0, 4, 9, 25))
+                    .register(new ItemEntry(Item.COAL, 0, 3, 8, 50))
+                    .register(new ItemEntry(Item.BREAD, 0, 1, 3, 75))
+                    .register(new ItemEntry(Item.APPLE, 0, 1, 3, 75))
                     .register(new ItemEntry(Item.IRON_PICKAXE, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 1, 1, 1, 6, getTreasure()))
-                    .register(new ItemEntry(Item.INK_SAC, 1, 3, 75));
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 6, getTreasure()))
+                    .register(new ItemEntry(Item.INK_SAC, 0, 1, 3, 75));
 
             this.pools.put(pool.build(), new RollEntry(4, 1, pool.getTotalWeight()));
         }
@@ -1551,11 +1551,11 @@ public class StrongholdPieces {
     protected static class LibraryChestPopulator extends RandomizableContainer {
         public LibraryChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()
-                    .register(new ItemEntry(Item.BOOK, 1, 3, 100))
-                    .register(new ItemEntry(Item.PAPER, 2, 7, 100))
+                    .register(new ItemEntry(Item.BOOK, 0, 1, 3, 100))
+                    .register(new ItemEntry(Item.PAPER, 0, 2, 7, 100))
                     .register(new ItemEntry(Item.EMPTY_MAP, 5))
                     .register(new ItemEntry(Item.COMPASS, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 1, 1, 1, 60, getTreasure()));
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 60, getTreasure()));
 
             this.pools.put(pool1.build(), new RollEntry(10, 2, pool1.getTotalWeight()));
 
