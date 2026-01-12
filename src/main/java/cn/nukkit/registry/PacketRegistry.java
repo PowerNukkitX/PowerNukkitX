@@ -81,11 +81,21 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     }
 
     /**
-     * Registers a packet to the pool. This method is primarily intended for standard/internal packet registration,
-     * but can also be used to register custom packets. For custom packets
-     * @param id    The packet id, non-negative int
-     * @param clazz The packet class (standard or custom)
-     * @throws RegisterException if the packet ID is already registered
+     * Registers a plugin-provided custom packet using the plugin's classloader.
+     *
+     * <p>This method is intended specifically for registering custom packets supplied
+     * by plugins. It ensures instances are instantiated using a {@link FastConstructor}
+     * configured with a {@link FastMemberLoader} that uses the plugin's classloader,
+     * so plugin classes resolve correctly at runtime.</p>
+     *
+     * <p>Do not use this method for standard/internal packet registration; internal
+     * packets should be registered via the normal internal registration path
+     * (for example {@code register0} or {@code register}).</p>
+     *
+     * @param plugin the plugin that provides the custom packet; its classloader will be used
+     * @param id     the packet id (non-negative)
+     * @param clazz  the packet class provided by the plugin
+     * @throws RegisterException if the packet id is already registered or the class has no no-arg constructor
      */
     public void registerCustomPacket(Plugin plugin, Integer id, Class<? extends DataPacket> clazz) throws RegisterException {
         final Constructor<? extends DataPacket> ctor;
