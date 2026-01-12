@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -70,8 +69,15 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     }
 
     @Override
-    public void register(Integer key, Class<? extends DataPacket> value) throws RegisterException
+    public void register(Integer id, Class<? extends DataPacket> clazz) throws RegisterException
     {
+        try {
+            if (this.PACKET_POOL.putIfAbsent(id, FastConstructor.create(clazz.getConstructor())) != null) {
+                throw new RegisterException("The packet has been registered!");
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RegisterException(e);
+        }
     }
 
     /**
