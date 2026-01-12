@@ -182,13 +182,13 @@ public class PopulatorRuinedPortal extends Populator {
 
         public ChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()
-                    .register(new ItemEntry(Block.OBSIDIAN, 1, 2, 40))
-                    .register(new ItemEntry(Item.FLINT, 1, 4, 40))
-                    .register(new ItemEntry(Item.IRON_NUGGET, 9, 18, 40))
+                    .register(new ItemEntry(Block.OBSIDIAN, 0, 1, 2, 40))
+                    .register(new ItemEntry(Item.FLINT, 0, 1, 4, 40))
+                    .register(new ItemEntry(Item.IRON_NUGGET, 0, 9, 18, 40))
                     .register(new ItemEntry(Item.FLINT_AND_STEEL, 40))
                     .register(new ItemEntry(Item.FIRE_CHARGE, 40))
                     .register(new ItemEntry(Item.GOLDEN_APPLE, 15))
-                    .register(new ItemEntry(Item.GOLD_NUGGET, 4, 24, 15))
+                    .register(new ItemEntry(Item.GOLD_NUGGET, 0, 4, 24, 15))
                     .register(new ItemEntry(Item.GOLDEN_SWORD, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_AXE, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_HOE, 0, 1, 1, 15, getDefaultEnchantments()))
@@ -198,21 +198,21 @@ public class PopulatorRuinedPortal extends Populator {
                     .register(new ItemEntry(Item.GOLDEN_CHESTPLATE, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_HELMET, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_LEGGINGS, 0, 1, 1, 15, getDefaultEnchantments()))
-                    .register(new ItemEntry(Item.GLISTERING_MELON_SLICE, 4, 12, 5))
+                    .register(new ItemEntry(Item.GLISTERING_MELON_SLICE, 0, 4, 12, 5))
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Block.LIGHT_WEIGHTED_PRESSURE_PLATE, 5))
-                    .register(new ItemEntry(Item.GOLDEN_CARROT, 4, 12, 5))
+                    .register(new ItemEntry(Item.GOLDEN_CARROT, 0, 4, 12, 5))
                     .register(new ItemEntry(Item.CLOCK, 5))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 2, 8, 5))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 2, 8, 5))
                     .register(new ItemEntry(Block.BELL, 1))
                     .register(new ItemEntry(Item.ENCHANTED_GOLDEN_APPLE, 1))
-                    .register(new ItemEntry(Block.GOLD_BLOCK, 1, 2, 1));
+                    .register(new ItemEntry(Block.GOLD_BLOCK, 0, 1, 2, 1));
 
             this.pools.put(pool1.build(), new RollEntry(8, 4, pool1.getTotalWeight()));
 
             PoolBuilder pool2 = new PoolBuilder()
                     .register(new ItemEntry(Block.AIR, 1))
-                    .register(new ItemEntry(Block.LODESTONE, 1, 2, 2));
+                    .register(new ItemEntry(Block.LODESTONE, 0, 1, 2, 2));
 
             this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
         }

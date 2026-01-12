@@ -290,7 +290,7 @@ public class OceanRuinPopulator extends Populator {
                     .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 5, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.LEATHER_CHESTPLATE, 1))
                     .register(new ItemEntry(Item.GOLDEN_HELMET, 1))
-                    .register(new ItemEntry(Item.FISHING_ROD, 0, 1,1,5, getRodEnchantments()))
+                    .register(new ItemEntry(Item.FISHING_ROD, 0, 1, 1,5, getRodEnchantments()))
                     .register(new ItemEntry(Item.EMPTY_MAP, 10)); //TODO: exploration_map buried treasure
             this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
         }

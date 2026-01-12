@@ -783,7 +783,7 @@ public class MineshaftPieces {
                     .register(new ItemEntry(Item.IRON_INGOT, 0, 5, 10))
                     .register(new ItemEntry(Item.GOLD_INGOT, 0, 3, 5))
                     .register(new ItemEntry(Item.REDSTONE, 0, 9, 4, 5))
-                    .register(new ItemEntry(Item.DYE, 4, 9, 4, 5))
+                    .register(new ItemEntry(Item.LAPIS_LAZULI, 0, 9, 4, 5))
                     .register(new ItemEntry(Item.DIAMOND, 0, 2, 3))
                     .register(new ItemEntry(Item.COAL, 0, 8, 3, 10))
                     .register(new ItemEntry(Item.BREAD, 0, 3, 15))
