@@ -1,8 +1,11 @@
 package cn.nukkit.registry;
 
+import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.sunlan.fastreflection.FastConstructor;
+import me.sunlan.fastreflection.FastMemberLoader;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnegative;
@@ -66,6 +69,11 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         init();
     }
 
+    @Override
+    public void register(Integer key, Class<? extends DataPacket> value) throws RegisterException
+    {
+    }
+
     /**
      * Registers a packet to the pool. This method is primarily intended for standard/internal packet registration,
      * but can also be used to register custom packets. For custom packets
@@ -73,21 +81,30 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
      * @param clazz The packet class (standard or custom)
      * @throws RegisterException if the packet ID is already registered
      */
-    @Override
-    public void register(Integer id, Class<? extends DataPacket> clazz) throws RegisterException {
+    public void registerCustomPacket(Plugin plugin, Integer id, Class<? extends DataPacket> clazz) throws RegisterException {
+        final Constructor<? extends DataPacket> ctor;
         try {
-            Constructor<? extends DataPacket> ctor = clazz.getConstructor();
-            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
-            try {
-                if (this.PACKET_POOL.putIfAbsent(id, FastConstructor.create(ctor)) != null) {
-                    throw new RegisterException("The packet has been registered!");
-                }
-            } finally {
-                Thread.currentThread().setContextClassLoader(oldCl);
-            }
+            ctor = clazz.getConstructor();
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
+        }
+
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        ClassLoader pluginCl = plugin.getPluginClassLoader();
+        Thread.currentThread().setContextClassLoader(pluginCl);
+        try {
+            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(
+                    plugin.getName(),
+                    p -> new FastMemberLoader(plugin.getPluginClassLoader())
+            );
+
+            FastConstructor<? extends DataPacket> fastCtor = FastConstructor.create(ctor, memberLoader, false);
+
+            if (this.PACKET_POOL.putIfAbsent(id, fastCtor) != null) {
+                throw new RegisterException("The packet has been registered!");
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
         }
     }
 
