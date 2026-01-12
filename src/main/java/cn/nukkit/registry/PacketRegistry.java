@@ -6,6 +6,7 @@ import me.sunlan.fastreflection.FastConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnegative;
+import java.lang.reflect.Constructor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? extends DataPacket>> {
@@ -75,8 +76,15 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
     @Override
     public void register(Integer id, Class<? extends DataPacket> clazz) throws RegisterException {
         try {
-            if (this.PACKET_POOL.putIfAbsent(id, FastConstructor.create(clazz.getConstructor())) != null) {
-                throw new RegisterException("The packet has been registered!");
+            Constructor<? extends DataPacket> ctor = clazz.getConstructor();
+            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
+            try {
+                if (this.PACKET_POOL.putIfAbsent(id, FastConstructor.create(ctor)) != null) {
+                    throw new RegisterException("The packet has been registered!");
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldCl);
             }
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
