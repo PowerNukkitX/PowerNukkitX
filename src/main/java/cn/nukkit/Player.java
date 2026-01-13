@@ -103,6 +103,7 @@ import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.debugshape.DebugShape;
+import cn.nukkit.network.protocol.types.transfer.*;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -633,12 +634,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.noDamageTicks = 60;
 
-        for (long index : playerChunkManager.getUsedChunks()) {
-            int chunkX = Level.getHashX(index);
-            int chunkZ = Level.getHashZ(index);
-            for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
+        synchronized (playerChunkManager) {
+            for (long index : playerChunkManager.getUsedChunks()) {
+                int chunkX = Level.getHashX(index);
+                int chunkZ = Level.getHashZ(index);
+                for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
+                    if (this != entity && !entity.closed && entity.isAlive()) {
+                        entity.spawnTo(this);
+                    }
                 }
             }
         }
@@ -4767,6 +4770,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.address = hostName;
         pk.port = port;
         this.dataPacket(pk);
+    }
+
+    /**
+     * Teleport the player to another server
+     *
+     * @param options TransferPlayerOptions
+     */
+    public void transfer(TransferPlayerOptions options) {
+        TransferPacket packet = new TransferPacket();
+
+        if (options instanceof TransferPlayerIpPortOptions ipOptions) {
+            packet.setAddress(ipOptions.getHostname());
+            packet.setPort(ipOptions.getPort());
+        } else if (options instanceof TransferPlayerNetherNetOptions netherNetOptions) {
+            packet.setAddress(netherNetOptions.getNetherNetId());
+            packet.setPort(0);
+        } else {
+            throw new IllegalArgumentException("Unknown TransferPlayerOptions type");
+        }
+
+        this.dataPacket(packet);
     }
 
     /**

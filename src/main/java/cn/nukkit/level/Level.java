@@ -99,6 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -2319,23 +2320,24 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
+        ObjectSet<Long2ObjectMap.Entry<IntOpenHashSet>> blockLightQueue;
+        synchronized (this.blockLightQueue) {
+            blockLightQueue = this.blockLightQueue.long2ObjectEntrySet();
+            this.blockLightQueue.clear();
+        }
         try {
-            int size = blockLightQueue.size();
-            if (size == 0) {
-                return;
-            }
+
             Queue<Long> lightPropagationQueue = new ConcurrentLinkedQueue<>();
             Queue<Object[]> lightRemovalQueue = new ConcurrentLinkedQueue<>();
             Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
             Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-            var iter = blockLightQueue.entrySet().iterator();
-            while (iter.hasNext() && size-- > 0) {
+            var iter = blockLightQueue.iterator();
+            while (iter.hasNext()) {
                 var entry = iter.next();
                 long index = entry.getKey();
                 var blocks = entry.getValue();
 
-                iter.remove();
                 if (blocks == null || blocks.isEmpty()) continue;
 
                 int chunkX = Level.getHashX(index);
@@ -2448,12 +2450,14 @@ public class Level implements Metadatable {
 
     public void addBlockLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        IntOpenHashSet blockSet = blockLightQueue.get(index);
-        if (blockSet == null) {
-            blockSet = new IntOpenHashSet();
-            blockLightQueue.put(index, blockSet);
+        synchronized (blockLightQueue) {
+            IntOpenHashSet blockSet = blockLightQueue.get(index);
+            if (blockSet == null) {
+                blockSet = new IntOpenHashSet();
+                blockLightQueue.put(index, blockSet);
+            }
+            blockSet.add(Level.localBlockHash(x, y, z, this));
         }
-        blockSet.add(Level.localBlockHash(x, y, z, this));
     }
 
     public boolean setBlock(Vector3 pos, Block block) {
