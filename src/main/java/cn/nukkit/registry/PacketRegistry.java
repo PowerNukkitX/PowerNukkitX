@@ -21,15 +21,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         registerPackets();
     }
 
-    /**
-     * Unregisters a custom packet by its ID.
-     * @param id The custom packet ID
-     * @return true if removed, false otherwise
-     */
-    public boolean unregisterCustomPacket(int id) {
-        return this.PACKET_POOL.remove(id) != null;
-    }
-
     @Override
     public DataPacket get(Integer key) {
         FastConstructor<? extends DataPacket> fastConstructor = PACKET_POOL.get(key.intValue());
@@ -68,6 +59,20 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         init();
     }
 
+    /**
+     * Registers an internal (non-plugin) packet class into the registry.
+     *
+     * <p>This method is intended for registering standard/internal packet classes
+     * that are part of the server implementation. It creates a {@link me.sunlan.fastreflection.FastConstructor}
+     * from the packet class's no-arg constructor and stores it in the packet pool.</p>
+     *
+     * <p>Do not use this method to register plugin-provided packet classes; use
+     * {@code registerCustomPacket} for plugin classes so the plugin classloader is used.</p>
+     *
+     * @param id    the packet id (should be non-negative)
+     * @param clazz the packet class to register (must have a public no-arg constructor)
+     * @throws RegisterException if the id is already registered or the class has no no-arg constructor
+     */
     @Override
     public void register(Integer id, Class<? extends DataPacket> clazz) throws RegisterException
     {
@@ -105,22 +110,15 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
             throw new RegisterException(e);
         }
 
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader pluginCl = plugin.getPluginClassLoader();
-        Thread.currentThread().setContextClassLoader(pluginCl);
-        try {
-            FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(
-                    plugin.getName(),
-                    p -> new FastMemberLoader(plugin.getPluginClassLoader())
-            );
+        FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(
+                plugin.getName(),
+                p -> new FastMemberLoader(plugin.getPluginClassLoader())
+        );
 
-            FastConstructor<? extends DataPacket> fastCtor = FastConstructor.create(ctor, memberLoader, false);
+        FastConstructor<? extends DataPacket> fastCtor = FastConstructor.create(ctor, memberLoader, false);
 
-            if (this.PACKET_POOL.putIfAbsent(id, fastCtor) != null) {
-                throw new RegisterException("The packet has been registered!");
-            }
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
+        if (this.PACKET_POOL.putIfAbsent(id, fastCtor) != null) {
+            throw new RegisterException("The packet has been registered!");
         }
     }
 

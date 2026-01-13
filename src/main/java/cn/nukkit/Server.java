@@ -333,6 +333,8 @@ public class Server {
             it.saveDefaults();
             it.load(true);
         });
+        long elapsed = System.currentTimeMillis() - launchTime;
+        log.info("Successfully loaded config in {}ms.", elapsed);
 
         if (wizardConfig != null && !config.exists()) {
             this.settings.baseSettings().language(wizardConfig.getLanguage());
