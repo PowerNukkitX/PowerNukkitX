@@ -9,10 +9,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnegative;
 import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? extends DataPacket>> {
     private final Int2ObjectOpenHashMap<FastConstructor<? extends DataPacket>> PACKET_POOL = new Int2ObjectOpenHashMap<>(256);
+    private final Map<String, FastMemberLoader> fastMemberLoaderCache = new ConcurrentHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Override
