@@ -7,10 +7,13 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.PopulatedGenerator;
+import cn.nukkit.level.generator.stages.LightPopulationStage;
+import cn.nukkit.level.generator.stages.flat.FinishedStage;
 import cn.nukkit.level.generator.terra.delegate.PNXProtoChunk;
 import cn.nukkit.level.generator.terra.delegate.PNXProtoWorld;
 import cn.nukkit.level.generator.terra.delegate.PNXServerWorld;
+import cn.nukkit.registry.Registries;
 import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
@@ -23,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-public class TerraGenerator extends Generator implements GeneratorWrapper {
+public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapper {
     private final BiomeProvider biomeProvider;
     private final ConfigPack configPack;
     private final WorldProperties worldProperties;
@@ -63,8 +66,16 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
     }
 
     @Override
+    public String getLastTerrainStage() {
+        return "terra_terrain";
+    }
+
+    @Override
     public void stages(GenerateStage.Builder builder) {
-        builder.start(new TerraStage());
+        builder.start(new TerrainStage());
+        builder.next(new PopulateStage());
+        builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
     }
 
     public ConfigPack getConfigPack() {
@@ -84,7 +95,7 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
         return config.getGeneratorProvider().newInstance(config);
     }
 
-    class TerraStage extends GenerateStage {
+    class TerrainStage extends GenerateStage {
         @Override
         public void apply(ChunkGenerateContext context) {
             final IChunk chunk = context.getChunk();
@@ -100,7 +111,24 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
                     }
                 }
             }
-            var tmp = new PNXProtoWorld(new PNXServerWorld(TerraGenerator.this, context.getLevel()), chunkX, chunkZ);
+            chunk.setChunkState(ChunkState.GENERATED);
+        }
+
+        @Override
+        public String name() {
+            return "terra_terrain";
+        }
+    }
+
+    class PopulateStage extends GenerateStage {
+
+        @Override
+        public void apply(ChunkGenerateContext context) {
+            final IChunk chunk = context.getChunk();
+            final int chunkX = chunk.getX();
+            final int chunkZ = chunk.getZ();
+            var tmp1 = new PNXServerWorld(TerraGenerator.this, context.getLevel());
+            var tmp = new PNXProtoWorld(tmp1, chunkX, chunkZ);
             try {
                 for (var generationStage : configPack.getStages()) {
                     generationStage.populate(tmp);
@@ -108,19 +136,12 @@ public class TerraGenerator extends Generator implements GeneratorWrapper {
             } catch (Exception e) {
                 log.error("", e);
             }
-
-            if (Server.getInstance().getSettings().chunkSettings().lightUpdates()) {
-                chunk.recalculateHeightMap();
-                chunk.populateSkyLight();
-                chunk.setLightPopulated();
-            }
-
-            chunk.setChunkState(ChunkState.FINISHED);
+            tmp1.apply(chunk);
         }
 
         @Override
         public String name() {
-            return "terra_stage";
+            return "terra_populate";
         }
     }
 
