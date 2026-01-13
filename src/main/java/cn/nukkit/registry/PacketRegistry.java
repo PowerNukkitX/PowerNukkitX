@@ -32,6 +32,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         } else {
             try {
                 return (DataPacket) fastConstructor.invoke();
+            } catch (Error e) {
+                throw e;
             } catch (Throwable e) {
                 throw new PacketInstantiationException("Failed to instantiate packet", e);
             }
@@ -45,6 +47,8 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         } else {
             try {
                 return (DataPacket) fastConstructor.invoke();
+            } catch (Error e) {
+                throw e;
             } catch (Throwable e) {
                 throw new PacketInstantiationException("Failed to instantiate packet", e);
             }
