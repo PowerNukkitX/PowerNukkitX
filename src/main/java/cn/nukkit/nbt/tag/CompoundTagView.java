@@ -235,6 +235,66 @@ public class CompoundTagView extends CompoundTag {
     }
 
     @Override
+    public byte getByte(String name, byte defaultValue) {
+        return delegate.getByte(name, defaultValue);
+    }
+
+    @Override
+    public short getShort(String name, short defaultValue) {
+        return delegate.getShort(name, defaultValue);
+    }
+
+    @Override
+    public int getInt(String name, int defaultValue) {
+        return delegate.getInt(name, defaultValue);
+    }
+
+    @Override
+    public long getLong(String name, long defaultValue) {
+        return delegate.getLong(name, defaultValue);
+    }
+
+    @Override
+    public float getFloat(String name, float defaultValue) {
+        return delegate.getFloat(name, defaultValue);
+    }
+
+    @Override
+    public double getDouble(String name, double defaultValue) {
+        return delegate.getDouble(name, defaultValue);
+    }
+
+    @Override
+    public String getString(String name, String defaultValue) {
+        return delegate.getString(name, defaultValue);
+    }
+
+    @Override
+    public byte[] getByteArray(String name, byte[] defaultValue) {
+        return delegate.getByteArray(name, defaultValue);
+    }
+
+    @Override
+    public int[] getIntArray(String name, int[] defaultValue) {
+        return delegate.getIntArray(name, defaultValue);
+    }
+
+    @Override
+    public CompoundTag getCompound(String name, CompoundTag defaultValue) {
+        return delegate.getCompound(name, defaultValue);
+    }
+
+    @Override
+    public ListTag<? extends Tag> getList(String name, ListTag<? extends Tag> defaultValue) {
+        return delegate.getList(name, defaultValue);
+    }
+
+    @Override
+    public <T extends Tag> ListTag<T> getList(String name, Class<T> type, ListTag<T> defaultValue) {
+        return delegate.getList(name, type, defaultValue);
+    }
+
+    @Override
     public Map<String, Tag> getTags() {
         return Collections.unmodifiableMap(delegate.getTags());
     }
