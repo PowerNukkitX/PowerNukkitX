@@ -171,70 +171,52 @@ public class CompoundTag extends Tag {
     }
 
     public byte getByte(String name) {
-        if (!tags.containsKey(name)) return (byte) 0;
-        return ((NumberTag<?>) tags.get(name)).getData().byteValue();
+        return getByte(name, (byte) 0);
     }
 
     public short getShort(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag<?>) tags.get(name)).getData().shortValue();
+        return getShort(name, (short) 0);
     }
 
     public int getInt(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag<?>) tags.get(name)).getData().intValue();
+        return getInt(name, 0);
     }
 
     public long getLong(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag<?>) tags.get(name)).getData().longValue();
+        return getLong(name, 0L);
     }
 
     public float getFloat(String name) {
-        if (!tags.containsKey(name)) return (float) 0;
-        return ((NumberTag<?>) tags.get(name)).getData().floatValue();
+        return getFloat(name, 0f);
     }
 
     public double getDouble(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag<?>) tags.get(name)).getData().doubleValue();
+        return getDouble(name, 0D);
     }
 
     public String getString(String name) {
-        if (!tags.containsKey(name)) return "";
-        Tag tag = tags.get(name);
-        if (tag instanceof NumberTag) {
-            return String.valueOf(((NumberTag<?>) tag).getData());
-        }
-        return ((StringTag) tag).data;
+        return getString(name, "");
     }
 
     public byte[] getByteArray(String name) {
-        if (!tags.containsKey(name)) return EmptyArrays.EMPTY_BYTES;
-        return ((ByteArrayTag) tags.get(name)).data;
+        return getByteArray(name, EmptyArrays.EMPTY_BYTES);
     }
 
     public int[] getIntArray(String name) {
-        if (!tags.containsKey(name)) return EmptyArrays.EMPTY_INTS;
-        return ((IntArrayTag) tags.get(name)).data;
+        return getIntArray(name, EmptyArrays.EMPTY_INTS);
     }
 
     public CompoundTag getCompound(String name) {
-        if (!tags.containsKey(name)) return new CompoundTag();
-        return (CompoundTag) tags.get(name);
+        return getCompound(name, new CompoundTag());
     }
 
     public ListTag<? extends Tag> getList(String name) {
-        if (!tags.containsKey(name)) return new ListTag<>();
-        return (ListTag<? extends Tag>) tags.get(name);
+        return getList(name, new ListTag<>());
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Tag> ListTag<T> getList(String name, Class<T> type) {
-        if (tags.containsKey(name)) {
-            return (ListTag<T>) tags.get(name);
-        }
-        return new ListTag<>();
+        return getList(name, type, new ListTag<>());
     }
 
     public byte getByte(String name, byte defaultValue) {
