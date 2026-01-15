@@ -4780,14 +4780,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void transfer(TransferPlayerOptions options) {
         TransferPacket packet = new TransferPacket();
 
-        if (options instanceof TransferPlayerIpPortOptions ipOptions) {
-            packet.setAddress(ipOptions.getHostname());
-            packet.setPort(ipOptions.getPort());
-        } else if (options instanceof TransferPlayerNetherNetOptions netherNetOptions) {
-            packet.setAddress(netherNetOptions.getNetherNetId());
-            packet.setPort(0);
-        } else {
-            throw new IllegalArgumentException("Unknown TransferPlayerOptions type");
+        Objects.requireNonNull(options, "TransferPlayerOptions cannot be null");
+
+        switch (options) {
+            case TransferPlayerIpPortOptions ipOptions -> {
+                packet.setAddress(ipOptions.getHostname());
+                packet.setPort(ipOptions.getPort());
+            }
+            case TransferPlayerNetherNetOptions netherNetOptions -> {
+                packet.setAddress(netherNetOptions.getNetherNetId());
+                packet.setPort(0);
+            }
+            case TransferPlayerWaterdogOptions waterdogOptions -> {
+                packet.setAddress(waterdogOptions.getServerName());
+                packet.setPort(0);
+            }
+            default -> throw new IllegalArgumentException("Unknown TransferPlayerOptions type");
         }
 
         this.dataPacket(packet);
