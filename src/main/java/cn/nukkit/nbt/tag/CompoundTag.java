@@ -237,6 +237,73 @@ public class CompoundTag extends Tag {
         return new ListTag<>();
     }
 
+    public byte getByte(String name, byte defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((NumberTag<?>) tags.get(name)).getData().byteValue();
+    }
+
+    public short getShort(String name, short defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((NumberTag<?>) tags.get(name)).getData().shortValue();
+    }
+
+    public int getInt(String name, int defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((NumberTag<?>) tags.get(name)).getData().intValue();
+    }
+
+    public long getLong(String name, long defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((NumberTag<?>) tags.get(name)).getData().longValue();
+    }
+
+    public float getFloat(String name, float defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((NumberTag<?>) tags.get(name)).getData().floatValue();
+    }
+
+    public double getDouble(String name, double defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((NumberTag<?>) tags.get(name)).getData().doubleValue();
+    }
+
+    public String getString(String name, String defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        Tag tag = tags.get(name);
+        if (tag instanceof NumberTag) {
+            return String.valueOf(((NumberTag<?>) tag).getData());
+        }
+        return ((StringTag) tag).data;
+    }
+
+    public byte[] getByteArray(String name, byte[] defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((ByteArrayTag) tags.get(name)).data;
+    }
+
+    public int[] getIntArray(String name, int[] defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return ((IntArrayTag) tags.get(name)).data;
+    }
+
+    public CompoundTag getCompound(String name, CompoundTag defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return (CompoundTag) tags.get(name);
+    }
+
+    public ListTag<? extends Tag> getList(String name, ListTag<? extends Tag> defaultValue) {
+        if (!tags.containsKey(name)) return defaultValue;
+        return (ListTag<? extends Tag>) tags.get(name);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Tag> ListTag<T> getList(String name, Class<T> type, ListTag<T> defaultValue) {
+        if (tags.containsKey(name)) {
+            return (ListTag<T>) tags.get(name);
+        }
+        return defaultValue;
+    }
+
     public Map<String, Tag> getTags() {
         return new HashMap<>(this.tags);
     }
