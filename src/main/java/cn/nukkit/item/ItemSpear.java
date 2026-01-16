@@ -1,8 +1,11 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.event.player.PlayerSpearStabEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.plugin.PluginManager;
 
 public abstract class ItemSpear extends ItemTool {
 
@@ -21,7 +24,14 @@ public abstract class ItemSpear extends ItemTool {
         }
         player.setItemCoolDown(20, this.getIdentifier());
 
-        // TODO: Stab mechanics
+        PlayerSpearStabEvent event = new PlayerSpearStabEvent(player, this, movementSpeed);
+        PluginManager pluginManager = player.getServer().getPluginManager();
+
+        pluginManager.callEvent(event);
+
+        if (!event.isCancelled()){
+            // TODO: Stabbing mechanics
+        }
     }
 
     public float getChargeDamage(Player player, boolean fullCharge) {
