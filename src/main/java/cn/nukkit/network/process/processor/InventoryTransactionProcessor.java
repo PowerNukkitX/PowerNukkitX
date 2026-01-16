@@ -18,6 +18,7 @@ import cn.nukkit.event.player.*;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemSpear;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
@@ -273,6 +274,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         if(player.getInventory().getHeldItemIndex() != useItemData.hotbarSlot) {
             player.getInventory().equipItem(useItemData.hotbarSlot);
         }
+
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK -> {
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
@@ -352,7 +354,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         useItemDataItem.getNamedTag().remove("Damage");
                     }
                 }
-                ////
+
                 if (player.isCreative()) {
                     item = serverItemInHand;
                 } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
@@ -402,9 +404,67 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     }
                 }
             }
-            default -> {
-                //unknown
+            case InventoryTransactionPacket.USE_ITEM_ACTION_SPEAR_STAB -> {
+                Item item;
+                Item useItemDataItem = useItemData.itemInHand;
+                Item serverItemInHand = player.getInventory().getUnclonedItemInHand();
+                Vector3 directionVector = player.getDirectionVector();
+                // Removes Damage Tag that the client adds, but we do not store.
+                if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
+                    if(useItemDataItem.getNamedTag().containsInt("Damage")) {
+                        useItemDataItem.getNamedTag().remove("Damage");
+                    }
+                }
+
+                if (player.isCreative()) {
+                    item = serverItemInHand;
+                } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
+                    player.getServer().getLogger().debug("Item received did not match item in hand.");
+                    player.getInventory().sendHeldItem(player);
+                    return;
+                } else {
+                    item = serverItemInHand;
+                }
+
+                PlayerInteractEvent interactEvent = new PlayerInteractEvent(player, item.clone(), directionVector, face, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+                player.getServer().getPluginManager().callEvent(interactEvent);
+                playerHandle.setInteract();
+
+                if (interactEvent.isCancelled()) {
+                    player.getInventory().sendSlot(useItemData.hotbarSlot, player);
+                    return;
+                }
+
+                if (!(item instanceof ItemSpear spear)) {
+                    return;
+                }
+
+                if (!player.isUsingItem(item.getId())) {
+                    lastUsedItem = item;
+                    player.setLastUseTick(item.getId(), player.getLevel().getTick());
+
+                    if (lastUsedItem.getUsingTicks() <= 0) {
+                        spear.onSpearStab(player, player.getMovementSpeed());
+                        lastUsedItem.afterUse(player);
+                        player.removeLastUseTick(item.getId());
+                        lastUsedItem = null;
+                    }
+                    return;
+                }
+
+                int ticksUsed = player.getLevel().getTick()
+                        - player.getLastUseTick(lastUsedItem.getId());
+
+                if (ticksUsed < lastUsedItem.getUsingTicks()) {
+                    return;
+                }
+
+                spear.onSpearStab(player, player.getMovementSpeed());
+                lastUsedItem.afterUse(player);
+                player.removeLastUseTick(item.getId());
+                lastUsedItem = null;
             }
+            default -> log.debug("{} sent invalid item use action type {}", player.getName(), type);
         }
     }
 

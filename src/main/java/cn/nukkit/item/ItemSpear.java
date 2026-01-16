@@ -15,6 +15,15 @@ public abstract class ItemSpear extends ItemTool {
         return true;
     }
 
+    public void onSpearStab(Player player, float movementSpeed) {
+        if (!player.isItemCoolDownEnd(this.getIdentifier())) {
+            return;
+        }
+        player.setItemCoolDown(20, this.getIdentifier());
+
+        // TODO: Stab mechanics
+    }
+
     public float getChargeDamage(Player player, boolean fullCharge) {
         double speed = player.getMotion().length();
         float base = getAttackDamage();
