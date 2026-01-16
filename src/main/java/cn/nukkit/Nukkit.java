@@ -189,7 +189,7 @@ public class Nukkit {
             try (SetupWizard wizard = new SetupWizard()) {
                 String lang = (language != null && !language.isEmpty()) ? language : "eng";
                 wizard.setBaseLang(new cn.nukkit.lang.BaseLang(lang));
-                if (!autoAcceptLicense) {
+                if (!autoAcceptLicense && !hasLegacyConfig) {
                     boolean accepted = wizard.acceptLicense(false);
                     if (!accepted) {
                         System.out.println("License not accepted. Exiting.");
