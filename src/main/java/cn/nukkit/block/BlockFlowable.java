@@ -11,7 +11,7 @@ public abstract class BlockFlowable extends BlockTransparent {
         super(blockState);
     }
 
-    public BlockFlowable(BlockState blockState, BlockDefinition.BlockDefinitionBuilder definition) {
+    public BlockFlowable(BlockState blockState, BlockDefinition definition) {
         super(blockState, definition);
     }
 

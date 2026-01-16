@@ -10,7 +10,7 @@ public abstract class BlockTransparent extends Block {
         super(blockState);
     }
 
-    public BlockTransparent(BlockState blockState, BlockDefinition.BlockDefinitionBuilder definition) {
+    public BlockTransparent(BlockState blockState, BlockDefinition definition) {
         super(blockState, definition);
     }
 }

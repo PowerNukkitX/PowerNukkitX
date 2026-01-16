@@ -62,7 +62,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         this(blockState, BlockDefinitions.DEFAULT);
     }
 
-    public Block(@Nullable BlockState blockState, @Nullable BlockDefinition.BlockDefinitionBuilder definition) {
+    public Block(@Nullable BlockState blockState, @Nullable BlockDefinition definition) {
         super(0, 0, 0, null);
         if (blockState != null && getProperties().containBlockState(blockState)) {
             this.blockstate = blockState;
@@ -71,9 +71,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
 
         if (definition != null) {
-            this.definition = definition.build();
+            this.definition = definition;
         } else {
-            this.definition = BlockDefinitions.DEFAULT.build();
+            this.definition = BlockDefinitions.DEFAULT;
         }
     }
 

@@ -27,7 +27,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         super(meta);
     }
 
-    public BlockButton(BlockState meta, BlockDefinition.BlockDefinitionBuilder definition) {
+    public BlockButton(BlockState meta, BlockDefinition definition) {
         super(meta, definition);
     }
 
