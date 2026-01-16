@@ -44,7 +44,4 @@ public class BlockDefinition {
     double resistance;
     double frictionFactor;
     double passableFrictionFactor;
-
-    private BlockDefinition() {
-    }
 }
