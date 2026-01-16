@@ -52,8 +52,7 @@ public interface BlockDefinitions {
             .resistance(0)
             .isSolid(false)
             .breaksWhenMoved(true)
-            .sticksToPiston(false)
-            .self();
+            .sticksToPiston(false);
 
     BlockDefinition.BlockDefinitionBuilder BUTTON = FLOWABLE.build().toBuilder()
             .resistance(2.5)
