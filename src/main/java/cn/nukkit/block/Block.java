@@ -1653,7 +1653,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return Can the block be pulled by the piston
      */
     public boolean canBePulled() {
-        return canBePushed();
+        return definition.isCanBePulled();
     }
 
     /**
