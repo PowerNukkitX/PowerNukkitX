@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
@@ -26,24 +27,13 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         super(meta);
     }
 
-    @Override
-    public double getResistance() {
-        return 2.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
+    public BlockButton(BlockState meta, BlockDefinition.BlockDefinitionBuilder definition) {
+        super(meta, definition);
     }
 
     @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override
@@ -54,11 +44,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
         return true;
     }
 
@@ -134,11 +119,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         } else {
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
         }
-    }
-
-    @Override
-    public boolean isPowerSource() {
-        return true;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -8,9 +10,7 @@ public abstract class BlockTransparent extends Block {
         super(blockState);
     }
 
-    @Override
-    public boolean isTransparent() {
-        return true;
+    public BlockTransparent(BlockState blockState, BlockDefinition.BlockDefinitionBuilder definition) {
+        super(blockState, definition);
     }
-
 }
