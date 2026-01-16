@@ -164,10 +164,14 @@ public class Nukkit {
         String serverName = options.valueOf(serverNameSpec);
         Integer port = options.valueOf(portSpec);
 
+        File legacyNukkit = new File(DATA_PATH + "nukkit.yml");
+        File legacyProps = new File(DATA_PATH + "server.properties");
         File configFile = new File(DATA_PATH + "pnx.yml");
+
+        boolean hasLegacyConfig = legacyNukkit.exists() && legacyProps.exists();
         WizardConfig wizardConfig = null;
 
-        if (!configFile.exists() && !skipSetup) {
+        if (!configFile.exists() && !hasLegacyConfig && !skipSetup) {
             log.info("First-time setup detected. Running setup wizard...");
             try (SetupWizard wizard = new SetupWizard()) {
                 wizardConfig = wizard.run(language, false, autoAcceptLicense, serverName, port);
@@ -185,7 +189,7 @@ public class Nukkit {
             try (SetupWizard wizard = new SetupWizard()) {
                 String lang = (language != null && !language.isEmpty()) ? language : "eng";
                 wizard.setBaseLang(new cn.nukkit.lang.BaseLang(lang));
-                if (!autoAcceptLicense) {
+                if (!autoAcceptLicense && !hasLegacyConfig) {
                     boolean accepted = wizard.acceptLicense(false);
                     if (!accepted) {
                         System.out.println("License not accepted. Exiting.");
