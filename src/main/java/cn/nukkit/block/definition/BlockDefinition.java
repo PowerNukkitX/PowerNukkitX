@@ -2,9 +2,8 @@ package cn.nukkit.block.definition;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @Getter
 public class BlockDefinition {
     boolean canHarvestWithHand;
