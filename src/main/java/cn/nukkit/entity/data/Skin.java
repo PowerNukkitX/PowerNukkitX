@@ -201,7 +201,7 @@ public class Skin {
 
     public void setCapeData(byte[] capeData) {
         Objects.requireNonNull(capeData, "capeData");
-        Preconditions.checkArgument(capeData.length == SINGLE_SKIN_SIZE || capeData.length == 0, "Invalid legacy cape");
+        Preconditions.checkArgument(capeData.length == SKIN_64_32_SIZE || capeData.length == 0, "Invalid legacy cape");
         setCapeData(new SerializedImage(64, 32, capeData));
     }
 
