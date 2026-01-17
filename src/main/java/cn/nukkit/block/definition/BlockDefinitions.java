@@ -87,7 +87,6 @@ public interface BlockDefinitions {
             .hardness(5)
             .resistance(25)
             .toolType(ItemTool.TYPE_PICKAXE)
-            .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
             .build();
 
@@ -96,5 +95,26 @@ public interface BlockDefinitions {
             .resistance(3)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_STONE)
+            .build();
+
+    BlockDefinition FENCE = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
+
+    BlockDefinition NON_FLAMMABLE_FENCE = FENCE.toBuilder()
+            .burnChance(0)
+            .burnAbility(0)
+            .build();
+
+    BlockDefinition NETHER_BRICK_FENCE = NON_FLAMMABLE_FENCE.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
             .build();
 }
