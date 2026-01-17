@@ -39,8 +39,8 @@ public class Skin {
 
     static {
         String geoData;
-        try (var stream = Skin.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        try (var stream = Skin.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             geoData = reader.lines().reduce("", (acc, line) -> acc + line + "\n");
         } catch (IOException e) {
             geoData = "";
