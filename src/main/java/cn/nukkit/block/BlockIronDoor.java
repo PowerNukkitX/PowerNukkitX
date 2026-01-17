@@ -1,9 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public class BlockIronDoor extends BlockDoor {
     }
 
     public BlockIronDoor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, BlockDefinitions.IRON_DOOR);
     }
 
     @Override
@@ -30,32 +30,7 @@ public class BlockIronDoor extends BlockDoor {
     }
 
     @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 25;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
         return false;
     }
 

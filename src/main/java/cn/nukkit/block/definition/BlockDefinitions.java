@@ -68,4 +68,33 @@ public interface BlockDefinitions {
     BlockDefinition WOODEN_BUTTON = BUTTON.toBuilder()
             .toolType(ItemTool.TYPE_AXE)
             .build();
+
+    BlockDefinition DOOR = TRANSPARENT.toBuilder()
+            .isSolid(false)
+            .canBeActivated(false)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
+
+    BlockDefinition WOODEN_DOOR = DOOR.toBuilder()
+            .hardness(3)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .build();
+
+    BlockDefinition IRON_DOOR = DOOR.toBuilder()
+            .hardness(5)
+            .resistance(25)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canHarvestWithHand(false)
+            .build();
+
+    BlockDefinition COPPER_DOOR = DOOR.toBuilder()
+            .hardness(3)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .build();
 }
