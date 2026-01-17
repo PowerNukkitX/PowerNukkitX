@@ -132,4 +132,14 @@ public interface BlockDefinitions {
             .burnChance(0)
             .burnAbility(0)
             .build();
+
+    BlockDefinition SIGN = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .isSolid(false)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .build();
 }
