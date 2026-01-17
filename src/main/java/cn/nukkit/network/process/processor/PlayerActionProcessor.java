@@ -78,6 +78,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
 
                 playerHandle.onBlockBreakContinue(pos, face);
             }
+            case PlayerActionPacket.ACTION_SET_ENCHANTMENT_SEED -> {
+                //TODO
+            }
             case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK -> {
                 //TODO
             }
@@ -182,6 +185,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     player.setGliding(false);
                 }
             }
+            case PlayerActionPacket.ACTION_BUILD_DENIED -> {
+                //TODO
+            }
             case PlayerActionPacket.ACTION_START_SWIMMING -> {
                 if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
                     return;
@@ -256,6 +262,15 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                     player.setSpinAttacking(false);
                 }
             }
+            case PlayerActionPacket.ACTION_INTERACT_BLOCK -> {
+                //TODO
+            }
+            case PlayerActionPacket.ACTION_PREDICT_DESTROY_BLOCK -> {
+                //TODO
+            }
+            case PlayerActionPacket.ACTION_CONTINUE_DESTROY_BLOCK -> {
+                //TODO
+            }
             case PlayerActionPacket.ACTION_START_FLYING -> {
                 if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
                     return;
@@ -288,6 +303,9 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 } else {
                     player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
                 }
+            }
+            case PlayerActionPacket.ACTION_RECEIVED_SERVER_DATA -> {
+                //TODO
             }
             case PlayerActionPacket.ACTION_START_ITEM_USE_ON, PlayerActionPacket.ACTION_STOP_ITEM_USE_ON -> {
                 // TODO
