@@ -187,7 +187,8 @@ public class Skin {
 
     public void setSkinResourcePatch(String skinResourcePatch) {
         if (skinResourcePatch == null || skinResourcePatch.trim().isEmpty()) {
-            skinResourcePatch = GEOMETRY_CUSTOM;
+            this.skinResourcePatch = GEOMETRY_CUSTOM;
+            return;
         }
         this.skinResourcePatch = skinResourcePatch;
     }
