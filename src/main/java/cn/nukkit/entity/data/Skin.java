@@ -346,7 +346,12 @@ public class Skin {
             try {
                 this.playFabId = this.skinId.split("-")[5];
             } catch (Exception e) {
-                this.playFabId = this.getFullSkinId().replace("-", "").substring(16);
+                String fullSkinIdWithoutDashes = this.getFullSkinId().replace("-", "");
+                if (fullSkinIdWithoutDashes.length() > 16) {
+                    this.playFabId = fullSkinIdWithoutDashes.substring(16);
+                } else {
+                    this.playFabId = fullSkinIdWithoutDashes;
+                }
             }
         }
         return this.playFabId;
