@@ -1,13 +1,23 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerSpearStabEvent;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.PluginManager;
+import lombok.Getter;
 
 public abstract class ItemSpear extends ItemTool {
+
+    @Getter
+    public float minimumSpeed = 0.13f;
 
     public ItemSpear(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -22,7 +32,7 @@ public abstract class ItemSpear extends ItemTool {
         if (!player.isItemCoolDownEnd(this.getIdentifier())) {
             return;
         }
-        player.setItemCoolDown(20, this.getIdentifier());
+        player.setItemCoolDown(25, this.getIdentifier());
 
         PlayerSpearStabEvent event = new PlayerSpearStabEvent(player, this, movementSpeed);
         PluginManager pluginManager = player.getServer().getPluginManager();
@@ -30,19 +40,63 @@ public abstract class ItemSpear extends ItemTool {
         pluginManager.callEvent(event);
 
         if (!event.isCancelled()){
-            // TODO: Stabbing mechanics
+            if (movementSpeed >= getMinimumSpeed() && player.isSprinting()) {
+                Location playerLoc = player.getLocation();
+                Vector3 direction = player.getDirectionVector().normalize();
+
+                double maxDistance = 5.0;
+                Level level = player.getLevel();
+
+                Entity targetEntity = null;
+                double closestDistance = maxDistance;
+
+                for (Entity entity : level.getEntities()) {
+                    if (entity == player || !entity.isAlive()) {
+                        continue;
+                    }
+
+                    if (!(entity instanceof EntityLiving)) {
+                        continue;
+                    }
+
+                    double distance = entity.distance(player);
+                    if (distance > maxDistance) {
+                        continue;
+                    }
+
+                    Vector3 toEntity = entity.getPosition().subtract(playerLoc).normalize();
+                    double dotProduct = direction.dot(toEntity);
+
+                    if (dotProduct < 0.866) { // cos(30°) = 0.866
+                        continue;
+                    }
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        targetEntity = entity;
+                    }
+                }
+
+                if (targetEntity != null) {
+                    EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(
+                            player,
+                            targetEntity,
+                            EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                            getJabDamage()
+                    );
+                    targetEntity.attack(damageEvent);
+
+                    level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_HIT);
+                } else level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
+            } else player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
         }
     }
 
-    public float getChargeDamage(Player player, boolean fullCharge) {
-        double speed = player.getMotion().length();
-        float base = getAttackDamage();
-
-        float velocityBonus = (float) Math.min(speed * 6.0, 12.0);
-        float damage = base + velocityBonus;
+    public float getChargeDamage(boolean fullCharge) {
+        float damage = getAttackDamage();
 
         if (fullCharge) {
-            damage += base * 0.5f;
+            damage *= 0.5f;
         }
 
         return damage;
