@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.event.block.SignColorChangeEvent;
@@ -11,7 +12,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemGlowInkSac;
 import cn.nukkit.item.ItemHoneycomb;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.particle.WaxOnParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
@@ -28,22 +28,7 @@ import java.util.Objects;
 
 public abstract class BlockSignBase extends BlockTransparent implements Faceable {
     public BlockSignBase(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getHardness() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 5;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
+        super(blockState, BlockDefinitions.SIGN);
     }
 
     @Override
@@ -134,11 +119,6 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
         }
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
     public CompassRoseDirection getSignDirection() {
         return CompassRoseDirection.from(getPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION));
     }
@@ -155,15 +135,5 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     @Override
     public void setBlockFace(BlockFace face) {
         setSignDirection(face.getCompassRoseDirection());
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 }
