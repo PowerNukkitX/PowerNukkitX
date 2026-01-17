@@ -1005,7 +1005,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 AxisAlignedBB box = def.getBoundingBox(this);
                 if (box != null) return box;
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            log.error("Failed to recalculate bounding box for block {}", getName(), exception);
         }
         return this;
     }
