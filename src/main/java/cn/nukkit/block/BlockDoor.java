@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.event.block.BlockRedstoneEvent;
@@ -53,19 +54,13 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
         super(blockState);
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
+    public BlockDoor(BlockState meta, BlockDefinition definition) {
+        super(meta, definition);
     }
 
     @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override
@@ -393,15 +388,5 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.values()[DOOR_DIRECTION.get(face)]);
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 }

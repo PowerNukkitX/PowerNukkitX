@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWoodenDoor extends BlockDoor {
@@ -17,26 +17,11 @@ public class BlockWoodenDoor extends BlockDoor {
     }
 
     public BlockWoodenDoor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, BlockDefinitions.WOODEN_DOOR);
     }
 
     @Override
     public String getName() {
         return "Wood Door Block";
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 }

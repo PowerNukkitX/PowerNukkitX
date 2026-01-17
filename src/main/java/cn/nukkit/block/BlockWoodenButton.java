@@ -17,8 +17,8 @@ public class BlockWoodenButton extends BlockButton {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWoodenButton(BlockState blockstate) {
-        super(blockstate, BlockDefinitions.WOODEN_BUTTON);
+    public BlockWoodenButton(BlockState blockState) {
+        super(blockState, BlockDefinitions.WOODEN_BUTTON);
     }
 
     @Override
