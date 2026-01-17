@@ -223,9 +223,10 @@ public class Skin {
 
     public void setCapeId(String capeId) {
         if (capeId == null || capeId.trim().isEmpty()) {
-            capeId = null;
+            this.capeId = null;
+        } else {
+            this.capeId = capeId;
         }
-        this.capeId = capeId;
     }
 
     public String getGeometryData() {
