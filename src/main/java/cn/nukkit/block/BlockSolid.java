@@ -12,11 +12,6 @@ public abstract class BlockSolid extends Block {
     }
 
     @Override
-    public boolean isSolid() {
-        return true;
-    }
-
-    @Override
     public boolean isSolid(BlockFace side) {
         return true;
     }

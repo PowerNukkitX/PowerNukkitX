@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
@@ -16,17 +17,12 @@ public class BlockWoodenButton extends BlockButton {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWoodenButton(BlockState blockstate) {
-        super(blockstate);
+    public BlockWoodenButton(BlockState blockState) {
+        super(blockState, BlockDefinitions.WOODEN_BUTTON);
     }
 
     @Override
     public String getName() {
         return "Oak Button";
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 }
