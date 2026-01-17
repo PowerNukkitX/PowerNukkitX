@@ -117,4 +117,19 @@ public interface BlockDefinitions {
             .toolType(ItemTool.TYPE_PICKAXE)
             .canHarvestWithHand(false)
             .build();
+
+    BlockDefinition FENCE_GATE = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(15)
+            .canBeActivated(true)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
+
+    BlockDefinition NON_FLAMMABLE_FENCE_GATE = FENCE_GATE.toBuilder()
+            .burnChance(0)
+            .burnAbility(0)
+            .build();
 }

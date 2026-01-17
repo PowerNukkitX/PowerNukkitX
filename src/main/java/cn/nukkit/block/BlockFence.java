@@ -13,6 +13,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @since 2015/12/7
  */
 public abstract class BlockFence extends BlockTransparent implements BlockConnectable {
+
     public BlockFence(BlockState blockState) {
         this(blockState, BlockDefinitions.FENCE);
     }

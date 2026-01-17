@@ -16,8 +16,8 @@ public class BlockWoodenDoor extends BlockDoor {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWoodenDoor(BlockState blockstate) {
-        super(blockstate, BlockDefinitions.WOODEN_DOOR);
+    public BlockWoodenDoor(BlockState blockState) {
+        super(blockState, BlockDefinitions.WOODEN_DOOR);
     }
 
     @Override

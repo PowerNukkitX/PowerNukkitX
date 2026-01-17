@@ -2,11 +2,12 @@ package cn.nukkit.block;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
@@ -48,7 +49,11 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     public BlockFenceGate(BlockState blockState) {
-        super(blockState);
+        this(blockState, BlockDefinitions.FENCE_GATE);
+    }
+
+    public BlockFenceGate(BlockState blockState, BlockDefinition blockDefinition) {
+        super(blockState, blockDefinition);
     }
 
     @Override
@@ -57,28 +62,8 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
     }
 
     private static final double[] offMinX = new double[2];
@@ -314,15 +299,5 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirection.VALUES[face.getHorizontalIndex()]);
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
     }
 }
