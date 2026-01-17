@@ -1,13 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,16 +64,5 @@ public class BlockMangroveLeaves extends BlockLeaves {
             drops.add(Item.get(ItemID.STICK));
         }
         return drops.toArray(Item.EMPTY_ARRAY);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        //todo: 实现红树树叶催化
-        return false;
     }
 }

@@ -142,4 +142,16 @@ public interface BlockDefinitions {
             .breaksWhenMoved(true)
             .canBeActivated(true)
             .build();
+
+    BlockDefinition LEAVES = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_HOE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(30)
+            .burnAbility(60)
+            .canSilkTouch(true)
+            .diffusesSkyLight(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
 }
