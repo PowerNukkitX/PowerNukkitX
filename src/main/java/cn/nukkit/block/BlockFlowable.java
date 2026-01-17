@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.definition.BlockDefinition;
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.math.AxisAlignedBB;
 
 /**
@@ -8,7 +9,7 @@ import cn.nukkit.math.AxisAlignedBB;
  */
 public abstract class BlockFlowable extends BlockTransparent {
     public BlockFlowable(BlockState blockState) {
-        super(blockState);
+        super(blockState, BlockDefinitions.FLOWABLE);
     }
 
     public BlockFlowable(BlockState blockState, BlockDefinition definition) {
