@@ -2,11 +2,11 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -32,17 +32,7 @@ public abstract class BlockLeaves extends BlockTransparent {
     };
 
     public BlockLeaves(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        super(blockState, BlockDefinitions.LEAVES);
     }
 
     public abstract WoodType getType();
@@ -53,18 +43,8 @@ public abstract class BlockLeaves extends BlockTransparent {
     }
 
     @Override
-    public int getBurnChance() {
-        return 30;
-    }
-
-    @Override
     public int getWaterloggingLevel() {
         return 1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 60;
     }
 
     @Override
@@ -202,28 +182,8 @@ public abstract class BlockLeaves extends BlockTransparent {
         setPropertyValue(PERSISTENT_BIT, persistent);
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
     protected boolean canDropApple() {
         return getType() == WoodType.OAK;
-    }
-
-    @Override
-    public boolean diffusesSkyLight() {
-        return true;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     public Item toSapling() {
