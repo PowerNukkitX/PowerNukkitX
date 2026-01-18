@@ -10,6 +10,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.PluginManager;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public abstract class ItemSpear extends ItemTool {
         if (!player.isItemCoolDownEnd(this.getIdentifier())) {
             return;
         }
-        player.setItemCoolDown(25, this.getIdentifier());
+        player.setItemCoolDown(23, this.getIdentifier());
 
         PlayerSpearStabEvent event = new PlayerSpearStabEvent(player, this, movementSpeed);
         PluginManager pluginManager = player.getServer().getPluginManager();
@@ -41,21 +42,18 @@ public abstract class ItemSpear extends ItemTool {
 
         if (!event.isCancelled()){
             if (movementSpeed >= getMinimumSpeed() && player.isSprinting()) {
+                Level level = player.getLevel();
                 Location playerLoc = player.getLocation();
                 Vector3 direction = player.getDirectionVector().normalize();
 
                 double maxDistance = 5.0;
-                Level level = player.getLevel();
-
-                Entity targetEntity = null;
                 double closestDistance = maxDistance;
+                Entity targetEntity = null;
 
-                for (Entity entity : level.getEntities()) {
-                    if (entity == player || !entity.isAlive()) {
-                        continue;
-                    }
+                AxisAlignedBB bb = player.getBoundingBox().grow(maxDistance, maxDistance, maxDistance);
 
-                    if (!(entity instanceof EntityLiving)) {
+                for (Entity entity : level.getNearbyEntities(bb, player)) {
+                    if (!(entity instanceof EntityLiving) || !entity.isAlive()) {
                         continue;
                     }
 
@@ -65,9 +63,9 @@ public abstract class ItemSpear extends ItemTool {
                     }
 
                     Vector3 toEntity = entity.getPosition().subtract(playerLoc).normalize();
-                    double dotProduct = direction.dot(toEntity);
+                    double dot = direction.dot(toEntity);
 
-                    if (dotProduct < 0.866) { // cos(30°) = 0.866
+                    if (dot < 0.866) { // cos(30°) = 0.866
                         continue;
                     }
 
@@ -84,8 +82,8 @@ public abstract class ItemSpear extends ItemTool {
                             EntityDamageEvent.DamageCause.ENTITY_ATTACK,
                             getJabDamage()
                     );
-                    targetEntity.attack(damageEvent);
 
+                    targetEntity.attack(damageEvent);
                     level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_HIT);
                 } else level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
             } else player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
