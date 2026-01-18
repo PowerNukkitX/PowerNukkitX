@@ -4,22 +4,14 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityDataPacket;
-import cn.nukkit.utils.SerializedImage;
+import cn.nukkit.network.protocol.*;
 import com.google.common.base.Strings;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -27,19 +19,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * @since 2015/11/21
  */
 public class FloatingTextParticle extends Particle {
-    private static final Skin EMPTY_SKIN = new Skin();
-    private static final SerializedImage SKIN_DATA = SerializedImage.fromLegacy(new byte[4096]);
-
-    static {
-        EMPTY_SKIN.setSkinData(SKIN_DATA);
-        EMPTY_SKIN.generateSkinId("FloatingText");
-    }
 
     protected final Level level;
-    protected UUID uuid = UUID.randomUUID();
     protected long entityId = -1;
     protected boolean invisible = false;
-    protected EntityDataMap entityData = new EntityDataMap();
+    protected String title;
+    protected String text;
+    protected EntityDataMap metadata = new EntityDataMap();
 
     public FloatingTextParticle(Location location, String title) {
         this(location, title, null);
@@ -60,54 +46,80 @@ public class FloatingTextParticle extends Particle {
     private FloatingTextParticle(Level level, Vector3 pos, String title, String text) {
         super(pos.x, pos.y, pos.z);
         this.level = level;
+        this.title = title;
+        this.text = text;
 
-        entityData.setFlag(EntityFlag.NO_AI, true);
-        entityData.put(Entity.LEASH_HOLDER, -1);
-        entityData.put(Entity.SCALE, 0.01f); //zero causes problems on debug builds?
-        entityData.put(Entity.HEIGHT, 0.01f);
-        entityData.put(Entity.WIDTH, 0.01f);
-        entityData.put(EntityDataTypes.NAMETAG_ALWAYS_SHOW, (byte) 1);
-        if (!Strings.isNullOrEmpty(title)) {
-            entityData.put(Entity.NAME, title);
-        }
-        if (!Strings.isNullOrEmpty(text)) {
-            entityData.put(Entity.SCORE, text);
-        }
+        this.metadata.put(EntityDataTypes.FLAGS, EnumSet.of(EntityFlag.NO_AI, EntityFlag.CAN_SHOW_NAME));
+        this.metadata.put(EntityDataTypes.LEASH_HOLDER, -1);
+        this.metadata.put(EntityDataTypes.NAMETAG_ALWAYS_SHOW, 1);
+        this.metadata.put(EntityDataTypes.SCALE, 0.0001f); // Zero causes problems on debug builds?
+        this.metadata.put(EntityDataTypes.HEIGHT, 0.01f);
+        this.metadata.put(EntityDataTypes.WIDTH, 0.01f);
+
+        updateNameTag();
     }
 
     public String getText() {
-        return entityData.get(Entity.SCORE);
+        return this.text == null ? "" : this.text;
     }
 
     public void setText(String text) {
-        this.entityData.put(Entity.SCORE, text);
-        sendentityData();
+        this.text = text;
+        updateNameTag();
+        sendMetadata();
     }
 
     public String getTitle() {
-        return entityData.get(Entity.NAME);
+        return this.title == null ? "" : this.title;
     }
 
     public void setTitle(String title) {
-        this.entityData.put(Entity.NAME, title);
-        sendentityData();
+        this.title = title;
+        updateNameTag();
+        sendMetadata();
     }
 
-    private void sendentityData() {
-        if (level != null) {
+    private void updateNameTag() {
+        // Score tag only works on player
+        boolean hasTitle = !Strings.isNullOrEmpty(this.title);
+        boolean hasText = !Strings.isNullOrEmpty(this.text);
+        String tag = "";
+        if (hasTitle) {
+            tag += this.title;
+            if (hasText) {
+                tag += "\n";
+            }
+        }
+        if (hasText) {
+            tag += this.text;
+        }
+        this.metadata.put(Entity.NAME, tag);
+    }
+
+    private void sendMetadata() {
+        if (this.level != null) {
             SetEntityDataPacket packet = new SetEntityDataPacket();
             packet.eid = entityId;
-            packet.entityData = entityData;
-            level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+            packet.entityData = this.metadata;
+
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
         }
     }
 
     public boolean isInvisible() {
-        return invisible;
+        return this.invisible;
     }
 
     public void setInvisible(boolean invisible) {
         this.invisible = invisible;
+
+        if (this.level != null) {
+            if (invisible) {
+                this.level.addChunkPacket(getChunkX(), getChunkZ(), getRemovePacket());
+            } else {
+                this.level.addChunkPacket(getChunkX(), getChunkZ(), getAddPacket());
+            }
+        }
     }
 
     public void setInvisible() {
@@ -115,7 +127,7 @@ public class FloatingTextParticle extends Particle {
     }
 
     public long getEntityId() {
-        return entityId;
+        return this.entityId;
     }
 
     @Override
@@ -125,44 +137,31 @@ public class FloatingTextParticle extends Particle {
         if (this.entityId == -1) {
             this.entityId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
         } else {
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.entityId;
-
-            packets.add(pk);
+            packets.add(getRemovePacket());
         }
 
         if (!this.invisible) {
-            PlayerListPacket.Entry[] entry = {
-                    new PlayerListPacket.Entry(uuid, entityId, entityData.get(Entity.NAME), EMPTY_SKIN, Color.WHITE)
-            };
-            PlayerListPacket playerAdd = new PlayerListPacket();
-            playerAdd.entries = entry;
-            playerAdd.type = PlayerListPacket.TYPE_ADD;
-            packets.add(playerAdd);
-
-            AddPlayerPacket pk = new AddPlayerPacket();
-            pk.uuid = uuid;
-            pk.username = "";
-            pk.entityUniqueId = this.entityId;
-            pk.entityRuntimeId = this.entityId;
-            pk.x = (float) this.x;
-            pk.y = (float) (this.y - 0.75);
-            pk.z = (float) this.z;
-            pk.speedX = 0;
-            pk.speedY = 0;
-            pk.speedZ = 0;
-            pk.yaw = 0;
-            pk.pitch = 0;
-            pk.entityData = this.entityData;
-            pk.item = Item.AIR;
-            packets.add(pk);
-
-            PlayerListPacket playerRemove = new PlayerListPacket();
-            playerRemove.entries = entry;
-            playerRemove.type = PlayerListPacket.TYPE_REMOVE;
-            packets.add(playerRemove);
+            packets.add(getAddPacket());
         }
 
-        return packets.toArray(DataPacket.EMPTY_ARRAY);
+        return packets.toArray(new DataPacket[0]);
+    }
+
+    private AddEntityPacket getAddPacket() {
+        AddEntityPacket pk = new AddEntityPacket();
+        pk.id = "minecraft:armor_stand";
+        pk.entityUniqueId = this.entityId;
+        pk.entityRuntimeId = this.entityId;
+        pk.x = (float) this.x;
+        pk.y = (float) this.y - 0.75f;
+        pk.z = (float) this.z;
+        pk.entityData = this.metadata;
+        return pk;
+    }
+
+    private RemoveEntityPacket getRemovePacket() {
+        RemoveEntityPacket pk = new RemoveEntityPacket();
+        pk.eid = this.entityId;
+        return pk;
     }
 }
