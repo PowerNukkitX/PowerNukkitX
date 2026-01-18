@@ -47,6 +47,7 @@ public abstract class ItemSpear extends ItemTool {
                 Vector3 direction = player.getDirectionVector().normalize();
 
                 double maxDistance = 5.0;
+                double bestScore = -1;
                 double minDot = 0.866;
                 Entity targetEntity = null;
 
@@ -58,12 +59,20 @@ public abstract class ItemSpear extends ItemTool {
                     if (!(entity instanceof EntityLiving living) || !living.isAlive()) continue;
 
                     Vector3 targetPos = entity.getPosition().add(0, entity.getEyeHeight() / 2, 0);
+                    double distance = eyePos.distance(targetPos);
+                    if (distance > maxDistance) continue;
+
                     Vector3 toEntity = targetPos.subtract(eyePos).normalize();
 
                     double dot = direction.dot(toEntity);
                     if (dot < minDot) continue;
 
-                    targetEntity = entity;
+                    double score = dot - (distance / maxDistance) * 0.1;
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        targetEntity = entity;
+                    }
                 }
 
                 if (targetEntity != null) {
