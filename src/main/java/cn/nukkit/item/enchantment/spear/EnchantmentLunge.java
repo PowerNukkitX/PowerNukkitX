@@ -10,16 +10,6 @@ public class EnchantmentLunge extends EnchantmentSpear {
     }
 
     @Override
-    public int getMinEnchantAbility(int level) {
-        return 5 + (level - 1) * 20;
-    }
-
-    @Override
-    public int getMaxEnchantAbility(int level) {
-        return super.getMinEnchantAbility(level) + 50;
-    }
-
-    @Override
     public int getMaxLevel() {
         return 3;
     }

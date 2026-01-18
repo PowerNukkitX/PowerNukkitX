@@ -64,7 +64,6 @@ public abstract class ItemSpear extends ItemTool {
                     if (dot < minDot) continue;
 
                     targetEntity = entity;
-                    break;
                 }
 
                 if (targetEntity != null) {
