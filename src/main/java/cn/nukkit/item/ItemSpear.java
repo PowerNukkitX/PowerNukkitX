@@ -33,7 +33,7 @@ public abstract class ItemSpear extends ItemTool {
         if (!player.isItemCoolDownEnd(this.getIdentifier())) {
             return;
         }
-        player.setItemCoolDown(23, this.getIdentifier());
+        player.setItemCoolDown(20, this.getIdentifier());
 
         PlayerSpearStabEvent event = new PlayerSpearStabEvent(player, this, movementSpeed);
         PluginManager pluginManager = player.getServer().getPluginManager();
@@ -47,32 +47,24 @@ public abstract class ItemSpear extends ItemTool {
                 Vector3 direction = player.getDirectionVector().normalize();
 
                 double maxDistance = 5.0;
-                double closestDistance = maxDistance;
+                double minDot = 0.866;
                 Entity targetEntity = null;
 
                 AxisAlignedBB bb = player.getBoundingBox().grow(maxDistance, maxDistance, maxDistance);
 
+                Vector3 eyePos = playerLoc.add(0, player.getEyeHeight(), 0);
+
                 for (Entity entity : level.getNearbyEntities(bb, player)) {
-                    if (!(entity instanceof EntityLiving) || !entity.isAlive()) {
-                        continue;
-                    }
+                    if (!(entity instanceof EntityLiving living) || !living.isAlive()) continue;
 
-                    double distance = entity.distance(player);
-                    if (distance > maxDistance) {
-                        continue;
-                    }
+                    Vector3 targetPos = entity.getPosition().add(0, entity.getEyeHeight() / 2, 0);
+                    Vector3 toEntity = targetPos.subtract(eyePos).normalize();
 
-                    Vector3 toEntity = entity.getPosition().subtract(playerLoc).normalize();
                     double dot = direction.dot(toEntity);
+                    if (dot < minDot) continue;
 
-                    if (dot < 0.866) { // cos(30°) = 0.866
-                        continue;
-                    }
-
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        targetEntity = entity;
-                    }
+                    targetEntity = entity;
+                    break;
                 }
 
                 if (targetEntity != null) {
