@@ -211,10 +211,10 @@ public class ShipwreckPopulator extends Populator {
                     .register(new ItemEntry(Block.PUMPKIN, 0, 3, 2))
                     .register(new ItemEntry(Item.GUNPOWDER, 0, 5, 3))
                     .register(new ItemEntry(Block.TNT, 0, 2, 1))
-                    .register(new ItemEntry(Item.LEATHER_HELMET, 1, 1, 1,3, getDefaultEnchantments()))
-                    .register(new ItemEntry(Item.LEATHER_CHESTPLATE, 1, 1, 1,3, getDefaultEnchantments()))
-                    .register(new ItemEntry(Item.LEATHER_LEGGINGS, 1, 1, 1, 3, getDefaultEnchantments()))
-                    .register(new ItemEntry(Item.LEATHER_BOOTS, 1, 1, 1, 3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_HELMET, 0, 1, 1,3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_CHESTPLATE, 0, 1, 1, 3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_LEGGINGS, 0, 1, 1, 3, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.LEATHER_BOOTS, 0, 1, 1, 3, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.SUSPICIOUS_STEW, 10));
             this.pools.put(pool1.build(), new RollEntry(10, 3, pool1.getTotalWeight()));
         }
@@ -233,7 +233,7 @@ public class ShipwreckPopulator extends Populator {
             PoolBuilder pool2 = new PoolBuilder()
                     .register(new ItemEntry(Item.IRON_INGOT, 0, 10, 50))
                     .register(new ItemEntry(Item.GOLD_INGOT, 0, 10, 10))
-                    .register(new ItemEntry(Item.DYE, 4, 10, 20));
+                    .register(new ItemEntry(Item.LAPIS_LAZULI, 0, 10, 20));
             this.pools.put(pool2.build(), new RollEntry(5, 2, pool2.getTotalWeight()));
         }
     }

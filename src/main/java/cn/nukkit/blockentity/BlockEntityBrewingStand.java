@@ -173,6 +173,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public boolean onUpdate() {
+        if(!isBlockEntityValid()) this.close();
+
         if (closed) {
             return false;
         }
@@ -324,7 +326,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
                 pk.windowId = windowId;
-
                 p.dataPacket(pk);
             }
         }

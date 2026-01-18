@@ -279,14 +279,14 @@ public class ObjectJungleTemple extends RuledObjectGenerator {
     protected static class ChestPopulator extends RandomizableContainer {
         public ChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()
-                    .register(new ItemEntry(Item.DIAMOND, 1, 3, 15))
-                    .register(new ItemEntry(Item.IRON_INGOT, 1, 5, 50))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 2, 7, 75))
-                    .register(new ItemEntry(Item.EMERALD, 1, 3, 10))
-                    .register(new ItemEntry(Item.BONE, 4, 6, 100))
-                    .register(new ItemEntry(Item.ROTTEN_FLESH, 3, 7, 80))
-                    .register(new ItemEntry(Block.BAMBOO, 1, 3, 75))
-                    .register(new ItemEntry(Item.LEATHER, 1, 5, 15))
+                    .register(new ItemEntry(Item.DIAMOND, 0, 1, 3, 15))
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 1, 5, 50))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 2, 7, 75))
+                    .register(new ItemEntry(Item.EMERALD, 0, 1, 3, 10))
+                    .register(new ItemEntry(Item.BONE, 0, 4, 6, 100))
+                    .register(new ItemEntry(Item.ROTTEN_FLESH, 0, 3, 7, 80))
+                    .register(new ItemEntry(Block.BAMBOO, 0, 1, 3, 75))
+                    .register(new ItemEntry(Item.LEATHER, 0, 1, 5, 15))
                     .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
@@ -295,7 +295,7 @@ public class ObjectJungleTemple extends RuledObjectGenerator {
 
             PoolBuilder pool2 = new PoolBuilder()
                     .register(new ItemEntry(Block.AIR, 2))
-                    .register(new ItemEntry(Item.WILD_ARMOR_TRIM_SMITHING_TEMPLATE, 2, 2, 1));
+                    .register(new ItemEntry(Item.WILD_ARMOR_TRIM_SMITHING_TEMPLATE, 0, 2, 2, 1));
             this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
         }
     }

@@ -205,14 +205,14 @@ public class PillagerOutpostPopulator extends Populator {
             this.pools.put(pool2.build(), new RollEntry(3, 2, pool2.getTotalWeight()));
 
             PoolBuilder pool3 = new PoolBuilder()
-                    .register(new ItemEntry(Item.LOG2, 1, 3, 2, 1));
+                    .register(new ItemEntry(DARK_OAK_LOG, 0, 3, 2, 1));
             this.pools.put(pool3.build(), new RollEntry(3, 1, pool3.getTotalWeight()));
 
             PoolBuilder pool4 = new PoolBuilder()
                     .register(new ItemEntry(Item.EXPERIENCE_BOTTLE, 7))
                     .register(new ItemEntry(Item.STRING, 0, 6, 4))
                     .register(new ItemEntry(Item.ARROW, 0, 7, 2, 4))
-                    .register(new ItemEntry(TRIPWIRE_HOOK, 0, 3, 3))
+                    .register(new ItemEntry(Block.TRIPWIRE_HOOK, 0, 3, 3))
                     .register(new ItemEntry(Item.IRON_INGOT, 0, 3, 3))
                     .register(new ItemEntry(Item.ENCHANTED_BOOK, 0,1, 1, 1, getDefaultEnchantments()));
             this.pools.put(pool4.build(), new RollEntry(3, 2, pool4.getTotalWeight()));

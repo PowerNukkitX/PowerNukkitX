@@ -103,6 +103,7 @@ import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.debugshape.DebugShape;
+import cn.nukkit.network.protocol.types.transfer.*;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -515,6 +516,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             pk.z = (float) pos.z;
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+            this.getLevel().sendBlocks(new Player[]{this}, new Vector3[]{pos}, UpdateBlockPacket.FLAG_NOGRAPHIC);
         }
         this.blockBreakProgress = 0;
         this.breakingBlock = null;
@@ -632,12 +634,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.noDamageTicks = 60;
 
-        for (long index : playerChunkManager.getUsedChunks()) {
-            int chunkX = Level.getHashX(index);
-            int chunkZ = Level.getHashZ(index);
-            for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
+        synchronized (playerChunkManager) {
+            for (long index : playerChunkManager.getUsedChunks()) {
+                int chunkX = Level.getHashX(index);
+                int chunkZ = Level.getHashZ(index);
+                for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
+                    if (this != entity && !entity.closed && entity.isAlive()) {
+                        entity.spawnTo(this);
+                    }
                 }
             }
         }
@@ -4766,6 +4770,35 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.address = hostName;
         pk.port = port;
         this.dataPacket(pk);
+    }
+
+    /**
+     * Teleport the player to another server
+     *
+     * @param options TransferPlayerOptions
+     */
+    public void transfer(TransferPlayerOptions options) {
+        TransferPacket packet = new TransferPacket();
+
+        Objects.requireNonNull(options, "TransferPlayerOptions cannot be null");
+
+        switch (options) {
+            case TransferPlayerIpPortOptions ipOptions -> {
+                packet.setAddress(ipOptions.getHostname());
+                packet.setPort(ipOptions.getPort());
+            }
+            case TransferPlayerNetherNetOptions netherNetOptions -> {
+                packet.setAddress(netherNetOptions.getNetherNetId());
+                packet.setPort(0);
+            }
+            case TransferPlayerWaterdogOptions waterdogOptions -> {
+                packet.setAddress(waterdogOptions.getServerName());
+                packet.setPort(0);
+            }
+            default -> throw new IllegalArgumentException("Unknown TransferPlayerOptions type");
+        }
+
+        this.dataPacket(packet);
     }
 
     /**

@@ -67,7 +67,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
                                 all(entity -> getLevel().isRaining(),
                                         entity -> !isUnderBlock(),
                                         entity -> getLevel().getTick()%10 == 0),
-                                entity -> isInsideOfWater(),
+                                entity -> hasWaterAt(0),
                                 all(
                                         entity -> getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET),
                                         entity -> getLevel().getTick()%20==0,
