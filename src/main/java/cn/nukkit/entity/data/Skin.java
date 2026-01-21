@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.json.internal.json_simple.JSONValue;
+import org.jose4j.json.internal.json_simple.parser.ParseException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -122,10 +123,10 @@ public class Skin {
             return false;
         }
         try {
-            JSONObject object = (JSONObject) JSONValue.parse(skinResourcePatch);
+            JSONObject object = (JSONObject) JSONValue.parseWithException(skinResourcePatch);
             JSONObject geometry = (JSONObject) object.get("geometry");
             return geometry.containsKey("default") && geometry.get("default") instanceof String;
-        } catch (ClassCastException | NullPointerException e) {
+        } catch (ClassCastException | NullPointerException | ParseException e) {
             return false;
         }
     }
