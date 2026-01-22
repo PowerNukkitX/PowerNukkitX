@@ -42,6 +42,7 @@ public abstract class ItemSpear extends ItemTool {
 
         if (!event.isCancelled()){
             if (movementSpeed >= getMinimumSpeed() && player.isSprinting()) {
+                applyLunge(player);
                 Level level = player.getLevel();
                 Location playerLoc = player.getLocation();
                 Vector3 direction = player.getDirectionVector().normalize();
@@ -90,15 +91,6 @@ public abstract class ItemSpear extends ItemTool {
         }
     }
 
-    public float getChargeDamage(boolean fullCharge) {
-        float damage = getAttackDamage();
-
-        if (fullCharge) {
-            damage *= 0.5f;
-        }
-
-        return damage;
-    }
 
     public float getJabDamage() {
         float damage = getAttackDamage();
@@ -118,5 +110,47 @@ public abstract class ItemSpear extends ItemTool {
 
             player.getFoodData().setFood(Math.max(0, player.getFoodData().getFood() - level));
         }
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        float playerSpeed = player.getMovementSpeed();
+
+        if (playerSpeed < minimumSpeed) {
+            return false;
+        }
+
+        Level level = player.getLevel();
+        Vector3 dir = player.getDirectionVector().normalize().multiply(1.5);
+
+        AxisAlignedBB hitBox = player.getBoundingBox()
+                .grow(1.5, 1.0, 1.5)
+                .offset(dir.x, dir.y, dir.z);
+
+        float damage = getAttackDamage() * 1.5f;
+
+        for (Entity entity : level.getNearbyEntities(hitBox, player)) {
+            if (!(entity instanceof EntityLiving living) || !living.isAlive()) {
+                continue;
+            }
+
+            float finalDamage = (float) (
+                    damage + (playerSpeed * 3.0)
+            );
+
+            EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(
+                    player,
+                    entity,
+                    EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                    finalDamage
+            );
+
+            entity.attack(event);
+            level.addSound(player.getPosition(), Sound.ITEM_SPEAR_HIT);
+        }
+
+        level.addSound(player.getPosition(), Sound.ITEM_SPEAR_USE);
+
+        return false;
     }
 }
