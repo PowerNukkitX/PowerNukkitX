@@ -17,6 +17,12 @@ public abstract class DataPacketProcessor<T extends DataPacket> {
 
     public abstract int getPacketId();
 
+    public final void handlePacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket pk) {
+        @SuppressWarnings("unchecked")
+        T typedPacket = (T) pk;
+        handle(playerHandle, typedPacket);
+    }
+
     public int getProtocol() {
         return ProtocolInfo.CURRENT_PROTOCOL;
     }
