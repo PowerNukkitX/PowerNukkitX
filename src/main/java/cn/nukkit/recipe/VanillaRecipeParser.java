@@ -8,6 +8,7 @@ import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.JSONUtils;
+import cn.nukkit.utils.MapParsingUtils;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 @Slf4j
 public class VanillaRecipeParser {
@@ -41,6 +43,8 @@ public class VanillaRecipeParser {
     private static final String CAMPFIRE_TAG = "campfire";
     private static final String SOUL_CAMPFIRE_TAG = "soul_campfire";
     private static final String BREW_STAND_TAG = "brewing_stand";
+    private static final Function<String, RuntimeException> RECIPE_ERROR =
+            field -> new IllegalArgumentException("Invalid recipe data: " + field);
 
     public void parseAndRegisterRecipe(@NotNull File file) {
         try (var reader = new FileReader(file)) {
@@ -62,15 +66,15 @@ public class VanillaRecipeParser {
         Map<String, Object> map = JSONUtils.from(reader, new TypeToken<Map<String, Object>>() {
         });
         if (map.containsKey(SHAPED_KEY)) {
-            parseAndRegisterShapedRecipe(asStringObjectMap(map.get(SHAPED_KEY), SHAPED_KEY));
+            parseAndRegisterShapedRecipe(MapParsingUtils.stringObjectMap(map.get(SHAPED_KEY), SHAPED_KEY, RECIPE_ERROR));
         } else if (map.containsKey(SHAPELESS_KEY)) {
-            parseAndRegisterShapeLessRecipe(asStringObjectMap(map.get(SHAPELESS_KEY), SHAPELESS_KEY));
+            parseAndRegisterShapeLessRecipe(MapParsingUtils.stringObjectMap(map.get(SHAPELESS_KEY), SHAPELESS_KEY, RECIPE_ERROR));
         } else if (map.containsKey(FURNACE_KEY)) {
-            parseAndRegisterFurnaceRecipe(asStringObjectMap(map.get(FURNACE_KEY), FURNACE_KEY));
+            parseAndRegisterFurnaceRecipe(MapParsingUtils.stringObjectMap(map.get(FURNACE_KEY), FURNACE_KEY, RECIPE_ERROR));
         } else if (map.containsKey(BREW_KEY)) {
-            parseAndRegisterBrewRecipe(asStringObjectMap(map.get(BREW_KEY), BREW_KEY));
+            parseAndRegisterBrewRecipe(MapParsingUtils.stringObjectMap(map.get(BREW_KEY), BREW_KEY, RECIPE_ERROR));
         } else if (map.containsKey(CONTAINER_KEY)) {
-            parseAndRegisterContainerRecipe(asStringObjectMap(map.get(CONTAINER_KEY), CONTAINER_KEY));
+            parseAndRegisterContainerRecipe(MapParsingUtils.stringObjectMap(map.get(CONTAINER_KEY), CONTAINER_KEY, RECIPE_ERROR));
         }
     }
 
@@ -78,7 +82,7 @@ public class VanillaRecipeParser {
         List<String> tags = tags(recipeData);
         if (tags.size() == 1 && tags.get(0).equals("crafting_table")) {
             int prior = (int) recipeData.getOrDefault("priority", 0);
-            List<String> pattern = asStringList(recipeData.get("pattern"), "pattern");
+            List<String> pattern = MapParsingUtils.stringList(recipeData.get("pattern"), "pattern", RECIPE_ERROR);
             String[] shapes;
             if (pattern.size() > 1) {
                 int maxWidth = pattern.stream().map(s -> s.toCharArray().length).max(Integer::compare).get().intValue();
@@ -93,11 +97,11 @@ public class VanillaRecipeParser {
             } else {
                 shapes = pattern.toArray(String[]::new);
             }
-            Map<String, Object> key = asStringObjectMap(recipeData.get("key"), "key");
+            Map<String, Object> key = MapParsingUtils.stringObjectMap(recipeData.get("key"), "key", RECIPE_ERROR);
             final Map<Character, ItemDescriptor> ingredients = new LinkedHashMap<>();
             try {
                 key.forEach((k, v) -> {
-                    Map<String, Object> entry = asStringObjectMap(v, "key");
+                    Map<String, Object> entry = MapParsingUtils.stringObjectMap(v, "key", RECIPE_ERROR);
                     if (entry.containsKey("tag")) {
                         var tag = entry.get("tag").toString();
                         int count = (int) entry.getOrDefault("count", 1);
@@ -109,11 +113,9 @@ public class VanillaRecipeParser {
                 Object o = recipeData.get("result");
                 Map<String, Object> result = Map.of();
                 if (o instanceof Map<?, ?> map) {
-                    result = asStringObjectMap(map, "result");
-                } else if (o instanceof List<?> list) {
-                     if (!list.isEmpty() && list.get(0) instanceof Map<?,?> map) {
-                         result = asStringObjectMap(map, "result");
-                     }
+                    result = MapParsingUtils.stringObjectMap(map, "result", RECIPE_ERROR);
+                } else if (o instanceof List<?> list && !list.isEmpty()) {
+                    result = MapParsingUtils.stringObjectMap(list.get(0), "result", RECIPE_ERROR);
                 }
                 Registries.RECIPE.register(new ShapedRecipe(description(recipeData), prior, parseItem(result), shapes, ingredients, List.of()));
             } catch (AssertionError ignore) {
@@ -123,7 +125,7 @@ public class VanillaRecipeParser {
 
     private void parseAndRegisterShapeLessRecipe(Map<String, Object> recipeData) {
         int prior = (int) recipeData.getOrDefault("priority", 0);
-        List<Map<String, Object>> ingredients = asStringObjectMapList(recipeData.get("ingredients"), "ingredients");
+        List<Map<String, Object>> ingredients = MapParsingUtils.stringObjectMapList(recipeData.get("ingredients"), "ingredients", RECIPE_ERROR);
         final List<ItemDescriptor> itemDescriptors = new ArrayList<>();
         try {
             ingredients.forEach(v -> {
@@ -135,7 +137,7 @@ public class VanillaRecipeParser {
                     itemDescriptors.add(new DefaultDescriptor(parseItem(v)));
                 }
             });
-            Map<String, Object> result = asStringObjectMap(recipeData.get("result"), "result");
+            Map<String, Object> result = MapParsingUtils.stringObjectMap(recipeData.get("result"), "result", RECIPE_ERROR);
             Item re = parseItem(result);
             List<String> tags = tags(recipeData);
             for (var tag : tags) {
@@ -179,25 +181,26 @@ public class VanillaRecipeParser {
         String outputID = "minecraft:" + recipeData.get("output").toString().split(":")[2].toLowerCase(Locale.ENGLISH);
         Item output = ItemPotion.fromPotion(PotionType.get(outputID));
         Item reagent = Item.get(recipeData.get("reagent").toString());
-        if (input.isNull() || output.isNull() || reagent.isNull()) {
-            return;
-        }
-        List<String> tags = tags(recipeData);
-        if (tags.get(0).equals(BREW_STAND_TAG)) {
-            Registries.RECIPE.register(new BrewingRecipe(description(recipeData), input, reagent, output));
-        }
+        registerBrewingRecipe(recipeData, input, output, reagent, false);
     }
 
     private void parseAndRegisterContainerRecipe(Map<String, Object> recipeData) {
         Item input = Item.get(recipeData.get("input").toString());
         Item output = Item.get(recipeData.get("output").toString());
         Item reagent = Item.get(recipeData.get("reagent").toString());
+        registerBrewingRecipe(recipeData, input, output, reagent, true);
+    }
+
+    private void registerBrewingRecipe(Map<String, Object> recipeData, Item input, Item output, Item reagent, boolean isContainer) {
         if (input.isNull() || output.isNull() || reagent.isNull()) {
             return;
         }
         List<String> tags = tags(recipeData);
-        if (tags.get(0).equals(BREW_STAND_TAG)) {
-            Registries.RECIPE.register(new ContainerRecipe(description(recipeData), input, reagent, output));
+        if (!tags.isEmpty() && tags.get(0).equals(BREW_STAND_TAG)) {
+            Recipe recipe = isContainer
+                    ? new ContainerRecipe(description(recipeData), input, reagent, output)
+                    : new BrewingRecipe(description(recipeData), input, reagent, output);
+            Registries.RECIPE.register(recipe);
         }
     }
 
@@ -222,67 +225,10 @@ public class VanillaRecipeParser {
     }
 
     private String description(Map<String, Object> recipeData) {
-        return asStringStringMap(recipeData.get("description"), "description").get("identifier");
+        return MapParsingUtils.stringStringMap(recipeData.get("description"), "description", RECIPE_ERROR).get("identifier");
     }
 
     private List<String> tags(Map<String, Object> recipeData) {
-        return asStringList(recipeData.get("tags"), "tags");
-    }
-
-    private static Map<String, Object> asStringObjectMap(Object value, String field) {
-        if (!(value instanceof Map)) {
-            throw new IllegalArgumentException("Invalid recipe data: " + field);
-        }
-        Map<String, Object> map = new LinkedHashMap<>();
-        for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-            if (!(entry.getKey() instanceof String)) {
-                throw new IllegalArgumentException("Invalid recipe data: " + field);
-            }
-            map.put((String) entry.getKey(), entry.getValue());
-        }
-        return map;
-    }
-
-    private static Map<String, String> asStringStringMap(Object value, String field) {
-        if (!(value instanceof Map)) {
-            throw new IllegalArgumentException("Invalid recipe data: " + field);
-        }
-        Map<String, String> map = new LinkedHashMap<>();
-        for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-            if (!(entry.getKey() instanceof String)) {
-                throw new IllegalArgumentException("Invalid recipe data: " + field);
-            }
-            Object entryValue = entry.getValue();
-            if (!(entryValue instanceof String)) {
-                throw new IllegalArgumentException("Invalid recipe data: " + field);
-            }
-            map.put((String) entry.getKey(), (String) entryValue);
-        }
-        return map;
-    }
-
-    private static List<String> asStringList(Object value, String field) {
-        if (!(value instanceof List)) {
-            throw new IllegalArgumentException("Invalid recipe data: " + field);
-        }
-        List<String> list = new ArrayList<>();
-        for (Object entry : (List<?>) value) {
-            if (!(entry instanceof String)) {
-                throw new IllegalArgumentException("Invalid recipe data: " + field);
-            }
-            list.add((String) entry);
-        }
-        return list;
-    }
-
-    private static List<Map<String, Object>> asStringObjectMapList(Object value, String field) {
-        if (!(value instanceof List)) {
-            throw new IllegalArgumentException("Invalid recipe data: " + field);
-        }
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (Object entry : (List<?>) value) {
-            list.add(asStringObjectMap(entry, field));
-        }
-        return list;
+        return MapParsingUtils.stringList(recipeData.get("tags"), "tags", RECIPE_ERROR);
     }
 }

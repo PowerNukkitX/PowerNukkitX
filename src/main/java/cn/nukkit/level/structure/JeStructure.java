@@ -136,14 +136,27 @@ public class JeStructure extends AbstractStructure {
 
     @Override
     public void preparePlace(Position position, BlockManager blockManager) {
-        int baseX = position.getFloorX();
-        int baseY = position.getFloorY();
-        int baseZ = position.getFloorZ();
+        placeBlocks(position, blockManager, blockInstances, new BlockAccessor<StructureBlockInstance>() {
+            @Override
+            public int x(StructureBlockInstance block) {
+                return block.x;
+            }
 
-        for (StructureBlockInstance b : blockInstances) {
-            if(b.block.state == STATE_STRUCTURE_VOID) continue;
-            blockManager.setBlockStateAt(baseX + b.x, baseY + b.y, baseZ + b.z, b.block.state);
-        }
+            @Override
+            public int y(StructureBlockInstance block) {
+                return block.y;
+            }
+
+            @Override
+            public int z(StructureBlockInstance block) {
+                return block.z;
+            }
+
+            @Override
+            public BlockState state(StructureBlockInstance block) {
+                return block.block.state;
+            }
+        });
     }
 
     public void place(Position position, boolean includeEntities, BlockManager blockManager) {
@@ -154,17 +167,13 @@ public class JeStructure extends AbstractStructure {
     public JeStructure rotate(Rotation rotation) {
         if (rotation == Rotation.NONE) return this;
 
-        int newSizeX = (rotation == Rotation.ROTATE_180) ? sizeX : sizeZ;
-        int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
+        int newSizeX = rotatedSizeX(sizeX, sizeZ, rotation);
+        int newSizeZ = rotatedSizeZ(sizeX, sizeZ, rotation);
 
         List<StructureBlockInstance> rotated = new ArrayList<>(blockInstances.size());
         for (StructureBlockInstance b : blockInstances) {
-            int rx = b.x, rz = b.z;
-            switch (rotation) {
-                case ROTATE_90 -> { rx = b.z; rz = sizeX - 1 - b.x; }
-                case ROTATE_180 -> { rx = sizeX - 1 - b.x; rz = sizeZ - 1 - b.z; }
-                case ROTATE_270 -> { rx = sizeZ - 1 - b.z; rz = b.x; }
-            }
+            int rx = rotateX(sizeX, sizeZ, b.x, b.z, rotation);
+            int rz = rotateZ(sizeX, sizeZ, b.x, b.z, rotation);
             rotated.add(new StructureBlockInstance(rx, b.y, rz, b.block));
         }
 

@@ -11,6 +11,7 @@ import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.MapParsingUtils;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 
 
 @Getter
@@ -25,6 +27,8 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     protected Path filePath;
     protected Config json;
+    private static final Function<String, RuntimeException> SCOREBOARD_ERROR =
+            field -> new IllegalArgumentException("Invalid scoreboard data: " + field);
 
     public JSONScoreboardStorage(String path) {
         this.filePath = Paths.get(path);
@@ -59,25 +63,25 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     @Override
     public Map<String, IScoreboard> readScoreboard() {
-        Map<String, Object> scoreboards = asStringObjectMap(json.get("scoreboard"), "scoreboard");
+        Map<String, Object> scoreboards = MapParsingUtils.stringObjectMapOrNull(json.get("scoreboard"), "scoreboard", SCOREBOARD_ERROR);
         Map<String, IScoreboard> result = new HashMap<>();
         if (scoreboards == null) return result;
         for (Map.Entry<String, Object> entry : scoreboards.entrySet())
-            result.put(entry.getKey(), deserializeFromMap(asStringObjectMap(entry.getValue(), "scoreboard entry")));
+            result.put(entry.getKey(), deserializeFromMap(MapParsingUtils.stringObjectMap(entry.getValue(), "scoreboard entry", SCOREBOARD_ERROR)));
         return result;
     }
 
     @Override
     public IScoreboard readScoreboard(String name) {
         Object raw = json.get("scoreboard." + name);
-        return raw == null ? null : deserializeFromMap(asStringObjectMap(raw, "scoreboard." + name));
+        return raw == null ? null : deserializeFromMap(MapParsingUtils.stringObjectMap(raw, "scoreboard." + name, SCOREBOARD_ERROR));
     }
 
     @Override
     public Map<DisplaySlot, String> readDisplay() {
         Map<DisplaySlot, String> result = new HashMap<>();
         if (json.get("display") == null) return result;
-        for (Map.Entry<String, String> e : asStringStringMap(json.get("display"), "display").entrySet()) {
+        for (Map.Entry<String, String> e : MapParsingUtils.stringStringMapOrNull(json.get("display"), "display", SCOREBOARD_ERROR).entrySet()) {
             DisplaySlot slot = DisplaySlot.valueOf(e.getKey());
             result.put(slot, e.getValue());
         }
@@ -130,7 +134,7 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         String criteriaName = map.get("criteriaName").toString();
         SortOrder sortOrder = SortOrder.valueOf(map.get("sortOrder").toString());
         IScoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
-        for (Map<String, Object> line : asStringObjectMapList(map.get("lines"), "lines")) {
+        for (Map<String, Object> line : MapParsingUtils.stringObjectMapList(map.get("lines"), "lines", SCOREBOARD_ERROR)) {
             int score = ((Double) line.get("score")).intValue();
             IScorer scorer = null;
             switch (line.get("scorerType").toString()) {
@@ -147,54 +151,5 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
             scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
         }
         return scoreboard;
-    }
-
-    private static Map<String, Object> asStringObjectMap(Object value, String field) {
-        if (value == null) {
-            return null;
-        }
-        if (!(value instanceof Map)) {
-            throw new IllegalArgumentException("Invalid scoreboard data: " + field);
-        }
-        Map<String, Object> map = new HashMap<>();
-        for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-            if (!(entry.getKey() instanceof String)) {
-                throw new IllegalArgumentException("Invalid scoreboard data: " + field);
-            }
-            map.put((String) entry.getKey(), entry.getValue());
-        }
-        return map;
-    }
-
-    private static Map<String, String> asStringStringMap(Object value, String field) {
-        if (value == null) {
-            return null;
-        }
-        if (!(value instanceof Map)) {
-            throw new IllegalArgumentException("Invalid scoreboard data: " + field);
-        }
-        Map<String, String> map = new HashMap<>();
-        for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-            if (!(entry.getKey() instanceof String)) {
-                throw new IllegalArgumentException("Invalid scoreboard data: " + field);
-            }
-            Object entryValue = entry.getValue();
-            if (!(entryValue instanceof String)) {
-                throw new IllegalArgumentException("Invalid scoreboard data: " + field);
-            }
-            map.put((String) entry.getKey(), (String) entryValue);
-        }
-        return map;
-    }
-
-    private static List<Map<String, Object>> asStringObjectMapList(Object value, String field) {
-        if (!(value instanceof List)) {
-            throw new IllegalArgumentException("Invalid scoreboard data: " + field);
-        }
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (Object entry : (List<?>) value) {
-            list.add(asStringObjectMap(entry, field));
-        }
-        return list;
     }
 }
