@@ -1,9 +1,20 @@
 package cn.nukkit.command.tree.node;
 
 /**
- * 验证经验值或等级并解析为{@link Integer}值
+ * Parses and validates experience level arguments as {@link Integer} values for PowerNukkitX command trees.
  * <p>
- * 不会默认使用，需要手动指定
+ * This node is not used by default and must be manually specified. It parses arguments ending with 'l' or 'L' as experience levels.
+ *
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Parses arguments ending with 'l' or 'L' as experience levels.</li>
+ *   <li>Returns the integer value of the level or triggers an error if invalid.</li>
+ *   <li>Used for experience level parameter parsing when manually specified.</li>
+ * </ul>
+ *
+ * @author PowerNukkitX Project Team
+ * @see ParamNode
+ * @since PowerNukkitX 1.19.50
  */
 public class XpLevelNode extends ParamNode<Integer> {
     @Override

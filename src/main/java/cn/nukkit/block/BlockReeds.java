@@ -178,7 +178,7 @@ public class BlockReeds extends BlockFlowable {
         }
         for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             Block possibleWater = down.getSide(face);
-            if (possibleWater instanceof BlockWater
+            if (possibleWater instanceof BlockFlowingWater
                     || possibleWater instanceof BlockFrostedIce
                     || possibleWater.getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
                 return true;

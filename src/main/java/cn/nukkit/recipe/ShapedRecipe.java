@@ -5,9 +5,11 @@ import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,29 +63,16 @@ public class ShapedRecipe extends CraftingRecipe {
                         Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
         super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
-        this.row = shape.length;
         this.mirror = mirror;
-        if (this.row > 3 || this.row == 0) {
-            throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
-        }
+
+        this.row = shape.length;
+        Preconditions.checkArgument(this.row <= 3 && 1 <= this.row, "Shaped recipes may only have 1, 2 or 3 rows, not " + this.row);
 
         this.col = shape[0].length();
-        if (this.col > 3 || this.col == 0) {
-            throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 columns, not " + this.col);
-        }
+        Preconditions.checkArgument(this.col <= 3 && 1 <= this.col, "Shaped recipes may only have 1, 2 or 3 columns, not " + this.col);
 
         for (int i = 0, shapeLength = shape.length; i < shapeLength; i++) {
-            String row = shape[i];
-            if (row.length() != this.col) {
-                throw new RuntimeException("Shaped recipe rows must all have the same length (expected " + this.col + ", got " + row.length() + ")");
-            }
-
-            for (int x = 0; x < this.col; ++x) {
-                char c = row.charAt(x);
-                if (c != ' ' && !ingredients.containsKey(c)) {
-                    throw new RuntimeException("No item specified for symbol '" + c + "'");
-                }
-            }
+            String row = getShape(ingredients, shape[i]);
             shape[i] = row.intern();
         }
         this.results.add(primaryResult.clone());//primaryResult
@@ -92,15 +81,23 @@ public class ShapedRecipe extends CraftingRecipe {
 
         for (var entry : ingredients.entrySet()) {
             char key = entry.getKey();
+            Preconditions.checkArgument(String.join("", this.shape).indexOf(key) >= 0, "Symbol does not appear in the shape: " + key);
+
             var item = entry.getValue();
-            if (String.join("", this.shape).indexOf(key) < 0) {
-                throw new RuntimeException("Symbol does not appear in the shape: " + key);
-            }
             this.shapedIngredients.put(key, item);
             this.ingredients.add(entry.getValue());
         }
     }
-    
+
+    private @NotNull String getShape(Map<Character, ItemDescriptor> ingredients, String shape) {
+        Preconditions.checkArgument(shape.length() == this.col, "Shaped recipe rows must all have the same length (expected " + this.col + ", got " + shape.length() + ")");
+        for (int x = 0; x < this.col; ++x) {
+            char c = shape.charAt(x);
+            Preconditions.checkArgument(c == ' ' || ingredients.containsKey(c), "No item specified for symbol '" + c + "'");
+        }
+        return shape;
+    }
+
     public int getWidth() {
         return this.col;
     }
@@ -122,9 +119,8 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public ShapedRecipe setIngredient(char key, ItemDescriptor item) {
-        if (String.join("", this.shape).indexOf(key) < 0) {
-            throw new RuntimeException("Symbol does not appear in the shape: " + key);
-        }
+        Preconditions.checkArgument(String.join("", this.shape).indexOf(key) >= 0, "Symbol does not appear in the shape: " + key);
+
         this.shapedIngredients.put(key, item);
 
         List<ItemDescriptor> items = new ArrayList<>();

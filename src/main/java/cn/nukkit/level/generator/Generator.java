@@ -73,24 +73,32 @@ public abstract class Generator implements BlockID {
         return context.getChunk();
     }
 
+    protected String getEndName(IChunk chunk) {
+        return end.name();
+    }
+
+    protected GenerateStage getStart(ChunkGenerateContext context) {
+        return start;
+    }
+
     public final void asyncGenerate(IChunk chunk) {
-        asyncGenerate(chunk, end.name(), (c) -> {
+        asyncGenerate(chunk, getEndName(chunk), (c) -> {
         });
     }
 
     public final void asyncGenerate(IChunk chunk, Consumer<ChunkGenerateContext> callback) {
-        asyncGenerate(chunk, end.name(), callback);
+        asyncGenerate(chunk, getEndName(chunk), callback);
     }
 
     public final void asyncGenerate(IChunk chunk, String to, Consumer<ChunkGenerateContext> callback) {
         Preconditions.checkNotNull(to);
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         chunk.setChunkState(ChunkState.STARTED);
-        asyncGenerate0(context, start, to, () -> callback.accept(context));
+        asyncGenerate0(context, getStart(context), to, () -> callback.accept(context));
     }
 
 
-    private void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, String to, final Runnable callback) {
+    protected final void asyncGenerate0(final ChunkGenerateContext context, final GenerateStage start, String to, final Runnable callback) {
         if (start == null || to == null) {
             callback.run();
             return;

@@ -263,11 +263,7 @@ public class ObjectDesertPyramid extends RuledObjectGenerator {
             return false;
         }
 
-        if (!level.getBlock(x, y, z).hasTag(BlockTags.SAND)) {
-            return false;
-        }
-
-        return true;
+        return level.getBlock(x, y, z).hasTag(BlockTags.SAND);
     }
 
     protected static class ChestPopulator extends RandomizableContainer {

@@ -114,14 +114,18 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean pairWith(BlockEntityChest chest) {
-        if ((this.isPaired() || chest.isPaired())) {
-            int x1 = namedTag.getInt("pairx");
+        if (this.isPaired()) {
+            int x1 = this.namedTag.getInt("pairx");
+            int z1 = this.namedTag.getInt("pairz");
+            if (!(chest.x == x1 && chest.z == z1)) {
+                return false;
+            }
+        }
+
+        if (chest.isPaired()) {
             int x2 = chest.namedTag.getInt("pairx");
-
-            int z1 = namedTag.getInt("pairz");
             int z2 = chest.namedTag.getInt("pairz");
-
-            if(!(chest.isPaired() && (this.x == x2 && this.z == z2)) || !(this.isPaired() && (chest.x == x1 && chest.z == z1))) {
+            if (!(this.x == x2 && this.z == z2)) {
                 return false;
             }
         }

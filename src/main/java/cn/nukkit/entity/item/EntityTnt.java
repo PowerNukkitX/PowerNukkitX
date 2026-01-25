@@ -74,8 +74,6 @@ public class EntityTnt extends Entity implements EntityExplosive {
         return false;
     }
 
-    
-
     @Override
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);

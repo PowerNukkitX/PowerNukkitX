@@ -7,33 +7,63 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+/**
+ * Represents an input element for custom forms.
+ * Allows the user to enter text, with optional placeholder and default value.
+ */
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
 @AllArgsConstructor
 public class ElementInput extends Element implements ElementCustom {
+
     private String text;
     private String placeholder;
     private String defaultText;
+    private String tooltip;
 
+    /**
+     * Creates an input element with empty text, placeholder, and default value.
+     */
     public ElementInput() {
-        this("");
+        this("", "", "", "");
     }
 
+    /**
+     * Creates an input element with specified text and empty placeholder/default.
+     * @param text The input label
+     */
     public ElementInput(String text) {
-        this(text, "");
+        this(text, "", "", "");
     }
 
+    /**
+     * Creates an input element with specified text and placeholder, empty default.
+     * @param text The input label
+     * @param placeholder The placeholder text
+     */
     public ElementInput(String text, String placeholder) {
-        this(text, placeholder, "");
+        this(text, placeholder, "", "");
     }
 
+    public ElementInput(String text, String placeholder, String defaultText) {
+        this(text, placeholder, defaultText, "");
+    }
+
+    /**
+     * Serializes the input element to JSON.
+     * @return The input as a JsonObject
+     */
     @Override
     public JsonObject toJson() {
         this.object.addProperty("type", "input");
         this.object.addProperty("text", this.text);
         this.object.addProperty("placeholder", this.placeholder);
         this.object.addProperty("default", this.defaultText);
+
+        if (this.tooltip != null && !this.tooltip.isEmpty()) {
+            this.object.addProperty("tooltip", this.tooltip);
+        }
 
         return this.object;
     }

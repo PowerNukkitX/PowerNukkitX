@@ -19,7 +19,10 @@ import java.util.function.Function;
 import java.util.function.ToLongFunction;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * Utility class for reading and writing binary data streams.
+ * <p>
+ * Provides methods for manipulating byte buffers, reading and writing primitive types,
+ * arrays, strings, and custom objects in various formats. Used for network and file IO.
  */
 @Slf4j
 public class BinaryStream {

@@ -5,31 +5,24 @@ import cn.nukkit.utils.random.NukkitRandom;
 
 public class NormalNoise {
 
-    private final float valueFactor;
     private final SimplexNoise first;
     private final SimplexNoise second;
     private final double maxValue;
 
-    private final int firstOctave;
-    private final float[] amplitudes;
-
     public NormalNoise(NukkitRandom random, int firstOctave, float[] amplitudes) {
-        this.firstOctave = firstOctave;
-        this.amplitudes = amplitudes;
-        this.first = new SimplexNoise(random, this.firstOctave, this.amplitudes);
-        this.second = new SimplexNoise(random, this.firstOctave, this.amplitudes);
+        this.first = new SimplexNoise(random, firstOctave, amplitudes);
+        this.second = new SimplexNoise(random, firstOctave, amplitudes);
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
 
-        for(int i = 0; i < this.amplitudes.length; i++) {
-            double amplitude = this.amplitudes[i];
+        for(int i = 0; i < amplitudes.length; i++) {
+            double amplitude = amplitudes[i];
             if(amplitude != 0) {
                 min = Math.min(min, i);
                 max = Math.max(max, i);
             }
         }
 
-        this.valueFactor = (float) ((1/6f) / (0.1 * (1.0 + 1.0 / ((max-min) + 1))));
         this.maxValue = (this.first.getMax() + this.second.getMax()) / 2;
     }
 

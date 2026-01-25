@@ -49,6 +49,12 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    public boolean openInventory(Player player) {
+        player.addWindow(getInventory());
+        return true;
+    }
+
+    @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (player.isSneaking()) {
             player.addWindow(this.inventory);

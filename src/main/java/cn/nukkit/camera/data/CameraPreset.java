@@ -19,6 +19,22 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
+ * Represents a camera preset configuration for the camera system.
+ * <p>
+ * CameraPreset objects define the behavior, position, rotation, and other properties
+ * for a camera view in the game. Presets can be registered and retrieved by identifier.
+ * <p>
+ * Usage:
+ * <ul>
+ *   <li>Use {@link #registerCameraPresets(CameraPreset...)} to register new presets.</li>
+ *   <li>Access registered presets via {@link #getPresets()} or {@link #getPreset(String)}.</li>
+ *   <li>Predefined presets: {@link #FIRST_PERSON}, {@link #FOLLOW_ORBIT}, {@link #FREE}, {@link #THIRD_PERSON}, {@link #THIRD_PERSON_FRONT}.</li>
+ * </ul>
+ * <p>
+ * Each preset can specify position, rotation, limits, audio listener, effects, and aim assist options.
+ * <p>
+ * Thread safety: The preset registry is backed by a TreeMap and is not thread-safe for concurrent modification.
+ *
  * @author daoge_cmd (PowerNukkitX Project)
  * @since 2023/6/11
  */
@@ -29,16 +45,38 @@ public final class CameraPreset {
 
     private static final Map<String, CameraPreset> PRESETS = new TreeMap<>();
 
+    /**
+     * Returns the map of all registered camera presets.
+     * <p>
+     * The returned map is unmodifiable and contains all presets registered via {@link #registerCameraPresets(CameraPreset...)}.
+     *
+     * @return the map of registered camera presets, keyed by identifier
+     */
     @DoNotModify
     public static Map<String, CameraPreset> getPresets() {
         return PRESETS;
     }
 
-    public @Nullable
-    static CameraPreset getPreset(String identifier) {
+    /**
+     * Retrieves a camera preset by its identifier.
+     *
+     * @param identifier the unique identifier of the camera preset
+     * @return the CameraPreset instance, or null if not found
+     */
+    public @Nullable static CameraPreset getPreset(String identifier) {
         return getPresets().get(identifier);
     }
 
+    /**
+     * Registers one or more camera presets to the global registry.
+     * <p>
+     * Throws an exception if a preset with the same identifier already exists.
+     * Updates the camera preset enum for command auto-completion and assigns unique IDs to each preset.
+     * Notifies all online players of the new presets.
+     *
+     * @param presets the camera presets to register
+     * @throws IllegalArgumentException if a preset identifier is already registered
+     */
     public static void registerCameraPresets(CameraPreset... presets) {
         for (var preset : presets) {
             if (PRESETS.containsKey(preset.getIdentifier()))
@@ -47,7 +85,7 @@ public final class CameraPreset {
             CommandEnum.CAMERA_PRESETS.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, preset.getIdentifier());
         }
         int id = 0;
-        //重新分配id
+        // Reassign unique IDs to each preset
         for (var preset : presets) {
             preset.id = id++;
         }
@@ -123,10 +161,22 @@ public final class CameraPreset {
 
     private int id = 0;
 
-    /**
-     * Remember to call the registerCameraPresets() method to register!
-     */
     @Builder
+    /**
+     * Constructs a CameraPreset using the builder pattern.
+     * <p>
+     * Only a subset of fields is settable via the builder. For advanced configuration, use the full constructor.
+     * <p>
+     * You must call {@link #registerCameraPresets(CameraPreset...)} to make the preset available.
+     *
+     * @param identifier the unique identifier for the preset
+     * @param inheritFrom the identifier of the preset to inherit from (optional)
+     * @param pos the position of the camera (optional)
+     * @param yaw the yaw rotation (optional)
+     * @param pitch the pitch rotation (optional)
+     * @param listener the audio listener configuration (optional)
+     * @param playEffect whether to play camera effects (optional)
+     */
     public CameraPreset(String identifier, String inheritFrom, @Nullable Vector3f pos, @Nullable Float yaw, @Nullable Float pitch, @Nullable CameraAudioListener listener, OptionalValue<Boolean> playEffect) {
         this(
                 identifier,
@@ -151,6 +201,31 @@ public final class CameraPreset {
         );
     }
 
+    /**
+     * Full constructor for CameraPreset.
+     * <p>
+     * Allows setting all available fields for advanced camera configuration.
+     *
+     * @param identifier the unique identifier for the preset
+     * @param inheritFrom the identifier of the preset to inherit from (optional)
+     * @param pos the position of the camera (optional)
+     * @param yaw the yaw rotation (optional)
+     * @param pitch the pitch rotation (optional)
+     * @param rotationSpeed the speed of camera rotation (optional)
+     * @param snapToTarget whether the camera snaps to its target (optional)
+     * @param blockListeningRadius the audio block listening radius (optional)
+     * @param viewOffset the offset of the camera view (optional)
+     * @param entityOffset the offset relative to the entity (optional)
+     * @param radius the camera orbit radius (optional)
+     * @param yawLimitMin minimum yaw limit (optional)
+     * @param yawLimitMax maximum yaw limit (optional)
+     * @param listener the audio listener configuration (optional)
+     * @param playEffect whether to play camera effects (optional)
+     * @param horizontalRotationLimit horizontal rotation limits (optional)
+     * @param verticalRotationLimit vertical rotation limits (optional)
+     * @param continueTargeting whether to continue targeting (optional)
+     * @param aimAssist aim assist configuration (optional)
+     */
     public CameraPreset(
             String identifier,
             String inheritFrom,

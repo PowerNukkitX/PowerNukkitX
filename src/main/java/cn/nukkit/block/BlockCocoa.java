@@ -111,12 +111,11 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target instanceof BlockJungleLog || target instanceof BlockWood wood && wood.getWoodType() == WoodType.JUNGLE) {
-            if (face != BlockFace.DOWN && face != BlockFace.UP) {
-                setPropertyValue(DIRECTION, faces[face.getIndex()]);
-                this.level.setBlock(block, this, true, true);
-                return true;
-            }
+        if ((target instanceof BlockJungleLog || target instanceof BlockWood wood && wood.getWoodType() == WoodType.JUNGLE)
+                && face != BlockFace.DOWN && face != BlockFace.UP) {
+            setPropertyValue(DIRECTION, faces[face.getIndex()]);
+            this.level.setBlock(block, this, true, true);
+            return true;
         }
         return false;
     }
@@ -135,10 +134,8 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1) {
-                if (this.getAge() < 2) {
-                    if (!this.grow()) {
-                        return Level.BLOCK_UPDATE_RANDOM;
-                    }
+                if (this.getAge() < 2 && !this.grow()) {
+                    return Level.BLOCK_UPDATE_RANDOM;
                 }
             } else {
                 return Level.BLOCK_UPDATE_RANDOM;
@@ -199,11 +196,6 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     @Override
     public int getWaterloggingLevel() {
         return 2;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override

@@ -4,12 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDirt;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityMarkVariant;
 import cn.nukkit.entity.EntityOwnable;
-import cn.nukkit.entity.EntityRideable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
@@ -43,13 +43,18 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.AuthInputAction;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
@@ -57,6 +62,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +74,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityRideable, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityOwnable, InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {
         return HORSE;
@@ -79,6 +85,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     private Map<String, Attribute> attributeMap;
     private HorseInventory horseInventory;
     private final AtomicInteger jumping = new AtomicInteger(-1);
+
+    private int jumpingTicks = 0;
 
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -101,6 +109,26 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public boolean isRideable() {
+        return true;
+    }
+
+    @Override
+    public boolean isRiderControl() {
+        return true;
+    }
+
+    @Override
+    public boolean openInventory(Player player) {
+        if (hasOwner(false) && getOwnerName().equals(player.getName())) {
+            player.addWindow(getInventory());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void initEntity() {
         attributeMap = new HashMap<>();
         if (this.namedTag.containsList("Attributes")) {
@@ -113,6 +141,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             }
         }
         this.setMaxHealth((int) Math.ceil(attributeMap.get("minecraft:health").getMaxValue()));
+        this.setMovementSpeed(attributeMap.get("minecraft:movement").getValue());
         super.initEntity();
 
         this.horseInventory = new HorseInventory(this);
@@ -337,7 +366,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
             float damage = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
 
-            if (damage > 0) {
+            if (damage > 0 && (!isJumping())) {
                 this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage));
             }
         }
@@ -387,18 +416,66 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return super.canCollideWith(entity) && entity != this.getRider();
     }
 
-    public void onInput(Location clientLoc) {
-        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return;
-        //每次输入乘骑玩家位置之前都要确保motion为0,避免onGround不更新
-        this.motionX = 0;
-        this.motionY = 0;
-        this.motionZ = 0;
+    @Override
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return false;
         this.setMoveTarget(null);
         this.setLookTarget(null);
-        this.move(clientLoc.x - this.x, clientLoc.y - this.y, clientLoc.z - this.z);
-        this.yaw = clientLoc.yaw;
-        this.headYaw = clientLoc.headYaw;
+        if(pk.inputData.contains(AuthInputAction.JUMPING)){
+            jumpingTicks++;
+        } else if(jumpingTicks != -1) {
+            if(isOnGround()) {
+                float jumpStrength = jumpingTicks < 10 ? jumpingTicks * 0.1f : 0.8f + 2.0f / (jumpingTicks - 9) * 0.1f;
+                float maxMotionY = this.getClientMaxJumpHeight();
+                double motion = maxMotionY * jumpStrength * 8;
+                this.getJumping().set(this.getLevel().getTick());
+                this.motionX = 0;
+                this.motionY = 0;
+                this.motionZ = 0;
+                this.addTmpMoveMotion(new Vector3(0, motion, 0));
+                this.setDataFlag(EntityFlag.STANDING);
+            }
+            jumpingTicks = -1;
+            return true;
+        }
+
+        if (isOnGround() || level.getTick() - getJumping().get() <= 5) {
+            this.motionX = 0;
+            this.motionY = 0;
+            this.motionZ = 0;
+            Vector2 motion = pk.motion.normalize();
+            double yawRad = Math.toRadians(pk.yaw);
+
+            double cos = Math.cos(yawRad);
+            double sin = Math.sin(yawRad);
+
+            double x = motion.x * cos - motion.y * sin;
+            double y = motion.x * sin + motion.y * cos;
+
+            Vector2 rotated = new Vector2(x, y).multiply(getMovementSpeed());
+            Vector3 direction = getDirectionVector().normalize();
+
+            var dy = 0.0d;
+            if(pk.motion.length() != 0) {
+                Block[] collisionBlocks = level.getCollisionBlocks(this.getBoundingBox().getOffsetBoundingBox(direction.x, 0, direction.z));
+                // Calculate the height you need to move upward
+                double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
+                double diffY = maxY - this.getY();
+                if (diffY > 0.01 && diffY <= 1.1) { // 1.1 gives some leeway for stairs etc.
+                    dy += this.getJumpingMotion(diffY);
+                }
+            }
+            this.addTmpMoveMotion(new Vector3(rotated.x, dy, rotated.y));
+        } else {
+            if(!isJumping() || level.getTick() - getJumping().get() > 5) {
+                handleGravity();
+                handleFloatingMovement();
+            }
+        }
+        this.yaw = pk.yaw;
+        this.headYaw = 0;
         broadcastMovement(false);
+        return true;
     }
 
     @Override
@@ -452,7 +529,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     public float getClientMaxJumpHeight() {
-        return attributeMap.get("minecraft:horse.jump_strength").getValue();
+        return getAttributes().get(Attribute.HORSE_JUMP_STRENGTH).getValue();
     }
 
     /**

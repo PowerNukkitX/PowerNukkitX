@@ -6,7 +6,6 @@ import cn.nukkit.item.ItemPotion;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
-import cn.nukkit.registry.RecipeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.reflect.TypeToken;
@@ -42,12 +41,6 @@ public class VanillaRecipeParser {
     private static final String CAMPFIRE_TAG = "campfire";
     private static final String SOUL_CAMPFIRE_TAG = "soul_campfire";
     private static final String BREW_STAND_TAG = "brewing_stand";
-
-    private final RecipeRegistry recipeRegistry;
-
-    public VanillaRecipeParser(RecipeRegistry recipeRegistry) {
-        this.recipeRegistry = recipeRegistry;
-    }
 
     public void parseAndRegisterRecipe(@NotNull File file) {
         try (var reader = new FileReader(file)) {

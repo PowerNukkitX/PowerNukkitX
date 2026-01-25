@@ -99,11 +99,9 @@ public class BlockCandleCake extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (down().isAir()) {
-                getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-                return Level.BLOCK_UPDATE_NORMAL;
-            }
+        if (type == Level.BLOCK_UPDATE_NORMAL && down().isAir()) {
+            getLevel().setBlock(this, Block.get(BlockID.AIR), true);
+            return Level.BLOCK_UPDATE_NORMAL;
         }
 
         return 0;

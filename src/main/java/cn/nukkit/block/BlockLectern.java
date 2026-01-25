@@ -7,12 +7,14 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.LecternDropBookEvent;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -122,13 +124,14 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         BlockEntityLectern lectern = getOrCreateBlockEntity();
         Item currentBook = lectern.getBook();
         if (!currentBook.isNull()) {
+            this.openBook(player);
             return true;
         }
         if (!Objects.equals(item.getId(), ItemID.WRITTEN_BOOK) && !Objects.equals(item.getId(), ItemID.WRITABLE_BOOK)) {
             return false;
         }
 
-        if (player == null || !player.isCreative()) {
+        if (!player.isCreative()) {
             item.count--;
         }
 
@@ -217,5 +220,15 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         lectern.setBook(Item.AIR);
         lectern.spawnToAll();
         this.level.dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());
+    }
+
+    public void openBook(Player player) {
+        ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.windowId = -1;
+        pk.type = InventoryType.LECTERN.getNetworkType();
+        pk.x = this.getFloorX();
+        pk.y = this.getFloorY();
+        pk.z = this.getFloorZ();
+        player.dataPacket(pk);
     }
 }

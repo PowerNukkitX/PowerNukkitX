@@ -10,9 +10,10 @@ import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.apache.commons.io.FileUtils;
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.jose4j.json.internal.json_simple.JSONValue;
+import org.jose4j.json.internal.json_simple.parser.ParseException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -38,8 +39,8 @@ public class Skin {
 
     static {
         String geoData;
-        try (var stream = Skin.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        try (var stream = Skin.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             geoData = reader.lines().reduce("", (acc, line) -> acc + line + "\n");
         } catch (IOException e) {
             geoData = "";
@@ -121,12 +122,10 @@ public class Skin {
             return false;
         }
         try {
-            JSONObject object = (JSONObject) new JSONParser().parse(skinResourcePatch);
+            JSONObject object = (JSONObject) JSONValue.parseWithException(skinResourcePatch);
             JSONObject geometry = (JSONObject) object.get("geometry");
-            return geometry != null
-                    && geometry.containsKey("default")
-                    && geometry.get("default") instanceof String;
-        } catch (ParseException | ClassCastException | NullPointerException e) {
+            return geometry.containsKey("default") && geometry.get("default") instanceof String;
+        } catch (ClassCastException | NullPointerException | ParseException e) {
             return false;
         }
     }
@@ -188,7 +187,8 @@ public class Skin {
 
     public void setSkinResourcePatch(String skinResourcePatch) {
         if (skinResourcePatch == null || skinResourcePatch.trim().isEmpty()) {
-            skinResourcePatch = GEOMETRY_CUSTOM;
+            this.skinResourcePatch = GEOMETRY_CUSTOM;
+            return;
         }
         this.skinResourcePatch = skinResourcePatch;
     }
@@ -202,7 +202,7 @@ public class Skin {
 
     public void setCapeData(byte[] capeData) {
         Objects.requireNonNull(capeData, "capeData");
-        Preconditions.checkArgument(capeData.length == SINGLE_SKIN_SIZE || capeData.length == 0, "Invalid legacy cape");
+        Preconditions.checkArgument(capeData.length == SKIN_64_32_SIZE || capeData.length == 0, "Invalid legacy cape");
         setCapeData(new SerializedImage(64, 32, capeData));
     }
 
@@ -224,9 +224,10 @@ public class Skin {
 
     public void setCapeId(String capeId) {
         if (capeId == null || capeId.trim().isEmpty()) {
-            capeId = null;
+            this.capeId = null;
+        } else {
+            this.capeId = capeId;
         }
-        this.capeId = capeId;
     }
 
     public String getGeometryData() {
@@ -347,7 +348,12 @@ public class Skin {
             try {
                 this.playFabId = this.skinId.split("-")[5];
             } catch (Exception e) {
-                this.playFabId = this.getFullSkinId().replace("-", "").substring(16);
+                String fullSkinIdWithoutDashes = this.getFullSkinId().replace("-", "");
+                if (fullSkinIdWithoutDashes.length() > 16) {
+                    this.playFabId = fullSkinIdWithoutDashes.substring(16);
+                } else {
+                    this.playFabId = fullSkinIdWithoutDashes;
+                }
             }
         }
         return this.playFabId;

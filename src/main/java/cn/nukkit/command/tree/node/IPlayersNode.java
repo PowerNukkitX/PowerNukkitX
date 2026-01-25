@@ -12,9 +12,34 @@ import java.util.stream.Collectors;
 
 
 /**
- * 解析为{@code List<IPlayer>}值
+ * Parses a command parameter as a {@code List<IPlayer>} value for PowerNukkitX command trees.
  * <p>
- * 不会默认使用，需要手动指定
+ * This node is not used by default and must be manually specified. It supports entity selectors and offline player lookup,
+ * returning a list of matching {@link IPlayer} instances or triggering an error if no match is found.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Parses entity selectors (e.g., @a, @p) using {@link EntitySelectorAPI}.</li>
+ *   <li>Filters matched entities to {@link IPlayer} instances only.</li>
+ *   <li>Supports offline player lookup by name as a fallback.</li>
+ *   <li>Returns a list of matching players or triggers an error if no match is found.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for player list parameter parsing when manually specified.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses: @a, Steve, @p
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see IPlayer
+ * @see EntitySelectorAPI
+ * @see IParamNode
+ * @since PowerNukkitX 1.19.50
  */
 
 
@@ -32,7 +57,10 @@ public class IPlayersNode extends ParamNode<List<IPlayer>> {
                 error(exception.getMessage());
                 return;
             }
-            result = entities.stream().filter(entity -> entity instanceof IPlayer).map(entity -> (IPlayer) entity).collect(Collectors.toList());
+            result = entities.stream()
+                    .filter(entity -> entity instanceof IPlayer)
+                    .map(entity -> (IPlayer) entity)
+                    .collect(Collectors.toList());
             if (!result.isEmpty())
                 this.value = result;
             else error("commands.generic.noTargetMatch");

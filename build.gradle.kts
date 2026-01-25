@@ -31,6 +31,9 @@ java.targetCompatibility = JavaVersion.VERSION_21
 
 // Constants
 val SHADOW_JAR = "shadowJar"
+val ENCODING = "UTF-8"
+val GH_BUILD = "build"
+val ALPHA_BUILD = "alpha build"
 
 dependencies {
     api(libs.bundles.netty)
@@ -119,36 +122,36 @@ tasks.processTestResources {
 }
 
 tasks.register<DefaultTask>("buildFast") {
-    group = "alpha build"
+    group = ALPHA_BUILD
     description = "Fast build without documentation and tests - for rapid development"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar)
 }
 
 tasks.register<DefaultTask>("buildSkipChores") {
-    group = "alpha build"
+    group = ALPHA_BUILD
     description = "Build without documentation and tests"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.register<DefaultTask>("buildForGithubAction") {
-    group = "build"
+    group = GH_BUILD
     description = "Optimized build for CI/CD pipelines (without tests)"
     dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, SHADOW_JAR)
 }
 
 tasks.build {
     dependsOn(SHADOW_JAR)
-    group = "alpha build"
+    group = ALPHA_BUILD
 }
 
 tasks.clean {
-    group = "alpha build"
+    group = ALPHA_BUILD
     description = "Deletes the build directory and generated files"
     delete("pnx.yml", "terra", "services")
 }
 
 tasks.compileJava {
-    options.encoding = "UTF-8"
+    options.encoding = ENCODING
     options.compilerArgs.addAll(listOf(
         "-Xpkginfo:always",
         "-parameters",
@@ -166,7 +169,7 @@ tasks.compileJava {
 }
 
 tasks.compileTestJava {
-    options.encoding = "UTF-8"
+    options.encoding = ENCODING
     options.isIncremental = true
     options.isFork = true
     options.forkOptions.jvmArgs = listOf("-Xmx1g")
@@ -332,11 +335,11 @@ publishing {
 }
 
 tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
+    options.encoding = ENCODING
 }
 
 tasks.withType<Javadoc> {
-    options.encoding = "UTF-8"
+    options.encoding = ENCODING
 }
 
 // Task optimization - disable unnecessary tasks for faster builds

@@ -1,5 +1,7 @@
 package cn.nukkit.utils;
 
+import com.google.common.base.Preconditions;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -14,18 +16,18 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * SortedList是{@link List}的一个有序实现，内部是用平衡二叉树实现的。
+ * SortedList is an ordered implementation of {@link List}, internally represented as a balanced binary tree.
  * <p>
- * 请注意，你不能对这个列表做指定项操作，除了{@code remove(int)}，{@code remove(Object)}，{@code clear}和{@code add()}。
+ * Note that you cannot perform specific operations on this list except for {@code remove(int)}, {@code remove(Object)}, {@code clear}, and {@code add()}.
  * <p>
- * 此列表操作的时间复杂度如下：{@code contains}，{@code add}，{@code remove}以及{@code get}
- * 的时间复杂度为<i>O(log(n))</i>。
+ * The time complexity of the following operations is as follows:
+ * The time complexity of `{@code contains}`, `{@code add}`, `{@code remove}`, and `{@code get}` is `O(log(n))`.
  * <p>
- * 此列表不保证线程安全，若有必要，请使用{@link Collections#synchronizedList(List)}包装以确保线程安全。
+ * This list is not guaranteed to be thread-safe. If necessary, use `{@link Collections#synchronizedList(List)}` to wrap it and ensure thread safety.
  * <p>
- * 这个列表提供的迭代器是快速失效的，所以除了通过迭代器本身之外的任何结构修改都会导致它抛出{@link ConcurrentModificationException}。
+ * The iterator provided by this list is short-lived. Any structural modification outside the iterator itself will cause it to throw a {@link ConcurrentModificationException}.
  *
- * @param <T> 列表类型.
+ * @param <T> The type of the list.
  * @see List
  * @see Collection
  * @see AbstractList
@@ -36,51 +38,51 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = -7115342129716877152L;
 
-    // 用以获取下一个节点的id
+    // Used to obtain the ID of the next node
     private int NEXT_NODE_ID = Integer.MIN_VALUE;
 
-    // 平衡树的根节点
+    // The root node of a balanced tree
     private Node root;
 
-    // 元素排序比较器
+    // Element sorting comparator
     private final Comparator<? super T> comparator;
 
     /**
-     * 构造一个新的空SortedList，根据给定的比较器对元素进行排序。
+     * Construct a new empty SortedList and sort its elements using the specified comparator.
      *
-     * @param comparator 给元素排序的比较器
+     * @param comparator Comparator for sorting elements
      */
     public SortedList(Comparator<? super T> comparator) {
         this.comparator = comparator;
     }
 
     /**
-     * 将给定对象插入SortedList的适当位置，以确保列表中的元素按给定比较器指定的顺序保存。
+     * Inserts the given object into the appropriate position in a SortedList to ensure elements are preserved in the order specified by the given comparator.
      * <p>
-     * 此方法仅允许添加非null值，如果给定对象为null，则列表保持不变并返回false。
+     * This method only permits adding non-null values. If the given object is null, the list remains unchanged and returns false.
      *
-     * @param object 要添加的元素
-     * @return 当给定对象为null时为false，否则为true
+     * @param object Elements to be added
+     * @return Returns false if the given object is null; otherwise, returns true.
      */
     @Override
     public boolean add(T object) {
         boolean treeAltered = false;
         if (object != null) {
-            // 将值包装在节点中并添加它到树上
-            add(new Node(object)); //这将确保modcount自增
+            // Wrap the value in a node and add it to the tree.
+            add(new Node(object)); // This will ensure the mod count increments
             treeAltered = true;
         }
         return treeAltered;
     }
 
     /**
-     * 将给定节点添加到此SortedList。
+     * Add the given node to this SortedList
      * <p>
-     * 此方法可以被子类重写，以便更改此列表将存储的节点的定义。
+     * This method can be overridden by subclasses to modify the definition of nodes that this list will store.
      * <p>
-     * 此实现使用{@link Node#compareTo(Node)}方法来确定给定节点应该存储在哪里。它还会增加此列表的modCount。
+     * This implementation uses the {@link Node#compareTo(Node)} method to determine where a given node should be stored. It also increments the modCount of this list.
      *
-     * @param toAdd 要新增的节点
+     * @param toAdd New nodes to be added
      */
     protected void add(Node toAdd) {
         if (root == null) {
@@ -88,7 +90,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         } else {
             Node current = root;
             //noinspection ConstantConditions
-            while (current != null) { // 理论上这玩意==true，但是为了确保使用动态代理、JVMTI、调试器或JVMCI时仍然能正常，我们需要判断下
+            while (current != null) { // Theoretically, this thing is true, but to ensure it still works when using dynamic proxies, JVMTI, debuggers, or JVMCI, we need to check.
                 int comparison = toAdd.compareTo(current);
                 if (comparison < 0) { // toAdd < node
                     if (current.leftChild == null) {
@@ -97,7 +99,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                     } else {
                         current = current.leftChild;
                     }
-                } else { // toAdd > node （==应该不太可能会发生，即使发生了上面的逃生门也能发挥作用）
+                } else { // toAdd > node (==It's highly unlikely to happen, and even if it did, the escape hatch above would still function.)
                     if (current.rightChild == null) {
                         current.setRightChild(toAdd);
                         break;
@@ -107,11 +109,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                 }
             }
         }
-        modCount++; // 参阅AbstractList#modCount，增加这个值可以使迭代器快速失效。
+        modCount++; // Refer to AbstractList#modCount. Increasing this value can cause the iterator to become invalid quickly.
     }
 
     /**
-     * 测试是否此树与给定树的结构和值完全相同。仅供测试使用。
+     * Test whether this tree has the exact same structure and values as the given tree. For testing purposes only.
      */
     boolean structurallyEqualTo(SortedList<T> other) {
         return other != null && structurallyEqualTo(root, other.root);
@@ -129,25 +131,25 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 提供一个迭代器，该迭代器按照给定比较器确定的顺序提供此SortedList的元素。
+     * Provides an iterator that yields the elements of this SortedList in the order determined by the given comparator.
      * <p>
-     * 此迭代器实现允许以O(n)时间复杂度迭代整个列表，其中n是列表中的元素数。
+     * This iterator implementation allows traversing the entire list in O(n) time complexity, where n is the number of elements in the list.
      *
-     * @return 一个按照给定比较器确定的顺序提供这个分类列表的元素的迭代器。
+     * @return An iterator that provides the elements of this sorted list in the order determined by the given comparator.
      */
     @Override
     public Iterator<T> iterator() {
         return new Itr();
     }
 
-    // 使用后继方法的迭代器接口的实现
-    // 为了提高速度至O(n)，我们通过列表进行迭代，而不是O(n*log(n))的排序。
+    // Implementation of an iterator interface using a successor method
+    // To achieve O(n) speed, we iterate over the list rather than using O(n*log(n)) sorting.
     private class Itr implements Iterator<T> {
         private Node nextNode = (isEmpty() ? null : findNodeAtIndex(0));
         private int nextIndex = 0;
         private Node lastReturned = null;
         /**
-         * 此迭代器预期的modCount
+         * The expected modCount for this iterator
          */
         private int expectedModCount = modCount;
 
@@ -182,9 +184,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
             SortedList.this.remove(lastReturned);
             lastReturned = null;
 
-            // 下一个节点现在可能不正确，所以需要再次获取它。
+            // The next node may now be incorrect, so it needs to be retrieved again.
             nextIndex--;
-            if (nextIndex < size()) { // 检查具有此索引的节点是否确实存在。
+            if (nextIndex < size()) { // Verify whether the node with this index actually exists.
                 nextNode = findNodeAtIndex(nextIndex);
             } else {
                 nextNode = null;
@@ -194,7 +196,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 检查modcount是否为预期值
+         * Check whether the modCount is the expected value.
          */
         private void checkModCount() {
             if (expectedModCount != modCount) {
@@ -204,7 +206,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * @return 存储在此SortedList中的元素数量。
+     * @return The number of elements stored in this SortedList.
      */
     @Override
     public int size() {
@@ -212,20 +214,20 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * @return 此SortedList的根节点，如果此列表为空，则为空。
+     * @return The root node of this SortedList. If the list is empty, returns null.
      */
     protected Node getRoot() {
         return root;
     }
 
     /**
-     * 返回给定对象是否在此SortedList中。
+     * Returns whether the given object is present in this SortedList.
      * <p>
-     * 元素比较使用{@link Object#equals(Object)}方法，并假设给定的obj必须具有与此SortedList中的元素相等的T类型。
-     * 时间复杂度为<i>O(log(n))</i>，其中n是列表中的元素数。
+     * Element comparison uses the {@link Object#equals(Object)} method and assumes the given obj must be of type T equal to an element in this SortedList.
+     * Time complexity is <i>O(log(n))</i>, where n is the number of elements in the list.
      *
-     * @param obj 要检查存在性的对象
-     * @return 是否存在于此SortedList中
+     * @param obj The object to check for existence
+     * @return Whether it exists in this SortedList
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -236,12 +238,12 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 返回表示树中给定值的节点，如果不存在此类节点，则该节点可以为null。
+     * Returns the node representing the given value in the tree. If no such node exists, it may be null.
      * <p>
-     * 该方法使用给定的比较器执行二进制搜索，时间复杂度为O(log(n))。
+     * This method performs a binary search using the given comparator, with a time complexity of O(log(n)).
      *
-     * @param value 要搜索的值
-     * @return 此列表中具有给定值的第一个节点
+     * @param value The value to search for
+     * @return The first node in this list with the given value
      */
     protected Node findFirstNodeWithValue(T value) {
         Node current = root;
@@ -263,29 +265,29 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 移除并返回此SortedList中给定索引处的元素。由于列表已排序，这是从0-n-1开始计数的第四个最小元素。
+     * Removes and returns the element at the given index in this SortedList. Since the list is sorted, this is the fourth smallest element starting from 0-n-1.
      * <p>
-     * 例如，调用remove(0)将删除列表中最小的元素。
+     * For example, calling remove(0) deletes the smallest element in the list.
      *
-     * @param index 要删除的元素的索引
-     * @return 被删除的元素
-     * @throws IllegalArgumentException 如果索引不是有效的索引则抛出此异常
+     * @param index The index of the element to remove
+     * @return The removed element
+     * @throws IllegalArgumentException If the index is invalid
      */
     @Override
     public T remove(int index) {
-        // 在索引处获取节点，如果节点索引不存在，将抛出异常。
+        // Retrieve the node at the index. If the node at the index does not exist, an exception will be thrown.
         Node nodeAtIndex = findNodeAtIndex(index);
         remove(nodeAtIndex);
         return nodeAtIndex.value;
     }
 
     /**
-     * 删除列表中具有给定值的第一个元素（如果存在这样的节点），否则不执行任何操作。使用给定的比较器对元素进行比较。
+     * Removes the first element in the list with the given value (if such a node exists), otherwise does nothing. Compares elements using the specified comparator.
      * <p>
-     * 返回是否找到并删除了匹配的元素。
+     * Returns whether a matching element was found and removed.
      *
-     * @param value 要移除的元素
-     * @return 是否找到并删除了匹配的元素。
+     * @param value The element to be removed
+     * @return Whether a matching element was found and removed.
      */
     @Override
     public boolean remove(Object value) {
@@ -306,10 +308,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 从这个SortedList中删除给定的节点，如果需要重新平衡，也会添加modCount。
-     * 时间复杂度O(log(n))。
+     * Removes the specified node from this SortedList. If rebalancing is required, it also increments modCount.
+     * Time complexity O(log(n)).
      *
-     * @param toRemove 此SortedList中的节点
+     * @param toRemove The node to remove from this SortedList
      */
     protected void remove(Node toRemove) {
         if (toRemove.isLeaf()) {
@@ -333,13 +335,13 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 返回此SortedList中给定索引处的元素。由于列表已排序，因此这是从0-n-1开始计算的第四个最小元素的索引。
+     * Returns the element at the given index in this SortedList. Since the list is sorted, this is the index of the fourth smallest element, starting from 0-n-1.
      * <p>
-     * 例如，调用get(0)将返回列表中最小的元素。
+     * For example, calling get(0) returns the smallest element in the list.
      *
-     * @param index 要获取的元素的索引
-     * @return 此SortedList中给定索引处的元素
-     * @throws IllegalArgumentException 如果索引不是有效的索引则抛出此异常
+     * @param index The index of the element to retrieve
+     * @return The element at the given index in this SortedList
+     * @throws IllegalArgumentException If the index is invalid
      */
     @Override
     public T get(int index) {
@@ -414,7 +416,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 返回整个列表中的最小平衡因子。仅供测试使用
+     * Returns the smallest balancing factor in the entire list. For testing purposes only.
      */
     int minBalanceFactor() {
         int minBalanceFactor = 0;
@@ -427,7 +429,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 返回整个列表中的最大平衡因子。仅供测试使用
+     * Returns the maximum balancing factor in the entire list. For testing purposes only.
      */
     int maxBalanceFactor() {
         int maxBalanceFactor = 0;
@@ -439,11 +441,11 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         return maxBalanceFactor;
     }
 
-    //从startNode开始执行二叉树的再平衡，并向上递归树。..
+    //Begin rebalancing the binary tree starting from startNode, then recursively traverse upward through the tree...
     private void rebalanceTree(Node startNode) {
         Node current = startNode;
         while (current != null) {
-            //获取此时左右子树之间的差异。
+            //Retrieve the differences between the left and right subtrees at this point.
             int balanceFactor = current.getBalanceFactor();
 
             if (balanceFactor == -2) {
@@ -469,9 +471,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
     }
 
     /**
-     * 用于表示树中位置的内部类。每个节点存储一个相等值的列表，包含它们的子节点和父节点、在该点扎根的子树的高度以及它们拥有的子元素的总数。
+     * An inner class used to represent positions within a tree. Each node stores a list of equal values containing its child and parent nodes, the height of the subtree rooted at that point, and the total number of child elements it possesses.
      * <p>
-     * 顺便提一句，这里的left和right仅仅是处于中国人描述数据结构的习惯，并不是影射某些买办/新官僚政治立场左右摇晃，本人坚定信仰中国特色社会主义。
+     * By the way, the terms “left” and “right” here are merely a convention used by Chinese programmers to describe data structures. They do not imply any political stance of vacillation between left and right. I firmly believe in socialism with Chinese characteristics.
      *
      * @author superice666
      */
@@ -487,7 +489,7 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         private int numChildren;
 
         /**
-         * 此节点的唯一id：自动生成，节点越新，此值越高。
+         * Unique ID for this node: Automatically generated; newer nodes have higher values.
          */
         protected final int id;
 
@@ -500,11 +502,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
             return leftChild != null && rightChild != null;
         }
 
-        // 如果是叶节点，则删除该节点，并更新树中的子节点数和高度。
+        // If it is a leaf node, remove the node and update the number of child nodes and height in the tree.
         private void detachFromParentIfLeaf() {
-            if (!isLeaf() || parent == null) {
-                throw new RuntimeException("Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
-            }
+            Preconditions.checkState(isLeaf() && parent != null, "Call made to detachFromParentIfLeaf, but this is not a leaf node with a parent!");
             if (isLeftChildOfParent()) {
                 parent.setLeftChild(null);
             } else {
@@ -513,19 +513,17 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 返回此节点的父节点，该节点可能为空。
+         * Returns the parent node of this node, which may be null.
          *
-         * @return 此节点的父节点（如果存在），否则为null
+         * @return The parent node of this node (if it exists), otherwise null
          */
         protected Node getGrandParent() {
             return (parent != null && parent.parent != null) ? parent.parent : null;
         }
 
-        // 将此节点在树上向上移动一个槽口，更新值并重新平衡树。
+        // Move this node up one notch in the tree, update its value, and rebalance the tree.
         private void contractParent() {
-            if (parent == null || parent.hasTwoChildren()) {
-                throw new RuntimeException("Can not call contractParent on root node or when the parent has two children!");
-            }
+            Preconditions.checkState(parent != null && !parent.hasTwoChildren(), "Can not call contractParent on root node or when the parent has two children!");
             Node grandParent = getGrandParent();
             if (grandParent != null) {
                 if (isLeftChildOfParent()) {
@@ -545,27 +543,27 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                 }
             } else {
                 parent = null;
-                root = this; // 如果在其他地方没有进行更新就重设根
+                root = this; // If the root is reset without updating elsewhere
             }
 
-            // 最后，更新值并重新平衡这颗平衡二叉树。
+            // Finally, update the value and rebalance this balanced binary tree.
             updateCachedValues();
             rebalanceTree(this);
         }
 
         /**
-         * 返回它是否是其父节点的左子节点；如果这是根节点，则返回false。
+         * Returns whether it is the left child of its parent node; returns false if this is the root node.
          *
-         * @return 如果这是其父节点的左子节点，则为true，否则为false
+         * @return true if this is the left child of its parent node, false otherwise
          */
         public boolean isLeftChildOfParent() {
             return parent != null && parent.leftChild == this;
         }
 
         /**
-         * 返回它是否是其父节点的右子节点；如果这是根节点，则返回false。
+         * Returns whether it is the right child of its parent node; returns false if this is the root node.
          *
-         * @return 如果这是其父节点的右子节点，则为true，否则为false
+         * @return true if this is the right child of its parent node, false otherwise
          */
         public boolean isRightChildOfParent() {
             return parent != null && parent.rightChild == this;
@@ -584,9 +582,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 使用比较器将存储在该节点上的值与给定节点上的值进行比较，如果这些值相等，则比较其ID上的节点。我们认定较老的节点较小。
+         * Compares the value stored at this node against the value at the given node using a comparator. If the values are equal, it compares the nodes by their IDs. We consider the older node to be smaller.
          *
-         * @return 如果比较器在比较存储在该节点和给定节点上的值时返回一个非零数字，则返回该数字，否则返回该节点的id减去给定节点的id
+         * @return Returns the number returned by the comparator when comparing the values stored at this node and the given node, if non-zero. Otherwise, returns the ID of this node minus the ID of the given node.
          */
         public int compareTo(Node other) {
             int comparison = comparator.compare(value, other.value);
@@ -620,9 +618,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 获取树中下一个最大的节点，如果这是值最大的节点，则为null。
+         * Returns the next largest node in the tree. Returns null if this is the largest node.
          *
-         * @return 树中下一个最大的节点，如果这是值最大的节点，则为null
+         * @return The next largest node in the tree, or null if this is the largest node.
          */
         protected final Node successor() {
             Node successor = null;
@@ -639,9 +637,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 获取树中下一个最小的节点，如果这是值最小的节点，则为null。
+         * Returns the next smallest node in the tree. Returns null if this is the smallest node.
          *
-         * @return 树中下一个最小的节点，如果这是值最小的节点，则为null
+         * @return The next smallest node in the tree, or null if this is the smallest node.
          */
         protected final Node predecessor() {
             Node predecessor = null;
@@ -657,9 +655,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
             return predecessor;
         }
 
-        // 将子节点设置为左/右，仅当给定节点为null或叶，且当前子节点相同时才应如此
+        // Set the child node as left/right only when the given node is null or a leaf, and the current child node is identical.
         private void setChild(boolean isLeft, Node leaf) {
-            //perform the update..
+            //perform the update
             if (leaf != null) {
                 leaf.parent = this;
             }
@@ -669,15 +667,15 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                 rightChild = leaf;
             }
 
-            // 确保树高的任何变化都得到了处理。
+            // Ensure that any changes in tree height are addressed.
             updateCachedValues();
             rebalanceTree(this);
         }
 
         /**
-         * 返回此节点是否为叶节点，如果其左和右子级都设置为null，则它就是叶子<del>姐姐</del>。
+         * Returns whether this node is a leaf node. If both its left and right children are null, it is a leaf.
          *
-         * @return 如果此节点为叶节点，则为true，否则为false。
+         * @return true if this node is a leaf node, false otherwise.
          */
         public boolean isLeaf() {
             return (leftChild == null && rightChild == null);
@@ -692,27 +690,12 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
                     ", numChildren: " + numChildren + "]\n";
         }
 
-        // 使用当前节点作为轴左旋。
         private void leftRotateAsPivot() {
-            if (parent == null || parent.rightChild != this) {
-                throw new RuntimeException("Can't left rotate as pivot has no valid parent node.");
-            }
+            Preconditions.checkState(parent != null && parent.rightChild == this, "Can't left rotate as pivot has no valid parent node.");
 
-            // 首先将此节点向上移动，分离父节点。
-            Node oldParent = parent;
-            Node grandParent = getGrandParent();
-            if (grandParent != null) {
-                if (parent.isLeftChildOfParent()) {
-                    grandParent.leftChild = this;
-                } else {
-                    grandParent.rightChild = this;
-                }
-            }
-
-            this.parent = grandParent;
+            Node oldParent = this.rotateGrandParentToParent();
 
             Node oldLeftChild = leftChild;
-            oldParent.parent = this;
             leftChild = oldParent;
             if (oldLeftChild != null) {
                 oldLeftChild.parent = oldParent;
@@ -723,9 +706,9 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 返回此节点的子节点数加一。此方法使用缓存的变量，确保它在恒定时间内运行。
+         * Returns the number child nodes of this node plus one. This method uses cached variables to ensure it runs in constant time.
          *
-         * @return 此节点的子节点数加一
+         * @return The number child nodes of this node plus one
          */
         public int sizeOfSubTree() {
             return 1 + numChildren;
@@ -736,22 +719,10 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         private void rightRotateAsPivot() {
-            if (parent == null || parent.leftChild != this) {
-                throw new RuntimeException("Can't right rotate as pivot has no valid parent node.");
-            }
+            Preconditions.checkState(parent != null && parent.leftChild == this, "Can't right rotate as pivot has no valid parent node.");
 
-            Node oldParent = parent;
-            Node grandParent = getGrandParent();
-            if (grandParent != null) {
-                if (parent.isLeftChildOfParent()) {
-                    grandParent.leftChild = this;
-                } else {
-                    grandParent.rightChild = this;
-                }
-            }
-            this.parent = grandParent;
+            Node oldParent = this.rotateGrandParentToParent();
 
-            oldParent.parent = this;
             Node oldRightChild = rightChild;
             rightChild = oldParent;
             if (oldRightChild != null) {
@@ -763,7 +734,26 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 更新此路径上节点的高度和子节点数。还为路径上的每个节点（包括此节点）调用{@link #updateAdditionalCachedValues()}
+         * Sets the current grandparent node to as new parent
+         * @return The old parent node
+         */
+        protected final Node rotateGrandParentToParent() {
+            Node oldParent = parent;
+            Node grandParent = getGrandParent();
+            if (grandParent != null) {
+                if (parent.isLeftChildOfParent()) {
+                    grandParent.leftChild = this;
+                } else {
+                    grandParent.rightChild = this;
+                }
+            }
+            this.parent = grandParent;
+            oldParent.parent = this;
+            return oldParent;
+        }
+
+        /**
+         * Update the height and number of child nodes for this node on the path. Also call {@link #updateAdditionalCachedValues()} for each node on the path, including this node.
          */
         protected final void updateCachedValues() {
             Node current = this;
@@ -789,20 +779,20 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         /**
-         * 当从树中插入或删除节点时被调用，并为子类提供一个钩子来更新其缓存值。
+         * Called when inserting or removing a node from the tree, providing a hook for subclasses to update their cached values.
          * <p>
-         * 每次更改列表时都会调用此方法。它首先在受给定更改影响的最深节点上调用，然后在该节点的祖先上调用，直到在根节点上调用为止。
+         * This method is invoked whenever the list changes. It is first called on the deepest node affected by the given change, then on that node's ancestors, continuing until it reaches the root node.
          * <p>
-         * 因此，它仅适用于在缓存值非全局且不依赖于计算时具有正确值的父节点的情况下更新缓存值。
+         * Therefore, it should only be used to update cache values when the parent node has the correct value at the time of computation and the cache value is not global.
          * <p>
-         * 这个实现是空的，留给子类使用（虽然我觉得没人会用）。
+         * This implementation is empty, left for subclasses to use (though I doubt anyone will).
          */
         protected void updateAdditionalCachedValues() {
 
         }
 
-        // 将此节点中的值替换为其他节点中的值。
-        // 应该只在需要删除并且只有一个值时调用。
+        // Replace the value in this node with the value from another node.
+        // This method should only be called when deletion is required and only one value exists.
         private void switchValuesForThoseIn(Node other) {
             this.value = other.value;
         }
@@ -813,16 +803,14 @@ public class SortedList<T> extends AbstractList<T> implements Serializable {
         }
 
         private void setLeftChild(Node leaf) {
-            if ((leaf != null && !leaf.isLeaf()) || (leftChild != null && !leftChild.isLeaf())) {
-                throw new RuntimeException("setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
-            }
+            boolean valid = (leaf == null || leaf.isLeaf()) && (leftChild == null || leftChild.isLeaf());
+            Preconditions.checkState(valid, "setLeftChild should only be called with null or a leaf node, to replace a likewise child node.");
             setChild(true, leaf);
         }
 
         private void setRightChild(Node leaf) {
-            if ((leaf != null && !leaf.isLeaf()) || (rightChild != null && !rightChild.isLeaf())) {
-                throw new RuntimeException("setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
-            }
+            boolean valid = (leaf == null || leaf.isLeaf()) && (rightChild == null || rightChild.isLeaf());
+            Preconditions.checkState(valid, "setRightChild should only be called with null or a leaf node, to replace a likewise child node.");
             setChild(false, leaf);
         }
     }

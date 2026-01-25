@@ -11,9 +11,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 解析为{@code List<Player>}值
+ * Parses a command parameter as a {@code List<Player>} value for PowerNukkitX command trees.
  * <p>
- * 不会默认使用，需要手动指定
+ * This node is not used by default and must be manually specified. It supports entity selectors and player name lookup,
+ * returning a list of matching {@link Player} instances.
+ * <p>
+ * <b>Features:</b>
+ * <ul>
+ *   <li>Parses entity selectors (e.g., @a, @p) using {@link EntitySelectorAPI}.</li>
+ *   <li>Filters matched entities to {@link Player} instances only.</li>
+ *   <li>Supports player name lookup as a fallback.</li>
+ *   <li>Returns a list of matching players.</li>
+ * </ul>
+ * <p>
+ * <b>Usage:</b>
+ * <ul>
+ *   <li>Used in command trees for player list parameter parsing when manually specified.</li>
+ * </ul>
+ * <p>
+ * <b>Example:</b>
+ * <pre>
+ * // Parses: @a, Steve, @p
+ * </pre>
+ *
+ * @author PowerNukkitX Project Team
+ * @see Player
+ * @see EntitySelectorAPI
+ * @see IParamNode
+ * @since PowerNukkitX 1.19.50
  */
 public class PlayersNode extends TargetNode<Player> {
     //todo 支持uuid 或者 xuid

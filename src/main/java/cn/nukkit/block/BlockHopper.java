@@ -21,11 +21,14 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+
+import java.util.Map;
 
 import static cn.nukkit.block.property.CommonBlockProperties.TOGGLE_BIT;
 
@@ -100,6 +103,12 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
         }
 
         CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        if (item.hasCustomBlockData()) {
+            Map<String, Tag> customData = item.getCustomBlockData().getTags();
+            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
+                nbt.put(tag.getKey(), tag.getValue());
+            }
+        }
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
@@ -242,7 +251,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
                 }
             } else if (blockSide instanceof BlockComposter blockComposter) {
                 if (blockComposter.isFull()) {
-                    //检查是否能输入
+                    //Check if input is possible
                     if (!hopperInv.canAddItem(blockComposter.getOutPutItem()))
                         return false;
 

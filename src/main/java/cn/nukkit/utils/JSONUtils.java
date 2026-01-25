@@ -43,7 +43,7 @@ import java.util.function.Consumer;
  * <p>
  * Advantages:
  * <br>
- * When the data volume is less than 10000, there is an absolute advantage in speed
+ * When the data volume is lower than 10000, there is an absolute advantage in speed
  * <br>
  * The API and annotation support are relatively comprehensive, supporting loose parsing
  * <br>
@@ -58,7 +58,7 @@ public class JSONUtils {
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-        gsonBuilder.disableHtmlEscaping(); // 禁止将部分特殊字符转义为unicode编码
+        gsonBuilder.disableHtmlEscaping(); // Prohibits the conversion of certain special characters into Unicode encoding.
         registerTypeAdapter(gsonBuilder);
         GSON = gsonBuilder.create();
 
@@ -401,7 +401,7 @@ public class JSONUtils {
     }
 
     /**
-     * 序列化为JSON文件
+     * Serialize to JSON file
      */
     public static <V> void toFile(String path, V v, Consumer<JsonWriter> jsonWriterConfigurator) {
         try (FileWriter fileWriter = new FileWriter(path, true); JsonWriter jsonWriter = new JsonWriter(fileWriter)) {
@@ -644,7 +644,7 @@ public class JSONUtils {
     }
 
     /**
-     * Add element to the json
+     * Add an element to the JSON
      */
     public static <V> String add(String json, String key, V value) {
         JsonElement element = JsonParser.parseString(json);
@@ -654,7 +654,7 @@ public class JSONUtils {
     }
 
     /**
-     * Add element to the json
+     * Add an element to the JSON
      */
     private static <V> void add(JsonObject jsonObject, String key, V value) {
         if (value instanceof String) {
@@ -667,7 +667,7 @@ public class JSONUtils {
     }
 
     /**
-     * remove an element from the json string
+     * Remove an element from the JSON string
      *
      * @return json
      */
@@ -679,7 +679,7 @@ public class JSONUtils {
     }
 
     /**
-     * update an element from the json string
+     * Update an element from the JSON string
      */
     public static <V> String update(String json, String key, V value) {
         JsonElement element = JsonParser.parseString(json);
@@ -713,7 +713,7 @@ public class JSONUtils {
     }
 
     /**
-     * get data of map as a specific type value
+     * Get data of a map as a specific type value
      */
     @SuppressWarnings("unchecked")
     public static <T> T childAsType(Map<?, ?> data, String key, Class<T> asType) {
