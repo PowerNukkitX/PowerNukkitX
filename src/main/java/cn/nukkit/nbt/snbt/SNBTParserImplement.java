@@ -479,7 +479,7 @@ public class SNBTParserImplement implements SNBTConstants {
                 }
                 // Code for ZeroOrMore specified at SNBT.javacc:90:27
                 while (true) {
-                    if (!(nextTokenType() == COMMA)) break;
+                    if (nextTokenType() != COMMA) break;
                     // Code for RegexpRef specified at SNBT.javacc:90:28
                     consumeToken(COMMA);
                     // Code for NonTerminal specified at SNBT.javacc:90:36
