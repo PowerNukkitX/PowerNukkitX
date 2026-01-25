@@ -11,6 +11,7 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket> {
+    private static final int ADD_PLAYER_LEVELS_EVENT = 34;
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EntityEventPacket pk) {
         Player player = playerHandle.player;
@@ -38,7 +39,7 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
 
             player.dataPacket(pk);
             Server.broadcastPacket(player.getViewers().values(), pk);
-        } else if (pk.event == EntityEventPacket.DEPRECATED_ADD_PLAYER_LEVELS) {
+        } else if (pk.event == ADD_PLAYER_LEVELS_EVENT) {
             if (pk.eid != player.getId()) {
                 return;
             }
