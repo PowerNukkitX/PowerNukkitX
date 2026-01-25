@@ -80,7 +80,9 @@ public class JeStructure extends AbstractStructure {
                     for (Tag tag : listTag.getAll()) {
                         compounds.add((CompoundTag) tag);
                     }
-                    paletteNbt = new ListTag<>(compounds);
+                    if (!compounds.isEmpty()) {
+                        paletteNbt = new ListTag<>(compounds);
+                    }
                 }
             }
         }
