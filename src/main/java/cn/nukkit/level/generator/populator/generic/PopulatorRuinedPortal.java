@@ -23,16 +23,16 @@ public class PopulatorRuinedPortal extends Populator {
 
     public static final String NAME = "generic_ruined_portal";
 
-    private static BlockState NETHERRACK = BlockNetherrack.PROPERTIES.getDefaultState();
-    private static BlockState CRYING_OBSIDIAN = BlockCryingObsidian.PROPERTIES.getDefaultState();
-    private static BlockState POLISHED_BLACKSTONE_BRICKS = BlockPolishedBlackstoneBricks.PROPERTIES.getDefaultState();
-    private static BlockState POLISHED_BLACKSTONE_BRICK_SLAB = BlockPolishedBlackstoneBrickSlab.PROPERTIES.getDefaultState();
-    private static BlockState POLISHED_BLACKSTONE_BRICK_STAIRS = BlockPolishedBlackstoneBrickStairs.PROPERTIES.getDefaultState();
-    private static BlockState CHISELED_POLISHED_BLACKSTONE = BlockChiseledPolishedBlackstone.PROPERTIES.getDefaultState();
-    private static BlockState POLISHED_BLACKSTONE_WALL = BlockPolishedBlackstoneWall.PROPERTIES.getDefaultState();
-    private static BlockState CRACKED_POLISHED_BLACKSTONE_BRICKS = BlockCrackedPolishedBlackstoneBricks.PROPERTIES.getDefaultState();
+    private static final BlockState NETHERRACK = BlockNetherrack.PROPERTIES.getDefaultState();
+    private static final BlockState CRYING_OBSIDIAN = BlockCryingObsidian.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_BRICKS = BlockPolishedBlackstoneBricks.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_BRICK_SLAB = BlockPolishedBlackstoneBrickSlab.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_BRICK_STAIRS = BlockPolishedBlackstoneBrickStairs.PROPERTIES.getDefaultState();
+    private static final BlockState CHISELED_POLISHED_BLACKSTONE = BlockChiseledPolishedBlackstone.PROPERTIES.getDefaultState();
+    private static final BlockState POLISHED_BLACKSTONE_WALL = BlockPolishedBlackstoneWall.PROPERTIES.getDefaultState();
+    private static final BlockState CRACKED_POLISHED_BLACKSTONE_BRICKS = BlockCrackedPolishedBlackstoneBricks.PROPERTIES.getDefaultState();
 
-    private static ChestPopulator CHEST_POPULATOR = new ChestPopulator();
+    private static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
 
     protected static final int MIN_DISTANCE = 40;
     protected static final int MAX_DISTANCE = 25;
@@ -101,25 +101,20 @@ public class PopulatorRuinedPortal extends Populator {
                     }, 10);
                 }
                 if(level.getDimension() == Level.DIMENSION_NETHER) {
-                    if(block instanceof BlockStoneBricks) {
-                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICKS);
-                    }
-                    else if(block instanceof BlockStoneBrickSlab) {
-                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_SLAB.setPropertyValues(block.getProperties()));
-                    }
-                    else if(block instanceof BlockStoneBrickStairs) {
-                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_STAIRS.setPropertyValues(block.getProperties()));
-                    }
-                    else if(block instanceof BlockChiseledStoneBricks) {
+                    if (block instanceof BlockChiseledStoneBricks) {
                         manager.setBlockStateAt(block, CHISELED_POLISHED_BLACKSTONE.setPropertyValues(block.getProperties()));
-                    }
-                    else if(block instanceof BlockStoneBrickWall) {
-                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_WALL.setPropertyValues(block.getProperties()));
-                    }
-                    else if(block instanceof BlockCrackedStoneBricks) {
+                    } else if(block instanceof BlockCrackedStoneBricks) {
                         manager.setBlockStateAt(block, CRACKED_POLISHED_BLACKSTONE_BRICKS.setPropertyValues(block.getProperties()));
                     } else if(block instanceof BlockMossyStoneBricks) {
                         manager.unsetBlockStateAt(block);
+                    } else if(block instanceof BlockStoneBricks) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICKS);
+                    }  else if(block instanceof BlockStoneBrickSlab) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_SLAB.setPropertyValues(block.getProperties()));
+                    } else if(block instanceof BlockStoneBrickStairs) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_STAIRS.setPropertyValues(block.getProperties()));
+                    } else if(block instanceof BlockStoneBrickWall) {
+                        manager.setBlockStateAt(block, POLISHED_BLACKSTONE_WALL.setPropertyValues(block.getProperties()));
                     }
                 }
             }
