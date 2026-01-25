@@ -111,9 +111,9 @@ public class VanillaRecipeParser {
                 if (o instanceof Map<?, ?> map) {
                     result = asStringObjectMap(map, "result");
                 } else if (o instanceof List<?> list) {
-                    if (!list.isEmpty()) {
-                        result = asStringObjectMap(list.get(0), "result");
-                    }
+                     if (!list.isEmpty() && list.get(0) instanceof Map<?,?> map) {
+                         result = asStringObjectMap(map, "result");
+                     }
                 }
                 Registries.RECIPE.register(new ShapedRecipe(description(recipeData), prior, parseItem(result), shapes, ingredients, List.of()));
             } catch (AssertionError ignore) {
