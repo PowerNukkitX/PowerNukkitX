@@ -72,13 +72,13 @@ public class NKServiceManager implements ServiceManager {
 
         synchronized (handle) {
             Iterator<RegisteredServiceProvider<?>> it = handle.get(service).iterator();
-            RegisteredServiceProvider next;
+            RegisteredServiceProvider<?> next;
 
             while (it.hasNext() && result == null) {
                 next = it.next();
                 if (next.getProvider() == provider) {
                     it.remove();
-                    result = next;
+                    result = castProvider(service, next);
                 }
             }
 
@@ -92,7 +92,7 @@ public class NKServiceManager implements ServiceManager {
         synchronized (handle) {
             List<RegisteredServiceProvider<?>> list = handle.get(service);
             if (list == null || list.isEmpty()) return null;
-            return (RegisteredServiceProvider<T>) list.get(0);
+            return castProvider(service, list.get(0));
         }
     }
 
@@ -126,7 +126,7 @@ public class NKServiceManager implements ServiceManager {
                 return empty;
             }
             for (RegisteredServiceProvider<?> provider : registered) {
-                builder.add((RegisteredServiceProvider<T>)provider);
+                builder.add(castProvider(service, provider));
             }
         }
         return builder.build();
@@ -137,5 +137,14 @@ public class NKServiceManager implements ServiceManager {
         synchronized (handle) {
             return handle.containsKey(service);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> RegisteredServiceProvider<T> castProvider(Class<T> service, RegisteredServiceProvider<?> provider) {
+        Object value = provider.getProvider();
+        if (value != null && !service.isInstance(value)) {
+            throw new IllegalArgumentException("Service provider type mismatch for " + service.getName());
+        }
+        return (RegisteredServiceProvider<T>) provider;
     }
 }
