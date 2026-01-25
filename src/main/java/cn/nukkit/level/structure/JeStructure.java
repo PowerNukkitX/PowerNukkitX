@@ -6,6 +6,7 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.StructureMirror;
 import cn.nukkit.network.protocol.types.Rotation;
@@ -64,9 +65,24 @@ public class JeStructure extends AbstractStructure {
         Map<String, StructureBlocks> blockCache = new HashMap<>();
         List<BlockState> palette = new ArrayList<>();
         ListTag<CompoundTag> paletteNbt = nbt.getList("palette", CompoundTag.class);
-        if(paletteNbt.size() == 0) {
+        if (paletteNbt.size() == 0) {
             var palettesNbt = nbt.getList("palettes", ListTag.class);
-            paletteNbt = palettesNbt.get(0);
+            if (!palettesNbt.getAll().isEmpty() && palettesNbt.get(0) instanceof ListTag<?> listTag) {
+                boolean allCompound = true;
+                for (Tag tag : listTag.getAll()) {
+                    if (!(tag instanceof CompoundTag)) {
+                        allCompound = false;
+                        break;
+                    }
+                }
+                if (allCompound) {
+                    List<CompoundTag> compounds = new ArrayList<>();
+                    for (Tag tag : listTag.getAll()) {
+                        compounds.add((CompoundTag) tag);
+                    }
+                    paletteNbt = new ListTag<>(compounds);
+                }
+            }
         }
         if (paletteNbt.size() != 0) {
             for (CompoundTag blockStateNbt : paletteNbt.getAll()) {
