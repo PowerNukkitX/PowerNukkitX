@@ -3066,7 +3066,9 @@ public class Level implements Metadatable {
                 Tag tag = item.getNamedTagEntry("CanPlaceOn");
                 boolean canPlace = canChangeBlock;
                 if (tag instanceof ListTag<?> listTag) {
-                    for (Tag v : listTag.getAll()) {
+                    @SuppressWarnings("unchecked")
+                    List<? extends Tag> tags = (List<? extends Tag>) listTag.getAll();
+                    for (Tag v : tags) {
                         if (!(v instanceof StringTag stringTag)) {
                             continue;
                         }
