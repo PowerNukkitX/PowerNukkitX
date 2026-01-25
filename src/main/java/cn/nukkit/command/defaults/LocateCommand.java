@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
@@ -16,6 +17,8 @@ import java.util.Map;
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class LocateCommand extends VanillaCommand {
+    private static final int SEARCH_SPIRAL = 0;
+    private static final int SEARCH_X_AXIS = 1;
 
     public LocateCommand(String name) {
         super(name, "commands.locate.description");
@@ -49,47 +52,12 @@ public class LocateCommand extends VanillaCommand {
                     maxRadius = list.getResult(3);
                 }
 
-                int type = 0;
-                if(list.hasResult(4)) {
-                    type = switch (list.getResult(4).toString()) {
-                        case "xaxis" -> 1;
-                        default -> 0;
-                    };
-                }
-                if(type == 0) {
-                    int centerX = (int) pos.x;
-                    int centerZ = (int) pos.z;
+                int searchType = resolveSearchType(list);
 
-                    int x = 0, z = 0;
-                    int dx = 0, dz = -1;
-                    int maxSteps = (maxRadius * 2 + 1) * (maxRadius * 2 + 1);
-
-                    for (int step = 0; step < maxSteps; step++) {
-                        Vector3 check = new Vector3(centerX + (x << 4), pos.y, centerZ + (z << 4));
-                        if(pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
-                            found = check;
-                            break;
-                        }
-                        if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
-                            int tmp = dx;
-                            dx = -dz;
-                            dz = tmp;
-                        }
-
-                        x += dx;
-                        z += dz;
-                    }
-                } else if(type == 1) {
-                    u:
-                    for(int x = 0; x <= maxRadius; x++) {
-                        for(int i = 0; i < 2; i++) {
-                            Vector3 check = new Vector3(pos.getFloorX() + ((x * (i == 0 ? 1 : -1)) << 4), pos.y, pos.getFloorZ());
-                            if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
-                                found = check;
-                                break u;
-                            }
-                        }
-                    }
+                if (searchType == SEARCH_SPIRAL) {
+                    found = findBiomeSpiral(pos, biomeId, maxRadius);
+                } else if (searchType == SEARCH_X_AXIS) {
+                    found = findBiomePosition(pos, maxRadius, biomeId);
                 }
 
                 if(found != null) {
@@ -112,5 +80,63 @@ public class LocateCommand extends VanillaCommand {
         }
         log.output();
         return 1;
+    }
+
+    private int resolveSearchType(ParamList list) {
+        if (!list.hasResult(4)) {
+            return SEARCH_SPIRAL;
+        }
+
+        return "xaxis".equalsIgnoreCase(list.getResult(4).toString())
+                ? SEARCH_X_AXIS
+                : SEARCH_SPIRAL;
+    }
+
+    private Vector3 findBiomeSpiral(Position pos, int biomeId, int maxRadius) {
+        int centerX = pos.getFloorX();
+        int centerZ = pos.getFloorZ();
+
+        int x = 0, z = 0;
+        int dx = 0, dz = -1;
+
+        int diameter = maxRadius * 2 + 1;
+        int maxSteps = diameter * diameter;
+
+        for (int step = 0; step < maxSteps; step++) {
+            Vector3 check = new Vector3(centerX + (x << 4), pos.y, centerZ + (z << 4));
+
+            if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
+                return check;
+            }
+
+            if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
+                int tmp = dx;
+                dx = -dz;
+                dz = tmp;
+            }
+
+            x += dx;
+            z += dz;
+        }
+
+        return null;
+    }
+
+
+    private Vector3 findBiomePosition(Position pos, int maxRadius, int biomeId) {
+        for (int x = 0; x <= maxRadius; x++) {
+            int offset = x << 4;
+
+            for (int i = 0; i < 2; i++) {
+                int dx = (i == 0) ? offset : -offset;
+
+                Vector3 check = new Vector3(pos.getFloorX() + dx, pos.y, pos.getFloorZ());
+
+                if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
+                    return check;
+                }
+            }
+        }
+        return null;
     }
 }
