@@ -323,13 +323,13 @@ public class Utils {
             return existing;
         }
         try {
-            U toPut = clazz.newInstance();
+            U toPut = clazz.getDeclaredConstructor().newInstance();
             existing = map.putIfAbsent(key, toPut);
             if (existing == null) {
                 return toPut;
             }
             return existing;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | java.lang.reflect.InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
