@@ -95,7 +95,6 @@ public class BlockBambooSapling extends BlockSapling {
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
-
             boolean success = false;
             Block block = this.up();
             if (block.isAir()) {
