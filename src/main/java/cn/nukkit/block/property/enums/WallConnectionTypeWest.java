@@ -1,10 +1,10 @@
 package cn.nukkit.block.property.enums;
 
-import cn.nukkit.api.Internal;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Placeholder, to avoid generate this class repeatedly. Replace to use {@link WallConnectionType} uniformly
  */
-@Internal
+@ApiStatus.Internal
 public enum WallConnectionTypeWest {
 }
