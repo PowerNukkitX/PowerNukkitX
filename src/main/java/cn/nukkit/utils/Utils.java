@@ -329,7 +329,7 @@ public class Utils {
                 return toPut;
             }
             return existing;
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | java.lang.reflect.InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
