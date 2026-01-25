@@ -11,7 +11,7 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket> {
-    private static final int ADD_PLAYER_LEVELS_EVENT = 34;
+    private static final int ADD_PLAYER_LEVELS_EVENT = EntityEventPacket.DEPRECATED_ADD_PLAYER_LEVELS;
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EntityEventPacket pk) {
         Player player = playerHandle.player;
