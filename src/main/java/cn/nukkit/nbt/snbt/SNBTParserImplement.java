@@ -10,10 +10,7 @@ import cn.nukkit.nbt.snbt.ast.Root;
 import cn.nukkit.nbt.snbt.ast.Value;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,24 +88,6 @@ public class SNBTParserImplement implements SNBTConstants {
      */
     public SNBTParserImplement(Path path) throws IOException {
         this(path.toString(), path);
-    }
-
-    /**
-     * Use the constructor that takes a #java.nio.files.Path or just
-     * a String (i.e. CharSequence) directly.
-     */
-    @Deprecated
-    public SNBTParserImplement(InputStream stream) {
-        this(new InputStreamReader(stream));
-    }
-
-    /**
-     * Use the constructor that takes a #java.nio.files.Path or just
-     * a String (i.e. CharSequence) directly.
-     */
-    @Deprecated
-    public SNBTParserImplement(Reader reader) {
-        this(new SNBTLexer("input", reader));
     }
 
     /**

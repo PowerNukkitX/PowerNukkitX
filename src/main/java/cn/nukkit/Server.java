@@ -1570,6 +1570,15 @@ public class Server {
     }
 
     /**
+     * Get all unique player UUIDs that have connected to the server during the current uptime.
+     *
+     * @return Set of UUIDs
+     */
+    public Set<UUID> getUniquePlayers() {
+        return uniquePlayers;
+    }
+
+    /**
      * Get the player instance from the specified UUID.
      *
      * @param uuid uuid

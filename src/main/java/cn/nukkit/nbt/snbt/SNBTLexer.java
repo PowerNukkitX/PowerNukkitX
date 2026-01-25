@@ -129,34 +129,6 @@ public class SNBTLexer implements SNBTConstants {
         switchTo(lexState);
     }
 
-    /**
-     * Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
-     * depending on your use case
-     */
-    @Deprecated
-    public SNBTLexer(Reader reader) {
-        this("input", reader, LexicalState.SNBT, 1, 1);
-    }
-
-    /**
-     * Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
-     * depending on your use case
-     */
-    @Deprecated
-    public SNBTLexer(String inputSource, Reader reader) {
-        this(inputSource, reader, LexicalState.SNBT, 1, 1);
-    }
-
-    /**
-     * Preferably use the constructor that takes a #java.nio.files.Path or simply a String,
-     * depending on your use case
-     */
-    @Deprecated
-    public SNBTLexer(String inputSource, Reader reader, LexicalState lexState, int line, int column) {
-        this(inputSource, readToEnd(reader), lexState, line, column);
-        switchTo(lexState);
-    }
-
     private Token getNextToken() {
         InvalidToken invalidToken = null;
         Token token = nextToken();

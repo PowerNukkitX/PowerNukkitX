@@ -70,7 +70,11 @@ public class Utils {
 
         if (oldFile.isFile()) {
             if (olderFile.isFile()) {
-                Utils.copyFile(oldFile, olderFile);
+                try {
+                    Utils.copyFile(oldFile, olderFile);
+                } catch (IOException e) {
+                    log.error("Could not copy {} to {} during safeWrite rotation", oldFile.getAbsolutePath(), olderFile.getAbsolutePath(), e);
+                }
             } else if (!oldFile.renameTo(olderFile)) {
                 throw new IOException("Could not rename the " + oldFile + " to " + olderFile);
             }
@@ -155,24 +159,12 @@ public class Utils {
         if (from.isDirectory() || to.isDirectory()) {
             throw new FileNotFoundException();
         }
-        FileInputStream fi = null;
-        FileChannel in = null;
-        FileOutputStream fo = null;
-        FileChannel out = null;
-        try {
-            if (!to.exists()) {
-                to.createNewFile();
-            }
-            fi = new FileInputStream(from);
-            in = fi.getChannel();
-            fo = new FileOutputStream(to);
-            out = fo.getChannel();
+
+        try (FileInputStream fi = new FileInputStream(from);
+             FileOutputStream fo = new FileOutputStream(to);
+             FileChannel in = fi.getChannel();
+             FileChannel out = fo.getChannel()) {
             in.transferTo(0, in.size(), out);
-        } finally {
-            if (fi != null) fi.close();
-            if (in != null) in.close();
-            if (fo != null) fo.close();
-            if (out != null) out.close();
         }
     }
 
@@ -272,9 +264,16 @@ public class Utils {
     @SuppressWarnings("unchecked")
     public static <T> T[] concatArray(T[]... arrays) {
         ArrayList<T> list = new ArrayList<>();
-        for(T[] array : arrays) list.addAll(Arrays.asList(array));
+        for (T[] array : arrays) {
+            list.addAll(Arrays.asList(array));
+        }
+        if (list.isEmpty()) {
+            return (T[]) new Object[0];
+        }
         T[] output = (T[]) Array.newInstance(list.getFirst().getClass(), list.size());
-        for(int i = 0; i < list.size(); i++) output[i] = list.get(i);
+        for (int i = 0; i < list.size(); i++){
+            output[i] = list.get(i);
+        }
         return output;
     }
 
@@ -332,6 +331,19 @@ public class Utils {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static <T, U> U getOrCreate(Map<T, U> map, T key, java.util.function.Supplier<? extends U> supplier) {
+        U existing = map.get(key);
+        if (existing != null) {
+            return existing;
+        }
+        U toPut = supplier.get();
+        existing = map.putIfAbsent(key, toPut);
+        if (existing == null) {
+            return toPut;
+        }
+        return existing;
     }
 
     public static int toInt(Object number) {

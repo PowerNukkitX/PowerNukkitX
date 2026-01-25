@@ -204,6 +204,7 @@ public class Palette<V> {
         } else return false;
     }
 
+    @SuppressWarnings("unchecked")
     protected void addBlockPalette(ByteBuf byteBuf,
                                    RuntimeDataDeserializer<V> deserializer,
                                    NBTInputStream input) throws IOException {

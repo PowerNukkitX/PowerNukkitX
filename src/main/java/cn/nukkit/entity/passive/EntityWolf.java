@@ -207,7 +207,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                         new NearestPlayerSensor(8, 0, 20),
                         new NearestTargetEntitySensor<>(0, 20, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
-                                entity -> switch (entity.getIdentifier().toString()) {
+                                entity -> switch (entity.getIdentifier()) {
                                     case SKELETON, WITHER_SKELETON, STRAY -> true;
                                     default -> false;
                                 }),
