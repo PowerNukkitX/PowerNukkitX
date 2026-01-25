@@ -425,8 +425,9 @@ public class Int2ObjectNonBlockingMap<TypeV>
     /**
      * Auto-boxing version of {@link #remove(int)}.
      */
+    @Override
     public TypeV remove(Object key) {
-        return (key instanceof Integer) ? remove(key) : null;
+        return (key instanceof Integer k) ? remove(k.intValue()) : null;
     }
 
     /**
@@ -1224,59 +1225,35 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * interfaces, generified to the {@link Integer} class and supporting a
      * <strong>non-auto-boxing</strong> {@link #nextInt()} function.
      */
-    public class IteratorInteger implements Iterator<Integer>, Enumeration<Integer>, IntIterator {
+    public class IteratorInteger implements Enumeration<Integer>, IntIterator {
         private final SnapshotV _ss;
 
-        /**
-         * A new IteratorLong
-         */
-        public IteratorInteger() {
-            _ss = new SnapshotV();
-        }
+        public IteratorInteger() { _ss = new SnapshotV(); }
 
-        /**
-         * Remove last key returned by {@link #next} or {@link #nextInt()}.
-         */
-        public void remove() {
-            _ss.removeKey();
-        }
+        @Override
+        public void remove() { _ss.removeKey(); }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Integer next() {
-            _ss.next();
-            return _ss._prevK;
-        }
-
-        /**
-         * Return the next key as a primitive {@code int}.
-         */
+        // Primitive path (preferred)
+        @Override
         public int nextInt() {
             _ss.next();
             return _ss._prevK;
         }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
-        public boolean hasNext() {
-            return _ss.hasNext();
+        // Boxed Iterator path
+        @Override
+        public Integer next() {
+            return Integer.valueOf(nextInt());
         }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Integer nextElement() {
-            return next();
-        }
+        @Override
+        public boolean hasNext() { return _ss.hasNext(); }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
-        public boolean hasMoreElements() {
-            return hasNext();
-        }
+        @Override
+        public Integer nextElement() { return next(); }
+
+        @Override
+        public boolean hasMoreElements() { return hasNext(); }
     }
 
     /**

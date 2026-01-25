@@ -41,7 +41,7 @@ public class MesaFoliageFeature extends GenerateFeature {
                     Set<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags();
                     if(tags.contains(BiomeTags.STONE)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
-                        if (support.is(BlockTags.DIRT)) {
+                        if (support.hasTag(BlockTags.DIRT)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
                                 chunk.setBlockState(x, y, z, BlockLeafLitter.PROPERTIES.getBlockState(
                                         MINECRAFT_CARDINAL_DIRECTION.createValue(

@@ -1226,56 +1226,40 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * interfaces, generified to the {@link Long} class and supporting a
      * <strong>non-auto-boxing</strong> {@link #nextLong} function.
      */
-    public class IteratorLong implements Iterator<Long>, Enumeration<Long>, LongIterator {
+    public class IteratorLong implements Enumeration<Long>, LongIterator {
         private final SnapshotV _ss;
 
-        /**
-         * A new IteratorLong
-         */
         public IteratorLong() {
             _ss = new SnapshotV();
         }
 
-        /**
-         * Remove last key returned by {@link #next} or {@link #nextLong}.
-         */
+        @Override
         public void remove() {
             _ss.removeKey();
         }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Long next() {
-            _ss.next();
-            return _ss._prevK;
-        }
-
-        /**
-         * Return the next key as a primitive {@code long}.
-         */
+        @Override
         public long nextLong() {
             _ss.next();
             return _ss._prevK;
         }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
+        @Override
         public boolean hasNext() {
             return _ss.hasNext();
         }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Long nextElement() {
-            return next();
+        @Override
+        public Long next() {
+            return Long.valueOf(nextLong());
         }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
+        @Override
+        public Long nextElement() {
+            return Long.valueOf(nextLong());
+        }
+
+        @Override
         public boolean hasMoreElements() {
             return hasNext();
         }
