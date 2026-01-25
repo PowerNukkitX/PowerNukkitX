@@ -17,8 +17,6 @@ import java.util.function.Consumer;
 
 /**
  * Abstract class used to dynamically generate and send forms to players.
- *
- * @param <T> A response object
  */
 @Getter
 @Setter

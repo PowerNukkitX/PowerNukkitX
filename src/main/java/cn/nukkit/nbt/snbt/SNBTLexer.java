@@ -454,7 +454,7 @@ public class SNBTLexer implements SNBTConstants {
     }
 
     private void createLineOffsetsTable() {
-        if (content.length() == 0) {
+        if (content.isEmpty()) {
             this.lineOffsets = new int[0];
             return;
         }
@@ -490,7 +490,7 @@ public class SNBTLexer implements SNBTConstants {
     private static String mungeContent(CharSequence content, boolean preserveTabs, boolean preserveLines, boolean javaUnicodeEscape, boolean ensureFinalEndline) {
         if (preserveTabs && preserveLines && !javaUnicodeEscape) {
             if (ensureFinalEndline) {
-                if (content.length() == 0) {
+                if (content.isEmpty()) {
                     content = "\n";
                 } else {
                     int lastChar = content.charAt(content.length() - 1);
@@ -546,8 +546,7 @@ public class SNBTLexer implements SNBTConstants {
                     ++index;
                 }
             } else if (ch == '\t' && !preserveTabs) {
-                int spacesToAdd = DEFAULT_TAB_SIZE - col % DEFAULT_TAB_SIZE;
-                for (int i = 0; i < spacesToAdd; i++) {
+                for (int i = 0; i < DEFAULT_TAB_SIZE; i++) {
                     buf.append(' ');
                     col++;
                 }
@@ -558,7 +557,7 @@ public class SNBTLexer implements SNBTConstants {
             }
         }
         if (ensureFinalEndline) {
-            if (buf.length() == 0) {
+            if (buf.isEmpty()) {
                 return "\n";
             }
             char lastChar = buf.charAt(buf.length() - 1);

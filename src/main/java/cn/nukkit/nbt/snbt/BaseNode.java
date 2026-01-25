@@ -37,7 +37,7 @@ public class BaseNode implements Node {
      * to replace this with LinkedList or your own java.util.List implementation even.
      *
      * @param listClass the #java.util.List implementation to use internally
-     *                  for the child nodes. By default #java.util.ArrayList is used.
+     *                  for the child nodes. By default, #java.util.ArrayList is used.
      */
     static public void setListClass(Class<? extends List<?>> listClass) {
         BaseNode.listClass = listClass;
@@ -157,7 +157,7 @@ public class BaseNode implements Node {
         }
         if (namedChildMap.containsKey(name)) {
             // Can't have duplicates
-            String msg = String.format("Duplicate named child not allowed: {0}", name);
+            String msg = String.format("Duplicate named child not allowed: %s", name);
             throw new RuntimeException(msg);
         }
         namedChildMap.put(name, node);

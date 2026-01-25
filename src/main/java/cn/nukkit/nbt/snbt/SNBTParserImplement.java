@@ -1099,21 +1099,6 @@ public class SNBTParserImplement implements SNBTConstants {
         throw new ParseException(this, nextToken, EnumSet.of(expectedType), parsingStack);
     }
 
-    private class ParseState {
-        Token lastConsumed;
-        ArrayList<NonTerminalCall> parsingStack;
-        NodeScope nodeScope;
-
-        ParseState() {
-            this.lastConsumed = SNBTParserImplement.this.lastConsumedToken;
-            @SuppressWarnings("unchecked")
-            ArrayList<NonTerminalCall> parsingStack = (ArrayList<NonTerminalCall>) SNBTParserImplement.this.parsingStack.clone();
-            this.parsingStack = parsingStack;
-            this.nodeScope = currentNodeScope.clone();
-        }
-
-    }
-
     private boolean buildTree = true;
     private boolean tokensAreNodes = true;
     private boolean unparsedTokensAreNodes = false;
