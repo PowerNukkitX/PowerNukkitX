@@ -18,9 +18,23 @@ public abstract class DataPacketProcessor<T extends DataPacket> {
     public abstract int getPacketId();
 
     public final void handlePacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket pk) {
-        @SuppressWarnings("unchecked")
-        T typedPacket = (T) pk;
-        handle(playerHandle, typedPacket);
+        try {
+            @SuppressWarnings("unchecked")
+            T typedPacket = (T) pk;
+            handle(playerHandle, typedPacket);
+        } catch (ClassCastException e) {
+            StringBuilder message = new StringBuilder()
+                    .append("DataPacketProcessor mis-registration detected. ")
+                    .append("Processor=").append(getClass().getName())
+                    .append(", expectedPacketId=").append(getPacketId())
+                    .append(", actualPacketClass=").append(pk.getClass().getName());
+            try {
+                message.append(", actualPacketId=").append(pk.pid());
+            } catch (Throwable ignored) {
+                // Ignore if pid() is not available or fails; basic info is still useful.
+            }
+            throw new IllegalStateException(message.toString(), e);
+        }
     }
 
     public int getProtocol() {
