@@ -1226,11 +1226,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * interfaces, generified to the {@link Long} class and supporting a
      * <strong>non-auto-boxing</strong> {@link #nextLong} function.
      */
-    public class IteratorLong implements Enumeration<Long>, LongIterator {
-        private final SnapshotV _ss;
+    public static class IteratorLong implements Enumeration<Long>, LongIterator {
+        private final Long2ObjectNonBlockingMap<?>.SnapshotV _ss;
 
-        public IteratorLong() {
-            _ss = new SnapshotV();
+        public IteratorLong(Long2ObjectNonBlockingMap<?> map) {
+            _ss = map.new SnapshotV();
         }
 
         @Override
@@ -1273,11 +1273,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * @see #keySet()
      */
     public Enumeration<Long> keys() {
-        return new IteratorLong();
+        return new IteratorLong(this);
     }
 
     public IteratorLong fastKeyIterator() {
-        return new IteratorLong();
+        return new IteratorLong(this);
     }
 
     /**
@@ -1299,7 +1299,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
     public LongSet keySet() {
         return new AbstractLongSet() {
             public LongIterator iterator() {
-                return new IteratorLong();
+                return new IteratorLong(Long2ObjectNonBlockingMap.this);
             }
 
             public void clear() {

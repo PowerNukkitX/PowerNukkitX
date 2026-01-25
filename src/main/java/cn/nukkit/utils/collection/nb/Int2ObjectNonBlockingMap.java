@@ -1225,10 +1225,10 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * interfaces, generified to the {@link Integer} class and supporting a
      * <strong>non-auto-boxing</strong> {@link #nextInt()} function.
      */
-    public class IteratorInteger implements Enumeration<Integer>, IntIterator {
-        private final SnapshotV _ss;
+    public static class IteratorInteger implements Enumeration<Integer>, IntIterator {
+        private final Int2ObjectNonBlockingMap<?>.SnapshotV _ss;
 
-        public IteratorInteger() { _ss = new SnapshotV(); }
+        public IteratorInteger(Int2ObjectNonBlockingMap<?> map) { _ss = map.new SnapshotV(); }
 
         @Override
         public void remove() { _ss.removeKey(); }
@@ -1264,11 +1264,11 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * @see #keySet()
      */
     public Enumeration<Integer> keys() {
-        return new IteratorInteger();
+        return new IteratorInteger(this);
     }
 
     public IteratorInteger fastKeyIterator() {
-        return new IteratorInteger();
+        return new IteratorInteger(this);
     }
 
     /**
@@ -1306,7 +1306,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
             }
 
             public IteratorInteger iterator() {
-                return new IteratorInteger();
+                return new IteratorInteger(Int2ObjectNonBlockingMap.this);
             }
         };
     }

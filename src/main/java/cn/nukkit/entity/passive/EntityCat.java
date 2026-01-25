@@ -307,8 +307,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
      */
     @Override
     public boolean isBreedingItem(Item item) {
-        return Objects.equals(item.getId(), ItemID.SALMON) ||
-                Objects.equals(item.getId(), ItemID.COD);
+        return item.getId() == ItemID.SALMON ||
+                item.getId() == ItemID.COD;
     }
 
     /**
