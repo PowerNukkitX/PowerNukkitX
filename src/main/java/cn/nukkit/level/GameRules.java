@@ -91,7 +91,7 @@ public class GameRules {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
         }
-        ((Value<V>) gameRules.get(gameRule)).setValue(value, type);
+        gameRules.get(gameRule).setValueRaw(value, type);
         stale = true;
     }
 
@@ -240,6 +240,14 @@ public class GameRules {
                 throw new UnsupportedOperationException("Rule not of type " + type.name().toLowerCase(Locale.ENGLISH));
             }
             this.value = value;
+        }
+
+        @SuppressWarnings("unchecked")
+        private void setValueRaw(Object value, Type type) {
+            if (this.type != type) {
+                throw new UnsupportedOperationException("Rule not of type " + type.name().toLowerCase(Locale.ENGLISH));
+            }
+            this.value = (T) value;
         }
 
         public boolean isCanBeChanged() {
