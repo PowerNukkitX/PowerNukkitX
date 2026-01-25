@@ -42,7 +42,7 @@ public class Skin {
         String geoData;
         try (var stream = Skin.class.getClassLoader().getResourceAsStream("gamedata/skin_geometry.json");
              BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-            geoData = reader.lines().reduce("", (acc, line) -> acc + line + "\n");
+            geoData = reader.lines().collect(java.util.stream.Collectors.joining("\n", "", "\n"));
         } catch (IOException e) {
             geoData = "";
             log.error("Failed to load skin geometry data", e);
@@ -176,7 +176,7 @@ public class Skin {
             return;
         }
 
-        this.skinResourcePatch = "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
+        this.skinResourcePatch = convertLegacyGeometryName(geometryName);
     }
 
     public String getSkinResourcePatch() {
@@ -336,8 +336,10 @@ public class Skin {
     }
 
     public String getFullSkinId() {
-        if (fullSkinId == null) fullSkinId = skinId + (capeId != null ? capeId : "");
-        return fullSkinId;
+        if (this.fullSkinId == null) {
+            this.fullSkinId = skinId + (capeId != null ? capeId : "");
+        }
+        return this.fullSkinId;
     }
 
     public void setFullSkinId(String fullSkinId) {
@@ -348,7 +350,7 @@ public class Skin {
         if (this.persona && (this.playFabId == null || this.playFabId.isEmpty())) {
             try {
                 this.playFabId = this.skinId.split("-")[5];
-            } catch (Exception e) {
+            } catch (ArrayIndexOutOfBoundsException e) {
                 String fullSkinIdWithoutDashes = this.getFullSkinId().replace("-", "");
                 if (fullSkinIdWithoutDashes.length() > 16) {
                     this.playFabId = fullSkinIdWithoutDashes.substring(16);
