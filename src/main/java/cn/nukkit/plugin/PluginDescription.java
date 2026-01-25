@@ -1,11 +1,13 @@
 package cn.nukkit.plugin;
 
 import cn.nukkit.permission.Permission;
+import cn.nukkit.utils.MapParsingUtils;
 import cn.nukkit.utils.PluginException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Represents the metadata and configuration of a PowerNukkitX plugin as defined in its plugin.yml file.
@@ -59,6 +61,8 @@ public class PluginDescription {
     private List<Permission> permissions = new ArrayList<>();
 
     private List<String> features = new ArrayList<>();
+    private static final Function<String, RuntimeException> PLUGIN_ERROR =
+            field -> new PluginException("Invalid PluginDescription " + field);
 
     /**
      * Constructs a PluginDescription from a parsed plugin.yml map.
@@ -104,7 +108,7 @@ public class PluginDescription {
         }
 
         if (plugin.containsKey("commands")) {
-            this.commands = asStringObjectMap(plugin.get("commands"), "commands");
+            this.commands = MapParsingUtils.stringObjectMap(plugin.get("commands"), "commands", PLUGIN_ERROR);
         }
 
         if (plugin.containsKey("depend")) {
@@ -149,7 +153,7 @@ public class PluginDescription {
         }
 
         if (plugin.containsKey("permissions")) {
-            this.permissions = Permission.loadPermissions(asStringObjectMap(plugin.get("permissions"), "permissions"));
+            this.permissions = Permission.loadPermissions(MapParsingUtils.stringObjectMap(plugin.get("permissions"), "permissions", PLUGIN_ERROR));
         }
 
         if (plugin.containsKey("features")) {
@@ -361,17 +365,4 @@ public class PluginDescription {
      * @return a map with string keys and object values
      * @throws PluginException if the value is not a map with string keys
      */
-    private static Map<String, Object> asStringObjectMap(Object value, String field) {
-        if (!(value instanceof Map)) {
-            throw new PluginException("Invalid PluginDescription " + field);
-        }
-        Map<String, Object> map = new HashMap<>();
-        for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-            if (!(entry.getKey() instanceof String)) {
-                throw new PluginException("Invalid PluginDescription " + field);
-            }
-            map.put((String) entry.getKey(), entry.getValue());
-        }
-        return map;
-    }
 }
