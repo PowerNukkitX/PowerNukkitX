@@ -4537,8 +4537,8 @@ public class Level implements Metadatable {
         }
 
         //gcDeadChunks
-            for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
-                long index = entry.getKey();
+        for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
+            long index = entry.getKey();
             if (!this.unloadQueue.containsKey(index)) {
                 IChunk chunk = entry.getValue();
                 int X = chunk.getX();
