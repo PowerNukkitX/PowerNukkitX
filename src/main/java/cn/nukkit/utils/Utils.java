@@ -334,6 +334,19 @@ public class Utils {
         }
     }
 
+    public static <T, U> U getOrCreate(Map<T, U> map, T key, java.util.function.Supplier<? extends U> supplier) {
+        U existing = map.get(key);
+        if (existing != null) {
+            return existing;
+        }
+        U toPut = supplier.get();
+        existing = map.putIfAbsent(key, toPut);
+        if (existing == null) {
+            return toPut;
+        }
+        return existing;
+    }
+
     public static int toInt(Object number) {
         if (number instanceof Integer) {
             return (Integer) number;
