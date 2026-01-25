@@ -65,12 +65,12 @@ public class BlockBambooSapling extends BlockSapling {
                 BlockGrowEvent blockGrowEvent = new BlockGrowEvent(up, newState);
                 level.getServer().getPluginManager().callEvent(blockGrowEvent);
                 if (!blockGrowEvent.isCancelled()) {
-                    Block newState1 = blockGrowEvent.getNewState();
-                    newState1.y = up.y;
-                    newState1.x = x;
-                    newState1.z = z;
-                    newState1.level = level;
-                    newState1.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
+                    Block finalState = blockGrowEvent.getNewState();
+                    finalState.setLevel(this.level)
+                            .setX(this.x)
+                            .setY(up.y)
+                            .setZ(this.z);
+                    finalState.place(toItem(), up, this, BlockFace.DOWN, 0.5, 0.5, 0.5, null);
                 }
             }
             return type;
@@ -103,7 +103,7 @@ public class BlockBambooSapling extends BlockSapling {
             }
 
             if (success) {
-                if (player != null && (player.gamemode & 0x01) == 0) {
+                if (player != null && !player.isCreative()) {
                     item.count--;
                 }
 
@@ -117,10 +117,10 @@ public class BlockBambooSapling extends BlockSapling {
 
     public boolean grow(Block up) {
         BlockBamboo bamboo = new BlockBamboo();
-        bamboo.x = x;
-        bamboo.y = y;
-        bamboo.z = z;
-        bamboo.level = level;
+        bamboo.setLevel(this.level)
+                .setX(this.x)
+                .setY(this.y)
+                .setZ(this.z);
         return bamboo.grow(up);
     }
 
