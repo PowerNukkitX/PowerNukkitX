@@ -3453,9 +3453,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void save(boolean async) {
-        if (this.closed) {
-            throw new IllegalStateException("Tried to save closed player");
-        }
+        Preconditions.checkState(!this.closed, "Tried to save closed player");
 
         saveNBT();
 
@@ -3582,14 +3580,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 case LAVA:
                     message = "death.attack.lava";
 
-                    if (killer instanceof EntityProjectile) {
-                        Entity shooter = ((EntityProjectile) killer).shootingEntity;
+                    if (killer instanceof EntityProjectile projectile) {
+                        Entity shooter = projectile.shootingEntity;
                         if (shooter != null) {
                             killer = shooter;
                         }
                         if (killer instanceof EntityHuman) {
                             message += ".player";
-                            params.add(!Objects.equals(shooter.getNameTag(), "") ? shooter.getNameTag() : shooter.getName());
+                            params.add(this.killer.hasCustomName() ? this.killer.getNameTag() : this.killer.getName());
                         }
                     }
                     break;
