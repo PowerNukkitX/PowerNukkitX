@@ -182,64 +182,36 @@ public class SetupWizard implements AutoCloseable {
         }
 
         List<Map.Entry<String, String>> languageList = new ArrayList<>(availableLanguages.entrySet());
-        int selectedIndex = 0;
+        String defaultLanguage = languageList.isEmpty() ? "eng" : languageList.get(0).getKey();
 
-        notice("Use ↑/↓ arrow keys to navigate, Enter to select, or type language code:");
+        notice("Enter a language code from the list below (press Enter for default).");
+        for (Map.Entry<String, String> entry : languageList) {
+            terminal.writer().println("  [" + entry.getKey() + "] " + entry.getValue());
+        }
         terminal.writer().println();
 
         try {
             while (true) {
-                displayLanguageMenu(languageList, selectedIndex);
-
-                String input = reader.readLine("» Selection [" + languageList.get(selectedIndex).getKey() + "]: ").trim();
-
+                String input = reader.readLine("» Language code [" + defaultLanguage + "]: ").trim();
                 if (input.isEmpty()) {
-                    String selected = languageList.get(selectedIndex).getKey();
-                    accept("Language selected: " + selected + " (" + availableLanguages.get(selected) + ")");
+                    accept("Language selected: " + defaultLanguage + " (" + availableLanguages.get(defaultLanguage) + ")");
                     terminal.writer().println();
                     terminal.writer().flush();
-                    return selected;
+                    return defaultLanguage;
                 } else if (validateLanguage(input)) {
                     accept("Language selected: " + input + " (" + availableLanguages.get(input) + ")");
                     terminal.writer().println();
                     terminal.writer().flush();
                     return input;
                 } else {
-                    switch (input.toLowerCase()) {
-                        case "up", "u" -> {
-                            selectedIndex = (selectedIndex - 1 + languageList.size()) % languageList.size();
-                        }
-                        case "down", "d" -> {
-                            selectedIndex = (selectedIndex + 1) % languageList.size();
-                        }
-                        default -> {
-                            warn("Invalid input. Enter a language code, 'up'/'down' to navigate, or press Enter to select highlighted.");
-                            terminal.writer().flush();
-                        }
-                    }
+                    warn("Invalid input. Enter a valid language code from the list.");
+                    terminal.writer().flush();
                 }
             }
         } catch (Exception e) {
             log.error("Error reading language input", e);
             return "eng"; // Default to English on error
         }
-    }
-
-    /**
-     * Displays the language menu with the current selection highlighted.
-     */
-    private void displayLanguageMenu(List<Map.Entry<String, String>> languageList, int selectedIndex) {
-        terminal.writer().println("┌──────────────────────────────────────────────────────────┐");
-
-        for (int i = 0; i < languageList.size(); i++) {
-            Map.Entry<String, String> entry = languageList.get(i);
-            String marker = (i == selectedIndex) ? "►" : " ";
-            String highlight = (i == selectedIndex) ? "▶ " : "  ";
-            terminal.writer().println("│ " + marker + " [" + entry.getKey() + "] " + highlight + entry.getValue());
-        }
-
-        terminal.writer().println("└──────────────────────────────────────────────────────────┘");
-        terminal.writer().flush();
     }
 
     /**
@@ -829,6 +801,4 @@ public class SetupWizard implements AutoCloseable {
             }
         }
     }
-
-
 }

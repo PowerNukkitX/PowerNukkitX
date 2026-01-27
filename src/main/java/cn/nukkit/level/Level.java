@@ -1260,9 +1260,8 @@ public class Level implements Metadatable {
 
     private void checkWeather() {
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            for (var entry : playerWeatherShowMap.object2IntEntrySet()) {
-                int intValue = entry.getIntValue();
-                String key = entry.getKey();
+            for (String key : playerWeatherShowMap.keySet()) {
+                int intValue = playerWeatherShowMap.getInt(key);
                 if (intValue == 0) {
                     Player player = server.getPlayer(key);
                     if (player != null) {
@@ -2335,7 +2334,7 @@ public class Level implements Metadatable {
             var iter = blockLightQueue.iterator();
             while (iter.hasNext()) {
                 var entry = iter.next();
-                long index = entry.getKey();
+                long index = entry.getLongKey();
                 var blocks = entry.getValue();
 
                 if (blocks == null || blocks.isEmpty()) continue;
@@ -2535,6 +2534,9 @@ public class Level implements Metadatable {
                 this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
             }
             this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
+            if(blockPrevious instanceof CustomBlock && block.isAir()) { //hack: For some reason, we have to send the same packet twice if the previous block was custom and the new block is air.
+                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
+            }
         } else {
             addBlockChange(index, x, y, z);
         }
@@ -3063,8 +3065,10 @@ public class Level implements Metadatable {
             if (player.isAdventure()) {
                 Tag tag = item.getNamedTagEntry("CanPlaceOn");
                 boolean canPlace = canChangeBlock;
-                if (tag instanceof ListTag) {
-                    for (Tag v : ((ListTag<Tag>) tag).getAll()) {
+                if (tag instanceof ListTag<?> listTag) {
+                    @SuppressWarnings("unchecked")
+                    List<? extends Tag> tags = (List<? extends Tag>) listTag.getAll();
+                    for (Tag v : tags) {
                         if (!(v instanceof StringTag stringTag)) {
                             continue;
                         }
