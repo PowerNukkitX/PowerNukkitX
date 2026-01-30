@@ -223,7 +223,12 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     public void updateMovement() {
+        if (!this.isAlive() || this.isClosed()) return;
+
         super.updateMovement();
+
+        if (this.ticksLived < 5) return;
+
         try {
             if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
                 creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
