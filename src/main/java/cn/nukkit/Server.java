@@ -126,7 +126,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -3201,22 +3200,8 @@ public class Server {
 
     private static class ComputeThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         private static final AtomicInteger threadCount = new AtomicInteger(0);
-        @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
-
-        @SuppressWarnings("removal")
-        static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
-            for (var perm : perms)
-                permissions.add(perm);
-            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
-        }
-
-        @SuppressWarnings("removal")
         public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new ComputeThread(pool, threadCount), ACC);
+            return new ComputeThread(pool, threadCount);
         }
     }
 
