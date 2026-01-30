@@ -48,6 +48,7 @@ import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanSit, EntityCanAttack, EntityHealable, EntityVariant, EntityColor {
@@ -159,7 +160,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         );
     }
 
-    //猫咪身体大小来自Wiki https://minecraft.wiki/w/Cat
+    //Cat body sizes from Wiki https://minecraft.wiki/w/Cat
     @Override
     public float getWidth() {
         return this.isBaby() ? 0.24f : 0.48f;
@@ -170,8 +171,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         return this.isBaby() ? 0.28f : 0.56f;
     }
 
-    //攻击选择器
-    //流浪猫会攻击兔子,小海龟
+    //Attack Selectors
+    //Stray cats will attack rabbits and baby turtles
 
 
     @Override
@@ -184,7 +185,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     @Override
     public boolean onUpdate(int currentTick) {
-        //同步owner eid
+        // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
             if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
@@ -212,7 +213,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         }
     }
 
-    //猫咪有11种颜色变种
+    // Cats have 11 colour variants
     @Override
     public int[] getAllVariant() {
         return VARIANTS;
@@ -275,8 +276,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     }
 
-    //击杀猫会掉落0-2根线
-    //击杀小猫不会获得
+    // Killing cats yields 0-2 strands of thread
+    // Killing kittens yields nothing
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         if (!this.isBaby()) {
@@ -298,8 +299,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     }
 
     /**
-     * 绑定猫繁殖物品
-     * WIKI了解只能使用生鲑鱼与生鳕鱼才能繁殖
+     * Binding Cat Breeding Items
+     * WIKI notes that only raw salmon and raw cod may be used for breeding
      * <p>
      * Bound cat breeding items
      * WIKI understands that only raw salmon and raw cod can be used to breed
@@ -311,8 +312,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
     }
 
     /**
-     * 获得可以治疗猫的物品的治疗量
-     * WIKI了解只有生鲑鱼与生鳕鱼才能恢复猫咪血量恢复2
+     * The healing effect of items that can treat cats
+     * WIKI notes that only raw salmon and raw cod can restore a cat's health by 2 points
      * <p>
      * Obtain healing amount of items that can heal cats
      * WIKI understands that only raw salmon and raw cod can restore the cat's blood recovery 2

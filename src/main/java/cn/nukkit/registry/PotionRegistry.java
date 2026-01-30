@@ -2,11 +2,13 @@ package cn.nukkit.registry;
 
 import cn.nukkit.entity.effect.PotionType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 public class PotionRegistry implements IRegistry<String, PotionType, PotionType> {
     private static final Object2ObjectOpenHashMap<String, PotionType> REGISTRY = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectOpenHashMap<Integer, PotionType> ID_2_POTION = new Object2ObjectOpenHashMap<>();
@@ -106,7 +108,7 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
         try {
             register(value.stringId(), value);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            log.error("Error registering Block: ", e);
         }
     }
 }

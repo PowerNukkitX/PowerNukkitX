@@ -3,9 +3,11 @@ package cn.nukkit.registry;
 import cn.nukkit.blockentity.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Class<? extends BlockEntity>, Class<? extends BlockEntity>> {
     private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(35);
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
@@ -97,7 +99,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         try {
             register(key,value);
         } catch (RegisterException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to register BlockEntity: {}", key, e);
         }
     }
 }

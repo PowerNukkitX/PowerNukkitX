@@ -46,7 +46,7 @@ public class ForestRockFeature extends SurfaceGenerateFeature {
 
     @Override
     public boolean isSupportValid(Block support) {
-        return support.is(BlockTags.DIRT) &&
+        return support.hasTag(BlockTags.DIRT) &&
                 Registries.BIOME.get(support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ())).getTags().contains(BiomeTags.TAIGA);
     }
 

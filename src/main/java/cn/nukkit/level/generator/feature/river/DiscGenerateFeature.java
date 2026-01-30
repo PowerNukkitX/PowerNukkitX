@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.feature.river;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockGrassBlock;
 import cn.nukkit.block.BlockState;
@@ -9,11 +8,9 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
-import cn.nukkit.level.generator.Normal;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class DiscGenerateFeature extends CountGenerateFeature {
@@ -75,7 +72,7 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
                     if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
                         for (int y = sourceY - getRadiusY(); y <= sourceY + getRadiusY(); y++) {
                             for (BlockState replaceBlockState : getReplacementBlocks()) {
-                                if (object.getBlockIfCachedOrLoaded(x, y, z).equals(replaceBlockState)) {
+                                if (object.getBlockIfCachedOrLoaded(x, y, z).getBlockState().equals(replaceBlockState)) {
                                     object.setBlockStateAt(x, y, z, getSourceBlock());
                                 }
                             }

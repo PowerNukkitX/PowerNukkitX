@@ -40,6 +40,7 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestItemSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.data.EntityFlag;
@@ -161,7 +162,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                 ),
                 Set.of(new NearestFeedingPlayerSensor(16, 0), new NearestPlayerSensor(16, 0, 20), new NearestTargetEntitySensor<>(0, 16, 20,
                         List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY), entity -> (entity instanceof EntityMob mob && !(mob instanceof EntitySlime) && !(mob instanceof EntityMagmaCube) && !(mob instanceof EntityGhast) && !(mob instanceof EntityShulker) && !(mob instanceof EntityPhantom) && !(mob instanceof EntityEnderDragon)) || entity instanceof Player),
-                        new NearestItemSensor(16,0)),
+                        new PandaNearestItemSensor(16, 0)),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
@@ -344,9 +345,9 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
         }
     }
 
-    private class NearestItemSensor extends cn.nukkit.entity.ai.sensor.NearestItemSensor {
+    private static class PandaNearestItemSensor extends NearestItemSensor {
 
-        public NearestItemSensor(double range, double minRange) {
+        public PandaNearestItemSensor(double range, double minRange) {
             super(range, minRange);
         }
 

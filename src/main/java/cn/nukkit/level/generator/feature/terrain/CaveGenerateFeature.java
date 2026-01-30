@@ -172,7 +172,7 @@ public class CaveGenerateFeature extends GenerateFeature {
                     for (int yy = yTo + 1; (!waterFound) && (yy >= yFrom - 1); yy--) {
                         if (yy >= -64 && yy < caveMaxAltitude) {
                             BlockState block = chunk.getBlockState(xx, yy, zz);
-                            if (block.toBlock().is(BlockTags.WATER)) {
+                            if (block.toBlock().hasTag(BlockTags.WATER)) {
                                 waterFound = true;
                             }
                             if ((yy != yFrom - 1) && (xx != xFrom) && (xx != xTo - 1) && (zz != zFrom) && (zz != zTo - 1))
@@ -199,7 +199,7 @@ public class CaveGenerateFeature extends GenerateFeature {
                             if ((modY > -0.7D) && (modX * modX + modY * modY + modZ * modZ < 1.0D)) {
 
                                 Block material = chunk.getBlockState(xx, yy, zz).toBlock();
-                                if (material.is(BlockTags.GRASS)) {
+                                if (material.hasTag(BlockTags.GRASS)) {
                                     grassFound = true;
                                 }
                                 {
@@ -208,7 +208,7 @@ public class CaveGenerateFeature extends GenerateFeature {
                                     } else {
                                         chunk.setBlockState(xx, yy, zz, BlockAir.STATE);
 
-                                        if (grassFound && (chunk.getBlockState(xx, yy - 1, zz).toBlock().is(BlockTags.DIRT))) {
+                                        if (grassFound && (chunk.getBlockState(xx, yy - 1, zz).toBlock().hasTag(BlockTags.DIRT))) {
                                             BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(xx, yy-1, zz));
                                             BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceMaterial.get().topBlock);
                                             chunk.setBlockState(xx, yy - 1, zz, topBlock);

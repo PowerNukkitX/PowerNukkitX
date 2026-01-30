@@ -39,7 +39,7 @@ public class PinkPetalsFeature extends GenerateFeature {
                     int y = chunk.getHeightMap(x, z) + 1;
                     if(Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags().contains(BiomeTags.CHERRY_GROVE)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
-                        if (support.is(BlockTags.GRASS)) {
+                        if (support.hasTag(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
                                 chunk.setBlockState(x, y, z, BlockPinkPetals.PROPERTIES.getBlockState(
                                         MINECRAFT_CARDINAL_DIRECTION.createValue(

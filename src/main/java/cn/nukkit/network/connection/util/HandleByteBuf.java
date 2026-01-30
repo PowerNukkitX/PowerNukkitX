@@ -112,11 +112,13 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public final ByteOrder order() {
         return buf.order();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public ByteBuf order(ByteOrder endianness) {
         return buf.order(endianness);
     }
@@ -1510,7 +1512,8 @@ public class HandleByteBuf extends ByteBuf {
                 readEntityUniqueId(),
                 EntityLink.Type.values()[readByte()],
                 readBoolean(),
-                readBoolean()
+                readBoolean(),
+                readFloatLE()
         );
     }
 

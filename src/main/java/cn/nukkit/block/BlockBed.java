@@ -105,8 +105,8 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             head = this;
         } else {
             head = getSide(dir);
-            if (head.getId() != getId() || !((BlockBed) head).isHeadPiece() || !((BlockBed) head).getBlockFace().equals(dir)) {
-                if (player != null && !willExplode) {
+            if (!head.getId().equals(getId()) || !((BlockBed) head).isHeadPiece() || !((BlockBed) head).getBlockFace().equals(dir)) {
+                if (!willExplode) {
                     player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.notValid"));
                 }
 
@@ -142,7 +142,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
             return true;
         }
 
-        if (player == null || !player.hasEffect(EffectType.CONDUIT_POWER) && getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
+        if (!player.hasEffect(EffectType.CONDUIT_POWER) && getLevelBlockAtLayer(1) instanceof BlockFlowingWater) {
             return true;
         }
 
@@ -155,7 +155,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         }
 
         Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
-        if (!player.getSpawn().equals(spawn)) {
+        if (!player.getSpawn().first().equals(spawn)) {
             player.setSpawn(this, SpawnPointType.BLOCK);
         }
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));

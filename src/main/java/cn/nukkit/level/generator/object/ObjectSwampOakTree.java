@@ -38,7 +38,7 @@ public class ObjectSwampOakTree extends TreeGenerator {
         BlockVector3 down = position.down();
         Block block = level.getBlockIfCachedOrLoaded(down.x, down.y, down.z);
 
-        if (!block.is(BlockTags.DIRT)) {
+        if (!block.hasTag(BlockTags.DIRT)) {
             return false;
         }
 

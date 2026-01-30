@@ -34,7 +34,7 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
         JwtConsumer jwtConsumer = new JwtConsumerBuilder()
                 .setVerificationKey(identityPublicKey)
                 .setJwsAlgorithmConstraints(new AlgorithmConstraints(
-                        AlgorithmConstraints.ConstraintType.WHITELIST,
+                        AlgorithmConstraints.ConstraintType.PERMIT,
                         AlgorithmIdentifiers.ECDSA_USING_P384_CURVE_AND_SHA384))
                 .build();
 

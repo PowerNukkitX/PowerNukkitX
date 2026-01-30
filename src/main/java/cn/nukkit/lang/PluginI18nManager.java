@@ -77,7 +77,7 @@ public final class PluginI18nManager {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
-                    // 开始读取文件内容
+                    // Begin reading the file contents
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     i18n.reloadLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
@@ -87,7 +87,8 @@ public final class PluginI18nManager {
             }
             return count > 0;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to reload language files from plugin JAR", e);
+            return false;
         }
     }
 
@@ -136,7 +137,7 @@ public final class PluginI18nManager {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
-                    // 开始读取文件内容
+                    // Begin reading the file contents
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     pluginMultiLanguage.addLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);

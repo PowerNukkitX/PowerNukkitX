@@ -387,7 +387,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             try {
                 FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class)));
             } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
+                throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
             }
             ID2RID.put(key.id, key.rid);
             RID2ID.put(key.rid, key.id);
@@ -418,7 +418,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
             FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
         }
         ID2RID.put(key.id, key.rid);
         RID2ID.put(key.rid, key.id);
@@ -468,9 +468,9 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                 Registries.ITEM.registerSpawnEgg(eggId);
             }
         } catch (NoSuchMethodException e) {
-            throw new RegisterException(e);
+            throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new RegisterException(e);
         }
     }
 

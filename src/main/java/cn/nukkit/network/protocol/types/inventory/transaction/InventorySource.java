@@ -11,13 +11,13 @@ import org.jetbrains.annotations.NotNull;
 
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InventorySource {
+public class InventorySource {
     private static final InventorySource CREATIVE_SOURCE = new InventorySource(Type.CREATIVE, SpecialWindowId.NONE.getId(), Flag.NONE);
     private static final InventorySource GLOBAL_SOURCE = new InventorySource(Type.GLOBAL, SpecialWindowId.NONE.getId(), Flag.NONE);
     private static final InventorySource INVALID_SOURCE = new InventorySource(Type.INVALID, SpecialWindowId.NONE.getId(), Flag.NONE);
-    private final Type type;
-    private final int containerId;
-    private final Flag flag;
+    Type type;
+    int containerId;
+    Flag flag;
 
     public static InventorySource fromContainerWindowId(int containerId) {
         return new InventorySource(Type.CONTAINER, containerId, Flag.NONE);

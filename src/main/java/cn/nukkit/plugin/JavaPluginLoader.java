@@ -57,9 +57,9 @@ public class JavaPluginLoader implements PluginLoader {
                 }
 
                 try {
-                    Class<PluginBase> pluginClass = (Class<PluginBase>) javaClass.asSubclass(PluginBase.class);
+                    Class<? extends PluginBase> pluginClass = javaClass.asSubclass(PluginBase.class);
 
-                    plugin = pluginClass.newInstance();
+                    plugin = pluginClass.getDeclaredConstructor().newInstance();
                     this.initPlugin(plugin, classLoader, description, dataFolder, file);
 
                     return plugin;

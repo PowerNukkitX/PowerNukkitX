@@ -154,19 +154,19 @@ public class ObjectJungleTree extends TreeGenerator {
                                     BlockVector3 blockpos4 = pos2.north();
                                     BlockVector3 blockpos1 = pos2.south();
 
-                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos2.x, blockpos2.y, blockpos2.z).equals(Block.AIR)) {
+                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos2.x, blockpos2.y, blockpos2.z).getId().equals(Block.AIR)) {
                                         this.addHangingVine(level, blockpos2, 8);
                                     }
 
-                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos3.x, blockpos3.y, blockpos3.z).equals(Block.AIR)) {
+                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos3.x, blockpos3.y, blockpos3.z).getId().equals(Block.AIR)) {
                                         this.addHangingVine(level, blockpos3, 2);
                                     }
 
-                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos4.x, blockpos4.y, blockpos4.z).equals(Block.AIR)) {
+                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos4.x, blockpos4.y, blockpos4.z).getId().equals(Block.AIR)) {
                                         this.addHangingVine(level, blockpos4, 1);
                                     }
 
-                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos1.x, blockpos1.y, blockpos1.z).equals(Block.AIR)) {
+                                    if (rand.nextInt(4) == 0 && level.getBlockIfCachedOrLoaded(blockpos1.x, blockpos1.y, blockpos1.z).getId().equals(Block.AIR)) {
                                         this.addHangingVine(level, blockpos1, 4);
                                     }
                                 }

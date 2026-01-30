@@ -156,7 +156,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         Block down = this.down();
-        if (!ItemTags.getItemSet(ItemTags.SAND.toString()).contains(down.getId())
+        if (!ItemTags.getItemSet(ItemTags.SAND).contains(down.getId())
                 && !(down instanceof BlockCactus)) {
             return false;
         }

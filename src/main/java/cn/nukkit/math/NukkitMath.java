@@ -197,16 +197,6 @@ public class NukkitMath {
         return modInverse(value, 64);
     }
 
-    @Deprecated
-    public static long modInverseOld(long value, int bits) {
-        long x = ((((value << 1) ^ value) & 4) << 1) ^ value;
-        x += x - value * x * x;
-        x += x - value * x * x;
-        x += x - value * x * x;
-        x += x - value * x * x;
-        return mask(x, bits);
-    }
-
     public static long modInverse(long value, int bits) {
         long x = ((((value << 1) ^ value) & 4) << 1) ^ value;
         x *= 2 - value * x;

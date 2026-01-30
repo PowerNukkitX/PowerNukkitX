@@ -49,6 +49,6 @@ public class FireflyBushWaterClusterFeature extends GroupedDiscFeature {
 
     @Override
     public boolean isSupportValid(Block block) {
-        return block.is(BlockTags.DIRT) && BlockReeds.isSupportValid(block);
+        return block.hasTag(BlockTags.DIRT) && BlockReeds.isSupportValid(block);
     }
 }

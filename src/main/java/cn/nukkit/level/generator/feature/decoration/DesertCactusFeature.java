@@ -45,7 +45,7 @@ public class DesertCactusFeature extends CountGenerateFeature {
         } else if (range >= 11) {
             height = 2;
         }
-        if (chunk.getBlockState(x, y-1, z).toBlock().is(BlockTags.SAND)) {
+        if (chunk.getBlockState(x, y-1, z).toBlock().hasTag(BlockTags.SAND)) {
             Block pos = chunk.getBlockState(x, y, z).toBlock();
             pos.setX(x + (chunk.getX() << 4));
             pos.setZ(z + (chunk.getZ() << 4));
