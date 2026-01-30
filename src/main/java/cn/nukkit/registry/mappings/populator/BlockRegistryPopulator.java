@@ -18,6 +18,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,7 +79,7 @@ public final class BlockRegistryPopulator {
                 treeMapCompoundTag.putString("name", name);
                 final TreeMapCompoundTag stateTag = new TreeMapCompoundTag();
                 if (v.containsKey("bedrock_states")) {
-                    Map<String, Object> states = (Map<String, Object>) v.get("bedrock_states");
+                    Map<String, Object> states = asStringObjectMap(v.get("bedrock_states"));
                     states.forEach((key, value) -> {
                         final String valueString = value.toString();
                         if (valueString.equals("true") || valueString.equals("false")) {
@@ -113,6 +114,20 @@ public final class BlockRegistryPopulator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Map<String, Object> asStringObjectMap(Object value) {
+        if (!(value instanceof Map<?, ?> rawMap)) {
+            return Map.of();
+        }
+        Map<String, Object> result = new HashMap<>(rawMap.size());
+        for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+            Object key = entry.getKey();
+            if (key instanceof String name) {
+                result.put(name, entry.getValue());
+            }
+        }
+        return result;
     }
 
     public static final Set<String> experimentalBlocks = Set.of(

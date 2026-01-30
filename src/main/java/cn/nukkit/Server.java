@@ -206,7 +206,6 @@ public class Server {
     private LevelMetadataStore levelMetadata;
     private Network network;
     private int serverAuthoritativeMovementMode = 0;
-    private Boolean getAllowFlight = null;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -2643,7 +2642,7 @@ public class Server {
     }
 
     /**
-     * @return Whether to force the use of server resource pack while allowing the loading of client resource pack
+     * @return Whether to force the use of the server resource pack while allowing the loading of the client resource pack
      */
     public boolean getForceResourcesAllowOwnPacks() {
         return this.settings.gameplaySettings().allowClientPacks();
@@ -2781,7 +2780,7 @@ public class Server {
     }
 
     /**
-     * Remove all DynamicProperties on the world.
+     * Remove all DynamicProperties in the world.
      */
     public Server clearDynamicProperties() {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
@@ -2823,7 +2822,7 @@ public class Server {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -2833,7 +2832,7 @@ public class Server {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -2963,7 +2962,7 @@ public class Server {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @return the int value or defaultValue if not available.
@@ -2975,7 +2974,7 @@ public class Server {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
@@ -3192,7 +3191,7 @@ public class Server {
          * Creates a ForkJoinWorkerThread operating in the given pool.
          *
          * @param pool the pool this thread works in
-         * @throws NullPointerException if pool is null
+         * @throws NullPointerException if the pool is null
          */
         ComputeThread(ForkJoinPool pool, AtomicInteger threadCount) {
             super(pool);
