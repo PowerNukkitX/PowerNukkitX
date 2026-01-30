@@ -20,7 +20,7 @@ public class ClientboundCloseFormPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return ProtocolInfo.CHANGE_DIMENSION_PACKET;
+        return ProtocolInfo.CLIENTBOUND_CLOSE_FORM_PACKET;
     }
 
     @Override
