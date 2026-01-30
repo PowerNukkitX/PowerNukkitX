@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockState;
 
 public class SandGenerateFeature extends DiscGenerateFeature {
 
-    public static final String NAME = "minecraft:minecraft:overworld_surface_sand_feature"; //Who messed that up? Why is it minecraft:minecraft: ??
+    public static final String NAME = "minecraft:minecraft:overworld_surface_sand_feature";
 
     protected static final BlockState STATE = BlockSand.PROPERTIES.getDefaultState();
 
