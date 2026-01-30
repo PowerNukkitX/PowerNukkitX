@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.level.Sound;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,8 +20,8 @@ public class BlockWarpedFenceGate extends BlockFenceGate {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWarpedFenceGate(BlockState blockstate) {
-        super(blockstate);
+    public BlockWarpedFenceGate(BlockState blockState) {
+        super(blockState, BlockDefinitions.NON_FLAMMABLE_FENCE_GATE);
     }
 
     @Override
