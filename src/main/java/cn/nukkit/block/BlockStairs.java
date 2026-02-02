@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
@@ -18,8 +19,16 @@ import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockStairs extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .waterloggingLevel(1)
+            .build();
+
     public BlockStairs(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
+    }
+
+    public BlockStairs(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -112,11 +121,6 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
             ));
             default -> false;
         };
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     public void setUpsideDown(boolean upsideDown) {

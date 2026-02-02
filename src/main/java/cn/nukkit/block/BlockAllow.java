@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -9,13 +10,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockAllow extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(ALLOW);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(-1)
+            .resistance(18000000)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canHarvestWithHand(false)
+            .build();
 
     public BlockAllow() {
-        super(PROPERTIES.getDefaultState());
+        super(PROPERTIES.getDefaultState(), DEFINITION);
     }
 
     public BlockAllow(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
@@ -24,33 +32,8 @@ public class BlockAllow extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return -1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 18000000;
-    }
-
-    @Override
     public String getName() {
         return "Allow";
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override
