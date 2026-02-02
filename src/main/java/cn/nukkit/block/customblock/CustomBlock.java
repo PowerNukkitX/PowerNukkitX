@@ -60,13 +60,6 @@ public interface CustomBlock {
     Item toItem();
 
     /**
-     * 该方法设置自定义方块的定义
-     * <p>
-     * This method sets the definition of custom block
-     */
-    CustomBlockDefinition getDefinition();
-
-    /**
      * Plugins do not need {@code @Override}
      *
      * @return the block
@@ -83,9 +76,13 @@ public interface CustomBlock {
      * @return the break time
      */
     default double breakTime(@NotNull Item item, @Nullable Player player) {
-        var block = this.toBlock();
+        Block block = this.toBlock();
         double breakTime = block.calculateBreakTime(item, player);
-        var comp = this.getDefinition().nbt().getCompound("components");
+        CustomBlockDefinition definition = block.getCustomDefinition();
+        if (definition == null) {
+            return breakTime;
+        }
+        var comp = definition.nbt().getCompound("components");
         if (comp.containsCompound("minecraft:destructible_by_mining")) {
             var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {

@@ -60,7 +60,7 @@ public class ItemNode extends ParamNode<Item> {
         // Reject if it's an ItemBlock of a custom block marked as hidden
         if (item instanceof ItemBlock itemBlock) {
             Block block = itemBlock.getBlock();
-            if (block instanceof CustomBlock customBlock && CommandUtils.isHiddenInCommands(customBlock)) {
+            if (CommandUtils.isHiddenInCommands(block)) {
                 error();
                 return;
             }
