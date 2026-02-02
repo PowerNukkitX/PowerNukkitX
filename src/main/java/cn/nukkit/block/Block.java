@@ -1411,9 +1411,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public BlockDefinition getDefinition() {
-        if (this instanceof CustomBlock customBlock) {
-            return BlockRegistry.getCustomBlockDefinitionByIdStatic(customBlock.getId());
-        }
         return this.definition;
     }
 

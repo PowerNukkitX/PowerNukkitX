@@ -10,6 +10,7 @@ import cn.nukkit.block.copper.lantern.*;
 import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.shelf.*;
 import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
@@ -1324,10 +1325,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             }
 
             Block block = (Block) c.invoke((Object) null);
-            CustomBlockDefinition def = block.getCustomDefinition();
-
-            if (def == null) {
-                throw new RegisterException("The custom block class: %s returned a null CustomBlockDefinition!"
+            BlockDefinition bd = block.getDefinition();
+            if (!(bd instanceof CustomBlockDefinition def)) {
+                throw new RegisterException("The custom block class: %s must return a CustomBlockDefinition in the getDefinition() method!"
                         .formatted(value.getSimpleName()));
             }
 
