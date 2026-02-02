@@ -40,6 +40,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
             .toolTier(ItemTool.TIER_WOODEN)
             .burnChance(5)
             .burnAbility(20)
+            .waterloggingLevel(1)
             .build();
 
     @Override
@@ -68,11 +69,6 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     @Override
     public String getName() {
         return "Oak Fence Gate";
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     private static final double[] offMinX = new double[2];

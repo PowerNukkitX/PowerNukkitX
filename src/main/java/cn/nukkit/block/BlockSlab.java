@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 import cn.nukkit.item.Item;
@@ -15,6 +16,11 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockSlab extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .build();
+
     protected final BlockState doubleSlab;
 
     public BlockSlab(BlockState blockState, BlockState doubleSlab) {
@@ -48,11 +54,6 @@ public abstract class BlockSlab extends BlockTransparent {
     @Override
     public double getMaxY() {
         return isOnTop() ? this.y + 1 : this.y + 0.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
     }
 
     @Override

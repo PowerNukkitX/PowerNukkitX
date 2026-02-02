@@ -85,6 +85,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             .toolTier(0) //No tier required
             .toolType(ItemTool.TYPE_NONE)
             .walkThroughExtraCost(0)
+            .waterloggingLevel(0)
             .build();
 
     public static final Block[] EMPTY_ARRAY = new Block[0];
@@ -460,7 +461,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return the waterlogging level (0 if not waterlogged)
      */
     public int getWaterloggingLevel() {
-        return 0;
+        return this.definition.getWaterloggingLevel();
     }
 
     /**

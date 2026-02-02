@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -15,8 +16,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * The default is red flower, but there are other flower variants
  */
 public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     public BlockFlower(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockFlower(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     public static boolean isSupportValid(Block block) {
@@ -49,11 +58,6 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
         }
 
         return 0;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

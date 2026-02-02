@@ -38,6 +38,7 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
             .canBeActivated(false)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .waterloggingLevel(1)
             .build();
 
     private static final double THICKNESS = 3.0 / 16;
@@ -63,16 +64,6 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
     public BlockDoor(BlockState meta, BlockDefinition definition) {
         super(meta, definition);
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean isSolid(BlockFace side) {
-        return false;
     }
 
     @Override
