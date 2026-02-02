@@ -102,13 +102,13 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
                     (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
             setDirection(direction);
-            if (!this.getLevel().setBlock(block, this, true)) {
+            if (!this.getLevel().setBlock(block, this, false)) {
                 return false;
             }
         } else {
             BlockStandingBanner wall = (BlockStandingBanner) Block.get(BlockID.WALL_BANNER);
             wall.setBlockFace(face);
-            if (!this.getLevel().setBlock(block, wall, true)) {
+            if (!this.getLevel().setBlock(block, wall, false)) {
                 return false;
             }
         }
@@ -141,7 +141,6 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.down().getId() == BlockID.AIR) {
                 this.getLevel().useBreakOn(this);
-
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
