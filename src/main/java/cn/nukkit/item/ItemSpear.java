@@ -129,7 +129,7 @@ public abstract class ItemSpear extends ItemTool {
         float playerSpeed = player.getMovementSpeed();
 
         if (playerSpeed < minimumSpeed) {
-            return false;
+            return true;
         }
 
         Level level = player.getLevel();
@@ -161,6 +161,6 @@ public abstract class ItemSpear extends ItemTool {
 
         level.addSound(player.getPosition(), Sound.ITEM_SPEAR_USE);
 
-        return false;
+        return true;
     }
 }
