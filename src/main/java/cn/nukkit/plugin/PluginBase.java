@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Locale;
 
 /**
@@ -201,7 +202,7 @@ public abstract class PluginBase implements Plugin {
         try {
             return this.getClass().getModule().getResourceAsStream(filename);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -276,7 +277,7 @@ public abstract class PluginBase implements Plugin {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

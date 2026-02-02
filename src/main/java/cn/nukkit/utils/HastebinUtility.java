@@ -45,7 +45,7 @@ public class HastebinUtility {
         if (matcher.matches()) {
             return "https://hastebin.com/" + matcher.group(1);
         } else {
-            throw new RuntimeException("Couldn't read response!");
+            throw new IllegalStateException("Couldn't read response!");
         }
     }
 

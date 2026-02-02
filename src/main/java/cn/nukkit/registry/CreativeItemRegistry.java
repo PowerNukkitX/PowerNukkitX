@@ -14,6 +14,7 @@ import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -120,7 +121,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 ITEM_DATA.add(new CreativeItemData(item, groupIndex));
                 register(i, item);
             }
-        } catch (IOException | RegisterException e) {
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
     }

@@ -18,6 +18,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -112,7 +113,7 @@ public final class BlockRegistryPopulator {
             MAP2.trim();
             return BlockMappings.builder().mapping1(MAP1).mapping2(MAP2).build();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

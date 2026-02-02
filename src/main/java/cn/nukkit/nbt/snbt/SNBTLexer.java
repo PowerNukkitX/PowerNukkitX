@@ -3,6 +3,7 @@ package cn.nukkit.nbt.snbt;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -626,7 +627,7 @@ public class SNBTLexer implements SNBTConstants {
         try {
             return readFully(reader);
         } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
+            throw new UncheckedIOException(ioe);
         }
     }
 

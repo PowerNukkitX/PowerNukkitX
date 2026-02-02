@@ -158,7 +158,7 @@ public class BaseNode implements Node {
         if (namedChildMap.containsKey(name)) {
             // Can't have duplicates
             String msg = String.format("Duplicate named child not allowed: %s", name);
-            throw new RuntimeException(msg);
+            throw new IllegalStateException(msg);
         }
         namedChildMap.put(name, node);
     }

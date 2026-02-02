@@ -119,6 +119,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -620,7 +621,7 @@ public class Server {
 
     private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
-        if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
+        Preconditions.checkState(file.isDirectory(), "worlds isn't directory");
         //load all world from `worlds` folder
         for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
             LevelConfig levelConfig = getLevelConfig(f.getName());
@@ -1826,7 +1827,7 @@ public class Server {
             buffer.putLong(uuid.getLeastSignificantBits());
             playerDataDB.put(buffer.array(), bytes);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

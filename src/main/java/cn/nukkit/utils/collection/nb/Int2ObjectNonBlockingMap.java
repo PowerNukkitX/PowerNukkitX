@@ -846,7 +846,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
             if ((int) len != len) {
                 log2 = 30;
                 len = (1L << log2) + 2;
-                if (sz > ((len >> 2) + (len >> 1))) throw new RuntimeException("Table is full.");
+                if (sz > ((len >> 2) + (len >> 1))) throw new IllegalStateException("Table is full.");
             }
 
             // Now limit the number of threads actually allocating memory to a

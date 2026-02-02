@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -77,7 +78,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
         try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/proxypass/runtime_item_states.json")){
             if (stream == null) {
-                throw new RuntimeException("Failed to load runtime_item_states.json");
+                throw new IllegalStateException("Failed to load runtime_item_states.json");
             }
 
             JsonArray items = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
@@ -88,7 +89,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             }
             trim();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

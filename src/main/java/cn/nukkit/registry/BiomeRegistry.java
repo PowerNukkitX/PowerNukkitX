@@ -18,6 +18,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biome_definitions.nbt")) {
@@ -60,7 +61,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
