@@ -1,9 +1,8 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.definition.BlockDefinitions;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockWarpedFence extends BlockFence {
+public class BlockWarpedFence extends BlockFenceNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FENCE);
 
     @Override
@@ -16,7 +15,7 @@ public class BlockWarpedFence extends BlockFence {
     }
 
     public BlockWarpedFence(BlockState blockState) {
-        super(blockState, BlockDefinitions.NON_FLAMMABLE_FENCE);
+        super(blockState);
     }
 
     @Override

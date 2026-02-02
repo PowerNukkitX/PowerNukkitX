@@ -5,7 +5,6 @@ import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.customblock.CustomBlockDefinition.BlockTickSettings;
 import cn.nukkit.block.definition.BlockDefinition;
-import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.type.BlockPropertyType;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -49,6 +48,45 @@ import java.util.function.Predicate;
  */
 @Slf4j
 public abstract class Block extends Position implements Metadatable, AxisAlignedBB, BlockID {
+    public static final BlockDefinition DEFAULT_DEFINITION = BlockDefinition.builder()
+            .breaksWhenMoved(false)
+            .burnAbility(0)
+            .burnChance(0)
+            .canBeActivated(false)
+            .canBeClimbed(false)
+            .canBeFlowedInto(false)
+            .canBePlaced(true)
+            .canBePulled(true)
+            .canBePushed(true)
+            .canBeReplaced(false)
+            .canHarvestWithHand(true)
+            .canStickBlocks(false)
+            .canPassThrough(false)
+            .canSilkTouch(false)
+            .diffusesSkyLight(false)
+            .dropExp(0)
+            .friction(Block.DEFAULT_FRICTION_FACTOR)
+            .hardness(10)
+            .hasComparatorInputOverride(false)
+            .hasEntityCollision(false)
+            .hasEntityStepSensor(false)
+            .isFertilizable(false)
+            .isPowerSource(false)
+            .lightDampening(0)
+            .passableFrictionFactor(Block.DEFAULT_AIR_FLUID_FRICTION)
+            .isSolid(true)
+            .isSoulSpeedCompatible(false)
+            .isTransparent(false)
+            .lavaResistant(false)
+            .resistance(1)
+            .maxStackSize(64)
+            .sticksToPiston(true)
+            .tickRate(10)
+            .toolTier(0) //No tier required
+            .toolType(ItemTool.TYPE_NONE)
+            .walkThroughExtraCost(0)
+            .build();
+
     public static final Block[] EMPTY_ARRAY = new Block[0];
     public static final double DEFAULT_FRICTION_FACTOR = 0.4;
     public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
@@ -59,7 +97,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     protected BlockColor color;
 
     public Block(@Nullable BlockState blockState) {
-        this(blockState, BlockDefinitions.DEFAULT);
+        this(blockState, DEFAULT_DEFINITION);
     }
 
     public Block(@Nullable BlockState blockState, @Nullable BlockDefinition definition) {
@@ -73,7 +111,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (definition != null) {
             this.definition = definition;
         } else {
-            this.definition = BlockDefinitions.DEFAULT;
+            this.definition = DEFAULT_DEFINITION;
         }
     }
 

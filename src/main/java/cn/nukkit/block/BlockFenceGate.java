@@ -3,11 +3,11 @@ package cn.nukkit.block;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.block.definition.BlockDefinition;
-import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
@@ -32,6 +32,15 @@ import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
  */
 public class BlockFenceGate extends BlockTransparent implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FENCE_GATE, IN_WALL_BIT, MINECRAFT_CARDINAL_DIRECTION, OPEN_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(15)
+            .canBeActivated(true)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -49,7 +58,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
     }
 
     public BlockFenceGate(BlockState blockState) {
-        this(blockState, BlockDefinitions.FENCE_GATE);
+        this(blockState, DEFINITION);
     }
 
     public BlockFenceGate(BlockState blockState, BlockDefinition blockDefinition) {

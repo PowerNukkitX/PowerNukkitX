@@ -1,15 +1,22 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.definition.BlockDefinitions;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockIronDoor extends BlockDoor {
     public static final BlockProperties PROPERTIES = new BlockProperties(IRON_DOOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT, CommonBlockProperties.DOOR_HINGE_BIT);
+    public static final BlockDefinition DEFINITION = BlockDoor.DEFINITION.toBuilder()
+            .hardness(5)
+            .resistance(25)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +28,7 @@ public class BlockIronDoor extends BlockDoor {
     }
 
     public BlockIronDoor(BlockState blockstate) {
-        super(blockstate, BlockDefinitions.IRON_DOOR);
+        super(blockstate, DEFINITION);
     }
 
     @Override

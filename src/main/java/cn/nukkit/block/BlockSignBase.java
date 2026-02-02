@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.definition.BlockDefinitions;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.event.block.SignColorChangeEvent;
@@ -12,6 +12,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemGlowInkSac;
 import cn.nukkit.item.ItemHoneycomb;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.particle.WaxOnParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
@@ -27,8 +28,18 @@ import java.util.Objects;
 
 
 public abstract class BlockSignBase extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1)
+            .resistance(5)
+            .isSolid(false)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .breaksWhenMoved(true)
+            .canBeActivated(true)
+            .build();
+
     public BlockSignBase(BlockState blockState) {
-        super(blockState, BlockDefinitions.SIGN);
+        super(blockState, DEFINITION);
     }
 
     @Override
