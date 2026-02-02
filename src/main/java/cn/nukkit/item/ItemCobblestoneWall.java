@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemCobblestoneWall extends Item {
+import cn.nukkit.block.BlockCobblestoneWall;
+
+public class ItemCobblestoneWall extends ItemBlock {
     public ItemCobblestoneWall() {
-        super(COBBLESTONE_WALL);
+        super(new BlockCobblestoneWall());
     }
 }
