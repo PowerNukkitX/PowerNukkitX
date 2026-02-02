@@ -12,7 +12,6 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.plugin.PluginManager;
 import lombok.Getter;
 
 public abstract class ItemSpear extends ItemTool {
@@ -30,67 +29,70 @@ public abstract class ItemSpear extends ItemTool {
     }
 
     public void onSpearStab(Player player, float movementSpeed) {
-        if (!player.isItemCoolDownEnd(this.getIdentifier())) {
-            return;
-        }
+        if (!player.isItemCoolDownEnd(this.getIdentifier())) return;
+
         player.setItemCoolDown(20, this.getIdentifier());
 
         PlayerSpearStabEvent event = new PlayerSpearStabEvent(player, this, movementSpeed);
-        PluginManager pluginManager = player.getServer().getPluginManager();
+        player.getServer().getPluginManager().callEvent(event);
 
-        pluginManager.callEvent(event);
+        if (event.isCancelled()) return;
 
-        if (!event.isCancelled()){
-            if (movementSpeed >= getMinimumSpeed() && player.isSprinting()) {
-                applyLunge(player);
-                Level level = player.getLevel();
-                Location playerLoc = player.getLocation();
-                Vector3 direction = player.getDirectionVector().normalize();
+        if (movementSpeed < getMinimumSpeed() || !player.isSprinting()) {
+            player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
+            return;
+        }
 
-                double maxDistance = 5.0;
-                double bestScore = -1;
-                double minDot = 0.866;
-                Entity targetEntity = null;
+        applyLunge(player);
 
-                AxisAlignedBB bb = player.getBoundingBox().grow(maxDistance, maxDistance, maxDistance);
+        Level level = player.getLevel();
+        Location loc = player.getLocation();
 
-                Vector3 eyePos = playerLoc.add(0, player.getEyeHeight(), 0);
+        Vector3 eyePos = loc.add(0, player.getEyeHeight(), 0);
+        Vector3 direction = player.getDirectionVector().normalize();
 
-                for (Entity entity : level.getNearbyEntities(bb, player)) {
-                    if (!(entity instanceof EntityLiving living) || !living.isAlive()) continue;
+        double maxDistance = 5.0;
+        double minDot = 0.866;
+        double bestScore = -1;
 
-                    Vector3 targetPos = entity.getPosition().add(0, entity.getEyeHeight() / 2, 0);
-                    double distance = eyePos.distance(targetPos);
-                    if (distance > maxDistance) continue;
+        Entity target = null;
 
-                    Vector3 toEntity = targetPos.subtract(eyePos).normalize();
+        AxisAlignedBB searchBox = player.getBoundingBox().grow(maxDistance, maxDistance, maxDistance);
 
-                    double dot = direction.dot(toEntity);
-                    if (dot < minDot) continue;
+        for (Entity entity : level.getNearbyEntities(searchBox, player)) {
+            if (!(entity instanceof EntityLiving living) || !living.isAlive()) continue;
 
-                    double score = dot - (distance / maxDistance) * 0.1;
+            Vector3 targetPos = entity.getPosition().add(0, living.getEyeHeight() * 0.5, 0);
 
-                    if (score > bestScore) {
-                        bestScore = score;
-                        targetEntity = entity;
-                    }
-                }
+            double distance = eyePos.distance(targetPos);
+            if (distance > maxDistance) continue;
 
-                if (targetEntity != null) {
-                    EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(
-                            player,
-                            targetEntity,
-                            EntityDamageEvent.DamageCause.ENTITY_ATTACK,
-                            getJabDamage()
-                    );
+            Vector3 toEntity = targetPos.subtract(eyePos).normalize();
+            double dot = direction.dot(toEntity);
 
-                    targetEntity.attack(damageEvent);
-                    level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_HIT);
-                } else level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
-            } else player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
+            if (dot < minDot) continue;
+
+            double score = dot - (distance / maxDistance) * 0.1;
+            if (score <= bestScore) continue;
+
+            bestScore = score;
+            target = entity;
+        }
+
+        if (target != null) {
+            EntityDamageByEntityEvent damageEvent = new EntityDamageByEntityEvent(
+                    player,
+                    target,
+                    EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                    getJabDamage()
+            );
+
+            target.attack(damageEvent);
+            level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_HIT);
+        } else {
+            level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
         }
     }
-
 
     public float getJabDamage() {
         float damage = getAttackDamage();
@@ -107,13 +109,17 @@ public abstract class ItemSpear extends ItemTool {
         if (level > 0) {
             Vector3 dir = player.getDirectionVector().multiply(0.8 + (level * 0.4));
             player.setMotion(player.getMotion().add(dir));
-
-            player.getFoodData().setFood(Math.max(0, player.getFoodData().getFood() - level));
+            player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
         }
     }
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
+    }
+
+    @Override
+    public boolean onUse(Player player, int ticksUsed) {
         float playerSpeed = player.getMovementSpeed();
 
         if (playerSpeed < minimumSpeed) {
@@ -134,9 +140,7 @@ public abstract class ItemSpear extends ItemTool {
                 continue;
             }
 
-            float finalDamage = (float) (
-                    damage + (playerSpeed * 3.0)
-            );
+            float finalDamage = (float) (damage + (playerSpeed * 3.0));
 
             EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(
                     player,

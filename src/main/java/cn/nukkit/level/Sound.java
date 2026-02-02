@@ -436,6 +436,7 @@ public enum Sound {
     ITEM_SPEAR_ATTACK_HIT("item.spear.attack_hit"),
     ITEM_SPEAR_ATTACK_MISS("item.spear.attack_miss"),
     ITEM_SPEAR_HIT("item.spear.hit"),
+    ITEM_SPEAR_LUNGE("item.spear.lunge"),
     ITEM_SPEAR_USE("item.spear.use"),
     ITEM_SPYGLASS_STOP_USING("item.spyglass.stop_using"),
     ITEM_SPYGLASS_USE("item.spyglass.use"),
