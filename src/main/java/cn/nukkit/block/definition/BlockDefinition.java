@@ -1,9 +1,9 @@
 package cn.nukkit.block.definition;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @Getter
 public class BlockDefinition {
     boolean canHarvestWithHand;
@@ -35,13 +35,14 @@ public class BlockDefinition {
     int tickRate;
     int toolType;
     int walkThroughExtraCost;
-    int lightLevel;
+    int lightDampening;
+    int lightEmission;
     int toolTier;
     int dropExp;
     int maxStackSize;
 
     double hardness;
     double resistance;
-    double frictionFactor;
+    double friction;
     double passableFrictionFactor;
 }

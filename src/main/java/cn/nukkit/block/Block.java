@@ -776,14 +776,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * Checks if the block can be destroyed by mining with a specific item.
      */
     public boolean canBeMinedWith(Item item) {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag mining = def.getComponents().getCompound("minecraft:destructible_by_mining");
-            if (mining != null && mining.contains("value")) {
-                float secondsToDestroy = mining.getFloat("value");
-                return secondsToDestroy != -1f;
-            }
-        }
         return this.getHardness() != -1;
     }
 
@@ -791,12 +783,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * Checks if the block can be destroyed by explosions.
      */
     public boolean canBeExploded() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag resistance = def.getComponents().getCompound("minecraft:destructible_by_explosion");
-            int resistanceValue = resistance.getInt("explosion_resistance");
-            return resistanceValue != -1;
-        }
         return this.getResistance() != -1;
     }
 
@@ -1366,14 +1352,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return Light absorbed by the block 0-15
      */
     public int getLightFilter() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag light = def.getComponents().getCompound("minecraft:light_dampening");
-            if (light != null && light.contains("lightLevel")) {
-                return light.getByte("lightLevel");
-            }
-        }
-        return isSolid() && !isTransparent() ? 15 : 1;
+        int lightLevel = this.definition.getLightDampening();
+        return lightLevel != 0 ? lightLevel : isSolid() && !isTransparent() ? 15 : 1;
     }
 
     public final boolean canRandomTick() {
@@ -1430,12 +1410,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
     }
 
-    @Nullable
-    public CustomBlockDefinition getCustomDefinition() {
+    public BlockDefinition getDefinition() {
         if (this instanceof CustomBlock customBlock) {
             return BlockRegistry.getCustomBlockDefinitionByIdStatic(customBlock.getId());
         }
-        return null;
+        return this.definition;
+    }
+
+    @Nullable
+    public CustomBlockDefinition getCustomDefinition() {
+        return (this instanceof CustomBlock customBlock)
+                ? BlockRegistry.getCustomBlockDefinitionByIdStatic(customBlock.getId())
+                : null;
     }
 
     @Override
@@ -1482,12 +1468,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * Defines the block explosion resistance
      */
     public double getResistance() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            return def.getComponents()
-                    .getCompound("minecraft:destructible_by_explosion")
-                    .getInt("explosion_resistance");
-        }
         return definition.getResistance();
     }
 
@@ -1520,15 +1500,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * The friction, which is used to control the speed that player / entity movement on the block.The larger the value, the faster the movement.
      */
     public double getFrictionFactor() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag comp = def.getComponents().getCompound("minecraft:friction");
-            if (comp != null && comp.contains("value")) {
-                return comp.getFloat("value");
-            }
-        }
-
-        return definition.getFrictionFactor();
+        return definition.getFriction();
     }
 
     /**
@@ -1555,15 +1527,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return Luminance Level (0 - 15)
      */
     public int getLightLevel() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag light = def.getComponents().getCompound("minecraft:light_emission");
-            if (light != null && light.contains("emission")) {
-                return light.getByte("emission");
-            }
-        }
-
-        return definition.getLightLevel();
+        return definition.getLightEmission();
     }
 
     public boolean canBePlaced() {
@@ -1612,16 +1576,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * instead of overriding this method, so it is correctly saved in NBT and synced with client.
      */
     public boolean canBeActivated() {
-        CustomBlockDefinition def = getCustomDefinition();
-        if (def != null) {
-            CompoundTag components = def.getComponents();
-            if (components != null && components.contains("minecraft:custom_components")) {
-                CompoundTag custom = components.getCompound("minecraft:custom_components");
-                if (custom.contains("hasPlayerInteract")) {
-                    return custom.getByte("hasPlayerInteract") != 0;
-                }
-            }
-        }
         return definition.isCanBeActivated();
     }
 
@@ -1635,8 +1589,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * For custom blocks, can be set this by using the builder (isStepSensor).
      */
     public boolean hasEntityStepSensor() {
-        CustomBlockDefinition def = getCustomDefinition();
-        return (def != null && def.isStepSensor()) || definition.isHasEntityStepSensor();
+        return definition.isHasEntityStepSensor();
     }
 
     public boolean canPassThrough() {
