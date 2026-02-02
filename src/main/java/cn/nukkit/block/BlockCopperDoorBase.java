@@ -1,9 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.definition.BlockDefinitions;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
@@ -11,14 +12,20 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public abstract class BlockCopperDoorBase extends BlockDoor implements Oxidizable, Waxable {
+     public static final BlockDefinition DEFINITION = BlockDoor.DEFINITION.toBuilder()
+            .hardness(3)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_STONE)
+            .build();
 
     public BlockCopperDoorBase(BlockState blockState) {
-        super(blockState, BlockDefinitions.COPPER_DOOR);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(player.isSneaking()) {
+        if (player != null && player.isSneaking()) {
             return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                     || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
         }

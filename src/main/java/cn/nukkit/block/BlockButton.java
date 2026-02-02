@@ -23,6 +23,14 @@ import javax.annotation.Nullable;
  */
 
 public abstract class BlockButton extends BlockFlowable implements RedstoneComponent, Faceable {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .resistance(2.5)
+            .hardness(0.5)
+            .canBeFlowedInto(false)
+            .canBeActivated(true)
+            .isPowerSource(true)
+            .build();
+
     public BlockButton(BlockState meta) {
         super(meta);
     }

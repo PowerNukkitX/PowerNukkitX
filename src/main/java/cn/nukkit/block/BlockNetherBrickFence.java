@@ -1,10 +1,17 @@
 package cn.nukkit.block;
 
-import cn.nukkit.block.definition.BlockDefinitions;
+import cn.nukkit.block.definition.BlockDefinition;
+import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockNetherBrickFence extends BlockFence {
+public class BlockNetherBrickFence extends BlockFenceNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_BRICK_FENCE);
+    public static final BlockDefinition DEFINITION = BlockFenceNonFlammable.DEFINITION.toBuilder()
+            .hardness(2)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +23,7 @@ public class BlockNetherBrickFence extends BlockFence {
     }
 
     public BlockNetherBrickFence(BlockState blockState) {
-        super(blockState, BlockDefinitions.NETHER_BRICK_FENCE);
+        super(blockState, DEFINITION);
     }
 
     @Override

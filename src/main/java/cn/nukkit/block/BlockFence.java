@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.definition.BlockDefinition;
-import cn.nukkit.block.definition.BlockDefinitions;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -13,9 +12,17 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @since 2015/12/7
  */
 public abstract class BlockFence extends BlockTransparent implements BlockConnectable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
 
     public BlockFence(BlockState blockState) {
-        this(blockState, BlockDefinitions.FENCE);
+        this(blockState, DEFINITION);
     }
 
     public BlockFence(BlockState blockState, BlockDefinition definition) {

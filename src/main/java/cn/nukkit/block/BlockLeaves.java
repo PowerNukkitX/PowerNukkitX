@@ -2,11 +2,12 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.definition.BlockDefinitions;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -27,12 +28,24 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
  * @author Angelic47 (Nukkit Project)
  */
 public abstract class BlockLeaves extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_HOE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(30)
+            .burnAbility(60)
+            .canSilkTouch(true)
+            .diffusesSkyLight(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
+
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
 
     public BlockLeaves(BlockState blockState) {
-        super(blockState, BlockDefinitions.LEAVES);
+        super(blockState, DEFINITION);
     }
 
     public abstract WoodType getType();

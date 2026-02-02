@@ -33,6 +33,13 @@ import java.util.List;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockDoor extends BlockTransparent implements RedstoneComponent, Faceable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .isSolid(false)
+            .canBeActivated(false)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
+
     private static final double THICKNESS = 3.0 / 16;
 
     // Contains a list of positions of doors, which have been opened by hand (by a player).
