@@ -40,6 +40,7 @@ public class BlockDefinition {
     int toolTier;
     int dropExp;
     int maxStackSize;
+    int waterloggingLevel;
 
     double hardness;
     double resistance;

@@ -19,6 +19,7 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
             .toolTier(ItemTool.TIER_WOODEN)
             .burnChance(5)
             .burnAbility(20)
+            .waterloggingLevel(1)
             .build();
 
     public BlockFence(BlockState blockState) {
@@ -27,11 +28,6 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
 
     public BlockFence(BlockState blockState, BlockDefinition definition) {
         super(blockState, definition);
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

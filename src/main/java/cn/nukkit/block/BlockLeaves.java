@@ -38,6 +38,7 @@ public abstract class BlockLeaves extends BlockTransparent {
             .diffusesSkyLight(true)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
+            .waterloggingLevel(1)
             .build();
 
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
@@ -53,11 +54,6 @@ public abstract class BlockLeaves extends BlockTransparent {
     @Override
     public String getName() {
         return getType().getName() + " Leaves";
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

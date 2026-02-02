@@ -36,6 +36,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
             .toolTier(ItemTool.TIER_WOODEN)
             .breaksWhenMoved(true)
             .canBeActivated(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockSignBase(BlockState blockState) {
@@ -45,11 +46,6 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
     @Override
     public boolean isSolid(BlockFace side) {
         return false;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

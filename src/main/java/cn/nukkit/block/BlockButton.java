@@ -29,6 +29,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             .canBeFlowedInto(false)
             .canBeActivated(true)
             .isPowerSource(true)
+            .waterloggingLevel(1)
             .build();
 
     public BlockButton(BlockState meta) {
@@ -37,11 +38,6 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
     public BlockButton(BlockState meta, BlockDefinition definition) {
         super(meta, definition);
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;
@@ -15,9 +16,15 @@ import cn.nukkit.nbt.tag.ListTag;
  * @author rcsuperman (Nukkit Project)
  */
 public abstract class BlockFallable extends BlockSolid {
+    public static final BlockDefinition FALLABLE = SOLID.toBuilder()
+            .build();
 
     public BlockFallable(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, FALLABLE);
+    }
+
+    public BlockFallable(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     @Override
