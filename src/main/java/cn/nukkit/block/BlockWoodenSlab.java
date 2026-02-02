@@ -1,14 +1,31 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.ItemTool;
 
 public abstract class BlockWoodenSlab extends BlockSlab {
+    public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
+            .toolType(ItemTool.TYPE_AXE)
+            .canHarvestWithHand(true)
+            .toolTier(ItemTool.TYPE_NONE)
+            .burnChance(5)
+            .burnAbility(20)
+            .build();
+
     public BlockWoodenSlab(BlockState blockState, BlockState doubleSlab) {
-        super(blockState, doubleSlab);
+        super(blockState, doubleSlab, DEFINITION);
     }
 
     public BlockWoodenSlab(BlockState blockState, String doubleSlab) {
-        super(blockState, doubleSlab);
+        super(blockState, doubleSlab, DEFINITION);
+    }
+
+    public BlockWoodenSlab(BlockState blockState, BlockState doubleSlab, BlockDefinition definition) {
+        super(blockState, doubleSlab, definition);
+    }
+
+    public BlockWoodenSlab(BlockState blockState, String doubleSlab, BlockDefinition definition) {
+        super(blockState, doubleSlab, definition);
     }
 
     @Override
@@ -19,30 +36,5 @@ public abstract class BlockWoodenSlab extends BlockSlab {
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId().equals(getId());
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return true;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TYPE_NONE;
     }
 }

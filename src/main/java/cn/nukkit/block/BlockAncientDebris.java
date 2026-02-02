@@ -1,11 +1,21 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 
 public class BlockAncientDebris extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(ANCIENT_DEBRIS);
+
+    public static final BlockDefinition DEFINITION = BlockSolid.SOLID.toBuilder()
+            .hardness(30)
+            .resistance(1200)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_DIAMOND)
+            .canHarvestWithHand(false)
+            .lavaResistant(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -17,41 +27,11 @@ public class BlockAncientDebris extends BlockSolid {
     }
 
     public BlockAncientDebris(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Ancient Derbris";
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_DIAMOND;
-    }
-    
-    @Override
-    public double getResistance() {
-        return 1200;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 30;
-    }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 }
