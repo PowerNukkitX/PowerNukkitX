@@ -105,13 +105,19 @@ public abstract class ItemSpear extends ItemTool {
 
     public void applyLunge(Player player) {
         int level = getEnchantmentLevel(Enchantment.ID_LUNGE);
+        if (level <= 0) return;
 
-        if (level > 0) {
-            Vector3 dir = player.getDirectionVector().multiply(0.8 + (level * 0.4));
-            player.setMotion(player.getMotion().add(dir));
-            player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
-        }
+        Vector3 dir = player.getDirectionVector();
+        dir.y = 0;
+
+        if (dir.lengthSquared() == 0) return;
+
+        dir = dir.normalize().multiply(0.8 + (level * 0.4));
+
+        player.setMotion(player.getMotion().add(dir));
+        player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
     }
+
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
