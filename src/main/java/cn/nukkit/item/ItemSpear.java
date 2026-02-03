@@ -118,10 +118,9 @@ public abstract class ItemSpear extends ItemTool {
         player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
     }
 
-
     @Override
-    public boolean onClickAir(Player player, Vector3 directionVector) {
-        return true;
+    public int getUsingTicks() {
+        return 72000;
     }
 
     @Override
@@ -129,7 +128,7 @@ public abstract class ItemSpear extends ItemTool {
         float playerSpeed = player.getMovementSpeed();
 
         if (playerSpeed < minimumSpeed) {
-            return true;
+            return false;
         }
 
         Level level = player.getLevel();

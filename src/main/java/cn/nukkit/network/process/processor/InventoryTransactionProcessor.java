@@ -274,7 +274,6 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         if(player.getInventory().getHeldItemIndex() != useItemData.hotbarSlot) {
             player.getInventory().equipItem(useItemData.hotbarSlot);
         }
-
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK -> {
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
@@ -439,30 +438,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     return;
                 }
 
-                if (!player.isUsingItem(item.getId())) {
-                    lastUsedItem = item;
-                    player.setLastUseTick(item.getId(), player.getLevel().getTick());
-
-                    if (lastUsedItem.getUsingTicks() <= 0) {
-                        spear.onSpearStab(player, player.getMovementSpeed());
-                        lastUsedItem.afterUse(player);
-                        player.removeLastUseTick(item.getId());
-                        lastUsedItem = null;
-                    }
-                    return;
-                }
-
-                int ticksUsed = player.getLevel().getTick()
-                        - player.getLastUseTick(lastUsedItem.getId());
-
-                if (ticksUsed < lastUsedItem.getUsingTicks()) {
-                    return;
-                }
-
                 spear.onSpearStab(player, player.getMovementSpeed());
-                lastUsedItem.afterUse(player);
-                player.removeLastUseTick(item.getId());
-                lastUsedItem = null;
             }
             default -> log.debug("{} sent invalid item use action type {}", player.getName(), type);
         }
