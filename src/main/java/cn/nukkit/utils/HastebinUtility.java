@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class HastebinUtility {
     public static final Pattern PATTERN = Pattern.compile("\\{\"key\":\"([\\S\\s]*)\"}");
 
     public static String upload(final String string) throws IOException {
-        final URL url = new URL(BIN_URL);
+        final URL url = URI.create(BIN_URL).toURL();
         final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod("POST");

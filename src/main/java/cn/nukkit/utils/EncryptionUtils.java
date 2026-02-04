@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -99,7 +100,7 @@ public class EncryptionUtils {
 
     private static Map<String, Object> getDiscoveryData() {
         try {
-            URL url = new URL(DISCOVERY_ENDPOINT);
+            URL url = URI.create(DISCOVERY_ENDPOINT).toURL();
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
@@ -153,7 +154,7 @@ public class EncryptionUtils {
 
         String openIdConfigUrl = serviceUri + "/.well-known/openid-configuration";
         try {
-            URL url = new URL(openIdConfigUrl);
+            URL url = URI.create(openIdConfigUrl).toURL();
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
