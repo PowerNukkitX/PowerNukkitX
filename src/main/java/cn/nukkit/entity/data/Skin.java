@@ -6,13 +6,12 @@ import cn.nukkit.utils.PersonaPiece;
 import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
+import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonObject;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.jose4j.json.internal.json_simple.JSONObject;
-import org.jose4j.json.internal.json_simple.JSONValue;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -121,10 +120,10 @@ public class Skin {
             return false;
         }
         try {
-            JSONObject object = (JSONObject) JSONValue.parseWithException(skinResourcePatch);
-            JSONObject geometry = (JSONObject) object.get("geometry");
-            return geometry.containsKey("default") && geometry.get("default") instanceof String;
-        } catch (ClassCastException | NullPointerException | ParseException e) {
+            JsonObject object = Utils.GSON.fromJson(skinResourcePatch, JsonObject.class);
+            JsonObject geometry = object.getAsJsonObject("geometry");
+            return geometry.has("default") && geometry.get("default").isJsonPrimitive() && geometry.get("default").getAsJsonPrimitive().isString();
+        } catch (ClassCastException | NullPointerException e) {
             return false;
         }
     }

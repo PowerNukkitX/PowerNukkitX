@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
-    implementation(libs.json.simple)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
