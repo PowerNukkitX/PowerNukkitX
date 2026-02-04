@@ -190,6 +190,9 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
         byteBuf.writeBoolean(false); // telemetry enabled
+        for(int i = 0 ; i < 3; i++) {
+            byteBuf.writeString(String.valueOf(i)); // TODO: Add proper telemetry data
+        }
     }
 
     private void writeLevelSettings(HandleByteBuf byteBuf) {
