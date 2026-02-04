@@ -1,7 +1,12 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.MemoryCategoryCounter;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,6 +23,7 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
     public float avgEndFrameTimeMS;
     public float avgRemainderTimePercent;
     public float avgUnaccountedTimePercent;
+    public List<MemoryCategoryCounter> memoryCategoryValues = new ArrayList<>();
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -30,6 +36,10 @@ public class ServerboundDiagnosticsPacket extends DataPacket {
         this.avgEndFrameTimeMS = byteBuf.readFloatLE();
         this.avgRemainderTimePercent = byteBuf.readFloatLE();
         this.avgUnaccountedTimePercent = byteBuf.readFloatLE();
+
+        memoryCategoryValues = Arrays.stream(byteBuf.readArray(MemoryCategoryCounter.class, (buf) ->
+                new MemoryCategoryCounter(MemoryCategoryCounter.Category.values()[buf.readUnsignedByte()], byteBuf.readLongLE())
+        )).toList();
     }
 
     @Override

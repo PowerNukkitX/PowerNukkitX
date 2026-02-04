@@ -26,6 +26,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
     public OptionalValue<BiomeOverworldGenRulesData> overworldGenRules = OptionalValue.empty();
     public OptionalValue<BiomeMultinoiseGenRulesData> multinoiseGenRules = OptionalValue.empty();
     public OptionalValue<BiomeLegacyWorldGenRulesData> legacyWorldGenRules = OptionalValue.empty();
+    public OptionalValue<VillageType> villageType = OptionalValue.empty();
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
@@ -44,6 +45,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         byteBuf.writeOptional(multinoiseGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(legacyWorldGenRules, v -> v.encode(byteBuf));
         byteBuf.writeBoolean(false);
+        byteBuf.writeOptional(villageType, v -> byteBuf.writeString(v.name()));
     }
 
     @Override

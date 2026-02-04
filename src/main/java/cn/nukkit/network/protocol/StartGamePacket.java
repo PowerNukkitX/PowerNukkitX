@@ -138,12 +138,6 @@ public class StartGamePacket extends DataPacket {
     private String ownerIdentifier = "";
     private List<ExperimentEntry> experiments = new ArrayList<>();
 
-    /**
-     * @since v827
-     */
-
-    private boolean tickDeathSystemsEnabled = false;
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -195,6 +189,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
+        byteBuf.writeBoolean(false); // telemetry enabled
     }
 
     private void writeLevelSettings(HandleByteBuf byteBuf) {

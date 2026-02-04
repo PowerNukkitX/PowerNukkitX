@@ -599,4 +599,10 @@ public interface PacketHandler {
     default void handle(ServerboundDataStorePacket pk) {
 
     }
+
+    default void handle(ClientboundDataDrivenUICloseAllScreensPacket pk) {}
+    default void handle(ClientboundDataDrivenUIReloadPacket pk) {}
+    default void handle(ClientboundDataDrivenUIShowScreenPacket pk) {}
+    default void handle(ClientboundTextureShiftPacket pk) {}
+
 }

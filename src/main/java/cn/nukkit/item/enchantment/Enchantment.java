@@ -156,6 +156,8 @@ public abstract class Enchantment implements Cloneable {
     public static final String NAME_DENSITY = "density";
     public static final int ID_BREACH = 40;
     public static final String NAME_BREACH = "breach";
+    public static final int ID_LUNGE = 41;
+    public static final String NAME_LUNGE = "lunge";
 
 
     public static void init() {
@@ -201,6 +203,7 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_WIND_BURST] = new EnchantmentWindBurst();
         enchantments[ID_DENSITY] = new EnchantmentDensity();
         enchantments[ID_BREACH] = new EnchantmentBreach();
+        enchantments[ID_LUNGE] = new EnchantmentLunge();
         //custom
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_ALL), enchantments[0]);
         namedEnchantments.put(new Identifier("minecraft", NAME_PROTECTION_FIRE), enchantments[1]);
@@ -243,7 +246,7 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_WIND_BURST), enchantments[38]);
         namedEnchantments.put(new Identifier("minecraft", NAME_DENSITY), enchantments[39]);
         namedEnchantments.put(new Identifier("minecraft", NAME_BREACH), enchantments[40]);
-
+        namedEnchantments.put(new Identifier("minecraft", NAME_LUNGE), enchantments[41]);
     }
 
     private static String getLevelString(int level) {
