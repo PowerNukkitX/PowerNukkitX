@@ -73,6 +73,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             .isFertilizable(false)
             .isPowerSource(false)
             .lightDampening(0)
+            .lightEmission(0)
             .passableFrictionFactor(Block.DEFAULT_AIR_FLUID_FRICTION)
             .isSolid(true)
             .isSoulSpeedCompatible(false)
