@@ -388,49 +388,49 @@ public class Education implements BlockID, ItemID {
         try (var input = Education.class.getClassLoader().getResourceAsStream("gamedata/unknown/creativeitems_edu.json")) {
             if(input == null) return;
 
-            Map<String, Object> data;
             try (InputStreamReader reader = new InputStreamReader(input)) {
-                data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
-            }
-            List<String> tmpGroups = new ArrayList<>();
+                Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                List<String> tmpGroups = new ArrayList<>();
 
-            List<Map<String, Object>> groupData = asStringObjectMapList(data.get("groups"));
-            for (Map<String, Object> tag : groupData) {
-                String name = (String) tag.getOrDefault("name", null);
-                String icon = (String) tag.getOrDefault("icon", null);
+                List<Map<String, Object>> groupData = asStringObjectMapList(data.get("groups"));
+                for (Map<String, Object> tag : groupData) {
+                    String name = (String) tag.getOrDefault("name", null);
+                    String icon = (String) tag.getOrDefault("icon", null);
 
-                addCreativeGroup(name, icon);
-                tmpGroups.add(name);
-            }
-
-            CreativeGroupsRegistry.register();
-
-            for(String group : tmpGroups) {
-                groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
-                CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
-                    CreativeItemRegistry.ITEM_DATA.remove(entry);
-                    CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
-                });
-            }
-
-            List<Map<String, Object>> items = asStringObjectMapList(data.get("items"));
-            for (Map<String, Object> tag : items) {
-                String id = (String) tag.getOrDefault("id", null);
-                String group = (String) tag.getOrDefault("group", null);
-
-                Integer groupIndex = groups.get(group);
-
-                Item item = Item.get(id, 0, 1, null, false);
-
-                if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
-                    item = Item.AIR;
-                    log.warn("load creative edu item {} is null", id);
+                    addCreativeGroup(name, icon);
+                    tmpGroups.add(name);
                 }
 
-                if (groupIndex == null) {
-                    Registries.CREATIVE.addCreativeItem(item);
-                } else {
-                    Registries.CREATIVE.addCreativeItem(item, groupIndex);
+                CreativeGroupsRegistry.register();
+
+                for (String group : tmpGroups) {
+                    groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
+                    CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
+                        CreativeItemRegistry.ITEM_DATA.remove(entry);
+                        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
+                    });
+                }
+
+                List<Map<String, Object>> items = asStringObjectMapList(data.get("items"));
+                for (Map<String, Object> tag : items) {
+                    String id = (String) tag.getOrDefault("id", null);
+                    String group = (String) tag.getOrDefault("group", null);
+
+                    Integer groupIndex = groups.get(group);
+
+                    Item item = Item.get(id, 0, 1, null, false);
+
+                    if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
+                        item = Item.AIR;
+                        log.warn("load creative edu item {} is null", id);
+                    }
+
+                    if (groupIndex == null) {
+                        Registries.CREATIVE.addCreativeItem(item);
+                    } else {
+                        Registries.CREATIVE.addCreativeItem(item, groupIndex);
+                    }
                 }
             }
         } catch (Exception e) {
