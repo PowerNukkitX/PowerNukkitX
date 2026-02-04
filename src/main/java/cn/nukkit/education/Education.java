@@ -388,7 +388,10 @@ public class Education implements BlockID, ItemID {
         try (var input = Education.class.getClassLoader().getResourceAsStream("gamedata/unknown/creativeitems_edu.json")) {
             if(input == null) return;
 
-            Map<String, Object> data = new Gson().fromJson(new InputStreamReader(input), new TypeToken<Map<String, Object>>() {}.getType());
+            Map<String, Object> data;
+            try (InputStreamReader reader = new InputStreamReader(input)) {
+                data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
+            }
             List<String> tmpGroups = new ArrayList<>();
 
             List<Map<String, Object>> groupData = asStringObjectMapList(data.get("groups"));
