@@ -60,8 +60,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (isLoad.getAndSet(true))
             return;
 
-        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json")) {
-            Map<String, Object> data = new Gson().fromJson(new InputStreamReader(input), new TypeToken<Map<String, Object>>() {}.getType());
+        try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json");
+             InputStreamReader reader = new InputStreamReader(input)) {
+            Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
             List<Map<String, Object>> groups = asStringObjectMapList(data.get("groups"));
             int index = 0;
             for (Map<String, Object> tag : groups) {
