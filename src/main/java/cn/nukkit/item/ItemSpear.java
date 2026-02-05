@@ -14,6 +14,11 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
 
+/**
+ * @author Buddelbubi
+ * @author xRookieFight
+ * @since 16/31/2025
+ */
 public abstract class ItemSpear extends ItemTool {
 
     @Getter
@@ -38,12 +43,12 @@ public abstract class ItemSpear extends ItemTool {
 
         if (event.isCancelled()) return;
 
+        applyLunge(player);
+
         if (movementSpeed < getMinimumSpeed() || !player.isSprinting()) {
             player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
             return;
         }
-
-        applyLunge(player);
 
         Level level = player.getLevel();
         Location loc = player.getLocation();
@@ -112,7 +117,7 @@ public abstract class ItemSpear extends ItemTool {
 
         if (dir.lengthSquared() == 0) return;
 
-        dir = dir.normalize().multiply(0.8 + (level * 0.4));
+        dir = dir.normalize().multiply(0.5 + (level * 0.4));
 
         player.setMotion(player.getMotion().add(dir));
         player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
@@ -124,11 +129,20 @@ public abstract class ItemSpear extends ItemTool {
     }
 
     @Override
-    public boolean onUse(Player player, int ticksUsed) {
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_USE);
+        return true;
+    }
+
+    @Override
+    public void whileUsing(Player player) {
+        if (!player.isItemCoolDownEnd(this.getIdentifier())) return;
+
+        player.setItemCoolDown(5, this.getIdentifier());
         float playerSpeed = player.getMovementSpeed();
 
         if (playerSpeed < minimumSpeed) {
-            return false;
+            return;
         }
 
         Level level = player.getLevel();
@@ -140,26 +154,34 @@ public abstract class ItemSpear extends ItemTool {
 
         float damage = getAttackDamage() * 1.5f;
 
+        EntityLiving closest = null;
+        double closestDistance = Double.MAX_VALUE;
+
         for (Entity entity : level.getNearbyEntities(hitBox, player)) {
             if (!(entity instanceof EntityLiving living) || !living.isAlive()) {
                 continue;
             }
 
+            double dist = living.distanceSquared(player);
+
+            if (dist < closestDistance) {
+                closestDistance = dist;
+                closest = living;
+            }
+        }
+
+        if (closest != null) {
             float finalDamage = (float) (damage + (playerSpeed * 3.0));
 
             EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(
                     player,
-                    entity,
+                    closest,
                     EntityDamageEvent.DamageCause.ENTITY_ATTACK,
                     finalDamage
             );
 
-            entity.attack(event);
+            closest.attack(event);
             level.addSound(player.getPosition(), Sound.ITEM_SPEAR_HIT);
         }
-
-        level.addSound(player.getPosition(), Sound.ITEM_SPEAR_USE);
-
-        return true;
     }
 }

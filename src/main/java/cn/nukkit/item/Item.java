@@ -2243,6 +2243,12 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     /**
+     * Triggers when the player uses an item.
+     * @param player The player using item
+     */
+    public void whileUsing(Player player) {}
+
+    /**
      * Define the Armor Toughness of an item
      */
     public int getToughness() {
