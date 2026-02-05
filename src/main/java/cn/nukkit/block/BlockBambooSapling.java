@@ -126,7 +126,7 @@ public class BlockBambooSapling extends BlockSapling {
 
     private boolean isSupportInvalid() {
         return switch (down().getId()) {
-            case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK -> false;
+            case BAMBOO, DIRT, GRASS_BLOCK, SAND, GRAVEL, PODZOL, BAMBOO_SAPLING, MOSS_BLOCK, MUD, MUDDY_MANGROVE_ROOTS -> false;
             default -> true;
         };
     }
