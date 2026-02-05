@@ -180,7 +180,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
-        byteBuf.writeBoolean(this.hasServerJoinInformation); // hasServerInformation
+        byteBuf.writeBoolean(this.hasServerJoinInformation); // hasServerJoinInformation
 
         // Server telemetry data
         byteBuf.writeString(this.serverTelemetryData.getServerId()); // serverId
