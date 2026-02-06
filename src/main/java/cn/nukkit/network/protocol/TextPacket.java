@@ -3,8 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.utils.OptionalValue;
 import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import lombok.*;
 
 /**
@@ -42,62 +40,106 @@ public class TextPacket extends DataPacket {
     public OptionalValue<String> filteredMessage = OptionalValue.of("");
     @Override
     public void decode(HandleByteBuf byteBuf) {
+        boolean needsTranslation = byteBuf.readBoolean();
+
+        int mode = byteBuf.readByte();
         this.type = byteBuf.readByte();
-        this.isLocalized = byteBuf.readBoolean() || type == TYPE_TRANSLATION;
-        switch (type) {
-            case TYPE_CHAT:
-            case TYPE_WHISPER:
-            case TYPE_ANNOUNCEMENT:
-                this.source = byteBuf.readString();
-            case TYPE_RAW:
-            case TYPE_TIP:
-            case TYPE_SYSTEM:
-            case TYPE_OBJECT:
-            case TYPE_OBJECT_WHISPER:
+
+        switch (mode) {
+            case 0: // MessageOnly
                 this.message = byteBuf.readString();
                 break;
 
-            case TYPE_TRANSLATION:
-            case TYPE_POPUP:
-            case TYPE_JUKEBOX_POPUP:
+            case 1: // AuthorAndMessage
+                this.source = byteBuf.readString();
                 this.message = byteBuf.readString();
-                this.parameters = byteBuf.readArray(String.class, HandleByteBuf::readString);
+                break;
+
+            case 2: // MessageAndParams
+                this.message = byteBuf.readString();
+                int len = byteBuf.readUnsignedVarInt();
+                this.parameters = new String[len];
+                for (int i = 0; i < len; i++) {
+                    this.parameters[i] = byteBuf.readString();
+                }
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown TextPacket mode: " + mode);
         }
+
+        this.isLocalized = needsTranslation;
+
         this.xboxUserId = byteBuf.readString();
         this.platformChatId = byteBuf.readString();
-        //this.filteredMessage = byteBuf.readString(); //TODO: Its optional now
+
+        String filtered = byteBuf.readString();
+        this.filteredMessage = OptionalValue.of(filtered);
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeByte(this.type);
-        byteBuf.writeBoolean(this.isLocalized || type == TYPE_TRANSLATION);
+        boolean needsTranslation = this.isLocalized || this.type == TYPE_TRANSLATION;
+        byteBuf.writeBoolean(needsTranslation);
+
         switch (this.type) {
-            case TYPE_CHAT:
-            case TYPE_WHISPER:
-            case TYPE_ANNOUNCEMENT:
-                byteBuf.writeString(this.source);
+
+            // MessageOnly
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
             case TYPE_OBJECT:
-            case TYPE_OBJECT_WHISPER:
-                byteBuf.writeString(this.message);
-                break;
+            case TYPE_OBJECT_WHISPER: {
+                byteBuf.writeByte(0);
+                byteBuf.writeByte(this.type);
 
+                String msg = (this.message == null || this.message.isEmpty()) ? " " : this.message;
+                byteBuf.writeString(msg);
+                break;
+            }
+
+            // AuthorAndMessage
+            case TYPE_CHAT:
+            case TYPE_WHISPER:
+            case TYPE_ANNOUNCEMENT: {
+                byteBuf.writeByte(1);
+                byteBuf.writeByte(this.type);
+
+                byteBuf.writeString(this.source == null ? "" : this.source);
+
+                String msg = (this.message == null || this.message.isEmpty()) ? " " : this.message;
+                byteBuf.writeString(msg);
+                break;
+            }
+
+            // MessageAndParams
             case TYPE_TRANSLATION:
             case TYPE_POPUP:
-            case TYPE_JUKEBOX_POPUP:
-                byteBuf.writeString(this.message);
+            case TYPE_JUKEBOX_POPUP: {
+                byteBuf.writeByte(2);
+                byteBuf.writeByte(this.type);
+
+                String msg = (this.message == null || this.message.isEmpty()) ? " " : this.message;
+                byteBuf.writeString(msg);
+
                 byteBuf.writeUnsignedVarInt(this.parameters.length);
                 for (String parameter : this.parameters) {
-                    byteBuf.writeString(parameter);
+                    byteBuf.writeString(parameter == null ? "" : parameter);
                 }
+                break;
+            }
+
+            default:
+                throw new UnsupportedOperationException("Unknown TextPacket type: " + this.type);
         }
-        byteBuf.writeString(this.xboxUserId);
-        byteBuf.writeString(this.platformChatId);
-        byteBuf.writeOptional(this.filteredMessage, (s) -> byteBuf.writeString(s));
+
+        byteBuf.writeString(this.xboxUserId == null ? "" : this.xboxUserId);
+        byteBuf.writeString(this.platformChatId == null ? "" : this.platformChatId);
+
+        String filtered = this.filteredMessage.isPresent() ? this.filteredMessage.get() : "";
+        byteBuf.writeString(filtered);
     }
+
 
     @Override
     public int pid() {

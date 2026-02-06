@@ -613,4 +613,13 @@ public interface PacketHandler {
 
     default void handle(VoxelShapesPacket pk) {
     }
+
+    default void handle(CameraAimAssistActorPriorityPacket pk) {
+    }
+
+    default void handle(ClientboundDataStorePacket pk) {
+    }
+
+    default void handle(GraphicsParameterOverridePacket pk) {
+    }
 }

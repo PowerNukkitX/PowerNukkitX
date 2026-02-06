@@ -1,9 +1,6 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.types.LabTableReactionType;
-import cn.nukkit.network.protocol.types.LabTableType;
 import lombok.*;
 
 @Getter
