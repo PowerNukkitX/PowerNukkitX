@@ -670,6 +670,7 @@ public class Server {
 
         if (serverReloadEvent.isCancelled()) return;
 
+        // Set network to starting to prevent new players from joining during the reload process
         this.network.setState(NetworkState.STARTING);
 
         log.info("Reloading server...");
