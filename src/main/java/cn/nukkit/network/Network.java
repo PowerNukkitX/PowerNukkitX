@@ -6,6 +6,7 @@ import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
+import cn.nukkit.network.process.NetworkState;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.codec.QueryPacketCodec;
 import cn.nukkit.network.query.handler.QueryPacketHandler;
@@ -14,6 +15,8 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -25,6 +28,8 @@ import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
@@ -58,6 +63,8 @@ public class Network {
     private final Map<InetAddress, LocalDateTime> blockIpMap = new HashMap<>();
     private final RakServerChannel channel;
     private BedrockPong pong;
+    @Getter @Setter
+    private NetworkState state = NetworkState.STARTING;
 
     public Network(Server server) {
         this(server, Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
@@ -104,7 +111,7 @@ public class Network {
 
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
-                .option(RakChannelOption.RAK_ADVERTISEMENT, pong.toByteBuf())
+                .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
                 .option(RakChannelOption.RAK_SEND_COOKIE, true)
                 .group(eventloopgroup)
@@ -126,6 +133,11 @@ public class Network {
                     public BedrockSession createSession0(BedrockPeer peer, int subClientId) {
                         BedrockSession session = new BedrockSession(peer, subClientId);
                         InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
+
+                        if (Network.this.getState() == NetworkState.STARTING ||  Network.this.getState() == NetworkState.STOPPING) {
+                            return session;
+                        }
+
                         if (isAddressBlocked(address)) {
                             session.close("Your IP address has been blocked by this server!");
                             onSessionDisconnect(address);
@@ -298,5 +310,16 @@ public class Network {
      */
     public BedrockPong getPong() {
         return pong;
+    }
+
+    /**
+     * Retrieves RakNet advertisement.
+     * @return Byte buffer
+     */
+    private ByteBuf getAdvertisement() {
+        if (state == NetworkState.STARTING || state == NetworkState.STOPPING) {
+            return Unpooled.EMPTY_BUFFER;
+        }
+        return pong.toByteBuf();
     }
 }
