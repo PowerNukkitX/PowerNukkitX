@@ -5,7 +5,7 @@ import cn.nukkit.utils.TextFormat;
 import java.util.HashMap;
 
 /**
- * @author CreeperFace
+ * @author CreeperFace, AzaleeX
  * @since 9/11/2016
  */
 public class Achievement {
