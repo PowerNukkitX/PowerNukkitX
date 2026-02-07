@@ -557,7 +557,7 @@ public class CustomBlockDefinition extends BlockDefinition {
 
         /**
          * Defines how this custom block should tick over time.
-         * Example: {@code .blockTick(60, 60, true)} will schedule the block to tick every 3 seconds.
+         * Example: {@code .blockTick(60, 60, true)} will schedule the block to tick every 60 ticks (3 seconds).
          *
          * @param minTicks The minimum number of ticks before the block updates.
          * @param maxTicks The maximum number of ticks before the block updates. Must be ≥ {@code minTicks}.
