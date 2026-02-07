@@ -8,7 +8,7 @@
     </a>
     <p align="center">
         <strong>
-            A Minecraft Bedrock Editon Server Software, open source and written in java
+            A Minecraft Bedrock Edition Server Software, open source and written in java
         </strong>
     </p>
 </p>

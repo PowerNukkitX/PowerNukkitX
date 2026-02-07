@@ -35,17 +35,19 @@ public class CommandRequestPacket extends DataPacket {
     /**
      * @since v567
      */
-    public int version;
+    public String version;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.command = byteBuf.readString();
         byteBuf.readString(); // hardcoded "player"
         UUID uuid = byteBuf.readUUID();
-        CommandOriginData.Origin type = CommandOriginData.Origin.values()[byteBuf.readVarInt()];
+        CommandOriginData.Origin type = CommandOriginData.Origin.PLAYER;
         String requestId = byteBuf.readString();
         Long varLong = byteBuf.readLongLE();
         this.data = new CommandOriginData(type, uuid, requestId, varLong);
+        this.internal = byteBuf.readBoolean();
+        this.version = byteBuf.readString();
     }
 
     @Override
