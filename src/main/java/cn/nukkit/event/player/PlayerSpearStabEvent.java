@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * Triggers before player stabs the spear.
  *
  * @author xRookieFight
- * @since 16/01/2025
+ * @since 16/01/2026
  */
 public class PlayerSpearStabEvent extends PlayerEvent implements Cancellable {
 
