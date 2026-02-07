@@ -10,8 +10,8 @@ com-google-code-findbugs-jsr305                 = "3.0.2"
 com-google-code-gson-gson                       = "2.10.1"
 com-google-guava-guava                          = "33.0.0-jre"
 commons-io-commons-io                           = "2.15.1"
-io-netty-netty-transport-classes-epoll          = "4.1.101.Final"
-io-netty-netty-transport-classes-kqueue         = "4.1.101.Final"
+io-netty-netty-transport-classes-epoll          = "4.2.10.Final"
+io-netty-netty-transport-classes-kqueue         = "4.2.10.Final"
 io-sentry-sentry                                = "7.1.0"
 io-sentry-sentry-log4j2                         = "7.1.0"
 it-unimi-dsi-fastutil                           = "8.5.12"
@@ -26,7 +26,7 @@ org-jline-jline-reader                          = "3.25.0"
 org-jline-jline-terminal                        = "3.25.0"
 org-jline-jline-terminal-jna                    = "3.25.0"
 org-junit-jupiter-junit-jupiter                 = "5.10.1"
-org-lz4-lz4-java                                = "1.8.0"
+org-lz4-lz4-java                                = "1.10.2"
 org-mockito-mockito-junit-jupiter               = "5.8.0"
 org-openjdk-jmh-jmh-core                        = "1.37"
 org-openjdk-jmh-jmh-generator-annprocess        = "1.37"
@@ -72,7 +72,7 @@ jline-reader         = { module = "org.jline:jline-reader",                     
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
 jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
-lz4                  = { module = "org.lz4:lz4-java",                               version.ref = "org-lz4-lz4-java"                                }
+lz4                  = { module = "at.yawk.lz4:lz4-java",                               version.ref = "org-lz4-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }
 jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",       version.ref = "org-openjdk-jmh-jmh-generator-annprocess"        }
