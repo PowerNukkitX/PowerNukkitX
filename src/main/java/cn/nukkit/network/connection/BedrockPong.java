@@ -55,10 +55,24 @@ public class BedrockPong {
         return string == null ? "" : string;
     }
 
+    /**
+     * Updates the advertisement for the Bedrock server channel.
+     * Defensive checks are applied to avoid null pointer exceptions and invalid states.
+     *
+     * @param network the network instance to check state
+     */
     public void update(Network network) {
+        // Defensive checks
+        if (network == null) {
+            return;
+        }
+        if (channel == null) {
+            return;
+        }
         if (network.getState() == NetworkState.STARTING || network.getState() == NetworkState.STOPPING) {
             return;
         }
-        this.channel.config().setAdvertisement(this.toByteBuf());
+        // Update advertisement
+        channel.config().setAdvertisement(this.toByteBuf());
     }
 }
