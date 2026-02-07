@@ -1,5 +1,7 @@
 package cn.nukkit.network.connection;
 
+import cn.nukkit.network.Network;
+import cn.nukkit.network.process.NetworkState;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Data;
@@ -53,7 +55,10 @@ public class BedrockPong {
         return string == null ? "" : string;
     }
 
-    public void update() {
+    public void update(Network network) {
+        if (network.getState() == NetworkState.STARTING || network.getState() == NetworkState.STOPPING) {
+            return;
+        }
         this.channel.config().setAdvertisement(this.toByteBuf());
     }
 }
