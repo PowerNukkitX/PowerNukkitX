@@ -28,7 +28,8 @@ public enum EnchantmentType {
     WEARABLE,
     TRIDENT,
     CROSSBOW,
-    MACE;
+    MACE,
+    SPEAR;
 
 
     public boolean canEnchantItem(@NotNull Item item) {
@@ -62,6 +63,7 @@ public enum EnchantmentType {
             case TRIDENT -> item.isTrident();
             case CROSSBOW -> item.isCrossbow();
             case MACE -> item.isMace();
+            case SPEAR -> item.isSpear();
             default -> false;
         };
     }
