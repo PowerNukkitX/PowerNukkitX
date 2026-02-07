@@ -241,7 +241,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     private static BlockColor parseHexColor(String hex) {
         if (hex == null || hex.isEmpty()) return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
         String s = hex.charAt(0) == '#' ? hex.substring(1) : hex;
-        long val = Long.parseLong(s, 16);
+        long val;
+        try {
+            val = Long.parseLong(s, 16);
+        } catch (NumberFormatException e) {
+            return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
+        }
 
         if (s.length() == 6) {
             return new BlockColor((int) ((val >> 16) & 0xFF), (int) ((val >> 8) & 0xFF), (int) (val & 0xFF), 0xFF);
