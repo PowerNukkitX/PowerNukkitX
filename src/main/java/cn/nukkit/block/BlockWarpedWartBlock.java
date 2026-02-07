@@ -25,10 +25,9 @@ public class BlockWarpedWartBlock extends BlockSolid {
         return "Warped Wart Block";
     }
 
-    // TODO Fix it in https://github.com/PowerNukkit/PowerNukkit/pull/370, the same for BlockNetherWartBlock
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HANDS_ONLY; //TODO Correct type is hoe
+        return ItemTool.TYPE_HOE;
     }
 
     @Override
