@@ -47,7 +47,7 @@ public class CommandRequestPacket extends DataPacket {
         Long varLong = byteBuf.readLongLE();
         this.data = new CommandOriginData(type, uuid, requestId, varLong);
         this.internal = byteBuf.readBoolean();
-        this.version = byteBuf.readString();d
+        this.version = byteBuf.readString();
     }
 
     @Override
