@@ -257,8 +257,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
     protected int lastInAirTick = 0;
     protected int previousInteractTick = 0;
-    private static final float ROTATION_UPDATE_THRESHOLD = 1;
-    private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
+    private final float rotationUpdateThreshold;
+    private final float movementDistanceThreshold;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     private int timeSinceRest;
@@ -374,6 +374,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
         this.setSkin(info.getSkin());
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
+        this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
+        this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();
     }
 
     /**
@@ -969,10 +971,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
          */
         protected void offerMovementTask(Location newPosition) {
             double distance = newPosition.distance(this);
-            boolean updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;
-            boolean updateRotation = Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
-                    || Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
-                    || Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
+            boolean updatePosition = distance > movementDistanceThreshold;
+            boolean updateRotation = Math.abs(this.getPitch() - newPosition.pitch) > rotationUpdateThreshold
+                    || Math.abs(this.getYaw() - newPosition.yaw) > rotationUpdateThreshold
+                    || Math.abs(this.getHeadYaw() - newPosition.headYaw) > rotationUpdateThreshold;
 
             boolean shouldHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
             if (shouldHandle) {
@@ -980,7 +982,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 long now = System.currentTimeMillis();
                 if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
                     double teleportDistance = newPosition.distance(lastTeleportMessage.left());
-                    if (teleportDistance < MOVEMENT_DISTANCE_THRESHOLD) {
+                    if (teleportDistance < movementDistanceThreshold) {
                         // Ignore this movement as it is probably due to post-teleport desynchronization
                         return;
                     }
