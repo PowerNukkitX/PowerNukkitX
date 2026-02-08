@@ -580,7 +580,6 @@ public class BedrockSession {
                     if (overload == null) continue;
 
                     overloadValid = true;
-                    break;
                 }
 
                 if (overloadValid) {
