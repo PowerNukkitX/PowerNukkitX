@@ -7,6 +7,8 @@ import cn.nukkit.level.Location;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
 
     public enum Type {
@@ -21,15 +23,9 @@ public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
         return handlers;
     }
 
-    @Setter @Getter
     private Location from;
-    @Setter @Getter
     private Location to;
-
-    @Setter @Getter
     private boolean resetBlocksAround;
-
-    @Setter @Getter
     private Type movementType;
 
     public PlayerMoveEvent(Player player, Location from, Location to) {

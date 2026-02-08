@@ -906,15 +906,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.collisionBlocks = null;
             }
 
-            PlayerMoveEvent.Type moveType;
-
             boolean positionChanged = last.x != now.x || last.y != now.y || last.z != now.z;
             boolean rotationChanged = last.yaw != now.yaw || last.pitch != now.pitch || last.headYaw != now.headYaw;
 
-            if (!positionChanged && rotationChanged) {
-                moveType = PlayerMoveEvent.Type.ROTATE;
-            } else {
+            if (!positionChanged && !rotationChanged) {
+                return;
+            }
+
+            PlayerMoveEvent.Type moveType;
+
+            if (positionChanged && rotationChanged) {
+                moveType = PlayerMoveEvent.Type.ALL;
+            } else if (positionChanged) {
                 moveType = PlayerMoveEvent.Type.POSITION_CHANGE;
+            } else {
+                moveType = PlayerMoveEvent.Type.ROTATE;
             }
 
             PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now, true, moveType);
