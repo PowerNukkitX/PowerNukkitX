@@ -2623,6 +2623,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.checkNearEntities();
             }
 
+            Item itemInHand = this.getInventory().getItemInHand();
+            if (!itemInHand.isNull() && this.isUsingItem(itemInHand.getId())) {
+                itemInHand.whileUsing(this);
+            }
+
             this.entityBaseTick(tickDiff);
 
             if (this.getServer().getDifficulty() == 0 || this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {

@@ -63,6 +63,7 @@ import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.Network;
+import cn.nukkit.network.process.NetworkState;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -668,6 +669,9 @@ public class Server {
 
         if (serverReloadEvent.isCancelled()) return;
 
+        // Set network to starting to prevent new players from joining during the reload process
+        this.network.setState(NetworkState.STARTING);
+
         log.info("Reloading server...");
         log.info("Saving levels...");
 
@@ -694,10 +698,6 @@ public class Server {
         }
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
-        // TODO: enable js plugin when adapt
-//        JSIInitiator.reset();
-//        JSFeatures.clearFeatures();
-//        JSFeatures.initInternalFeatures();
         this.scoreboardManager.read();
 
         log.info("Reloading registries...");
@@ -745,12 +745,14 @@ public class Server {
             Registries.RECIPE.trim();
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+        this.network.setState(NetworkState.STARTED);
     }
 
     /**
      * Shutdown the server
      */
     public void shutdown() {
+        network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
     }
 
@@ -763,6 +765,7 @@ public class Server {
         }
 
         try {
+            network.setState(NetworkState.STOPPING);
             isRunning.compareAndSet(true, false);
 
             this.hasStopped = true;
@@ -835,6 +838,10 @@ public class Server {
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
+
+        this.network.setState(NetworkState.STARTED);
+        this.network.getPong().update(this.network);
+
         this.tickProcessor();
         this.forceShutdown();
     }
@@ -1440,7 +1447,7 @@ public class Server {
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
         this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID(), player.getLocatorBarColor());
-        this.getNetwork().getPong().playerCount(playerList.size()).update();
+        this.getNetwork().getPong().playerCount(playerList.size()).update(this.getNetwork());
     }
 
     @ApiStatus.Internal
@@ -1453,8 +1460,7 @@ public class Server {
             pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
 
             Server.broadcastPacket(this.playerList.values(), pk);
-            this.getNetwork().getPong().playerCount(playerList.size()).update();
-            ;
+            this.getNetwork().getPong().playerCount(playerList.size()).update(this.getNetwork());
         }
     }
     /**
@@ -2419,7 +2425,7 @@ public class Server {
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
-        this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update();
+        this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update(this.getNetwork());
     }
 
     /**
@@ -2593,7 +2599,7 @@ public class Server {
      */
     public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
-        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update();
+        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update(this.getNetwork());
     }
 
     /**
@@ -2610,7 +2616,7 @@ public class Server {
      */
     public void setMotd(String motd) {
         this.settings.baseSettings().motd(motd);
-        this.getNetwork().getPong().motd(motd).update();
+        this.getNetwork().getPong().motd(motd).update(this.getNetwork());
     }
 
     /**
@@ -2631,7 +2637,7 @@ public class Server {
      */
     public void setSubMotd(String subMotd) {
         this.settings.baseSettings().subMotd(subMotd);
-        this.getNetwork().getPong().subMotd(subMotd).update();
+        this.getNetwork().getPong().subMotd(subMotd).update(this.getNetwork());
     }
 
     /**

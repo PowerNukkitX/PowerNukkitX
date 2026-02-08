@@ -29,6 +29,7 @@ public class InventoryTransactionPacket extends DataPacket {
     public static final int USE_ITEM_ACTION_CLICK_BLOCK = 0;
     public static final int USE_ITEM_ACTION_CLICK_AIR = 1;
     public static final int USE_ITEM_ACTION_BREAK_BLOCK = 2;
+    public static final int USE_ITEM_ACTION_SPEAR_STAB = 3;
 
     public static final int RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
     public static final int RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
