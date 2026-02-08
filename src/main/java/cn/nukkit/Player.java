@@ -880,14 +880,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
         this.fastMove(diffX, diffY, diffZ);
 
-        //after check
-        double corrX = this.x - clientPos.getX();
-        double corrY = this.y - clientPos.getY();
-        double corrZ = this.z - clientPos.getZ();
-
         //update server-side position and rotation and aabb
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
         Location now = this.getLocation();
+
         this.lastX = now.x;
         this.lastY = now.y;
         this.lastZ = now.z;
@@ -907,7 +903,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.blocksAround = null;
                 this.collisionBlocks = null;
             }
-            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
+
+            PlayerMoveEvent.Type moveType;
+
+            boolean positionChanged = last.x != now.x || last.y != now.y || last.z != now.z;
+            boolean rotationChanged = last.yaw != now.yaw || last.pitch != now.pitch || last.headYaw != now.headYaw;
+
+            if (!positionChanged && rotationChanged) {
+                moveType = PlayerMoveEvent.Type.ROTATE;
+            } else {
+                moveType = PlayerMoveEvent.Type.POSITION_CHANGE;
+            }
+
+            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now, true, moveType);
+
             this.server.getPluginManager().callEvent(ev);
 
             if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
