@@ -23,6 +23,8 @@ public abstract class ItemSpear extends ItemTool {
 
     @Getter
     public float minimumSpeed = 0.13f;
+    public int minimumLungeFood = 6;
+    public int baseLungeExhaust = 4;
 
     public ItemSpear(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -109,18 +111,33 @@ public abstract class ItemSpear extends ItemTool {
     }
 
     public void applyLunge(Player player) {
-        int level = getEnchantmentLevel(Enchantment.ID_LUNGE);
-        if (level <= 0) return;
+        if(this.canLunge(player)){
+            int lungeLevel = getEnchantmentLevel(Enchantment.ID_LUNGE);
+            Vector3 dir = player.getDirectionVector();
+            dir.y = 0;
 
-        Vector3 dir = player.getDirectionVector();
-        dir.y = 0;
+            if (dir.lengthSquared() == 0) return;
 
-        if (dir.lengthSquared() == 0) return;
+            dir = dir.normalize().multiply(0.5 + (lungeLevel * 0.4));
 
-        dir = dir.normalize().multiply(0.5 + (level * 0.4));
+            player.setMotion(player.getMotion().add(dir));
+            player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
+            player.getFoodData().exhaust(baseLungeExhaust * lungeLevel);
+        }
+    }
 
-        player.setMotion(player.getMotion().add(dir));
-        player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
+    public boolean canLunge(Player player) {
+        int playerGamemode = player.getGamemode();
+        int enchantmentLevel = getEnchantmentLevel(Enchantment.ID_LUNGE);
+
+        if (player.isGliding() || player.isSwimming() || player.isInsideOfWater() || player.isTouchingWater()) {
+            return false;
+        }
+
+        if ((playerGamemode == Player.SURVIVAL || playerGamemode == Player.ADVENTURE) && player.getFoodData().getFood() < minimumLungeFood) {
+            return false;
+        }
+        return enchantmentLevel > 0;
     }
 
     @Override
