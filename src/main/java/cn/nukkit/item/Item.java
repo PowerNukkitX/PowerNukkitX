@@ -523,7 +523,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
-        StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + idConvertToName() + "\n", "");
+        StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + getOriginalName() + "\n", "");
         for (var ench : custom_ench.getAll()) {
             var enchantment = Enchantment.getEnchantment(ench.getString("id")).setLevel(ench.getShort("lvl"));
             joiner.add(enchantment.getLore());
@@ -1357,12 +1357,17 @@ public abstract class Item implements Cloneable, ItemID {
 
     public @NotNull
     final String getName() {
-        return this.hasCustomName() ? this.getCustomName() : idConvertToName();
+        return this.hasCustomName() ? this.getCustomName() : getOriginalName();
+    }
+
+    public @NotNull
+    final String getOriginalName() {
+        return idConvertToName();
     }
 
     public @NotNull
     final String getDisplayName() {
-        return this.hasCustomName() ? this.getCustomName() : idConvertToName();
+        return this.hasCustomName() ? this.getCustomName() : getOriginalName();
     }
 
     public final boolean canBePlaced() {
@@ -1527,7 +1532,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     @Override
     final public String toString() {
-        return "Item " + idConvertToName() +
+        return "Item " + getOriginalName() +
                 " (" + this.id
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
