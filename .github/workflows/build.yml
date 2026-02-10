@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Detect modified files
         id: filter
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v3.0.2
         with:
           filters: |
             src:
