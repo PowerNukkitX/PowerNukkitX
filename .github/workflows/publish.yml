@@ -145,7 +145,7 @@ jobs:
           tag_name: v${{ env.API_VERSION }}
           prerelease: false
           draft: true
-          name: "PowerNukkitX ${{ env.API_VERSION }} for ${{ MINECRAFT_VERSION_NETWORK }}"
+          name: "PowerNukkitX ${{ env.API_VERSION }} for ${{ env.MINECRAFT_VERSION_NETWORK }}"
           body: |
             # PowerNukkitX Release ${{ env.API_VERSION }}
             This is the latest official release of PowerNukkitX, built from the [`master`](https://github.com/${{ github.repository }}/tree/master) branch.
