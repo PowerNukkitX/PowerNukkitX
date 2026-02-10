@@ -119,4 +119,4 @@ jobs:
     steps:
       - name: Show build summary
         run: |
-          echo '✅ Build & static checks completed. See artifacts and logs above.'
+          echo 'Build & static checks completed. See artifacts and logs above.'

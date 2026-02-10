@@ -120,8 +120,10 @@ jobs:
 
       - name: Check Release Trigger (Commit Message)
         id: check_release
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          if [[ "${{ github.event.head_commit.message }}" =~ ^(Release:|Version:) ]]; then
+          if [[ "$COMMIT_MSG" =~ ^(Release:|Version:) ]]; then
             echo "RELEASE_TRIGGER=true" >> $GITHUB_ENV
           else
             echo "RELEASE_TRIGGER=false" >> $GITHUB_ENV
