@@ -23,8 +23,8 @@ public class BookEditPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.action = Action.values()[byteBuf.readInt()];
-        this.inventorySlot = byteBuf.readInt();
+        this.inventorySlot = byteBuf.readVarInt();
+        this.action = Action.values()[byteBuf.readUnsignedVarInt()];
 
         switch (this.action) {
             case REPLACE_PAGE:

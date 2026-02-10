@@ -40,35 +40,36 @@ public class TextPacket extends DataPacket {
     public OptionalValue<String> filteredMessage = OptionalValue.of("");
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        boolean needsTranslation = byteBuf.readBoolean();
-
-        int mode = byteBuf.readByte();
-        this.type = byteBuf.readByte();
-
-        switch (mode) {
+        switch (byteBuf.readByte()) {
             case 0: // MessageOnly
+                this.type = byteBuf.readByte();
                 this.message = byteBuf.readString();
                 break;
 
             case 1: // AuthorAndMessage
+                this.type = byteBuf.readByte();
                 this.source = byteBuf.readString();
                 this.message = byteBuf.readString();
                 break;
 
             case 2: // MessageAndParams
+                this.type = byteBuf.readByte();
                 this.message = byteBuf.readString();
-                int len = byteBuf.readUnsignedVarInt();
-                this.parameters = new String[len];
-                for (int i = 0; i < len; i++) {
+                int paramCount = byteBuf.readUnsignedVarInt();
+                if (paramCount > 4) {
+                    throw new IllegalArgumentException("Parameter List maxItems is 4");
+                }
+                this.parameters = new String[paramCount];
+                for (int i = 0; i < this.parameters.length; i++) {
                     this.parameters[i] = byteBuf.readString();
                 }
                 break;
 
             default:
-                throw new UnsupportedOperationException("Unknown TextPacket mode: " + mode);
+                throw new IllegalArgumentException("Not one of<MessageOnly, AuthorAndMessage, MessageAndParams>");
         }
 
-        this.isLocalized = needsTranslation;
+        this.isLocalized = byteBuf.readBoolean() || type == TYPE_TRANSLATION;
 
         this.xboxUserId = byteBuf.readString();
         this.platformChatId = byteBuf.readString();
