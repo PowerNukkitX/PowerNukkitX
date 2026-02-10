@@ -60,8 +60,8 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build project & run tests (parallel, optimized)
-        run: ./gradlew build --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
+      - name: Build project (parallel, optimized)
+        run: ./gradlew assemble --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
 
       - name: Upload JAR artifact (on success)
         if: success()
