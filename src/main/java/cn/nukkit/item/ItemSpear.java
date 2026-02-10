@@ -13,6 +13,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Buddelbubi
@@ -48,7 +49,10 @@ public abstract class ItemSpear extends ItemTool {
         applyLunge(player);
 
         if (movementSpeed < getMinimumSpeed() || !player.isSprinting()) {
-            player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
+            Sound missSound = getMissSound();
+            if (missSound != null) {
+                player.getLevel().addSound(player.getPosition(), missSound);
+            }
             return;
         }
 
@@ -95,9 +99,15 @@ public abstract class ItemSpear extends ItemTool {
             );
 
             target.attack(damageEvent);
-            level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_HIT);
+            Sound hitSound = getHitSound();
+            if (hitSound != null) {
+                level.addSound(player.getPosition(), hitSound);
+            }
         } else {
-            level.addSound(player.getPosition(), Sound.ITEM_SPEAR_ATTACK_MISS);
+            Sound missSound = getMissSound();
+            if (missSound != null) {
+                level.addSound(player.getPosition(), missSound);
+            }
         }
     }
 
@@ -147,7 +157,10 @@ public abstract class ItemSpear extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_USE);
+        Sound useSound = getUseSound();
+        if (useSound != null) {
+            player.getLevel().addSound(player.getPosition(), useSound);
+        }
         return true;
     }
 
@@ -198,7 +211,45 @@ public abstract class ItemSpear extends ItemTool {
             );
 
             closest.attack(event);
-            level.addSound(player.getPosition(), Sound.ITEM_SPEAR_HIT);
+            Sound hitSound = getHitSound();
+            if (hitSound != null) {
+                level.addSound(player.getPosition(), hitSound);
+            }
+        }
+    }
+
+    private @Nullable String getSoundPrefix() {
+        return switch (this.getTier()) {
+            case TIER_DIAMOND -> "item.diamond_spear";
+            case TIER_GOLD -> "item.golden_spear";
+            case TIER_COPPER -> "item.copper_spear";
+            case TIER_IRON -> "item.iron_spear";
+            case TIER_NETHERITE -> "item.netherite_spear";
+            case TIER_WOODEN -> "item.wooden_spear";
+            default -> null;
+        };
+    }
+
+    private @Nullable Sound getHitSound() {
+        return getSoundBySuffix(".attack_hit");
+    }
+
+    private @Nullable Sound getMissSound() {
+        return getSoundBySuffix(".attack_miss");
+    }
+
+    private @Nullable Sound getUseSound() {
+        return getSoundBySuffix(".use");
+    }
+
+    private @Nullable Sound getSoundBySuffix(String suffix) {
+        String prefix = getSoundPrefix();
+        if (prefix == null) return null;
+
+        try {
+            return Sound.valueOf(prefix + suffix);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 }

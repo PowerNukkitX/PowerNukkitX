@@ -150,7 +150,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeVarInt(this.rewindHistorySize);
         if (this.serverAuthoritativeMovement != null) {
             byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
-        } else { //兼容nkx旧插件
+        } else { // Older PowerNukkitX plugin compatibility
             byteBuf.writeBoolean(this.isMovementServerAuthoritative); // isServerAuthoritativeBlockBreaking
         }
         byteBuf.writeLongLE(this.currentTick);
