@@ -8,28 +8,22 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class BlockEventPacket extends DataPacket {
-    public int x;
-    public int y;
-    public int z;
-    public int type;
-    public int value;
+public class ClientboundDataDrivenUIShowScreenPacket extends DataPacket {
+    public String screenId;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-
+        this.screenId = byteBuf.readString();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeBlockVector3(this.x, this.y, this.z);
-        byteBuf.writeVarInt(this.type);
-        byteBuf.writeVarInt(this.value);
+        byteBuf.writeString(this.screenId);
     }
 
     @Override
     public int pid() {
-        return ProtocolInfo.BLOCK_EVENT_PACKET;
+        return ProtocolInfo.CLIENTBOUND_DDUI_SHOW_SCREEN;
     }
 
     public void handle(PacketHandler handler) {

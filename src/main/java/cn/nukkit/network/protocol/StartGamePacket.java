@@ -6,7 +6,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.ExperimentEntry;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.network.protocol.types.telemetry.ServerTelemetryData;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,11 +14,10 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
- * @since 15-10-13
+ * @since 15/10/2013
  */
 @Slf4j
 @Getter
@@ -120,29 +119,15 @@ public class StartGamePacket extends DataPacket {
      * @since v589
      */
     public boolean isSoundsServerAuthoritative;
-    /**
-     * @since v685
-     */
-    private String serverId = "";
-    /**
-     * @since v685
-     */
-    private String worldId = "";
-    /**
-     * @since v685
-     */
-    private String scenarioId = "";
-    /**
-     * @since v818
-     */
-    private String ownerIdentifier = "";
     private List<ExperimentEntry> experiments = new ArrayList<>();
-
     /**
-     * @since v827
+     * @since v924
      */
-
-    private boolean tickDeathSystemsEnabled = false;
+    private boolean hasServerJoinInformation = false;
+    /**
+     * @since v924
+     */
+    private ServerTelemetryData serverTelemetryData = new ServerTelemetryData();
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -164,8 +149,8 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.isTrial);
         byteBuf.writeVarInt(this.rewindHistorySize);
         if (this.serverAuthoritativeMovement != null) {
-            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking 
-        } else { //兼容nkx旧插件
+            byteBuf.writeBoolean(this.serverAuthoritativeMovement > 0); // isServerAuthoritativeBlockBreaking
+        } else { // Older PowerNukkitX plugin compatibility
             byteBuf.writeBoolean(this.isMovementServerAuthoritative); // isServerAuthoritativeBlockBreaking
         }
         byteBuf.writeLongLE(this.currentTick);
@@ -195,6 +180,13 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
+        byteBuf.writeBoolean(this.hasServerJoinInformation); // hasServerJoinInformation
+
+        // Server telemetry data
+        byteBuf.writeString(this.serverTelemetryData.getServerId()); // serverId
+        byteBuf.writeString(this.serverTelemetryData.getScenarioId()); // scenarioId
+        byteBuf.writeString(this.serverTelemetryData.getWorldId()); // worldId
+        byteBuf.writeString(this.serverTelemetryData.getOwnerId()); // ownerId
     }
 
     private void writeLevelSettings(HandleByteBuf byteBuf) {
@@ -254,10 +246,6 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(false); // force Experimental Gameplay (exclusive to debug clients)
         byteBuf.writeByte(this.chatRestrictionLevel);
         byteBuf.writeBoolean(this.disablePlayerInteractions);
-        byteBuf.writeString(serverId);
-        byteBuf.writeString(worldId);
-        byteBuf.writeString(scenarioId);
-        byteBuf.writeString(ownerIdentifier);
         /* Level settings end */
     }
 
