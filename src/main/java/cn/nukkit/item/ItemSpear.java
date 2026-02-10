@@ -218,38 +218,39 @@ public abstract class ItemSpear extends ItemTool {
         }
     }
 
-    private @Nullable String getSoundPrefix() {
+    private @Nullable Sound getHitSound() {
         return switch (this.getTier()) {
-            case TIER_DIAMOND -> "item.diamond_spear";
-            case TIER_GOLD -> "item.golden_spear";
-            case TIER_COPPER -> "item.copper_spear";
-            case TIER_IRON -> "item.iron_spear";
-            case TIER_NETHERITE -> "item.netherite_spear";
-            case TIER_WOODEN -> "item.wooden_spear";
+            case TIER_DIAMOND -> Sound.ITEM_DIAMOND_SPEAR_ATTACK_HIT;
+            case TIER_GOLD -> Sound.ITEM_GOLDEN_SPEAR_ATTACK_HIT;
+            case TIER_COPPER -> Sound.ITEM_COPPER_SPEAR_ATTACK_HIT;
+            case TIER_IRON -> Sound.ITEM_IRON_SPEAR_ATTACK_HIT;
+            case TIER_NETHERITE -> Sound.ITEM_NETHERITE_SPEAR_ATTACK_HIT;
+            case TIER_WOODEN -> Sound.ITEM_WOODEN_SPEAR_ATTACK_HIT;
             default -> null;
         };
     }
 
-    private @Nullable Sound getHitSound() {
-        return getSoundBySuffix(".attack_hit");
-    }
-
     private @Nullable Sound getMissSound() {
-        return getSoundBySuffix(".attack_miss");
+        return switch (this.getTier()) {
+            case TIER_DIAMOND -> Sound.ITEM_DIAMOND_SPEAR_ATTACK_MISS;
+            case TIER_GOLD -> Sound.ITEM_GOLDEN_SPEAR_ATTACK_MISS;
+            case TIER_COPPER -> Sound.ITEM_COPPER_SPEAR_ATTACK_MISS;
+            case TIER_IRON -> Sound.ITEM_IRON_SPEAR_ATTACK_MISS;
+            case TIER_NETHERITE -> Sound.ITEM_NETHERITE_SPEAR_ATTACK_MISS;
+            case TIER_WOODEN -> Sound.ITEM_WOODEN_SPEAR_ATTACK_MISS;
+            default -> null;
+        };
     }
 
     private @Nullable Sound getUseSound() {
-        return getSoundBySuffix(".use");
-    }
-
-    private @Nullable Sound getSoundBySuffix(String suffix) {
-        String prefix = getSoundPrefix();
-        if (prefix == null) return null;
-
-        try {
-            return Sound.valueOf(prefix + suffix);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return switch (this.getTier()) {
+            case TIER_DIAMOND -> Sound.ITEM_DIAMOND_SPEAR_USE;
+            case TIER_GOLD -> Sound.ITEM_GOLDEN_SPEAR_USE;
+            case TIER_COPPER -> Sound.ITEM_COPPER_SPEAR_USE;
+            case TIER_IRON -> Sound.ITEM_IRON_SPEAR_USE;
+            case TIER_NETHERITE -> Sound.ITEM_NETHERITE_SPEAR_USE;
+            case TIER_WOODEN -> Sound.ITEM_WOODEN_SPEAR_USE;
+            default -> null;
+        };
     }
 }

@@ -136,11 +136,7 @@ public enum DisconnectFailReason {
     EDITION_MISMATCH_EDU_TO_VANILLA(132),
     EDITION_MISMATCH_EDITOR_TO_VANILLA(133),
     EDITION_MISMATCH_VANILLA_TO_EDITOR(134),
-    DENY_LISTED(135)
-
-
-
-    ;
+    DENY_LISTED(135);
 
     private final int code;
 
