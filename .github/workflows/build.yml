@@ -109,7 +109,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Gradle check (format, lint, etc)
-        run: ./gradlew check --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
+        run: ./gradlew check -PskipTests --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
 
   summary:
     name: Build summary

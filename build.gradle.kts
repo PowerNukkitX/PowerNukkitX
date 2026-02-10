@@ -202,6 +202,9 @@ tasks.test {
     finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
 
+tasks.withType<Test>().configureEach {
+    onlyIf { !project.hasProperty("skipTests") }
+}
 
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
