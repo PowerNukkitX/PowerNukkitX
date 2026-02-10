@@ -29,8 +29,7 @@ public enum EnchantmentType {
     TRIDENT,
     CROSSBOW,
     MACE,
-    SPEAR,
-    ;
+    SPEAR;
 
 
     public boolean canEnchantItem(@NotNull Item item) {

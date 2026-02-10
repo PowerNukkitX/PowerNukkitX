@@ -24,6 +24,7 @@ import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.block.BlockBreakEvent;
+import cn.nukkit.event.block.BlockChangeEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.level.ChunkLoadEvent;
@@ -2524,6 +2525,9 @@ public class Level implements Metadatable {
         blockPrevious.z = z;
         blockPrevious.level = this;
         blockPrevious.layer = layer;
+
+        BlockChangeEvent blockChangeEvent = new BlockChangeEvent(block, blockPrevious);
+        this.server.getPluginManager().callEvent(blockChangeEvent);
 
         int cx = x >> 4;
         int cz = z >> 4;

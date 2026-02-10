@@ -82,6 +82,20 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     @Override
+    protected void initBlockEntity() {
+        super.initBlockEntity();
+        scheduleUpdate();
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if(!isBlockEntityValid()) {
+            close();
+        }
+        return !closed;
+    }
+
+    @Override   
     public CompoundTag getSpawnCompound() {
         return super.getSpawnCompound()
                 .putInt("Base", getBaseColor())

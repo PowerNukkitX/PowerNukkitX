@@ -22,6 +22,7 @@ import cn.nukkit.item.enchantment.protection.EnchantmentProtectionExplosion;
 import cn.nukkit.item.enchantment.protection.EnchantmentProtectionFall;
 import cn.nukkit.item.enchantment.protection.EnchantmentProtectionFire;
 import cn.nukkit.item.enchantment.protection.EnchantmentProtectionProjectile;
+import cn.nukkit.item.enchantment.spear.EnchantmentLunge;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentChanneling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
