@@ -64,7 +64,7 @@ dependencies {
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
+    testRuntimeOnly(libs.junit.jupiter.engine)
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
