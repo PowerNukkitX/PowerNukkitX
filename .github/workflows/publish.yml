@@ -134,7 +134,7 @@ jobs:
         id: version
         run: |
           API_VERSION=$(grep 'public final static String API_VERSION' src/main/java/cn/nukkit/Nukkit.java | sed -E 's/.*"([^"\n]+)".*/\1/')
-          MINECRAFT_VERSION_NETWORK=$(grep 'public final static String MINECRAFT_VERSION_NETWORK' src/main/java/cn/nukkit/network/protocol/ProtocolInfo.java | sed -E 's/.*"([^"\n]+)".*/\1/')
+          MINECRAFT_VERSION_NETWORK=$(grep -E 'String[[:space:]]+MINECRAFT_VERSION_NETWORK[[:space:]]*=' src/main/java/cn/nukkit/network/protocol/ProtocolInfo.java | sed -E 's/.*"([^"\n]+)".*/\1/')
           echo "API_VERSION=$API_VERSION" >> $GITHUB_ENV
           echo "MINECRAFT_VERSION_NETWORK=$MINECRAFT_VERSION_NETWORK" >> $GITHUB_ENV
 
