@@ -36,11 +36,11 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  publish-experimental:
-    name: Publish Experimental Nightly Build
+  publish-next-major:
+    name: Publish Next Major Nightly Build
     runs-on: ubuntu-latest
     needs: build-publish-maven
-    if: github.ref == 'refs/heads/experimental'
+    if: github.ref == 'refs/heads/next-major'
     steps:
       - name: Checkout Source Code (Full)
         uses: actions/checkout@v4
@@ -57,20 +57,20 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x gradlew
 
-      - name: Build Project (Experimental)
+      - name: Build Project (Next Major)
         run: ./gradlew build --no-daemon --stacktrace
 
-      - name: Publish Experimental Nightly (experimental)
+      - name: Publish Next Major Nightly (next-major)
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: experimental
+          tag_name: next-major
           prerelease: true
-          name: "PowerNukkitX Experimental Nightly"
+          name: "PowerNukkitX Next Major Nightly"
           body: |
-            # PowerNukkitX Experimental Nightly
-            This is the latest experimental build of PowerNukkitX, built automatically from the [`experimental`](https://github.com/${{ github.repository }}/tree/experimental) branch.
+            # PowerNukkitX Next Major Nightly
+            This is the latest next major build of PowerNukkitX, built automatically from the [`next-major`](https://github.com/${{ github.repository }}/tree/next-major) branch.
 
-            Note: The `experimental` tag remains the same, but the assets below are replaced on every push to this branch. These builds are for testing and feedback only and may be unstable or contain untested features.
+            Note: The `next-major` tag remains the same, but the assets below are replaced on every push to this branch. These builds are for testing and feedback only and may be unstable or contain untested features.
 
             Commit: `${{ github.sha }}`
 
