@@ -87,7 +87,7 @@ jobs:
           path: build/libs/*.jar
 
       - name: Publish Next Major Nightly (next-major)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
         with:
           tag_name: next-major
           prerelease: true
@@ -182,7 +182,7 @@ jobs:
 
       - name: Publish Official Release (Draft)
         if: env.RELEASE_TRIGGER == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
         with:
           tag_name: v${{ env.API_VERSION }}
           prerelease: false

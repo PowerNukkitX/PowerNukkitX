@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Detect modified files
         id: filter
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@668c092af3649c4b664c54e4b704aa46782f6f7c
         with:
           filters: |
             src:
@@ -120,23 +120,3 @@ jobs:
       - name: Show build summary
         run: |
           echo 'Build & static checks completed. See artifacts and logs above.'
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Upload JAR artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: powernukkitx-jar
-          path: build/libs/*.jar
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: build/libs/*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
