@@ -23,22 +23,22 @@ public class BookEditPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.action = Action.values()[byteBuf.readByte()];
-        this.inventorySlot = byteBuf.readByte();
+        this.inventorySlot = byteBuf.readVarInt();
+        this.action = Action.values()[byteBuf.readUnsignedVarInt()];
 
         switch (this.action) {
             case REPLACE_PAGE:
             case ADD_PAGE:
-                this.pageNumber = byteBuf.readByte();
+                this.pageNumber = byteBuf.readVarInt();
                 this.text = byteBuf.readString();
                 this.photoName = byteBuf.readString();
                 break;
             case DELETE_PAGE:
-                this.pageNumber = byteBuf.readByte();
+                this.pageNumber = byteBuf.readVarInt();
                 break;
             case SWAP_PAGES:
-                this.pageNumber = byteBuf.readByte();
-                this.secondaryPageNumber = byteBuf.readByte();
+                this.pageNumber = byteBuf.readVarInt();
+                this.secondaryPageNumber = byteBuf.readVarInt();
                 break;
             case SIGN_BOOK:
                 this.title = byteBuf.readString();

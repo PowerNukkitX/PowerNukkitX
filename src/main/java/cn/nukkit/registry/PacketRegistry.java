@@ -230,8 +230,6 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.UPDATE_SOFT_ENUM_PACKET, UpdateSoftEnumPacket.class);
         this.register0(ProtocolInfo.NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET, NetworkChunkPublisherUpdatePacket.class);
         this.register0(ProtocolInfo.AVAILABLE_ENTITY_IDENTIFIERS_PACKET, AvailableEntityIdentifiersPacket.class);
-//        this.register0(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2, LevelSoundEventPacket.class); // deprecated since 1.21.70
-//        this.registerPacket(ProtocolInfo.SCRIPT_CUSTOM_EVENT_PACKET, ScriptCustomEventPacket.class); // deprecated since 1.20.10
         this.register0(ProtocolInfo.SPAWN_PARTICLE_EFFECT_PACKET, SpawnParticleEffectPacket.class);
         this.register0(ProtocolInfo.BIOME_DEFINITION_LIST_PACKET, BiomeDefinitionListPacket.class);
         this.register0(ProtocolInfo.LEVEL_SOUND_EVENT_PACKET, LevelSoundEventPacket.class);
@@ -324,6 +322,13 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.PLAYER_LOCATION_PACKET, PlayerLocationPacket.class);
         this.register0(ProtocolInfo.SERVER_SCRIPT_DEBUG_DRAWER_PACKET, ServerScriptDebugDrawerPacket.class);
         this.register0(ProtocolInfo.SHOW_STORE_OFFER_PACKET, ShowStoreOfferPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_DATA_STORE_PACKET, ClientboundDataStorePacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_DDUI_SHOW_SCREEN, ClientboundDataDrivenUIShowScreenPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_DDUI_CLOSE_ALL_SCREENS, ClientboundDataDrivenUICloseAllScreensPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_DDUI_RELOAD, ClientboundDataDrivenUIReloadPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_TEXTURE_SHIFT, ClientboundTextureShiftPacket.class);
+        this.register0(ProtocolInfo.VOXEL_SHAPES_PACKET, VoxelShapesPacket.class);
+        this.register0(ProtocolInfo.CAMERA_AIM_ASSIST_ACTOR_PRIORITY_PACKET, CameraAimAssistActorPriorityPacket.class);
 
         this.PACKET_POOL.trim();
     }
