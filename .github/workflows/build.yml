@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Detect modified files
         id: filter
-        uses: dorny/paths-filter@v3.0.2
+        uses: dorny/paths-filter@v3
         with:
           filters: |
             src:
@@ -36,19 +36,19 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository (shallow)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
           submodules: false
 
       - name: Set up JDK 21 (Temurin)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
 
       - name: Restore Gradle cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
@@ -65,14 +65,14 @@ jobs:
 
       - name: Upload JAR artifact (on success)
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: powernukkitx-jar
           path: build/libs/*.jar
 
       - name: Upload test results (always)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results
           path: build/test-results/
@@ -84,19 +84,19 @@ jobs:
     if: needs.filter.outputs.src == 'true'
     steps:
       - name: Checkout repository (shallow)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
           submodules: false
 
       - name: Set up JDK 21 (Temurin)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
 
       - name: Restore Gradle cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
@@ -120,3 +120,23 @@ jobs:
       - name: Show build summary
         run: |
           echo 'Build & static checks completed. See artifacts and logs above.'
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: powernukkitx-jar
+          path: build/libs/*.jar
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
