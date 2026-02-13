@@ -18,6 +18,7 @@ import cn.nukkit.event.player.*;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemMace;
 import cn.nukkit.item.ItemSpear;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
@@ -248,6 +249,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     if (target instanceof EntityLiving living) {
                         living.postAttack(player);
                     }
+                }
+                if (item instanceof ItemMace mace) {
+                    mace.onPostAttack(target, itemDamage);
                 }
                 if (item.isTool() && (player.isSurvival() || player.isAdventure())) {
                     if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {

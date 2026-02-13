@@ -1187,6 +1187,7 @@ public enum Sound {
     RESPAWN_ANCHOR_CHARGE("respawn_anchor.charge"),
     RESPAWN_ANCHOR_DEPLETE("respawn_anchor.deplete"),
     RESPAWN_ANCHOR_SET_SPAWN("respawn_anchor.set_spawn"),
+    SADDLE_IN_WATER("saddle_in_water"),
     SCRAPE("scrape"),
     SHATTER_DECORATED_POT("shatter.decorated_pot"),
     SHRIEK_SCULK_SHRIEKER("shriek.sculk_shrieker"),

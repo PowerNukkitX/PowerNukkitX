@@ -2,9 +2,9 @@ package cn.nukkit.network.protocol.types.inventory;
 
 public enum InventoryLayout {
     NONE,
-    SURVIVAL,
-    RECIPE_BOOK,
-    CREATIVE;
+    INVENTORY_ONLY,
+    DEFAULT,
+    RECIPE_BOOK_ONLY;
 
     public static final InventoryLayout[] VALUES = values();
 }
