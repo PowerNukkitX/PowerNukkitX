@@ -34,9 +34,10 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     @Override
     public void init() {
         if (isLoad.getAndSet(true)) return;
-        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biomes.json")) { //From Endstone Data
+        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biomes.json");
+             var reader = new InputStreamReader(stream)) { //From Endstone Data
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
-            Map<String, ?> map = gson.fromJson(new InputStreamReader(stream), new TypeToken<Map<String, ?>>() {}.getType());
+            Map<String, ?> map = gson.fromJson(reader, new TypeToken<Map<String, ?>>() {}.getType());
             for (var e : map.entrySet()) {
                 Object value = e.getValue();
                 if (value instanceof Number number) {
