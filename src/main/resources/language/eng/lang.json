@@ -85,6 +85,8 @@
   "pnx.settings.player.forceskintrusted": "Whether to force trust player skins, allowing players to use third-party skins freely",
   "pnx.settings.player.checkmovement": "Whether to check player movement",
   "pnx.settings.player.spawnRadius": "Spawn radius",
+  "pnx.settings.player.rotationupdatethreshold": "Rotation update threshold",
+  "pnx.settings.player.movementdistancethreshold": "Movement distance threshold",
   "pnx.settings.gameplay.enablecommandblocks": "Whether to allow players to use command blocks",
   "pnx.settings.gameplay.allowbeta": "Whether to allow beta clients to join",
   "pnx.settings.gameplay.enableredstone": "Whether to enable Redstone functionality",
