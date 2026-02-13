@@ -10,7 +10,7 @@ import cn.nukkit.utils.TextFormat;
 
 public class TpsCommand extends Command implements CoreCommand {
     public TpsCommand(String name) {
-        super(name, "get server tps");
+        super(name, "Retrieve server TPS");
         this.setPermission("nukkit.tps.status");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
