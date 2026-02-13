@@ -248,7 +248,6 @@ public abstract class Enchantment implements Cloneable {
         namedEnchantments.put(new Identifier("minecraft", NAME_DENSITY), enchantments[39]);
         namedEnchantments.put(new Identifier("minecraft", NAME_BREACH), enchantments[40]);
         namedEnchantments.put(new Identifier("minecraft", NAME_LUNGE), enchantments[41]);
-
     }
 
     private static String getLevelString(int level) {

@@ -6,6 +6,7 @@ import cn.nukkit.registry.ItemRegistry;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 
 /**
@@ -23,7 +24,7 @@ public class BlockColor implements Cloneable {
         try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/unknown/tint_map.nbt")) {
             tint_tag = NBTIO.readCompressed(stream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

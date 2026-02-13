@@ -70,7 +70,11 @@ public class Utils {
 
         if (oldFile.isFile()) {
             if (olderFile.isFile()) {
-                Utils.copyFile(oldFile, olderFile);
+                try {
+                    Utils.copyFile(oldFile, olderFile);
+                } catch (IOException e) {
+                    log.error("Could not copy {} to {} during safeWrite rotation", oldFile.getAbsolutePath(), olderFile.getAbsolutePath(), e);
+                }
             } else if (!oldFile.renameTo(olderFile)) {
                 throw new IOException("Could not rename the " + oldFile + " to " + olderFile);
             }
@@ -155,24 +159,12 @@ public class Utils {
         if (from.isDirectory() || to.isDirectory()) {
             throw new FileNotFoundException();
         }
-        FileInputStream fi = null;
-        FileChannel in = null;
-        FileOutputStream fo = null;
-        FileChannel out = null;
-        try {
-            if (!to.exists()) {
-                to.createNewFile();
-            }
-            fi = new FileInputStream(from);
-            in = fi.getChannel();
-            fo = new FileOutputStream(to);
-            out = fo.getChannel();
+
+        try (FileInputStream fi = new FileInputStream(from);
+             FileOutputStream fo = new FileOutputStream(to);
+             FileChannel in = fi.getChannel();
+             FileChannel out = fo.getChannel()) {
             in.transferTo(0, in.size(), out);
-        } finally {
-            if (fi != null) fi.close();
-            if (in != null) in.close();
-            if (fo != null) fo.close();
-            if (out != null) out.close();
         }
     }
 
@@ -272,9 +264,16 @@ public class Utils {
     @SuppressWarnings("unchecked")
     public static <T> T[] concatArray(T[]... arrays) {
         ArrayList<T> list = new ArrayList<>();
-        for(T[] array : arrays) list.addAll(Arrays.asList(array));
+        for (T[] array : arrays) {
+            list.addAll(Arrays.asList(array));
+        }
+        if (list.isEmpty()) {
+            return (T[]) new Object[0];
+        }
         T[] output = (T[]) Array.newInstance(list.getFirst().getClass(), list.size());
-        for(int i = 0; i < list.size(); i++) output[i] = list.get(i);
+        for (int i = 0; i < list.size(); i++){
+            output[i] = list.get(i);
+        }
         return output;
     }
 
@@ -332,6 +331,19 @@ public class Utils {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static <T, U> U getOrCreate(Map<T, U> map, T key, java.util.function.Supplier<? extends U> supplier) {
+        U existing = map.get(key);
+        if (existing != null) {
+            return existing;
+        }
+        U toPut = supplier.get();
+        existing = map.putIfAbsent(key, toPut);
+        if (existing == null) {
+            return toPut;
+        }
+        return existing;
     }
 
     public static int toInt(Object number) {
@@ -467,25 +479,72 @@ public class Utils {
     // Used for commands /fill, /clone and so on
     // TODO: using other methods instead of this one
 
+    @FunctionalInterface
+    public interface Int3Consumer {
+        void accept(int x, int y, int z);
+    }
 
-    public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
+    @FunctionalInterface
+    public interface Int3Predicate {
+        boolean test(int x, int y, int z);
+    }
+
+    private static int[] getBlockBounds(AxisAlignedBB bb, boolean ceilMax) {
         int minX = NukkitMath.floorDouble(Math.min(bb.getMinX(), bb.getMaxX()));
         int minY = NukkitMath.floorDouble(Math.min(bb.getMinY(), bb.getMaxY()));
         int minZ = NukkitMath.floorDouble(Math.min(bb.getMinZ(), bb.getMaxZ()));
-        int maxX = NukkitMath.floorDouble(Math.max(bb.getMinX(), bb.getMaxX()));
-        int maxY = NukkitMath.floorDouble(Math.max(bb.getMinY(), bb.getMaxY()));
-        int maxZ = NukkitMath.floorDouble(Math.max(bb.getMinZ(), bb.getMaxZ()));
+        double maxXVal = Math.max(bb.getMinX(), bb.getMaxX());
+        double maxYVal = Math.max(bb.getMinY(), bb.getMaxY());
+        double maxZVal = Math.max(bb.getMinZ(), bb.getMaxZ());
+        int maxX = ceilMax ? NukkitMath.ceilDouble(maxXVal) : NukkitMath.floorDouble(maxXVal);
+        int maxY = ceilMax ? NukkitMath.ceilDouble(maxYVal) : NukkitMath.floorDouble(maxYVal);
+        int maxZ = ceilMax ? NukkitMath.ceilDouble(maxZVal) : NukkitMath.floorDouble(maxZVal);
+        return new int[]{minX, minY, minZ, maxX, maxY, maxZ};
+    }
 
-        List<Block> blocks = new ArrayList<>();
-        Vector3 vec = new Vector3();
-
+    public static void forEachBlockPos(AxisAlignedBB bb, boolean ceilMax, Int3Consumer consumer) {
+        int[] bounds = getBlockBounds(bb, ceilMax);
+        int minX = bounds[0];
+        int minY = bounds[1];
+        int minZ = bounds[2];
+        int maxX = bounds[3];
+        int maxY = bounds[4];
+        int maxZ = bounds[5];
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
-                    blocks.add(level.getBlock(vec.setComponents(x, y, z), false));
+                    consumer.accept(x, y, z);
                 }
             }
         }
+    }
+
+    public static boolean anyBlockPos(AxisAlignedBB bb, boolean ceilMax, Int3Predicate predicate) {
+        int[] bounds = getBlockBounds(bb, ceilMax);
+        int minX = bounds[0];
+        int minY = bounds[1];
+        int minZ = bounds[2];
+        int maxX = bounds[3];
+        int maxY = bounds[4];
+        int maxZ = bounds[5];
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    if (predicate.test(x, y, z)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
+        List<Block> blocks = new ArrayList<>();
+        Vector3 vec = new Vector3();
+
+        forEachBlockPos(bb, false, (x, y, z) -> blocks.add(level.getBlock(vec.setComponents(x, y, z), false)));
 
         return blocks.toArray(Block.EMPTY_ARRAY);
     }
@@ -514,49 +573,17 @@ public class Utils {
     }
 
     public static boolean hasCollisionBlocks(Level level, AxisAlignedBB bb) {
-        int minX = NukkitMath.floorDouble(bb.getMinX());
-        int minY = NukkitMath.floorDouble(bb.getMinY());
-        int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    Block block = level.getBlock(x, y, z, false);
-                    // Determine whether there is a collision with non-air blocks
-                    if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+        return anyBlockPos(bb, true, (x, y, z) -> {
+            Block block = level.getBlock(x, y, z, false);
+            return block != null && !block.canPassThrough() && block.collidesWithBB(bb);
+        });
     }
 
     public static boolean hasCollisionTickCachedBlocks(Level level, AxisAlignedBB bb) {
-        int minX = NukkitMath.floorDouble(bb.getMinX());
-        int minY = NukkitMath.floorDouble(bb.getMinY());
-        int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    Block block = level.getTickCachedBlock(x, y, z, false);
-                    // Determine whether there is a collision with non-air blocks
-                    if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+        return anyBlockPos(bb, true, (x, y, z) -> {
+            Block block = level.getTickCachedBlock(x, y, z, false);
+            return block != null && block.collidesWithBB(bb) && !block.canPassThrough();
+        });
     }
 
     /**
@@ -572,45 +599,42 @@ public class Utils {
      * if zz is 00, then zz is not used <br>
      */
     public static byte hasCollisionTickCachedBlocksWithInfo(Level level, @NotNull AxisAlignedBB bb) {
-        int minX = NukkitMath.floorDouble(bb.getMinX());
-        int minY = NukkitMath.floorDouble(bb.getMinY());
-        int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        int[] bounds = getBlockBounds(bb, true);
+        int minX = bounds[0];
+        int minY = bounds[1];
+        int minZ = bounds[2];
+        int maxX = bounds[3];
+        int maxY = bounds[4];
+        int maxZ = bounds[5];
         float centerX = (float) (maxX + minX) / 2;
         float centerY = (float) (maxY + minY) / 2;
         float centerZ = (float) (maxZ + minZ) / 2;
-        byte returnValue = 0;
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    Block block = level.getTickCachedBlock(x, y, z, false);
-                    // Determine whether there is a collision with non-air blocks
-                    if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
-                        if (x < centerX) {
-                            returnValue |= 0b010000;
-                        } else if (x > centerX) {
-                            returnValue |= 0b110000;
-                        }
-                        if (y < centerY) {
-                            returnValue |= 0b0100;
-                        } else if (y > centerY) {
-                            returnValue |= 0b1100;
-                        }
-                        if (z < centerZ) {
-                            returnValue |= 0b01;
-                        } else if (z > centerZ) {
-                            returnValue |= 0b11;
-                        }
-                        return returnValue;
-                    }
+        byte[] result = new byte[]{0};
+        boolean found = anyBlockPos(bb, true, (x, y, z) -> {
+            Block block = level.getTickCachedBlock(x, y, z, false);
+            if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
+                byte returnValue = 0;
+                if (x < centerX) {
+                    returnValue |= 0b010000;
+                } else if (x > centerX) {
+                    returnValue |= 0b110000;
                 }
+                if (y < centerY) {
+                    returnValue |= 0b0100;
+                } else if (y > centerY) {
+                    returnValue |= 0b1100;
+                }
+                if (z < centerZ) {
+                    returnValue |= 0b01;
+                } else if (z > centerZ) {
+                    returnValue |= 0b11;
+                }
+                result[0] = returnValue;
+                return true;
             }
-        }
-
-        return 0;
+            return false;
+        });
+        return found ? result[0] : 0;
     }
 
     public static byte[] appendBytes(byte[] bytes1, byte[]... bytes2) {

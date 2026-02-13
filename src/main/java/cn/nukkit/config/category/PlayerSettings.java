@@ -18,6 +18,10 @@ public class PlayerSettings extends OkaeriConfig {
     boolean forceSkinTrusted = false;
     @Comment("pnx.settings.player.checkmovement")
     boolean checkMovement = true;
+    @Comment("pnx.settings.player.rotationupdatethreshold")
+    float rotationUpdateThreshold = 1;
+    @Comment("pnx.settings.player.movementdistancethreshold")
+    float movementDistanceThreshold = 0.1f;
     @Comment("pnx.settings.player.spawnRadius")
     int spawnRadius = 16;
 }

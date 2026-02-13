@@ -127,7 +127,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 this.transactionData = releaseItemData;
                 break;
             default:
-                throw new RuntimeException("Unknown transaction type " + this.transactionType);
+                throw new IllegalStateException("Unknown transaction type " + this.transactionType);
         }
     }
 
@@ -186,7 +186,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 byteBuf.writeVector3f(releaseItemData.headRot.asVector3f());
                 break;
             default:
-                throw new RuntimeException("Unknown transaction type " + this.transactionType);
+                throw new IllegalStateException("Unknown transaction type " + this.transactionType);
         }
     }
 

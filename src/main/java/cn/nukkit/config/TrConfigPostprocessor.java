@@ -154,7 +154,7 @@ public class TrConfigPostprocessor {
         try {
             return this.updateLinesKeys0(walker);
         } catch (Exception exception) {
-            throw new RuntimeException("failed to #updateLinesKeys for context:\n" + this.context, exception);
+            throw new IllegalStateException("failed to #updateLinesKeys for context:\n" + this.context, exception);
         }
     }
 

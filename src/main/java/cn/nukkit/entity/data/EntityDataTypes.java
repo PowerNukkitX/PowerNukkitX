@@ -250,4 +250,12 @@ public interface EntityDataTypes {
      * @since v685
      */
     EntityDataType<Long> VISIBLE_MOB_EFFECTS = new EntityDataType<>(0L, "VISIBLE_MOB_EFFECTS", 131);
+
+    EntityDataType<String> FILTERED_NAME = new EntityDataType<>("", "FILTERED_NAME", 132);
+    EntityDataType<Vector3f> ENTER_BED_POSITION = new EntityDataType<>(new Vector3f(), "ENTER_BED_POSITION", 133);
+    EntityDataType<Float> SEAT_THIRD_PERSON_CAMERA_RADIUS = new EntityDataType<>(0f, "SEAT_THIRD_PERSON_CAMERA_RADIUS", 134);
+    EntityDataType<Float> SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING = new EntityDataType<>(0f, "SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING", 135);
+    EntityDataType<Integer> AIM_ASSIST_PRIORITY_PRESET_ID = new EntityDataType<>(0, "AIM_ASSIST_PRIORITY_PRESET_ID", 136);
+    EntityDataType<Integer> AIM_ASSIST_PRIORITY_CATEGORY_ID = new EntityDataType<>(0, "AIM_ASSIST_PRIORITY_CATEGORY_ID", 137);
+    EntityDataType<Long> AIM_ASSIST_PRIORITY_ACTOR_ID = new EntityDataType<>(0L, "AIM_ASSIST_PRIORITY_ACTOR_ID", 138);
 }

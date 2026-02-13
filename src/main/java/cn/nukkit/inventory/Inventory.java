@@ -289,7 +289,7 @@ public interface Inventory {
     default ContainerSlotType getSlotType(int nativeSlot) {
         ContainerSlotType type = slotTypeMap().get(fromNetworkSlot(nativeSlot));
         if (type == null) {
-            throw new RuntimeException("ContainerSlotType " + nativeSlot + " does not exist!");
+            throw new IllegalStateException("ContainerSlotType " + nativeSlot + " does not exist!");
         }
         return type;
     }

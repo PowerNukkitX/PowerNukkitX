@@ -11,10 +11,10 @@ import lombok.Value;
  */
 @Value
 public class PlayerDiedEventData implements EventData {
-    private final int attackerEntityId;
-    private final int attackerVariant;
-    private final int entityDamageCause;
-    private final boolean inRaid;
+    int attackerEntityId;
+    int attackerVariant;
+    int entityDamageCause;
+    boolean inRaid;
 
     @Override
     public EventDataType getType() {

@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -91,7 +92,7 @@ public class JarPluginResourcePack extends AbstractResourcePack {
                         zipOutputStream.putNextEntry(new ZipEntry(entry.getName().substring(RESOURCE_PACK_PATH.length())));
                         zipOutputStream.write(jar.getInputStream(entry).readAllBytes());
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UncheckedIOException(e);
                     }
                 }
             });

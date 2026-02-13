@@ -18,6 +18,7 @@ import me.sunlan.fastreflection.FastConstructor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeature, Class<? extends GenerateFeature>> {
@@ -137,8 +138,8 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
 
     @SneakyThrows
     public GenerateFeature get(Class<? extends GenerateFeature> c) {
-        for (var entry : REGISTRY.entrySet()) {
-            if (entry.getValue().equals(c)) {
+        for (Map.Entry<String, FastConstructor<? extends GenerateFeature>> entry : REGISTRY.entrySet()) {
+            if (entry.getValue().getDeclaringClass().getRawClass().equals(c)) {
                 try {
                     return (GenerateFeature) entry.getValue().invoke();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |

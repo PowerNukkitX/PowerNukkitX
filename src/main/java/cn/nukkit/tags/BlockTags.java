@@ -9,6 +9,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,7 +80,7 @@ public final class BlockTags {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
