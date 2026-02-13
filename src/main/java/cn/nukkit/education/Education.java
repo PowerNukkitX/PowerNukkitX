@@ -12,6 +12,7 @@ import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.registry.CreativeGroupsRegistry;
 import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.MapParsingUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
@@ -393,7 +394,7 @@ public class Education implements BlockID, ItemID {
                 }.getType());
                 List<String> tmpGroups = new ArrayList<>();
 
-                List<Map<String, Object>> groupData = asStringObjectMapList(data.get("groups"));
+                List<Map<String, Object>> groupData = MapParsingUtils.stringObjectMapList(data.get("groups"));
                 for (Map<String, Object> tag : groupData) {
                     String name = (String) tag.getOrDefault("name", null);
                     String icon = (String) tag.getOrDefault("icon", null);
@@ -412,7 +413,7 @@ public class Education implements BlockID, ItemID {
                     });
                 }
 
-                List<Map<String, Object>> items = asStringObjectMapList(data.get("items"));
+                List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"));
                 for (Map<String, Object> tag : items) {
                     String id = (String) tag.getOrDefault("id", null);
                     String group = (String) tag.getOrDefault("group", null);
@@ -436,25 +437,5 @@ public class Education implements BlockID, ItemID {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-    }
-
-    private static List<Map<String, Object>> asStringObjectMapList(Object value) {
-        if (!(value instanceof List<?> rawList)) {
-            return List.of();
-        }
-        List<Map<String, Object>> result = new ArrayList<>(rawList.size());
-        for (Object entry : rawList) {
-            if (entry instanceof Map<?, ?> rawMap) {
-                Map<String, Object> typed = new HashMap<>();
-                for (Map.Entry<?, ?> mapEntry : rawMap.entrySet()) {
-                    Object key = mapEntry.getKey();
-                    if (key instanceof String name) {
-                        typed.put(name, mapEntry.getValue());
-                    }
-                }
-                result.add(typed);
-            }
-        }
-        return result;
     }
 }

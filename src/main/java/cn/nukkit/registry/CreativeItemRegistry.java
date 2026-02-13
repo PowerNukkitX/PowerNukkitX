@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.MapParsingUtils;
 import lombok.extern.slf4j.Slf4j;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -63,7 +64,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json");
              InputStreamReader reader = new InputStreamReader(input)) {
             Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
-            List<Map<String, Object>> groups = asStringObjectMapList(data.get("groups"));
+            List<Map<String, Object>> groups = MapParsingUtils.stringObjectMapList(data.get("groups"));
             int index = 0;
             for (Map<String, Object> tag : groups) {
                 int creativeCategory = ((Number) tag.getOrDefault("creative_category", 0)).intValue();
@@ -83,7 +84,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             CreativeItemRegistry.LAST_ITEMS_INDEX = getLastGroupIndexFrom("ITEMS");
             CreativeItemRegistry.LAST_NATURE_INDEX = getLastGroupIndexFrom("NATURE");
 
-            List<Map<String, Object>> items = asStringObjectMapList(data.get("items"));
+            List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"));
             for (int i = 0; i < items.size(); i++) {
                 Map<String, Object> tag = items.get(i);
                 int damage = ((Number) tag.getOrDefault("damage", 0)).intValue();
@@ -127,26 +128,6 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static List<Map<String, Object>> asStringObjectMapList(Object value) {
-        if (!(value instanceof List<?> rawList)) {
-            return List.of();
-        }
-        List<Map<String, Object>> result = new ArrayList<>(rawList.size());
-        for (Object entry : rawList) {
-            if (entry instanceof Map<?, ?> rawMap) {
-                Map<String, Object> typed = new HashMap<>();
-                for (Map.Entry<?, ?> mapEntry : rawMap.entrySet()) {
-                    Object key = mapEntry.getKey();
-                    if (key instanceof String name) {
-                        typed.put(name, mapEntry.getValue());
-                    }
-                }
-                result.add(typed);
-            }
-        }
-        return result;
     }
 
     /**
