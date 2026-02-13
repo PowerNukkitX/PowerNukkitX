@@ -120,6 +120,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -1071,6 +1073,18 @@ public class Server {
             sum += aUseAverage;
         }
         return ((float) Math.round(sum / count * 100)) / 100;
+    }
+
+    public String getCPULoad() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
+            double cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getProcessCpuLoad();
+            if (cpuLoad < 0) {
+                return "N/A";
+            }
+            return String.format("%.1f%%", cpuLoad * 100);
+        }
+        return "N/A";
     }
 
     // TODO: Fix title tick

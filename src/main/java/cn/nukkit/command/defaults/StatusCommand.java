@@ -209,7 +209,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
 
             sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
 
-            sender.sendMessage(TextFormat.GOLD + "Load: " + tpsColor + server.getTickUsage() + "%");
+            sender.sendMessage(TextFormat.GOLD + "CPU Load: " + tpsColor + server.getCPULoad());
 
 
             Runtime runtime = Runtime.getRuntime();
@@ -268,6 +268,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 }
                 sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
                 // 游戏刻负载
+                sender.sendMessage(TextFormat.GOLD + "CPU Load: " + tpsColor + server.getCPULoad());
                 sender.sendMessage(TextFormat.GOLD + "Tick Load: " + tpsColor + server.getTickUsage() + "%");
                 // 在线玩家情况
                 var playerColor = TextFormat.GREEN;
