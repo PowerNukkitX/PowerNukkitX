@@ -133,7 +133,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
                     }
                 }
                 case BOX -> buf.writeVector3f(shape.boxBound);
-                case CIRCLE, SPHERE -> buf.writeByte(shape.numSegments.byteValue());
+                case CIRCLE, SPHERE -> buf.writeByte(shape.numSegments != null ? shape.numSegments.byteValue() : 0);
                 case LINE -> buf.writeVector3f(shape.lineEndLocation);
                 case TEXT -> buf.writeString(shape.text);
             }
