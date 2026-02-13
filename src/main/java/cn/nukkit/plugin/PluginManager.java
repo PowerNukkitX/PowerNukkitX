@@ -83,6 +83,7 @@ public class PluginManager {
         Map<String, Object> info = new HashMap<>();
         info.put("name", "PowerNukkitX");
         info.put("version", server.getNukkitVersion());
+        info.put("api", java.util.Collections.singletonList(server.getApiVersion()));
         info.put("website", "https://github.com/PowerNukkitX/PowerNukkitX");
         info.put("main", InternalPlugin.class.getName());
         File file;
@@ -493,12 +494,15 @@ public class PluginManager {
                     Object aliases = map.get("aliases");
                     if (aliases instanceof List) {
                         List<String> aliasList = new ArrayList<>();
-                        for (String alias : (List<String>) aliases) {
-                            if (alias.contains(":")) {
-                                log.error(this.server.getLanguage().tr("nukkit.plugin.aliasError", alias, plugin.getDescription().getFullName()));
+                        for (Object alias : (List<?>) aliases) {
+                            if (!(alias instanceof String aliasStr)) {
                                 continue;
                             }
-                            aliasList.add(alias);
+                            if (aliasStr.contains(":")) {
+                                log.error(this.server.getLanguage().tr("nukkit.plugin.aliasError", aliasStr, plugin.getDescription().getFullName()));
+                                continue;
+                            }
+                            aliasList.add(aliasStr);
                         }
 
                         newCmd.setAliases(aliasList.toArray(EmptyArrays.EMPTY_STRINGS));

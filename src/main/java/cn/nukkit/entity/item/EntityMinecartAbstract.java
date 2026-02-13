@@ -31,6 +31,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
+import cn.nukkit.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -406,26 +407,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @return 是否有漏斗被通知
      */
     private boolean checkPushHopper(AxisAlignedBB pushArea, InventoryHolder holder) {
-        int minX = NukkitMath.floorDouble(pushArea.getMinX());
-        int minY = NukkitMath.floorDouble(pushArea.getMinY());
-        int minZ = NukkitMath.floorDouble(pushArea.getMinZ());
-        int maxX = NukkitMath.ceilDouble(pushArea.getMaxX());
-        int maxY = NukkitMath.ceilDouble(pushArea.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(pushArea.getMaxZ());
-        var tmpBV = new BlockVector3();
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    tmpBV.setComponents(x, y, z);
-                    var be = this.level.getBlockEntity(tmpBV);
-                    if (be instanceof BlockEntityHopper blockEntityHopper) {
-                        blockEntityHopper.setMinecartInvPushTo(holder);
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return notifyHopper(pushArea, holder, true);
     }
 
     /**
@@ -435,26 +417,24 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @return 是否有漏斗被通知
      */
     private boolean checkPickupHopper(AxisAlignedBB pickupArea, InventoryHolder holder) {
-        int minX = NukkitMath.floorDouble(pickupArea.getMinX());
-        int minY = NukkitMath.floorDouble(pickupArea.getMinY());
-        int minZ = NukkitMath.floorDouble(pickupArea.getMinZ());
-        int maxX = NukkitMath.ceilDouble(pickupArea.getMaxX());
-        int maxY = NukkitMath.ceilDouble(pickupArea.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(pickupArea.getMaxZ());
+        return notifyHopper(pickupArea, holder, false);
+    }
+
+    private boolean notifyHopper(AxisAlignedBB area, InventoryHolder holder, boolean push) {
         var tmpBV = new BlockVector3();
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    tmpBV.setComponents(x, y, z);
-                    var be = this.level.getBlockEntity(tmpBV);
-                    if (be instanceof BlockEntityHopper blockEntityHopper) {
-                        blockEntityHopper.setMinecartInvPickupFrom(holder);
-                        return true;
-                    }
+        return Utils.anyBlockPos(area, true, (x, y, z) -> {
+            tmpBV.setComponents(x, y, z);
+            var be = this.level.getBlockEntity(tmpBV);
+            if (be instanceof BlockEntityHopper blockEntityHopper) {
+                if (push) {
+                    blockEntityHopper.setMinecartInvPushTo(holder);
+                } else {
+                    blockEntityHopper.setMinecartInvPickupFrom(holder);
                 }
+                return true;
             }
-        }
-        return false;
+            return false;
+        });
     }
 
     private void setFalling() {

@@ -2,10 +2,9 @@ package cn.nukkit.utils;
 
 import cn.nukkit.network.connection.util.ChainValidationResult;
 import cn.nukkit.network.process.login.*;
+import com.google.common.reflect.TypeToken;
 import lombok.experimental.UtilityClass;
 import org.jose4j.json.JsonUtil;
-import org.jose4j.json.internal.json_simple.parser.JSONParser;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jwa.AlgorithmConstraints.ConstraintType;
 import org.jose4j.jwk.HttpsJwks;
@@ -30,6 +29,8 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -59,8 +60,8 @@ public class EncryptionUtils {
 
     private static final String DISCOVERY_ENDPOINT =
             "https://client.discovery.minecraft-services.net/api/v1.0/discovery/MinecraftPE/builds/1.0.0.0";
-    private static final JSONParser JSON_PARSER = new JSONParser();
 
+    private static final Type MAP_PARSE_TYPE = new TypeToken<Map<String, Object>>(){}.getType();
     private static final Map<String, Object> DISCOVERY_DATA = getDiscoveryData();
     private static final Map<String, Object> OPENID_CONFIGURATION = getOpenIdConfiguration();
     private static final String JWKS_URL = getJwksUrl();
@@ -99,7 +100,7 @@ public class EncryptionUtils {
 
     private static Map<String, Object> getDiscoveryData() {
         try {
-            URL url = new URL(DISCOVERY_ENDPOINT);
+            URL url = URI.create(DISCOVERY_ENDPOINT).toURL();
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
@@ -111,10 +112,9 @@ public class EncryptionUtils {
             }
             try(InputStream stream = connection.getInputStream();
                 InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-                //noinspection unchecked
-                return (Map<String, Object>) JSON_PARSER.parse(reader);
+                return Utils.GSON.fromJson(reader, MAP_PARSE_TYPE);
             }
-        } catch (ParseException | IOException e) {
+        } catch (IOException e) {
             throw new AssertionError("Unable to fetch discovery data from " + DISCOVERY_ENDPOINT, e);
         }
     }
@@ -154,7 +154,7 @@ public class EncryptionUtils {
 
         String openIdConfigUrl = serviceUri + "/.well-known/openid-configuration";
         try {
-            URL url = new URL(openIdConfigUrl);
+            URL url = URI.create(openIdConfigUrl).toURL();
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
@@ -166,10 +166,9 @@ public class EncryptionUtils {
             }
             try (InputStream stream = connection.getInputStream();
                  InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-                //noinspection unchecked
-                return (Map<String, Object>) JSON_PARSER.parse(reader);
+                return Utils.GSON.fromJson(reader, MAP_PARSE_TYPE);
             }
-        } catch (ParseException | IOException e) {
+        } catch (IOException e) {
             throw new AssertionError("Unable to fetch OpenID configuration from " + openIdConfigUrl, e);
         }
     }

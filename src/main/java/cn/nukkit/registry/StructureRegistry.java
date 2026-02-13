@@ -11,6 +11,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Set;
 
 /**
@@ -26,7 +27,7 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
             CompoundTag structureTag = NBTIO.readCompressed(stream);
             registerFromTag("", structureTag);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -36,7 +37,7 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
             String name1 = entry.getKey();
             String identifier = name + (name.isEmpty() ? "" : "/") + name1;
             if(entry.getValue() instanceof CompoundTag tag1) {
-                if(tag1.getTags().keySet().contains("palette")) {
+                if(tag1.getTags().containsKey("palette")) {
                     PNXStructure structure = PNXStructure.fromNbt(tag1);
                     structure.setName(identifier);
                     this.register(structure);
@@ -67,17 +68,15 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
 
     @Override
     public void register(String key, AbstractStructure value) throws RegisterException {
-        if (REGISTRY.putIfAbsent(key, value) == null) {
-        } else {
-            throw new RegisterException("The blockstate has been registered!");
+        if (REGISTRY.putIfAbsent(key, value) != null) {
+            throw new RegisterException("The blockState has been registered!");
         }
     }
 
     public void register(AbstractStructure value) throws RegisterException {
         AbstractStructure now;
-        if ((now = REGISTRY.put(value.getName(), value)) == null) {
-        } else {
-            throw new RegisterException("The blockstate " + value + "has been registered,\n current value: " + now);
+        if ((now = REGISTRY.put(value.getName(), value)) != null) {
+            throw new RegisterException("The blockState " + value + "has been registered,\n current value: " + now);
         }
     }
 

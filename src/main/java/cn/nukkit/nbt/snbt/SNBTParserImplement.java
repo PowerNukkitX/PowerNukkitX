@@ -10,10 +10,7 @@ import cn.nukkit.nbt.snbt.ast.Root;
 import cn.nukkit.nbt.snbt.ast.Value;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,24 +88,6 @@ public class SNBTParserImplement implements SNBTConstants {
      */
     public SNBTParserImplement(Path path) throws IOException {
         this(path.toString(), path);
-    }
-
-    /**
-     * Use the constructor that takes a #java.nio.files.Path or just
-     * a String (i.e. CharSequence) directly.
-     */
-    @Deprecated
-    public SNBTParserImplement(InputStream stream) {
-        this(new InputStreamReader(stream));
-    }
-
-    /**
-     * Use the constructor that takes a #java.nio.files.Path or just
-     * a String (i.e. CharSequence) directly.
-     */
-    @Deprecated
-    public SNBTParserImplement(Reader reader) {
-        this(new SNBTLexer("input", reader));
     }
 
     /**
@@ -500,7 +479,7 @@ public class SNBTParserImplement implements SNBTConstants {
                 }
                 // Code for ZeroOrMore specified at SNBT.javacc:90:27
                 while (true) {
-                    if (!(nextTokenType() == COMMA)) break;
+                    if (nextTokenType() != COMMA) break;
                     // Code for RegexpRef specified at SNBT.javacc:90:28
                     consumeToken(COMMA);
                     // Code for NonTerminal specified at SNBT.javacc:90:36
@@ -1118,21 +1097,6 @@ public class SNBTParserImplement implements SNBTConstants {
 
     private Token handleUnexpectedTokenType(TokenType expectedType, Token nextToken) {
         throw new ParseException(this, nextToken, EnumSet.of(expectedType), parsingStack);
-    }
-
-    private class ParseState {
-        Token lastConsumed;
-        ArrayList<NonTerminalCall> parsingStack;
-        NodeScope nodeScope;
-
-        ParseState() {
-            this.lastConsumed = SNBTParserImplement.this.lastConsumedToken;
-            @SuppressWarnings("unchecked")
-            ArrayList<NonTerminalCall> parsingStack = (ArrayList<NonTerminalCall>) SNBTParserImplement.this.parsingStack.clone();
-            this.parsingStack = parsingStack;
-            this.nodeScope = currentNodeScope.clone();
-        }
-
     }
 
     private boolean buildTree = true;

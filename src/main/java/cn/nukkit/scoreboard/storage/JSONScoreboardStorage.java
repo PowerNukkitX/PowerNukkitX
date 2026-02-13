@@ -11,6 +11,7 @@ import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.MapParsingUtils;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 
 
 @Getter
@@ -25,6 +27,8 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     protected Path filePath;
     protected Config json;
+    private static final Function<String, RuntimeException> SCOREBOARD_ERROR =
+            field -> new IllegalArgumentException("Invalid scoreboard data: " + field);
 
     public JSONScoreboardStorage(String path) {
         this.filePath = Paths.get(path);
@@ -60,24 +64,25 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     @Override
     public Map<String, IScoreboard> readScoreboard() {
-        Map<String, Object> scoreboards = (Map<String, Object>) json.get("scoreboard");
+        Map<String, Object> scoreboards = MapParsingUtils.stringObjectMapOrNull(json.get("scoreboard"), "scoreboard", SCOREBOARD_ERROR);
         Map<String, IScoreboard> result = new HashMap<>();
         if (scoreboards == null) return result;
         for (Map.Entry<String, Object> entry : scoreboards.entrySet())
-            result.put(entry.getKey(), deserializeFromMap((Map<String, Object>) entry.getValue()));
+            result.put(entry.getKey(), deserializeFromMap(MapParsingUtils.stringObjectMap(entry.getValue(), "scoreboard entry", SCOREBOARD_ERROR)));
         return result;
     }
 
     @Override
     public IScoreboard readScoreboard(String name) {
-        return json.get("scoreboard." + name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard." + name));
+        Object raw = json.get("scoreboard." + name);
+        return raw == null ? null : deserializeFromMap(MapParsingUtils.stringObjectMap(raw, "scoreboard." + name, SCOREBOARD_ERROR));
     }
 
     @Override
     public Map<DisplaySlot, String> readDisplay() {
         Map<DisplaySlot, String> result = new HashMap<>();
         if (json.get("display") == null) return result;
-        for (Map.Entry<String, String> e : ((Map<String, String>) json.get("display")).entrySet()) {
+        for (Map.Entry<String, String> e : MapParsingUtils.stringStringMapOrNull(json.get("display"), "display", SCOREBOARD_ERROR).entrySet()) {
             DisplaySlot slot = DisplaySlot.valueOf(e.getKey());
             result.put(slot, e.getValue());
         }
