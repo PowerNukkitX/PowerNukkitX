@@ -348,11 +348,8 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
             for(BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
                 boolean[] skulls = new boolean[5];
-                ints:
-                for(int i = -2; i<=2; i++) {
-                    if(block.getSide(face, i) instanceof BlockWitherSkeletonSkull skull) {
-                        skulls[i+2] = true;
-                    } else skulls[i+2] = false;
+                for (int i = -2; i <= 2; i++) {
+                    skulls[i + 2] = block.getSide(face, i) instanceof BlockWitherSkeletonSkull;
                 }
                 int inrow = 0;
                 for(int i = 0; i < skulls.length; i++) {

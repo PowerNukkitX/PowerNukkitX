@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBufInputStream;
 import lombok.*;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 
 /**
@@ -34,7 +35,7 @@ public class BlockEntityDataPacket extends DataPacket {
         try (ByteBufInputStream is = new ByteBufInputStream(byteBuf)) {
             this.namedTag = NBTIO.read(is, ByteOrder.LITTLE_ENDIAN, true);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -44,7 +45,7 @@ public class BlockEntityDataPacket extends DataPacket {
         try {
             byteBuf.writeBytes(NBTIO.write(namedTag, ByteOrder.LITTLE_ENDIAN, true));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

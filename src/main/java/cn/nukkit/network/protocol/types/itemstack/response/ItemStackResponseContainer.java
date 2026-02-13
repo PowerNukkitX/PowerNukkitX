@@ -4,7 +4,6 @@ import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import lombok.Value;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**

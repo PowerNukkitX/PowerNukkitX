@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
@@ -77,7 +78,7 @@ public final class PluginI18nManager {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
-                    // 开始读取文件内容
+                    // Begin reading the file contents
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     i18n.reloadLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
@@ -87,7 +88,8 @@ public final class PluginI18nManager {
             }
             return count > 0;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to reload language files from plugin JAR", e);
+            return false;
         }
     }
 
@@ -111,7 +113,7 @@ public final class PluginI18nManager {
                     i18n.reloadLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                     count++;
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UncheckedIOException(e);
                 }
             }
             return count > 0;
@@ -136,7 +138,7 @@ public final class PluginI18nManager {
                 JarEntry entry = jarEntrys.nextElement();
                 String name = entry.getName();
                 if (name.startsWith("language") && name.endsWith(".json")) {
-                    // 开始读取文件内容
+                    // Begin reading the file contents
                     InputStream inputStream = plugin.getResource(name);
                     assert inputStream != null;
                     pluginMultiLanguage.addLang(LangCode.from(name.substring(9, name.indexOf("."))), inputStream);
@@ -146,7 +148,7 @@ public final class PluginI18nManager {
             PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
             return pluginMultiLanguage;
         } catch (IOException e) {
-            throw new RuntimeException("No language exists in the plugin resources folder");
+            throw new IllegalStateException("No language exists in the plugin resources folder");
         }
     }
 
@@ -168,13 +170,13 @@ public final class PluginI18nManager {
                 try (InputStream inputStream = new FileInputStream(f)) {
                     pluginMultiLanguage.addLang(LangCode.from(f.getName().replace(".json", "")), inputStream);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UncheckedIOException(e);
                 }
             }
             PLUGINS_MULTI_LANGUAGE.put(plugin.getFile().getName(), pluginMultiLanguage);
             return pluginMultiLanguage;
         } else {
-            throw new RuntimeException("The path does not represent a folder or not exists!");
+            throw new IllegalStateException("The path does not represent a folder or not exists!");
         }
     }
 

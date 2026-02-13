@@ -11,6 +11,7 @@ import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.MapParsingUtils;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 
 
 @Getter
@@ -25,6 +27,8 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     protected Path filePath;
     protected Config json;
+    private static final Function<String, RuntimeException> SCOREBOARD_ERROR =
+            field -> new IllegalArgumentException("Invalid scoreboard data: " + field);
 
     public JSONScoreboardStorage(String path) {
         this.filePath = Paths.get(path);
@@ -40,6 +44,7 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     @Override
     public void saveScoreboard(IScoreboard scoreboard) {
+        if (scoreboard == null) return;
         json.set("scoreboard." + scoreboard.getObjectiveName(), serializeToMap(scoreboard));
         json.save();
     }
@@ -59,24 +64,25 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     @Override
     public Map<String, IScoreboard> readScoreboard() {
-        Map<String, Object> scoreboards = (Map<String, Object>) json.get("scoreboard");
+        Map<String, Object> scoreboards = MapParsingUtils.stringObjectMapOrNull(json.get("scoreboard"), "scoreboard", SCOREBOARD_ERROR);
         Map<String, IScoreboard> result = new HashMap<>();
         if (scoreboards == null) return result;
         for (Map.Entry<String, Object> entry : scoreboards.entrySet())
-            result.put(entry.getKey(), deserializeFromMap((Map<String, Object>) entry.getValue()));
+            result.put(entry.getKey(), deserializeFromMap(MapParsingUtils.stringObjectMap(entry.getValue(), "scoreboard entry", SCOREBOARD_ERROR)));
         return result;
     }
 
     @Override
     public IScoreboard readScoreboard(String name) {
-        return json.get("scoreboard." + name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard." + name));
+        Object raw = json.get("scoreboard." + name);
+        return raw == null ? null : deserializeFromMap(MapParsingUtils.stringObjectMap(raw, "scoreboard." + name, SCOREBOARD_ERROR));
     }
 
     @Override
     public Map<DisplaySlot, String> readDisplay() {
         Map<DisplaySlot, String> result = new HashMap<>();
         if (json.get("display") == null) return result;
-        for (Map.Entry<String, String> e : ((Map<String, String>) json.get("display")).entrySet()) {
+        for (Map.Entry<String, String> e : MapParsingUtils.stringStringMapOrNull(json.get("display"), "display", SCOREBOARD_ERROR).entrySet()) {
             DisplaySlot slot = DisplaySlot.valueOf(e.getKey());
             result.put(slot, e.getValue());
         }
@@ -124,26 +130,49 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
     }
 
     private IScoreboard deserializeFromMap(Map<String, Object> map) {
-        String objectiveName = map.get("objectiveName").toString();
-        String displayName = map.get("displayName").toString();
-        String criteriaName = map.get("criteriaName").toString();
-        SortOrder sortOrder = SortOrder.valueOf(map.get("sortOrder").toString());
+        if (map == null) return null;
+
+        String objectiveName = Objects.toString(map.get("objectiveName"), null);
+        String displayName = Objects.toString(map.get("displayName"), objectiveName);
+        String criteriaName = Objects.toString(map.get("criteriaName"), "dummy");
+        String sortRaw = Objects.toString(map.get("sortOrder"), SortOrder.ASCENDING.name());
+
+        SortOrder sortOrder;
+        try {
+            sortOrder = SortOrder.valueOf(sortRaw);
+        } catch (Exception e) {
+            sortOrder = SortOrder.ASCENDING;
+        }
+
+        if (objectiveName == null) return null;
         IScoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
-        for (Map<String, Object> line : (List<Map<String, Object>>) map.get("lines")) {
-            int score = ((Double) line.get("score")).intValue();
+        Object linesObj = map.get("lines");
+        if (!(linesObj instanceof List<?>)) return scoreboard;
+
+        for (Map<String, Object> line : (List<Map<String, Object>>) linesObj) {
+            if (!line.containsKey("score") || !line.containsKey("scorerType")) continue;
+            int score = ((Number) line.get("score")).intValue();
+            String scorerType = Objects.toString(line.get("scorerType"), null);
+            String name = Objects.toString(line.get("name"), null);
+            if (scorerType == null) continue;
             IScorer scorer = null;
-            switch (line.get("scorerType").toString()) {
+            switch (scorerType) {
                 case "PLAYER":
-                    scorer = new PlayerScorer(UUID.fromString((String) line.get("name")));
+                    if (name != null)
+                        scorer = new PlayerScorer(UUID.fromString(name));
                     break;
                 case "ENTITY":
-                    scorer = new EntityScorer(UUID.fromString((String) line.get("name")));
+                    if (name != null)
+                        scorer = new EntityScorer(UUID.fromString(name));
                     break;
                 case "FAKE":
-                    scorer = new FakeScorer((String) line.get("name"));
+                    if (name != null)
+                        scorer = new FakeScorer(name);
                     break;
             }
-            scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
+            if (scorer != null) {
+                scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
+            }
         }
         return scoreboard;
     }
