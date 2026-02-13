@@ -439,7 +439,7 @@ public class ServerScheduler {
         TaskHandler task;
         while ((task = pending.poll()) != null) {
             int tick = Math.max(currentTick, task.getNextRunTick()); // Do not schedule in the past
-            ArrayDeque<TaskHandler> queue = Utils.getOrCreate(queueMap, ArrayDeque.class, tick);
+            ArrayDeque<TaskHandler> queue = Utils.getOrCreate(queueMap, tick, ArrayDeque::new);
             queue.add(task);
         }
         if (currentTick - this.currentTick > queueMap.size()) { // A large number of ticks have passed since the last execution

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -624,7 +625,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_components.nbt")) {
             itemComponents = NBTIO.readCompressed(stream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

@@ -36,6 +36,7 @@ import org.iq80.leveldb.WriteBatch;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,7 +73,7 @@ public class LevelDBChunkSerializer {
                 serializeBlockTicks(unsafeChunk);
                 writeBatch.put(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), NBTIO.write(unsafeChunk.getExtraData()));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         });
 
@@ -310,7 +311,7 @@ public class LevelDBChunkSerializer {
                     blockEntityTags.add(NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN));
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
             builder.blockEntities(blockEntityTags);
         }
@@ -324,7 +325,7 @@ public class LevelDBChunkSerializer {
                 entityTags.add(NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         if (pnxExtraData == null) {
             db.delete(key);
@@ -350,7 +351,7 @@ public class LevelDBChunkSerializer {
                 writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         } finally {
             tileBuffer.release();
         }
@@ -371,7 +372,7 @@ public class LevelDBChunkSerializer {
                 writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         } finally {
             entityBuffer.release();
         }

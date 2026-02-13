@@ -847,7 +847,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
             if ((int) len != len) {
                 log2 = 30;
                 len = (1L << log2) + 2;
-                if (sz > ((len >> 2) + (len >> 1))) throw new RuntimeException("Table is full.");
+                if (sz > ((len >> 2) + (len >> 1))) throw new IllegalStateException("Table is full.");
             }
 
             // Now limit the number of threads actually allocating memory to a
@@ -1226,56 +1226,40 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * interfaces, generified to the {@link Long} class and supporting a
      * <strong>non-auto-boxing</strong> {@link #nextLong} function.
      */
-    public class IteratorLong implements Iterator<Long>, Enumeration<Long>, LongIterator {
-        private final SnapshotV _ss;
+    public static class IteratorLong implements Enumeration<Long>, LongIterator {
+        private final Long2ObjectNonBlockingMap<?>.SnapshotV _ss;
 
-        /**
-         * A new IteratorLong
-         */
-        public IteratorLong() {
-            _ss = new SnapshotV();
+        public IteratorLong(Long2ObjectNonBlockingMap<?> map) {
+            _ss = map.new SnapshotV();
         }
 
-        /**
-         * Remove last key returned by {@link #next} or {@link #nextLong}.
-         */
+        @Override
         public void remove() {
             _ss.removeKey();
         }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Long next() {
-            _ss.next();
-            return _ss._prevK;
-        }
-
-        /**
-         * Return the next key as a primitive {@code long}.
-         */
+        @Override
         public long nextLong() {
             _ss.next();
             return _ss._prevK;
         }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
+        @Override
         public boolean hasNext() {
             return _ss.hasNext();
         }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Long nextElement() {
-            return next();
+        @Override
+        public Long next() {
+            return Long.valueOf(nextLong());
         }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
+        @Override
+        public Long nextElement() {
+            return Long.valueOf(nextLong());
+        }
+
+        @Override
         public boolean hasMoreElements() {
             return hasNext();
         }
@@ -1289,11 +1273,11 @@ public class Long2ObjectNonBlockingMap<TypeV>
      * @see #keySet()
      */
     public Enumeration<Long> keys() {
-        return new IteratorLong();
+        return new IteratorLong(this);
     }
 
     public IteratorLong fastKeyIterator() {
-        return new IteratorLong();
+        return new IteratorLong(this);
     }
 
     /**
@@ -1315,7 +1299,7 @@ public class Long2ObjectNonBlockingMap<TypeV>
     public LongSet keySet() {
         return new AbstractLongSet() {
             public LongIterator iterator() {
-                return new IteratorLong();
+                return new IteratorLong(Long2ObjectNonBlockingMap.this);
             }
 
             public void clear() {

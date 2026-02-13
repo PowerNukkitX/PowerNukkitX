@@ -425,8 +425,9 @@ public class Int2ObjectNonBlockingMap<TypeV>
     /**
      * Auto-boxing version of {@link #remove(int)}.
      */
+    @Override
     public TypeV remove(Object key) {
-        return (key instanceof Integer) ? remove(key) : null;
+        return (key instanceof Integer k) ? remove(k.intValue()) : null;
     }
 
     /**
@@ -845,7 +846,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
             if ((int) len != len) {
                 log2 = 30;
                 len = (1L << log2) + 2;
-                if (sz > ((len >> 2) + (len >> 1))) throw new RuntimeException("Table is full.");
+                if (sz > ((len >> 2) + (len >> 1))) throw new IllegalStateException("Table is full.");
             }
 
             // Now limit the number of threads actually allocating memory to a
@@ -1224,59 +1225,35 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * interfaces, generified to the {@link Integer} class and supporting a
      * <strong>non-auto-boxing</strong> {@link #nextInt()} function.
      */
-    public class IteratorInteger implements Iterator<Integer>, Enumeration<Integer>, IntIterator {
-        private final SnapshotV _ss;
+    public static class IteratorInteger implements Enumeration<Integer>, IntIterator {
+        private final Int2ObjectNonBlockingMap<?>.SnapshotV _ss;
 
-        /**
-         * A new IteratorLong
-         */
-        public IteratorInteger() {
-            _ss = new SnapshotV();
-        }
+        public IteratorInteger(Int2ObjectNonBlockingMap<?> map) { _ss = map.new SnapshotV(); }
 
-        /**
-         * Remove last key returned by {@link #next} or {@link #nextInt()}.
-         */
-        public void remove() {
-            _ss.removeKey();
-        }
+        @Override
+        public void remove() { _ss.removeKey(); }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Integer next() {
-            _ss.next();
-            return _ss._prevK;
-        }
-
-        /**
-         * Return the next key as a primitive {@code int}.
-         */
+        // Primitive path (preferred)
+        @Override
         public int nextInt() {
             _ss.next();
             return _ss._prevK;
         }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
-        public boolean hasNext() {
-            return _ss.hasNext();
+        // Boxed Iterator path
+        @Override
+        public Integer next() {
+            return Integer.valueOf(nextInt());
         }
 
-        /**
-         * <strong>Auto-box</strong> and return the next key.
-         */
-        public Integer nextElement() {
-            return next();
-        }
+        @Override
+        public boolean hasNext() { return _ss.hasNext(); }
 
-        /**
-         * True if there are more keys to iterate over.
-         */
-        public boolean hasMoreElements() {
-            return hasNext();
-        }
+        @Override
+        public Integer nextElement() { return next(); }
+
+        @Override
+        public boolean hasMoreElements() { return hasNext(); }
     }
 
     /**
@@ -1287,11 +1264,11 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * @see #keySet()
      */
     public Enumeration<Integer> keys() {
-        return new IteratorInteger();
+        return new IteratorInteger(this);
     }
 
     public IteratorInteger fastKeyIterator() {
-        return new IteratorInteger();
+        return new IteratorInteger(this);
     }
 
     /**
@@ -1329,7 +1306,7 @@ public class Int2ObjectNonBlockingMap<TypeV>
             }
 
             public IteratorInteger iterator() {
-                return new IteratorInteger();
+                return new IteratorInteger(Int2ObjectNonBlockingMap.this);
             }
         };
     }

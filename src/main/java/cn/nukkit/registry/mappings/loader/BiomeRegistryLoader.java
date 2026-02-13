@@ -32,6 +32,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -55,7 +56,7 @@ public class BiomeRegistryLoader implements RegistryLoader<String, HashBiMap<Int
             });
             return biomes;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

@@ -42,7 +42,7 @@ public class BirchForestWildflowersFeature extends GenerateFeature {
                     Set<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags();
                     if(tags.contains(BiomeTags.FOREST) && tags.contains(BiomeTags.BIRCH)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
-                        if (support.is(BlockTags.GRASS)) {
+                        if (support.hasTag(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
                                 chunk.setBlockState(x, y, z, BlockWildflowers.PROPERTIES.getBlockState(
                                         MINECRAFT_CARDINAL_DIRECTION.createValue(

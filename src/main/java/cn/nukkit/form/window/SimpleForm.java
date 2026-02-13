@@ -203,7 +203,7 @@ public class SimpleForm extends Form<SimpleResponse> {
             clickedId = Integer.parseInt(formData);
         } catch (Exception ignored) {}
 
-        if (entries.length < clickedId || clickedId == -1) {
+        if (entries.length <= clickedId || clickedId == -1) {
             return null;
         }
 

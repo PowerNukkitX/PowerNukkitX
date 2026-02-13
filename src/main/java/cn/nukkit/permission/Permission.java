@@ -46,14 +46,14 @@ public class Permission {
         this(name, description, null, new HashMap<>());
     }
 
-    public Permission(String name, String description, String defualtValue) {
-        this(name, description, defualtValue, new HashMap<>());
+    public Permission(String name, String description, String defaultValue) {
+        this(name, description, defaultValue, new HashMap<>());
     }
 
-    public Permission(String name, String description, String defualtValue, Map<String, Boolean> children) {
+    public Permission(String name, String description, String defaultValue, Map<String, Boolean> children) {
         this.name = name;
         this.description = description != null ? description : "";
-        this.defaultValue = defualtValue != null ? defualtValue : DEFAULT_PERMISSION;
+        this.defaultValue = defaultValue != null ? defaultValue : DEFAULT_PERMISSION;
         this.children = children;
 
         this.recalculatePermissibles();
@@ -169,11 +169,17 @@ public class Permission {
                         @SuppressWarnings("unchecked")
                         Map<String, Object> vMapCasted = (Map<String, Object>) vMap;
                         Permission permission = loadPermission(k, vMapCasted, defaultValue, output);
-                        if (permission != null) {
-                            output.add(permission);
+                        output.add(permission);
+                        children.put(k, true);
+                    } else {
+                        boolean childValue;
+                        if (v instanceof Boolean bool) {
+                            childValue = bool;
+                        } else {
+                            childValue = Boolean.parseBoolean(String.valueOf(v));
                         }
+                        children.put(k, childValue);
                     }
-                    children.put(k, true);
                 }
             } else {
                 throw new IllegalStateException("'children' key is of wrong type");
