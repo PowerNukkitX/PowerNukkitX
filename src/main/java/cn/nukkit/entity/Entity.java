@@ -1287,7 +1287,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      */
     public boolean attack(EntityDamageEvent source) {
         // Fire Protection enchantment implemented
-        if (hasEffect(EffectType.FIRE_RESISTANCE)
+        if ((hasEffect(EffectType.FIRE_RESISTANCE)
+                || !this.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE))
                 && (source.getCause() == DamageCause.FIRE
                 || source.getCause() == DamageCause.FIRE_TICK
                 || source.getCause() == DamageCause.LAVA)) {
