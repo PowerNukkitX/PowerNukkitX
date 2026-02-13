@@ -13,6 +13,7 @@ import org.jose4j.json.JsonUtil;
 import org.jose4j.lang.JoseException;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,10 +58,17 @@ public class LoginPacket extends DataPacket {
             } else if (payload.containsKey("Certificate") && payload.get("Certificate") instanceof String && !((String) payload.get("Certificate")).isEmpty()) {
                 String certJson = (String) payload.get("Certificate");
                 Map<String, Object> certData = JsonUtil.parseJson(certJson);
-                if (!certData.containsKey("chain") || !(certData.get("chain") instanceof List)) {
+                if (!certData.containsKey("chain") || !(certData.get("chain") instanceof List<?>)) {
                     throw new IllegalArgumentException("Invalid Certificate chain in JWT");
                 }
-                List<String> chain = (List<String>) certData.get("chain");
+                List<?> chainRaw = (List<?>) certData.get("chain");
+                List<String> chain = new ArrayList<>(chainRaw.size());
+                for (Object entry : chainRaw) {
+                    if (!(entry instanceof String)) {
+                        throw new IllegalArgumentException("Invalid Certificate chain entry in JWT");
+                    }
+                    chain.add((String) entry);
+                }
                 return new CertificateChainPayload(chain, authType);
             } else {
                 throw new IllegalArgumentException("Invalid AuthPayload in JWT");

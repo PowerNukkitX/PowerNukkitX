@@ -257,8 +257,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
     protected int lastInAirTick = 0;
     protected int previousInteractTick = 0;
-    private static final float ROTATION_UPDATE_THRESHOLD = 1;
-    private static final float MOVEMENT_DISTANCE_THRESHOLD = 0.1f;
+    private final float rotationUpdateThreshold;
+    private final float movementDistanceThreshold;
     private final Queue<Location> clientMovements = PlatformDependent.newMpscQueue(4);
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     private int timeSinceRest;
@@ -374,6 +374,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.rawUUID = Binary.writeUUID(info.getUniqueId());
         this.setSkin(info.getSkin());
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
+        this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
+        this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();
     }
 
     /**
@@ -880,14 +882,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setRotation(clientPos.getYaw(), clientPos.getPitch(), clientPos.getHeadYaw());
         this.fastMove(diffX, diffY, diffZ);
 
-        //after check
-        double corrX = this.x - clientPos.getX();
-        double corrY = this.y - clientPos.getY();
-        double corrZ = this.z - clientPos.getZ();
-
         //update server-side position and rotation and aabb
         Location last = new Location(this.lastX, this.lastY, this.lastZ, this.lastYaw, this.lastPitch, this.lastHeadYaw, this.level);
         Location now = this.getLocation();
+
         this.lastX = now.x;
         this.lastY = now.y;
         this.lastZ = now.z;
@@ -907,7 +905,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.blocksAround = null;
                 this.collisionBlocks = null;
             }
-            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now);
+
+            boolean positionChanged = last.x != now.x || last.y != now.y || last.z != now.z;
+            boolean rotationChanged = last.yaw != now.yaw || last.pitch != now.pitch || last.headYaw != now.headYaw;
+
+            if (!positionChanged && !rotationChanged) {
+                return;
+            }
+
+            PlayerMoveEvent.Type moveType;
+
+            if (positionChanged && rotationChanged) {
+                moveType = PlayerMoveEvent.Type.ALL;
+            } else if (positionChanged) {
+                moveType = PlayerMoveEvent.Type.POSITION_CHANGE;
+            } else {
+                moveType = PlayerMoveEvent.Type.ROTATE;
+            }
+
+            PlayerMoveEvent ev = new PlayerMoveEvent(this, last, now, true, moveType);
+
             this.server.getPluginManager().callEvent(ev);
 
             if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
@@ -960,10 +977,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
          */
         protected void offerMovementTask(Location newPosition) {
             double distance = newPosition.distance(this);
-            boolean updatePosition = distance > MOVEMENT_DISTANCE_THRESHOLD;
-            boolean updateRotation = Math.abs(this.getPitch() - newPosition.pitch) > ROTATION_UPDATE_THRESHOLD
-                    || Math.abs(this.getYaw() - newPosition.yaw) > ROTATION_UPDATE_THRESHOLD
-                    || Math.abs(this.getHeadYaw() - newPosition.headYaw) > ROTATION_UPDATE_THRESHOLD;
+            boolean updatePosition = distance > movementDistanceThreshold;
+            boolean updateRotation = Math.abs(this.getPitch() - newPosition.pitch) > rotationUpdateThreshold
+                    || Math.abs(this.getYaw() - newPosition.yaw) > rotationUpdateThreshold
+                    || Math.abs(this.getHeadYaw() - newPosition.headYaw) > rotationUpdateThreshold;
 
             boolean shouldHandle = this.isAlive() && this.spawned && !this.isSleeping() && (updatePosition || updateRotation);
             if (shouldHandle) {
@@ -971,7 +988,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 long now = System.currentTimeMillis();
                 if (lastTeleportMessage != null && (now - lastTeleportMessage.right()) < 200) {
                     double teleportDistance = newPosition.distance(lastTeleportMessage.left());
-                    if (teleportDistance < MOVEMENT_DISTANCE_THRESHOLD) {
+                    if (teleportDistance < movementDistanceThreshold) {
                         // Ignore this movement as it is probably due to post-teleport desynchronization
                         return;
                     }
@@ -3458,9 +3475,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void save(boolean async) {
-        if (this.closed) {
-            throw new IllegalStateException("Tried to save closed player");
-        }
+        Preconditions.checkState(!this.closed, "Tried to save closed player");
 
         saveNBT();
 
@@ -3587,14 +3602,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 case LAVA:
                     message = "death.attack.lava";
 
-                    if (killer instanceof EntityProjectile) {
-                        Entity shooter = ((EntityProjectile) killer).shootingEntity;
+                    if (this.killer instanceof EntityProjectile projectile) {
+                        Entity shooter = projectile.shootingEntity;
                         if (shooter != null) {
-                            killer = shooter;
+                            this.killer = shooter;
                         }
-                        if (killer instanceof EntityHuman) {
+                        if (this.killer instanceof EntityHuman) {
                             message += ".player";
-                            params.add(!Objects.equals(shooter.getNameTag(), "") ? shooter.getNameTag() : shooter.getName());
+                            params.add(this.killer.hasCustomName() ? this.killer.getNameTag() : this.killer.getName());
                         }
                     }
                     break;

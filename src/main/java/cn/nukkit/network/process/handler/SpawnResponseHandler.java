@@ -11,6 +11,7 @@ import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
 import cn.nukkit.network.protocol.StartGamePacket;
 import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
 import cn.nukkit.network.protocol.TrimDataPacket;
+import cn.nukkit.network.protocol.VoxelShapesPacket;
 import cn.nukkit.network.protocol.types.TrimData;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
@@ -18,13 +19,21 @@ import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 @Slf4j
 public class SpawnResponseHandler extends BedrockSessionPacketHandler {
     public SpawnResponseHandler(BedrockSession session) {
         super(session);
         var server = player.getServer();
+
+        log.debug("Sending voxel shapes");
+        VoxelShapesPacket voxelShapesPacket = new VoxelShapesPacket();
+        voxelShapesPacket.setShapes(new ArrayList<>());
+        voxelShapesPacket.setNameMap(new HashMap<>());
+        player.dataPacketImmediately(voxelShapesPacket);
 
         this.startGame();
 

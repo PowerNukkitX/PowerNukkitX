@@ -5,12 +5,6 @@ import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.Permission;
-import java.security.Permissions;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.RecursiveAction;
@@ -19,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 寻路管理器，所有的寻路任务都应该提交到这个管理器中，管理器负责调度寻路任务，实现资源利用最大化
+ * Pathfinding manager. All pathfinding tasks should be submitted to this manager.
+ * The manager is responsible for scheduling pathfinding tasks to maximize resource utilization.
  */
-
 
 public class RouteFindingManager {
     private static final AtomicInteger threadCount = new AtomicInteger(0);
@@ -51,27 +45,13 @@ public class RouteFindingManager {
         RouteFindingThread(ForkJoinPool pool) {
             super(pool);
             this.setName("RouteFindingThread" + threadCount.getAndIncrement());
-            this.setPriority(2); // 保证主线程能得到足够多的CPU时间
+            this.setPriority(2); // Ensure the main thread gets sufficient CPU time
         }
     }
 
     public static final class RouteFindingPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
-        @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
-
-        @SuppressWarnings("removal")
-        static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
-            for (var perm : perms)
-                permissions.add(perm);
-            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
-        }
-
-        @SuppressWarnings("removal")
         public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new RouteFindingThread(pool), ACC);
+            return new RouteFindingThread(pool);
         }
     }
 
@@ -111,7 +91,7 @@ public class RouteFindingManager {
         }
 
         /**
-         * @return 是否开始寻路
+         * @return Whether pathfinding has started
          */
         public boolean getStarted() {
             return started.get();
@@ -122,7 +102,7 @@ public class RouteFindingManager {
         }
 
         /**
-         * @return 是否已经完成寻路，寻路失败也会返回完成
+         * @return Whether pathfinding has completed (returns true even if pathfinding failed)
          */
         public boolean getFinished() {
             return finished.get();

@@ -10,14 +10,14 @@ public interface SNBTConstants {
      * They represent the end of input and invalid input
      * respectively.
      */
-    public enum TokenType {
+    enum TokenType {
         EOF, WHITESPACE, COLON, COMMA, OPEN_BRACKET, CLOSE_BRACKET, OPEN_BRACE, CLOSE_BRACE, BOOLEAN, FLOAT, DOUBLE, INTEGER, LONG, BYTE, SHORT, STRING, B, _TOKEN_17, I, INVALID
     }
 
     /**
      * Lexical States
      */
-    public enum LexicalState {
+    enum LexicalState {
         SNBT
     }
 

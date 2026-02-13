@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /**
  * Allay Project 11/12/2023
@@ -23,7 +24,7 @@ public class PaletteUtils {
             input.skipBytes(input.readUnsignedShort()); //Skip Root tag name
             return deserialize(input, byteBuf, typeId, 16);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

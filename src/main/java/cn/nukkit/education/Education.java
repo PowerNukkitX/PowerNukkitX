@@ -12,17 +12,22 @@ import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.registry.CreativeGroupsRegistry;
 import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.MapParsingUtils;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Function;
 
 @Slf4j
 public class Education implements BlockID, ItemID {
     @Getter
     private static boolean enabled = false;
+    private static final Function<String, RuntimeException> EDUCATION_EDITION_ERROR =
+            field -> new IllegalArgumentException("Invalid Education edition creative_items data: " + field);
 
     public static final Set<String> eduBlocks = Set.of(
             "minecraft:element_0",
@@ -387,46 +392,49 @@ public class Education implements BlockID, ItemID {
         try (var input = Education.class.getClassLoader().getResourceAsStream("gamedata/unknown/creativeitems_edu.json")) {
             if(input == null) return;
 
-            Map data = new Gson().fromJson(new InputStreamReader(input), Map.class);
-            List<String> tmpGroups = new ArrayList<>();
+            try (InputStreamReader reader = new InputStreamReader(input)) {
+                Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                List<String> tmpGroups = new ArrayList<>();
 
-            List<Map<String, Object>> groupData = (List<Map<String, Object>>) data.get("groups");
-            for (Map<String, Object> tag : groupData) {
-                String name = (String) tag.getOrDefault("name", null);
-                String icon = (String) tag.getOrDefault("icon", null);
+                List<Map<String, Object>> groupData = MapParsingUtils.stringObjectMapList(data.get("groups"), "groups", EDUCATION_EDITION_ERROR);
+                for (Map<String, Object> tag : groupData) {
+                    String name = (String) tag.getOrDefault("name", null);
+                    String icon = (String) tag.getOrDefault("icon", null);
 
-                addCreativeGroup(name, icon);
-                tmpGroups.add(name);
-            }
-
-            CreativeGroupsRegistry.register();
-
-            for(String group : tmpGroups) {
-                groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
-                CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
-                    CreativeItemRegistry.ITEM_DATA.remove(entry);
-                    CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
-                });
-            }
-
-            List<Map<String, Object>> items = (List<Map<String, Object>>) data.get("items");
-            for (Map<String, Object> tag : items) {
-                String id = (String) tag.getOrDefault("id", null);
-                String group = (String) tag.getOrDefault("group", null);
-
-                Integer groupIndex = groups.get(group);
-
-                Item item = Item.get(id, 0, 1, null, false);
-
-                if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
-                    item = Item.AIR;
-                    log.warn("load creative edu item {} is null", id);
+                    addCreativeGroup(name, icon);
+                    tmpGroups.add(name);
                 }
 
-                if (groupIndex == null) {
-                    Registries.CREATIVE.addCreativeItem(item);
-                } else {
-                    Registries.CREATIVE.addCreativeItem(item, groupIndex);
+                CreativeGroupsRegistry.register();
+
+                for (String group : tmpGroups) {
+                    groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
+                    CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
+                        CreativeItemRegistry.ITEM_DATA.remove(entry);
+                        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
+                    });
+                }
+
+                List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"), "items", EDUCATION_EDITION_ERROR);
+                for (Map<String, Object> tag : items) {
+                    String id = (String) tag.getOrDefault("id", null);
+                    String group = (String) tag.getOrDefault("group", null);
+
+                    Integer groupIndex = groups.get(group);
+
+                    Item item = Item.get(id, 0, 1, null, false);
+
+                    if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
+                        item = Item.AIR;
+                        log.warn("load creative edu item {} is null", id);
+                    }
+
+                    if (groupIndex == null) {
+                        Registries.CREATIVE.addCreativeItem(item);
+                    } else {
+                        Registries.CREATIVE.addCreativeItem(item, groupIndex);
+                    }
                 }
             }
         } catch (Exception e) {

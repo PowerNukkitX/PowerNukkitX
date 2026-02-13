@@ -14,7 +14,6 @@ import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,7 +22,7 @@ public class SNBTParser {
     private final cn.nukkit.nbt.snbt.Node root;
 
     private SNBTParser(@NotNull String SNBT) {
-        SNBTParserImplement parser = new SNBTParserImplement(new StringReader(SNBT));
+        SNBTParserImplement parser = new SNBTParserImplement(SNBT);
         parser.Root();
         root = parser.rootNode();
     }
