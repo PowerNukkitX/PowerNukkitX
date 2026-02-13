@@ -20,11 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Function;
 
 @Slf4j
 public class Education implements BlockID, ItemID {
     @Getter
     private static boolean enabled = false;
+    private static final Function<String, RuntimeException> EDUCATION_EDITION_ERROR =
+            field -> new IllegalArgumentException("Invalid Education edition creative_items data: " + field);
 
     public static final Set<String> eduBlocks = Set.of(
             "minecraft:element_0",
@@ -394,7 +397,7 @@ public class Education implements BlockID, ItemID {
                 }.getType());
                 List<String> tmpGroups = new ArrayList<>();
 
-                List<Map<String, Object>> groupData = MapParsingUtils.stringObjectMapList(data.get("groups"));
+                List<Map<String, Object>> groupData = MapParsingUtils.stringObjectMapList(data.get("groups"), "groups", EDUCATION_EDITION_ERROR);
                 for (Map<String, Object> tag : groupData) {
                     String name = (String) tag.getOrDefault("name", null);
                     String icon = (String) tag.getOrDefault("icon", null);
@@ -413,7 +416,7 @@ public class Education implements BlockID, ItemID {
                     });
                 }
 
-                List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"));
+                List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"), "items", EDUCATION_EDITION_ERROR);
                 for (Map<String, Object> tag : items) {
                     String id = (String) tag.getOrDefault("id", null);
                     String group = (String) tag.getOrDefault("group", null);

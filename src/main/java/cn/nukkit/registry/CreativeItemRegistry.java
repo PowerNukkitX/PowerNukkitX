@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.MapParsingUtils;
@@ -55,6 +56,8 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     public static int LAST_EQUIPMENTS_INDEX = -1;
     public static int LAST_ITEMS_INDEX = -1;
     public static int LAST_NATURE_INDEX = -1;
+    private static final Function<String, RuntimeException> CREATIVE_ITEMS_ERROR =
+            field -> new IllegalArgumentException("Invalid creative_items data: " + field);
 
     @Override
     public void init() {
@@ -64,7 +67,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         try (var input = CreativeItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/creative_items.json");
              InputStreamReader reader = new InputStreamReader(input)) {
             Map<String, Object> data = new Gson().fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
-            List<Map<String, Object>> groups = MapParsingUtils.stringObjectMapList(data.get("groups"));
+            List<Map<String, Object>> groups = MapParsingUtils.stringObjectMapList(data.get("groups"), "groups", CREATIVE_ITEMS_ERROR);
             int index = 0;
             for (Map<String, Object> tag : groups) {
                 int creativeCategory = ((Number) tag.getOrDefault("creative_category", 0)).intValue();
@@ -84,7 +87,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             CreativeItemRegistry.LAST_ITEMS_INDEX = getLastGroupIndexFrom("ITEMS");
             CreativeItemRegistry.LAST_NATURE_INDEX = getLastGroupIndexFrom("NATURE");
 
-            List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"));
+            List<Map<String, Object>> items = MapParsingUtils.stringObjectMapList(data.get("items"), "items", CREATIVE_ITEMS_ERROR);
             for (int i = 0; i < items.size(); i++) {
                 Map<String, Object> tag = items.get(i);
                 int damage = ((Number) tag.getOrDefault("damage", 0)).intValue();
