@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -49,6 +50,14 @@ import static cn.nukkit.utils.Rail.Orientation.straightOrCurved;
  */
 public class BlockRail extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(RAIL, RAIL_DIRECTION_10);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .hardness(0.7)
+            .resistance(0.7)
+            .canPassThrough(true)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .sticksToPiston(true)
+            .breaksWhenMoved(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -65,37 +74,16 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     public BlockRail(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockRail(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
     public String getName() {
         return "Rail";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.7;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.7;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return true;
     }
 
     @Override
@@ -370,11 +358,6 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getBlockState().specialValue() & 0x07);
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return false;
     }
 
     @Override

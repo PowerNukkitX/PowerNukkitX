@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -14,8 +15,20 @@ import java.util.Arrays;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_BLOCK_FACE;
 
 public abstract class BlockAmethystBud extends BlockTransparent implements Faceable {
+    public static final BlockDefinition DEFINITION = BlockTransparent.TRANSPARENT.toBuilder()
+            .hardness(1.5)
+            .resistance(1.5)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_IRON)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockAmethystBud(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockAmethystBud(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -26,41 +39,8 @@ public abstract class BlockAmethystBud extends BlockTransparent implements Facea
     protected abstract String getNamePrefix();
 
     @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public abstract int getLightLevel();
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override

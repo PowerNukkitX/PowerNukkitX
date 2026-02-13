@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.*;
 import cn.nukkit.block.copper.bars.*;
 import cn.nukkit.block.copper.bulb.*;
@@ -11,6 +10,7 @@ import cn.nukkit.block.copper.lantern.*;
 import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.shelf.*;
 import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
@@ -1153,10 +1153,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             register(ZOMBIE_HEAD, BlockZombieHead.class);
             register(DRIED_GHAST, BlockDriedGhast.class);
 
-            /**
-             * @since 1.21.110
-             */
-
             register(COPPER_BARS, BlockCopperBars.class);
             register(EXPOSED_COPPER_BARS, BlockExposedCopperBars.class);
             register(WEATHERED_COPPER_BARS, BlockWeatheredCopperBars.class);
@@ -1320,31 +1316,40 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             String key = blockProperties.getIdentifier();
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
             FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class), memberLoader, false);
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
-                if (CustomBlock.class.isAssignableFrom(value)) {
-                    CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
-                    List<CustomBlockDefinition> customBlockDefinitions = CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, (p) -> new ArrayList<>());
-                    CustomBlockDefinition def = customBlock.getDefinition();
-                    customBlockDefinitions.add(def);
-                    CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), customBlock.getDefinition());
-                    int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
-                    Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
-                    CompoundTag nbt = def.nbt();
-                    if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
-                        ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
-                        itemBlock.setNetId(null);
-                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(key, nbt);
-                        Registries.CREATIVE.addCreativeItem(itemBlock, groupIndex);
-                    }
-                    KEYSET.add(key);
-                    PROPERTIES.put(key, blockProperties);
-                    blockProperties.getSpecialValueMap().values().forEach(Registries.BLOCKSTATE::registerInternal);
-                } else {
-                    throw new RegisterException("Register Error,must implement the CustomBlock interface!");
-                }
-            } else {
+            if (!CustomBlock.class.isAssignableFrom(value)) {
+                throw new RegisterException("Register Error, must implement the CustomBlock interface!");
+            }
+
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
                 throw new RegisterException("There custom block has already been registered with the identifier: " + key);
             }
+
+            Block block = (Block) c.invoke((Object) null);
+            BlockDefinition bd = block.getDefinition();
+            if (!(bd instanceof CustomBlockDefinition def)) {
+                throw new RegisterException("The custom block class: %s must return a CustomBlockDefinition in the getDefinition() method!"
+                        .formatted(value.getSimpleName()));
+            }
+
+            CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, p -> new ArrayList<>()).add(def);
+            CUSTOM_BLOCK_DEFINITION_BY_ID.put(block.getId(), def);
+
+            int rid = 255 - CustomBlockDefinition.getRuntimeId(block.getId());
+            Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(
+                    new ItemRuntimeIdRegistry.RuntimeEntry(block.getId(), rid, false)
+            );
+
+            CompoundTag nbt = def.nbt();
+            if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
+                ItemBlock itemBlock = new ItemBlock(block);
+                itemBlock.setNetId(null);
+                int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(key, nbt);
+                Registries.CREATIVE.addCreativeItem(itemBlock, groupIndex);
+            }
+
+            KEYSET.add(key);
+            PROPERTIES.put(key, blockProperties);
+            blockProperties.getSpecialValueMap().values().forEach(Registries.BLOCKSTATE::registerInternal);
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -11,9 +12,18 @@ import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DATA_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_6;
 
 public class BlockRailPowerable extends BlockRail {
+    public static final BlockDefinition DEFINITION = BlockRail.DEFINITION.toBuilder()
+            .isPowerSource(true)
+            .build();
 
     public BlockRailPowerable(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+
+        this.canBePowered = true;
+    }
+
+    public BlockRailPowerable(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
 
         this.canBePowered = true;
     }

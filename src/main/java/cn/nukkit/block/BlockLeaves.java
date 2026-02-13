@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
@@ -27,22 +28,25 @@ import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
  * @author Angelic47 (Nukkit Project)
  */
 public abstract class BlockLeaves extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .toolType(ItemTool.TYPE_HOE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(30)
+            .burnAbility(60)
+            .canSilkTouch(true)
+            .diffusesSkyLight(true)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .waterloggingLevel(1)
+            .build();
+
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
     };
 
     public BlockLeaves(BlockState blockState) {
-        super(blockState);
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        super(blockState, DEFINITION);
     }
 
     public abstract WoodType getType();
@@ -50,21 +54,6 @@ public abstract class BlockLeaves extends BlockTransparent {
     @Override
     public String getName() {
         return getType().getName() + " Leaves";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 30;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 60;
     }
 
     @Override
@@ -202,28 +191,8 @@ public abstract class BlockLeaves extends BlockTransparent {
         setPropertyValue(PERSISTENT_BIT, persistent);
     }
 
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
     protected boolean canDropApple() {
         return getType() == WoodType.OAK;
-    }
-
-    @Override
-    public boolean diffusesSkyLight() {
-        return true;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
     }
 
     public Item toSapling() {

@@ -1,48 +1,28 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.math.AxisAlignedBB;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockFlowable extends BlockTransparent {
+    public static final BlockDefinition FLOWABLE = TRANSPARENT.toBuilder()
+            .canBeFlowedInto(true)
+            .canPassThrough(true)
+            .hardness(0)
+            .resistance(0)
+            .isSolid(false)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .build();
+
     public BlockFlowable(BlockState blockState) {
-        super(blockState);
+        super(blockState, FLOWABLE);
     }
 
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
+    public BlockFlowable(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override

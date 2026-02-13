@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -11,28 +12,22 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  * @since 2015/12/7
  */
 public abstract class BlockFence extends BlockTransparent implements BlockConnectable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .toolType(ItemTool.TYPE_AXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .burnChance(5)
+            .burnAbility(20)
+            .waterloggingLevel(1)
+            .build();
+
     public BlockFence(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
+    public BlockFence(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -53,16 +48,6 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
                 this.y + 1.5,
                 this.z + s
         );
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 20;
     }
 
     @Override

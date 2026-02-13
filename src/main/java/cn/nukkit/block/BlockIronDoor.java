@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -10,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockIronDoor extends BlockDoor {
     public static final BlockProperties PROPERTIES = new BlockProperties(IRON_DOOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT, CommonBlockProperties.DOOR_HINGE_BIT);
+    public static final BlockDefinition DEFINITION = BlockDoor.DEFINITION.toBuilder()
+            .hardness(5)
+            .resistance(25)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -21,7 +28,7 @@ public class BlockIronDoor extends BlockDoor {
     }
 
     public BlockIronDoor(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -30,32 +37,7 @@ public class BlockIronDoor extends BlockDoor {
     }
 
     @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 25;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
         return false;
     }
 

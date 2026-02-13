@@ -7,7 +7,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.IN_WALL_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.OPEN_BIT;
 
-public class BlockWarpedFenceGate extends BlockFenceGate {
+public class BlockWarpedFenceGate extends BlockFenceGateNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_FENCE_GATE,  IN_WALL_BIT, MINECRAFT_CARDINAL_DIRECTION, OPEN_BIT);
 
     @Override
@@ -19,23 +19,13 @@ public class BlockWarpedFenceGate extends BlockFenceGate {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockWarpedFenceGate(BlockState blockstate) {
-        super(blockstate);
+    public BlockWarpedFenceGate(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Warped Fence Gate";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 
     @Override

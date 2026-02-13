@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 import cn.nukkit.item.Item;
@@ -15,25 +16,35 @@ import javax.annotation.Nullable;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BlockSlab extends BlockTransparent {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .waterloggingLevel(1)
+            .build();
+
     protected final BlockState doubleSlab;
 
     public BlockSlab(BlockState blockState, BlockState doubleSlab) {
-        super(blockState);
+        super(blockState, DEFINITION);
         this.doubleSlab = doubleSlab;
     }
 
     public BlockSlab(BlockState blockState, String doubleSlab) {
-        super(blockState);
+        super(blockState, DEFINITION);
+        this.doubleSlab = Registries.BLOCK.get(doubleSlab).getBlockState();
+    }
+
+    public BlockSlab(BlockState blockState, BlockState doubleSlab, BlockDefinition definition) {
+        super(blockState, definition);
+        this.doubleSlab = doubleSlab;
+    }
+
+    public BlockSlab(BlockState blockState, String doubleSlab, BlockDefinition definition) {
+        super(blockState, definition);
         this.doubleSlab = Registries.BLOCK.get(doubleSlab).getBlockState();
     }
 
     public abstract String getSlabName();
-
-    public abstract boolean canHarvestWithHand();
-
-    public abstract int getToolTier();
-
-    public abstract int getToolType();
 
     @Override
     public String getName() {
@@ -51,18 +62,8 @@ public abstract class BlockSlab extends BlockTransparent {
     }
 
     @Override
-    public double getHardness() {
-        return 2;
-    }
-
-    @Override
     public double getResistance() {
         return getToolType() == ItemTool.TYPE_PICKAXE ? 6 : 3;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     public boolean isOnTop() {

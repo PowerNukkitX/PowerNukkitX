@@ -1,11 +1,21 @@
 package cn.nukkit.block;
 
+import cn.nukkit.block.definition.BlockDefinition;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
 public abstract class BlockDoubleSlabBase extends BlockSolid {
+    public static final BlockDefinition DEFINITION = BlockSolid.SOLID.toBuilder()
+            .hardness(2)
+            .resistance(3)
+            .build();
+
     public BlockDoubleSlabBase(BlockState blockState) {
-        super(blockState);
+        this(blockState, DEFINITION);
+    }
+
+    public BlockDoubleSlabBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -20,13 +30,6 @@ public abstract class BlockDoubleSlabBase extends BlockSolid {
     @Override
     public Item toItem() {
         return Block.get(getSingleSlab()).toItem();
-    }
-
-//    public abstract int getToolType();
-
-    @Override
-    public double getHardness() {
-        return 2;
     }
 
     @Override

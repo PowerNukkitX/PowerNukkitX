@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BlockCrimsonFence extends BlockFence {
+public class BlockCrimsonFence extends BlockFenceNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FENCE);
 
     @Override
@@ -14,22 +14,12 @@ public class BlockCrimsonFence extends BlockFence {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockCrimsonFence(BlockState blockstate) {
-        super(blockstate);
+    public BlockCrimsonFence(BlockState blockState) {
+        super(blockState);
     }
 
     @Override
     public String getName() {
         return "Crimson Fence";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 }
