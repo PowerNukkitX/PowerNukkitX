@@ -119,7 +119,7 @@ public class Palette<V> {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to write palette to storage", e);
         }
     }
 
@@ -140,7 +140,7 @@ public class Palette<V> {
                 addBlockPalette(byteBuf, deserializer, nbtInputStream);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to read palette from storage", e);
         }
     }
 
@@ -204,6 +204,7 @@ public class Palette<V> {
         } else return false;
     }
 
+    @SuppressWarnings("unchecked")
     protected void addBlockPalette(ByteBuf byteBuf,
                                    RuntimeDataDeserializer<V> deserializer,
                                    NBTInputStream input) throws IOException {

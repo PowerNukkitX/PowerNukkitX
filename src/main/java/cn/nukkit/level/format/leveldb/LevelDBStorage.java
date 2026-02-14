@@ -15,6 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteOrder;
 import java.nio.file.Path;
 
@@ -92,7 +93,7 @@ public final class LevelDBStorage {
                 db.close();
                 LevelDBProvider.CACHE.remove(path);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         }
     }

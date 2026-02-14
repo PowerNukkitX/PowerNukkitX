@@ -30,6 +30,7 @@ import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -205,7 +206,6 @@ public class Explosion {
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
     public boolean explodeB() {
-
         LongArraySet updateBlocks = new LongArraySet();
         List<Vector3> send = new ArrayList<>();
 
@@ -243,14 +243,7 @@ public class Explosion {
         }
 
         double explosionSize = this.size * 2d;
-        double minX = NukkitMath.floorDouble(this.source.x - explosionSize - 1);
-        double maxX = NukkitMath.ceilDouble(this.source.x + explosionSize + 1);
-        double minY = NukkitMath.floorDouble(this.source.y - explosionSize - 1);
-        double maxY = NukkitMath.ceilDouble(this.source.y + explosionSize + 1);
-        double minZ = NukkitMath.floorDouble(this.source.z - explosionSize - 1);
-        double maxZ = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
-
-        AxisAlignedBB explosionBB = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+        AxisAlignedBB explosionBB = getAxisAlignedBB(explosionSize);
         Entity[] list = this.level.getNearbyEntities(explosionBB, this.what instanceof Entity ? (Entity) this.what : null);
         for (Entity entity : list) {
             double distance = entity.distance(this.source) / explosionSize;
@@ -284,7 +277,8 @@ public class Explosion {
 
         ItemBlock air = new ItemBlock(Block.get(BlockID.AIR));
         BlockEntity container;
-        List<Vector3> smokePositions = this.affectedBlocks.isEmpty() ? Collections.emptyList() : new ObjectArrayList<>();
+        boolean hasAffectedBlocks = !this.affectedBlocks.isEmpty();
+        List<Vector3> smokePositions = !hasAffectedBlocks ? Collections.emptyList() : new ObjectArrayList<>();
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (Block block : this.affectedBlocks) {
@@ -306,7 +300,7 @@ public class Explosion {
                 }
             }
 
-            if (random.nextInt(8) == 0) {
+            if (hasAffectedBlocks && random.nextInt(8) == 0) {
                 smokePositions.add(block);
             }
 
@@ -372,4 +366,14 @@ public class Explosion {
         return true;
     }
 
+    private @NotNull AxisAlignedBB getAxisAlignedBB(double explosionSize) {
+        double minX = NukkitMath.floorDouble(this.source.x - explosionSize - 1);
+        double maxX = NukkitMath.ceilDouble(this.source.x + explosionSize + 1);
+        double minY = NukkitMath.floorDouble(this.source.y - explosionSize - 1);
+        double maxY = NukkitMath.ceilDouble(this.source.y + explosionSize + 1);
+        double minZ = NukkitMath.floorDouble(this.source.z - explosionSize - 1);
+        double maxZ = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
+
+        return new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+    }
 }

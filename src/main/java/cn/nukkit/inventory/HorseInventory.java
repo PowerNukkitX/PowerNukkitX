@@ -15,6 +15,7 @@ import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 
@@ -127,7 +128,7 @@ public class HorseInventory extends BaseInventory {
         try {
             updateEquipmentPacket.namedtag = NBTIO.writeNetwork(nbt);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return updateEquipmentPacket;
     }

@@ -120,6 +120,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -127,7 +130,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -207,7 +209,6 @@ public class Server {
     private LevelMetadataStore levelMetadata;
     private Network network;
     private int serverAuthoritativeMovementMode = 0;
-    private Boolean getAllowFlight = null;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -623,7 +624,7 @@ public class Server {
 
     private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
-        if (!file.isDirectory()) throw new RuntimeException("worlds isn't directory");
+        Preconditions.checkState(file.isDirectory(), "worlds isn't directory");
         //load all world from `worlds` folder
         for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
             LevelConfig levelConfig = getLevelConfig(f.getName());
@@ -1071,6 +1072,18 @@ public class Server {
             sum += aUseAverage;
         }
         return ((float) Math.round(sum / count * 100)) / 100;
+    }
+
+    public String getCPULoad() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
+            double cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getProcessCpuLoad();
+            if (cpuLoad < 0) {
+                return "N/A";
+            }
+            return String.format("%.1f%%", cpuLoad * 100);
+        }
+        return "N/A";
     }
 
     // TODO: Fix title tick
@@ -1576,6 +1589,15 @@ public class Server {
     }
 
     /**
+     * Get all unique player UUIDs that have connected to the server during the current uptime.
+     *
+     * @return Set of UUIDs
+     */
+    public Set<UUID> getUniquePlayers() {
+        return uniquePlayers;
+    }
+
+    /**
      * Get the player instance from the specified UUID.
      *
      * @param uuid uuid
@@ -1825,7 +1847,7 @@ public class Server {
             buffer.putLong(uuid.getLeastSignificantBits());
             playerDataDB.put(buffer.array(), bytes);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -2640,7 +2662,7 @@ public class Server {
     }
 
     /**
-     * @return Whether to force the use of server resource pack while allowing the loading of client resource pack
+     * @return Whether to force the use of the server resource pack while allowing the loading of the client resource pack
      */
     public boolean getForceResourcesAllowOwnPacks() {
         return this.settings.gameplaySettings().allowClientPacks();
@@ -2778,7 +2800,7 @@ public class Server {
     }
 
     /**
-     * Remove all DynamicProperties on the world.
+     * Remove all DynamicProperties in the world.
      */
     public Server clearDynamicProperties() {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
@@ -2820,7 +2842,7 @@ public class Server {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -2830,7 +2852,7 @@ public class Server {
     }
 
     /**
-     * Set a int DynamicProperty.
+     * Set an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
@@ -2960,7 +2982,7 @@ public class Server {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @return the int value or defaultValue if not available.
@@ -2972,7 +2994,7 @@ public class Server {
     }
 
     /**
-     * Get a int DynamicProperty.
+     * Get an int DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
@@ -3189,7 +3211,7 @@ public class Server {
          * Creates a ForkJoinWorkerThread operating in the given pool.
          *
          * @param pool the pool this thread works in
-         * @throws NullPointerException if pool is null
+         * @throws NullPointerException if the pool is null
          */
         ComputeThread(ForkJoinPool pool, AtomicInteger threadCount) {
             super(pool);
@@ -3199,22 +3221,8 @@ public class Server {
 
     private static class ComputeThreadPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         private static final AtomicInteger threadCount = new AtomicInteger(0);
-        @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
-
-        @SuppressWarnings("removal")
-        static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
-            Permissions permissions = new Permissions();
-            for (var perm : perms)
-                permissions.add(perm);
-            return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
-        }
-
-        @SuppressWarnings("removal")
         public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
-            return AccessController.doPrivileged((PrivilegedAction<ForkJoinWorkerThread>) () -> new ComputeThread(pool, threadCount), ACC);
+            return new ComputeThread(pool, threadCount);
         }
     }
 

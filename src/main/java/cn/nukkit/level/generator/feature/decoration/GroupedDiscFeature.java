@@ -67,7 +67,7 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
     }
 
     public boolean isSupportValid(Block block) {
-        return block.is(BlockTags.DIRT) || block.is(BlockTags.SAND);
+        return block.hasTag(BlockTags.DIRT) || block.hasTag(BlockTags.SAND);
     }
 
     public int getY(IChunk chunk, int x, int z) {

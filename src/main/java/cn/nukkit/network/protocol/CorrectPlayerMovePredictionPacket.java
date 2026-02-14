@@ -30,7 +30,7 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
         this.rotation = buf.readVector2f();
         this.vehicleAngularVelocity = buf.readOptional(null, buf::readFloatLE);
         this.onGround = buf.readBoolean();
-        this.tick = buf.readVarLong();
+        this.tick = buf.readUnsignedVarLong();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class CorrectPlayerMovePredictionPacket extends DataPacket {
         buf.writeVector2f(this.rotation);
         buf.writeOptional(OptionalValue.ofNullable(this.vehicleAngularVelocity), buf::writeFloatLE);
         buf.writeBoolean(this.onGround);
-        buf.writeVarLong(this.tick);
+        buf.writeUnsignedVarLong(this.tick);
     }
 
     @Override

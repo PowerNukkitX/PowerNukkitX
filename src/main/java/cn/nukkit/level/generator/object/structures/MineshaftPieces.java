@@ -472,7 +472,10 @@ public class MineshaftPieces {
                         this.hasPlacedSpider = true;
                         level.setBlockStateAt(vec.x, vec.y, vec.z, SPAWNER);
                         level.getLevel().getScheduler().scheduleDelayedTask(() -> {
-                            ((BlockEntityHolder<BlockEntityMobSpawner>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.CAVE_SPIDER));
+                            Block block = level.getLevel().getBlock(vec.x, vec.y, vec.z);
+                            if (block instanceof BlockMobSpawner spawner) {
+                                spawner.getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.CAVE_SPIDER));
+                            }
                         },20);
                     }
                 }

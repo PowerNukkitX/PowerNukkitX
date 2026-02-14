@@ -11,7 +11,7 @@ public class RegisterException extends FormativeException {
         super(format, arguments);
     }
 
-    public RegisterException(Exception e) {
+    public RegisterException(Throwable e) {
         super(e);
     }
 }

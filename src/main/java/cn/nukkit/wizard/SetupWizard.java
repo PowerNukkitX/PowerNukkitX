@@ -324,7 +324,7 @@ public class SetupWizard implements AutoCloseable {
             return;
         }
         try {
-            String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.motd.question")).trim());
+            String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.motd.question"))).trim();
             if (!input.isEmpty()) {
                 wizardConfig.setMotd(input);
             }
@@ -533,7 +533,7 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println("─".repeat(57));
         while (true) {
             try {
-                String input = reader.readLine(baseLang.tr("pnx.setupWizard.maxPlayers.prompt")).trim();
+                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.maxPlayers.prompt"))).trim();
                 if (input.isEmpty()) {
                     break; // Use default
                 }
@@ -565,7 +565,7 @@ public class SetupWizard implements AutoCloseable {
         terminal.writer().println("─".repeat(57));
         while (true) {
             try {
-                String input = reader.readLine(baseLang.tr("pnx.setupWizard.query.prompt")).trim();
+                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.query.prompt"))).trim();
                 if (input.isEmpty() || input.equals("y") || input.equals("yes")) {
                     wizardConfig.setQueryEnabled(true);
                     accept(baseLang.tr("pnx.setupWizard.query.enabled"));
