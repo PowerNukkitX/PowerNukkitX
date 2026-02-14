@@ -1357,12 +1357,12 @@ public abstract class Item implements Cloneable, ItemID {
 
     public @NotNull
     final String getName() {
-        return this.hasCustomName() ? this.getCustomName() : idConvertToName();
+        return idConvertToName();
     }
 
     public @NotNull
     final String getDisplayName() {
-        return this.hasCustomName() ? this.getCustomName() : idConvertToName();
+        return this.hasCustomName() ? this.getCustomName() : getName();
     }
 
     public final boolean canBePlaced() {
@@ -1527,7 +1527,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     @Override
     final public String toString() {
-        return "Item " + idConvertToName() +
+        return "Item " + getName() +
                 " (" + this.id
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
