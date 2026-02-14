@@ -106,7 +106,6 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new ExecuteCommand("execute"));
         this.register("nukkit", new CameraCommand("camera"));
         this.register("nukkit", new FogCommand("fog"));
-        this.register("nukkit", new ExecuteCommandOld("executeold"));
         this.register("nukkit", new PlayAnimationCommand("playanimation"));
         this.register("nukkit", new WorldCommand("world"));
         this.register("nukkit", new TpsCommand("tps"));
@@ -172,7 +171,6 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new XpCommand("xp"));
         this.register("nukkit", new SetBlockCommand("setblock"));
         this.register("nukkit", new HudCommand("hud"));
-        this.register("nukkit", new TTCommand("tt"));
         this.register("nukkit", new LocateCommand("locate"));
 
         this.register("nukkit", new StatusCommand("status"));
