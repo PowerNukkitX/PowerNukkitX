@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 public class TestForCommand extends VanillaCommand {
 
     public TestForCommand(String name) {
@@ -27,16 +26,20 @@ public class TestForCommand extends VanillaCommand {
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         List<Entity> targets = result.getValue().getResult(0);
+
         if (targets.isEmpty()) {
             log.addNoTargetMatch().output();
             return 0;
-        } else {
-            log.addSuccess("commands.testfor.success", targets.stream().map(entity -> {
-                var name = entity.getName();
-                if (name.isBlank()) name = entity.getOriginalName();
-                return name;
-            }).collect(Collectors.joining(","))).output();
-            return targets.size();
         }
+
+        List<String> names = targets.stream().map(entity -> {
+            String name = entity.getName();
+            if (name.isBlank()) name = entity.getOriginalName();
+            return name;
+        }).collect(Collectors.toList());
+
+        log.addSuccess("commands.testfor.success", names).output();
+        return targets.size();
     }
+
 }
