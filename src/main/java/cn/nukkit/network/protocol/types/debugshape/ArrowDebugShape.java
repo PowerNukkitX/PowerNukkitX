@@ -7,10 +7,11 @@ import org.checkerframework.checker.units.qual.A;
 import java.awt.*;
 
 public class ArrowDebugShape extends DebugShape {
-    public ArrowDebugShape(Vector3f location, Color color, Vector3f lineEndLocation, float arrowHeadLength, float arrowHeadRadius) {
+    public ArrowDebugShape(Vector3f location, Color color, Vector3f lineEndLocation, float arrowHeadLength, float arrowHeadRadius, long attachedToEntityId) {
         shapeType = ScriptDebugShapeType.ARROW;
         this.location = location;
         this.color = color;
+        this.attachedToEntityId = attachedToEntityId;
         this.lineEndLocation = lineEndLocation;
         this.arrowHeadLength = arrowHeadLength;
         this.arrowHeadRadius = arrowHeadRadius;
