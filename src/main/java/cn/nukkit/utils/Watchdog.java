@@ -7,22 +7,33 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 
+/**
+ * Watchdog monitors the main server thread and forces shutdown if the server becomes unresponsive.
+ */
 @Slf4j
 public class Watchdog extends Thread {
     private final Server server;
-    private final long time;
+    private final long timeoutMs;
     public volatile boolean running;
     private boolean responding = true;
 
-    public Watchdog(Server server, long time) {
+    /**
+     * Creates a new Watchdog.
+     * @param server the server to monitor
+     * @param timeoutMs maximum inactivity delay (in ms) before detecting a freeze
+     */
+    public Watchdog(Server server, long timeoutMs) {
         this.server = server;
-        this.time = time;
+        this.timeoutMs = timeoutMs;
         this.running = true;
-        this.setName("Watchdog");
-        this.setDaemon(true);
-        this.setPriority(Thread.MIN_PRIORITY);
+        setName("Watchdog");
+        setDaemon(true);
+        setPriority(Thread.MIN_PRIORITY);
     }
 
+    /**
+     * Stops the Watchdog gracefully.
+     */
     public void kill() {
         running = false;
         interrupt();
@@ -30,68 +41,78 @@ public class Watchdog extends Thread {
 
     @Override
     public void run() {
-        while (this.running) {
-            //Refresh the advanced network information in watchdog, as this is a time-consuming operation and will block the main thread
+        while (running) {
+            // Refresh network statistics (expensive operation)
             server.getNetwork().resetStatistics();
 
-            long current = server.getNextTick();
-            if (current != 0) {
-                var now = System.currentTimeMillis();
-                long diff = now - current;
-                if (!responding && diff > time * 2) {
-                    System.exit(1); // Kill the server if it gets stuck on shutdown
+            long nextTick = server.getNextTick();
+            if (nextTick != 0) {
+                long now = System.currentTimeMillis();
+                long diff = now - nextTick;
+                if (!responding && diff > timeoutMs * 2) {
+                    System.exit(1); // Kill the server if stuck during shutdown
                 }
 
-                if (diff <= time) {
+                if (diff <= timeoutMs) {
                     responding = true;
                 } else if (responding && now - server.getBusyingTime() < 60) {
-                    StringBuilder builder = new StringBuilder(
-                            "--------- Server stopped responding --------- (" + Math.round(diff / 1000d) + "s)").append('\n')
-                            .append("Please report this to PowerNukkitX:").append('\n')
-                            .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new").append('\n')
-                            .append("---------------- Main thread ----------------").append('\n');
+                    StringBuilder builder = new StringBuilder()
+                            .append("--------- Server stopped responding --------- (")
+                            .append(Math.round(diff / 1000d)).append("s)\n")
+                            .append("Please report this to PowerNukkitX:\n")
+                            .append(" - https://github.com/PowerNukkitX/PowerNukkitX/issues/new\n")
+                            .append("---------------- Main thread ----------------\n");
 
-                    dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(this.server.getPrimaryThread().threadId(), Integer.MAX_VALUE), builder);
+                    dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(
+                            server.getPrimaryThread().threadId(), Integer.MAX_VALUE), builder);
 
-                    builder.append("---------------- All threads ----------------").append('\n');
+                    builder.append("---------------- All threads ----------------\n");
                     ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
                     for (int i = 0; i < threads.length; i++) {
-                        if (i != 0) builder.append("------------------------------").append('\n');
+                        if (i != 0) builder.append("------------------------------\n");
                         dumpThread(threads[i], builder);
                     }
-                    builder.append("---------------------------------------------").append('\n');
+                    builder.append("---------------------------------------------\n");
                     log.error(builder.toString());
                     responding = false;
-                    this.server.forceShutdown();
+                    server.forceShutdown();
                 }
             }
             try {
-                sleep(Math.max(time / 4, 1000));
+                sleep(Math.max(timeoutMs / 4, 1000));
             } catch (InterruptedException interruption) {
                 log.error("The Watchdog Thread has been interrupted and is no longer monitoring the server state", interruption);
                 running = false;
+                Thread.currentThread().interrupt();
                 return;
             }
         }
         log.warn("Watchdog was stopped");
     }
 
+    /**
+     * Appends a thread dump to the StringBuilder.
+     * @param thread the thread to dump
+     * @param builder the target StringBuilder
+     */
     private static void dumpThread(ThreadInfo thread, StringBuilder builder) {
         if (thread == null) {
-            builder.append("Attempted to dump a null thread!").append('\n');
+            builder.append("Attempted to dump a null thread!\n");
             return;
         }
         builder.append("Current Thread: ").append(thread.getThreadName()).append('\n');
-        builder.append("\tPID: ").append(thread.getThreadId()).append(" | Suspended: ").append(thread.isSuspended()).append(" | Native: ").append(thread.isInNative()).append(" | State: ").append(thread.getThreadState()).append('\n');
+        builder.append("\tPID: ").append(thread.getThreadId())
+                .append(" | Suspended: ").append(thread.isSuspended())
+                .append(" | Native: ").append(thread.isInNative())
+                .append(" | State: ").append(thread.getThreadState()).append('\n');
         // Monitors
         if (thread.getLockedMonitors().length != 0) {
-            builder.append("\tThread is waiting on monitor(s):").append('\n');
+            builder.append("\tThread is waiting on monitor(s):\n");
             for (MonitorInfo monitor : thread.getLockedMonitors()) {
                 builder.append("\t\tLocked on:").append(monitor.getLockedStackFrame()).append('\n');
             }
         }
-
-        builder.append("\tStack:").append('\n');
+        builder.append("\tStack:\n");
         for (var stack : thread.getStackTrace()) {
             builder.append("\t\t").append(stack).append('\n');
         }
