@@ -98,6 +98,7 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.wizard.SparkInstaller;
 import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;

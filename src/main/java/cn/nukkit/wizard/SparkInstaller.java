@@ -1,4 +1,4 @@
-package cn.nukkit.utils;
+package cn.nukkit.wizard;
 
 import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
@@ -39,7 +39,7 @@ public class SparkInstaller {
     private static final String CLASSIFIER = "all";
     private static final String EXTENSION = "jar";
 
-    public static boolean initSpark(@Nonnull Server server) {
+    public static void initSpark(@Nonnull Server server) {
         boolean download = false;
         Plugin spark = server.getPluginManager().getPlugin("spark");
         if (spark == null) {
@@ -47,7 +47,7 @@ public class SparkInstaller {
         }
 
         if (!download) {
-            return false;
+            return;
         }
 
         File targetPath = new File(server.getPluginPath(), "spark.jar");
@@ -55,7 +55,7 @@ public class SparkInstaller {
         // Keep old behavior: if spark.jar already exists, don't overwrite it.
         if (targetPath.exists()) {
             log.info("Spark not loaded but spark.jar already exists at {} - skipping download.", targetPath.getAbsolutePath());
-            return true;
+            return;
         }
 
         try {
@@ -83,7 +83,6 @@ public class SparkInstaller {
             log.warn("Failed to download/install spark: {}", Arrays.toString(e.getStackTrace()));
         }
 
-        return true;
     }
 
     private static URI resolveLatestSparkAllJar(HttpClient client) throws Exception {
