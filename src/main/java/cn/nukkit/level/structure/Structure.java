@@ -236,9 +236,9 @@ public class Structure extends AbstractStructure {
         blockManager.applySubChunkUpdate();
 
         for (var entry : blockEntities.entrySet()) {
-            int newPosX = (int) (entry.getKey().x + pos.x);
-            int newPosY = (int) (entry.getKey().y + pos.y);
-            int newPosZ = (int) (entry.getKey().z + pos.z);
+            int newPosX = (entry.getKey().getFloorX() + pos.getFloorX());
+            int newPosY = (entry.getKey().getFloorY() + pos.getFloorY());
+            int newPosZ = (entry.getKey().getFloorZ() + pos.getFloorZ());
 
             BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
             if (blockEntity != null) {
