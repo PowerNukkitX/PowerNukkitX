@@ -11,8 +11,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
@@ -182,21 +182,21 @@ public class BlockSnowLayer extends BlockFallable {
         getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
             Player[] target = level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
             Vector3[] blocks = {getLocation()};
-            level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0, false);
-            level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
+            level.sendBlocks(target, blocks, 3, 0, false);
+            level.sendBlocks(target, blocks, 3, 1, false);
         }, 10);
 
         Player[] target = level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
         Vector3[] blocks = {getLocation()};
-        level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0, false);
-        level.sendBlocks(target, blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1, false);
+        level.sendBlocks(target, blocks, 3, 0, false);
+        level.sendBlocks(target, blocks, 3, 1, false);
     }
 
     @Override
     public int onUpdate(int type) {
         super.onUpdate(type);
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            BiomeDefinition biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
+            BiomeDefinitionData biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
             if (biomeDefinition.getTags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
                 melt();
                 return Level.BLOCK_UPDATE_RANDOM;

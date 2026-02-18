@@ -9,8 +9,9 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     protected void initEntity() {
         this.setMaxHealth(1);
         super.initEntity();
-        getLevel().addLevelSoundEvent(this, LevelSoundEvent.FANG, -1, EntityID.EVOCATION_FANG, false, false);
+        getLevel().addLevelSoundEvent(this, SoundEvent.FANG, -1, EntityID.EVOCATION_FANG, false, false);
         for(Entity entity : getLevel().getCollidingEntities(getBoundingBox())) {
             if(attackTarget(entity)) {
                 EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.MAGIC, 6);
@@ -50,9 +51,9 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     public void spawnTo(Player player) {
         super.spawnTo(player);
         EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = this.getId();
-        pk.data = 0;
-        pk.event = EntityEventPacket.ARM_SWING;
+        pk.setRuntimeEntityId(this.getId());
+        pk.setData(0);
+        pk.setType(EntityEventType.ATTACK_START);
         player.dataPacket(pk);
     }
 

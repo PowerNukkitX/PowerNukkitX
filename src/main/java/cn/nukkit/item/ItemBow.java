@@ -98,7 +98,7 @@ public class ItemBow extends ItemTool {
                         .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag((float) -player.pitch)))
                 .putShort("Fire", flame ? 45 * 60 : 0)

@@ -7,9 +7,9 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.SetHudPacket;
-import cn.nukkit.network.protocol.types.hud.HudElement;
-import cn.nukkit.network.protocol.types.hud.HudVisibility;
+import org.cloudburstmc.protocol.bedrock.packet.SetHudPacket;
+import org.cloudburstmc.protocol.bedrock.data.HudElement;
+import org.cloudburstmc.protocol.bedrock.data.HudVisibility;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,8 +68,8 @@ public class HudCommand extends VanillaCommand {
 
         for (Player player : players) {
             SetHudPacket packet = new SetHudPacket();
-            packet.elements.add(element);
-            packet.visibility = visibility;
+            packet.getElements().add(element);
+            packet.setVisibility(visibility);
             player.dataPacket(packet);
             
             return 1;

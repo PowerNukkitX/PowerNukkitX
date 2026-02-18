@@ -2,7 +2,8 @@ package cn.nukkit.dialog.response;
 
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.window.FormWindowDialog;
-import cn.nukkit.network.protocol.NPCRequestPacket;
+import org.cloudburstmc.protocol.bedrock.data.NpcRequestType;
+import org.cloudburstmc.protocol.bedrock.packet.NpcRequestPacket;
 import lombok.Getter;
 
 /**
@@ -15,7 +16,7 @@ public class FormResponseDialog {
     private String data;
     private ElementDialogButton clickedButton;//can be null
     private String sceneName;
-    private NPCRequestPacket.RequestType requestType;
+    private NpcRequestType requestType;
     private int skinType;
 
     /**
@@ -23,16 +24,16 @@ public class FormResponseDialog {
      * @param packet The NPC request packet
      * @param dialog The dialog window
      */
-    public FormResponseDialog(NPCRequestPacket packet, FormWindowDialog dialog) {
-        this.entityRuntimeId = packet.entityRuntimeId;
-        this.data = packet.data;
+    public FormResponseDialog(NpcRequestPacket packet, FormWindowDialog dialog) {
+        this.entityRuntimeId = packet.getRuntimeEntityId();
+        this.data = packet.getCommand();
         try {
-            this.clickedButton = dialog.getButtons().get(packet.skinType);
+            this.clickedButton = dialog.getButtons().get(packet.getActionType());
         }catch (IndexOutOfBoundsException e){
             this.clickedButton = null;
         }
-        this.sceneName = packet.sceneName;
-        this.requestType = packet.requestType;
-        this.skinType = packet.skinType;
+        this.sceneName = packet.getSceneName();
+        this.requestType = packet.getRequestType();
+        this.skinType = packet.getActionType();
     }
 }

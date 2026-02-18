@@ -5,13 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.MineBlockAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.MineBlockAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
@@ -42,16 +42,8 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
         }
 
         if (itemInHand.getDamage() != action.getPredictedDurability()) {
-            InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-            int id = SpecialWindowId.PLAYER.getId();
-            inventorySlotPacket.inventoryId = id;
-            inventorySlotPacket.item = itemInHand;
-            inventorySlotPacket.slot = action.getHotbarSlot();
-            inventorySlotPacket.fullContainerName = new FullContainerName(
-                    ContainerSlotType.HOTBAR,
-                    id
-            );
-            player.dataPacket(inventorySlotPacket);
+            // Let regular inventory sync correct client state.
+            inventory.sendSlot(heldItemIndex, player);
         }
         var itemStackResponseSlot =
                 new ItemStackResponseContainer(
@@ -63,7 +55,8 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
                                         itemInHand.getCount(),
                                         itemInHand.getNetId(),
                                         itemInHand.getCustomName(),
-                                        itemInHand.getDamage()
+                                        itemInHand.getDamage(),
+                                        ""
                                 )
                         ),
                         new FullContainerName(

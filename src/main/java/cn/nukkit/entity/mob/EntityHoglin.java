@@ -42,8 +42,9 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -210,9 +211,9 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
 
     protected void sendBreedingAnimation(Item item) {
         EntityEventPacket pk = new EntityEventPacket();
-        pk.event = EntityEventPacket.EATING_ITEM;
-        pk.eid = this.getId();
-        pk.data =  item.getFullId();
+        pk.setType(EntityEventType.EATING_ITEM);
+        pk.setRuntimeEntityId(this.getId());
+        pk.setData(item.getFullId());
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
@@ -247,7 +248,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
             super.onStart(entity);
             entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
             entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.HOGLIN, false, false);
+            entity.level.addLevelSoundEvent(entity, SoundEvent.ANGRY, -1, Entity.HOGLIN, false, false);
         }
 
         @Override

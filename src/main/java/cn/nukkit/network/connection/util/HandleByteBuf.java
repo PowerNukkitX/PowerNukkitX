@@ -14,15 +14,14 @@ import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.*;
-import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
-import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
-import cn.nukkit.network.protocol.types.itemstack.request.TextProcessingEventOrigin;
-import cn.nukkit.network.protocol.types.itemstack.request.action.*;
+import org.cloudburstmc.protocol.bedrock.data.*;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequestSlotData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.TextProcessingEventOrigin;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.*;
 import cn.nukkit.recipe.descriptor.ComplexAliasDescriptor;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.DeferredDescriptor;
@@ -929,14 +928,16 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public void writeFullContainerName(FullContainerName fullContainerName) {
-        this.writeByte(fullContainerName.getContainer().getId());
+        this.writeByte(fullContainerName.getContainer().ordinal());
         this.writeOptional(OptionalValue.ofNullable(fullContainerName.getDynamicId()), this::writeIntLE);
 
     }
 
     public FullContainerName readFullContainerName() {
+        ContainerSlotType[] values = ContainerSlotType.values();
+        int id = Byte.toUnsignedInt(this.readByte());
         return new FullContainerName(
-                ContainerSlotType.fromId(this.readByte()),
+                id < values.length ? values[id] : ContainerSlotType.UNKNOWN,
                 this.readOptional(null, this::readIntLE)
         );
     }
@@ -1497,32 +1498,24 @@ public class HandleByteBuf extends ByteBuf {
         this.writeIntLE(color.getRGB());
     }
 
-    public void writeEntityLink(EntityLink link) {
-        writeEntityUniqueId(link.fromEntityUniqueId);
-        writeEntityUniqueId(link.toEntityUniqueId);
-        writeByte(link.type);
-        writeBoolean(link.immediate);
-        writeBoolean(link.riderInitiated);
+    public void writeEntityLink(EntityLinkData link) {
+        writeEntityUniqueId(link.getFrom());
+        writeEntityUniqueId(link.getTo());
+        writeByte(link.getType().ordinal());
+        writeBoolean(link.isImmediate());
+        writeBoolean(link.isRiderInitiated());
         writeFloatLE(0f);
     }
 
-    public EntityLink readEntityLink() {
-        return new EntityLink(
+    public EntityLinkData readEntityLink() {
+        return new EntityLinkData(
                 readEntityUniqueId(),
                 readEntityUniqueId(),
-                EntityLink.Type.values()[readByte()],
+                EntityLinkData.Type.values()[readByte()],
                 readBoolean(),
                 readBoolean(),
                 readFloatLE()
         );
-    }
-
-    public PlayerInputTick readPlayerInputTick() {
-        return new PlayerInputTick(readUnsignedVarLong());
-    }
-
-    public void writePlayerInputTick(PlayerInputTick value) {
-        writeUnsignedVarLong(value.getInputTick());
     }
 
     public <T> void writeArray(Collection<T> collection, Consumer<T> writer) {
@@ -1549,19 +1542,6 @@ public class HandleByteBuf extends ByteBuf {
         this.writeUnsignedVarInt(array.size());
         for (T val : array) {
             biConsumer.accept(this, val);
-        }
-    }
-
-    public void writePropertySyncData(PropertySyncData data) {
-        writeUnsignedVarInt(data.intProperties().length);
-        for (int i = 0, len = data.intProperties().length; i < len; ++i) {
-            writeUnsignedVarInt(i);
-            writeVarInt(data.intProperties()[i]);
-        }
-        writeUnsignedVarInt(data.floatProperties().length);
-        for (int i = 0, len = data.floatProperties().length; i < len; ++i) {
-            writeUnsignedVarInt(i);
-            writeFloatLE(data.floatProperties()[i]);
         }
     }
 
@@ -1593,14 +1573,6 @@ public class HandleByteBuf extends ByteBuf {
         }
     }
 
-    public ScriptDebugShapeType readScriptDebugShapeType() {
-        return ScriptDebugShapeType.values()[this.readUnsignedByte()];
-    }
-
-    public void writeScriptDebugShapeType(ScriptDebugShapeType type) {
-        this.writeByte(type.ordinal());
-    }
-
     @SneakyThrows(IOException.class)
     public void writeTag(CompoundTag tag) {
         writeBytes(NBTIO.writeNetwork(tag));
@@ -1609,13 +1581,16 @@ public class HandleByteBuf extends ByteBuf {
     public ItemStackRequest readItemStackRequest() {
         int requestId = readVarInt();
         ItemStackRequestAction[] actions = readArray(ItemStackRequestAction.class, (s) -> {
-            ItemStackRequestActionType itemStackRequestActionType = ItemStackRequestActionType.fromId(s.readByte());
+            ItemStackRequestActionType[] values = ItemStackRequestActionType.values();
+            int id = Byte.toUnsignedInt(s.readByte());
+            ItemStackRequestActionType itemStackRequestActionType = values[id];
             return readRequestActionData(itemStackRequestActionType);
         });
         String[] filteredStrings = readArray(String.class, HandleByteBuf::readString);
 
         int originVal = readIntLE();
-        TextProcessingEventOrigin origin = originVal == -1 ? null : TextProcessingEventOrigin.fromId(originVal);  // new for v552
+        TextProcessingEventOrigin[] origins = TextProcessingEventOrigin.values();
+        TextProcessingEventOrigin origin = originVal == -1 || originVal >= origins.length ? null : origins[originVal];  // new for v552
         return new ItemStackRequest(requestId, actions, filteredStrings, origin);
     }
 
@@ -1627,17 +1602,19 @@ public class HandleByteBuf extends ByteBuf {
                 int recipeId = readUnsignedVarInt();
                 int numberOfRequestedCrafts = readUnsignedByte();
                 int timesCrafted = readUnsignedByte();
-                List<ItemDescriptor> ingredients = new ObjectArrayList<>();
-                readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readRecipeIngredient);
+                List<org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount> ingredients = new ObjectArrayList<>();
+                readArray(ingredients, HandleByteBuf::readUnsignedByte, HandleByteBuf::readRecipeIngredientForRequest);
                 yield new AutoCraftRecipeAction(
                         recipeId,
-                        numberOfRequestedCrafts,
                         timesCrafted,
-                        ingredients
+                        ingredients,
+                        numberOfRequestedCrafts
                 );
             }
             case CRAFT_RESULTS_DEPRECATED -> new CraftResultsDeprecatedAction(
-                    readArray(Item.class, (s) -> s.readSlot(true)),
+                    Arrays.stream(readArray(Item.class, (s) -> s.readSlot(true)))
+                            .map(HandleByteBuf::toItemData)
+                            .toArray(org.cloudburstmc.protocol.bedrock.data.inventory.ItemData[]::new),
                     readUnsignedByte()
             );
             case MINE_BLOCK -> new MineBlockAction(readVarInt(), readVarInt(), readVarInt());
@@ -1906,21 +1883,62 @@ public class HandleByteBuf extends ByteBuf {
         return buf.release(decrement);
     }
 
-    public void writeExperiments(List<ExperimentEntry> experiments) {
-        for(ExperimentEntry experiment : experiments) {
-            this.writeString(experiment.name());
-            this.writeBoolean(experiment.enabled());
+    public void writeExperiments(List<ExperimentData> experiments) {
+        for(ExperimentData experiment : experiments) {
+            this.writeString(experiment.getName());
+            this.writeBoolean(experiment.isEnabled());
         }
     }
 
-    public void writeArmorDamagePair(ArmorSlotAndDamagePair pair) {
-        writeByte(pair.getSlot().getId());
-        writeShortLE(pair.getDamage());
+    private static org.cloudburstmc.protocol.bedrock.data.inventory.ItemData toItemData(Item item) {
+        if (item == null || item.isNull() || Objects.equals(item.getId(), Item.AIR.getId())) {
+            return org.cloudburstmc.protocol.bedrock.data.inventory.ItemData.AIR;
+        }
+        return org.cloudburstmc.protocol.bedrock.data.inventory.ItemData.builder()
+                .definition(new org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition(item.getId(), item.getRuntimeId(), false))
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .usingNetId(item.getNetId() != null)
+                .netId(item.getNetId() != null ? item.getNetId() : 0)
+                .build();
     }
 
-    public ArmorSlotAndDamagePair readArmorDamagePair(HandleByteBuf buffer) {
-        final ArmorSlot slot = ArmorSlot.from(buffer.readUnsignedByte());
-        final short damage = buffer.readShortLE();
-        return new ArmorSlotAndDamagePair(slot, damage);
+    private static org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount readRecipeIngredientForRequest(HandleByteBuf byteBuf) {
+        ItemDescriptor descriptor = byteBuf.readRecipeIngredient();
+        return switch (descriptor.getType()) {
+            case DEFAULT -> {
+                Item item = descriptor.toItem();
+                yield new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount(
+                        new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor(
+                                new org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition(item.getId(), item.getRuntimeId(), false),
+                                item.getDamage()
+                        ),
+                        item.getCount()
+                );
+            }
+            case MOLANG -> {
+                MolangDescriptor molang = (MolangDescriptor) descriptor;
+                yield new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount(
+                        new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.MolangDescriptor(molang.getTagExpression(), molang.getMolangVersion()),
+                        molang.getCount()
+                );
+            }
+            case ITEM_TAG -> {
+                ItemTagDescriptor itemTag = (ItemTagDescriptor) descriptor;
+                yield new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount(
+                        new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemTagDescriptor(itemTag.getItemTag()),
+                        itemTag.getCount()
+                );
+            }
+            case DEFERRED -> {
+                DeferredDescriptor deferred = (DeferredDescriptor) descriptor;
+                yield new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount(
+                        new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DeferredDescriptor(deferred.getFullName(), deferred.getAuxValue()),
+                        deferred.getCount()
+                );
+            }
+            default -> org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount.EMPTY;
+        };
     }
+
 }

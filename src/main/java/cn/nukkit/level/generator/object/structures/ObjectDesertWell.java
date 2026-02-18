@@ -9,7 +9,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
@@ -82,7 +82,7 @@ public class ObjectDesertWell extends RuledObjectGenerator {
         random.setSeed(level.getSeed() ^ (x+y+z));
 
         int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome);
         if (!definition.getTags().contains(BiomeTags.DESERT) || random.nextBoundedInt(500) != 0) {
             return false;
         }

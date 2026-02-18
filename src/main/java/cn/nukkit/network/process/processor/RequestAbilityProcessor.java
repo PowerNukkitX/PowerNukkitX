@@ -8,9 +8,8 @@ import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerToggleFlightEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.RequestAbilityPacket;
-import cn.nukkit.network.protocol.types.PlayerAbility;
+import org.cloudburstmc.protocol.bedrock.data.Ability;
+import org.cloudburstmc.protocol.bedrock.packet.RequestAbilityPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,13 +18,13 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestAbilityPacket pk) {
         Player player = playerHandle.player;
-        PlayerAbility ability = pk.ability;
-        if (ability != PlayerAbility.FLYING) {
-            log.info("[{}] has tried to trigger {} ability {}", player.getName(), ability, pk.boolValue ? "on" : "off");
+        Ability ability = pk.getAbility();
+        if (ability != Ability.FLYING) {
+            log.info("[{}] has tried to trigger {} ability {}", player.getName(), ability, pk.isBoolValue() ? "on" : "off");
             return;
         }
 
-        if (!pk.boolValue && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
+        if (!pk.isBoolValue() && !player.getAdventureSettings().get(AdventureSettings.Type.ALLOW_FLIGHT)) {
             PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.FLIGHT);
             Server.getInstance().getPluginManager().callEvent(detectedEvent);
             if(detectedEvent.isKick())
@@ -33,7 +32,7 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
             return;
         }
 
-        PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, pk.boolValue);
+        PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(player, pk.isBoolValue());
         player.getServer().getPluginManager().callEvent(playerToggleFlightEvent);
         if (playerToggleFlightEvent.isCancelled()) {
             player.getAdventureSettings().update();
@@ -43,7 +42,7 @@ public class RequestAbilityProcessor extends DataPacketProcessor<RequestAbilityP
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.REQUEST_ABILITY_PACKET;
+    public Class<RequestAbilityPacket> getPacketClass() {
+        return RequestAbilityPacket.class;
     }
 }

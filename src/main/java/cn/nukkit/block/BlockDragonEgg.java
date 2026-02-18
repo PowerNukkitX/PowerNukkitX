@@ -8,7 +8,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,11 +94,9 @@ public class BlockDragonEgg extends BlockFallable {
                 int diffY = this.getFloorY() - to.getFloorY();
                 int diffZ = this.getFloorZ() - to.getFloorZ();
                 LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_PARTICLE_DRAGON_EGG;
-                pk.data = (((((Math.abs(diffX) << 16) | (Math.abs(diffY) << 8)) | Math.abs(diffZ)) | ((diffX < 0 ? 1 : 0) << 24)) | ((diffY < 0 ? 1 : 0) << 25)) | ((diffZ < 0 ? 1 : 0) << 26);
-                pk.x = this.getFloorX();
-                pk.y = this.getFloorY();
-                pk.z = this.getFloorZ();
+                pk.setType(LevelEvent.PARTICLE_DRAGON_EGG);
+                pk.setData((((((Math.abs(diffX) << 16) | (Math.abs(diffY) << 8)) | Math.abs(diffZ)) | ((diffX < 0 ? 1 : 0) << 24)) | ((diffY < 0 ? 1 : 0) << 25)) | ((diffZ < 0 ? 1 : 0) << 26));
+                pk.setPosition(Vector3f.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
                 this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
                 this.getLevel().setBlock(this, get(AIR), true);
                 this.getLevel().setBlock(to, this, true);

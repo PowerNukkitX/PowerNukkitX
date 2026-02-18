@@ -2,9 +2,11 @@ package cn.nukkit.registry;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.customitem.data.CreativeCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemGroup;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,34 +22,69 @@ import java.util.Map;
  */
 @Slf4j
 public class CreativeGroupsRegistry {
+    public static final class CustomGroupDefinition {
+        private final CreativeItemCategory category;
+        private final String name;
+        private final String iconId;
+
+        public CustomGroupDefinition(CreativeItemCategory category, String name, String iconId) {
+            this.category = category;
+            this.name = name;
+            this.iconId = iconId;
+        }
+
+        public CreativeItemCategory getCategory() {
+            return category;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getIconId() {
+            return iconId;
+        }
+    }
+
     private static final ObjectLinkedOpenHashSet<CreativeItemGroup> INJECTED_GROUPS = new ObjectLinkedOpenHashSet<>();
+    private static final List<CustomGroupDefinition> DEFINED_GROUPS = new ArrayList<>();
+
+    public static void define(CreativeItemCategory category, String name, String iconId) {
+        var def = new CustomGroupDefinition(category, name, iconId);
+        DEFINED_GROUPS.add(def);
+        load(def);
+    }
+
+    public static List<CustomGroupDefinition> getDefinedGroups() {
+        return List.copyOf(DEFINED_GROUPS);
+    }
 
     /**
      * Registers a new custom creative group. If this is the first group being registered,
      * triggers the injection process into the existing creative registry.
      */
-    public static void load(CreativeCustomGroups.CustomGroupDefinition def) {
+    public static void load(CustomGroupDefinition def) {
         if (!isValid(def)) return;
 
-        Item icon = resolveIcon(def);
+        ItemData icon = resolveIcon(def);
         CreativeItemGroup group = new CreativeItemGroup(def.getCategory(), def.getName(), icon);
         INJECTED_GROUPS.add(group);
     }
 
-    private static boolean isValid(CreativeCustomGroups.CustomGroupDefinition def) {
+    private static boolean isValid(CustomGroupDefinition def) {
         return def != null && def.getName() != null && def.getCategory() != null;
     }
 
-    private static Item resolveIcon(CreativeCustomGroups.CustomGroupDefinition def) {
+    private static ItemData resolveIcon(CustomGroupDefinition def) {
         for (CreativeItemData data : CreativeItemRegistry.ITEM_DATA) {
-            Item candidate = data.getItem();
-            if (def.getIconId().equals(candidate.getName()) || def.getIconId().equalsIgnoreCase(candidate.getId())) {
+            ItemData candidate = data.getItem();
+            String identifier = candidate.getDefinition().getIdentifier();
+            if (def.getIconId().equals(identifier) || def.getIconId().equalsIgnoreCase(identifier)) {
                 return candidate;
             }
         }
         log.warn("Icon '{}' could not be resolved for group '{}'. Falling back to stone.", def.getIconId(), def.getName());
-
-        return Item.get("minecraft:stone");
+        return toNetworkItem(Item.get("minecraft:stone"));
     }
 
     /**
@@ -146,7 +183,7 @@ public class CreativeGroupsRegistry {
         ObjectLinkedOpenHashSet<CreativeItemData> rebuilt = new ObjectLinkedOpenHashSet<>();
 
         for (CreativeItemData data : current) {
-            Item item = data.getItem();
+            ItemData item = data.getItem();
             int originalGroupId = data.getGroupId();
             int newGroupId = CreativeItemRegistry.LAST_ITEMS_INDEX;
 
@@ -158,7 +195,7 @@ public class CreativeGroupsRegistry {
                 }
             } else {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
-                String key = item.getIdentifier().toString();
+                String key = item.getDefinition().getIdentifier();
                 String groupName = CreativeItemRegistry.ITEM_GROUP_MAP.get(key);
                 CreativeCategory fallbackCategory = getCategoryFromFallbackIndex(originalGroupId);
 
@@ -187,15 +224,28 @@ public class CreativeGroupsRegistry {
                     // No group set at all, fallback to last index of original category
                     int fallbackIndex = CreativeItemRegistry.getLastGroupIndexFrom(fallbackCategory.name());
                     log.debug("Group name not saved for item '{}'; falling back to last index {}",
-                             item.getName(), fallbackIndex);
+                             item.getDefinition().getIdentifier(), fallbackIndex);
                     newGroupId = fallbackIndex;
                 }
             }
-            rebuilt.add(new CreativeItemData(item, newGroupId));
+            rebuilt.add(new CreativeItemData(item, data.getNetId(), newGroupId));
         }
         current.clear();
         current.addAll(rebuilt);
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();
+    }
+
+    private static ItemData toNetworkItem(Item item) {
+        if (item == null || item.isNull() || item.getId().equals(Item.AIR.getId())) {
+            return ItemData.AIR;
+        }
+        return ItemData.builder()
+                .definition(new SimpleItemDefinition(item.getId(), item.getRuntimeId(), false))
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .usingNetId(item.getNetId() != null)
+                .netId(item.getNetId() != null ? item.getNetId() : 0)
+                .build();
     }
 
     private static boolean isCategoryFallbackIndex(int groupId) {

@@ -6,9 +6,10 @@ import cn.nukkit.api.DoNotModify;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
-import cn.nukkit.network.protocol.types.camera.CameraAudioListener;
-import cn.nukkit.network.protocol.types.camera.aimassist.CameraPresetAimAssist;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateSoftEnumPacket;
+import org.cloudburstmc.protocol.bedrock.data.camera.CameraAudioListener;
+import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPreset;
+import org.cloudburstmc.protocol.bedrock.data.command.SoftEnumUpdateType;
 import cn.nukkit.utils.OptionalValue;
 import lombok.Builder;
 import lombok.Getter;
@@ -82,7 +83,7 @@ public final class CameraPreset {
             if (PRESETS.containsKey(preset.getIdentifier()))
                 throw new IllegalArgumentException("Camera preset " + preset.getIdentifier() + " already exists!");
             PRESETS.put(preset.getIdentifier(), preset);
-            CommandEnum.CAMERA_PRESETS.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, preset.getIdentifier());
+            CommandEnum.CAMERA_PRESETS.updateSoftEnum(SoftEnumUpdateType.ADD, preset.getIdentifier());
         }
         int id = 0;
         // Reassign unique IDs to each preset
@@ -156,7 +157,7 @@ public final class CameraPreset {
     @NotNull
     private final OptionalValue<Boolean> playEffect;
     @NotNull
-    private final OptionalValue<CameraPresetAimAssist> aimAssist;
+    private final OptionalValue<CameraAimAssistPreset> aimAssist;
 
 
     private int id = 0;
@@ -245,7 +246,7 @@ public final class CameraPreset {
             @Nullable Vector2f horizontalRotationLimit,
             @Nullable Vector2f verticalRotationLimit,
             @Nullable Boolean continueTargeting,
-            @Nullable CameraPresetAimAssist aimAssist
+            @Nullable CameraAimAssistPreset aimAssist
     ) {
         this.identifier = identifier;
         this.inheritFrom = inheritFrom != null ? inheritFrom : "";

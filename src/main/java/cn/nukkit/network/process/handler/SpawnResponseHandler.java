@@ -4,24 +4,37 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.BedrockSession;
-import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
-import cn.nukkit.network.protocol.ItemRegistryPacket;
-import cn.nukkit.network.protocol.RequestChunkRadiusPacket;
-import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
-import cn.nukkit.network.protocol.StartGamePacket;
-import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
-import cn.nukkit.network.protocol.TrimDataPacket;
-import cn.nukkit.network.protocol.VoxelShapesPacket;
-import cn.nukkit.network.protocol.types.TrimData;
+import cn.nukkit.inventory.request.CraftRecipeActionProcessor;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.AuthoritativeMovementMode;
+import org.cloudburstmc.protocol.bedrock.data.ChatRestrictionLevel;
+import org.cloudburstmc.protocol.bedrock.data.GamePublishSetting;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
+import org.cloudburstmc.protocol.bedrock.data.SpawnBiomeType;
+import org.cloudburstmc.protocol.bedrock.data.WorldType;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.packet.AvailableEntityIdentifiersPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ItemComponentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
+import org.cloudburstmc.protocol.bedrock.packet.SyncEntityPropertyPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TrimDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.VoxelShapesPacket;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.packet.RequestChunkRadiusPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
+import org.cloudburstmc.protocol.common.PacketSignal;
+import org.cloudburstmc.protocol.common.util.OptionalBoolean;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Slf4j
 public class SpawnResponseHandler extends BedrockSessionPacketHandler {
@@ -39,8 +52,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
         log.debug("Sending component items");
 
-        ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-        var entries = new ObjectOpenHashSet<ItemRegistryPacket.Entry>();
+        ItemComponentPacket itemRegistryPacket = new ItemComponentPacket();
 
         for(ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
             CompoundTag tag = new CompoundTag();
@@ -53,10 +65,9 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
                 tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
             }
 
-            entries.add(new ItemRegistryPacket.Entry(data.identifier(), data.runtimeId(), data.version(), data.componentBased(), tag));
+            itemRegistryPacket.getItems().add(new SimpleItemDefinition(data.identifier(), data.runtimeId(), data.componentBased()));
         }
 
-        itemRegistryPacket.setEntries(entries.toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
         player.dataPacket(itemRegistryPacket);
 
         log.debug("Sending actor identifiers");
@@ -102,8 +113,8 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         this.session.syncCreativeContent();
 
         TrimDataPacket trimDataPacket = new TrimDataPacket();
-        trimDataPacket.materials.addAll(TrimData.trimMaterials);
-        trimDataPacket.patterns.addAll(TrimData.trimPatterns);
+        trimDataPacket.getMaterials().addAll(CraftRecipeActionProcessor.getTrimMaterials());
+        trimDataPacket.getPatterns().addAll(CraftRecipeActionProcessor.getTrimPatterns());
         this.session.sendPacket(trimDataPacket);
 
         player.setCanClimb(true);
@@ -121,52 +132,63 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
     private void startGame() {
         var server = player.getServer();
         var startPk = new StartGamePacket();
-
-        startPk.entityUniqueId = player.getId();
-        startPk.entityRuntimeId = player.getId();
-        startPk.playerGamemode = Player.toNetworkGamemode(player.getGamemode());
-
-        startPk.x = (float) player.x;
-        startPk.y = (float) (player.isOnGround() ? player.y + player.getEyeHeight() : player.y);//防止在地上生成容易陷进地里
-        startPk.z = (float) player.z;
-        startPk.yaw = (float) player.yaw;
-        startPk.pitch = (float) player.pitch;
-        startPk.seed = -1L;
-        startPk.dimension = (byte) (player.level.getDimension() & 0xff);
-        startPk.worldGamemode = Player.toNetworkGamemode(server.getDefaultGamemode());
-        startPk.difficulty = server.getDifficulty();
         var spawn = player.getSafeSpawn();
-        startPk.spawnX = spawn.getFloorX();
-        startPk.spawnY = spawn.getFloorY();
-        startPk.spawnZ = spawn.getFloorZ();
-        startPk.hasAchievementsDisabled = true;
-        startPk.dayCycleStopTime = -1;
-        startPk.rainLevel = 0;
-        startPk.lightningLevel = 0;
-        startPk.commandsEnabled = player.isEnableClientCommand();
-        startPk.gameRules = player.getLevel().getGameRules();
-        startPk.levelId = "";
-        startPk.worldName = server.getSubMotd();
-        startPk.generator = (byte) ((player.getLevel().getDimension() + 1) & 0xff); //0 旧世界 Old world, 1 主世界 Main world, 2 下界 Nether, 3 末地 End
-        startPk.serverAuthoritativeMovement = server.getServerAuthoritativeMovement();
-        startPk.isInventoryServerAuthoritative = true;//enable item stack request packet
-        startPk.blockNetworkIdsHashed = true;//enable blockhash
-        // 写入自定义方块数据
-        // Write custom block data
-        startPk.blockProperties.addAll(Registries.BLOCK.getCustomBlockDefinitionList());
-        startPk.playerPropertyData = EntityProperty.getPlayerPropertyCache();
-        startPk.setExperiments(server.getExperiments());
+
+        startPk.setUniqueEntityId(player.getId());
+        startPk.setRuntimeEntityId(player.getId());
+        startPk.setPlayerGameType(GameType.from(Player.toNetworkGamemode(player.getGamemode())));
+        startPk.setPlayerPosition(Vector3f.from((float) player.x, (float) (player.isOnGround() ? player.y + player.getEyeHeight() : player.y), (float) player.z));
+        startPk.setRotation(Vector2f.from((float) player.pitch, (float) player.yaw));
+        startPk.setSeed(-1L);
+        startPk.setDimensionId(player.level.getDimension());
+        startPk.setGeneratorId((player.getLevel().getDimension() + 1) & 0xff);
+        startPk.setLevelGameType(GameType.from(Player.toNetworkGamemode(server.getDefaultGamemode())));
+        startPk.setDifficulty(server.getDifficulty());
+        startPk.setDefaultSpawn(Vector3i.from(spawn.getFloorX(), spawn.getFloorY(), spawn.getFloorZ()));
+        startPk.setSpawnBiomeType(SpawnBiomeType.DEFAULT);
+        startPk.setCustomBiomeName("plains");
+        startPk.setAchievementsDisabled(true);
+        startPk.setDayCycleStopTime(-1);
+        startPk.setRainLevel(0);
+        startPk.setLightningLevel(0);
+        startPk.setCommandsEnabled(player.isEnableClientCommand());
+        startPk.setLevelId("");
+        startPk.setLevelName(server.getSubMotd());
+        startPk.setAuthoritativeMovementMode(AuthoritativeMovementMode.SERVER_WITH_REWIND);
+        startPk.setInventoriesServerAuthoritative(true);
+        startPk.setBlockNetworkIdsHashed(true);
+        startPk.setPlayerPropertyData(NbtMap.EMPTY);
+        startPk.setExperimentsPreviouslyToggled(false);
+        startPk.setForceExperimentalGameplay(OptionalBoolean.empty());
+        startPk.setMultiplayerGame(true);
+        startPk.setBroadcastingToLan(true);
+        startPk.setXblBroadcastMode(GamePublishSetting.PUBLIC);
+        startPk.setPlatformBroadcastMode(GamePublishSetting.PUBLIC);
+        startPk.setServerId("");
+        startPk.setWorldId("");
+        startPk.setScenarioId("");
+        startPk.setOwnerId("");
+        startPk.setPremiumWorldTemplateId("00000000-0000-0000-0000-000000000000");
+        startPk.setWorldTemplateId(new UUID(0, 0));
+        startPk.setEditorWorldType(WorldType.NON_EDITOR);
+        startPk.setChatRestrictionLevel(ChatRestrictionLevel.NONE);
+        startPk.setLevelName(server.getSubMotd());
+        startPk.setServerAuthoritativeBlockBreaking(true);
+        startPk.setServerEngine("PowerNukkitX");
+        startPk.getExperiments().addAll(server.getExperiments());
         player.dataPacketImmediately(startPk);
     }
 
     @Override
-    public void handle(RequestChunkRadiusPacket pk) {
+    public PacketSignal handle(RequestChunkRadiusPacket pk) {
         player.setViewDistance(Math.max(2, player.getViewDistance()));
+        return PacketSignal.HANDLED;
     }
 
     @Override
-    public void handle(SetLocalPlayerAsInitializedPacket pk) {
-        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", this.player.getPlayerInfo().getUsername());
+    public PacketSignal handle(SetLocalPlayerAsInitializedPacket pk) {
+        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", this.player.getName());
         handle.onPlayerLocallyInitialized();
+        return PacketSignal.HANDLED;
     }
 }

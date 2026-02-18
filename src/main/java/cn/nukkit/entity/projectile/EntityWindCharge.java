@@ -12,7 +12,7 @@ import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -58,7 +58,7 @@ public class EntityWindCharge extends EntityProjectile {
                 }
             }
         }
-        level.addLevelSoundEvent(position.add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
+        level.addLevelSoundEvent(position.add(0, 1), SoundEvent.WIND_CHARGE_BURST);
         this.kill();
 
         return true;
@@ -70,7 +70,7 @@ public class EntityWindCharge extends EntityProjectile {
             if(directionChanged == entity) return;
         }
         entity.attack(new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, 1f));
-        level.addLevelSoundEvent(entity.getPosition().add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
+        level.addLevelSoundEvent(entity.getPosition().add(0, 1), SoundEvent.WIND_CHARGE_BURST);
         this.level.addParticle(new GenericParticle(this, Particle.TYPE_WIND_EXPLOSION));
         knockBack(entity);
         this.kill();

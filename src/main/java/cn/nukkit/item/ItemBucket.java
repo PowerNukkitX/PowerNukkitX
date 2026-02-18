@@ -22,8 +22,8 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.Identifier;
 
 import javax.annotation.Nullable;
@@ -266,7 +266,7 @@ public class ItemBucket extends Item {
 
             if (!ev.isCancelled()) {
                 player.getLevel().setBlock(placementBlock, placementBlock.layer, targetBlock, true, true);
-                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1)}, 3, 1);
                 target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
                 updateBucketItem(player, ev);
 
@@ -278,10 +278,10 @@ public class ItemBucket extends Item {
                     this.setDamage(0); // Empty bucket
                     player.getInventory().setItemInHand(this);
                 }
-                player.getLevel().addLevelSoundEvent(target, LevelSoundEvent.FIZZ);
+                player.getLevel().addLevelSoundEvent(target, SoundEvent.FIZZ);
                 player.getLevel().addParticle(new ExplodeParticle(target.add(0.5, 1, 0.5)));
             } else {
-                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+                player.getLevel().sendBlocks(new Player[]{player}, new Block[]{block.getLevelBlockAtLayer(1)}, 3, 1);
                 player.getInventory().sendContents(player);
             }
         } else if (targetBlock instanceof BlockPowderSnow) {

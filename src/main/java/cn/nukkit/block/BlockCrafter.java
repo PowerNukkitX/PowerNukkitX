@@ -17,7 +17,9 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.recipe.MultiRecipe;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.utils.RedstoneComponent;
@@ -181,12 +183,9 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
             BlockFace facing = getBlockFace();
 
-            pk.x = 0.5f + facing.getXOffset() * 0.7f;
-            pk.y = 0.5f + facing.getYOffset() * 0.7f;
-            pk.z = 0.5f + facing.getZOffset() * 0.7f;
-
-            pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;
-            pk.data = 7;
+            pk.setPosition(Vector3f.from(0.5f + facing.getXOffset() * 0.7f, 0.5f + facing.getYOffset() * 0.7f, 0.5f + facing.getZOffset() * 0.7f));
+            pk.setType(LevelEvent.PARTICLE_SHOOT);
+            pk.setData(7);
             this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
 
             Block side = this.getSide(facing);

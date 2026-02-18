@@ -1,27 +1,28 @@
 package cn.nukkit.network.connection.netty.initializer;
 
-import cn.nukkit.compression.CompressionProvider;
-import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
-import cn.nukkit.network.connection.netty.codec.compression.CompressionStrategy;
-import cn.nukkit.network.connection.netty.codec.compression.NoopCompression;
-import cn.nukkit.network.connection.netty.codec.compression.SimpleCompressionStrategy;
-import cn.nukkit.network.connection.netty.codec.compression.SnappyCompression;
-import cn.nukkit.network.connection.netty.codec.compression.ZlibCompression;
-import cn.nukkit.network.protocol.types.CompressionAlgorithm;
-import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import org.cloudburstmc.protocol.bedrock.data.CompressionAlgorithm;
+import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockSession;
-import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
-import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
-import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchEncoder;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v1;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v2;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v3;
+import org.cloudburstmc.protocol.bedrock.netty.codec.FrameIdCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.batch.BedrockBatchDecoder;
+import org.cloudburstmc.protocol.bedrock.netty.codec.batch.BedrockBatchEncoder;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionStrategy;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.NoopCompression;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.SimpleCompressionStrategy;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.SnappyCompression;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.ZlibCompression;
+import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v1;
+import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v2;
+import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v3;
+import org.cloudburstmc.protocol.bedrock.PacketDirection;
+import org.cloudburstmc.protocol.common.util.Zlib;
 
 @Slf4j
 public abstract class BedrockChannelInitializer<T extends BedrockSession> extends ChannelInitializer<Channel> {
@@ -29,8 +30,8 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
     private static final FrameIdCodec RAKNET_FRAME_CODEC = new FrameIdCodec(RAKNET_MINECRAFT_ID);
     private static final BedrockBatchDecoder BATCH_DECODER = new BedrockBatchDecoder();
 
-    private static final CompressionStrategy ZLIB_RAW_STRATEGY = new SimpleCompressionStrategy(new ZlibCompression(CompressionProvider.ZLIB_RAW));
-    private static final CompressionStrategy ZLIB_STRATEGY = new SimpleCompressionStrategy(new ZlibCompression(CompressionProvider.ZLIB));
+    private static final CompressionStrategy ZLIB_RAW_STRATEGY = new SimpleCompressionStrategy(new ZlibCompression(Zlib.RAW));
+    private static final CompressionStrategy ZLIB_STRATEGY = new SimpleCompressionStrategy(new ZlibCompression(Zlib.DEFAULT));
     private static final CompressionStrategy SNAPPY_STRATEGY = new SimpleCompressionStrategy(new SnappyCompression());
     private static final CompressionStrategy NOOP_STRATEGY = new SimpleCompressionStrategy(new NoopCompression());
 
@@ -54,6 +55,7 @@ public abstract class BedrockChannelInitializer<T extends BedrockSession> extend
     }
 
     protected void preInitChannel(Channel channel) {
+        channel.attr(PacketDirection.ATTRIBUTE).set(PacketDirection.CLIENT_BOUND);
         channel.pipeline().addLast(FrameIdCodec.NAME, RAKNET_FRAME_CODEC);
 
         int rakVersion = channel.config().getOption(RakChannelOption.RAK_PROTOCOL_VERSION);

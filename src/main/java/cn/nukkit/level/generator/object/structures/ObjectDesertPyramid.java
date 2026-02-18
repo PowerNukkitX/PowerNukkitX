@@ -14,7 +14,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
@@ -253,7 +253,7 @@ public class ObjectDesertPyramid extends RuledObjectGenerator {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome);
         if (!definition.getTags().contains(BiomeTags.DESERT) ||
                 !((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
             return false;

@@ -60,10 +60,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.TakeItemEntityPacket;
-import cn.nukkit.network.protocol.UpdateTradePacket;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateTradePacket;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
@@ -536,8 +538,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 && event.getDamager() instanceof Player player) {
             addGossip(player.getLoginChainData().getXUID(), Gossip.MINOR_NEGATIVE, 25);
             EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = getId();
-            pk.event = EntityEventPacket.VILLAGER_ANGRY;
+            pk.setRuntimeEntityId(getId());
+            pk.setType(EntityEventType.VILLAGER_ANGRY);
             Server.broadcastPacket(getViewers().values(), pk);
             return true;
         }
@@ -749,11 +751,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void updateTrades(Player player) {
         if (player.getTopWindow().isEmpty() || player.getTopWindow().get() != getTradeInventory()) return;
         var pk1 = new UpdateTradePacket();
-        pk1.containerId = (byte) player.getWindowId(getTradeInventory());
-        pk1.tradeTier = getTradeTier();
-        pk1.traderUniqueEntityId = getId();
-        pk1.playerUniqueEntityId = player.getId();
-        pk1.displayName = getDisplayName();
+        pk1.setContainerId((byte) player.getWindowId(getTradeInventory()));
+        pk1.setTradeTier(getTradeTier());
+        pk1.setTraderUniqueEntityId(getId());
+        pk1.setPlayerUniqueEntityId(player.getId());
+        pk1.setDisplayName(getDisplayName());
         var tierExpRequirements = new ListTag<CompoundTag>();
         for (int i = 0, len = tierExpRequirement.length; i < len; ++i) {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), tierExpRequirement[i]));
@@ -774,11 +776,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 buyB.putByte("Count", Math.max(buyB.getByte("Count") - (int) (reputation * multiplier), 1));
             }
         }
-        pk1.offers = new CompoundTag()
-                .putList("Recipes", recipes)
-                .putList("TierExpRequirements", tierExpRequirements);
-        pk1.newTradingUi = true;
-        pk1.usingEconomyTrade = true;
+        pk1.setOffers(NbtMap.EMPTY);
+        pk1.setNewTradingUi(true);
+        pk1.setUsingEconomyTrade(true);
         player.dataPacket(pk1);
     }
 
@@ -888,8 +888,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         InventorySlice slice = new InventorySlice(getInventory(), 1, getInventory().getSize());
                         if (slice.canAddItem(item)) {
                             TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                            pk.entityId = this.getId();
-                            pk.target = i.getId();
+                            pk.setRuntimeEntityId(this.getId());
+                            pk.setItemRuntimeEntityId(i.getId());
                             Server.broadcastPacket(getViewers().values(), pk);
                             slice.addItem(item);
                             i.close();
@@ -933,8 +933,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         TAIGA;
 
         public static Clothing getClothing(int biomeId) {
-            BiomeDefinition definition = Registries.BIOME.get(biomeId);
-            Set<String> tags = definition.getTags();
+            BiomeDefinitionData definition = Registries.BIOME.get(biomeId);
+            List<String> tags = definition.getTags();
             if (tags.contains("desert") || tags.contains("mesa")) return DESERT;
             if (tags.contains("jungle")) return JUNGLE;
             if (tags.contains("savanna")) return SAVANNA;

@@ -10,7 +10,8 @@ import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.PlaySoundPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.packet.PlaySoundPacket;
 import com.google.common.collect.Lists;
 
 import java.util.Arrays;
@@ -80,19 +81,15 @@ public class PlaySoundCommand extends VanillaCommand {
                     continue;
                 }
 
-                packet.volume = minimumVolume;
-                packet.x = player.getFloorX();
-                packet.y = player.getFloorY();
-                packet.z = player.getFloorZ();
+                packet.setVolume(minimumVolume);
+                packet.setPosition(Vector3f.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
             } else {
-                packet.volume = volume;
-                packet.x = position.getFloorX();
-                packet.y = position.getFloorY();
-                packet.z = position.getFloorZ();
+                packet.setVolume(volume);
+                packet.setPosition(Vector3f.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
             }
 
-            packet.name = sound;
-            packet.pitch = pitch;
+            packet.setSound(sound);
+            packet.setPitch(pitch);
             player.dataPacket(packet);
 
             successes.add(name);

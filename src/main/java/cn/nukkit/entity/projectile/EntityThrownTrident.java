@@ -25,7 +25,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.protocol.bedrock.packet.AddEntityPacket;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -244,18 +245,15 @@ public class EntityThrownTrident extends SlenderProjectile {
     @Override
     public void spawnTo(Player player) {
         AddEntityPacket pk = new AddEntityPacket();
-        pk.type = Registries.ENTITY.getEntityNetworkId(THROWN_TRIDENT);
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
-        pk.entityData = this.entityDataMap;
+        pk.setEntityType(Registries.ENTITY.getEntityNetworkId(THROWN_TRIDENT));
+        pk.setUniqueEntityId(this.getId());
+        pk.setRuntimeEntityId(this.getId());
+        pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y, (float) this.z));
+        pk.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        pk.setRotation(Vector2f.from((float) this.pitch, (float) this.yaw));
+        pk.setHeadRotation((float) this.yaw);
+        pk.setBodyRotation((float) this.yaw);
+        pk.setMetadata(toCloudburstMetadata(this.entityDataMap));
         player.dataPacket(pk);
 
         super.spawnTo(player);

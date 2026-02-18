@@ -4,8 +4,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerCommandPreprocessEvent;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.CommandRequestPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.CommandRequestPacket;
 import com.google.common.util.concurrent.RateLimiter;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +15,7 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandRequestPacket pk) {
-        int length = pk.command.length();
+        int length = pk.getCommand().length();
         if (!rateLimiter.tryAcquire(length, 300, TimeUnit.MILLISECONDS)) {
             PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(playerHandle.player, PlayerHackDetectedEvent.HackType.COMMAND_SPAM);
             playerHandle.player.getServer().getPluginManager().callEvent(event);
@@ -27,7 +26,7 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
-        PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(playerHandle.player, pk.command);
+        PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(playerHandle.player, pk.getCommand());
         playerHandle.player.getServer().getPluginManager().callEvent(playerCommandPreprocessEvent);
         if (playerCommandPreprocessEvent.isCancelled()) {
             return;
@@ -36,7 +35,7 @@ public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestP
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.COMMAND_REQUEST_PACKET;
+    public Class<CommandRequestPacket> getPacketClass() {
+        return CommandRequestPacket.class;
     }
 }

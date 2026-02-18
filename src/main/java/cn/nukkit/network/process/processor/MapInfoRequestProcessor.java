@@ -9,8 +9,7 @@ import cn.nukkit.event.player.PlayerMapInfoRequestEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.MapInfoRequestPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.MapInfoRequestPacket;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
 import lombok.extern.slf4j.Slf4j;
@@ -83,13 +82,11 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
             }
         }
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.MAP_INFO_REQUEST_PACKET;
+    public Class<MapInfoRequestPacket> getPacketClass() {
+        return MapInfoRequestPacket.class;
     }
-
-    protected boolean checkMapItemValid(Item item, MapInfoRequestPacket pk) {
-        return item instanceof ItemFilledMap itemMap && itemMap.getMapId() == pk.mapId;
+protected boolean checkMapItemValid(Item item, MapInfoRequestPacket pk) {
+        return item instanceof ItemFilledMap itemMap && itemMap.getMapId() == pk.getUniqueMapId();
     }
 }

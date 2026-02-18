@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemGusterBannerPattern extends ItemBannerPattern {
 
@@ -9,8 +8,8 @@ public class ItemGusterBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.GUSTER;
+    public String getPatternCode() {
+        return "gus";
     }
 
     @Override

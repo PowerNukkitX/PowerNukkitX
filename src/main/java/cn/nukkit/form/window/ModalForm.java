@@ -2,7 +2,7 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.form.response.ModalResponse;
-import cn.nukkit.network.protocol.types.ModalFormCancelReason;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

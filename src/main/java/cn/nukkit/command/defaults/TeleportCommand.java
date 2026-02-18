@@ -11,7 +11,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.PlayerAbility;
+import org.cloudburstmc.protocol.bedrock.data.Ability;
 
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class TeleportCommand extends VanillaCommand {
 
     @Override
     public boolean testPermissionSilent(CommandSender target) {
-        if (target.isPlayer() && target.asPlayer().getAdventureSettings().get(PlayerAbility.TELEPORT))
+        if (target.isPlayer() && target.asPlayer().getAdventureSettings().get(cn.nukkit.AdventureSettings.Type.TELEPORT))
             return true;
         return super.testPermissionSilent(target);
     }

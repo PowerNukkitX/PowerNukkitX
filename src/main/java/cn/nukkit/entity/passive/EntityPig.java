@@ -41,7 +41,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -177,7 +177,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
                 mountEntity(player);
             } else if (item.getId().equals(Item.SADDLE)) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                getLevel().addLevelSoundEvent(this, LevelSoundEvent.SADDLE, -1, getIdentifier(), false, false);
+                getLevel().addLevelSoundEvent(this, SoundEvent.SADDLE, -1, getIdentifier(), false, false);
                 setSaddled(true);
             }
             return true;

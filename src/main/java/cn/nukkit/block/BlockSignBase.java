@@ -16,8 +16,9 @@ import cn.nukkit.level.particle.WaxOnParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +66,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
             }
             // If a sign is waxed, it cannot be modified.
             if (sign.isWaxed() || (Objects.requireNonNull(player).isSneaking() && !Objects.equals(item.getId(), AIR))) {
-                level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEvent.WAXED_SIGN_INTERACT_FAIL);
+                level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), SoundEvent.WAXED_SIGN_INTERACT_FAIL);
                 return;
             }
             boolean front = switch (getSignDirection()) {
@@ -92,7 +93,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 }
                 sign.setColor(front, color);
                 sign.spawnToAll();
-                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+                this.level.addLevelEvent(this, LevelEvent.SOUND_DYE_USED.ordinal());
                 if ((player.getGamemode() & 0x01) == 0) {
                     item.count--;
                 }
@@ -110,7 +111,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 }
                 sign.setGlowing(front, true);
                 sign.spawnToAll();
-                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
+                this.level.addLevelEvent(this, LevelEvent.SOUND_INK_SACE_USED.ordinal());
                 if ((player.getGamemode() & 0x01) == 0) {
                     item.count--;
                 }

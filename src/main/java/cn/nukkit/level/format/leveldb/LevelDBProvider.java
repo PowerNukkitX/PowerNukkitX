@@ -24,7 +24,7 @@ import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.types.GameType;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.Utils;

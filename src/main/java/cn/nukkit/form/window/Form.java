@@ -2,7 +2,7 @@ package cn.nukkit.form.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.form.response.Response;
-import cn.nukkit.network.protocol.types.ModalFormCancelReason;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;

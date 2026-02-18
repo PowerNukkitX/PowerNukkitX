@@ -11,10 +11,13 @@ import cn.nukkit.item.AliasItem;
 import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -507,10 +510,11 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void sendContents(Player... players) {
         InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
+        List<ItemData> contents = new ArrayList<>(this.getSize());
         for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getUnclonedItem(i);
+            contents.add(toNetworkItem(this.getUnclonedItem(i)));
         }
+        pk.setContents(contents);
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -518,7 +522,7 @@ public abstract class BaseInventory implements Inventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
+            pk.setContainerId(id);
             player.dataPacket(pk);
         }
     }
@@ -590,8 +594,8 @@ public abstract class BaseInventory implements Inventory {
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         int slot = toNetworkSlot(index);
-        pk.slot = slot;
-        pk.item = this.getUnclonedItem(index);
+        pk.setSlot(slot);
+        pk.setItem(toNetworkItem(this.getUnclonedItem(index)));
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -599,13 +603,31 @@ public abstract class BaseInventory implements Inventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
-            pk.fullContainerName = new FullContainerName(
+            pk.setContainerId(id);
+            pk.setContainerNameData(new FullContainerName(
                     this.getSlotType(slot),
                     id
-            );
+            ));
             player.dataPacket(pk);
         }
+    }
+
+    protected static ItemData toNetworkItem(Item item) {
+        if (item == null || item.isNull() || Objects.equals(item.getId(), Item.AIR.getId())) {
+            return ItemData.AIR;
+        }
+        return ItemData.builder()
+                .definition(new SimpleItemDefinition(item.getId(), item.getRuntimeId(), false))
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .usingNetId(item.getNetId() != null)
+                .netId(item.getNetId() != null ? item.getNetId() : 0)
+                .build();
+    }
+
+    protected static ContainerType containerTypeOf(InventoryType inventoryType) {
+        int networkType = inventoryType.getNetworkType();
+        return networkType >= 0 ? ContainerType.from(networkType) : ContainerType.NONE;
     }
 
     @Override

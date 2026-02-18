@@ -41,8 +41,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -200,9 +201,9 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
         this.setMaxHealth(10);
         super.initEntity();
         if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY.getId());
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT_BABY.name().toLowerCase());
         } else {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
+            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT.name().toLowerCase());
         }
         if (!hasVariant()) {
             this.setVariant(randomVariant());
@@ -231,8 +232,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
                     EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_SUCCESS;
+                    packet.setRuntimeEntityId(this.getId());
+                    packet.setType(EntityEventType.TAME_SUCCEEDED);
                     player.dataPacket(packet);
 
                     this.setMaxHealth(10);
@@ -246,8 +247,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                     return true;
                 } else {
                     EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_FAIL;
+                    packet.setRuntimeEntityId(this.getId());
+                    packet.setType(EntityEventType.TAME_FAILED);
                     player.dataPacket(packet);
                 }
             } else {

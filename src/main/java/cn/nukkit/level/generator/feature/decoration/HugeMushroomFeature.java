@@ -4,7 +4,7 @@ import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectBigMushroom;
 import cn.nukkit.level.generator.object.ObjectDarkOakTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;

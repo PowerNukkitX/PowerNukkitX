@@ -10,7 +10,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -209,9 +209,13 @@ public class CaveGenerateFeature extends GenerateFeature {
                                         chunk.setBlockState(xx, yy, zz, BlockAir.STATE);
 
                                         if (grassFound && (chunk.getBlockState(xx, yy - 1, zz).toBlock().hasTag(BlockTags.DIRT))) {
-                                            BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(xx, yy-1, zz));
-                                            BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceMaterial.get().topBlock);
-                                            chunk.setBlockState(xx, yy - 1, zz, topBlock);
+                                            BiomeDefinitionData definition = Registries.BIOME.get(chunk.getBiomeId(xx, yy-1, zz));
+                                            if (definition.getChunkGenData() != null && definition.getChunkGenData().getSurfaceMaterial() != null) {
+                                                BlockState topBlock = Registries.BLOCKSTATE.get(definition.getChunkGenData().getSurfaceMaterial().getTopBlock().getRuntimeId());
+                                                if (topBlock != null) {
+                                                    chunk.setBlockState(xx, yy - 1, zz, topBlock);
+                                                }
+                                            }
                                         }
                                     }
                                 }

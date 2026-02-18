@@ -4,8 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -45,17 +46,17 @@ public class EntityElytraFirework extends EntityFireworksRocket {
                     this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D);
                     this.pitch = (float) (Math.atan2(this.motionY, f) * 57.29577951308232D);
                     if (this.fireworkAge == 0) {
-                        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.LAUNCH);
+                        this.getLevel().addLevelSoundEvent(this, SoundEvent.LAUNCH);
                     }
 
                     ++this.fireworkAge;
                     hasUpdate = true;
                     if (this.fireworkAge >= this.lifetime) {
                         EntityEventPacket pk = new EntityEventPacket();
-                        pk.data = 0;
-                        pk.event = 25;
-                        pk.eid = this.getId();
-                        this.level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, 72);
+                        pk.setData(0);
+                        pk.setType(EntityEventType.FIREWORK_EXPLODE);
+                        pk.setRuntimeEntityId(this.getId());
+                        this.level.addLevelSoundEvent(this, SoundEvent.LARGE_BLAST, -1, 72);
                         Server.broadcastPacket(this.getViewers().values(), pk);
                         this.kill();
                     }

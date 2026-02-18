@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemCreeperBannerPattern extends ItemBannerPattern {
     public ItemCreeperBannerPattern() {
@@ -12,7 +11,7 @@ public class ItemCreeperBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.CREEPER;
+    public String getPatternCode() {
+        return "cre";
     }
 }

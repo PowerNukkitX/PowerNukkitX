@@ -74,7 +74,7 @@ public class VexSummonExecutor extends FangLineExecutor {
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag(0f)));
 

@@ -3,7 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.TickSyncPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TickSyncPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class TickSyncProcessor extends DataPacketProcessor<TickSyncPacket> {
@@ -14,9 +14,8 @@ public class TickSyncProcessor extends DataPacketProcessor<TickSyncPacket> {
         tickSyncPacketToClient.setResponseTimestamp(playerHandle.player.getServer().getTick());
         playerHandle.player.dataPacketImmediately(tickSyncPacketToClient);
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.TICK_SYNC_PACKET;
+    public Class<TickSyncPacket> getPacketClass() {
+        return TickSyncPacket.class;
     }
 }

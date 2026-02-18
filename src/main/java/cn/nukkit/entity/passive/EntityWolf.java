@@ -54,8 +54,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
@@ -291,8 +292,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
                     EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_SUCCESS;
+                    packet.setRuntimeEntityId(this.getId());
+                    packet.setType(EntityEventType.TAME_SUCCEEDED);
                     player.dataPacket(packet);
 
                     this.setMaxHealth(20);
@@ -306,8 +307,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
                     return true;
                 } else {
                     EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_FAIL;
+                    packet.setRuntimeEntityId(this.getId());
+                    packet.setType(EntityEventType.TAME_FAILED);
                     player.dataPacket(packet);
                 }
             }
@@ -412,9 +413,15 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     public static int getBiomeVariant(int biomeId) {
-        BiomeDefinition definition = Registries.BIOME.get(biomeId);
-        Set<String> tags = definition.getTags();
-        String name = definition.getName();
+        BiomeDefinitionData definition = Registries.BIOME.get(biomeId);
+        List<String> tags = definition.getTags();
+        String name = definition.getId();
+        if (name == null) {
+            return PALE;
+        }
+        if (tags == null) {
+            tags = List.of();
+        }
         if(name.equals("cold_taiga")) return ASHEN;
         if(name.equals("mega_taiga")) return BLACK;
         if(name.equals("redwood_taiga_mutated")) return CHESSNUT;

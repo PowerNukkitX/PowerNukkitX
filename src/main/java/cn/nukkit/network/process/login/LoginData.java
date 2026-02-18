@@ -1,13 +1,14 @@
 package cn.nukkit.network.process.login;
 
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.network.connection.util.ChainValidationResult;
-import cn.nukkit.network.protocol.LoginPacket;
-import cn.nukkit.utils.EncryptionUtils;
 import cn.nukkit.utils.SkinUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.cloudburstmc.protocol.bedrock.data.auth.CertificateChainPayload;
+import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
+import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
+import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jwt.JwtClaims;
@@ -23,7 +24,7 @@ import java.util.UUID;
 
 public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicKey, JsonObject clientData, String xuid, UUID uuid, String displayName, boolean xboxAuthed, boolean isChainPayload, ChainValidationResult.IdentityData identityData) {
     public static LoginData processHandshake(LoginPacket packet, boolean strict) throws Exception {
-        ChainValidationResult result = EncryptionUtils.validatePayload(packet.authPayload);
+        ChainValidationResult result = EncryptionUtils.validatePayload(packet.getAuthPayload());
         boolean xboxAuth = result.signed();
         ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
         ChainValidationResult.IdentityData identityData = identityClaims.extraData;
@@ -40,7 +41,7 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
 
         JwtClaims clientClaims;
         try {
-            clientClaims = jwtConsumer.processToClaims(packet.clientPayload);
+            clientClaims = jwtConsumer.processToClaims(packet.getClientJwt());
         } catch (InvalidJwtException e) {
             throw new SecurityException("Invalid clientData JWT", e);
         }

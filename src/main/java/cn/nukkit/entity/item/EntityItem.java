@@ -12,9 +12,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddItemEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.AddItemEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jetbrains.annotations.NotNull;
@@ -188,9 +192,9 @@ public class EntityItem extends Entity {
                         entity.close();
                         this.getItem().setCount(newAmount);
                         EntityEventPacket packet = new EntityEventPacket();
-                        packet.eid = getId();
-                        packet.data = newAmount;
-                        packet.event = EntityEventPacket.MERGE_ITEMS;
+                        packet.setRuntimeEntityId(getId());
+                        packet.setData(newAmount);
+                        packet.setType(EntityEventType.UPDATE_ITEM_STACK_SIZE);
                         Server.broadcastPacket(this.getViewers().values(), packet);
                     }
                 }
@@ -381,19 +385,28 @@ public class EntityItem extends Entity {
     }
 
     @Override
-    public DataPacket createAddEntityPacket() {
+    public BedrockPacket createAddEntityPacket() {
         AddItemEntityPacket addEntity = new AddItemEntityPacket();
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
-        addEntity.item = this.getItem();
+        addEntity.setUniqueEntityId(this.getId());
+        addEntity.setRuntimeEntityId(this.getId());
+        addEntity.setPosition(Vector3f.from((float) this.x, (float) this.y + this.getBaseOffset(), (float) this.z));
+        addEntity.setMotion(Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        addEntity.setMetadata(toCloudburstMetadata(this.entityDataMap));
+        addEntity.setItemInHand(toNetworkItem(this.getItem()));
         return addEntity;
+    }
+
+    private static ItemData toNetworkItem(Item item) {
+        if (item == null || item.isNull() || Objects.equals(item.getId(), Item.AIR.getId())) {
+            return ItemData.AIR;
+        }
+        return ItemData.builder()
+                .definition(new SimpleItemDefinition(item.getId(), item.getRuntimeId(), false))
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .usingNetId(item.getNetId() != null)
+                .netId(item.getNetId() != null ? item.getNetId() : 0)
+                .build();
     }
 
     @Override

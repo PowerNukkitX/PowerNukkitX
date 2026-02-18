@@ -48,7 +48,7 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
                             .add(new DoubleTag(0))
                             .add(new DoubleTag(0))
                             .add(new DoubleTag(0)))
-                    .putList("Rotation", new ListTag<FloatTag>()
+                    .putList("StructureRotation", new ListTag<FloatTag>()
                             .add(new FloatTag(0))
                             .add(new FloatTag(0)));
 

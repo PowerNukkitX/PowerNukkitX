@@ -11,9 +11,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
+import org.cloudburstmc.protocol.bedrock.packet.AddEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
 
 import java.util.Set;
 
@@ -70,26 +70,21 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
+    protected BedrockPacket createAddEntityPacket() {
         AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = 0;
-        addEntity.id = "minecraft:chest_boat";
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+        addEntity.setEntityType(0);
+        addEntity.setIdentifier("minecraft:chest_boat");
+        addEntity.setUniqueEntityId(this.getId());
+        addEntity.setRuntimeEntityId(this.getId());
+        addEntity.setRotation(org.cloudburstmc.math.vector.Vector2f.from((float) this.yaw, (float) this.pitch));
+        addEntity.setHeadRotation((float) this.yaw);
+        addEntity.setBodyRotation((float) this.yaw);
+        addEntity.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y + getBaseOffset(), (float) this.z));
+        addEntity.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        addEntity.setMetadata(toCloudburstMetadata(this.entityDataMap));
 
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+        for (int i = 0; i < this.passengers.size(); i++) {
+            addEntity.getEntityLinks().add(new EntityLinkData(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLinkData.Type.RIDER : EntityLinkData.Type.PASSENGER, false, false, 0f));
         }
 
         return addEntity;

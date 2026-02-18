@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemSkullBannerPattern extends ItemBannerPattern {
     public ItemSkullBannerPattern() {
@@ -8,8 +7,8 @@ public class ItemSkullBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.SKULL;
+    public String getPatternCode() {
+        return "sku";
     }
 
     @Override

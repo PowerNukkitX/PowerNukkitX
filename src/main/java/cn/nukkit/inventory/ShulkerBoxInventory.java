@@ -5,8 +5,9 @@ import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import cn.nukkit.tags.BlockTags;
 
 import java.util.Map;
@@ -38,11 +39,9 @@ public class ShulkerBoxInventory extends ContainerInventory {
 
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
-            pk.type = 1;
-            pk.value = 2;
+            pk.setBlockPosition(Vector3i.from((int) this.getHolder().getX(), (int) this.getHolder().getY(), (int) this.getHolder().getZ()));
+            pk.setEventType(1);
+            pk.setEventData(2);
 
             Level level = this.getHolder().getLevel();
             if (level != null) {
@@ -56,11 +55,9 @@ public class ShulkerBoxInventory extends ContainerInventory {
     public void onClose(Player who) {
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
-            pk.type = 1;
-            pk.value = 0;
+            pk.setBlockPosition(Vector3i.from((int) this.getHolder().getX(), (int) this.getHolder().getY(), (int) this.getHolder().getZ()));
+            pk.setEventType(1);
+            pk.setEventData(0);
 
             Level level = this.getHolder().getLevel();
             if (level != null) {

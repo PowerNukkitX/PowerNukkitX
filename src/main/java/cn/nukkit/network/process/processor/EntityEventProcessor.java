@@ -6,12 +6,12 @@ import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFood;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket> {
-    private static final int ADD_PLAYER_LEVELS_EVENT = EntityEventPacket.DEPRECATED_ADD_PLAYER_LEVELS;
+    private static final EntityEventType ADD_PLAYER_LEVELS_EVENT = EntityEventType.PLAYER_ADD_XP_LEVELS;
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull EntityEventPacket pk) {
         Player player = playerHandle.player;
@@ -19,8 +19,8 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             return;
         }
 
-        if (pk.event == EntityEventPacket.EATING_ITEM) {
-            if (pk.data == 0 || pk.eid != player.getId()) {
+        if (pk.getType() == EntityEventType.EATING_ITEM) {
+            if (pk.getData() == 0 || pk.getRuntimeEntityId() != player.getId()) {
                 return;
             }
 
@@ -30,24 +30,26 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             }
 
             int predictedData = (hand.getRuntimeId() << 16) | hand.getDamage();
-            if(pk.data != predictedData) {
+            if(pk.getData() != predictedData) {
                 return;
             }
 
-            pk.eid = player.getId();
-            pk.data = predictedData;
+            pk.setRuntimeEntityId(player.getId());
+            pk.setData(predictedData);
 
             player.dataPacket(pk);
-            Server.broadcastPacket(player.getViewers().values(), pk);
-        } else if (pk.event == ADD_PLAYER_LEVELS_EVENT) {
-            if (pk.eid != player.getId()) {
+            for (var viewer : player.getViewers().values()) {
+                viewer.dataPacket(pk);
+            }
+        } else if (pk.getType() == ADD_PLAYER_LEVELS_EVENT) {
+            if (pk.getRuntimeEntityId() != player.getId()) {
                 return;
             }
         }
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.ENTITY_EVENT_PACKET;
+    public Class<EntityEventPacket> getPacketClass() {
+        return EntityEventPacket.class;
     }
 }

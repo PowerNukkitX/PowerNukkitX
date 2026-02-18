@@ -7,10 +7,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBanner;
 import cn.nukkit.item.ItemBannerPattern;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.network.protocol.types.BannerPattern;
-import cn.nukkit.network.protocol.types.BannerPatternType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftLoomAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftLoomAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.utils.DyeColor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
@@ -46,10 +44,10 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
         }
 
         Item pattern = loomInventory.getPattern();
-        BannerPatternType patternType = BannerPatternType.fromCode(action.getPatternId());
+        String patternCode = action.getPatternId();
         if (pattern instanceof ItemBannerPattern itemBannerPattern && action.getPatternId() != null && !action.getPatternId().isBlank()) {
-            patternType = itemBannerPattern.getPatternType();
-            if (!action.getPatternId().equals(patternType.getCode())) return context.error();
+            patternCode = itemBannerPattern.getPatternCode();
+            if (!action.getPatternId().equals(patternCode)) return context.error();
         }
         DyeColor dyeColor = DyeColor.BLACK;
         if (dye instanceof ItemDye itemDye) {
@@ -57,8 +55,8 @@ public class CraftLoomActionProcessor implements ItemStackRequestActionProcessor
         }
         ItemBanner result = (ItemBanner) banner.clone();
         result.setCount(action.getTimesCrafted());
-        if (patternType != null) {
-            result.addPattern(new BannerPattern(patternType, dyeColor));
+        if (patternCode != null && !patternCode.isBlank()) {
+            result.addPattern(patternCode, dyeColor);
         } else {
             result.setBaseColor(dyeColor);
         }

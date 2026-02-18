@@ -13,9 +13,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRotation;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Faceable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -61,27 +61,18 @@ public class SingleFakeBlock implements FakeBlock {
                     BlockEntityChest blockEntity = chest.getOrCreateBlockEntity();
                     if(blockEntity.isBlockEntityValid() && blockEntity.isPaired()) {
                         Vector3 pair = blockEntity.getPair();
-                        player.getLevel().sendBlocks(new Player[]{player}, new Vector3[]{BlockAir.STATE.toBlock(Position.fromObject(pair))}, UpdateBlockPacket.FLAG_NETWORK, 0);
+                        player.getLevel().sendBlocks(new Player[]{player}, new Vector3[]{BlockAir.STATE.toBlock(Position.fromObject(pair))}, 2, 0);
                         additional.add(pair);
                     }
                 }
             }
 
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
-            updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
-            updateBlockPacket.x = position.getFloorX();
-            updateBlockPacket.y = position.getFloorY();
-            updateBlockPacket.z = position.getFloorZ();
+            updateBlockPacket.setDefinition(() -> block.getRuntimeId());
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
+            updateBlockPacket.setDataLayer(0);
+            updateBlockPacket.setBlockPosition(Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
             player.dataPacket(updateBlockPacket);
-
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-            blockEntityDataPacket.x = position.getFloorX();
-            blockEntityDataPacket.y = position.getFloorY();
-            blockEntityDataPacket.z = position.getFloorZ();
-            blockEntityDataPacket.namedTag = this.getBlockEntityDataAt(position, titleName);
-
-            player.dataPacket(blockEntityDataPacket);
         });
         lastPositions.addAll(additional);
     }
@@ -89,7 +80,7 @@ public class SingleFakeBlock implements FakeBlock {
     @Override
     public void remove(Player player) {
         Level level = player.getLevel();
-        level.sendBlocks(new Player[]{player}, getLastPositions(player).stream().map(level::getBlock).toArray(Block[]::new), UpdateBlockPacket.FLAG_NETWORK, 0);
+        level.sendBlocks(new Player[]{player}, getLastPositions(player).stream().map(level::getBlock).toArray(Block[]::new), 2, 0);
         lastPositions.remove(player);
     }
 

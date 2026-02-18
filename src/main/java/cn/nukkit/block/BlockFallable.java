@@ -56,7 +56,7 @@ public abstract class BlockFallable extends BlockSolid {
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
                 .putCompound("Block", this.blockstate.getBlockStateTag().copy());

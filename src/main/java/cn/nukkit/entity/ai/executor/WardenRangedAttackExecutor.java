@@ -11,8 +11,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventGenericPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             //sound
             entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);
 //            LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//            pk.sound = LevelSoundEvent.SONIC_BOOM;
+//            pk.sound = SoundEvent.SONIC_BOOM;
 //            pk.entityIdentifier = "minecraft:warden";
 //            pk.x = (float) entity.x;
 //            pk.y = (float) entity.y;
@@ -93,7 +93,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
         entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_CHARGE);
 //        LevelSoundEventPacketV2 pk = new LevelSoundEventPacketV2();
-//        pk.sound = LevelSoundEvent.SONIC_CHARGE;
+//        pk.sound = SoundEvent.SONIC_CHARGE;
 //        pk.entityIdentifier = "minecraft:warden";
 //        pk.x = (float) entity.x;
 //        pk.y = (float) entity.y;
@@ -115,8 +115,8 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         var relativeVector = new Vector3(to.x - from.x, to.y - from.y, to.z - from.z);
         for (int i = 1; i <= (length + 4); i++) {
             var pk = new LevelEventGenericPacket();
-            pk.eventId = LevelEventPacket.EVENT_SONIC_EXPLOSION;
-            pk.tag = createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f());
+            pk.setType(LevelEvent.SONIC_EXPLOSION);
+            pk.setTag(createVec3fTag(from.add(relativeVector.multiply(i / length)).asVector3f()));
             Server.broadcastPacket(entity.getViewers().values(), pk);
         }
     }

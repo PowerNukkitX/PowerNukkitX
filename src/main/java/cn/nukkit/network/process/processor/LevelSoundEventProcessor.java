@@ -3,8 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.LevelSoundEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class LevelSoundEventProcessor extends DataPacketProcessor<LevelSoundEventPacket> {
@@ -17,7 +16,7 @@ public class LevelSoundEventProcessor extends DataPacketProcessor<LevelSoundEven
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
+    public Class<LevelSoundEventPacket> getPacketClass() {
+        return LevelSoundEventPacket.class;
     }
 }

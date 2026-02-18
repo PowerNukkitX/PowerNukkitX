@@ -5,11 +5,8 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,61 +19,31 @@ public class MobEquipmentProcessor extends DataPacketProcessor<MobEquipmentPacke
             return;
         }
 
-        if(pk.hotbarSlot < 0 || pk.hotbarSlot > 8) {
+        if (pk.getHotbarSlot() < 0 || pk.getHotbarSlot() > 8) {
             player.close("§cPacket handling error");
             return;
         }
-        if(!pk.item.isNull()) {
-            if (pk.item.getEnchantments().length > Enchantment.getEnchantments().length) { // Last Enchant Id
-                player.close("§cPacket handling error");
-                return;
-            }
-            if (pk.item.getLore().length > 100) {
-                player.close("§cPacket handling error");
-                return;
-            }
-            if (pk.item.getCanPlaceOn().size() > 250) {
-                player.close("§cPacket handling error");
-                return;
-            }
-            if (pk.item.getCanDestroy().size() > 250) {
-                player.close("§cPacket handling error");
-                return;
-            }
-        }
 
-        Inventory inv = player.getWindowById(pk.windowId);
+        Inventory inv = player.getWindowById(pk.getContainerId());
 
         if (inv == null) {
-            log.debug("Player {} has no open container with window ID {}", player.getName(), pk.windowId);
+            log.debug("Player {} has no open container with window ID {}", player.getName(), pk.getContainerId());
             return;
         }
 
-        if (inv instanceof HumanInventory inventory && inventory.getHeldItemIndex() == pk.hotbarSlot) {
+        if (inv instanceof HumanInventory inventory && inventory.getHeldItemIndex() == pk.getHotbarSlot()) {
             return;
-        }
-
-        Item item = inv.getItem(pk.hotbarSlot);
-
-        if (!item.equals(pk.item, false, true)) {
-            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getCompoundTag());
-            if (fixItem.equals(pk.item, false, true)) {
-                inv.setItem(pk.hotbarSlot, fixItem);
-            } else {
-                log.debug("Tried to equip {} but have {} in target slot", pk.item, fixItem);
-                inv.sendContents(player);
-            }
         }
 
         if (inv instanceof HumanInventory inventory) {
-            inventory.equipItem(pk.hotbarSlot);
+            inventory.equipItem(pk.getHotbarSlot());
         }
 
         player.setDataFlag(EntityFlag.USING_ITEM, false);
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.MOB_EQUIPMENT_PACKET;
+    public Class<MobEquipmentPacket> getPacketClass() {
+        return MobEquipmentPacket.class;
     }
 }

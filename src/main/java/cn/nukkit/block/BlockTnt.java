@@ -92,7 +92,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
                         .add(new DoubleTag(-Math.sin(mot) * 0.02))
                         .add(new DoubleTag(0.2))
                         .add(new DoubleTag(-Math.cos(mot) * 0.02)))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)))
                 .putShort("Fuse", fuse);

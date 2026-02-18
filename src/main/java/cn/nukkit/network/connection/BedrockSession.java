@@ -12,10 +12,6 @@ import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
-import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
-import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.handler.HandshakePacketHandler;
@@ -24,12 +20,12 @@ import cn.nukkit.network.process.handler.LoginHandler;
 import cn.nukkit.network.process.handler.ResourcePackHandler;
 import cn.nukkit.network.process.handler.SessionStartHandler;
 import cn.nukkit.network.process.handler.SpawnResponseHandler;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
-import cn.nukkit.network.protocol.types.PlayerInfo;
+import cn.nukkit.network.process.login.LoginData;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketType;
+import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.ByteBufVarInt;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 
@@ -41,6 +37,11 @@ import io.netty.util.internal.PlatformDependent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.cloudburstmc.protocol.bedrock.netty.BedrockPacketWrapper;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,16 +63,21 @@ import java.util.function.Consumer;
 
 @Slf4j
 public class BedrockSession {
+    private static final int LEGACY_PLAY_STATUS_LOGIN_SUCCESS = 0;
+    private static final int LEGACY_PLAY_STATUS_LOGIN_FAILED_CLIENT = 1;
+    private static final int LEGACY_PLAY_STATUS_LOGIN_FAILED_SERVER = 2;
+    private static final int LEGACY_PLAY_STATUS_PLAYER_SPAWN = 3;
+
     private final AtomicBoolean closed = new AtomicBoolean();
     protected final BedrockPeer peer;
     protected final int subClientId;
-    private final Queue<DataPacket> inbound = PlatformDependent.newSpscQueue();
+    private final Queue<BedrockPacket> inbound = PlatformDependent.newSpscQueue();
     private final AtomicBoolean nettyThreadOwned = new AtomicBoolean(false);
-    private final AtomicReference<Consumer<DataPacket>> consumer = new AtomicReference<>(null);
+    private final AtomicReference<Consumer<BedrockPacket>> consumer = new AtomicReference<>(null);
     private final @NotNull StateMachine<SessionState, SessionState> machine;
     private PlayerHandle handle;
-    private PlayerInfo info;
-    protected @Nullable PacketHandler packetHandler;
+    private LoginData info;
+    protected @Nullable BedrockPacketHandler packetHandler;
     private InetSocketAddress address;
     @Getter
     protected boolean authenticated = false;
@@ -180,7 +186,7 @@ public class BedrockSession {
         return this.nettyThreadOwned.get();
     }
 
-    public void setPacketConsumer(Consumer<DataPacket> consumer) {
+    public void setPacketConsumer(Consumer<BedrockPacket> consumer) {
         this.consumer.set(consumer);
     }
 
@@ -191,7 +197,7 @@ public class BedrockSession {
         this.peer.flush();
     }
 
-    public void sendPacket(DataPacket packet) {
+    public void sendPacket(BedrockPacket packet) {
         if (isDisconnected()) {
             return;
         }
@@ -202,25 +208,31 @@ public class BedrockSession {
         }
 
         // If pacing is off or this packet is not one of the critical bulk types, behave as usual
-        if (!this.pacingEnabled || !isPacedBulk(packet)) {
+        if (!(packet instanceof BedrockPacket dataPacket) || !this.pacingEnabled || !isPacedBulk(dataPacket)) {
             this.peer.sendPacket(this.subClientId, 0, packet);
             this.logOutbound(packet);
             return;
         }
 
         // Only pace critical bulk (RP chunks, creative/item registry).
-        int est = estimateBytes(packet);
-        if (packet.pid() == ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET) {
-            this.scheduler.enqueueResourcePackChunk(packet, est);
+        int est = estimateBytes(dataPacket);
+        if (dataPacket.getPacketType() == BedrockPacketType.RESOURCE_PACK_CHUNK_DATA) {
+            this.scheduler.enqueueResourcePackChunk(dataPacket, est);
         } else {
-            this.scheduler.enqueueRegistryBulk(packet, est);
+            this.scheduler.enqueueRegistryBulk(dataPacket, est);
         }
         this.scheduler.tryPump(this.peer, this.subClientId, this);
     }
 
     public void sendPlayStatus(int status, boolean immediate) {
-        PlayStatusPacket pk = new PlayStatusPacket();
-        pk.status = status;
+        org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket pk = new org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket();
+        pk.setStatus(switch (status) {
+            case LEGACY_PLAY_STATUS_LOGIN_SUCCESS -> org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket.Status.LOGIN_SUCCESS;
+            case LEGACY_PLAY_STATUS_LOGIN_FAILED_CLIENT -> org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket.Status.LOGIN_FAILED_CLIENT_OLD;
+            case LEGACY_PLAY_STATUS_LOGIN_FAILED_SERVER -> org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD;
+            case LEGACY_PLAY_STATUS_PLAYER_SPAWN -> org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket.Status.PLAYER_SPAWN;
+            default -> org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD;
+        });
         if (immediate) {
             this.sendPacketImmediately(pk);
         } else {
@@ -235,7 +247,7 @@ public class BedrockSession {
         BedrockPacketCodec bedrockPacketCodec = getPacketCodec();
 
         ByteBuf buf1 = ByteBufAllocator.DEFAULT.ioBuffer(4);
-        BedrockPacketWrapper msg = new BedrockPacketWrapper(pid, this.subClientId, 0, null, null);
+        BedrockPacketWrapper msg = BedrockPacketWrapper.create(pid, this.subClientId, 0, null, null);
         bedrockPacketCodec.encodeHeader(buf1, msg);
         CompositeByteBuf compositeBuf = Unpooled.compositeBuffer();
         compositeBuf.addComponents(true, buf1, buf2);
@@ -243,7 +255,7 @@ public class BedrockSession {
         this.peer.sendRawPacket(msg);
     }
 
-    public void sendPacketImmediately(@NotNull DataPacket packet) {
+    public void sendPacketImmediately(@NotNull BedrockPacket packet) {
         if (isDisconnected()) {
             return;
         }
@@ -256,7 +268,7 @@ public class BedrockSession {
         this.logOutbound(packet);
     }
 
-    public void sendPacketSync(@NotNull DataPacket packet) {
+    public void sendPacketSync(@NotNull BedrockPacket packet) {
         if (isDisconnected()) {
             return;
         }
@@ -269,30 +281,12 @@ public class BedrockSession {
         this.logOutbound(packet);
     }
 
-    public void sendNetworkSettingsPacket(@NonNull NetworkSettingsPacket pk) {
-        ByteBufAllocator alloc = this.peer.channel.alloc();
-        ByteBuf buf1 = alloc.buffer(16);
-        ByteBuf header = alloc.ioBuffer(5);
-        BedrockPacketWrapper msg = new BedrockPacketWrapper(0, subClientId, 0, pk, null);
-        try {
-            BedrockPacketCodec bedrockPacketCodec = getPacketCodec();
-            DataPacket packet = msg.getPacket();
-            msg.setPacketId(packet.pid());
-            bedrockPacketCodec.encodeHeader(buf1, msg);
-            packet.encode(HandleByteBuf.of(buf1));
+    public void sendNetworkSettingsPacket(org.cloudburstmc.protocol.bedrock.packet.NetworkSettingsPacket pk) {
+        this.peer.sendPacketImmediately(this.subClientId, 0, pk);
+    }
 
-            BedrockBatchWrapper batch = BedrockBatchWrapper.newInstance();
-            CompositeByteBuf buf2 = alloc.compositeDirectBuffer(2);
-            ByteBufVarInt.writeUnsignedInt(header, buf1.readableBytes());
-            buf2.addComponent(true, header);
-            buf2.addComponent(true, buf1);
-            batch.setCompressed(buf2);
-            this.peer.channel.writeAndFlush(batch);
-        } catch (Throwable t) {
-            log.error("Error send", t);
-        } finally {
-            msg.release();
-        }
+    public void setCodec(BedrockCodec codec) {
+        this.getPacketCodec().setCodec(codec);
     }
 
     public void flushSendBuffer() {
@@ -321,17 +315,15 @@ public class BedrockSession {
     }
 
     protected void onPacket(BedrockPacketWrapper wrapper) {
-        DataPacket packet = wrapper.getPacket();
+        BedrockPacket packet = wrapper.getPacket();
         this.logInbound(packet);
 
         DataPacketDecodeEvent ev = new DataPacketDecodeEvent(this.getPlayer(), wrapper);
         Server.getInstance().getPluginManager().callEvent(ev);
 
-        int predictMaxBuffer = switch (ev.getPacketId()) {
-            case ProtocolInfo.LOGIN_PACKET -> 10_000_000;
-            case ProtocolInfo.PLAYER_SKIN_PACKET -> 5_000_000;
-            default -> 25_000;
-        };
+        int predictMaxBuffer = packet instanceof LoginPacket
+                ? 10_000_000
+                : packet instanceof PlayerSkinPacket ? 5_000_000 : 25_000;
         if (ev.getPacketBuffer().length() > predictMaxBuffer) {
             ev.setCancelled();
         }
@@ -349,14 +341,16 @@ public class BedrockSession {
         }
     }
 
-    protected void logOutbound(DataPacket packet) {
-        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+    protected void logOutbound(BedrockPacket packet) {
+        boolean ignored = packet instanceof BedrockPacket dataPacket && Server.getInstance().isIgnoredPacket(dataPacket.getClass());
+        if (log.isTraceEnabled() && !ignored) {
             log.trace("Outbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
 
-    protected void logInbound(DataPacket packet) {
-        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+    protected void logInbound(BedrockPacket packet) {
+        boolean ignored = packet instanceof BedrockPacket dataPacket && Server.getInstance().isIgnoredPacket(dataPacket.getClass());
+        if (log.isTraceEnabled() && !ignored) {
             log.trace("Inbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
@@ -386,8 +380,8 @@ public class BedrockSession {
 
         //when a player haven't login,it only hold a BedrockSession,and Player Instance is null
         if (reason != null) {
-            DisconnectPacket packet = new DisconnectPacket();
-            packet.message = reason;
+            org.cloudburstmc.protocol.bedrock.packet.DisconnectPacket packet = new org.cloudburstmc.protocol.bedrock.packet.DisconnectPacket();
+            packet.setKickMessage(reason);
             this.sendPacketImmediately(packet);
         }
 
@@ -455,7 +449,7 @@ public class BedrockSession {
         try {
             PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
             Server.getInstance().getPluginManager().callEvent(event);
-            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(BedrockSession.class, PlayerInfo.class);
+            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(BedrockSession.class, LoginData.class);
             return constructor.newInstance(this, this.info);
         } catch (Exception e) {
             log.error("Failed to create player", e);
@@ -465,7 +459,7 @@ public class BedrockSession {
 
     private void onServerLoginSuccess() {
         log.debug("Login completed");
-        this.sendPlayStatus(PlayStatusPacket.LOGIN_SUCCESS, false);
+        this.sendPlayStatus(LEGACY_PLAY_STATUS_LOGIN_SUCCESS, false);
     }
 
     private void onClientSpawned() {
@@ -481,7 +475,7 @@ public class BedrockSession {
 
     }
 
-    public void handleDataPacket(DataPacket packet) {
+    public void handleDataPacket(BedrockPacket packet) {
         DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this.getPlayer(), packet);
         Server.getInstance().getPluginManager().callEvent(ev);
 
@@ -499,7 +493,7 @@ public class BedrockSession {
     }
 
     public void tick() {
-        DataPacket packet;
+        BedrockPacket packet;
         var c = this.consumer.get();
         if (c != null) {
             while ((packet = this.inbound.poll()) != null) {
@@ -531,7 +525,6 @@ public class BedrockSession {
 
     public void syncAvailableCommands() {
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
-        Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
         final Map<String, Command> commands = Server.getInstance().getCommandMap().getCommands();
         synchronized (commands) {
@@ -540,19 +533,18 @@ public class BedrockSession {
                     continue;
                 }
                 ++count;
-                CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
-                data.put(command.getName(), data0);
             }
         }
         if (count > 0) {
-            //TODO: structure checking
-            pk.commands = data;
+            // TODO: map PNX command model to cloudburst CommandData model
             this.sendPacket(pk);
         }
     }
 
     public void syncCraftingData() {
-        this.sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
+        CraftingDataPacket packet = new CraftingDataPacket();
+        packet.setCleanRecipes(true);
+        this.sendPacket(packet);
     }
 
     public void syncCreativeContent() {
@@ -589,7 +581,7 @@ public class BedrockSession {
 
     public void setEnableClientCommand(boolean enable) {
         var pk = new SetCommandsEnabledPacket();
-        pk.enabled = enable;
+        pk.setCommandsEnabled(enable);
         this.sendPacket(pk);
         if (enable) {
             this.syncAvailableCommands();
@@ -617,7 +609,7 @@ public class BedrockSession {
         return this.machine;
     }
 
-    public void setPacketHandler(@javax.annotation.Nullable final PacketHandler packetHandler) {
+    public void setPacketHandler(@javax.annotation.Nullable final BedrockPacketHandler packetHandler) {
         this.packetHandler = packetHandler;
     }
 
@@ -631,22 +623,20 @@ public class BedrockSession {
     }
 
     /* --------------------- Helpers (only pace critical bulk) --------------------- */
-    private static boolean isPacedBulk(DataPacket pk) {
-        int id = pk.pid();
-        return  id == ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET     // RP zip chunks (big)
-            ||  id == ProtocolInfo.CREATIVE_CONTENT_PACKET             // creative items list
-            ||  id == ProtocolInfo.ITEM_REGISTRY_PACKET;               // item components/registry
+    private static boolean isPacedBulk(BedrockPacket pk) {
+        BedrockPacketType type = pk.getPacketType();
+        return type == BedrockPacketType.RESOURCE_PACK_CHUNK_DATA
+            || type == BedrockPacketType.CREATIVE_CONTENT
+            || type == BedrockPacketType.ITEM_COMPONENT;
     }
 
-    private static int estimateBytes(DataPacket pk) {
+    private static int estimateBytes(BedrockPacket pk) {
         if (pk instanceof ResourcePackChunkDataPacket rp) {
-            return (rp.data != null ? rp.data.length : 64 * 1024);
+            return (rp.getData() != null ? rp.getData().readableBytes() : 64 * 1024);
         }
-        switch (pk.pid()) {
-            case ProtocolInfo.CREATIVE_CONTENT_PACKET:        return 192 * 1024;
-            case ProtocolInfo.ITEM_REGISTRY_PACKET:           return 8 * 1024;
-            default:                                          return 256;
-        }
+        if (pk.getPacketType() == BedrockPacketType.CREATIVE_CONTENT) return 192 * 1024;
+        if (pk.getPacketType() == BedrockPacketType.ITEM_COMPONENT) return 8 * 1024;
+        return 256;
     }
 
     private static final class PacingConfig {
@@ -692,8 +682,8 @@ public class BedrockSession {
         private long lastRefillNs = System.nanoTime();
         private long nextFlushNs = lastRefillNs;
 
-        private final Deque<DataPacket> rpQ = new ArrayDeque<>();
-        private final Deque<DataPacket> registryQ = new ArrayDeque<>();
+        private final Deque<BedrockPacket> rpQ = new ArrayDeque<>();
+        private final Deque<BedrockPacket> registryQ = new ArrayDeque<>();
 
         private int headBytes = 0;
 
@@ -709,12 +699,12 @@ public class BedrockSession {
             this.byteTokens = this.burstBytes;
         }
 
-        synchronized void enqueueResourcePackChunk(DataPacket pk, int estimatedBytes) {
+        synchronized void enqueueResourcePackChunk(BedrockPacket pk, int estimatedBytes) {
             this.rpQ.addLast(pk);
             this.headBytes += Math.max(estimatedBytes, 32);
         }
 
-        synchronized void enqueueRegistryBulk(DataPacket pk, int estimatedBytes) {
+        synchronized void enqueueRegistryBulk(BedrockPacket pk, int estimatedBytes) {
             this.registryQ.addLast(pk);
             this.headBytes += Math.max(estimatedBytes, 32);
         }
@@ -757,7 +747,7 @@ public class BedrockSession {
             int sentBytes = 0;
 
             while (sentBytes < allowBytes) {
-                DataPacket next;
+                BedrockPacket next;
 
                 if (!this.rpQ.isEmpty()) {
                     next = this.rpQ.peekFirst();

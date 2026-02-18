@@ -3,8 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.PlayerInputPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerInputPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket> {
@@ -14,12 +13,12 @@ public class PlayerInputProcessor extends DataPacketProcessor<PlayerInputPacket>
             return;
         }
         if (playerHandle.player.riding instanceof EntityMinecartAbstract entityMinecartAbstract) {
-            entityMinecartAbstract.setCurrentSpeed(pk.motionY);
+            entityMinecartAbstract.setCurrentSpeed(pk.getInputMotion().getY());
         }
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.PLAYER_INPUT_PACKET;
+    public Class<PlayerInputPacket> getPacketClass() {
+        return PlayerInputPacket.class;
     }
 }

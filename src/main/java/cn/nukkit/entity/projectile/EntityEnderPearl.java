@@ -16,7 +16,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -103,14 +104,14 @@ public class EntityEnderPearl extends EntityProjectile {
             return;
         }
 
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_TELEPORT_ENDERPEARL);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL.ordinal());
         Vector3 destination = new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y+1, NukkitMath.floorDouble(this.z) + 0.5);
         this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
             this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
         }
-        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_TELEPORT);
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_TELEPORT_ENDERPEARL);
+        this.level.addLevelEvent(this, LevelEvent.PARTICLE_TELEPORT.ordinal());
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL.ordinal());
         if(this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
             if(ThreadLocalRandom.current().nextInt(1,20) == 1) {
                 EntityEndermite endermite = (EntityEndermite) Entity.createEntity(Entity.ENDERMITE,
@@ -123,7 +124,7 @@ public class EntityEnderPearl extends EntityProjectile {
                                         .add(new DoubleTag(0))
                                         .add(new DoubleTag(0))
                                         .add(new DoubleTag(0)))
-                                .putList("Rotation", new ListTag<>()
+                                .putList("StructureRotation", new ListTag<>()
                                         .add(new FloatTag(0))
                                         .add(new FloatTag(0)))
                 );

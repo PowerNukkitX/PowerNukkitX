@@ -46,7 +46,7 @@ public final class BDSEntityTranslator {
             target.add(new DoubleTag(0));
             linkedCompoundTag.putList("Motion", target);
         }
-        linkedCompoundTag.putList("Rotation", from.getList("Rotation"));
+        linkedCompoundTag.putList("StructureRotation", from.getList("StructureRotation"));
         return linkedCompoundTag;
     }
 }

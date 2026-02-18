@@ -53,11 +53,14 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.AuthInputAction;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.AttributeData;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -208,8 +211,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                     .setMaxValue(this.getMaxHealth())
                     .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
-            pk.entityId = this.getId();
+            pk.setRuntimeEntityId(this.getId());
+            pk.getAttributes().add(toAttributeData(attr));
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
         }
     }
@@ -223,8 +226,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         if (this.isAlive()) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
-            pk.entityId = this.getId();
+            pk.setRuntimeEntityId(this.getId());
+            pk.getAttributes().add(toAttributeData(attr));
             Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
         }
     }
@@ -421,7 +424,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return false;
         this.setMoveTarget(null);
         this.setLookTarget(null);
-        if(pk.inputData.contains(AuthInputAction.JUMPING)){
+        if(pk.getInputData().contains(PlayerAuthInputData.JUMPING)){
             jumpingTicks++;
         } else if(jumpingTicks != -1) {
             if(isOnGround()) {
@@ -443,8 +446,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
-            Vector2 motion = pk.motion.normalize();
-            double yawRad = Math.toRadians(pk.yaw);
+            Vector2 motion = new Vector2(pk.getMotion().getX(), pk.getMotion().getY()).normalize();
+            double yawRad = Math.toRadians(pk.getRotation().getY());
 
             double cos = Math.cos(yawRad);
             double sin = Math.sin(yawRad);
@@ -456,7 +459,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
             Vector3 direction = getDirectionVector().normalize();
 
             var dy = 0.0d;
-            if(pk.motion.length() != 0) {
+            if(pk.getMotion().lengthSquared() != 0) {
                 Block[] collisionBlocks = level.getCollisionBlocks(this.getBoundingBox().getOffsetBoundingBox(direction.x, 0, direction.z));
                 // Calculate the height you need to move upward
                 double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
@@ -472,7 +475,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 handleFloatingMovement();
             }
         }
-        this.yaw = pk.yaw;
+        this.yaw = pk.getRotation().getY();
         this.headYaw = 0;
         broadcastMovement(false);
         return true;
@@ -504,7 +507,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     @Override
     public boolean mountEntity(Entity entity) {
         this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, entity.getName());
-        super.mountEntity(entity, EntityLink.Type.RIDER);
+        super.mountEntity(entity, EntityLinkData.Type.RIDER);
         return true;
     }
 
@@ -571,7 +574,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
      * Play an animation of a failed tamer
      */
     public void playTameFailAnimation() {
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
+        this.getLevel().addLevelSoundEvent(this, SoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
         this.setDataFlag(EntityFlag.STANDING);
     }
 
@@ -592,8 +595,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 .setMaxValue(this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new Attribute[]{attr};
-        pk.entityId = this.getId();
+        pk.setRuntimeEntityId(this.getId());
+        pk.getAttributes().add(toAttributeData(attr));
         player.dataPacket(pk);
     }
 
@@ -622,31 +625,32 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
+    protected BedrockPacket createAddEntityPacket() {
         AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = this.getNetworkId();
-        addEntity.entityUniqueId = this.getId();
+        addEntity.setEntityType(this.getNetworkId());
+        addEntity.setUniqueEntityId(this.getId());
         if (this instanceof CustomEntity) {
-            addEntity.id = this.getIdentifier();
+            addEntity.setIdentifier(this.getIdentifier());
         }
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap.copy();
-        addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+        addEntity.setRuntimeEntityId(this.getId());
+        addEntity.setRotation(Vector2f.from((float) this.pitch, (float) this.yaw));
+        addEntity.setHeadRotation((float) this.yaw);
+        addEntity.setBodyRotation((float) this.yaw);
+        addEntity.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y + this.getBaseOffset(), (float) this.z));
+        addEntity.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        addEntity.setMetadata(toCloudburstMetadata(this.entityDataMap.copy()));
+        for (Attribute attribute : this.attributeMap.values()) {
+            addEntity.getAttributes().add(toAttributeData(attribute));
+        }
+        for (int i = 0; i < this.passengers.size(); i++) {
+            addEntity.getEntityLinks().add(new EntityLinkData(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLinkData.Type.RIDER : EntityLinkData.Type.PASSENGER, false, false, 0f));
         }
 
         return addEntity;
+    }
+
+    private static AttributeData toAttributeData(Attribute attribute) {
+        return new AttributeData(attribute.getName(), attribute.getMinValue(), attribute.getMaxValue(), attribute.getValue(), attribute.getDefaultValue());
     }
 
     @Override

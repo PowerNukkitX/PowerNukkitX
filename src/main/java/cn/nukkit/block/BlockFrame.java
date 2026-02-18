@@ -14,7 +14,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
@@ -139,7 +140,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_REMOVE);
+                this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_ITEM_REMOVE.ordinal());
             } else {
                 blockEntity.dropItem(player);
             }
@@ -179,7 +180,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
+                this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_ITEM_ADD.ordinal());
             } else {
                 ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
                 this.getLevel().getServer().getPluginManager().callEvent(event);
@@ -192,7 +193,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ROTATE);
+                this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_ITEM_ROTATE.ordinal());
             }
 
             return true;
@@ -243,7 +244,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     @Override
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
-        this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
+        this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_BREAK.ordinal());
         return true;
     }
 

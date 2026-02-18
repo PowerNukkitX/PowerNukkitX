@@ -2,38 +2,39 @@ package cn.nukkit.network.process;
 
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.processor.*;
-import cn.nukkit.network.protocol.DataPacket;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DataPacketManager is a static class to manage DataPacketProcessors and process DataPackets.
  */
 public final class DataPacketManager {
-    private final Int2ObjectOpenHashMap<DataPacketProcessor<? extends DataPacket>> PROCESSORS = new Int2ObjectOpenHashMap<>(300);
+    private final Map<Class<? extends BedrockPacket>, DataPacketProcessor<? extends BedrockPacket>> PROCESSORS = new HashMap<>(300);
 
     public DataPacketManager() {
         registerDefaultProcessors();
     }
 
     @SafeVarargs
-    public final void registerProcessor(@NotNull DataPacketProcessor<? extends DataPacket>... processors) {
+    public final void registerProcessor(@NotNull DataPacketProcessor<? extends BedrockPacket>... processors) {
         for (var processor : processors) {
-            PROCESSORS.put(processor.getPacketId(), processor);
+            PROCESSORS.put(processor.getPacketClass(), processor);
         }
-        PROCESSORS.trim();
     }
 
-    public boolean canProcess(int packetId) {
-        return PROCESSORS.containsKey(packetId);
+    public boolean canProcess(@NotNull BedrockPacket packet) {
+        return PROCESSORS.containsKey(packet.getClass());
     }
 
-    public void processPacket(@NotNull PlayerHandle playerHandle, @NotNull DataPacket packet) {
-        var processor = PROCESSORS.get(packet.pid());
+    public void processPacket(@NotNull PlayerHandle playerHandle, @NotNull BedrockPacket packet) {
+        var processor = PROCESSORS.get(packet.getClass());
         if (processor != null) {
             processor.handlePacket(playerHandle, packet);
         } else {
-            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + " with id " + packet.pid() + ".");
+            throw new UnsupportedOperationException("No processor found for packet " + packet.getClass().getName() + ".");
         }
     }
 

@@ -53,7 +53,7 @@ public class ItemMinecart extends Item {
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<>()
+                            .putList("StructureRotation", new ListTag<>()
                                     .add(new FloatTag(0))
                                     .add(new FloatTag(0)))
             );

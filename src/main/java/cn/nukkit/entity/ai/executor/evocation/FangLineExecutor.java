@@ -104,7 +104,7 @@ public class FangLineExecutor implements EntityControl, IBehaviorExecutor {
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag((location.yaw)))
                         .add(new FloatTag(0f)));
 

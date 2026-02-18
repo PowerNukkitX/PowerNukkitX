@@ -34,8 +34,9 @@ import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -178,7 +179,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         this.setMaxHealth(500);
         super.initEntity();
         this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
-        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT.getId());
+        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, SoundEvent.HEARTBEAT.name().toLowerCase());
         //空闲声音
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
@@ -222,8 +223,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         this.waitForVibration = false;
         this.lastDetectTime = getLevel().getTick();
         EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = this.getId();
-        pk.event = EntityEventPacket.VIBRATION_DETECTED;
+        pk.setRuntimeEntityId(this.getId());
+        pk.setType(EntityEventType.VIBRATION_DETECTED);
         Server.broadcastPacket(this.getViewers().values(), pk);
 
         //handle anger value

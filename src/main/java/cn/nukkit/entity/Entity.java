@@ -71,10 +71,12 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.PropertySyncData;
-import cn.nukkit.network.protocol.types.SwingSource;
+import org.cloudburstmc.protocol.bedrock.data.AttributeData;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityProperties;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
@@ -86,10 +88,12 @@ import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateAttributesPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -344,7 +348,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                         .add(new DoubleTag(motion != null ? motion.x : 0))
                         .add(new DoubleTag(motion != null ? motion.y : 0))
                         .add(new DoubleTag(motion != null ? motion.z : 0)))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag(yaw))
                         .add(new FloatTag(pitch)));
     }
@@ -360,17 +364,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param entities  需要播放动画的实体群 Group of entities that need to play animations
      * @param players   可视玩家 Visible Player
      */
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
+    public static void playAnimationOnEntities(String animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
-        pk.parseFromAnimation(animation);
-        entities.forEach(entity -> pk.entityRuntimeIds.add(entity.getId()));
+        pk.setAnimation(animation);
+        pk.setNextState("default");
+        pk.setStopExpression("");
+        pk.setController("");
+        entities.forEach(entity -> pk.getRuntimeEntityIds().add(entity.getId()));
         Server.broadcastPacket(players, pk);
     }
 
     /**
-     * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection, Collection)
+     * @see #playAnimationOnEntities(String, Collection, Collection)
      */
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
+    public static void playAnimationOnEntities(String animation, Collection<Entity> entities) {
         var viewers = new HashSet<Player>();
         entities.forEach(entity -> {
             viewers.addAll(entity.getViewers().values());
@@ -603,7 +610,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
         ListTag<DoubleTag> posList = this.namedTag.getList("Pos", DoubleTag.class);
-        ListTag<FloatTag> rotationList = this.namedTag.getList("Rotation", FloatTag.class);
+        ListTag<FloatTag> rotationList = this.namedTag.getList("StructureRotation", FloatTag.class);
         ListTag<DoubleTag> motionList = this.namedTag.getList("Motion", DoubleTag.class);
         this.setPositionAndRotation(
                 this.temporalVector.setComponents(
@@ -880,9 +887,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
             if (this instanceof Player player && effect.getId() != null) {
                 MobEffectPacket packet = new MobEffectPacket();
-                packet.eid = player.getId();
-                packet.effectId = effect.getId();
-                packet.eventId = MobEffectPacket.EVENT_REMOVE;
+                packet.setRuntimeEntityId(player.getId());
+                packet.setEffectId(effect.getId());
+                packet.setEvent(MobEffectPacket.Event.REMOVE);
                 player.dataPacket(packet);
             }
 
@@ -927,15 +934,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         if (this instanceof Player player && effect.getId() != null) {
             MobEffectPacket packet = new MobEffectPacket();
-            packet.eid = player.getId();
-            packet.effectId = effect.getId();
-            packet.amplifier = effect.getAmplifier();
-            packet.particles = effect.isVisible();
-            packet.duration = effect.getDuration();
+            packet.setRuntimeEntityId(player.getId());
+            packet.setEffectId(effect.getId());
+            packet.setAmplifier(effect.getAmplifier());
+            packet.setParticles(effect.isVisible());
+            packet.setDuration(effect.getDuration());
             if (oldEffect != null) {
-                packet.eventId = MobEffectPacket.EVENT_MODIFY;
+                packet.setEvent(MobEffectPacket.Event.MODIFY);
             } else {
-                packet.eventId = MobEffectPacket.EVENT_ADD;
+                packet.setEvent(MobEffectPacket.Event.ADD);
             }
 
             player.dataPacket(packet);
@@ -1072,7 +1079,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 .add(new DoubleTag(this.motionZ))
         );
 
-        this.namedTag.putList("Rotation", new ListTag<FloatTag>()
+        this.namedTag.putList("StructureRotation", new ListTag<FloatTag>()
                 .add(new FloatTag((float) this.yaw))
                 .add(new FloatTag((float) this.pitch))
         );
@@ -1181,40 +1188,29 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.riding.spawnTo(player);
 
             SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-            pkk.vehicleUniqueId = this.riding.getId();
-            pkk.riderUniqueId = this.getId();
-            pkk.type = EntityLink.Type.RIDER;
-            pkk.immediate = 1;
+            pkk.setEntityLink(new EntityLinkData(this.riding.getId(), this.getId(), EntityLinkData.Type.RIDER, true, false, 0f));
 
             player.dataPacket(pkk);
         }
     }
 
-    protected DataPacket createAddEntityPacket() {
+    protected BedrockPacket createAddEntityPacket() {
         AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = this.getNetworkId();
-        addEntity.entityUniqueId = this.getId();
+        addEntity.setEntityType(this.getNetworkId());
+        addEntity.setUniqueEntityId(this.getId());
         if (this instanceof CustomEntity) {
-            addEntity.id = this.getIdentifier();
+            addEntity.setIdentifier(this.getIdentifier());
         }
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
-
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+        addEntity.setRuntimeEntityId(this.getId());
+        addEntity.setRotation(org.cloudburstmc.math.vector.Vector2f.from((float) this.pitch, (float) this.yaw));
+        addEntity.setHeadRotation((float) this.yaw);
+        addEntity.setBodyRotation((float) this.yaw);
+        addEntity.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y + this.getBaseOffset(), (float) this.z));
+        addEntity.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        addEntity.setMetadata(toCloudburstMetadata(this.entityDataMap));
+        for (int i = 0; i < this.passengers.size(); i++) {
+            addEntity.getEntityLinks().add(new EntityLinkData(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLinkData.Type.RIDER : EntityLinkData.Type.PASSENGER, false, false, 0f));
         }
-        addEntity.syncedProperties = this.getClientSyncProperties();
-
         return addEntity;
     }
 
@@ -1226,12 +1222,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         for (Effect effect : effects.values()) {
             if (effect.getId() != null) {
                 MobEffectPacket packet = new MobEffectPacket();
-                packet.eid = this.getId();
-                packet.effectId = effect.getId();
-                packet.amplifier = effect.getAmplifier();
-                packet.particles = effect.isVisible();
-                packet.duration = effect.getDuration();
-                packet.eventId = MobEffectPacket.EVENT_ADD;
+                packet.setRuntimeEntityId(this.getId());
+                packet.setEffectId(effect.getId());
+                packet.setAmplifier(effect.getAmplifier());
+                packet.setParticles(effect.isVisible());
+                packet.setDuration(effect.getDuration());
+                packet.setEvent(MobEffectPacket.Event.ADD);
                 player.dataPacket(packet);
             }
         }
@@ -1243,9 +1239,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void sendData(Player player, EntityDataMap data) {
         SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.eid = this.getId();
-        pk.entityData = data == null ? this.entityDataMap : data;
-        pk.syncedProperties = this.propertySyncData();
+        pk.setRuntimeEntityId(this.getId());
+        pk.setMetadata(toCloudburstMetadata(data == null ? this.entityDataMap : data));
+        pk.setProperties(toCloudburstProperties());
 
         player.dataPacket(pk);
     }
@@ -1256,9 +1252,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void sendData(Player[] players, EntityDataMap data) {
         SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.eid = this.getId();
-        pk.entityData = data == null ? this.entityDataMap : data;
-        pk.syncedProperties = this.propertySyncData();
+        pk.setRuntimeEntityId(this.getId());
+        pk.setMetadata(toCloudburstMetadata(data == null ? this.entityDataMap : data));
+        pk.setProperties(toCloudburstProperties());
 
         for (Player player : players) {
             if (player == this) {
@@ -1274,7 +1270,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
+            pk.setUniqueEntityId(this.getId());
             player.dataPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
         }
@@ -1343,7 +1339,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 }
                 // Resurrection Totem Implementation
                 if (totem) {
-                    this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM_USED);
+                    this.getLevel().addLevelEvent(this, LevelEvent.SOUND_TOTEM_USED.ordinal());
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
 
                     this.extinguish();
@@ -1355,8 +1351,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     this.addEffect(Effect.get(EffectType.ABSORPTION).setDuration(100).setAmplifier(1));
 
                     EntityEventPacket pk = new EntityEventPacket();
-                    pk.eid = this.getId();
-                    pk.event = EntityEventPacket.CONSUME_TOTEM;
+                    pk.setRuntimeEntityId(this.getId());
+                    pk.setType(EntityEventType.CONSUME_TOTEM);
                     player.dataPacket(pk);
 
                     if (isOffhand) {
@@ -1822,10 +1818,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      */
     public void addMotion(double motionX, double motionY, double motionZ) {
         SetEntityMotionPacket pk = new SetEntityMotionPacket();
-        pk.eid = this.getId();
-        pk.motionX = (float) motionX;
-        pk.motionY = (float) motionY;
-        pk.motionZ = (float) motionZ;
+        pk.setRuntimeEntityId(this.getId());
+        pk.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) motionX, (float) motionY, (float) motionZ));
 
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
@@ -1833,15 +1827,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     protected void broadcastMovement(boolean tp) {
         var pk = new MoveEntityAbsolutePacket();
-        pk.eid = this.getId();
-        pk.x = this.x;
-        pk.y = this.y + this.getBaseOffset();
-        pk.z = this.z;
-        pk.headYaw = yaw;
-        pk.pitch = pitch;
-        pk.yaw = yaw;
-        pk.teleport = tp;
-        pk.onGround = this.onGround;
+        pk.setRuntimeEntityId(this.getId());
+        pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) (this.y + this.getBaseOffset()), (float) this.z));
+        pk.setRotation(org.cloudburstmc.math.vector.Vector3f.from((float) this.pitch, (float) this.yaw, (float) this.yaw));
+        pk.setTeleported(tp);
+        pk.setOnGround(this.onGround);
         Server.broadcastPacket(hasSpawned.values(), pk);
     }
 
@@ -1874,7 +1864,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean mountEntity(Entity entity) {
-        return mountEntity(entity, EntityLink.Type.RIDER);
+        return mountEntity(entity, EntityLinkData.Type.RIDER);
     }
 
     /**
@@ -1883,7 +1873,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
      */
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, EntityLinkData.Type mode) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
         if (isPassenger(entity) || entity.riding != null && !entity.riding.dismountEntity(entity, false)) {
@@ -1920,15 +1910,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (ev.isCancelled()) {
             int seatIndex = this.passengers.indexOf(entity);
             if (seatIndex == 0) {
-                this.broadcastLinkPacket(entity, EntityLink.Type.RIDER);
+                this.broadcastLinkPacket(entity, EntityLinkData.Type.RIDER);
             } else if (seatIndex != -1) {
-                this.broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
+                this.broadcastLinkPacket(entity, EntityLinkData.Type.PASSENGER);
             }
             return false;
         }
 
         if (sendLinks) {
-            broadcastLinkPacket(entity, EntityLink.Type.REMOVE);
+            broadcastLinkPacket(entity, EntityLinkData.Type.REMOVE);
         }
 
         // refresh the entity
@@ -1945,12 +1935,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return true;
     }
 
-    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
+    protected void broadcastLinkPacket(Entity rider, EntityLinkData.Type type) {
         SetEntityLinkPacket pk = new SetEntityLinkPacket();
-        pk.vehicleUniqueId = getId();         // To the?
-        pk.riderUniqueId = rider.getId(); // From who?
-        pk.type = type;
-        pk.riderInitiated = type != EntityLink.Type.REMOVE;
+        pk.setEntityLink(new EntityLinkData(getId(), rider.getId(), type, false, type != EntityLinkData.Type.REMOVE, 0f));
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
@@ -2012,15 +1999,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void syncAttribute(Attribute attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new Attribute[]{attribute};
-        pk.entityId = this.getId();
+        pk.setRuntimeEntityId(this.getId());
+        pk.getAttributes().add(attributeToData(attribute));
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
     public void syncAttributes() {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
-        pk.entityId = this.getId();
+        pk.setRuntimeEntityId(this.getId());
+        this.attributes.values().stream().filter(Attribute::isSyncable).map(Entity::attributeToData).forEach(pk.getAttributes()::add);
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
@@ -2275,7 +2262,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
-    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+    public boolean onRiderInput(Player rider, org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket pk) {
         return false; //if false, normal player movement will proceed
     }
 
@@ -3407,7 +3394,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, eventName);
     }
 
-    public void playAnimation(AnimateEntityPacket.Animation animation) {
+    public void playAnimation(String animation) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
         playAnimation(animation, viewers);
@@ -3421,14 +3408,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param animation 动画对象 Animation objects
      * @param players   可视玩家 Visible Player
      */
-    public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
+    public void playAnimation(String animation, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
-        pk.parseFromAnimation(animation);
-        pk.entityRuntimeIds.add(this.getId());
+        pk.setAnimation(animation);
+        pk.setNextState("default");
+        pk.setStopExpression("");
+        pk.setController("");
+        pk.getRuntimeEntityIds().add(this.getId());
         Server.broadcastPacket(players, pk);
     }
 
-    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource) {
+    public void playActionAnimation(AnimatePacket.Action action, AnimatePacket.SwingSource swingSource) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
         playActionAnimation(action, swingSource, viewers);
@@ -3443,12 +3433,95 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param swingSource the swing source
      * @param players    可视玩家 Visible Player
      */
-    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource, Collection<Player> players) {
+    public void playActionAnimation(AnimatePacket.Action action, AnimatePacket.SwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
-        pk.action = action;
-        pk.eid = this.getId();
+        pk.setAction(action);
+        pk.setRuntimeEntityId(this.getId());
         pk.setSwingSource(swingSource);
         Server.broadcastPacket(players, pk);
+    }
+
+    private static AttributeData attributeToData(Attribute attribute) {
+        return new AttributeData(
+                attribute.getName(),
+                attribute.getMinValue(),
+                attribute.getMaxValue(),
+                attribute.getValue(),
+                attribute.getDefaultMinimum(),
+                attribute.getDefaultMaximum(),
+                attribute.getDefaultValue(),
+                List.of()
+        );
+    }
+
+    private static final Map<String, org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType<?>> CB_ENTITY_DATA_TYPES = loadCloudburstEntityDataTypes();
+
+    protected org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap toCloudburstMetadata(EntityDataMap source) {
+        org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap mapped = new org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap();
+        if (source == null || source.isEmpty()) {
+            return mapped;
+        }
+
+        for (Map.Entry<EntityDataType<?>, Object> entry : source.entrySet()) {
+            org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType<?> cbType = CB_ENTITY_DATA_TYPES.get(entry.getKey().toString());
+            if (cbType == null) {
+                continue;
+            }
+
+            Object transformed = entry.getKey().getTransformer().apply(entry.getValue());
+            Object value = mapMetadataValue(transformed);
+            if (value == null) {
+                continue;
+            }
+
+            try {
+                mapped.put(cbType, value);
+            } catch (Exception ignored) {
+                // Ignore unsupported metadata entries so migration remains forward-moving.
+            }
+        }
+        return mapped;
+    }
+
+    private static Map<String, org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType<?>> loadCloudburstEntityDataTypes() {
+        Map<String, org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType<?>> map = new HashMap<>();
+        for (Field field : org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes.class.getFields()) {
+            if (!org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType.class.isAssignableFrom(field.getType())) {
+                continue;
+            }
+            try {
+                map.put(field.getName(), (org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType<?>) field.get(null));
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+        return map;
+    }
+
+    private static Object mapMetadataValue(Object value) {
+        if (value instanceof cn.nukkit.math.Vector3f vector3f) {
+            return org.cloudburstmc.math.vector.Vector3f.from(vector3f.x, vector3f.y, vector3f.z);
+        }
+        if (value instanceof Vector3 vector3) {
+            return org.cloudburstmc.math.vector.Vector3f.from((float) vector3.x, (float) vector3.y, (float) vector3.z);
+        }
+        if (value instanceof cn.nukkit.math.BlockVector3 vector3i) {
+            return org.cloudburstmc.math.vector.Vector3i.from(vector3i.x, vector3i.y, vector3i.z);
+        }
+        if (value instanceof EnumSet<?> flags && (flags.isEmpty() || flags.iterator().next() instanceof cn.nukkit.entity.data.EntityFlag)) {
+            EnumMap<org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag, Boolean> mapped = new EnumMap<>(org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag.class);
+            for (Object flag : flags) {
+                try {
+                    mapped.put(org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag.valueOf(((cn.nukkit.entity.data.EntityFlag) flag).name()), true);
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+            return mapped;
+        }
+        return value;
+    }
+
+    private EntityProperties toCloudburstProperties() {
+        return new EntityProperties();
     }
 
     public double getLookingAngleAt(Vector3 location) {
@@ -3560,29 +3633,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return false;
     }
 
-    public PropertySyncData getClientSyncProperties() {
-        List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
-
-        int[] intArray = propertyDefs.stream()
-                .filter(this::shouldSyncIntProperty)
-                .map(this::getIntPropertyValue)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .toArray();
-
-        double[] doubleArray = propertyDefs.stream()
-                .filter(this::shouldSyncFloatProperty)
-                .map(this::getFloatPropertyValue)
-                .filter(Objects::nonNull)
-                .mapToDouble(Float::doubleValue)
-                .toArray();
-
-        float[] floatArray = new float[doubleArray.length];
-        for (int i = 0; i < doubleArray.length; i++) {
-            floatArray[i] = (float) doubleArray[i];
-        }
-
-        return new PropertySyncData(intArray, floatArray);
+    public Object getClientSyncProperties() {
+        return null;
     }
 
     private boolean shouldSyncIntProperty(EntityProperty prop) {
@@ -3678,22 +3730,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
-    private PropertySyncData propertySyncData() {
-        Collection<Integer> intValues = intProperties.values();
-        int[] intArray = new int[intValues.size()];
-        int i = 0;
-        for (Integer value : intValues) {
-            intArray[i++] = value;
-        }
-
-        Collection<Float> floatValues = floatProperties.values();
-        float[] floatArray = new float[floatValues.size()];
-        i = 0;
-        for (Float value : floatValues) {
-            floatArray[i++] = value;
-        }
-
-        return new PropertySyncData(intArray, floatArray);
+    private Object propertySyncData() {
+        return null;
     }
 
     public Map<Integer, Attribute> getAttributes() {

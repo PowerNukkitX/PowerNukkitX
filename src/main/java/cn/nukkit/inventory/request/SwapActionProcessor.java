@@ -2,12 +2,12 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.SwapAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +59,8 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
                                         destinationItem.getCount(),
                                         destinationItem.getNetId(),
                                         destinationItem.getCustomName(),
-                                        destinationItem.getDamage()
+                                        destinationItem.getDamage(),
+                                        ""
                                 )
                         ),
                         action.getSource().getContainerName()
@@ -73,7 +74,8 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
                                         sourceItem.getCount(),
                                         sourceItem.getNetId(),
                                         sourceItem.getCustomName(),
-                                        sourceItem.getDamage()
+                                        sourceItem.getDamage(),
+                                        ""
                                 )
                         ),
                         action.getDestination().getContainerName()

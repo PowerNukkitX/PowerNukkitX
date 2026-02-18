@@ -12,7 +12,7 @@ import cn.nukkit.form.element.custom.ElementStepSlider;
 import cn.nukkit.form.element.custom.ElementToggle;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
-import cn.nukkit.network.protocol.types.ModalFormCancelReason;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

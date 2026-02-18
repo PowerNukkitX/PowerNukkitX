@@ -35,7 +35,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -191,8 +191,8 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
                     if(item.isArmor() || item.isTool()) {
                         if(holder.equip(item)) {
                             TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                            pk.entityId = entity.getId();
-                            pk.target = i.getId();
+                            pk.setRuntimeEntityId(entity.getId());
+                            pk.setItemRuntimeEntityId(i.getId());
                             Server.broadcastPacket(entity.getViewers().values(), pk);
                             i.close();
                         }

@@ -22,9 +22,10 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.AddEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -183,18 +184,18 @@ public class EntityFishingHook extends SlenderProjectile {
         Collection<Player> viewers = this.getViewers().values();
 
         EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = this.getId();
-        pk.event = EntityEventPacket.FISH_HOOK_HOOK;
+        pk.setRuntimeEntityId(this.getId());
+        pk.setType(EntityEventType.FISH_HOOK_POSITION);
         Server.broadcastPacket(viewers, pk);
 
         EntityEventPacket bubblePk = new EntityEventPacket();
-        bubblePk.eid = this.getId();
-        bubblePk.event = EntityEventPacket.FISH_HOOK_BUBBLE;
+        bubblePk.setRuntimeEntityId(this.getId());
+        bubblePk.setType(EntityEventType.FISH_HOOK_BUBBLE);
         Server.broadcastPacket(viewers, bubblePk);
 
         EntityEventPacket teasePk = new EntityEventPacket();
-        teasePk.eid = this.getId();
-        teasePk.event = EntityEventPacket.FISH_HOOK_TEASE;
+        teasePk.setRuntimeEntityId(this.getId());
+        teasePk.setType(EntityEventType.FISH_HOOK_TEASE);
         Server.broadcastPacket(viewers, teasePk);
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -269,26 +270,23 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
+    protected BedrockPacket createAddEntityPacket() {
         AddEntityPacket pk = new AddEntityPacket();
-        pk.entityRuntimeId = this.getId();
-        pk.entityUniqueId = this.getId();
-        pk.type = getNetworkId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
+        pk.setRuntimeEntityId(this.getId());
+        pk.setUniqueEntityId(this.getId());
+        pk.setEntityType(getNetworkId());
+        pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y, (float) this.z));
+        pk.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        pk.setRotation(org.cloudburstmc.math.vector.Vector2f.from((float) this.pitch, (float) this.yaw));
+        pk.setHeadRotation((float) this.yaw);
+        pk.setBodyRotation((float) this.yaw);
 
         long ownerId = -1;
         if (this.shootingEntity != null) {
             ownerId = this.shootingEntity.getId();
         }
         this.entityDataMap.put(OWNER_EID, ownerId);
-        pk.entityData = entityDataMap;
+        pk.setMetadata(toCloudburstMetadata(entityDataMap));
         return pk;
     }
 

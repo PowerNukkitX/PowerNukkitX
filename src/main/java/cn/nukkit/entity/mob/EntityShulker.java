@@ -31,7 +31,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -180,9 +180,9 @@ public class EntityShulker extends EntityMob implements EntityVariant {
         Arrays.stream(getLevel().getCollisionBlocks(getBoundingBox().grow(7, 7, 7))).filter(block -> block.isFullBlock() && block.up().isAir()).findAny().ifPresent(
                 block -> {
                     Location location = block.up().getLocation();
-                    getLevel().addLevelSoundEvent(this, LevelSoundEvent.TELEPORT, -1, getIdentifier(), false, false);
+                    getLevel().addLevelSoundEvent(this, SoundEvent.TELEPORT, -1, getIdentifier(), false, false);
                     teleport(location, PlayerTeleportEvent.TeleportCause.SHULKER);
-                    getLevel().addLevelSoundEvent(location, LevelSoundEvent.SPAWN, -1, getIdentifier(), false, false);
+                    getLevel().addLevelSoundEvent(location, SoundEvent.SPAWN, -1, getIdentifier(), false, false);
                 }
         );
     }

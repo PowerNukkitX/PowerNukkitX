@@ -10,7 +10,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.types.SpawnPointType;
+import org.cloudburstmc.protocol.bedrock.packet.SetSpawnPositionPacket.Type;
 import cn.nukkit.utils.TextFormat;
 
 import java.text.DecimalFormat;
@@ -58,7 +58,7 @@ public class SpawnpointCommand extends VanillaCommand {
                         if (position.y > 255) position.y = 255;
                     }
                     for (Player player : players) {
-                        player.setSpawn(position, SpawnPointType.PLAYER);
+                        player.setSpawn(position, Type.PLAYER_SPAWN);
                     }
                     log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(Player::getName).collect(Collectors.joining(" ")),
                             round2.format(position.x),
@@ -72,7 +72,7 @@ public class SpawnpointCommand extends VanillaCommand {
         }
         if (!players.isEmpty()) {
             Position pos = players.get(0).getPosition();
-            players.get(0).setSpawn(pos, SpawnPointType.PLAYER);
+            players.get(0).setSpawn(pos, Type.PLAYER_SPAWN);
             log.addSuccess("commands.spawnpoint.success.single", sender.getName(),
                     round2.format(pos.x),
                     round2.format(pos.y),

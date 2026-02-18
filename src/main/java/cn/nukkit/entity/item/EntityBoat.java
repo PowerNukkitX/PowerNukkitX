@@ -26,14 +26,14 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.AnimatePacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerAuthInputPacket;
-import cn.nukkit.network.protocol.types.AuthInputAction;
-import cn.nukkit.network.protocol.types.AuthInteractionModel;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.InputMode;
+import org.cloudburstmc.protocol.bedrock.packet.AddEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
+import org.cloudburstmc.protocol.bedrock.data.InputInteractionModel;
+import org.cloudburstmc.protocol.bedrock.data.InputMode;
+import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -148,26 +148,21 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
+    protected BedrockPacket createAddEntityPacket() {
         AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = 0;
-        addEntity.id = "minecraft:boat";
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+        addEntity.setEntityType(0);
+        addEntity.setIdentifier("minecraft:boat");
+        addEntity.setUniqueEntityId(this.getId());
+        addEntity.setRuntimeEntityId(this.getId());
+        addEntity.setRotation(org.cloudburstmc.math.vector.Vector2f.from((float) this.yaw, (float) this.pitch));
+        addEntity.setHeadRotation((float) this.yaw);
+        addEntity.setBodyRotation((float) this.yaw);
+        addEntity.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y + getBaseOffset(), (float) this.z));
+        addEntity.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+        addEntity.setMetadata(toCloudburstMetadata(this.entityDataMap));
 
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+        for (int i = 0; i < this.passengers.size(); i++) {
+            addEntity.getEntityLinks().add(new EntityLinkData(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLinkData.Type.RIDER : EntityLinkData.Type.PASSENGER, false, false, 0f));
         }
 
         return addEntity;
@@ -364,7 +359,7 @@ public class EntityBoat extends EntityVehicle {
             super.updatePassengerPosition(ent);
 
             if (sendLinks) {
-                broadcastLinkPacket(ent, EntityLink.Type.RIDER);
+                broadcastLinkPacket(ent, EntityLinkData.Type.RIDER);
             }
         } else if (passengers.size() == 2) {
             if (!((ent = passengers.get(0)) instanceof Player)) { //swap
@@ -381,7 +376,7 @@ public class EntityBoat extends EntityVehicle {
             ent.setSeatPosition(getMountedOffset(ent).add(RIDER_PASSENGER_OFFSET));
             super.updatePassengerPosition(ent);
             if (sendLinks) {
-                broadcastLinkPacket(ent, EntityLink.Type.RIDER);
+                broadcastLinkPacket(ent, EntityLinkData.Type.RIDER);
             }
 
             (ent = this.passengers.get(1)).setSeatPosition(getMountedOffset(ent).add(PASSENGER_OFFSET));
@@ -389,7 +384,7 @@ public class EntityBoat extends EntityVehicle {
             super.updatePassengerPosition(ent);
 
             if (sendLinks) {
-                broadcastLinkPacket(ent, EntityLink.Type.PASSENGER);
+                broadcastLinkPacket(ent, EntityLinkData.Type.PASSENGER);
             }
 
             //float yawDiff = ent.getId() % 2 == 0 ? 90 : 270;
@@ -433,17 +428,17 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public boolean mountEntity(Entity entity) {
         boolean player = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
-        EntityLink.Type mode = EntityLink.Type.PASSENGER;
+        EntityLinkData.Type mode = EntityLinkData.Type.PASSENGER;
 
         if (!player && (entity instanceof Player || this.passengers.isEmpty())) {
-            mode = EntityLink.Type.RIDER;
+            mode = EntityLinkData.Type.RIDER;
         }
 
         return super.mountEntity(entity, mode);
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, EntityLinkData.Type mode) {
         boolean r = super.mountEntity(entity, mode);
         if (entity.riding == this) {
             updatePassengers(true);
@@ -605,18 +600,18 @@ public class EntityBoat extends EntityVehicle {
     public boolean onRiderInput(Player player, PlayerAuthInputPacket pk) {
         float acceleration = 0.0F;
 
-        boolean isMobileAndClassicMovement = pk.getInputMode() == InputMode.TOUCH && pk.getInteractionModel() == AuthInteractionModel.CLASSIC;
+        boolean isMobileAndClassicMovement = pk.getInputMode() == InputMode.TOUCH && pk.getInputInteractionModel() == InputInteractionModel.CLASSIC;
         Vector2 input;
         if (isMobileAndClassicMovement) {
             // Press both left and right to move forward and press 1 to turn the boat.
-            boolean left = pk.getInputData().contains(AuthInputAction.PADDLE_LEFT), right = pk.getInputData().contains(AuthInputAction.PADDLE_RIGHT);
+            boolean left = pk.getInputData().contains(PlayerAuthInputData.PADDLE_LEFT), right = pk.getInputData().contains(PlayerAuthInputData.PADDLE_RIGHT);
             if (left && right) {
                 input = new Vector2(0, 1);
             } else {
                 input = new Vector2(1,0).multiply(left ? -1 : right ? 1 : 0);
             }
         } else {
-            input = pk.motion;
+            input = new Vector2(pk.getMotion().getX(), pk.getMotion().getY());
         }
         boolean up = input.getY() > 0;
         boolean down = input.getY() < 0;
@@ -634,7 +629,7 @@ public class EntityBoat extends EntityVehicle {
         this.setMotion(this.getMotion().add(motion));
         float animationSpeed = (float) Math.max(0.01, Math.min(0.08,
                 Math.sqrt(motionX * motionX + motionZ * motionZ) * 0.05));
-        double turnRate = NukkitMath.min((Math.abs(Math.toDegrees(Math.atan2(pk.motion.y, pk.motion.x)) - 90) / 90d) * 4, 4);
+        double turnRate = NukkitMath.min((Math.abs(Math.toDegrees(Math.atan2(pk.getMotion().getY(), pk.getMotion().getX())) - 90) / 90d) * 4, 4);
 
         if (up) {
             paddleTimeLeft  += animationSpeed;
@@ -647,7 +642,7 @@ public class EntityBoat extends EntityVehicle {
             if (left)  this.yaw -= turnRate;
             if (right) this.yaw += turnRate;
         } else {
-            double yawRad = Math.toRadians(pk.yaw);
+            double yawRad = Math.toRadians(pk.getRotation().getY());
             double pz = Math.cos(yawRad);
             double fz = Math.sin(yawRad);
             if (left && !right) applyTurn(true,  turnRate, acceleration, pz, fz, animationSpeed);

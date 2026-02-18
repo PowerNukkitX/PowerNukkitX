@@ -1,8 +1,8 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftCreativeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftCreativeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
 

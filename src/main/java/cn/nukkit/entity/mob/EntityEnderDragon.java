@@ -8,7 +8,6 @@ import cn.nukkit.block.BlockEndGateway;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTorch;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
-import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntityIntelligent;
@@ -43,8 +42,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.plugin.InternalPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,23 +100,8 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = this.getNetworkId();
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y;
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
-        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(200).setValue(200)};
-        return addEntity;
+    protected BedrockPacket createAddEntityPacket() {
+        return super.createAddEntityPacket();
     }
 
     @Override
@@ -143,7 +128,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         }
         if (currentTick % 2 == 0) {
             if(currentTick % ((toHorizontal().distance(Vector2.ZERO) < 1) ? 10 : 20) == 0) {
-                getLevel().addLevelSoundEvent(this, LevelSoundEvent.FLAP, -1, this.getIdentifier(), false, false);
+                getLevel().addLevelSoundEvent(this, SoundEvent.FLAP, -1, this.getIdentifier(), false, false);
             }
             for (Entity e : this.getLevel().getEntities()) {
                 if (e instanceof EntityEnderCrystal) {
@@ -165,10 +150,10 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     public void kill() {
         if(deathTicks == -1) {
             deathTicks = 190;
-            getLevel().addLevelSoundEvent(this, LevelSoundEvent.DEATH, -1, getIdentifier(), false, false);
+            getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, getIdentifier(), false, false);
             EntityEventPacket packet = new EntityEventPacket();
-            packet.event = EntityEventPacket.ENDER_DRAGON_DEATH;
-            packet.eid = getId();
+            packet.setType(EntityEventType.ENDER_DRAGON_DEATH);
+            packet.setRuntimeEntityId(getId());
             Server.broadcastPacket(getViewers().values(), packet);
             setImmobile(true);
         } else {
@@ -263,11 +248,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     @Override
     public void addBossbar(Player player) {
         BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = this.id;
-        pkBoss.type = BossEventPacket.TYPE_SHOW;
-        pkBoss.title = this.getName();
-        pkBoss.color = 5;
-        pkBoss.healthPercent = health / getMaxHealth();
+        pkBoss.setBossUniqueEntityId(this.id);
+        pkBoss.setAction(BossEventPacket.Action.CREATE);
+        pkBoss.setTitle(this.getName());
+        pkBoss.setColor(5);
+        pkBoss.setHealthPercentage(health / getMaxHealth());
         player.dataPacket(pkBoss);
     }
 

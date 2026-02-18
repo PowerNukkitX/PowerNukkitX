@@ -11,8 +11,9 @@ import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Location;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 
 public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor {
     protected MemoryType<? extends Entity> memory;
@@ -125,15 +126,15 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
 
     private void startSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.level.addLevelSoundEvent(entity, LevelSoundEvent.MOB_WARNING, -1, entity.getIdentifier(), false, false);
+        entity.level.addLevelSoundEvent(entity, SoundEvent.MOB_WARNING, -1, entity.getIdentifier(), false, false);
     }
 
     private void endSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
         EntityEventPacket pk = new EntityEventPacket();
-        pk.event = EntityEventPacket.GUARDIAN_ATTACK_ANIMATION;
-        pk.eid = entity.getId();
-        pk.data = 0;
+        pk.setType(EntityEventType.GUARDIAN_ATTACK_ANIMATION);
+        pk.setRuntimeEntityId(entity.getId());
+        pk.setData(0);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

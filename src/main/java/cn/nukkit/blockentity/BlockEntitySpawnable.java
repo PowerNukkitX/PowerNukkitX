@@ -3,7 +3,8 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEntityDataPacket;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -46,10 +47,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         }
 
         BlockEntityDataPacket pk = new BlockEntityDataPacket();
-        pk.x = this.getFloorX();
-        pk.y = this.getFloorY();
-        pk.z = this.getFloorZ();
-        pk.namedTag = nbt;
+        pk.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
 
         return pk;
     }

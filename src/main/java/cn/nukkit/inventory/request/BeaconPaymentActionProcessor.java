@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.network.protocol.types.itemstack.request.action.BeaconPaymentAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.BeaconPaymentAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;

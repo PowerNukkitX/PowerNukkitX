@@ -101,7 +101,7 @@ public class ItemPainting extends Item {
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0))
                         .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag(direction * 90))
                         .add(new FloatTag(0)));
 

@@ -13,7 +13,7 @@ import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
-import java.util.Set;
+import java.util.List;
 
 import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
@@ -38,7 +38,10 @@ public class MesaFoliageFeature extends GenerateFeature {
             for (int z = 0; z < 16; z++) {
                 if(random.nextInt(10) < 2) {
                     int y = chunk.getHeightMap(x, z) + 1;
-                    Set<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags();
+                    List<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).getTags();
+                    if (tags == null) {
+                        continue;
+                    }
                     if(tags.contains(BiomeTags.STONE)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
                         if (support.hasTag(BlockTags.DIRT)) {

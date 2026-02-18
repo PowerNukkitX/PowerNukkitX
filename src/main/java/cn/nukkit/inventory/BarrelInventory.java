@@ -7,7 +7,7 @@ import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 
 import java.util.Map;
 

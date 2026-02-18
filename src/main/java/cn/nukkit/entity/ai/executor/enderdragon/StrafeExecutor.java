@@ -47,7 +47,7 @@ public class StrafeExecutor implements EntityControl, IBehaviorExecutor {
                             .add(new DoubleTag(-Math.sin(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI)))
                             .add(new DoubleTag(-Math.sin(pitch / 180 * Math.PI)))
                             .add(new DoubleTag(Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI))))
-                    .putList("Rotation", new ListTag<FloatTag>()
+                    .putList("StructureRotation", new ListTag<FloatTag>()
                             .add(new FloatTag(0))
                             .add(new FloatTag(0)));
 

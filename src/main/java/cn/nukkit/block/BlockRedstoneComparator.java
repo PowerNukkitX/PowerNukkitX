@@ -10,7 +10,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -134,7 +135,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             setMode(Mode.SUBTRACT);
         }
 
-        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_ACTIVATE_BLOCK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEvent.ACTIVATE_BLOCK.ordinal(), this.getMode() == Mode.SUBTRACT ? 500 : 550);
         this.level.setBlock(this, this, true, false);
         this.level.updateComparatorOutputLevelSelective(this, true);
         //bug?

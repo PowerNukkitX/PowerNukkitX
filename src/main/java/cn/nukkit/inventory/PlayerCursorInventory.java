@@ -3,9 +3,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 
 import java.util.Map;
 
@@ -44,16 +44,16 @@ public class PlayerCursorInventory extends BaseInventory {
     @Override
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
-        pk.item = this.getUnclonedItem(index);
-        pk.slot = index;
+        pk.setItem(toNetworkItem(this.getUnclonedItem(index)));
+        pk.setSlot(index);
 
         for (Player player : players) {
             int id = SpecialWindowId.CURSOR.getId();
-            pk.inventoryId = id;
-            pk.fullContainerName = new FullContainerName(
+            pk.setContainerId(id);
+            pk.setContainerNameData(new FullContainerName(
                     ContainerSlotType.CURSOR,
                     id
-            );
+            ));
             player.dataPacket(pk);
         }
     }
@@ -62,13 +62,13 @@ public class PlayerCursorInventory extends BaseInventory {
     public void sendContents(Player... players) {
         InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
         int id = SpecialWindowId.CURSOR.getId();
-        inventorySlotPacket.inventoryId = id;
-        inventorySlotPacket.item = getUnclonedItem(0);
-        inventorySlotPacket.slot = 0;
-        inventorySlotPacket.fullContainerName = new FullContainerName(
+        inventorySlotPacket.setContainerId(id);
+        inventorySlotPacket.setItem(toNetworkItem(getUnclonedItem(0)));
+        inventorySlotPacket.setSlot(0);
+        inventorySlotPacket.setContainerNameData(new FullContainerName(
                 ContainerSlotType.CURSOR,
                 id
-        );
+        ));
         Server.broadcastPacket(players, inventorySlotPacket);
     }
 }

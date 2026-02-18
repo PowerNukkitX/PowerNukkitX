@@ -3,7 +3,7 @@ package cn.nukkit.inventory;
 
 
 import cn.nukkit.blockentity.BlockEntityFurnace;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 
 import java.util.Map;
 

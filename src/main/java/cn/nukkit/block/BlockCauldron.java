@@ -22,7 +22,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -164,7 +165,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     this.setFillLevel(FILL_LEVEL.getMin(), player); // empty
                     this.level.setBlock(this, this, true);
                     cauldron.clearCustomColor();
-                    this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
+                    this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEvent.CAULDRON_TAKE_WATER.ordinal());
                 }
             } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
                 if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
@@ -299,7 +300,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                 consumePotion(item, player);
 
-                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POTION);
+                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEvent.CAULDRON_FILL_POTION.ordinal());
                 break;
             case ItemID.GLASS_BOTTLE:
                 if (isEmpty()) {
@@ -342,7 +343,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     }
                 }
 
-                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_POTION);
+                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEvent.CAULDRON_TAKE_POTION.ordinal());
                 break;
             case ItemID.BANNER:
                 if (isEmpty() || cauldron.isCustomColor() || cauldron.hasPotion()) {

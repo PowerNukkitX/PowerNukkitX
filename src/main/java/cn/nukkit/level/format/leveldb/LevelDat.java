@@ -7,8 +7,8 @@ import java.util.Map;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.types.ExperimentEntry;
-import cn.nukkit.network.protocol.types.GameType;
+import org.cloudburstmc.protocol.bedrock.data.ExperimentData;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
 import cn.nukkit.utils.SemVersion;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -336,10 +336,10 @@ public class LevelDat {
             return new Experiments(new HashMap<>());
         }
 
-        public static Experiments fromList(List<ExperimentEntry> entries) {
+        public static Experiments fromList(List<ExperimentData> entries) {
             Map<String, Boolean> map = new HashMap<>();
-            for (ExperimentEntry entry : entries) {
-                map.put(entry.name(), entry.enabled());
+            for (ExperimentData entry : entries) {
+                map.put(entry.getName(), entry.isEnabled());
             }
             return new Experiments(map);
         }

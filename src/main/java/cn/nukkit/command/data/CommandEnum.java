@@ -3,7 +3,10 @@ package cn.nukkit.command.data;
 import cn.nukkit.Server;
 import cn.nukkit.camera.data.CameraPreset;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumConstraint;
+import org.cloudburstmc.protocol.bedrock.data.command.SoftEnumUpdateType;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateSoftEnumPacket;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +33,7 @@ import java.util.function.Supplier;
  * <ul>
  *   <li>Instantiate with a name and a list of values, or a supplier for dynamic values.</li>
  *   <li>Use {@link #getValues()} to retrieve the current list of options.</li>
- *   <li>Call {@link #updateSoftEnum(UpdateSoftEnumPacket.Type, String...)} or {@link #updateSoftEnum()} to update client-side enums.</li>
+ *   <li>Call {@link #updateSoftEnum(SoftEnumUpdateType, String...)} or {@link #updateSoftEnum()} to update client-side enums.</li>
  *   <li>Use built-in static instances for common command options.</li>
  * </ul>
  * <p>
@@ -180,12 +183,15 @@ public class CommandEnum {
      * @param mode the update type (SET, ADD, REMOVE)
      * @param value the values to update
      */
-    public void updateSoftEnum(UpdateSoftEnumPacket.Type mode, String... value) {
+    public void updateSoftEnum(SoftEnumUpdateType mode, String... value) {
         if (!this.soft) return;
         UpdateSoftEnumPacket packet = new UpdateSoftEnumPacket();
-        packet.name = this.getName();
-        packet.values = Arrays.stream(value).toList();
-        packet.type = mode;
+        packet.setSoftEnum(new CommandEnumData(
+                this.getName(),
+                toCommandEnumValues(Arrays.stream(value).toList()),
+                true
+        ));
+        packet.setType(mode);
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), packet);
     }
 
@@ -197,10 +203,21 @@ public class CommandEnum {
     public void updateSoftEnum() {
         if (!this.soft && this.supplier == null) return;
         UpdateSoftEnumPacket packet = new UpdateSoftEnumPacket();
-        packet.name = this.getName();
-        packet.values = this.getValues();
-        packet.type = UpdateSoftEnumPacket.Type.SET;
+        packet.setSoftEnum(new CommandEnumData(
+                this.getName(),
+                toCommandEnumValues(this.getValues()),
+                true
+        ));
+        packet.setType(SoftEnumUpdateType.REPLACE);
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), packet);
+    }
+
+    private static Map<String, Set<CommandEnumConstraint>> toCommandEnumValues(Collection<String> values) {
+        Map<String, Set<CommandEnumConstraint>> map = new LinkedHashMap<>();
+        for (String value : values) {
+            map.put(value, Set.of());
+        }
+        return map;
     }
 
     /**

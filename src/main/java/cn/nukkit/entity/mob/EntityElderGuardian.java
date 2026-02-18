@@ -31,7 +31,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -157,10 +159,8 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
                 if (p.locallyInitialized && p.getGamemode() % 2 == 0 && p.distance(this) < 50 && !p.hasEffect(EffectType.MINING_FATIGUE)) {
                     p.addEffect(Effect.get(EffectType.MINING_FATIGUE).setAmplifier(2).setDuration(6000));
                     LevelEventPacket pk = new LevelEventPacket();
-                    pk.evid = LevelEventPacket.EVENT_PARTICLE_SOUND_GUARDIAN_GHOST;
-                    pk.x = (float) this.x;
-                    pk.y = (float) this.y;
-                    pk.z = (float) this.z;
+                    pk.setType(LevelEvent.PARTICLE_SOUND_GUARDIAN_GHOST);
+                    pk.setPosition(Vector3f.from((float) this.x, (float) this.y, (float) this.z));
                     p.dataPacket(pk);
                 }
             }

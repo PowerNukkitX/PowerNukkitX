@@ -5,13 +5,11 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,29 +27,23 @@ public class NormalChunkFeatureStage extends GenerateStage {
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 int y = chunk.getHeightMap(x, z);
-                BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z));
-                BiomeDefinitionData biome = definition.data;
-                OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
-                if(chunkGenDataOptional.isPresent()) {
-                    BiomeDefinitionChunkGenData chunkGenData = chunkGenDataOptional.get();
-                    OptionalValue<BiomeConsolidatedFeatureData[]> consolidatedFeatureDataOptional = chunkGenData.consolidatedFeatures;
-                    if(consolidatedFeatureDataOptional.isPresent()) {
-                        BiomeConsolidatedFeatureData[] consolidatedFeatureDataArray = consolidatedFeatureDataOptional.get();
-                        for(BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeatureDataArray) {
-                            features.put(consolidatedFeatureData, consolidatedFeatureData.scatter.evalOrder);
-                        }
+                BiomeDefinitionData definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z));
+                BiomeDefinitionChunkGenData chunkGenData = definition.getChunkGenData();
+                if(chunkGenData != null && chunkGenData.getConsolidatedFeatures() != null) {
+                    for(BiomeConsolidatedFeatureData consolidatedFeatureData : chunkGenData.getConsolidatedFeatures()) {
+                        features.put(consolidatedFeatureData, consolidatedFeatureData.getScatter().getEvalOrder().ordinal());
                     }
                 } else {
                     if(definition.getTags().contains(BiomeTags.JUNGLE)) {
-                        log.warn("No chunkGenData for biome {}", definition.getName());
+                        log.warn("No chunkGenData for biome {}", definition.getId());
                     }
                 }
             }
         }
         for(var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
             var consolidatedFeatureData = entry.getKey();
-            String featureIdentifier = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier); //Usually more specific. Like contains biome and type.
-            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature); //Usually globally usable. But not always descriptive enough to use (e.g. ores)
+            String featureIdentifier = consolidatedFeatureData.getIdentifier();
+            String featureName = consolidatedFeatureData.getFeature();
             for(String key : new String[]{featureIdentifier, featureName}) {
                 if(Registries.GENERATE_FEATURE.has(key)) {
                     try {

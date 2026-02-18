@@ -8,7 +8,8 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 
 public abstract class ContainerInventory extends BaseInventory {
     public ContainerInventory(InventoryHolder holder, InventoryType type, int size) {
@@ -25,14 +26,12 @@ public abstract class ContainerInventory extends BaseInventory {
         if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS)) return;
         super.onOpen(who);
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
+        pk.setId((byte) who.getWindowId(this));
+        pk.setType(containerTypeOf(this.getType()));
         InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
+        pk.setBlockPosition(Vector3i.from((int) holder.getX(), (int) holder.getY(), (int) holder.getZ()));
         if(holder instanceof Entity entity) {
-            pk.entityId = entity.getId();
+            pk.setUniqueEntityId(entity.getId());
         }
         who.dataPacket(pk);
 

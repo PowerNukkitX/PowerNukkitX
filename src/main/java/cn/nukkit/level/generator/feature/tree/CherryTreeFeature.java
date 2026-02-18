@@ -4,7 +4,7 @@ import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectCherryTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -29,7 +29,7 @@ public class CherryTreeFeature extends ObjectGeneratorFeature {
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
         return definition.getTags().contains(BiomeTags.CHERRY_GROVE);
     }
 

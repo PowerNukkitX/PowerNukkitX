@@ -7,8 +7,7 @@ import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.MoveEntityAbsolutePacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.MoveEntityAbsolutePacket;
 import org.jetbrains.annotations.NotNull;
 
 public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityAbsolutePacket> {
@@ -18,12 +17,13 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
         if (!player.isAlive() || !player.spawned || player.getRiding() == null) {
             return;
         }
-        Entity movedEntity = player.getLevel().getEntity(pk.eid);
+        Entity movedEntity = player.getLevel().getEntity(pk.getRuntimeEntityId());
         if (!(movedEntity instanceof EntityBoat)) {
             return;
         }
 
-        player.temporalVector.setComponents(pk.x, pk.y - ((EntityBoat) movedEntity).getBaseOffset(), pk.z);
+        var position = pk.getPosition();
+        player.temporalVector.setComponents(position.getX(), position.getY() - ((EntityBoat) movedEntity).getBaseOffset(), position.getZ());
         if (!movedEntity.equals(player.getRiding()) || !movedEntity.isControlling(player)
                 || player.temporalVector.distanceSquared(movedEntity) > 10 * 10) {
             movedEntity.addMovement(movedEntity.x, movedEntity.y, movedEntity.z, movedEntity.yaw, movedEntity.pitch, movedEntity.yaw);
@@ -31,7 +31,7 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
         }
 
         Location from = movedEntity.getLocation();
-        movedEntity.setPositionAndRotation(player.temporalVector, pk.headYaw, 0);
+        movedEntity.setPositionAndRotation(player.temporalVector, pk.getRotation().getY(), 0);
         Location to = movedEntity.getLocation();
         if (!from.equals(to)) {
             player.getServer().getPluginManager().callEvent(new VehicleMoveEvent(player, from, to));
@@ -39,7 +39,7 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
+    public Class<MoveEntityAbsolutePacket> getPacketClass() {
+        return MoveEntityAbsolutePacket.class;
     }
 }

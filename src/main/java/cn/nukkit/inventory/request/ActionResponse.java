@@ -1,6 +1,6 @@
 package cn.nukkit.inventory.request;
 
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainer;
 
 import java.util.List;
 

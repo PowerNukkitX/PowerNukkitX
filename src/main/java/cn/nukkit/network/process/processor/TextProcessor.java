@@ -3,8 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.TextPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TextPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,18 +16,18 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
         }
 
         boolean isXboxAuth = Server.getInstance().getSettings().baseSettings().xboxAuth();
-        if(isXboxAuth && !pk.xboxUserId.equals(playerHandle.getLoginChainData().getXUID())) {
-            log.warn("{} sent TextPacket with invalid xuid : {} != {}", playerHandle.getUsername(), pk.xboxUserId, playerHandle.getLoginChainData().getXUID());
+        if (isXboxAuth && !pk.getXuid().equals(playerHandle.getLoginChainData().getXUID())) {
+            log.warn("{} sent TextPacket with invalid xuid : {} != {}", playerHandle.getUsername(), pk.getXuid(), playerHandle.getLoginChainData().getXUID());
             return;
         }
 
-        if(pk.parameters.length > 1) {
+        if (pk.getParameters().size() > 1) {
             playerHandle.player.close("§cPacket handling error");
             return;
         }
 
-        if (pk.type == TextPacket.TYPE_CHAT) {
-            String chatMessage = pk.message;
+        if (pk.getType() == TextPacket.Type.CHAT) {
+            String chatMessage = pk.getMessage();
             int breakLine = chatMessage.indexOf('\n');
             // Chat messages shouldn't contain break lines so ignore text afterwards
             if (breakLine != -1) {
@@ -39,7 +38,7 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.TEXT_PACKET;
+    public Class<TextPacket> getPacketClass() {
+        return TextPacket.class;
     }
 }

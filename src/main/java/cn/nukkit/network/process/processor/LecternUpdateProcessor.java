@@ -8,18 +8,18 @@ import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.block.LecternPageChangeEvent;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.LecternUpdatePacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.LecternUpdatePacket;
 import org.jetbrains.annotations.NotNull;
 
 public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull LecternUpdatePacket pk) {
-        BlockVector3 blockPosition = pk.blockPosition;
+        var networkPos = pk.getBlockPosition();
+        BlockVector3 blockPosition = new BlockVector3(networkPos.getX(), networkPos.getY(), networkPos.getZ());
         playerHandle.player.temporalVector.setComponents(blockPosition.x, blockPosition.y, blockPosition.z);
         BlockEntity blockEntityLectern = playerHandle.player.level.getBlockEntity(playerHandle.player.temporalVector);
         if (blockEntityLectern instanceof BlockEntityLectern lectern) {
-            LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, pk.page);
+            LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(playerHandle.player, lectern, pk.getPage());
             playerHandle.player.getServer().getPluginManager().callEvent(lecternPageChangeEvent);
             if (!lecternPageChangeEvent.isCancelled()) {
                 lectern.setRawPage(lecternPageChangeEvent.getNewRawPage());
@@ -33,7 +33,7 @@ public class LecternUpdateProcessor extends DataPacketProcessor<LecternUpdatePac
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.LECTERN_UPDATE_PACKET;
+    public Class<LecternUpdatePacket> getPacketClass() {
+        return LecternUpdatePacket.class;
     }
 }

@@ -16,7 +16,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.BlockEventPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 
 /**
  * @author GoodLucky777
@@ -224,11 +225,9 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
         }
 
         BlockEventPacket pk = new BlockEventPacket();
-        pk.x = this.getFloorX();
-        pk.y = this.getFloorY();
-        pk.z = this.getFloorZ();
-        pk.type = 1;
-        pk.value = eventData;
+        pk.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+        pk.setEventType(1);
+        pk.setEventData(eventData);
         this.getLevel().addChunkPacket(this.getChunkX(), this.getChunkZ(), pk);
     }
 }

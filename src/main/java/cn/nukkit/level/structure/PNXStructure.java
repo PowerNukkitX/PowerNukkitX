@@ -7,8 +7,8 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureMirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRotation;
 import cn.nukkit.registry.Registries;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -137,9 +137,9 @@ public class PNXStructure extends AbstractStructure {
     }
 
     @Override
-    public PNXStructure rotate(Rotation rotation) {
-        // Rotation support could also be done lazily, but here we materialize.
-        if (rotation == Rotation.NONE) return this;
+    public PNXStructure rotate(StructureRotation rotation) {
+        // StructureRotation support could also be done lazily, but here we materialize.
+        if (rotation == StructureRotation.NONE) return this;
 
         int newSizeX = rotatedSizeX(sizeX, sizeZ, rotation);
         int newSizeZ = rotatedSizeZ(sizeX, sizeZ, rotation);

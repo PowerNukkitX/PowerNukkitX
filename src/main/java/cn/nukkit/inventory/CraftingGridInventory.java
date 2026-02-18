@@ -2,7 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
 

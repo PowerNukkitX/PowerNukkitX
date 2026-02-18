@@ -5,10 +5,11 @@ import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -125,11 +126,9 @@ public class DoubleChestInventory extends ContainerInventory {
 
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk1 = new BlockEventPacket();
-            pk1.x = (int) this.left.getHolder().getX();
-            pk1.y = (int) this.left.getHolder().getY();
-            pk1.z = (int) this.left.getHolder().getZ();
-            pk1.type = 1;
-            pk1.value = 2;
+            pk1.setBlockPosition(Vector3i.from((int) this.left.getHolder().getX(), (int) this.left.getHolder().getY(), (int) this.left.getHolder().getZ()));
+            pk1.setEventType(1);
+            pk1.setEventData(2);
             Level level = this.left.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
@@ -137,11 +136,9 @@ public class DoubleChestInventory extends ContainerInventory {
             }
 
             BlockEventPacket pk2 = new BlockEventPacket();
-            pk2.x = (int) this.right.getHolder().getX();
-            pk2.y = (int) this.right.getHolder().getY();
-            pk2.z = (int) this.right.getHolder().getZ();
-            pk2.type = 1;
-            pk2.value = 2;
+            pk2.setBlockPosition(Vector3i.from((int) this.right.getHolder().getX(), (int) this.right.getHolder().getY(), (int) this.right.getHolder().getZ()));
+            pk2.setEventType(1);
+            pk2.setEventData(2);
 
             level = this.right.getHolder().getLevel();
             if (level != null) {
@@ -155,11 +152,9 @@ public class DoubleChestInventory extends ContainerInventory {
     public void onClose(Player who) {
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk1 = new BlockEventPacket();
-            pk1.x = (int) this.right.getHolder().getX();
-            pk1.y = (int) this.right.getHolder().getY();
-            pk1.z = (int) this.right.getHolder().getZ();
-            pk1.type = 1;
-            pk1.value = 0;
+            pk1.setBlockPosition(Vector3i.from((int) this.right.getHolder().getX(), (int) this.right.getHolder().getY(), (int) this.right.getHolder().getZ()));
+            pk1.setEventType(1);
+            pk1.setEventData(0);
 
             Level level = this.right.getHolder().getLevel();
             if (level != null) {
@@ -168,11 +163,9 @@ public class DoubleChestInventory extends ContainerInventory {
             }
 
             BlockEventPacket pk2 = new BlockEventPacket();
-            pk2.x = (int) this.left.getHolder().getX();
-            pk2.y = (int) this.left.getHolder().getY();
-            pk2.z = (int) this.left.getHolder().getZ();
-            pk2.type = 1;
-            pk2.value = 0;
+            pk2.setBlockPosition(Vector3i.from((int) this.left.getHolder().getX(), (int) this.left.getHolder().getY(), (int) this.left.getHolder().getZ()));
+            pk2.setEventType(1);
+            pk2.setEventData(0);
 
             level = this.left.getHolder().getLevel();
             if (level != null) {
@@ -197,8 +190,9 @@ public class DoubleChestInventory extends ContainerInventory {
     public void sendSlot(Inventory inv, int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         int i = inv == this.right ? this.left.getSize() + index : index;
-        pk.slot = toNetworkSlot(i);
-        pk.item = inv.getUnclonedItem(index);
+        int slot = toNetworkSlot(i);
+        pk.setSlot(slot);
+        pk.setItem(toNetworkItem(inv.getUnclonedItem(index)));
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -206,11 +200,11 @@ public class DoubleChestInventory extends ContainerInventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
-            pk.fullContainerName = new FullContainerName(
-                    this.getSlotType(pk.slot),
+            pk.setContainerId(id);
+            pk.setContainerNameData(new FullContainerName(
+                    this.getSlotType(slot),
                     id
-            );
+            ));
             player.dataPacket(pk);
         }
     }

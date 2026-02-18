@@ -17,7 +17,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.SpawnPointType;
+import org.cloudburstmc.protocol.bedrock.packet.SetSpawnPositionPacket.Type;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
@@ -156,7 +156,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         Location spawn = Location.fromObject(head.add(0.5, 0.5, 0.5), player.getLevel(), player.getYaw(), player.getPitch());
         if (!player.getSpawn().first().equals(spawn)) {
-            player.setSpawn(this, SpawnPointType.BLOCK);
+            player.setSpawn(this, Type.PLAYER_SPAWN);
         }
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.bed.respawnSet"));
 

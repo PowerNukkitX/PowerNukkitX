@@ -45,7 +45,7 @@ public class PerchingExecutor implements EntityControl, IBehaviorExecutor {
                                             .add(new DoubleTag(location.y))
                                             .add(new DoubleTag(location.z))
                                     )
-                                    .putList("Rotation", new ListTag<>()
+                                    .putList("StructureRotation", new ListTag<>()
                                             .add(new FloatTag(0))
                                             .add(new FloatTag(0))
                                     )

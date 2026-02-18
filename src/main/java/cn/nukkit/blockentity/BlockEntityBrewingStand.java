@@ -18,7 +18,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 import cn.nukkit.recipe.ContainerRecipe;
 import cn.nukkit.recipe.MixRecipe;
 import cn.nukkit.registry.Registries;
@@ -303,15 +303,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
                 ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
-                pk1.windowId = windowId;
-                pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
-                pk1.value = this.fuelAmount;
+                pk1.setWindowId((byte) windowId);
+                pk1.setProperty(ContainerSetDataPacket.BREWING_STAND_FUEL_AMOUNT);
+                pk1.setValue(this.fuelAmount);
                 p.dataPacket(pk1);
 
                 ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
-                pk2.windowId = windowId;
-                pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
-                pk2.value = this.fuelTotal;
+                pk2.setWindowId((byte) windowId);
+                pk2.setProperty(ContainerSetDataPacket.BREWING_STAND_FUEL_TOTAL);
+                pk2.setValue(this.fuelTotal);
                 p.dataPacket(pk2);
             }
         }
@@ -319,13 +319,13 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     protected void sendBrewTime() {
         ContainerSetDataPacket pk = new ContainerSetDataPacket();
-        pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-        pk.value = brewTime;
+        pk.setProperty(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+        pk.setValue(brewTime);
 
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                pk.windowId = windowId;
+                pk.setWindowId((byte) windowId);
                 p.dataPacket(pk);
             }
         }

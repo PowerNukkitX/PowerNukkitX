@@ -13,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -117,9 +117,9 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
             // Without this, the brewing stand starts brewing (visually) once opened.
             if(brewing.brewTime == BlockEntityBrewingStand.MAX_BREW_TIME) {
                 ContainerSetDataPacket pk = new ContainerSetDataPacket();
-                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-                pk.value = 0;
-                pk.windowId = player.getWindowId(brewing.getInventory());;
+                pk.setProperty(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+                pk.setValue(0);
+                pk.setWindowId((byte) player.getWindowId(brewing.getInventory()));
                 player.dataPacket(pk);
             }
         }

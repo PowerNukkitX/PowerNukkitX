@@ -6,8 +6,8 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.event.player.PlayerEnchantOptionsRequestEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.EnchantmentHelper;
-import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerEnchantOptionsPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.google.common.collect.BiMap;
 
 import java.util.List;
@@ -43,12 +43,12 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
         if (index == 0) {
             if (before.isNull()) {
                 for (final Player viewer : this.getViewers()) {
-                    List<PlayerEnchantOptionsPacket.EnchantOptionData> options = EnchantmentHelper.getEnchantOptions(this.getHolder(), this.getFirst(), viewer.getEnchantmentSeed());
+                    var options = EnchantmentHelper.getEnchantOptions(this.getHolder(), this.getFirst(), viewer.getEnchantmentSeed());
 
                     PlayerEnchantOptionsRequestEvent event = new PlayerEnchantOptionsRequestEvent(viewer, this, options);
                     if (!event.isCancelled() && !event.getOptions().isEmpty()) {
                         PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
-                        pk.options = event.getOptions();
+                        pk.getOptions().addAll(event.getOptions());
                         viewer.dataPacket(pk);
                     }
                 }

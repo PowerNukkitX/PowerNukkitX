@@ -18,7 +18,7 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -125,7 +125,7 @@ public class OceanRuinPopulator extends Populator {
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome);
         if (definition.getTags().contains(BiomeTags.OCEAN)
                 && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) -1)
                 && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) - 1)) {

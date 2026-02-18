@@ -2,8 +2,9 @@ package cn.nukkit.level.particle;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 
 /**
  * @author xtypr
@@ -19,13 +20,11 @@ public class ItemBreakParticle extends Particle {
     }
 
     @Override
-    public DataPacket[] encode() {
+    public BedrockPacket[] encode() {
         LevelEventPacket packet = new LevelEventPacket();
-        packet.evid = (short) (LevelEventPacket.EVENT_ADD_PARTICLE_MASK | Particle.TYPE_ICON_CRACK);
-        packet.x = (float) this.x;
-        packet.y = (float) this.y;
-        packet.z = (float) this.z;
-        packet.data = this.data;
-        return new DataPacket[]{packet};
+        packet.setType(LevelEvent.PARTICLE_CRACK_BLOCK);
+        packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y, (float) this.z));
+        packet.setData(this.data);
+        return new BedrockPacket[]{packet};
     }
 }

@@ -8,17 +8,17 @@ import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.passive.EntityNpc;
 import cn.nukkit.event.player.PlayerDialogRespondedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.NPCDialoguePacket;
-import cn.nukkit.network.protocol.NPCRequestPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.data.NpcRequestType;
+import org.cloudburstmc.protocol.bedrock.packet.NpcDialoguePacket;
+import org.cloudburstmc.protocol.bedrock.packet.NpcRequestPacket;
 import org.jetbrains.annotations.NotNull;
 
-public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
+public class NPCRequestProcessor extends DataPacketProcessor<NpcRequestPacket> {
     @Override
-    public void handle(@NotNull PlayerHandle playerHandle, @NotNull NPCRequestPacket pk) {
+    public void handle(@NotNull PlayerHandle playerHandle, @NotNull NpcRequestPacket pk) {
         Player player = playerHandle.player;
         //若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
-        if (pk.sceneName.isEmpty() && player.level.getEntity(pk.entityRuntimeId) instanceof EntityNpc npcEntity) {
+        if (pk.getSceneName().isEmpty() && player.level.getEntity(pk.getRuntimeEntityId()) instanceof EntityNpc npcEntity) {
             FormWindowDialog dialog = npcEntity.getDialog();
 
             FormResponseDialog response = new FormResponseDialog(pk, dialog);
@@ -30,14 +30,14 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
             player.getServer().getPluginManager().callEvent(event);
             return;
         }
-        if (playerHandle.getDialogWindows().getIfPresent(pk.sceneName) != null) {
+        if (playerHandle.getDialogWindows().getIfPresent(pk.getSceneName()) != null) {
             //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
             FormWindowDialog dialog;
-            if (pk.requestType == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
-                dialog = playerHandle.getDialogWindows().getIfPresent(pk.sceneName);
-                playerHandle.getDialogWindows().invalidate(pk.sceneName);
+            if (pk.getRequestType() == NpcRequestType.EXECUTE_CLOSING_COMMANDS) {
+                dialog = playerHandle.getDialogWindows().getIfPresent(pk.getSceneName());
+                playerHandle.getDialogWindows().invalidate(pk.getSceneName());
             } else {
-                dialog = playerHandle.getDialogWindows().getIfPresent(pk.sceneName);
+                dialog = playerHandle.getDialogWindows().getIfPresent(pk.getSceneName());
             }
 
             FormResponseDialog response = new FormResponseDialog(pk, dialog);
@@ -49,21 +49,20 @@ public class NPCRequestProcessor extends DataPacketProcessor<NPCRequestPacket> {
             player.getServer().getPluginManager().callEvent(event);
 
             //close dialog after clicked button (otherwise the client will not be able to close the window)
-            if (response.getClickedButton() != null && pk.requestType == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
-                NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
-                closeWindowPacket.runtimeEntityId = pk.entityRuntimeId;
-                closeWindowPacket.sceneName = response.getSceneName();
-                closeWindowPacket.action = NPCDialoguePacket.NPCDialogAction.CLOSE;
+            if (response.getClickedButton() != null && pk.getRequestType() == NpcRequestType.EXECUTE_COMMAND_ACTION) {
+                NpcDialoguePacket closeWindowPacket = new NpcDialoguePacket();
+                closeWindowPacket.setUniqueEntityId(pk.getRuntimeEntityId());
+                closeWindowPacket.setSceneName(response.getSceneName());
+                closeWindowPacket.setAction(NpcDialoguePacket.Action.CLOSE);
                 player.dataPacket(closeWindowPacket);
             }
-            if (response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null) {
+            if (response.getClickedButton() != null && response.getRequestType() == NpcRequestType.EXECUTE_COMMAND_ACTION && response.getClickedButton().getNextDialog() != null) {
                 response.getClickedButton().getNextDialog().send(player);
             }
         }
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.NPC_REQUEST_PACKET;
+    public Class<NpcRequestPacket> getPacketClass() {
+        return NpcRequestPacket.class;
     }
 }

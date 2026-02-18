@@ -16,8 +16,9 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -132,11 +133,11 @@ public class EntityFireworksRocket extends Entity {
             hasUpdate = true;
             if (this.fireworkAge >= this.lifetime) {
                 EntityEventPacket pk = new EntityEventPacket();
-                pk.data = 0;
-                pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
-                pk.eid = this.getId();
+                pk.setData(0);
+                pk.setType(EntityEventType.FIREWORK_EXPLODE);
+                pk.setRuntimeEntityId(this.getId());
 
-                level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
+                level.addLevelSoundEvent(this, SoundEvent.LARGE_BLAST, -1, getNetworkId());
                 Server.broadcastPacket(getViewers().values(), pk);
 
                 this.kill();

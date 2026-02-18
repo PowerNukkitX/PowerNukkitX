@@ -18,7 +18,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 import cn.nukkit.recipe.SmeltingRecipe;
 
 import java.util.HashSet;
@@ -348,15 +348,15 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
             int windowId = player.getWindowId(this.getInventory());
             if (windowId > 0) {
                 ContainerSetDataPacket pk = new ContainerSetDataPacket();
-                pk.windowId = windowId;
-                pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_TICK_COUNT;
-                pk.value = cookTime;
+                pk.setWindowId((byte) windowId);
+                pk.setProperty(ContainerSetDataPacket.FURNACE_TICK_COUNT);
+                pk.setValue(cookTime);
                 player.dataPacket(pk);
 
                 pk = new ContainerSetDataPacket();
-                pk.windowId = windowId;
-                pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_LIT_TIME;
-                pk.value = burnDuration;
+                pk.setWindowId((byte) windowId);
+                pk.setProperty(ContainerSetDataPacket.FURNACE_LIT_TIME);
+                pk.setValue(burnDuration);
                 player.dataPacket(pk);
             }
         }

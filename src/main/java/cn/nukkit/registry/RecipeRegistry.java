@@ -4,8 +4,8 @@ import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.CraftingDataPacket;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.packet.CraftingDataPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
@@ -452,32 +452,9 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public void rebuildPacket() {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(64);
-        CraftingDataPacket pk = new CraftingDataPacket();
-        pk.cleanRecipes = true;
-
-        pk.addNetworkIdRecipe(networkIdRecipeList);
-
-        for (FurnaceRecipe recipe : getFurnaceRecipeMap()) {
-            pk.addFurnaceRecipe(recipe);
-        }
-        for (SmokerRecipe recipe : getSmokerRecipeMap()) {
-            pk.addSmokerRecipe(recipe);
-        }
-        for (BlastFurnaceRecipe recipe : getBlastFurnaceRecipeMap()) {
-            pk.addBlastFurnaceRecipe(recipe);
-        }
-        for (CampfireRecipe recipe : getCampfireRecipeMap()) {
-            pk.addCampfireRecipeRecipe(recipe);
-        }
-        for (BrewingRecipe recipe : getBrewingRecipeMap()) {
-            pk.addBrewingRecipe(recipe);
-        }
-        for (ContainerRecipe recipe : getContainerRecipeMap()) {
-            pk.addContainerRecipe(recipe);
-        }
-        pk.encode(HandleByteBuf.of(buf));
-        buffer = buf;
+        ReferenceCountUtil.safeRelease(buffer);
+        // CraftingDataPacket is now encoded by cloudburst codec at send time.
+        buffer = ByteBufAllocator.DEFAULT.ioBuffer(0, 0);
     }
 
     @SneakyThrows

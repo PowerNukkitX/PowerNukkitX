@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ClientboundMapItemDataPacket;
 import cn.nukkit.plugin.InternalPlugin;
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,15 +121,15 @@ public class ItemFilledMap extends Item {
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
         ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
-        pk.eids = new long[]{getMapId()};
-        pk.mapId = getMapId();
-        pk.update = 2;
-        pk.scale = (byte) (scale - 1);
-        pk.width = 128;
-        pk.height = 128;
-        pk.offsetX = 0;
-        pk.offsetZ = 0;
-        pk.image = image;
+        pk.setUniqueMapId(getMapId());
+        pk.setDimensionId(getMapWorld());
+        pk.setLocked(false);
+        pk.setScale(scale - 1);
+        pk.setWidth(128);
+        pk.setHeight(128);
+        pk.setXOffset(0);
+        pk.setYOffset(0);
+        pk.setColors(image == null ? new int[128 * 128] : image.getRGB(0, 0, 128, 128, null, 0, 128));
 
         player.dataPacket(pk);
         player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(pk), 20);

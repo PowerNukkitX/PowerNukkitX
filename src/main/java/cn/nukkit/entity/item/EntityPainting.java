@@ -16,8 +16,9 @@ import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddPaintingPacket;
-import cn.nukkit.network.protocol.DataPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.packet.AddPaintingPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 
@@ -189,15 +190,13 @@ public class EntityPainting extends EntityHanging {
     }
 
     @Override
-    public DataPacket createAddEntityPacket() {
+    public BedrockPacket createAddEntityPacket() {
         AddPaintingPacket addPainting = new AddPaintingPacket();
-        addPainting.entityUniqueId = this.getId();
-        addPainting.entityRuntimeId = this.getId();
-        addPainting.x = (float) this.x;
-        addPainting.y = (float) this.y;
-        addPainting.z = (float) this.z;
-        addPainting.direction = this.getDirection().getHorizontalIndex();
-        addPainting.title = this.namedTag.getString("Motive");
+        addPainting.setUniqueEntityId(this.getId());
+        addPainting.setRuntimeEntityId(this.getId());
+        addPainting.setPosition(Vector3f.from((float) this.x, (float) this.y, (float) this.z));
+        addPainting.setDirection(this.getDirection().getHorizontalIndex());
+        addPainting.setMotive(this.namedTag.getString("Motive"));
         return addPainting;
     }
 

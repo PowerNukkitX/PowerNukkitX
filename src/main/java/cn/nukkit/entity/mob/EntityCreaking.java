@@ -35,8 +35,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventGenericPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -148,7 +149,7 @@ public class EntityCreaking extends EntityMob {
 
     public void sendParticleTrail() {
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
-        packet.eventId = LevelEventPacket.EVENT_PARTICLE_CREAKING_HEART_TRIAL;
+        packet.setType(LevelEvent.PARTICLE_CREAKING_HEART_TRIAL);
         CompoundTag tag = new CompoundTag();
         tag.putInt("CreakingAmount", 1);
         tag.putFloat("CreakingX", (float) this.x);
@@ -158,7 +159,7 @@ public class EntityCreaking extends EntityMob {
         tag.putFloat("HeartX", (float) creakingHeart.x);
         tag.putFloat("HeartY", (float) creakingHeart.y);
         tag.putFloat("HeartZ", (float) creakingHeart.z);
-        packet.tag = tag;
+        packet.setTag(tag);
         Server.broadcastPacket(this.getViewers().values(), packet);
     }
 

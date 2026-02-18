@@ -37,6 +37,7 @@ commons-rng                                     = "1.5"
 com-github-stateless4j                          = "2.6.0"
 eu-okaeri-core                                  = "5.0.1"
 disruptor                                       = "4.0.0"
+cloudburst-protocol                            = "3.0.0.Beta12-SNAPSHOT"
 
 [libraries]
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
@@ -77,6 +78,9 @@ jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",   
 snappy               = { module = "org.xerial.snappy:snappy-java",                  version.ref = "org-xerial-snappy-snappy-java"                   }
 rng-simple           = { module = "org.apache.commons:commons-rng-simple",          version.ref = "commons-rng"                                     }
 rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",        version.ref = "commons-rng"                                     }
+protocol-connection  = { module = "org.cloudburstmc.protocol:bedrock-connection",   version.ref = "cloudburst-protocol"                             }
+protocol-common      = { module = "org.cloudburstmc.protocol:common",                version.ref = "cloudburst-protocol"                             }
+protocol-codec       = { module = "org.cloudburstmc.protocol:bedrock-codec",         version.ref = "cloudburst-protocol"                             }
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
@@ -85,3 +89,4 @@ netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"      
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]
+protocol        = ["protocol-connection","protocol-common","protocol-codec"                               ]

@@ -1,6 +1,6 @@
 package cn.nukkit.scoreboard.scorer;
 
-import cn.nukkit.network.protocol.SetScorePacket;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.IScoreboardLine;
@@ -40,7 +40,7 @@ public class FakeScorer implements IScorer {
     }
 
     @Override
-    public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), getFakeName());
+    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        return new ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), getFakeName());
     }
 }

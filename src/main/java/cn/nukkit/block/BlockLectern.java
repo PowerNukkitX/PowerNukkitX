@@ -14,7 +14,9 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -224,11 +226,9 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
 
     public void openBook(Player player) {
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = -1;
-        pk.type = InventoryType.LECTERN.getNetworkType();
-        pk.x = this.getFloorX();
-        pk.y = this.getFloorY();
-        pk.z = this.getFloorZ();
+        pk.setId((byte) -1);
+        pk.setType(ContainerType.LECTERN);
+        pk.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
         player.dataPacket(pk);
     }
 }

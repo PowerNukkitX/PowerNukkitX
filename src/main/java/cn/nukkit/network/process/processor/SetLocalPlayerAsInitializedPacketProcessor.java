@@ -3,8 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.SetLocalPlayerAsInitializedPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetLocalPlayerAsInitializedPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,12 +13,11 @@ public class SetLocalPlayerAsInitializedPacketProcessor extends DataPacketProces
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetLocalPlayerAsInitializedPacket pk) {
         Player player = playerHandle.player;
-        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", player.getPlayerInfo().getUsername());
+        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", player.getName());
         playerHandle.onPlayerLocallyInitialized();
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
+    public Class<SetLocalPlayerAsInitializedPacket> getPacketClass() {
+        return SetLocalPlayerAsInitializedPacket.class;
     }
 }

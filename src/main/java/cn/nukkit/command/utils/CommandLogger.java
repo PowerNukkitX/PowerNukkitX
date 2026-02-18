@@ -51,7 +51,7 @@ import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.PluginI18nManager;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.network.protocol.types.CommandOutputMessage;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputMessage;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
@@ -106,7 +106,7 @@ public record CommandLogger(Command command,
             else key = TextFormat.WHITE + key;
         }
 
-        this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
+        this.outputContainer.getMessages().add(new CommandOutputMessage(false, key, params));
         this.outputContainer.incrementSuccessCount();
         return this;
     }
@@ -133,7 +133,7 @@ public record CommandLogger(Command command,
      * @return the command logger
      */
     public CommandLogger addError(String key, String... params) {
-        this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
+        this.outputContainer.getMessages().add(new CommandOutputMessage(false, key, params));
         return this;
     }
 
@@ -168,11 +168,11 @@ public record CommandLogger(Command command,
                 } else {
                     text = i18n.tr(Server.getInstance().getLanguageCode(), key, params);
                 }
-                this.outputContainer.getMessages().add(new CommandOutputMessage(text, CommandOutputContainer.EMPTY_STRING));
+                this.outputContainer.getMessages().add(new CommandOutputMessage(false, text, CommandOutputContainer.EMPTY_STRING));
                 return this;
             }
         }
-        this.outputContainer.getMessages().add(new CommandOutputMessage(Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
+        this.outputContainer.getMessages().add(new CommandOutputMessage(false, Server.getInstance().getLanguage().tr(key, params), CommandOutputContainer.EMPTY_STRING));
         return this;
     }
 

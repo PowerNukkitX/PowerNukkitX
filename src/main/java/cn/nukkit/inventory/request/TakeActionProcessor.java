@@ -4,9 +4,9 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.TakeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.TakeAction;
 import lombok.extern.slf4j.Slf4j;
 
 /**

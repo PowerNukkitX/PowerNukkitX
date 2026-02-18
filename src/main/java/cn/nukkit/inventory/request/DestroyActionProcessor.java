@@ -1,11 +1,11 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.DestroyAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +71,8 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
                                         item.getCount(),
                                         item.getNetId(),
                                         item.getCustomName(),
-                                        item.getDamage()
+                                        item.getDamage(),
+                                        ""
                                 )
                         ),
                         action.getSource().getContainerName()

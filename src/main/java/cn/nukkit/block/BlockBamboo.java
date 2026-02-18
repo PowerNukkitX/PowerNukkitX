@@ -11,7 +11,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.network.protocol.AnimatePacket;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -120,8 +120,8 @@ public class BlockBamboo extends BlockTransparent implements BlockFlowerPot.Flow
         if (downId.equals(BAMBOO_SAPLING)) {
             if (player != null) {
                 AnimatePacket animatePacket = new AnimatePacket();
-                animatePacket.action = AnimatePacket.Action.SWING_ARM;
-                animatePacket.eid = player.getId();
+                animatePacket.setAction(AnimatePacket.Action.SWING_ARM);
+                animatePacket.setRuntimeEntityId(player.getId());
                 this.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), animatePacket);
             }
             setBambooLeafSize(BambooLeafSize.SMALL_LEAVES);

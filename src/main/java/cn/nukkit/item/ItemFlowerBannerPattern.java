@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemFlowerBannerPattern extends ItemBannerPattern {
     public ItemFlowerBannerPattern() {
@@ -8,8 +7,8 @@ public class ItemFlowerBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.FLOWER;
+    public String getPatternCode() {
+        return "flo";
     }
 
     @Override

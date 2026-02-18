@@ -7,10 +7,10 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SoleInventory;
 import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.TransferItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainer;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,7 +72,8 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                                         sourItem.getCount(),
                                         sourItem.getNetId(),
                                         sourItem.getCustomName(),
-                                        sourItem.getDamage()
+                                        sourItem.getDamage(),
+                                        ""
                                 )
                         ),
                         action.getDestination().getContainerName()
@@ -159,7 +160,8 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                                         resultDestItem.getCount(),
                                         resultDestItem.getNetId(),
                                         resultDestItem.getCustomName(),
-                                        resultDestItem.getDamage()
+                                        resultDestItem.getDamage(),
+                                        ""
                                 )
                         ),
                         action.getDestination().getContainerName()
@@ -178,8 +180,9 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                                             resultSourItem.getCount(),
                                             resultSourItem.getNetId(),
                                             resultSourItem.getCustomName(),
-                                            resultSourItem.getDamage()
-                                    )
+                                            resultSourItem.getDamage(),
+                                        ""
+                                )
                             ),
                             action.getSource().getContainerName()
                     ), destItemStackResponseSlot));

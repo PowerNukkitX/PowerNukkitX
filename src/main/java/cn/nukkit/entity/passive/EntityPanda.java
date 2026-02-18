@@ -61,7 +61,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.TakeItemEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -196,8 +196,8 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
                     if(item.getId().equals(Block.BAMBOO)) {
                         getInventory().addItem(item);
                         TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                        pk.entityId = getId();
-                        pk.target = entityItem.getId();
+                        pk.setRuntimeEntityId(getId());
+                        pk.setItemRuntimeEntityId(entityItem.getId());
                         Server.broadcastPacket(getViewers().values(), pk);
                         entityItem.close();
                     }

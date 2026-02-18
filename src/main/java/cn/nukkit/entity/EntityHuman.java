@@ -9,10 +9,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveEntityPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetEntityLinkPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -175,20 +176,17 @@ public class EntityHuman extends EntityHumanType {
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
             AddPlayerPacket pk = new AddPlayerPacket();
-            pk.uuid = this.getUniqueId();
-            pk.username = this.getName();
-            pk.entityUniqueId = this.getId();
-            pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
-            pk.speedX = (float) this.motionX;
-            pk.speedY = (float) this.motionY;
-            pk.speedZ = (float) this.motionZ;
-            pk.yaw = (float) this.yaw;
-            pk.pitch = (float) this.pitch;
-            pk.item = this.getInventory().getItemInHand();
-            pk.entityData = this.entityDataMap;
+            pk.setUuid(this.getUniqueId());
+            pk.setUsername(this.getName());
+            pk.setUniqueEntityId(this.getId());
+            pk.setRuntimeEntityId(this.getId());
+            pk.setPlatformChatId("");
+            pk.setDeviceId("");
+            pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y, (float) this.z));
+            pk.setMotion(org.cloudburstmc.math.vector.Vector3f.from((float) this.motionX, (float) this.motionY, (float) this.motionZ));
+            pk.setRotation(org.cloudburstmc.math.vector.Vector3f.from((float) this.pitch, (float) this.yaw, (float) this.yaw));
+            pk.setHand(ItemData.AIR);
+            pk.getMetadata().putAll(toCloudburstMetadata(this.entityDataMap));
             player.dataPacket(pk);
 
             this.inventory.sendArmorContents(player);
@@ -196,10 +194,7 @@ public class EntityHuman extends EntityHumanType {
 
             if (this.riding != null) {
                 SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-                pkk.vehicleUniqueId = this.riding.getId();
-                pkk.riderUniqueId = this.getId();
-                pkk.type = EntityLink.Type.RIDER;
-                pkk.immediate = 1;
+                pkk.setEntityLink(new EntityLinkData(this.riding.getId(), this.getId(), EntityLinkData.Type.RIDER, true, false, 0f));
 
                 player.dataPacket(pkk);
             }
@@ -215,7 +210,7 @@ public class EntityHuman extends EntityHumanType {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
 
             RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
+            pk.setUniqueEntityId(this.getId());
             player.dataPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
         }

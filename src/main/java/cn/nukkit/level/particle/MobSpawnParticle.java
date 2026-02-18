@@ -1,8 +1,9 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 
 /**
  * @author xtypr
@@ -20,14 +21,12 @@ public class MobSpawnParticle extends Particle {
     }
 
     @Override
-    public DataPacket[] encode() {
+    public BedrockPacket[] encode() {
         LevelEventPacket packet = new LevelEventPacket();
-        packet.evid = LevelEventPacket.EVENT_PARTICLE_MOB_BLOCK_SPAWN;
-        packet.x = (float) this.x;
-        packet.y = (float) this.y;
-        packet.z = (float) this.z;
-        packet.data = (this.width & 0xff) + ((this.height & 0xff) << 8);
+        packet.setType(LevelEvent.PARTICLE_MOB_BLOCK_SPAWN);
+        packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y, (float) this.z));
+        packet.setData((this.width & 0xff) + ((this.height & 0xff) << 8));
 
-        return new DataPacket[]{packet};
+        return new BedrockPacket[]{packet};
     }
 }

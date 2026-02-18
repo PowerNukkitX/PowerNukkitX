@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.UpdateTradePacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateTradePacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.google.common.collect.BiMap;
 
 import java.util.Map;

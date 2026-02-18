@@ -337,7 +337,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * Create handshake JWS used in the {@link cn.nukkit.network.protocol.ServerToClientHandshakePacket}
+     * Create handshake JWS used in the {@link org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket}
      * which completes the encryption handshake.
      *
      * @param serverKeyPair used to sign the JWT

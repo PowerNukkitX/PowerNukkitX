@@ -9,8 +9,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.math.VectorMath;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventGenericPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.tags.BlockTags;
 
@@ -68,8 +68,8 @@ public class SimpleVibrationManager implements VibrationManager {
                 .putCompound("target", listener.isEntity() ? createEntityTargetTag(listener.asEntity()) : createVec3fTag(listenerPos))
                 .putFloat("timeToLive", (float) (listenerPos.distance(sourcePos) / 20.0));
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
-        packet.eventId = LevelEventPacket.EVENT_PARTICLE_VIBRATION_SIGNAL;
-        packet.tag = tag;
+        packet.setType(LevelEvent.PARTICLE_VIBRATION_SIGNAL);
+        packet.setTag(tag);
         //todo: 只对在视野范围内的玩家发包
         Server.broadcastPacket(level.getPlayers().values(), packet);
     }

@@ -25,7 +25,8 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -360,8 +361,8 @@ public class Explosion {
             data.putFloat(prefix + "z", (float) pos.z);
         }
         this.level.addSound(this.source, Sound.RANDOM_EXPLODE);
-        this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_EXPLOSION, Math.round((float) this.size));
-        this.level.addLevelEvent(this.source, LevelEventPacket.EVENT_PARTICLE_BLOCK_EXPLOSION, data);
+        this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_EXPLOSION.ordinal(), Math.round((float) this.size));
+        this.level.addLevelEvent(this.source, LevelEvent.PARTICLE_BLOCK_EXPLOSION.ordinal(), data);
 
         return true;
     }

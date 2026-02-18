@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemPiglinBannerPattern extends ItemBannerPattern {
     public ItemPiglinBannerPattern() {
@@ -8,8 +7,8 @@ public class ItemPiglinBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.PIGLIN;
+    public String getPatternCode() {
+        return "pig";
     }
 
     @Override

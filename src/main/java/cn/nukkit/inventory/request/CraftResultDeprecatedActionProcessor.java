@@ -3,8 +3,8 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftResultsDeprecatedAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftResultsDeprecatedAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.RecipeType;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +28,6 @@ public class CraftResultDeprecatedActionProcessor implements ItemStackRequestAct
     @Override
     public ActionResponse handle(CraftResultsDeprecatedAction action, Player player, ItemStackRequestContext context) {
         if (context.has(RECIPE_DATA_KEY) && ((Recipe) context.get(RECIPE_DATA_KEY)).getType() == RecipeType.MULTI) {
-            var createdOutput = player.getCreativeOutputInventory();
-            Item resultItem = action.getResultItems()[0];
-            resultItem.autoAssignStackNetworkId();
-            createdOutput.setItem(0, resultItem, false);
             return null;
         }
         context.put(NO_RESPONSE_DESTROY_KEY, true);

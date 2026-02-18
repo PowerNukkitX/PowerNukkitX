@@ -5,8 +5,10 @@ import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -183,15 +185,13 @@ public class StructBlockInventory implements Inventory {
         if (who.isOp() && who.isCreative()) {
             this.viewers.add(who);
             ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.windowId = who.getWindowId(this);
-            pk.type = getType().getNetworkType();
+            pk.setId((byte) who.getWindowId(this));
+            pk.setType(containerTypeOf(getType()));
             InventoryHolder holder = this.getHolder();
             if (holder != null) {
-                pk.x = holder.getVector3().getFloorX();
-                pk.y = holder.getVector3().getFloorY();
-                pk.z = holder.getVector3().getFloorZ();
+                pk.setBlockPosition(Vector3i.from(holder.getVector3().getFloorX(), holder.getVector3().getFloorY(), holder.getVector3().getFloorZ()));
             } else {
-                pk.x = pk.y = pk.z = 0;
+                pk.setBlockPosition(Vector3i.ZERO);
             }
             who.dataPacket(pk);
         }
@@ -222,11 +222,17 @@ public class StructBlockInventory implements Inventory {
     @Override
     public void onClose(Player who) {
         ContainerClosePacket pk = new ContainerClosePacket();
-        pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        pk.type = getType();
+        byte id = (byte) who.getWindowId(this);
+        pk.setId(id);
+        pk.setServerInitiated(who.getClosingWindowId() != id);
+        pk.setType(containerTypeOf(getType()));
         who.dataPacket(pk);
         this.viewers.remove(who);
+    }
+
+    private static ContainerType containerTypeOf(InventoryType inventoryType) {
+        int networkType = inventoryType.getNetworkType();
+        return networkType >= 0 ? ContainerType.from(networkType) : ContainerType.NONE;
     }
 
     @Override

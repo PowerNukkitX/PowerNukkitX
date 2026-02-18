@@ -99,7 +99,7 @@ public class IglooPopulator extends Populator {
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
+                            .putList("StructureRotation", new ListTag<FloatTag>()
                                     .add(new FloatTag(new Random().nextFloat() * 360))
                                     .add(new FloatTag(0)));
                     EntityVillagerV2 entity = (EntityVillagerV2) Entity.createEntity(Entity.VILLAGER_V2, chunk, nbt);
@@ -113,7 +113,7 @@ public class IglooPopulator extends Populator {
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
+                            .putList("StructureRotation", new ListTag<FloatTag>()
                                     .add(new FloatTag(new Random().nextFloat() * 360))
                                     .add(new FloatTag(0)));
                     EntityZombieVillagerV2 entity2 = (EntityZombieVillagerV2) Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, nbt2);

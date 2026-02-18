@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 import org.jetbrains.annotations.ApiStatus;
 
 
@@ -23,8 +22,7 @@ public class ItemBannerPattern extends Item {
 
     @ApiStatus.Internal
     public void internalAdjust() {
-        BannerPatternType patternType = getPatternType();
-        name = patternType.getName() + " Pattern";
+        name = getPatternCode() + " Pattern";
     }
 
     @Override
@@ -32,7 +30,25 @@ public class ItemBannerPattern extends Item {
         return 1;
     }
 
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.fromTypeId(getDamage());
+    public String getPatternCode() {
+        return switch (getDamage()) {
+            case 0 -> "base";
+            case 1 -> "bl";
+            case 2 -> "br";
+            case 3 -> "tl";
+            case 4 -> "tr";
+            case 5 -> "bs";
+            case 6 -> "ts";
+            case 7 -> "ls";
+            case 8 -> "rs";
+            case 9 -> "cs";
+            case 10 -> "ms";
+            case 11 -> "drs";
+            case 12 -> "dls";
+            case 13 -> "ss";
+            case 14 -> "cr";
+            case 15 -> "sc";
+            default -> "base";
+        };
     }
 }

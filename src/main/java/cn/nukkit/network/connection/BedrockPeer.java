@@ -1,16 +1,10 @@
 package cn.nukkit.network.connection;
 
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
-import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
-import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
-import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
-import cn.nukkit.network.connection.netty.codec.compression.CompressionStrategy;
-import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionDecoder;
-import cn.nukkit.network.connection.netty.codec.encryption.BedrockEncryptionEncoder;
 import cn.nukkit.network.connection.netty.initializer.BedrockChannelInitializer;
 import cn.nukkit.network.connection.util.EncryptionUtils;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,6 +22,14 @@ import org.cloudburstmc.netty.channel.raknet.RakDisconnectReason;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
+import org.cloudburstmc.protocol.bedrock.netty.BedrockPacketWrapper;
+import org.cloudburstmc.protocol.bedrock.netty.codec.FrameIdCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.batch.BedrockBatchDecoder;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionStrategy;
+import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryptionDecoder;
+import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryptionEncoder;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.crypto.SecretKey;
@@ -116,12 +118,12 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
      * @param targetClientId the target client id
      * @param packet         the packet
      */
-    public void sendPacket(int senderClientId, int targetClientId, DataPacket packet) {
-        this.packetQueue.add(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
+    public void sendPacket(int senderClientId, int targetClientId, BedrockPacket packet) {
+        this.packetQueue.add(BedrockPacketWrapper.create(0, senderClientId, targetClientId, packet, null));
     }
 
-    public void sendPacketSync(int senderClientId, int targetClientId, DataPacket packet) {
-        this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null)).syncUninterruptibly();
+    public void sendPacketSync(int senderClientId, int targetClientId, BedrockPacket packet) {
+        this.channel.writeAndFlush(BedrockPacketWrapper.create(0, senderClientId, targetClientId, packet, null)).syncUninterruptibly();
     }
 
     /**
@@ -131,8 +133,8 @@ public class BedrockPeer extends ChannelInboundHandlerAdapter {
      * @param targetClientId the target client id
      * @param packet         the packet
      */
-    public void sendPacketImmediately(int senderClientId, int targetClientId, DataPacket packet) {
-        this.channel.writeAndFlush(new BedrockPacketWrapper(0, senderClientId, targetClientId, packet, null));
+    public void sendPacketImmediately(int senderClientId, int targetClientId, BedrockPacket packet) {
+        this.channel.writeAndFlush(BedrockPacketWrapper.create(0, senderClientId, targetClientId, packet, null));
     }
 
     public void sendRawPacket(BedrockPacketWrapper packet) {

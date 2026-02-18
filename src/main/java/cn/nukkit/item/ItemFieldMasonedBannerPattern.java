@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemFieldMasonedBannerPattern extends ItemBannerPattern {
     public ItemFieldMasonedBannerPattern() {
@@ -8,8 +7,8 @@ public class ItemFieldMasonedBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.BRICKS;
+    public String getPatternCode() {
+        return "bri";
     }
 
     @Override

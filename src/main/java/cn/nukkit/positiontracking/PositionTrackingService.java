@@ -6,8 +6,9 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemLodestoneCompass;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBServerBroadcastPacket;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MapMaker;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -104,10 +105,8 @@ public class PositionTrackingService implements Closeable {
         if (player.getLevelName().equals(pos.getLevelName())) {
             PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
             packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.UPDATE);
-            packet.setPosition(pos);
-            packet.setDimension(player.getLevel().getDimension());
             packet.setTrackingId(trackingHandler);
-            packet.setStatus(0);
+            packet.setTag(trackingTag(trackingHandler, (int) pos.x, (int) pos.y, (int) pos.z, player.getLevel().getDimension(), 0));
             player.dataPacket(packet);
         } else {
             sendTrackingDestroy(player, trackingHandler);
@@ -154,19 +153,27 @@ public class PositionTrackingService implements Closeable {
         PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
         packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.DESTROY);
         packet.setTrackingId(trackingHandler);
-        packet.setDimension(0);
-        packet.setPosition(0, 0, 0);
-        packet.setStatus(2);
+        packet.setTag(trackingTag(trackingHandler, 0, 0, 0, 0, 2));
         return packet;
+    }
+
+    private static NbtMap trackingTag(int trackingId, int x, int y, int z, int dimension, int status) {
+        return NbtMap.builder()
+                .putByte("version", (byte) 1)
+                .putString("id", String.format("0x%08x", trackingId))
+                .putList("pos", org.cloudburstmc.nbt.NbtType.INT, List.of(x, y, z))
+                .putInt("dim", dimension)
+                .putByte("status", (byte) status)
+                .build();
     }
 
     public synchronized boolean stopTracking(Player player) {
         Map<PositionTrackingStorage, IntSet> toRemove = tracking.remove(player);
         if (toRemove != null && player.isOnline()) {
-            DataPacket[] packets = toRemove.values().stream()
+            BedrockPacket[] packets = toRemove.values().stream()
                     .flatMapToInt(handlers -> IntStream.of(handlers.toIntArray()))
                     .mapToObj(this::destroyPacket)
-                    .toArray(DataPacket[]::new);
+                    .toArray(BedrockPacket[]::new);
             for (var p : packets) {
                 player.dataPacket(p);
             }

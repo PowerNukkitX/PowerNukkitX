@@ -7,9 +7,9 @@ import cn.nukkit.math.AtomicIntIncrementSupplier;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.InternalApi;
 
@@ -85,12 +85,14 @@ public class BundleInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
-        pk.storageItem = getHolder();
-        pk.fullContainerName = new FullContainerName(ContainerSlotType.DYNAMIC_CONTAINER, getHolder().getBundleId());
+        var contents = new java.util.ArrayList<org.cloudburstmc.protocol.bedrock.data.inventory.ItemData>(this.getSize());
         for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getUnclonedItem(i);
+            contents.add(toNetworkItem(this.getUnclonedItem(i)));
         }
+        pk.setContents(contents);
+        pk.setStorageItem(toNetworkItem(getHolder()));
+        pk.setContainerNameData(new FullContainerName(ContainerSlotType.DYNAMIC_CONTAINER, getHolder().getBundleId()));
+        pk.setDynamicContainerSize(getSize());
 
         for (Player player : players) {
             int id = SpecialWindowId.CONTAINER_ID_REGISTRY.getId();
@@ -98,7 +100,7 @@ public class BundleInventory extends BaseInventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
+            pk.setContainerId(id);
             player.dataPacket(pk);
         }
     }

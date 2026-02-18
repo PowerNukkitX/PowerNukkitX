@@ -11,13 +11,13 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.PlayerFogPacket;
-import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerFogPacket;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -249,11 +249,11 @@ public final class PlayerHandle {
         player.lastAttackEntity = lastAttackEntity;
     }
 
-    public List<PlayerFogPacket.Fog> getFogStack() {
+    public List<String> getFogStack() {
         return player.fogStack;
     }
 
-    public void setFogStack(List<PlayerFogPacket.Fog> fogStack) {
+    public void setFogStack(List<String> fogStack) {
         player.fogStack = fogStack;
     }
 

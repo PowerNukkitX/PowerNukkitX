@@ -18,7 +18,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.plugin.InternalPlugin;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -146,7 +147,7 @@ public class GhastShootExecutor implements EntityControl, IBehaviorExecutor {
                         .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag((float) -entity.pitch)))
                 .putDouble("damage", 2);
@@ -176,13 +177,13 @@ public class GhastShootExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
         entity.setDataFlag(EntityFlag.CHARGED, true);
         entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, 0x1);
-        entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_GHAST_WARNING);
+        entity.level.addLevelEvent(entity, LevelEvent.SOUND_GHAST_WARNING.ordinal());
     }
 
     private void endShootSequence(Entity entity) {
         entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
         entity.setDataFlag(EntityFlag.CHARGED, false);
         entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, 0x0);
-        entity.level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_GHAST_FIREBALL);
+        entity.level.addLevelEvent(entity, LevelEvent.SOUND_GHAST_FIREBALL.ordinal());
     }
 }

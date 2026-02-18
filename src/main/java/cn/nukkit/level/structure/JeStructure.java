@@ -8,8 +8,8 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureMirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRotation;
 import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.registry.mappings.MappingRegistries;
 import lombok.Getter;
@@ -164,8 +164,8 @@ public class JeStructure extends AbstractStructure {
         blockManager.applySubChunkUpdate();
     }
 
-    public JeStructure rotate(Rotation rotation) {
-        if (rotation == Rotation.NONE) return this;
+    public JeStructure rotate(StructureRotation rotation) {
+        if (rotation == StructureRotation.NONE) return this;
 
         int newSizeX = rotatedSizeX(sizeX, sizeZ, rotation);
         int newSizeZ = rotatedSizeZ(sizeX, sizeZ, rotation);

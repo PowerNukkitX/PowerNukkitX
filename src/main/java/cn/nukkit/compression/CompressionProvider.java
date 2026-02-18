@@ -1,6 +1,6 @@
 package cn.nukkit.compression;
 
-import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.xerial.snappy.Snappy;
 
 import java.io.IOException;

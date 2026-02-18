@@ -11,8 +11,7 @@ import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.event.player.PlayerMouseOverEntityEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.InteractPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.InteractPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +24,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             return;
         }
 
-        Entity targetEntity = player.level.getEntity(pk.target);
+        Entity targetEntity = player.level.getEntity(pk.getRuntimeEntityId());
 
         if (targetEntity == null || !player.isAlive() || !targetEntity.isAlive()) {
             return;
@@ -47,20 +46,20 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             return;
         }
 
-        switch (pk.action) {
-            case InteractPacket.ACTION_MOUSEOVER -> {
-                if (pk.target == 0) {
+        switch (pk.getAction()) {
+            case MOUSEOVER -> {
+                if (pk.getRuntimeEntityId() == 0) {
                     return;
                 }
                 player.getServer().getPluginManager().callEvent(new PlayerMouseOverEntityEvent(player, targetEntity));
             }
-            case InteractPacket.ACTION_VEHICLE_EXIT -> {
+            case LEAVE_VEHICLE -> {
                 if (!targetEntity.isRideable() || player.riding == null) {
                     return;
                 }
                 player.riding.dismountEntity(player);
             }
-            case InteractPacket.ACTION_OPEN_INVENTORY -> {
+            case OPEN_INVENTORY -> {
                 if (targetEntity.isRideable()) {
                     if(targetEntity.openInventory(player)) return;
                 } else if (targetEntity.getId() != player.getId()) {
@@ -77,9 +76,8 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             }
         }
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.INTERACT_PACKET;
+    public Class<InteractPacket> getPacketClass() {
+        return InteractPacket.class;
     }
 }

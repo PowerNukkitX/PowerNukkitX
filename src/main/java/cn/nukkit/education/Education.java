@@ -6,9 +6,10 @@ import cn.nukkit.education.block.elements.*;
 import cn.nukkit.education.block.glass.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import cn.nukkit.registry.CreativeGroupsRegistry;
 import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
@@ -380,8 +381,8 @@ public class Education implements BlockID, ItemID {
 
     private static void addCreativeGroup(String name, String icon) {
         Item item = Item.get(icon, 0, 1, null, false);
-        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(item, 0));
-        CreativeCustomGroups.define(CreativeItemCategory.CONSTRUCTION, name, icon);
+        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(toNetworkItem(item), 0, 0));
+        CreativeGroupsRegistry.define(CreativeItemCategory.CONSTRUCTION, name, icon);
     }
 
     public static void registerCreative() {
@@ -410,9 +411,9 @@ public class Education implements BlockID, ItemID {
 
                 for (String group : tmpGroups) {
                     groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
-                    CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
+                    CreativeGroupsRegistry.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getDefinition().getIdentifier().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
                         CreativeItemRegistry.ITEM_DATA.remove(entry);
-                        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
+                        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), entry.getNetId(), groups.get(group)));
                     });
                 }
 
@@ -440,5 +441,18 @@ public class Education implements BlockID, ItemID {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
+
+    private static ItemData toNetworkItem(Item item) {
+        if (item == null || item.isNull() || item.getId().equals(Item.AIR.getId())) {
+            return ItemData.AIR;
+        }
+        return ItemData.builder()
+                .definition(new SimpleItemDefinition(item.getId(), item.getRuntimeId(), false))
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .usingNetId(item.getNetId() != null)
+                .netId(item.getNetId() != null ? item.getNetId() : 0)
+                .build();
     }
 }

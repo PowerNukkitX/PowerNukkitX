@@ -8,7 +8,8 @@ import cn.nukkit.item.ItemArrow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -158,9 +159,9 @@ public class EntityArrow extends SlenderProjectile {
     protected void addHitEffect() {
         this.level.addSound(this, Sound.RANDOM_BOWHIT);
         EntityEventPacket packet = new EntityEventPacket();
-        packet.eid = getId();
-        packet.event = EntityEventPacket.ARROW_SHAKE;
-        packet.data = 7; // TODO Magic value. I have no idea why we have to set it to 7 here...
+        packet.setRuntimeEntityId(getId());
+        packet.setType(EntityEventType.ARROW_SHAKE);
+        packet.setData(7); // TODO Magic value. I have no idea why we have to set it to 7 here...
         Server.broadcastPacket(this.hasSpawned.values(), packet);
         onGround = true;
     }

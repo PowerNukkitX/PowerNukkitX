@@ -6,7 +6,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockSoulSand;
 import cn.nukkit.block.BlockWitherSkeletonSkull;
-import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.EntityID;
@@ -46,8 +45,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.*;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -151,10 +151,10 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     public void kill() {
         if(deathTicks == -1) {
             deathTicks = 190;
-            getLevel().addLevelSoundEvent(this, LevelSoundEvent.DEATH, -1, Entity.WITHER, false, false);
+            getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, Entity.WITHER, false, false);
             EntityEventPacket packet = new EntityEventPacket();
-            packet.event = EntityEventPacket.DEATH_ANIMATION;
-            packet.eid = getId();
+            packet.setType(EntityEventType.DEATH);
+            packet.setRuntimeEntityId(getId());
             Server.broadcastPacket(getViewers().values(), packet);
             setImmobile(true);
         } else {
@@ -207,23 +207,8 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = getNetworkId();
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y;
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
-        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth())};
-        return addEntity;
+    protected BedrockPacket createAddEntityPacket() {
+        return super.createAddEntityPacket();
     }
 
     private int getMaxDiffHealth() {
@@ -277,12 +262,12 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     @Override
     public void addBossbar(Player player) {
         BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = this.id;
-        pkBoss.type = BossEventPacket.TYPE_SHOW;
-        pkBoss.title = this.getName();
-        pkBoss.color = 6;
-        pkBoss.darkenSky = 1;
-        pkBoss.healthPercent = 0;
+        pkBoss.setBossUniqueEntityId(this.id);
+        pkBoss.setAction(BossEventPacket.Action.CREATE);
+        pkBoss.setTitle(this.getName());
+        pkBoss.setColor(6);
+        pkBoss.setDarkenSky(1);
+        pkBoss.setHealthPercentage(0);
         player.dataPacket(pkBoss);
     }
 
@@ -401,7 +386,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                         .add(new DoubleTag(0))
                                         .add(new DoubleTag(0))
                                         .add(new DoubleTag(0)))
-                                .putList("Rotation", new ListTag<FloatTag>()
+                                .putList("StructureRotation", new ListTag<FloatTag>()
                                         .add(new FloatTag(0f))
                                         .add(new FloatTag(0f)));
 

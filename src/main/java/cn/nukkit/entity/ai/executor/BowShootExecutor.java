@@ -168,7 +168,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
                         .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
                         .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
-                .putList("Rotation", new ListTag<FloatTag>()
+                .putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag((float) -entity.pitch)))
                 .putShort("Fire", flame ? 45 * 60 : 0)

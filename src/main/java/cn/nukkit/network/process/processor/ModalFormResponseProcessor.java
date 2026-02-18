@@ -15,9 +15,9 @@ import cn.nukkit.form.response.ElementResponse;
 import cn.nukkit.form.response.Response;
 import cn.nukkit.form.window.CustomForm;
 import cn.nukkit.form.window.Form;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ModalFormResponsePacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.ModalFormResponsePacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,24 +30,30 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
             return;
         }
         
-        if(pk.data.length() > 1024) {
+        String formData = pk.getFormData() == null ? "" : pk.getFormData();
+        if(formData.length() > 1024) {
             player.close("§cPacket handling error");
             return;
         }
-        
-        if (playerHandle.getFormWindows().containsKey(pk.formId)) {
-            Form<?> window = playerHandle.getFormWindows().remove(pk.formId);
 
-            Response response = window.respond(player, pk.data.trim(), pk.cancelReason);
+        int formId = pk.getFormId();
+        ModalFormCancelReason cancelReason = null;
+        if (pk.getCancelReason().isPresent()) {
+            cancelReason = switch (pk.getCancelReason().get()) {
+                case USER_CLOSED -> ModalFormCancelReason.USER_CLOSED;
+                case USER_BUSY -> ModalFormCancelReason.USER_BUSY;
+            };
+        }
 
-            PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, pk.formId, window, response);
+        if (playerHandle.getFormWindows().containsKey(formId)) {
+            Form<?> window = playerHandle.getFormWindows().remove(formId);
+            Response response = window.respond(player, formData.trim(), cancelReason);
+            PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, formId, window, response);
             player.getServer().getPluginManager().callEvent(event);
-        } else if (playerHandle.getServerSettings().containsKey(pk.formId)) {
-            Form<?> window = playerHandle.getServerSettings().get(pk.formId);
-
-            Response response = window.respond(player, pk.data.trim(), pk.cancelReason);
-
-            PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, pk.formId, window, response);
+        } else if (playerHandle.getServerSettings().containsKey(formId)) {
+            Form<?> window = playerHandle.getServerSettings().get(formId);
+            Response response = window.respond(player, formData.trim(), cancelReason);
+            PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, formId, window, response);
             player.getServer().getPluginManager().callEvent(event);
 
             // Apply responses as default settings
@@ -66,12 +72,11 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
                     }
                 });
             }
-        } else log.warn("{} sent unknown form id {}", player.getName(), pk.formId);
+        } else log.warn("{} sent unknown form id {}", player.getName(), formId);
 
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.MODAL_FORM_RESPONSE_PACKET;
+    public Class<ModalFormResponsePacket> getPacketClass() {
+        return ModalFormResponsePacket.class;
     }
 }

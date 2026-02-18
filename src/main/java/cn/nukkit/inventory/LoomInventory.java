@@ -3,8 +3,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockLoom;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.google.common.collect.BiMap;
 
 import java.util.Map;
@@ -31,12 +32,10 @@ public class LoomInventory extends BaseInventory {
     public void onOpen(Player who) {
         super.onOpen(who);
         ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
+        pk.setId((byte) who.getWindowId(this));
+        pk.setType(containerTypeOf(this.getType()));
         InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
+        pk.setBlockPosition(Vector3i.from((int) holder.getX(), (int) holder.getY(), (int) holder.getZ()));
         who.dataPacket(pk);
         this.sendContents(who);
     }

@@ -7,8 +7,7 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEntityDataPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDataPacket> {
@@ -19,7 +18,8 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
             return;
         }
 
-        Vector3 pos = new Vector3(pk.x, pk.y, pk.z);
+        var blockPosition = pk.getBlockPosition();
+        Vector3 pos = new Vector3(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
         if (pos.distanceSquared(player) > 10000) {
             return;
         }
@@ -27,15 +27,12 @@ public class BlockEntityDataProcessor extends DataPacketProcessor<BlockEntityDat
 
         BlockEntity t = player.level.getBlockEntity(pos);
         if (t instanceof BlockEntitySpawnable) {
-            CompoundTag nbt = pk.namedTag;
-            if (!((BlockEntitySpawnable) t).updateCompoundTag(nbt, player)) {
-                ((BlockEntitySpawnable) t).spawnTo(player);
-            }
+            ((BlockEntitySpawnable) t).spawnTo(player);
         }
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.BLOCK_ENTITY_DATA_PACKET;
+    public Class<BlockEntityDataPacket> getPacketClass() {
+        return BlockEntityDataPacket.class;
     }
 }

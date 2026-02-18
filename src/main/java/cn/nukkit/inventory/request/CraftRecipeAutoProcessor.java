@@ -4,18 +4,15 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.request.action.AutoCraftRecipeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.AutoCraftRecipeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 
 import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
 import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.findAllConsumeActions;
-import static cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType.CRAFT_RECIPE_AUTO;
+import static org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType.CRAFT_RECIPE_AUTO;
 
 @Slf4j
 public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor<AutoCraftRecipeAction> {
@@ -28,8 +25,10 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     @Override
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
-
-        Item[] eventItems = action.getIngredients().stream().map(ItemDescriptor::toItem).toArray(Item[]::new);
+        if (recipe == null) {
+            return context.error();
+        }
+        Item[] eventItems = Item.EMPTY_ARRAY;
 
         CraftItemEvent craftItemEvent = new CraftItemEvent(player, eventItems, recipe, 1);
         player.getServer().getPluginManager().callEvent(craftItemEvent);
@@ -37,46 +36,17 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             return context.error();
         }
 
-        int success = 0;
-        for (Item clientInputItem : eventItems) {
-            for (ItemDescriptor serverExpect : action.getIngredients()) {
-                boolean match = false;
-                if (serverExpect instanceof ItemTagDescriptor tagDescriptor) {
-                    match = tagDescriptor.match(clientInputItem);
-                } else if (serverExpect instanceof DefaultDescriptor descriptor) {
-                    match = descriptor.match(clientInputItem);
-                }
-                if (match) {
-                    success++;
-                    break;
-                }
-            }
+        context.put(RECIPE_DATA_KEY, recipe);
+        var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
+        if (recipe.getResults().size() == 1) {
+            Item output = recipe.getResults().getFirst().clone();
+            output.setCount(output.getCount() * action.getTimesCrafted());
+            CreativeOutputInventory createdOutput = player.getCreativeOutputInventory();
+            createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
         }
-
-        boolean matched = success == action.getIngredients().size();
-        if (!matched) {
-            log.warn("Mismatched recipe! Network id: {},Recipe name: {},Recipe type: {}", action.getRecipeNetworkId(), recipe.getRecipeId(), recipe.getType());
+        if (consumeActions.isEmpty()) {
+            log.warn("Missing consume actions for auto craft recipe {}", recipe.getRecipeId());
             return context.error();
-        } else {
-            context.put(RECIPE_DATA_KEY, recipe);
-            var consumeActions = findAllConsumeActions(context.getItemStackRequest().getActions(), context.getCurrentActionIndex() + 1);
-
-            int consumeActionCountNeeded = 0;
-            for (var item : eventItems) {
-                if (!item.isNull()) {
-                    consumeActionCountNeeded++;
-                }
-            }
-            if (consumeActions.size() < consumeActionCountNeeded) {
-                log.warn("Mismatched consume action count! Expected: {}, Actual: {}", consumeActionCountNeeded, consumeActions.size());
-                return context.error();
-            }
-            if (recipe.getResults().size() == 1) {
-                Item output = recipe.getResults().getFirst().clone();
-                output.setCount(output.getCount() * action.getTimesCrafted());
-                CreativeOutputInventory createdOutput = player.getCreativeOutputInventory();
-                createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);
-            }
         }
         return null;
     }

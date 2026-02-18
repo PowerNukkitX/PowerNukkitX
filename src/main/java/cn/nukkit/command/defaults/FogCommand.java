@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.utils.Identifier;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class FogCommand extends VanillaCommand {
                     return 0;
                 }
                 String userProvidedId = list.getResult(3);
-                var fog = new PlayerFogPacket.Fog(fogId, userProvidedId);
+                String fog = fogId.toString();
                 targets.forEach(player -> {
                     player.getFogStack().add(fog);
                     player.sendFogStack();//刷新到客户端
@@ -71,10 +70,10 @@ public class FogCommand extends VanillaCommand {
                             var fogStack = player.getFogStack();
                             for (int i = fogStack.size() - 1; i >= 0; i--) {
                                 var fog = fogStack.get(i);
-                                if (fog.userProvidedId().equals(userProvidedId)) {
+                                if (fog.equals(userProvidedId)) {
                                     fogStack.remove(i);
                                     player.sendFogStack();//刷新到客户端
-                                    log.addSuccess("commands.fog.success.pop", userProvidedId, fog.identifier().toString()).output();
+                                    log.addSuccess("commands.fog.success.pop", userProvidedId, fog).output();
                                     return;
                                 }
                             }
@@ -86,12 +85,12 @@ public class FogCommand extends VanillaCommand {
                     case "remove" -> {
                         targets.forEach(player -> {
                             var fogStack = player.getFogStack();
-                            List<PlayerFogPacket.Fog> shouldRemoved = new ArrayList<>();
+                            List<String> shouldRemoved = new ArrayList<>();
                             for (int i = 0; i < fogStack.size(); i++) {
                                 var fog = fogStack.get(i);
-                                if (fog.userProvidedId().equals(userProvidedId)) {
+                                if (fog.equals(userProvidedId)) {
                                     shouldRemoved.add(fog);
-                                    log.addSuccess("commands.fog.success.remove", userProvidedId, fog.identifier().toString()).output();
+                                    log.addSuccess("commands.fog.success.remove", userProvidedId, fog).output();
                                 }
                             }
                             fogStack.removeAll(shouldRemoved);

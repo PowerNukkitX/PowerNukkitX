@@ -1,6 +1,6 @@
 package cn.nukkit.scoreboard;
 
-import cn.nukkit.network.protocol.SetScorePacket;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 import cn.nukkit.scoreboard.scorer.IScorer;
 
 /**
@@ -62,7 +62,7 @@ public interface IScoreboardLine {
      * 转换到network信息
      * @return network信息
      */
-    default SetScorePacket.ScoreInfo toNetworkInfo() {
+    default ScoreInfo toNetworkInfo() {
         return getScorer().toNetworkInfo(getScoreboard(), this);
     }
 

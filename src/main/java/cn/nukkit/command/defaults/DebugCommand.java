@@ -24,10 +24,7 @@ import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.nbt.tag.LongTag;
-import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginManager;
@@ -174,15 +171,15 @@ public class DebugCommand extends TestCommand implements CoreCommand {
 
         if (!list.hasResult(1)) {
             var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-            sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+            sender.sendMessage(biome.getId() + " " + Arrays.toString((biome.getTags() == null ? java.util.List.<String>of() : biome.getTags()).toArray(String[]::new)));
             return 1;
         }
 
         switch (list.getResult(1).toString()) {
             case "parameter" -> {
-                BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                sender.sendMessage("Scale: " + biome.data.scale);
-                sender.sendMessage("Depth: " + biome.data.depth);
+                BiomeDefinitionData biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                sender.sendMessage("Scale: " + biome.getScale());
+                sender.sendMessage("Depth: " + biome.getDepth());
             }
             case "pick" -> {
                 BiomePicker picker = loc.getLevel().getBiomePicker();
@@ -194,27 +191,12 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage("Erosion: " + res.getErosion());
                     sender.sendMessage("Weirdness: " + res.getWeirdness());
                     sender.sendMessage("Peaks: " + res.getPv());
-                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
+                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getId());
                 }
             }
             case "features" -> {
-                BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ()));
-                BiomeDefinitionData biome = definition.data;
-                OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
-                if (chunkGenDataOptional.isPresent()) {
-                    OptionalValue<BiomeConsolidatedFeatureData[]> featuresOpt = chunkGenDataOptional.get().consolidatedFeatures;
-                    if (featuresOpt.isPresent()) {
-                        BiomeConsolidatedFeatureData[] features = featuresOpt.get();
-                        sender.sendMessage("§eFeatures of " + definition.getName() + " [" + features.length + "]");
-                        for (BiomeConsolidatedFeatureData f : features) {
-                            String id = Registries.BIOME.getFromBiomeStringList(f.identifier);
-                            String name = Registries.BIOME.getFromBiomeStringList(f.feature);
-                            int order = f.scatter.evalOrder;
-                            boolean registered = Registries.GENERATE_FEATURE.has(name) || Registries.GENERATE_FEATURE.has(id);
-                            sender.sendMessage((registered ? "§a" : "§c") + name + " (" + id + ") §e[" + order + "]");
-                        }
-                    }
-                }
+                BiomeDefinitionData definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), SEA_LEVEL, loc.getFloorZ()));
+                sender.sendMessage("§eFeatures not exposed by current protocol biome format for " + definition.getId());
             }
         }
         return 1;

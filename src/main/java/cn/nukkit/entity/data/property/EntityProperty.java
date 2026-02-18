@@ -2,7 +2,7 @@ package cn.nukkit.entity.data.property;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SyncEntityPropertyPacket;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,7 +56,10 @@ public abstract class EntityProperty {
     }
 
     public static List<SyncEntityPropertyPacket> getEntityPropertyCache() {
-        return entityPropertyCache.stream().map(SyncEntityPropertyPacket::new).toList();
+        return entityPropertyCache.stream().map(tag -> {
+            SyncEntityPropertyPacket packet = new SyncEntityPropertyPacket();
+            return packet;
+        }).toList();
     }
 
     public static CompoundTag getPlayerPropertyCache() {

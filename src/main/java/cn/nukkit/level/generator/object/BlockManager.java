@@ -18,9 +18,9 @@ import cn.nukkit.nbt.tag.IntArrayTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
-import cn.nukkit.network.protocol.types.BlockChangeEntry;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
+import org.cloudburstmc.protocol.bedrock.data.BlockChangeEntry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -239,11 +239,17 @@ public class BlockManager {
         for (var b : blockList) {
             ArrayList<Block> chunk = chunks.computeIfAbsent(level.getChunk(b.getChunkX(), b.getChunkZ(), true), c -> new ArrayList<>());
             chunk.add(b);
-            UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> new UpdateSubChunkBlocksPacket(s.x, s.y, s.z));
+            UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> {
+                UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
+                packet.setChunkX(s.x);
+                packet.setChunkY(s.y);
+                packet.setChunkZ(s.z);
+                return packet;
+            });
             if (b.layer == 1) {
-                batch.extraBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), ProtocolInfo.UPDATE_BLOCK_PACKET, -1, BlockChangeEntry.MessageType.NONE));
+                batch.getExtraBlocks().add(new BlockChangeEntry(Vector3i.from(b.getFloorX(), b.getFloorY(), b.getFloorZ()), () -> b.getRuntimeId(), 0, -1, BlockChangeEntry.MessageType.NONE));
             } else {
-                batch.standardBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), ProtocolInfo.UPDATE_BLOCK_PACKET, -1, BlockChangeEntry.MessageType.NONE));
+                batch.getStandardBlocks().add(new BlockChangeEntry(Vector3i.from(b.getFloorX(), b.getFloorY(), b.getFloorZ()), () -> b.getRuntimeId(), 0, -1, BlockChangeEntry.MessageType.NONE));
             }
         }
         chunks.entrySet().parallelStream().forEach(entry -> {

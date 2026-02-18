@@ -16,7 +16,7 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -40,7 +40,7 @@ public abstract class ObjectGeneratorFeature extends GenerateFeature {
         return BlockSweetBerryBush.isSupportValid(block);
     }
 
-    public boolean canSpawnHere(BiomeDefinition definition) {
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
         return true;
     }
 

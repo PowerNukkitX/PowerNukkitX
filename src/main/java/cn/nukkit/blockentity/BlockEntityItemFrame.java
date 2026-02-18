@@ -9,10 +9,10 @@ import cn.nukkit.event.block.ItemFrameUseEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -165,7 +165,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         setItem(Item.get(BlockID.AIR, 0, 1), true);
         setItemRotation(0);
         spawnToAll();
-        level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
+        level.addSound(this, Sound.BLOCK_ITEMFRAME_BREAK);
 
         return itemEntity;
     }

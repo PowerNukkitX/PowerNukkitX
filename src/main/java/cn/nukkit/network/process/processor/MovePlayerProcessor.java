@@ -6,8 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.MovePlayerPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.MovePlayerPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
@@ -17,22 +16,22 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
         if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
             return;
         }
-        Vector3 newPos = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);
+        Vector3 newPos = new Vector3(pk.getPosition().getX(), pk.getPosition().getY() - playerHandle.getBaseOffset(), pk.getPosition().getZ());
 
-        pk.yaw %= 360;
-        pk.headYaw %= 360;
-        pk.pitch %= 360;
-        if (pk.yaw < 0) {
-            pk.yaw += 360;
+        float yaw = pk.getRotation().getY() % 360;
+        float headYaw = pk.getRotation().getZ() % 360;
+        float pitch = pk.getRotation().getX() % 360;
+        if (yaw < 0) {
+            yaw += 360;
         }
-        if (pk.headYaw < 0) {
-            pk.headYaw += 360;
+        if (headYaw < 0) {
+            headYaw += 360;
         }
-        playerHandle.offerMovementTask(Location.fromObject(newPos, player.level, pk.yaw, pk.pitch, pk.headYaw));
+        playerHandle.offerMovementTask(Location.fromObject(newPos, player.level, yaw, pitch, headYaw));
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.MOVE_PLAYER_PACKET;
+    public Class<MovePlayerPacket> getPacketClass() {
+        return MovePlayerPacket.class;
     }
 }

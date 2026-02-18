@@ -22,7 +22,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -220,9 +221,11 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
         BlockFace facing = getBlockFace();
 
-        pk.x = 0.5f + facing.getXOffset() * 0.7f;
-        pk.y = 0.5f + facing.getYOffset() * 0.7f;
-        pk.z = 0.5f + facing.getZOffset() * 0.7f;
+        pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(
+                (float) this.x + 0.5f + facing.getXOffset() * 0.7f,
+                (float) this.y + 0.5f + facing.getYOffset() * 0.7f,
+                (float) this.z + 0.5f + facing.getZOffset() * 0.7f
+        ));
 
         if (target == null) {
             this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.2f);
@@ -234,8 +237,8 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
                 this.level.addSound(this, Sound.RANDOM_CLICK, 1.0f, 1.0f);
         }
 
-        pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;
-        pk.data = 7;
+        pk.setType(LevelEvent.PARTICLE_SHOOT);
+        pk.setData(7);
         this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
 
         Item origin = target;

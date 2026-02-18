@@ -4,9 +4,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.BiomeDefinitionListPacket;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -14,8 +11,12 @@ import com.google.gson.stream.JsonReader;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitions;
+import org.cloudburstmc.protocol.bedrock.packet.BiomeDefinitionListPacket;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
@@ -25,19 +26,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeDefinition> {
+public class BiomeRegistry implements IRegistry<Integer, BiomeDefinitionData, BiomeDefinitionData> {
     private static final ObjectArrayList<String> BIOME_STRING_LIST = new ObjectArrayList<>();
-    private static final Int2ObjectOpenHashMap<BiomeDefinition> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
+    private static final Int2ObjectOpenHashMap<BiomeDefinitionData> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
     private static final Object2IntOpenHashMap<String> NAME2ID = new Object2IntOpenHashMap<>(0xFF);
-    private static final AtomicBoolean isLoad = new AtomicBoolean(false);
+    private static final AtomicBoolean IS_LOAD = new AtomicBoolean(false);
 
     @Override
     public void init() {
-        if (isLoad.getAndSet(true)) return;
+        if (IS_LOAD.getAndSet(true)) {
+            return;
+        }
+        loadBiomeNameMap();
+        loadBiomeDefinitions();
+    }
+
+    private void loadBiomeNameMap() {
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biomes.json");
-             var reader = new InputStreamReader(stream)) { //From Endstone Data
+             var reader = new InputStreamReader(stream)) {
             Gson gson = new GsonBuilder().setObjectToNumberStrategy(JsonReader::nextInt).create();
-            Map<String, ?> map = gson.fromJson(reader, new TypeToken<Map<String, ?>>() {}.getType());
+            Map<String, ?> map = gson.fromJson(reader, new TypeToken<Map<String, ?>>() {
+            }.getType());
             for (var e : map.entrySet()) {
                 Object value = e.getValue();
                 if (value instanceof Number number) {
@@ -47,20 +56,34 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
 
+    private void loadBiomeDefinitions() {
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biome_definitions.nbt")) {
             CompoundTag root = NBTIO.readCompressed(stream);
             BIOME_STRING_LIST.addAll(root.getList("biomeStringList", StringTag.class).getAll().stream().map(tag -> tag.data).toList());
             ListTag<CompoundTag> biomeData = root.getList("biomeData", CompoundTag.class);
 
-            for(CompoundTag biomeTag : biomeData.getAll()) {
+            for (CompoundTag biomeTag : biomeData.getAll()) {
                 short index = biomeTag.getShort("index");
-                int biomeId = getBiomeId(getFromBiomeStringList(index));
-                BiomeDefinition definition = new BiomeDefinition();
-                definition.parse(biomeTag);
+                String fullName = getFromBiomeStringList(index);
+                int biomeId = getBiomeId(fullName);
+                var tags = biomeTag.getList("tags", StringTag.class).getAll().stream().map(tag -> tag.data).toList();
+
+                BiomeDefinitionData definition = new BiomeDefinitionData(
+                        fullName,
+                        0f,
+                        0f,
+                        0f,
+                        0f,
+                        0f,
+                        Color.BLUE,
+                        true,
+                        tags,
+                        null
+                );
                 register(biomeId, definition);
             }
-
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (RegisterException e) {
@@ -69,11 +92,11 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     }
 
     @Override
-    public BiomeDefinition get(Integer key) {
+    public BiomeDefinitionData get(Integer key) {
         return DEFINITIONS.get(key.intValue());
     }
 
-    public BiomeDefinition get(String biomeName) {
+    public BiomeDefinitionData get(String biomeName) {
         return get(NAME2ID.getInt(biomeName));
     }
 
@@ -82,18 +105,22 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     }
 
     public int getBiomeId(String biomeName) {
-        return NAME2ID.getInt(biomeName.split(":")[1]);
+        String key = biomeName.contains(":") ? biomeName.split(":")[1] : biomeName;
+        return NAME2ID.getInt(key);
     }
 
     public BiomeDefinitionListPacket getBiomeDefinitionListPacket() {
         BiomeDefinitionListPacket packet = new BiomeDefinitionListPacket();
-        packet.biomeStringList = BIOME_STRING_LIST.toArray(new String[0]);
-        packet.biomeDefinitionData = DEFINITIONS.values().toArray(new BiomeDefinition[0]);
+        Map<String, BiomeDefinitionData> definitions = new java.util.HashMap<>();
+        for (BiomeDefinitionData definition : DEFINITIONS.values()) {
+            definitions.put(definition.getId(), definition);
+        }
+        packet.setBiomes(new BiomeDefinitions(definitions));
         return packet;
     }
 
     @UnmodifiableView
-    public Set<BiomeDefinition> getBiomeDefinitions() {
+    public Set<BiomeDefinitionData> getBiomeDefinitions() {
         return Collections.unmodifiableSet(new HashSet<>(DEFINITIONS.values()));
     }
 
@@ -105,7 +132,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
 
     @Override
     public void reload() {
-        isLoad.set(false);
+        IS_LOAD.set(false);
         DEFINITIONS.clear();
         NAME2ID.clear();
         BIOME_STRING_LIST.clear();
@@ -113,17 +140,20 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     }
 
     @Override
-    public void register(Integer key, BiomeDefinition value) throws RegisterException {
+    public void register(Integer key, BiomeDefinitionData value) throws RegisterException {
         int id = key.intValue();
         if (DEFINITIONS.putIfAbsent(id, value) == null) {
-            NAME2ID.put(BIOME_STRING_LIST.get(value.stringIndex), id);
+            if (value.getId() != null) {
+                String name = value.getId().contains(":") ? value.getId().split(":")[1] : value.getId();
+                NAME2ID.put(name, id);
+            }
         } else {
-            throw new RegisterException("This biome " + value.getName() + " has already been registered with the id: " + id);
+            throw new RegisterException("This biome has already been registered with the id: " + id);
         }
     }
 
     public int registerToBiomeStringList(String value) {
         BIOME_STRING_LIST.add(value);
-        return BIOME_STRING_LIST.size()-1;
+        return BIOME_STRING_LIST.size() - 1;
     }
 }

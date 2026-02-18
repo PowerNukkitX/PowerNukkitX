@@ -32,8 +32,9 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.network.protocol.AnimatePacket;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import org.jetbrains.annotations.NotNull;
 
@@ -111,8 +112,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         super.setHealth(health);
         if (this.isAlive() && !wasAlive) {
             EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = this.getId();
-            pk.event = EntityEventPacket.RESPAWN;
+            pk.setRuntimeEntityId(this.getId());
+            pk.setType(EntityEventType.RESPAWN);
             Server.broadcastPacket(this.hasSpawned.values(), pk);
         }
     }
@@ -225,8 +226,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 //Critical hit
                 if (damager instanceof Player && !damager.onGround) {
                     AnimatePacket animate = new AnimatePacket();
-                    animate.action = AnimatePacket.Action.CRITICAL_HIT;
-                    animate.eid = getId();
+                    animate.setAction(AnimatePacket.Action.CRITICAL_HIT);
+                    animate.setRuntimeEntityId(getId());
 
                     this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
                     this.getLevel().addSound(this, Sound.GAME_PLAYER_ATTACK_STRONG);
@@ -244,8 +245,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
 
             EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = this.getId();
-            pk.event = this.getHealth() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
+            pk.setRuntimeEntityId(this.getId());
+            pk.setType(this.getHealth() <= 0 ? EntityEventType.DEATH : EntityEventType.HURT);
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
             this.attackTime = source.getAttackCooldown();

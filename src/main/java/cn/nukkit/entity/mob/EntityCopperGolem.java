@@ -58,7 +58,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.ObjectList;
@@ -217,7 +217,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
         if(item instanceof ItemShears) {
             if(hasFlower()) {
                 this.setFlower(false);
-                this.level.addLevelSoundEvent(this, LevelSoundEvent.SHEAR);
+                this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
                 if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.POPPY));
             }

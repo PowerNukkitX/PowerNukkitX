@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemMojangBannerPattern extends ItemBannerPattern {
     public ItemMojangBannerPattern() {
@@ -8,8 +7,8 @@ public class ItemMojangBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.MOJANG;
+    public String getPatternCode() {
+        return "moj";
     }
 
     @Override

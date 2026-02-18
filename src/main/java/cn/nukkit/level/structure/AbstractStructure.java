@@ -7,8 +7,8 @@ import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureMirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRotation;
 
 public abstract class AbstractStructure {
     protected static final BlockState STATE_AIR = BlockAir.STATE;
@@ -34,7 +34,7 @@ public abstract class AbstractStructure {
     public abstract CompoundTag toNBT();
     public abstract void place(Position pos, boolean includeEntities, BlockManager blockManager);
     public abstract void preparePlace(Position pos, BlockManager blockManager);
-    public abstract AbstractStructure rotate(Rotation rotation);
+    public abstract AbstractStructure rotate(StructureRotation rotation);
     public abstract AbstractStructure mirror(StructureMirror mirror);
 
     protected interface BlockAccessor<T> {
@@ -57,15 +57,15 @@ public abstract class AbstractStructure {
         }
     }
 
-    protected static int rotatedSizeX(int sizeX, int sizeZ, Rotation rotation) {
-        return rotation == Rotation.ROTATE_180 ? sizeX : sizeZ;
+    protected static int rotatedSizeX(int sizeX, int sizeZ, StructureRotation rotation) {
+        return rotation == StructureRotation.ROTATE_180 ? sizeX : sizeZ;
     }
 
-    protected static int rotatedSizeZ(int sizeX, int sizeZ, Rotation rotation) {
-        return rotation == Rotation.ROTATE_180 ? sizeZ : sizeX;
+    protected static int rotatedSizeZ(int sizeX, int sizeZ, StructureRotation rotation) {
+        return rotation == StructureRotation.ROTATE_180 ? sizeZ : sizeX;
     }
 
-    protected static int rotateX(int sizeX, int sizeZ, int x, int z, Rotation rotation) {
+    protected static int rotateX(int sizeX, int sizeZ, int x, int z, StructureRotation rotation) {
         return switch (rotation) {
             case ROTATE_90 -> z;
             case ROTATE_180 -> sizeX - 1 - x;
@@ -74,7 +74,7 @@ public abstract class AbstractStructure {
         };
     }
 
-    protected static int rotateZ(int sizeX, int sizeZ, int x, int z, Rotation rotation) {
+    protected static int rotateZ(int sizeX, int sizeZ, int x, int z, StructureRotation rotation) {
         return switch (rotation) {
             case ROTATE_90 -> sizeX - 1 - x;
             case ROTATE_180 -> sizeZ - 1 - z;

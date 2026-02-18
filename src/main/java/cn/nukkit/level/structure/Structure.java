@@ -12,8 +12,8 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureMirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRotation;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
@@ -293,8 +293,8 @@ public class Structure extends AbstractStructure {
                     .add(new DoubleTag(0))
                     .add(new DoubleTag(0)));
 
-            if(!entityNbt.contains("Rotation")) {
-                entityNbt.putList("Rotation", new ListTag<FloatTag>()
+            if(!entityNbt.contains("StructureRotation")) {
+                entityNbt.putList("StructureRotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0))
                         .add(new FloatTag(0)));
             }
@@ -438,13 +438,13 @@ public class Structure extends AbstractStructure {
      * @param rotation the rotation to apply
      * @return a new rotated Structure instance
      */
-    public Structure rotate(Rotation rotation) {
-        if (rotation == Rotation.NONE) {
+    public Structure rotate(StructureRotation rotation) {
+        if (rotation == StructureRotation.NONE) {
             return this;
         }
 
-        int newSizeX = (rotation == Rotation.ROTATE_180) ? sizeX : sizeZ;
-        int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
+        int newSizeX = (rotation == StructureRotation.ROTATE_180) ? sizeX : sizeZ;
+        int newSizeZ = (rotation == StructureRotation.ROTATE_180) ? sizeZ : sizeX;
 
         BlockState[][][][] rotatedStates = new BlockState[2][newSizeX][sizeY][newSizeZ];
         Map<Vector3, CompoundTag> rotatedBlockEntities = new HashMap<>();

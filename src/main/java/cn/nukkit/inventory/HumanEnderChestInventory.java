@@ -6,10 +6,11 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.entity.IHuman;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,21 +58,17 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
             return;
         }
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
-        containerOpenPacket.windowId = who.getWindowId(this);
-        containerOpenPacket.type = this.getType().getNetworkType();
-        containerOpenPacket.x = (int) enderChest.getX();
-        containerOpenPacket.y = (int) enderChest.getY();
-        containerOpenPacket.z = (int) enderChest.getZ();
+        containerOpenPacket.setId((byte) who.getWindowId(this));
+        containerOpenPacket.setType(containerTypeOf(this.getType()));
+        containerOpenPacket.setBlockPosition(Vector3i.from((int) enderChest.getX(), (int) enderChest.getY(), (int) enderChest.getZ()));
         super.onOpen(who);
         who.dataPacket(containerOpenPacket);
         this.sendContents(who);
 
         BlockEventPacket blockEventPacket = new BlockEventPacket();
-        blockEventPacket.x = (int) enderChest.getX();
-        blockEventPacket.y = (int) enderChest.getY();
-        blockEventPacket.z = (int) enderChest.getZ();
-        blockEventPacket.type = 1;
-        blockEventPacket.value = 2;
+        blockEventPacket.setBlockPosition(Vector3i.from((int) enderChest.getX(), (int) enderChest.getY(), (int) enderChest.getZ()));
+        blockEventPacket.setEventType(1);
+        blockEventPacket.setEventData(2);
 
         Level level = this.getHolder().getLevel();
         if (level != null) {
@@ -97,17 +94,16 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         }
 
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-        containerClosePacket.windowId = who.getWindowId(this);
-        containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
-        containerClosePacket.type = getType();
+        byte id = (byte) who.getWindowId(this);
+        containerClosePacket.setId(id);
+        containerClosePacket.setServerInitiated(who.getClosingWindowId() != id);
+        containerClosePacket.setType(containerTypeOf(getType()));
         who.dataPacket(containerClosePacket);
 
         BlockEventPacket blockEventPacket = new BlockEventPacket();
-        blockEventPacket.x = (int) enderChest.getX();
-        blockEventPacket.y = (int) enderChest.getY();
-        blockEventPacket.z = (int) enderChest.getZ();
-        blockEventPacket.type = 1;
-        blockEventPacket.value = 0;
+        blockEventPacket.setBlockPosition(Vector3i.from((int) enderChest.getX(), (int) enderChest.getY(), (int) enderChest.getZ()));
+        blockEventPacket.setEventType(1);
+        blockEventPacket.setEventData(0);
 
         Level level = this.getHolder().getLevel();
         if (level != null) {

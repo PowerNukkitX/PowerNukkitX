@@ -6,7 +6,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -58,8 +59,8 @@ public class BreezeJumpExecutor implements EntityControl, IBehaviorExecutor {
         entity.setMotion(motion);
         entity.setDataFlag(EntityFlag.JUMP_GOAL_JUMP, false);
         EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.DUST_PARTICLES;
+        pk.setRuntimeEntityId(entity.getId());
+        pk.setType(EntityEventType.DUST_PARTICLES);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

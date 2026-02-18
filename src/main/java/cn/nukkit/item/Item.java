@@ -31,7 +31,7 @@ import cn.nukkit.nbt.tag.LongTag;
 import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.CompletedUsingItemPacket;
+import org.cloudburstmc.protocol.bedrock.packet.CompletedUsingItemPacket;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.Registries;
@@ -2126,7 +2126,7 @@ public abstract class Item implements Cloneable, ItemID {
 
         if (this.onEaten(player)) {
             player.getFoodData().addFood(this);
-            player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
+            player.completeUsingItem(this.getRuntimeId(), 2);
 
             if (player.isAdventure() || player.isSurvival()) {
                 --this.count;

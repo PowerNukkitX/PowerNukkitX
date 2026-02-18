@@ -7,7 +7,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.SetDifficultyPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetDifficultyPacket;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class DifficultyCommand extends VanillaCommand {
         if (difficulty != -1) {
             sender.getServer().setDifficulty(difficulty);
             SetDifficultyPacket pk = new SetDifficultyPacket();
-            pk.difficulty = sender.getServer().getDifficulty();
+            pk.setDifficulty(sender.getServer().getDifficulty());
             Server.broadcastPacket(new ArrayList<>(sender.getServer().getOnlinePlayers().values()), pk);
             log.addSuccess("commands.difficulty.success", String.valueOf(difficulty)).output(true);
             return 1;

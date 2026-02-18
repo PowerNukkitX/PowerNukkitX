@@ -8,7 +8,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.item.ItemBundle;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

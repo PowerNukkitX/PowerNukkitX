@@ -6,7 +6,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.network.protocol.AnimateEntityPacket;
 
 import java.util.List;
 import java.util.Map;
@@ -38,28 +37,8 @@ public class PlayAnimationCommand extends VanillaCommand {
             log.addNoTargetMatch().output();
             return 0;
         }
-        var animationBuilder = AnimateEntityPacket.Animation.builder();
         String animation = list.getResult(1);
-        animationBuilder.animation(animation);
-        //optional
-        if (list.hasResult(2)) {
-            String next_state = list.getResult(2);
-            animationBuilder.nextState(next_state);
-        }
-        if (list.hasResult(3)) {
-            float blend_out_time = list.getResult(3);
-            animationBuilder.blendOutTime(blend_out_time);
-        }
-        if (list.hasResult(4)) {
-            String stop_expression = list.getResult(4);
-            animationBuilder.stopExpression(stop_expression);
-        }
-        if (list.hasResult(5)) {
-            String controller = list.getResult(5);
-            animationBuilder.controller(controller);
-        }
-        //send animation
-        Entity.playAnimationOnEntities(animationBuilder.build(), entities);
+        Entity.playAnimationOnEntities(animation, entities);
         log.addSuccess("commands.playanimation.success").output();
         return 1;
     }

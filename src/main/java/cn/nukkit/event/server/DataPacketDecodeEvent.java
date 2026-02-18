@@ -3,7 +3,7 @@ package cn.nukkit.event.server;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
+import org.cloudburstmc.protocol.bedrock.netty.BedrockPacketWrapper;
 
 
 /**

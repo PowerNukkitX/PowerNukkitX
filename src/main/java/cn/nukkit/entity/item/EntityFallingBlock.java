@@ -18,13 +18,14 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -240,9 +241,9 @@ public class EntityFallingBlock extends Entity {
                                     getLevel().setBlock(eventTo, anvil, true);
                                 }
                             }
-                            getLevel().addLevelEvent(eventTo, LevelEventPacket.EVENT_SOUND_ANVIL_LAND);
+                            getLevel().addSound(eventTo, Sound.RANDOM_ANVIL_LAND);
                         } else if (eventTo.getId().equals(BlockID.POINTED_DRIPSTONE)) {
-                            getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
+                            getLevel().addSound(block, Sound.LAND_POINTED_DRIPSTONE);
 
                             Entity[] e = level.getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
                             for (Entity entity : e) {

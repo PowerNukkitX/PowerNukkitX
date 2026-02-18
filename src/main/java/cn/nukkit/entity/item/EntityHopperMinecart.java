@@ -21,7 +21,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.EntityLink;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityLinkData;
 import cn.nukkit.utils.MinecartType;
 import org.jetbrains.annotations.NotNull;
 
@@ -128,7 +128,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, EntityLinkData.Type mode) {
         return false;
     }
 

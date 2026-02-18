@@ -3,10 +3,10 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.entity.IHuman;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import com.google.common.collect.BiMap;
 
 import java.util.Map;
@@ -63,12 +63,12 @@ public class HumanOffHandInventory extends BaseInventory {
         for (Player player : players) {
             if (player == this.getHolder()) {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
-                pk2.slots = new Item[]{item};
-                pk2.fullContainerName = new FullContainerName(
+                pk2.setContainerId(SpecialWindowId.OFFHAND.getId());
+                pk2.setContents(java.util.List.of(toNetworkItem(item)));
+                pk2.setContainerNameData(new FullContainerName(
                         ContainerSlotType.OFFHAND,
                         0
-                );
+                ));
                 player.dataPacket(pk2);
                 player.dataPacket(pk);
             } else {
@@ -84,10 +84,11 @@ public class HumanOffHandInventory extends BaseInventory {
 
     private MobEquipmentPacket createMobEquipmentPacket(Item item) {
         MobEquipmentPacket pk = new MobEquipmentPacket();
-        pk.eid = this.getHolder().getEntity().getId();
-        pk.item = item;
-        pk.inventorySlot = 1;
-        pk.windowId = SpecialWindowId.OFFHAND.getId();
+        pk.setRuntimeEntityId(this.getHolder().getEntity().getId());
+        pk.setItem(toNetworkItem(item));
+        pk.setInventorySlot(1);
+        pk.setHotbarSlot(1);
+        pk.setContainerId(SpecialWindowId.OFFHAND.getId());
         return pk;
     }
 

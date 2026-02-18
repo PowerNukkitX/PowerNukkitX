@@ -123,7 +123,7 @@ public class ItemCrossbow extends ItemTool {
                             .add(new DoubleTag(mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))
                             .add(new DoubleTag(mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D)))
                             .add(new DoubleTag(mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))))
-                    .putList("Rotation", new ListTag<>()
+                    .putList("StructureRotation", new ListTag<>()
                             .add(new FloatTag((float) (player.yaw > 180.0D ? 360 : 0) - (float) player.yaw))
                             .add(new FloatTag((float) (-player.pitch))));
             Item item = Item.get(this.getNamedTag().getCompound("chargedItem").getString("Name"));

@@ -12,7 +12,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.mob.EntityCopperGolem;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.BlockEventPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 
 /**
  * @author Buddelbubi
@@ -82,11 +83,9 @@ public class PutInChestExecutor implements EntityControl, IBehaviorExecutor {
     public void animateChest(EntityCopperGolem entity, boolean open) {
         if(chest instanceof BlockChest) {
             BlockEventPacket packet = new BlockEventPacket();
-            packet.x = (int) chest.getX();
-            packet.y = (int) chest.getY();
-            packet.z = (int) chest.getZ();
-            packet.type = 1;
-            packet.value = open ? 2 : 0;
+            packet.setBlockPosition(Vector3i.from((int) chest.getX(), (int) chest.getY(), (int) chest.getZ()));
+            packet.setEventType(1);
+            packet.setEventData(open ? 2 : 0);
             Server.broadcastPacket(entity.getViewers().values(), packet);
         }
     }

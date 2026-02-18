@@ -1,7 +1,7 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 
 import java.lang.reflect.Field;
 import java.util.Locale;
@@ -149,5 +149,5 @@ public abstract class Particle extends Vector3 {
         return getParticleIdByName(name) != null;
     }
 
-    abstract public DataPacket[] encode();
+    abstract public BedrockPacket[] encode();
 }

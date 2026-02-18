@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.utils.random.NukkitRandom;
 
 /**
@@ -72,9 +72,9 @@ public class ItemChorusFruit extends ItemFood {
             }
 
             // Sounds are broadcast at both source and destination
-            level.addLevelSoundEvent(player, LevelSoundEvent.TELEPORT);
+            level.addLevelSoundEvent(player, SoundEvent.TELEPORT);
             player.teleport(new Vector3(x + 0.5, y + 1, z + 0.5), PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT);
-            level.addLevelSoundEvent(player, LevelSoundEvent.TELEPORT);
+            level.addLevelSoundEvent(player, SoundEvent.TELEPORT);
 
             break;
         }

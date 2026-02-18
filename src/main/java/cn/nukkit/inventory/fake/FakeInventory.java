@@ -16,14 +16,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
-import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequestSlotData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DropAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.SwapAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
@@ -147,21 +148,20 @@ public class FakeInventory extends BaseInventory implements InputInventory {
 
     private void sendOpenContainerPacket(Player player, int x, int y, int z, long entityId) {
         ContainerOpenPacket packet = new ContainerOpenPacket();
-        packet.windowId = player.getWindowId(this);
-        packet.type = this.getType().getNetworkType();
-        packet.x = x;
-        packet.y = y;
-        packet.z = z;
-        if (entityId != 0) packet.entityId = entityId;
+        packet.setId((byte) player.getWindowId(this));
+        packet.setType(containerTypeOf(this.getType()));
+        packet.setBlockPosition(Vector3i.from(x, y, z));
+        if (entityId != 0) packet.setUniqueEntityId(entityId);
         player.dataPacket(packet);
     }
 
     @Override
     public void onClose(Player player) {
         ContainerClosePacket packet = new ContainerClosePacket();
-        packet.windowId = player.getWindowId(this);
-        packet.wasServerInitiated = player.getClosingWindowId() != packet.windowId;
-        packet.type = getType();
+        byte id = (byte) player.getWindowId(this);
+        packet.setId(id);
+        packet.setServerInitiated(player.getClosingWindowId() != id);
+        packet.setType(containerTypeOf(getType()));
         player.dataPacket(packet);
 
         if (this.fakeBlock != null) {

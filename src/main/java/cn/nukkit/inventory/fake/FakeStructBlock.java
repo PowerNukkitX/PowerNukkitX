@@ -7,8 +7,8 @@ import cn.nukkit.blockentity.IStructBlock;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 
 import java.util.HashSet;
 
@@ -36,20 +36,11 @@ public class FakeStructBlock extends SingleFakeBlock {
         createAndGetLastPositions(player).add(this.getOffset(player));
         lastPositions.get(player).forEach(position -> {
             UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
-            updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
-            updateBlockPacket.x = position.getFloorX();
-            updateBlockPacket.y = position.getFloorY();
-            updateBlockPacket.z = position.getFloorZ();
+            updateBlockPacket.setDefinition(() -> block.getRuntimeId());
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
+            updateBlockPacket.setDataLayer(0);
+            updateBlockPacket.setBlockPosition(Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
             player.dataPacket(updateBlockPacket);
-
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-            blockEntityDataPacket.x = position.getFloorX();
-            blockEntityDataPacket.y = position.getFloorY();
-            blockEntityDataPacket.z = position.getFloorZ();
-            blockEntityDataPacket.namedTag = this.getBlockEntityDataAt(position, targetStart, targetEnd);
-
-            player.dataPacket(blockEntityDataPacket);
         });
     }
 
@@ -57,11 +48,10 @@ public class FakeStructBlock extends SingleFakeBlock {
     public void remove(Player player) {
         this.lastPositions.getOrDefault(player, new HashSet<>()).forEach(position -> {
             UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
-            packet.flags = UpdateBlockPacket.FLAG_NETWORK;
-            packet.x = position.getFloorX();
-            packet.y = position.getFloorY();
-            packet.z = position.getFloorZ();
+            packet.setDefinition(() -> player.getLevel().getBlock(position).getRuntimeId());
+            packet.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
+            packet.setDataLayer(0);
+            packet.setBlockPosition(Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ()));
             player.dataPacket(packet);
         });
         this.lastPositions.clear();

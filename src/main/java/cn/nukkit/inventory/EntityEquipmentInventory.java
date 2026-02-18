@@ -5,7 +5,7 @@ import cn.nukkit.Player;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,9 +45,10 @@ public class EntityEquipmentInventory extends BaseInventory {
     @Override
     public void sendSlot(int index, Player player) {
         MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
-        mobEquipmentPacket.eid = this.entity.getId();
-        mobEquipmentPacket.inventorySlot = mobEquipmentPacket.hotbarSlot = index;//todo check inventorySlot and hotbarSlot for MobEquipmentPacket
-        mobEquipmentPacket.item = this.getItem(index);
+        mobEquipmentPacket.setRuntimeEntityId(this.entity.getId());
+        mobEquipmentPacket.setInventorySlot(index);//todo check inventorySlot and hotbarSlot for MobEquipmentPacket
+        mobEquipmentPacket.setHotbarSlot(index);
+        mobEquipmentPacket.setItem(toNetworkItem(this.getItem(index)));
         player.dataPacket(mobEquipmentPacket);
     }
 

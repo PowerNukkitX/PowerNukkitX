@@ -6,14 +6,13 @@ import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.util.EncryptionUtils;
 import cn.nukkit.network.process.login.LoginData;
 import cn.nukkit.network.process.SessionState;
-import cn.nukkit.network.protocol.LoginPacket;
-import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
-import cn.nukkit.network.protocol.types.InputMode;
-import cn.nukkit.network.protocol.types.PlayerInfo;
-import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
+import org.cloudburstmc.protocol.bedrock.data.InputMode;
 import cn.nukkit.utils.ClientChainData;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
+import org.cloudburstmc.protocol.common.PacketSignal;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -27,9 +26,9 @@ import java.util.regex.Pattern;
 @Slf4j
 public class LoginHandler extends BedrockSessionPacketHandler {
 
-    private final Consumer<PlayerInfo> consumer;
+    private final Consumer<LoginData> consumer;
 
-    public LoginHandler(BedrockSession session, Consumer<PlayerInfo> consumer) {
+    public LoginHandler(BedrockSession session, Consumer<LoginData> consumer) {
         super(session);
         this.consumer = consumer;
     }
@@ -38,7 +37,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
     @Override
     @SneakyThrows
-    public void handle(LoginPacket pk) {
+    public PacketSignal handle(LoginPacket pk) {
         var server = this.session.getServer();
 
         LoginData loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
@@ -58,13 +57,13 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         if (!loginData.isXboxAuthed() && server.getSettings().baseSettings().xboxAuth()) {
             log.debug("disconnection due to notAuthenticated");
             session.close("disconnectionScreen.notAuthenticated");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
             log.debug("disconnection due to serverFull");
             session.close("disconnectionScreen.serverFull");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         //set proxy ip
@@ -77,35 +76,35 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         //Verify if the language is valid
         if(!isValidLanguage(loginData.getLanguageCode())) {
             session.close("§cPacket handling error: lang check failed");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         //Verify if the GameVersion has valid format
         if(loginData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().gameplaySettings().allowBeta()) {
             session.close("§cPacket handling error: no beta allowed");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         //Verify if the CurrentInputMode is valid
         int CurrentInputMode = loginData.getCurrentInputMode();
         if(
-                CurrentInputMode <= InputMode.UNDEFINED.getOrdinal() ||
-                        CurrentInputMode >= InputMode.COUNT.getOrdinal()
+                CurrentInputMode <= InputMode.UNDEFINED.ordinal() ||
+                        CurrentInputMode >= InputMode.values().length
         ) {
             log.debug("disconnection due to invalid input mode");
             session.close("§cPacket handling error: invalid input mode");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         //Verify if the DefaultInputMode is valid
         int DefaultInputMode = loginData.getDefaultInputMode();
         if(
-                DefaultInputMode <= InputMode.UNDEFINED.getOrdinal() ||
-                        DefaultInputMode >= InputMode.COUNT.getOrdinal()
+                DefaultInputMode <= InputMode.UNDEFINED.ordinal() ||
+                        DefaultInputMode >= InputMode.values().length
         ) {
             log.debug("disconnection due to invalid input mode");
             session.close("§cPacket handling error: invalid input mode");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         var uniqueId = loginData.getClientUUID();
@@ -119,52 +118,34 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         ) {
             log.debug("disconnection due to invalidName");
             session.close("disconnectionScreen.invalidName");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         if (!loginDataRaw.skin().isValid()) {
             log.debug("disconnection due to invalidSkin");
             session.close("disconnectionScreen.invalidSkin");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         Skin skin = loginDataRaw.skin();
         if (server.getSettings().playerSettings().forceSkinTrusted()) {
             skin.setTrusted(true);
         }
-
-        var info = new PlayerInfo(
-                username,
-                uniqueId,
-                skin,
-                loginData
-        );
-
-        if (loginData.isXboxAuthed()) {
-            info = new XboxLivePlayerInfo(
-                    username,
-                    uniqueId,
-                    skin,
-                    loginData,
-                    loginData.getXUID()
-            );
-        }
-
-        this.consumer.accept(info);
+        this.consumer.accept(loginDataRaw);
         session.setAuthenticated();
 
-        if (!server.isWhitelisted((info.getUsername()).toLowerCase(Locale.ENGLISH))) {
+        if (!server.isWhitelisted(username.toLowerCase(Locale.ENGLISH))) {
             log.debug("disconnection due to white-listed");
             session.close("Server is white-listed");
-            return;
+            return PacketSignal.HANDLED;
         }
 
-        var entry = server.getNameBans().getEntires().get(info.getUsername().toLowerCase(Locale.ENGLISH));
+        var entry = server.getNameBans().getEntires().get(username.toLowerCase(Locale.ENGLISH));
         if (entry != null) {
             String reason = entry.getReason();
             log.debug("disconnection due to named ban");
             session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return;
+            return PacketSignal.HANDLED;
         }
 
         if (server.enabledNetworkEncryption) {
@@ -172,6 +153,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
         } else {
             session.getMachine().fire(SessionState.RESOURCE_PACK);
         }
+        return PacketSignal.HANDLED;
     }
 
     private boolean isValidLanguage(String language) {

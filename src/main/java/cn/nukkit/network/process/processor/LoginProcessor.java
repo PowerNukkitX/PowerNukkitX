@@ -8,8 +8,8 @@ import cn.nukkit.event.player.PlayerAnimationEvent;
 import cn.nukkit.event.player.PlayerDuplicatedLoginEvent;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.AnimatePacket;
-import cn.nukkit.network.protocol.LoginPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
+import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,9 +30,8 @@ public class LoginProcessor extends DataPacketProcessor<LoginPacket> {
 
         player.close("§cPacket handling error");
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.LOGIN_PACKET;
+    public Class<LoginPacket> getPacketClass() {
+        return LoginPacket.class;
     }
 }

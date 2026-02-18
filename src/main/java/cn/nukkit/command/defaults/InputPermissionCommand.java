@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.types.ClientInputLocksFlag;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,17 @@ import java.util.Objects;
  * @since 2026/05/01
  */
 public class InputPermissionCommand extends VanillaCommand {
+    private static final int CAMERA = 1 << 0;
+    private static final int MOVEMENT = 1 << 1;
+    private static final int JUMP = 1 << 2;
+    private static final int SNEAK = 1 << 3;
+    private static final int MOUNT = 1 << 4;
+    private static final int DISMOUNT = 1 << 5;
+    private static final int LATERAL_MOVEMENT = 1 << 6;
+    private static final int MOVE_FORWARD = 1 << 7;
+    private static final int MOVE_BACKWARD = 1 << 8;
+    private static final int MOVE_LEFT = 1 << 9;
+    private static final int MOVE_RIGHT = 1 << 10;
 
     public InputPermissionCommand(String name) {
         super(name, "commands.inputpermission.description");
@@ -68,22 +78,22 @@ public class InputPermissionCommand extends VanillaCommand {
 
         String permission = list.get(2).get();
 
-        ClientInputLocksFlag flag = switch (permission.toLowerCase()) {
-            case "camera" -> ClientInputLocksFlag.CAMERA;
-            case "movement" -> ClientInputLocksFlag.MOVEMENT;
-            case "jump" -> ClientInputLocksFlag.JUMP;
-            case "sneak" -> ClientInputLocksFlag.SNEAK;
-            case "mount" -> ClientInputLocksFlag.MOUNT;
-            case "dismount" -> ClientInputLocksFlag.DISMOUNT;
-            case "lateral_movement" -> ClientInputLocksFlag.LATERAL_MOVEMENT;
-            case "move_forward" -> ClientInputLocksFlag.MOVE_FORWARD;
-            case "move_backward" -> ClientInputLocksFlag.MOVE_BACKWARD;
-            case "move_left" -> ClientInputLocksFlag.MOVE_LEFT;
-            case "move_right" -> ClientInputLocksFlag.MOVE_RIGHT;
-            default -> null;
+        int flag = switch (permission.toLowerCase()) {
+            case "camera" -> CAMERA;
+            case "movement" -> MOVEMENT;
+            case "jump" -> JUMP;
+            case "sneak" -> SNEAK;
+            case "mount" -> MOUNT;
+            case "dismount" -> DISMOUNT;
+            case "lateral_movement" -> LATERAL_MOVEMENT;
+            case "move_forward" -> MOVE_FORWARD;
+            case "move_backward" -> MOVE_BACKWARD;
+            case "move_left" -> MOVE_LEFT;
+            case "move_right" -> MOVE_RIGHT;
+            default -> -1;
         };
 
-        if (flag == null) {
+        if (flag == -1) {
             log.addError("commands.inputpermission.set.invalidfilter", permission).output();
             return 0;
         }

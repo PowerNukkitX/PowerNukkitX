@@ -6,7 +6,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
@@ -93,8 +94,8 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                 var horse = (EntityHorse) entity;
                 horse.setOwnerName(horse.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME));
                 EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = horse.getId();
-                packet.event = EntityEventPacket.TAME_SUCCESS;
+                packet.setRuntimeEntityId(horse.getId());
+                packet.setType(EntityEventType.TAME_SUCCEEDED);
                 Player player = (Player) horse.getRider();
                 if (player == null) {
                     return false;
@@ -103,8 +104,8 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
             } else {
                 var horse = (EntityHorse) entity;
                 EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = horse.getId();
-                packet.event = EntityEventPacket.TAME_FAIL;
+                packet.setRuntimeEntityId(horse.getId());
+                packet.setType(EntityEventType.TAME_FAILED);
                 Player player = (Player) horse.getRider();
                 if (player == null) {
                     return false;

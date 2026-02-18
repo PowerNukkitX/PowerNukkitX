@@ -3,8 +3,8 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.RespawnPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.packet.RespawnPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
@@ -14,18 +14,16 @@ public class RespawnProcessor extends DataPacketProcessor<RespawnPacket> {
         if (player.isAlive()) {
             return;
         }
-        if (pk.respawnState == RespawnPacket.STATE_CLIENT_READY_TO_SPAWN) {
+        if (pk.getState() == RespawnPacket.State.CLIENT_READY) {
             RespawnPacket respawn1 = new RespawnPacket();
-            respawn1.x = (float) player.getX();
-            respawn1.y = (float) player.getY();
-            respawn1.z = (float) player.getZ();
-            respawn1.respawnState = RespawnPacket.STATE_READY_TO_SPAWN;
+            respawn1.setPosition(Vector3f.from((float) player.getX(), (float) player.getY(), (float) player.getZ()));
+            respawn1.setState(RespawnPacket.State.SERVER_READY);
+            respawn1.setRuntimeEntityId(player.getId());
             player.dataPacket(respawn1);
         }
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.RESPAWN_PACKET;
+    public Class<RespawnPacket> getPacketClass() {
+        return RespawnPacket.class;
     }
 }

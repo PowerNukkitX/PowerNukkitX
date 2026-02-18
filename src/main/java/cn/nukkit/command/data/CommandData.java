@@ -1,6 +1,6 @@
 package cn.nukkit.command.data;
 
-import cn.nukkit.network.protocol.types.PermissionLevel;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandPermission;
 
 import java.util.*;
 
@@ -34,7 +34,7 @@ import java.util.*;
  * <pre>
  * CommandData data = new CommandData();
  * data.description = "Teleport command";
- * data.permission = PermissionLevel.OPERATOR;
+ * data.permission = CommandPermission.OPERATOR;
  * data.flags.add(CommandData.Flag.HIDDEN);
  * </pre>
  *
@@ -42,7 +42,7 @@ import java.util.*;
  * @see CommandEnum
  * @see CommandOverload
  * @see Flag
- * @see PermissionLevel
+ * @see CommandPermission
  * @see ChainedSubCommandData
  */
 public class CommandData implements Cloneable {
@@ -65,7 +65,7 @@ public class CommandData implements Cloneable {
     /**
      * The required permission level to execute the command.
      */
-    public PermissionLevel permission = PermissionLevel.ANY;
+    public CommandPermission permission = CommandPermission.ANY;
     /**
      * The list of chained subcommands for advanced command structures.
      */

@@ -11,12 +11,12 @@ import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.StructureBlockUpdatePacket;
-import cn.nukkit.network.protocol.types.StructureAnimationMode;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.StructureRedstoneSaveMode;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureAnimationMode;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureMirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRedstoneSaveMode;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureRotation;
 import com.google.common.base.Strings;
+import org.cloudburstmc.protocol.bedrock.packet.StructureBlockUpdatePacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private StructureMirror mirror;
     private StructureRedstoneSaveMode redstoneSaveMode;
     private boolean removeBlocks;
-    private Rotation rotation;
+    private StructureRotation rotation;
     private long seed;
     private boolean showBoundingBox;
     private String structureName;
@@ -106,9 +106,9 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
             this.removeBlocks = false;
         }
         if (this.namedTag.contains(TAG_ROTATION)) {
-            this.rotation = Rotation.from(this.namedTag.getByte(TAG_ROTATION));
+            this.rotation = StructureRotation.from(this.namedTag.getByte(TAG_ROTATION));
         } else {
-            this.rotation = Rotation.from(0);
+            this.rotation = StructureRotation.from(0);
         }
         if (this.namedTag.contains(TAG_SEED)) {
             this.seed = this.namedTag.getLong(TAG_SEED);
@@ -231,25 +231,27 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     public void updateSetting(StructureBlockUpdatePacket packet) {
-        var editorData = packet.editorData;
-        this.animationMode = editorData.getSettings().getAnimationMode();
+        var editorData = packet.getEditorData();
+        this.animationMode = StructureAnimationMode.from(editorData.getSettings().getAnimationMode().ordinal());
         this.animationSeconds = editorData.getSettings().getAnimationSeconds();
-        this.data = editorData.getType();
+        this.data = cn.nukkit.block.property.enums.StructureBlockType.from(editorData.getType().ordinal());
         this.dataField = editorData.getDataField();
         this.ignoreEntities = editorData.getSettings().isIgnoringEntities();
         this.includePlayers = editorData.isIncludingPlayers();
         this.integrity = editorData.getSettings().getIntegrityValue();
-        this.mirror = editorData.getSettings().getMirror();
-        this.redstoneSaveMode = editorData.getRedstoneSaveMode();
+        this.mirror = StructureMirror.from(editorData.getSettings().getMirror().ordinal());
+        this.redstoneSaveMode = StructureRedstoneSaveMode.from(editorData.getRedstoneSaveMode().ordinal());
         this.removeBlocks = editorData.getSettings().isIgnoringBlocks();
-        this.rotation = editorData.getSettings().getRotation();
+        this.rotation = StructureRotation.from(editorData.getSettings().getRotation().ordinal());
         this.seed = editorData.getSettings().getIntegritySeed();
         this.showBoundingBox = editorData.isBoundingBoxVisible();
         this.structureName = editorData.getName();
-        this.offset = editorData.getSettings().getOffset();
-        this.size = editorData.getSettings().getSize();
+        var offset = editorData.getSettings().getOffset();
+        this.offset = new BlockVector3(offset.getX(), offset.getY(), offset.getZ());
+        var size = editorData.getSettings().getSize();
+        this.size = new BlockVector3(size.getX(), size.getY(), size.getZ());
 
-        if(packet.powered) onPower();
+        if(packet.isPowered()) onPower();
     }
 
     public void onPower() {
@@ -263,7 +265,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
         if (structure == null) return;
 
-        if(rotation != Rotation.NONE)
+        if(rotation != StructureRotation.NONE)
             structure = structure.rotate(rotation);
 
         if(mirror != StructureMirror.NONE)

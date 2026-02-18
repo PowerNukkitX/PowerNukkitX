@@ -6,8 +6,9 @@ import cn.nukkit.item.ItemMusicDisc;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlaySoundPacket;
-import cn.nukkit.network.protocol.StopSoundPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.packet.PlaySoundPacket;
+import org.cloudburstmc.protocol.bedrock.packet.StopSoundPacket;
 
 import java.util.Objects;
 
@@ -50,12 +51,10 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     public void play() {
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             PlaySoundPacket packet = new PlaySoundPacket();
-            packet.name = itemRecord.getSoundId();
-            packet.volume = 1;
-            packet.pitch = 1;
-            packet.x = this.getFloorX();
-            packet.y = this.getFloorY();
-            packet.z = this.getFloorZ();
+            packet.setSound(itemRecord.getSoundId());
+            packet.setVolume(1);
+            packet.setPitch(1);
+            packet.setPosition(Vector3f.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
             this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, packet);
         }
     }
@@ -64,8 +63,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     public void stop() {
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             StopSoundPacket packet = new StopSoundPacket();
-            packet.name = itemRecord.getSoundId();
-            packet.stopAll = false;
+            packet.setSoundName(itemRecord.getSoundId());
+            packet.setStoppingAllSound(false);
             this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, packet);
         }
     }

@@ -13,14 +13,16 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
-import cn.nukkit.network.protocol.types.TrimData;
-import cn.nukkit.network.protocol.types.TrimMaterial;
-import cn.nukkit.network.protocol.types.TrimPattern;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantOptionData;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerEnchantOptionsPacket;
+import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
+import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ConsumeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.SmithingTransformRecipe;
@@ -30,9 +32,11 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -44,6 +48,35 @@ import java.util.Optional;
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
+    private static final List<TrimMaterial> TRIM_MATERIALS = new ArrayList<>();
+    private static final List<TrimPattern> TRIM_PATTERNS = new ArrayList<>();
+
+    static {
+        try (var input = CraftRecipeActionProcessor.class.getClassLoader().getResourceAsStream("gamedata/kaooot/trim_data.json")) {
+            if (input != null) {
+                Map<String, Object> json = new Gson().fromJson(new InputStreamReader(input), new TypeToken<Map<String, Object>>() {
+                }.getType());
+                var mats = (List<Map<String, String>>) json.getOrDefault("materials", List.of());
+                for (var mat : mats) {
+                    TRIM_MATERIALS.add(new TrimMaterial(mat.get("materialId"), mat.get("color"), mat.get("itemName")));
+                }
+                var patterns = (List<Map<String, String>>) json.getOrDefault("patterns", List.of());
+                for (var pattern : patterns) {
+                    TRIM_PATTERNS.add(new TrimPattern(pattern.get("itemName"), pattern.get("patternId")));
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to load trim data", e);
+        }
+    }
+
+    public static List<TrimMaterial> getTrimMaterials() {
+        return TRIM_MATERIALS;
+    }
+
+    public static List<TrimPattern> getTrimPatterns() {
+        return TRIM_PATTERNS;
+    }
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
@@ -68,34 +101,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     @Override
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
         Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
-        if (action.getRecipeNetworkId() >= PlayerEnchantOptionsPacket.ENCH_RECIPEID) {  //handle ench recipe
-            PlayerEnchantOptionsPacket.EnchantOptionData enchantOptionData = PlayerEnchantOptionsPacket.RECIPE_MAP.get(action.getRecipeNetworkId());
-            if (enchantOptionData == null) {
-                log.error("Can't find enchant recipe from netId {}", action.getRecipeNetworkId());
-                return context.error();
-            }
-            Item first = inventory.getItem(0);
-            if (first.isNull()) {
-                log.error("Can't find enchant input!");
-                return context.error();
-            }
-            Item item = first.clone().autoAssignStackNetworkId();
-            if(item.getId().equals(Item.BOOK)) item = Item.get(Item.ENCHANTED_BOOK);
-            List<Enchantment> enchantments = enchantOptionData.enchantments();
-            item.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
-            EnchantItemEvent event = new EnchantItemEvent((EnchantInventory) inventory, first.clone().autoAssignStackNetworkId(), item, enchantOptionData.minLevel(), player);
-            Server.getInstance().getPluginManager().callEvent(event);
-            if(!event.isCancelled()) {
-                if ((player.getGamemode() & 0x01) == 0) {
-                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionData.entry()+1));
-                }
-                player.getCreativeOutputInventory().setItem(item);
-                PlayerEnchantOptionsPacket.RECIPE_MAP.remove(action.getRecipeNetworkId());
-                player.regenerateEnchantmentSeed();
-                context.put(ENCH_RECIPE_KEY, true);
-            }
-            return null;
-        } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
+        if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
             CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (tradeRecipe == null) {
                 log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
@@ -260,16 +266,16 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         Item template = smithingInventory.getTemplate();
 
         if (!ingredient.isNull() && !template.isNull()) {
-            Optional<TrimPattern> find1 = TrimData.trimPatterns.stream().filter(trimPattern -> template.getId().equals(trimPattern.itemName())).findFirst();
-            Optional<TrimMaterial> find2 = TrimData.trimMaterials.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.itemName())).findFirst();
+            Optional<TrimPattern> find1 = TRIM_PATTERNS.stream().filter(trimPattern -> template.getId().equals(trimPattern.getItemName())).findFirst();
+            Optional<TrimMaterial> find2 = TRIM_MATERIALS.stream().filter(trimMaterial -> ingredient.getId().equals(trimMaterial.getItemName())).findFirst();
             if (equipment.isNull() || find1.isEmpty() || find2.isEmpty()) {
                 return context.error();
             }
             TrimPattern trimPattern = find1.get();
             TrimMaterial trimMaterial = find2.get();
             Item result = equipment.clone();
-            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.materialId())
-                    .putString("Pattern", trimPattern.patternId());
+            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.getMaterialId())
+                    .putString("Pattern", trimPattern.getPatternId());
             CompoundTag compound = ingredient.getNamedTag();
             if (compound == null) {
                 compound = result.getOrCreateNamedTag();

@@ -17,10 +17,7 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.BannerPattern;
-import cn.nukkit.network.protocol.types.BannerPatternType;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
@@ -44,18 +41,6 @@ public class PillagerOutpostPopulator extends Populator {
             (PNXStructure) Registries.STRUCTURE.get("pillager_outpost/feature_targets"),
             (PNXStructure) Registries.STRUCTURE.get("pillager_outpost/feature_cage_with_allays")
     };
-
-    public static final BannerPattern[] BANNER = new BannerPattern[] {
-            new BannerPattern(BannerPatternType.RHOMBUS, DyeColor.CYAN),
-            new BannerPattern(BannerPatternType.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY),
-            new BannerPattern(BannerPatternType.STRIPE_CENTER, DyeColor.GRAY),
-            new BannerPattern(BannerPatternType.BORDER, DyeColor.LIGHT_GRAY),
-            new BannerPattern(BannerPatternType.STRIPE_MIDDLE, DyeColor.BLACK),
-            new BannerPattern(BannerPatternType.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY),
-            new BannerPattern(BannerPatternType.CIRCLE, DyeColor.LIGHT_GRAY),
-            new BannerPattern(BannerPatternType.BORDER, DyeColor.BLACK)
-    };
-
 
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 8;

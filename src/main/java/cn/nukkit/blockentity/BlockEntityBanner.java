@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.utils.DyeColor;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
@@ -56,18 +55,18 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
         this.namedTag.putInt("Type", type);
     }
 
-    public void addPattern(BannerPattern pattern) {
+    public void addPattern(String patternCode, DyeColor color) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
         patterns.add(new CompoundTag().
-                putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getCode()));
+                putInt("Color", color.getDyeData() & 0x0f).
+                putString("Pattern", patternCode));
         this.namedTag.putList("Patterns", patterns);
     }
 
-    public BannerPattern getPattern(int index) {
-        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns").size() > index && index >= 0 ?
+    public CompoundTag getPattern(int index) {
+        return this.namedTag.getList("Patterns").size() > index && index >= 0 ?
                 this.namedTag.getList("Patterns", CompoundTag.class).get(index) :
-                new CompoundTag());
+                new CompoundTag();
     }
 
     public void removePattern(int index) {

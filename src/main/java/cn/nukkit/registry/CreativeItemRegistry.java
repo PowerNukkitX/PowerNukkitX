@@ -8,9 +8,11 @@ import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemGroup;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -74,7 +76,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 String name = (String) tag.get("name");
                 Map iconMap = (Map) tag.get("icon");
                 Item icon = Item.get((String) iconMap.get("id"));
-                CreativeItemGroup group = new CreativeItemGroup(CreativeItemCategory.VALUES[creativeCategory], name, icon);
+                CreativeItemGroup group = new CreativeItemGroup(CreativeItemCategory.values()[creativeCategory], name, toNetworkItem(icon));
                 GROUPS.add(group);
 
                 CreativeCategory category = CreativeCategory.fromID(creativeCategory);
@@ -123,7 +125,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);
                 }
-                ITEM_DATA.add(new CreativeItemData(item, groupIndex));
+                ITEM_DATA.add(new CreativeItemData(toNetworkItem(item), i, groupIndex));
                 register(i, item);
             }
         } catch (IOException e) {
@@ -275,18 +277,20 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Register a creative item and specify its group index directly.
      */
     public void register(Integer key, Item value, int groupIndex) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(value))) {
+        var networkItem = toNetworkItem(value);
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(networkItem))) {
             return;
         }
-        ITEM_DATA.add(new CreativeItemData(value, groupIndex));
+        ITEM_DATA.add(new CreativeItemData(networkItem, key, groupIndex));
     }
     @Override
     public void register(Integer key, Item value) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(value))) {
+        var networkItem = toNetworkItem(value);
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItem().equals(networkItem))) {
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
-            ITEM_DATA.add(new CreativeItemData(value, CreativeItemRegistry.LAST_ITEMS_INDEX));
+            ITEM_DATA.add(new CreativeItemData(networkItem, key, CreativeItemRegistry.LAST_ITEMS_INDEX));
         }
     }
 
@@ -316,6 +320,19 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     public ObjectLinkedOpenHashSet<CreativeItemData> getCreativeItemData() {
         return ITEM_DATA;
+    }
+
+    private static ItemData toNetworkItem(Item item) {
+        if (item == null || item.isNull() || item.getId().equals(Item.AIR.getId())) {
+            return ItemData.AIR;
+        }
+        return ItemData.builder()
+                .definition(new SimpleItemDefinition(item.getId(), item.getRuntimeId(), false))
+                .damage(item.getDamage())
+                .count(item.getCount())
+                .usingNetId(item.getNetId() != null)
+                .netId(item.getNetId() != null ? item.getNetId() : 0)
+                .build();
     }
     /**
      * Detect if the item exists in the Creative backpack

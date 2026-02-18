@@ -3,9 +3,8 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.PositionTrackingDBClientRequestPacket;
-import cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBClientRequestPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBServerBroadcastPacket;
 import cn.nukkit.positiontracking.PositionTracking;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -18,21 +17,20 @@ public class PositionTrackingDBClientRequestProcessor extends DataPacketProcesso
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PositionTrackingDBClientRequestPacket pk) {
         Player player = playerHandle.player;
         try {
-            PositionTracking positionTracking = player.getServer().getPositionTrackingService().startTracking(player, pk.trackingId, true);
+            PositionTracking positionTracking = player.getServer().getPositionTrackingService().startTracking(player, pk.getTrackingId(), true);
             if (positionTracking != null) {
                 return;
             }
         } catch (IOException e) {
-            log.warn("Failed to track the trackingHandler {}", pk.trackingId, e);
+            log.warn("Failed to track the trackingHandler {}", pk.getTrackingId(), e);
         }
         PositionTrackingDBServerBroadcastPacket notFound = new PositionTrackingDBServerBroadcastPacket();
         notFound.setAction(PositionTrackingDBServerBroadcastPacket.Action.NOT_FOUND);
-        notFound.setTrackingId(pk.trackingId);
+        notFound.setTrackingId(pk.getTrackingId());
         player.dataPacket(notFound);
     }
-
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
+    public Class<PositionTrackingDBClientRequestPacket> getPacketClass() {
+        return PositionTrackingDBClientRequestPacket.class;
     }
 }

@@ -4,7 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.BlockCrafter;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.ShapedRecipe;

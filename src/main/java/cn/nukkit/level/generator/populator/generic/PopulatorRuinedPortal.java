@@ -11,11 +11,11 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
-import java.util.Set;
+import java.util.List;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -65,8 +65,11 @@ public class PopulatorRuinedPortal extends Populator {
         if(canGenerate(random, chunk)) {
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
-            BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7));
-            Set<String> tags = definition.getTags();
+            BiomeDefinitionData definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7));
+            List<String> tags = definition.getTags();
+            if (tags == null) {
+                tags = List.of();
+            }
             PortalHeight height = null;
             if(tags.contains(BiomeTags.DESERT)) height = PortalHeight.PARTLY_BURIED;
             else if(tags.contains(BiomeTags.JUNGLE) || tags.contains(BiomeTags.SWAMP)) height = PortalHeight.ON_LAND_SURFACE;

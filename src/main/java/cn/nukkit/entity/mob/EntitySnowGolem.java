@@ -35,7 +35,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -83,7 +83,7 @@ public class EntitySnowGolem extends EntityGolem {
         if(item instanceof ItemShears) {
             if(!isSheared()) {
                 this.setSheared(true);
-                this.level.addLevelSoundEvent(this, LevelSoundEvent.SHEAR);
+                this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
                 if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.CARVED_PUMPKIN));
             }
@@ -143,7 +143,7 @@ public class EntitySnowGolem extends EntityGolem {
             }
         }
         if(this.waterTicks >= 20) {
-            if((this.level.isRaining() && !this.isUnderBlock()) || this.getLevelBlock() instanceof BlockLiquid || Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).data.temperature > 1.0) {
+            if((this.level.isRaining() && !this.isUnderBlock()) || this.getLevelBlock() instanceof BlockLiquid || Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).getTemperature() > 1.0) {
                 this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.WEATHER, 1));
             }
             this.waterTicks = 0;
@@ -205,7 +205,7 @@ public class EntitySnowGolem extends EntityGolem {
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0))
                                     .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
+                            .putList("StructureRotation", new ListTag<FloatTag>()
                                     .add(new FloatTag(0f))
                                     .add(new FloatTag(0f)));
 

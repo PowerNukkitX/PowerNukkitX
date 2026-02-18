@@ -7,7 +7,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,7 +59,7 @@ public class BlockWetSponge extends BlockSolid {
 
 
         level.setBlock(block, new BlockSponge(), true, true);
-        this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_CAULDRON_EXPLODE);
+        this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEvent.CAULDRON_EXPLODE.ordinal());
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (int i = 0; i < 8; ++i) {

@@ -247,7 +247,7 @@ public class EntityIronGolem extends EntityGolem implements EntityOwnable {
                                         .add(new DoubleTag(0))
                                         .add(new DoubleTag(0))
                                         .add(new DoubleTag(0)))
-                                .putList("Rotation", new ListTag<FloatTag>()
+                                .putList("StructureRotation", new ListTag<FloatTag>()
                                         .add(new FloatTag(0f))
                                         .add(new FloatTag(0f)));
 

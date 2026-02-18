@@ -3,7 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
 import org.jetbrains.annotations.Range;
 
 import java.util.Map;

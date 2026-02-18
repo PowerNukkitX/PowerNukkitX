@@ -10,8 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.BlockPickRequestPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import org.cloudburstmc.protocol.bedrock.packet.BlockPickRequestPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,15 +19,16 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull BlockPickRequestPacket pk) {
         Player player = playerHandle.player;
-        Block block = player.level.getBlock(pk.x, pk.y, pk.z, false);
+        var blockPos = pk.getBlockPosition();
+        Block block = player.level.getBlock(blockPos.getX(), blockPos.getY(), blockPos.getZ(), false);
         if (block.distanceSquared(player) > 1000) {
             log.debug("{}: Block pick request for a block too far away", playerHandle.getUsername());
             return;
         }
         Item item = block.toItem();
 
-        if (pk.addUserData) {
-            BlockEntity blockEntity = player.getLevel().getBlockEntity(new Vector3(pk.x, pk.y, pk.z));
+        if (pk.isAddUserData()) {
+            BlockEntity blockEntity = player.getLevel().getBlockEntity(new Vector3(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
             if (blockEntity != null) {
                 CompoundTag nbt = blockEntity.getCleanedNBT();
                 if (nbt != null) {
@@ -96,7 +96,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.BLOCK_PICK_REQUEST_PACKET;
+    public Class<BlockPickRequestPacket> getPacketClass() {
+        return BlockPickRequestPacket.class;
     }
 }

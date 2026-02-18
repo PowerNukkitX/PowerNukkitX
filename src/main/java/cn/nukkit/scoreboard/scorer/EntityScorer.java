@@ -1,7 +1,7 @@
 package cn.nukkit.scoreboard.scorer;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.network.protocol.SetScorePacket;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.IScoreboardLine;
@@ -47,7 +47,7 @@ public class EntityScorer implements IScorer {
     }
 
     @Override
-    public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.ENTITY, entityUuid.getMostSignificantBits());
+    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        return new ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScoreInfo.ScorerType.ENTITY, entityUuid.getMostSignificantBits());
     }
 }

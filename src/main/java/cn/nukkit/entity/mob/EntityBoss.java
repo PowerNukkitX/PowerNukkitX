@@ -6,7 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BossEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 
 public abstract class EntityBoss extends EntityMob {
 
@@ -20,9 +20,9 @@ public abstract class EntityBoss extends EntityMob {
     public void setHealth(float health) {
         super.setHealth(health);
         BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = this.id;
-        pkBoss.type = BossEventPacket.TYPE_HEALTH_PERCENT;
-        pkBoss.healthPercent = health / getMaxHealth();
+        pkBoss.setBossUniqueEntityId(this.id);
+        pkBoss.setAction(BossEventPacket.Action.UPDATE_PERCENTAGE);
+        pkBoss.setHealthPercentage(health / getMaxHealth());
         Server.broadcastPacket(getViewers().values(), pkBoss);
     }
 

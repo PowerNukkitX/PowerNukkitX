@@ -4,7 +4,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.lang.CommandOutputContainer;
-import cn.nukkit.network.protocol.types.CommandOutputMessage;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputMessage;
 
 /**
  * Represents an abstract command parameter node for PowerNukkitX command trees.

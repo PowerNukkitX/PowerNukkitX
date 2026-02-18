@@ -3,9 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.RequestPermissionsPacket;
-import cn.nukkit.network.protocol.types.PlayerAbility;
+import org.cloudburstmc.protocol.bedrock.packet.RequestPermissionsPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPermissionsPacket> {
@@ -20,19 +18,18 @@ public class RequestPermissionsProcessor extends DataPacketProcessor<RequestPerm
 
             return;
         }
-        var player = pk.getTargetPlayer();
+        var player = playerHandle.player.getServer().getOnlinePlayers().values().stream()
+                .filter(target -> target.getId() == pk.getUniqueEntityId())
+                .findFirst()
+                .orElse(null);
         if (player != null && player.isOnline()) {
-            var customPermissions = pk.parseCustomPermissions();
-            for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
-                player.getAdventureSettings().set(controllableAbility, customPermissions.contains(controllableAbility));
-            }
-            player.getAdventureSettings().setPlayerPermission(pk.permissions);
+            player.getAdventureSettings().setPlayerPermission(pk.getPermissions());
             player.getAdventureSettings().update();
         }
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.REQUEST_PERMISSIONS_PACKET;
+    public Class<RequestPermissionsPacket> getPacketClass() {
+        return RequestPermissionsPacket.class;
     }
 }

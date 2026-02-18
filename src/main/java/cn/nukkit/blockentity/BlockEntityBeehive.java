@@ -292,7 +292,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
         yaw = -yaw * 180f / (float) Math.PI;
 
-        saveData.putList("Rotation", new ListTag<FloatTag>()
+        saveData.putList("StructureRotation", new ListTag<FloatTag>()
                 .add(new FloatTag(yaw))
                 .add(new FloatTag(0))
         );

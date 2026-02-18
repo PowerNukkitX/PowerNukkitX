@@ -9,7 +9,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
+import org.cloudburstmc.protocol.bedrock.packet.EntityEventPacket;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,9 +52,9 @@ public abstract class EntityAnimal extends EntityIntelligent {
 
     protected void sendBreedingAnimation(Item item) {
         EntityEventPacket pk = new EntityEventPacket();
-        pk.event = EntityEventPacket.EATING_ITEM;
-        pk.eid = this.getId();
-        pk.data =  item.getFullId();
+        pk.setType(EntityEventType.EATING_ITEM);
+        pk.setRuntimeEntityId(this.getId());
+        pk.setData(item.getFullId());
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 

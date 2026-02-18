@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.network.protocol.types.BannerPatternType;
 
 public class ItemBordureIndentedBannerPattern extends ItemBannerPattern {
     public ItemBordureIndentedBannerPattern() {
@@ -12,7 +11,7 @@ public class ItemBordureIndentedBannerPattern extends ItemBannerPattern {
     }
 
     @Override
-    public BannerPatternType getPatternType() {
-        return BannerPatternType.BORDER;
+    public String getPatternCode() {
+        return "bo";
     }
 }

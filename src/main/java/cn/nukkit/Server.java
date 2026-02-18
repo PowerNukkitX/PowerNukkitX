@@ -64,12 +64,11 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.process.NetworkState;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
+import cn.nukkit.network.process.login.LoginData;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.types.ExperimentEntry;
-import cn.nukkit.network.protocol.types.PlayerInfo;
-import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
+import org.cloudburstmc.protocol.bedrock.data.ExperimentData;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
@@ -270,7 +269,7 @@ public class Server {
     private Level defaultLevel = null;
     private boolean allowNether;
     private boolean allowTheEnd;
-    private List<ExperimentEntry> experiments;
+    private List<ExperimentData> experiments;
 
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
@@ -406,7 +405,7 @@ public class Server {
 
         this.experiments = new ArrayList<>();
         for(String experiment : settings.gameplaySettings().experiments())
-            experiments.add(new ExperimentEntry(experiment, true));
+            experiments.add(new ExperimentData(experiment, true));
 
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
@@ -1362,9 +1361,9 @@ public class Server {
     // region networking
 
     /**
-     * @see #broadcastPacket(Player[], DataPacket)
+     * @see #broadcastPacket(Player[], BedrockPacket)
      */
-    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
+    public static void broadcastPacket(Collection<Player> players, BedrockPacket packet) {
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -1376,7 +1375,7 @@ public class Server {
      * @param players All players receiving the data packet
      * @param packet  The data packet
      */
-    public static void broadcastPacket(Player[] players, DataPacket packet) {
+    public static void broadcastPacket(Player[] players, BedrockPacket packet) {
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -1470,8 +1469,8 @@ public class Server {
             this.playerList.remove(player.getUniqueId());
 
             PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_REMOVE;
-            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
+            pk.setAction(PlayerListPacket.Action.REMOVE);
+            pk.getEntries().add(new PlayerListPacket.Entry(player.getUniqueId()));
 
             Server.broadcastPacket(this.playerList.values(), pk);
             this.getNetwork().getPong().playerCount(playerList.size()).update(this.getNetwork());
@@ -1522,8 +1521,8 @@ public class Server {
      */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId, color)};
+        pk.setAction(PlayerListPacket.Action.ADD);
+        pk.getEntries().add(createPlayerListEntry(uuid, entityId, name, skin, xboxUserId, color));
         Server.broadcastPacket(players, pk);
     }
 
@@ -1545,8 +1544,8 @@ public class Server {
      */
     public void removePlayerListData(UUID uuid, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
+        pk.setAction(PlayerListPacket.Action.REMOVE);
+        pk.getEntries().add(new PlayerListPacket.Entry(uuid));
         Server.broadcastPacket(players, pk);
     }
 
@@ -1558,8 +1557,8 @@ public class Server {
 
     public void removePlayerListData(UUID uuid, Player player) {
         PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
+        pk.setAction(PlayerListPacket.Action.REMOVE);
+        pk.getEntries().add(new PlayerListPacket.Entry(uuid));
         player.dataPacket(pk);
     }
 
@@ -1574,18 +1573,61 @@ public class Server {
      */
     public void sendFullPlayerListData(Player player) {
         PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = this.playerList.values().stream()
-                .map(p -> new PlayerListPacket.Entry(
+        pk.setAction(PlayerListPacket.Action.ADD);
+        this.playerList.values().stream()
+                .map(p -> createPlayerListEntry(
                         p.getUniqueId(),
                         p.getId(),
                         p.getDisplayName(),
                         p.getSkin(),
                         p.getLoginChainData().getXUID(),
                         p.getLocatorBarColor()))
-                .toArray(PlayerListPacket.Entry[]::new);
+                .forEach(e -> pk.getEntries().add(e));
 
         player.dataPacket(pk);
+    }
+
+    private static PlayerListPacket.Entry createPlayerListEntry(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
+        var entry = new PlayerListPacket.Entry(uuid);
+        entry.setEntityId(entityId);
+        entry.setName(name);
+        entry.setXuid(xboxUserId);
+        entry.setPlatformChatId("");
+        entry.setBuildPlatform(-1);
+        entry.setSkin(toCloudburstSkin(skin));
+        entry.setTrustedSkin(skin.isTrusted());
+        entry.setColor(color);
+        return entry;
+    }
+
+    private static org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin toCloudburstSkin(Skin skin) {
+        return org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin.builder()
+                .skinId(skin.getSkinId())
+                .playFabId(skin.getPlayFabId())
+                .skinResourcePatch(skin.getSkinResourcePatch())
+                .skinData(org.cloudburstmc.protocol.bedrock.data.skin.ImageData.of(
+                        skin.getSkinData().width,
+                        skin.getSkinData().height,
+                        skin.getSkinData().data
+                ))
+                .capeData(org.cloudburstmc.protocol.bedrock.data.skin.ImageData.of(
+                        skin.getCapeData().width,
+                        skin.getCapeData().height,
+                        skin.getCapeData().data
+                ))
+                .geometryData(skin.getGeometryData())
+                .geometryDataEngineVersion(skin.getGeometryDataEngineVersion())
+                .animationData(skin.getAnimationData())
+                .premium(skin.isPremium())
+                .persona(skin.isPersona())
+                .capeOnClassic(skin.isCapeOnClassic())
+                .primaryUser(skin.isPrimaryUser())
+                .capeId(skin.getCapeId())
+                .fullSkinId(skin.getFullSkinId())
+                .armSize(skin.getArmSize())
+                .skinColor(skin.getSkinColor())
+                .overridingPlayerAppearance(skin.isOverridingPlayerAppearance())
+                .build();
     }
 
     /**
@@ -1636,9 +1678,9 @@ public class Server {
      *
      * @param info the player info
      */
-    void updateName(PlayerInfo info) {
-        var uniqueId = info.getUniqueId();
-        var name = info.getUsername();
+    void updateName(LoginData info) {
+        var uniqueId = info.uuid();
+        var name = info.displayName();
 
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
 
@@ -1651,7 +1693,7 @@ public class Server {
             playerDataDB.put(nameBytes, array);
         }
         boolean xboxAuthEnabled = this.settings.baseSettings().xboxAuth();
-        if (info instanceof XboxLivePlayerInfo || !xboxAuthEnabled) {
+        if (info.xboxAuthed() || !xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
     }
@@ -1771,7 +1813,7 @@ public class Server {
                             .add(new DoubleTag(0))
                             .add(new DoubleTag(0))
                             .add(new DoubleTag(0)))
-                    .putList("Rotation", new ListTag<FloatTag>()
+                    .putList("StructureRotation", new ListTag<FloatTag>()
                             .add(new FloatTag(0))
                             .add(new FloatTag(0)))
                     .putFloat("FallDistance", 0)
@@ -2100,7 +2142,7 @@ public class Server {
      * @param player the player
      */
     public void sendRecipeList(Player player) {
-        player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
+        player.getSession().syncCraftingData();
     }
 
     /**
@@ -2713,7 +2755,7 @@ public class Server {
         return this.allowTheEnd;
     }
 
-    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
+    public boolean isIgnoredPacket(Class<? extends BedrockPacket> clazz) {
         return this.getSettings().debugSettings().ignoredPackets().contains(clazz.getSimpleName());
     }
 
@@ -2756,7 +2798,7 @@ public class Server {
         return settings.gameplaySettings().allowVibrantVisuals();
     }
 
-    public List<ExperimentEntry> getExperiments() {
+    public List<ExperimentData> getExperiments() {
         return experiments;
     }
   

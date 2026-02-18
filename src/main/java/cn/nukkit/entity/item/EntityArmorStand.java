@@ -28,7 +28,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.SetEntityDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetEntityDataPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -287,8 +287,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     private void setPose(int pose) {
         this.entityDataMap.put(Entity.ARMOR_STAND_POSE_INDEX, pose);
         SetEntityDataPacket setEntityDataPacket = new SetEntityDataPacket();
-        setEntityDataPacket.eid = this.getId();
-        setEntityDataPacket.entityData = this.getEntityDataMap();
+        setEntityDataPacket.setRuntimeEntityId(this.getId());
+        setEntityDataPacket.setMetadata(toCloudburstMetadata(this.getEntityDataMap()));
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.dataPacket(setEntityDataPacket));
     }
 

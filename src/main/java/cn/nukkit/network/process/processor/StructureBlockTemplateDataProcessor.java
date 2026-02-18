@@ -4,42 +4,41 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.network.process.DataPacketProcessor;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.StructureTemplateDataRequestPacket;
-import cn.nukkit.network.protocol.StructureTemplateDataResponsePacket;
-import cn.nukkit.network.protocol.types.StructureTemplateRequestOperation;
-import cn.nukkit.network.protocol.types.StructureTemplateResponseType;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.packet.StructureTemplateDataRequestPacket;
+import org.cloudburstmc.protocol.bedrock.packet.StructureTemplateDataResponsePacket;
+import org.cloudburstmc.protocol.bedrock.data.structure.StructureTemplateResponseType;
 import org.jetbrains.annotations.NotNull;
 
 public class StructureBlockTemplateDataProcessor extends DataPacketProcessor<StructureTemplateDataRequestPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull StructureTemplateDataRequestPacket pk) {
         StructureTemplateDataResponsePacket resp = new StructureTemplateDataResponsePacket();
-        resp.name = pk.getName();
+        resp.setName(pk.getName());
         Structure structure = StructureAPI.load(pk.getName());
 
         if (structure == null) {
-            resp.success = false;
-            resp.responseType = StructureTemplateResponseType.FAILURE;
+            resp.setSave(false);
+            resp.setType(StructureTemplateResponseType.NONE);
 
             playerHandle.player.dataPacket(resp);
             return;
         }
 
-        resp.data = structure.toNBT();
-        resp.success = true;
-        resp.responseType = switch(pk.operation) {
+        resp.setTag(NbtMap.EMPTY);
+        resp.setSave(true);
+        resp.setType(switch (pk.getOperation()) {
             case QUERY_SAVED_STRUCTURE -> StructureTemplateResponseType.QUERY;
-            case EXPORT_FROM_SAVE_MODE -> StructureTemplateResponseType.EXPORT;
+            case EXPORT_FROM_SAVED_MODE -> StructureTemplateResponseType.EXPORT;
             case EXPORT_FROM_LOAD_MODE -> StructureTemplateResponseType.EXPORT;
-            case NONE -> StructureTemplateResponseType.FAILURE;
-        };
+            case IMPORT, NONE -> StructureTemplateResponseType.NONE;
+        });
 
         playerHandle.player.dataPacket(resp);
     }
 
     @Override
-    public int getPacketId() {
-        return ProtocolInfo.STRUCTURE_DATA_REQUEST;
+    public Class<StructureTemplateDataRequestPacket> getPacketClass() {
+        return StructureTemplateDataRequestPacket.class;
     }
 }

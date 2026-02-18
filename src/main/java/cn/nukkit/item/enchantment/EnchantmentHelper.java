@@ -4,7 +4,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantOptionData;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public final class EnchantmentHelper {
     private static final int MAX_BOOKSHELF_COUNT = 15;
 
-    public static List<PlayerEnchantOptionsPacket.EnchantOptionData> getEnchantOptions(Position tablePos, Item input, int seed) {
+    public static List<EnchantOptionData> getEnchantOptions(Position tablePos, Item input, int seed) {
         if (input == null || input.hasEnchantments()) {
             return Collections.emptyList();
         }
@@ -73,7 +74,7 @@ public final class EnchantmentHelper {
         return bookshelfCount;
     }
 
-    private static PlayerEnchantOptionsPacket.EnchantOptionData createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
+    private static EnchantOptionData createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
         int enchantingPower = requiredXpLevel;
         int enchantability = inputItem.getEnchantAbility();
         enchantingPower += random.nextInt(enchantability >> 2) + random.nextInt(enchantability >> 2) + 1;
@@ -113,7 +114,10 @@ public final class EnchantmentHelper {
                 resultEnchantments.remove(random.nextInt(resultEnchantments.size()-1));
             }
         }
-        return new PlayerEnchantOptionsPacket.EnchantOptionData(requiredXpLevel, getRandomOptionName(random), resultEnchantments, entry);
+        List<EnchantData> enchantData = resultEnchantments.stream()
+                .map(e -> new EnchantData(e.getId(), e.getLevel()))
+                .toList();
+        return new EnchantOptionData(requiredXpLevel, entry, enchantData, List.of(), List.of(), getRandomOptionName(random), entry);
     }
 
     private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {

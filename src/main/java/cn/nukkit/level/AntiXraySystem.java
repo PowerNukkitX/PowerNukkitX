@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.*;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -178,7 +178,7 @@ public final class AntiXraySystem {
                 }
             }
         }
-        level.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+        level.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), 11);
     }
 
     public void deObfuscateBlock(Player player, BlockFace face, Block target) {
@@ -197,7 +197,7 @@ public final class AntiXraySystem {
             } catch (Exception ignore) {
             }
         }
-        level.sendBlocks(new Player[]{player}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+        level.sendBlocks(new Player[]{player}, vecList.toArray(Vector3[]::new), 11);
     }
 
     public void reinitAntiXray(boolean global) {

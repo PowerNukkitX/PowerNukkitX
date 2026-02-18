@@ -9,7 +9,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import cn.nukkit.registry.Registries;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ public class LocateCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("biome", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeBiome", "biome")),
-                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new)),
+                CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinitionData::getId).toArray(String[]::new)),
                 CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
                 CommandParameter.newType("radius", true, CommandParamType.INT),
                 CommandParameter.newEnum("search", true, new String[]{"spiral", "xaxis"})
