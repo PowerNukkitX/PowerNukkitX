@@ -34,8 +34,6 @@ import static cn.nukkit.level.Level.DIMENSION_THE_END;
 @Slf4j
 public final class PortalHelper implements BlockID {
     private static final int PORTAL_SEARCH_RADIUS = 128;
-    private static final int PORTAL_HEIGHT = 3;
-    private static final int PORTAL_WIDTH = 2;
 
     /**
      * Spawns a Nether portal at the given position.
