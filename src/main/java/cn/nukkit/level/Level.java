@@ -4346,10 +4346,14 @@ public class Level implements Metadatable {
     }
 
     public boolean standable(Vector3 vec, boolean allowWaterUnder) {
+        return standable(vec, allowWaterUnder, true);
+    }
+
+    public boolean standable(Vector3 vec, boolean allowWaterUnder, boolean loadChunks) {
         Position pos = Position.fromObject(vec, this);
-        Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0, true);
-        Block block = pos.getLevelBlock(0, true);
-        Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0, true);
+        Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0, loadChunks);
+        Block block = pos.getLevelBlock(0, loadChunks);
+        Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0, loadChunks);
         if (!allowWaterUnder)
             return !blockUnder.canPassThrough()
                     && (block.isAir() || block.canPassThrough())

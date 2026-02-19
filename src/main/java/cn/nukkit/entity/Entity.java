@@ -746,7 +746,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setSneaking(boolean value) {
-        this.setDataFlag(EntityFlag.SNEAKING, value);
+        boolean changed = this.getEntityDataMap().existFlag(EntityFlag.SNEAKING) ^ value;
+
+        if (changed) {
+            this.getEntityDataMap().setFlag(EntityFlag.SNEAKING, value);
+        }
+
+        recalculateBoundingBox(false);
+        float newHeight = this.getEntityDataMap().getOrDefault(EntityDataTypes.HEIGHT, getCurrentHeight());
+
+        if (changed) {
+            EntityDataMap delta = new EntityDataMap();
+            delta.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+            delta.putType(EntityDataTypes.HEIGHT, newHeight);
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
+        } else {
+            EntityDataMap delta = new EntityDataMap();
+            delta.putType(EntityDataTypes.HEIGHT, newHeight);
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
+        }
     }
 
     public boolean isSwimming() {
@@ -3191,17 +3209,40 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public void setDataFlag(EntityFlag entityFlag, boolean value, boolean send) {
         if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
             this.getEntityDataMap().setFlag(entityFlag, value);
-            if(send) {
+
+            if (send) {
                 EntityDataMap entityDataMap = new EntityDataMap();
-                entityDataMap.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+
+                if (entityFlag.getValue() >= 64) {
+                    entityDataMap.put(EntityDataTypes.FLAGS_2, this.getEntityDataMap().getFlags2());
+                } else {
+                    entityDataMap.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+                }
+
                 sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
             }
         }
     }
 
     public void setDataFlags(EnumSet<EntityFlag> entityFlags) {
-        this.getEntityDataMap().put(FLAGS, entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        // split the incoming set into FLAGS and FLAGS_2 in the backing map
+        this.getEntityDataMap().putFlags(entityFlags);
+
+        // send both lanes (only if non-empty)
+        EnumSet<EntityFlag> f0 = this.getEntityDataMap().getFlags();
+        EnumSet<EntityFlag> f1 = this.getEntityDataMap().getFlags2();
+
+        if (f0 != null && !f0.isEmpty()) {
+            EntityDataMap d0 = new EntityDataMap();
+            d0.put(EntityDataTypes.FLAGS, f0);
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), d0);
+        }
+
+        if (f1 != null && !f1.isEmpty()) {
+            EntityDataMap d1 = new EntityDataMap();
+            d1.put(EntityDataTypes.FLAGS_2, f1);
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), d1);
+        }
     }
 
     public void setDataFlagExtend(EntityFlag entityFlag) {
@@ -3213,14 +3254,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setDataFlagExtend(EntityFlag entityFlag, boolean value, boolean send) {
+        if (entityFlag.getValue() < 64) {
+            this.setDataFlag(entityFlag, value, send);
+            return;
+        }
+
         if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
-            EnumSet<EntityFlag> entityFlags = this.getEntityDataMap().getOrDefault(EntityDataTypes.FLAGS_2, EnumSet.noneOf(EntityFlag.class));
+            EnumSet<EntityFlag> entityFlags = this.getEntityDataMap().getOrCreateFlags2();
             if (value) {
                 entityFlags.add(entityFlag);
             } else {
                 entityFlags.remove(entityFlag);
             }
-            this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, entityFlags);
+
             if(send) {
                 EntityDataMap entityDataMap = new EntityDataMap();
                 entityDataMap.put(EntityDataTypes.FLAGS_2, entityFlags);
@@ -3235,7 +3281,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean getDataFlag(EntityFlag id) {
-        return this.getEntityDataMap().getOrCreateFlags().contains(id);
+        return this.getEntityDataMap().existFlag(id);
     }
 
     public void setPlayerFlag(PlayerFlag entityFlag) {
