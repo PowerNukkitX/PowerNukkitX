@@ -1,6 +1,6 @@
 package cn.nukkit.network.connection;
 
-import cn.nukkit.network.Network;
+import cn.nukkit.network.NetworkInterface;
 import cn.nukkit.network.process.NetworkState;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -61,8 +61,7 @@ public class BedrockPong {
      *
      * @param network the network instance to check state
      */
-    public void update(Network network) {
-        // Defensive checks
+    public void update(NetworkInterface network) {
         if (network == null) {
             return;
         }
@@ -72,7 +71,7 @@ public class BedrockPong {
         if (network.getState() == NetworkState.STARTING || network.getState() == NetworkState.STOPPING) {
             return;
         }
-        // Update advertisement
+
         channel.config().setAdvertisement(this.toByteBuf());
     }
 }
