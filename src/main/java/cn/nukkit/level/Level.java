@@ -1540,79 +1540,82 @@ public class Level implements Metadatable {
         randRange = Math.min(randRange, this.chunkTickRadius);
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        if (!this.loaders.isEmpty()) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
+        synchronized (this.loaders) {
+            if (!this.loaders.isEmpty()) {
+                for (ChunkLoader loader : this.loaders.values()) {
+                    int chunkX = (int) loader.getX() >> 4;
+                    int chunkZ = (int) loader.getZ() >> 4;
 
-                long index = Level.chunkHash(chunkX, chunkZ);
-                int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
-                this.chunkTickList.put(index, existingLoaders + 1);
-                for (int chunk = 0; chunk < chunksPerLoader; ++chunk) {
-                    int dx = random.nextInt(2 * randRange) - randRange;
-                    int dz = random.nextInt(2 * randRange) - randRange;
-                    long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
-                    if (!this.chunkTickList.containsKey(hash) && requireProvider().isChunkLoaded(hash)) {
-                        this.chunkTickList.put(hash, -1);
-                    }
-                }
-            }
-        }
-
-        if (!chunkTickList.isEmpty()) {
-            ObjectIterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
-            while (iter.hasNext()) {
-                Long2IntMap.Entry entry = iter.next();
-                long index = entry.getLongKey();
-                if (!areNeighboringChunksLoaded(index)) {
-                    iter.remove();
-                    continue;
-                }
-
-                int loaders = entry.getIntValue();
-
-                int chunkX = getHashX(index);
-                int chunkZ = getHashZ(index);
-
-                IChunk chunk;
-                if ((chunk = this.getChunk(chunkX, chunkZ, false)) == null) {
-                    iter.remove();
-                    continue;
-                } else if (loaders <= 0) {
-                    iter.remove();
-                }
-
-                CompletableFuture.runAsync(() -> {
-                    for (Entity entity : chunk.getEntities().values()) {
-                        entity.scheduleUpdate();
-                    }
-                });
-
-                int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
-                if (tickSpeed <= 0) {
-                    continue;
-                }
-
-                for (ChunkSection section : chunk.getSections()) {
-                    if (section == null || section.isEmpty()) {
-                        continue;
-                    }
-                    for (int i = 0; i < tickSpeed; ++i) {
-                        int lcg = this.getUpdateLCG();
-                        int x = lcg & 0x0f;
-                        int y = lcg >>> 8 & 0x0f;
-                        int z = lcg >>> 16 & 0x0f;
-                        BlockState state = section.getBlockState(x, y, z);
-                        if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
-                            Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
-                            block.setLevel(this);
-                            block.onUpdate(BLOCK_UPDATE_RANDOM);
+                    long index = Level.chunkHash(chunkX, chunkZ);
+                    int existingLoaders = Math.max(0, this.chunkTickList.getOrDefault(index, 0));
+                    this.chunkTickList.put(index, existingLoaders + 1);
+                    for (int chunk = 0; chunk < chunksPerLoader; ++chunk) {
+                        int dx = random.nextInt(2 * randRange) - randRange;
+                        int dz = random.nextInt(2 * randRange) - randRange;
+                        long hash = Level.chunkHash(dx + chunkX, dz + chunkZ);
+                        if (!this.chunkTickList.containsKey(hash) && requireProvider().isChunkLoaded(hash)) {
+                            this.chunkTickList.put(hash, -1);
                         }
                     }
                 }
             }
         }
 
+        synchronized (this.chunkTickList) {
+            if (!this.chunkTickList.isEmpty()) {
+                ObjectIterator<Long2IntMap.Entry> iter = this.chunkTickList.long2IntEntrySet().iterator();
+                while (iter.hasNext()) {
+                    Long2IntMap.Entry entry = iter.next();
+                    long index = entry.getLongKey();
+                    if (!areNeighboringChunksLoaded(index)) {
+                        iter.remove();
+                        continue;
+                    }
+
+                    int loaders = entry.getIntValue();
+
+                    int chunkX = getHashX(index);
+                    int chunkZ = getHashZ(index);
+
+                    IChunk chunk;
+                    if ((chunk = this.getChunk(chunkX, chunkZ, false)) == null) {
+                        iter.remove();
+                        continue;
+                    } else if (loaders <= 0) {
+                        iter.remove();
+                    }
+
+                    CompletableFuture.runAsync(() -> {
+                        for (Entity entity : chunk.getEntities().values()) {
+                            entity.scheduleUpdate();
+                        }
+                    });
+
+                    int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
+                    if (tickSpeed <= 0) {
+                        continue;
+                    }
+
+                    for (ChunkSection section : chunk.getSections()) {
+                        if (section == null || section.isEmpty()) {
+                            continue;
+                        }
+                        for (int i = 0; i < tickSpeed; ++i) {
+                            int lcg = this.getUpdateLCG();
+                            int x = lcg & 0x0f;
+                            int y = lcg >>> 8 & 0x0f;
+                            int z = lcg >>> 16 & 0x0f;
+                            BlockState state = section.getBlockState(x, y, z);
+                            if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
+                                Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
+                                block.setLevel(this);
+                                block.onUpdate(BLOCK_UPDATE_RANDOM);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (this.clearChunksOnTick) {
             this.chunkTickList.clear();
         }
