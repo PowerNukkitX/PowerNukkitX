@@ -19,6 +19,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -48,6 +49,9 @@ public class EntityStray extends EntityMob implements EntityWalkable, EntitySmit
     protected void initEntity() {
         this.setMaxHealth(20);
         super.initEntity();
+        if (getItemInHand().isNull()) {
+            setItemInHand(Item.get(ItemID.BOW));
+        }
     }
 
     @Override
