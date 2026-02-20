@@ -24,6 +24,7 @@ org-jline-jline-reader                          = "3.25.0"
 org-jline-jline-terminal                        = "3.25.0"
 org-jline-jline-terminal-jna                    = "3.25.0"
 org-junit-jupiter-junit-jupiter                 = "5.10.1"
+org-junit-jupiter-junit-jupiter-engine         = "5.10.1"
 org-lz4-lz4-java                                = "1.10.2"
 org-mockito-mockito-junit-jupiter               = "5.8.0"
 org-openjdk-jmh-jmh-core                        = "1.37"
@@ -70,6 +71,7 @@ jline-reader         = { module = "org.jline:jline-reader",                     
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
 jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine",         version.ref = "org-junit-jupiter-junit-jupiter-engine"           }
 lz4                  = { module = "at.yawk.lz4:lz4-java",                               version.ref = "org-lz4-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }
@@ -80,7 +82,7 @@ rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",    
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
-test            = ["junit",             "mockito",          "jmh-core",             "jmh-generator"     ]
+test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator" ]
 netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"                              ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
