@@ -3,6 +3,7 @@ package cn.nukkit.network.protocol.types.debugshape;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
@@ -16,7 +17,7 @@ public class DebugShape {
     public Vector3f rotation;
     public Float totalTimeLeft;
     public Color color;
-    public Long attachedToEntityId;
+    public @Nullable Long attachedToEntityId;
     public String text;
     public Vector3f boxBound;
     public Vector3f lineEndLocation;

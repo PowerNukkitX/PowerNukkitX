@@ -2,12 +2,12 @@ package cn.nukkit.network.protocol.types.debugshape;
 
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
-import org.checkerframework.checker.units.qual.A;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
 public class ArrowDebugShape extends DebugShape {
-    public ArrowDebugShape(Vector3f location, Color color, Vector3f lineEndLocation, float arrowHeadLength, float arrowHeadRadius, long attachedToEntityId) {
+    public ArrowDebugShape(Vector3f location, Color color, Vector3f lineEndLocation, float arrowHeadLength, float arrowHeadRadius, @Nullable Long attachedToEntityId) {
         shapeType = ScriptDebugShapeType.ARROW;
         this.location = location;
         this.color = color;
