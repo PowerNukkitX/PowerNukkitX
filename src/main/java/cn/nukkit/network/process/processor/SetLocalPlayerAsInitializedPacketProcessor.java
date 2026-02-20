@@ -14,7 +14,7 @@ public class SetLocalPlayerAsInitializedPacketProcessor extends DataPacketProces
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull SetLocalPlayerAsInitializedPacket pk) {
         Player player = playerHandle.player;
-        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", player.getPlayerInfo().getUsername());
+        log.debug("Received SetLocalPlayerAsInitializedPacket for {}", player.getPlayerInfo().getUsername());
         playerHandle.onPlayerLocallyInitialized();
     }
 
