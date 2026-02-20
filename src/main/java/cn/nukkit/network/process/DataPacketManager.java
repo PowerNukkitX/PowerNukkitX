@@ -67,16 +67,6 @@ public final class DataPacketManager {
                 new SetPlayerGameTypeProcessor(),
                 new LecternUpdateProcessor(),
                 new MapInfoRequestProcessor(),
-                /*
-                 * Minecraft doesn't really use this packet any more, and the client can send it and play the music it wants,
-                 * even though it's of no interest to the gameplay.
-                 * The client isn't supposed to be able to broadcast a sound to the whole server.
-                 * @Zwuiix
-                new LevelSoundEventProcessor(),
-                new LevelSoundEventProcessorV1(),
-                new LevelSoundEventProcessorV2(),
-                */
-                //new PlayerHotbarProcessor(),
                 new ServerSettingsRequestProcessor(),
                 new RespawnProcessor(),
                 new BookEditProcessor(),

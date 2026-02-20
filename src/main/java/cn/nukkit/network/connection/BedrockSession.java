@@ -447,7 +447,7 @@ public class BedrockSession {
         log.debug("Sending spawn notification, waiting for spawn response");
         var state = this.machine.getState();
         if (!state.equals(SessionState.PRE_SPAWN)) {
-            throw new IllegalStateException("attempt to notifyTerrainReady when the state is " + state.name());
+            throw new IllegalStateException("Attempted to use notifyTerrainReady when the state was " + state.name());
         }
         handle.doFirstSpawn();
     }
