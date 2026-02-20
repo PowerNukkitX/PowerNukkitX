@@ -236,18 +236,21 @@ public class Structure extends AbstractStructure {
         blockManager.applySubChunkUpdate();
 
         for (var entry : blockEntities.entrySet()) {
-            BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z));
+            int newPosX = (entry.getKey().getFloorX() + pos.getFloorX());
+            int newPosY = (entry.getKey().getFloorY() + pos.getFloorY());
+            int newPosZ = (entry.getKey().getFloorZ() + pos.getFloorZ());
+
+            BlockEntity blockEntity = pos.getLevel().getBlockEntity(new Vector3(newPosX, newPosY, newPosZ));
             if (blockEntity != null) {
-                log.warn("Overwriting existing block entity at {}, {}, {}", entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z);
                 blockEntity.getLevel().removeBlockEntity(blockEntity);
             }
 
-            CompoundTag oldNbt = entry.getValue();
-            oldNbt.putInt("x", (int) (entry.getKey().x + x));
-            oldNbt.putInt("y", (int) (entry.getKey().y + y));
-            oldNbt.putInt("z", (int) (entry.getKey().z + z));
+            CompoundTag oldNbt = entry.getValue().getCompound("block_entity_data");
+            oldNbt.putInt("x", newPosX);
+            oldNbt.putInt("y", newPosY);
+            oldNbt.putInt("z", newPosZ);
 
-            BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(entry.getKey().x + x, entry.getKey().y + y, entry.getKey().z + z, pos.getLevel()), oldNbt);
+            BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), oldNbt);
         }
 
         if(!includeEntities) {
