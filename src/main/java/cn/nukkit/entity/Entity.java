@@ -1663,6 +1663,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
+        if(this.fireTicks > 0 && this.hasEffect(EffectType.FIRE_RESISTANCE)) fireTicks = 0;
         if (this.fireTicks > 0) {
             if (this.fireProof) {
                 this.fireTicks -= 4 * tickDiff;
@@ -1670,7 +1671,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     this.fireTicks = 0;
                 }
             } else {
-                if (!this.hasEffect(EffectType.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20)) {
+                if (((this.fireTicks % 20) == 0 || tickDiff > 20)) {
                     this.attack(new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1));
                 }
                 this.fireTicks -= tickDiff;
