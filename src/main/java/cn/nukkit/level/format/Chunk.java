@@ -463,10 +463,13 @@ public class Chunk implements IChunk {
 
     @Override
     public void removeEntity(Entity entity) {
+        if(entity.getId() < 0) return;
         if (this.entities != null) {
-            this.entities.remove(entity.getId());
-            if (!(entity instanceof Player) && this.isInit) {
-                this.setChanged();
+            synchronized (this.entities) {
+                this.entities.remove(entity.getId());
+                if (!(entity instanceof Player) && this.isInit) {
+                    this.setChanged();
+                }
             }
         }
     }

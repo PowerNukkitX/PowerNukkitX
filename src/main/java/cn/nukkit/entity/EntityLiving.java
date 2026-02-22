@@ -7,6 +7,8 @@ import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
+import cn.nukkit.entity.data.EntityDataMap;
+import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
@@ -39,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -643,8 +646,29 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void setBlocking(boolean value) {
-        this.setDataFlagExtend(EntityFlag.BLOCKING, value, false);
-        this.setDataFlagExtend(EntityFlag.TRANSITION_BLOCKING, value, true);
+        EnumSet<EntityFlag> ext = this.getEntityDataMap().getOrCreateFlags2();
+
+        boolean changed;
+        if (value) {
+            changed = ext.add(EntityFlag.BLOCKING);
+        } else {
+            changed = ext.remove(EntityFlag.BLOCKING);
+        }
+
+        if (!changed) return;
+
+        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, ext);
+
+        EnumSet<EntityFlag> wire = EnumSet.copyOf(ext);
+        if (value) {
+            wire.add(EntityFlag.TRANSITION_BLOCKING);
+        } else {
+            wire.remove(EntityFlag.TRANSITION_BLOCKING);
+        }
+
+        EntityDataMap delta = new EntityDataMap();
+        delta.put(EntityDataTypes.FLAGS_2, wire);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
     }
 
     @Override

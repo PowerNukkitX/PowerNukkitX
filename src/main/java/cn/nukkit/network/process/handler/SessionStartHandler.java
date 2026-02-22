@@ -24,6 +24,8 @@ public class SessionStartHandler extends BedrockSessionPacketHandler {
             return;
         }
 
+        session.setProtocolVersion(protocol);
+
         var server = session.getServer();
         if (server.getIPBans().isBanned(session.getAddressString())) {
             String reason = server.getIPBans().getEntires().get(session.getAddressString()).getReason();

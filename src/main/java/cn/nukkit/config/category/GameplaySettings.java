@@ -64,4 +64,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean cacheStructures = false;
     @Comment("pnx.settings.gameplay.enableEdu")
     boolean enableEducation = false;
+    @Comment("pnx.settings.gameplay.muteEmoteAnnouncements")
+    boolean muteEmoteAnnouncements = false;
 }

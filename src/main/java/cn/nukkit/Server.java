@@ -22,6 +22,7 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
+import cn.nukkit.event.network.NetworkRegisterEvent;
 import cn.nukkit.event.player.PlayerLoginEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.event.server.ServerReloadEvent;
@@ -63,6 +64,7 @@ import cn.nukkit.nbt.tag.ShortTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.Network;
+import cn.nukkit.network.NetworkInterface;
 import cn.nukkit.network.process.NetworkState;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
@@ -207,7 +209,7 @@ public class Server {
     private EntityMetadataStore entityMetadata;
     private PlayerMetadataStore playerMetadata;
     private LevelMetadataStore levelMetadata;
-    private Network network;
+    private NetworkInterface network;
     private int serverAuthoritativeMovementMode = 0;
     private int defaultGamemode = Integer.MAX_VALUE;
     private int autoSaveTicker = 0;
@@ -553,7 +555,6 @@ public class Server {
         loadLevels();
 
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
-        this.network = new Network(this);
         this.getTickingAreaManager().loadAllTickingArea();
 
         if (this.getDefaultLevel() == null) {
@@ -566,6 +567,15 @@ public class Server {
         this.autoSaveTicks = settings.baseSettings().autosaveDelay();
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        NetworkRegisterEvent networkRegisterEvent = new NetworkRegisterEvent(new Network(this));
+        this.pluginManager.callEvent(networkRegisterEvent);
+
+        NetworkInterface networkInterface = networkRegisterEvent.getNetworkInterface();
+
+        this.getLogger().debug("Registering network interface: " + networkInterface.getClass().getCanonicalName());
+        this.network = networkInterface;
+
         EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
 
@@ -1386,7 +1396,7 @@ public class Server {
         return this.queryRegenerateEvent;
     }
 
-    public Network getNetwork() {
+    public NetworkInterface getNetwork() {
         return network;
     }
 

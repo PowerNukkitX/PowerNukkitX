@@ -55,7 +55,7 @@ public final class ZlibChooser {
             log.warn(lang.tr("nukkit.zlib.affect-performance"));
         }
         provider = providers[providerIndex];
-        log.info("{}: {} ({})", lang.tr("nukkit.zlib.selected"), providerIndex, provider.getClass().getCanonicalName());
+        log.info("{}: {} ({})", lang.tr("nukkit.zlib.selected"), providerIndex, provider.getClass().getSimpleName());
     }
 
     public static ZlibProvider getCurrentProvider() {
