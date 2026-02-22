@@ -26,6 +26,7 @@ public class PlayerPreChunkRequestEvent extends PlayerEvent implements Cancellab
         this.forced = forced;
     }
 
+    @Override
     public void setCancelled(boolean value) {
         if(forced && value) {
             throw new EventException("Event is not Cancellable when forced!");
