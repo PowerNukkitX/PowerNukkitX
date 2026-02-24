@@ -688,8 +688,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.sendFogStack();
         this.sendCameraPresets();
 
-        log.debug("Send Player Spawn Status Packet to {},wait init packet", getName());
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
+        log.debug("Sent PlayStatusPacket.PLAYER_SPAWN to {}, waiting for init packet", getName());
 
         // Initialize the client before transferring the player to prevent falling (x)
         // Falling is already handled since immobile is set

@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author MagicDroidX (Nukkit Project)
  */
 @Slf4j
-public class Network {
+public class Network implements NetworkInterface {
     private final Server server;
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
     private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
