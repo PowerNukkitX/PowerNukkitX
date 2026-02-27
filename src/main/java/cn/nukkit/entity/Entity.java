@@ -95,6 +95,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 
 /**
  * @author MagicDroidX
@@ -1663,6 +1664,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
+        if(this.fireTicks > 0 && this.hasEffect(EffectType.FIRE_RESISTANCE)) fireTicks = 0;
         if (this.fireTicks > 0) {
             if (this.fireProof) {
                 this.fireTicks -= 4 * tickDiff;
@@ -1670,7 +1672,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     this.fireTicks = 0;
                 }
             } else {
-                if (!this.hasEffect(EffectType.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20)) {
+                if (((this.fireTicks % 20) == 0 || tickDiff > 20)) {
                     this.attack(new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1));
                 }
                 this.fireTicks -= tickDiff;
@@ -1690,30 +1692,34 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if (this.inPortalTicks == 80) {//handle portal teleport
+        if (this.inPortalTicks == 80) { // Handle portal teleport
             EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.NETHER);
-            getServer().getPluginManager().callEvent(ev);//call event
+            getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
-
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
-                if(newPos != null) {
+                if (newPos != null) {
                     IChunk destChunk = newPos.getChunk();
                     if (!destChunk.isGenerated()) {
                         newPos.getLevel().syncGenerateChunk(destChunk.getX(), destChunk.getZ());
                         newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
                     }
                     if (newPos != null) {
-                        Position nearestPortal = PortalHelper.getNearestValidPortal(newPos);
-                        if (nearestPortal != null) {
-                            teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
+                        // Use Optional for safer portal search
+                        Optional<Position> nearestPortalOpt = PortalHelper.getNearestValidPortal(newPos);
+                        if (nearestPortalOpt.isPresent()) {
+                            teleport(nearestPortalOpt.get().add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                         } else {
                             final Position finalPos = newPos.add(1.5, 1, 1.5);
                             inPortalTicks = 81;
                             PortalHelper.spawnPortal(newPos);
                             teleport(finalPos, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
                         }
+                    } else {
+                        getServer().getLogger().warning("Failed to calculate new Nether position for portal teleport.");
                     }
+                } else {
+                    getServer().getLogger().warning("Failed to convert position between Nether and Overworld for portal teleport.");
                 }
             }
         }
@@ -2777,7 +2783,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if (endPortal) {//handle endPortal teleport
+        if (endPortal) { // Handle End portal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
                 if (this.getRiding() == null && this.getPassengers().isEmpty() && !(this instanceof EntityEnderDragon)) {
@@ -2792,7 +2798,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                                     newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
-                                            // dirty hack to make sure chunks are loaded and generated before spawning player
+                                            // Ensure chunks are loaded and generated before spawning player
                                             teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL);
                                             BlockEndPortal.spawnObsidianPlatform(newPos);
                                         }
@@ -2803,12 +2809,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                                     newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
                                         public void onRun(int currentTick) {
-                                            // dirty hack to make sure chunks are loaded and generated before spawning player
+                                            // Ensure chunks are loaded and generated before spawning player
                                             teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL);
                                         }
                                     }, 5);
                                 }
                             }
+                        } else {
+                            getServer().getLogger().warning("Failed to convert position between End and Overworld for portal teleport.");
                         }
                     }
                 }

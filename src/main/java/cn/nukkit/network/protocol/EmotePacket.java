@@ -1,7 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.EmoteFlag;
 import lombok.*;
+
+import java.util.EnumSet;
 
 @Getter
 @Setter
@@ -13,7 +16,7 @@ public class EmotePacket extends DataPacket {
     public String xuid = "";
     public String platformId = "";
     public String emoteID;
-    public byte flags;
+    public EnumSet<EmoteFlag> flags;
     public int emoteDuration;
 
     @Override
@@ -28,7 +31,7 @@ public class EmotePacket extends DataPacket {
         this.emoteDuration = byteBuf.readUnsignedVarInt();
         this.xuid = byteBuf.readString();
         this.platformId = byteBuf.readString();
-        this.flags = byteBuf.readByte();
+        this.flags = EmoteFlag.fromByte(byteBuf.readByte());
     }
 
     @Override
@@ -38,7 +41,7 @@ public class EmotePacket extends DataPacket {
         byteBuf.writeUnsignedVarInt(this.emoteDuration);
         byteBuf.writeString(this.xuid);
         byteBuf.writeString(this.platformId);
-        byteBuf.writeByte(flags);
+        byteBuf.writeByte(EmoteFlag.toByte(this.flags));
     }
 
     public void handle(PacketHandler handler) {

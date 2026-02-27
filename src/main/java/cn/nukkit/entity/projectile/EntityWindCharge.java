@@ -150,7 +150,7 @@ public class EntityWindCharge extends EntityProjectile {
         knockback.y /= 2d;
         knockback.z /= 2d;
         knockback.x -= (this.getX() - entity.getX()) * getKnockbackStrength();
-        knockback.y += 0.3f;
+        knockback.y += 0.6f;
         knockback.z -= (this.getZ() - entity.getZ()) * getKnockbackStrength();
 
         entity.setMotion(knockback);

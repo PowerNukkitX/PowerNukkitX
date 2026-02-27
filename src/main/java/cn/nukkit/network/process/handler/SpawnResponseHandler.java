@@ -1,7 +1,9 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.AvailableEntityIdentifiersPacket;
@@ -119,8 +121,8 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
     }
 
     private void startGame() {
-        var server = player.getServer();
-        var startPk = new StartGamePacket();
+        Server server = player.getServer();
+        StartGamePacket startPk = new StartGamePacket();
 
         startPk.entityUniqueId = player.getId();
         startPk.entityRuntimeId = player.getId();
@@ -135,15 +137,18 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         startPk.dimension = (byte) (player.level.getDimension() & 0xff);
         startPk.worldGamemode = Player.toNetworkGamemode(server.getDefaultGamemode());
         startPk.difficulty = server.getDifficulty();
-        var spawn = player.getSafeSpawn();
+
+        Vector3 spawn = player.getSafeSpawn();
         startPk.spawnX = spawn.getFloorX();
         startPk.spawnY = spawn.getFloorY();
         startPk.spawnZ = spawn.getFloorZ();
+
         startPk.hasAchievementsDisabled = true;
         startPk.dayCycleStopTime = -1;
         startPk.rainLevel = 0;
         startPk.lightningLevel = 0;
         startPk.commandsEnabled = player.isEnableClientCommand();
+        startPk.muteEmoteAnnouncements = server.getSettings().gameplaySettings().muteEmoteAnnouncements();
         startPk.gameRules = player.getLevel().getGameRules();
         startPk.levelId = "";
         startPk.worldName = server.getSubMotd();
@@ -166,7 +171,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket pk) {
-        log.debug("receive SetLocalPlayerAsInitializedPacket for {}", this.player.getPlayerInfo().getUsername());
+        log.debug("Received SetLocalPlayerAsInitializedPacket for {}", this.player.getPlayerInfo().getUsername());
         handle.onPlayerLocallyInitialized();
     }
 }

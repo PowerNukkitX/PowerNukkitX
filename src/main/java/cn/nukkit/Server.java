@@ -2343,7 +2343,10 @@ public class Server {
             log.error("The levelConfig is not specified and no config.json exists under the {} path", path);
             return false;
         }
-
+        if(levelConfig == null) {
+            log.error("Could not load level " + name, new LevelException("Level config is not a valid"));
+            return false;
+        }
         for (var entry : levelConfig.generators().entrySet()) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
             var provider = LevelProviderManager.getProviderByName(levelConfig.format());
