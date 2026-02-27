@@ -27,6 +27,17 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public final class PlayerChunkManager {
 
+
+    /**
+     * Chunks closer than this distance to the player are always considered to be in the field of view.
+     */
+    private static final double MIN_FOV_CHECK_DISTANCE = 4.0;
+
+    /**
+     * Timeout for asynchronously loading a chunk before retrying or generating it, in microseconds.
+     */
+    private static final long CHUNK_LOAD_TIMEOUT_MICROS = 10L;
+
     private final LongComparator chunkDistanceAndFovComparator = new LongComparator() {
         @Override
         public int compare(long chunkHash1, long chunkHash2) {
@@ -62,7 +73,7 @@ public final class PlayerChunkManager {
             double dirZ = Math.cos(Math.toRadians(yaw));
 
             double len = Math.sqrt(dx * dx + dz * dz);
-            if (len < 4) return true;
+            if (len < MIN_FOV_CHECK_DISTANCE) return true;
 
             double toChunkX = dx / len;
             double toChunkZ = dz / len;
@@ -191,13 +202,13 @@ public final class PlayerChunkManager {
             int chunkZ = Level.getHashZ(chunkHash);
             PlayerPreChunkRequestEvent event = new PlayerPreChunkRequestEvent(player, chunkX, chunkZ, force);
             Server.getInstance().getPluginManager().callEvent(event);
-            if(event.isCancelled()) {
-               continue;
+            if (event.isCancelled()) {
+                continue;
             }
             var chunkTask = chunkLoadingQueue.computeIfAbsent(chunkHash, (hash) -> player.getLevel().getChunkAsync(chunkX, chunkZ));
             if (chunkTask.isDone()) {
                 try {
-                    IChunk chunk = chunkTask.get(10, TimeUnit.MICROSECONDS);
+                    IChunk chunk = chunkTask.get(CHUNK_LOAD_TIMEOUT_MICROS, TimeUnit.MICROSECONDS);
                     if (chunk == null || !chunk.getChunkState().canSend()) {
                         player.level.generateChunk(chunkX, chunkZ, force);
                         enqueue.add(chunkHash);
@@ -207,9 +218,12 @@ public final class PlayerChunkManager {
                     chunkLoadingQueue.remove(chunkHash);
                     player.level.registerChunkLoader(player, chunkX, chunkZ, false);
                     chunkReadyToSend.enqueue(chunkHash);
-                } catch (InterruptedException | ExecutionException ignore) {
+                } catch (InterruptedException e) {
+                    log.warn("Chunk loading interrupted for chunk ({}, {})", chunkX, chunkZ, e);
+                } catch (ExecutionException e) {
+                    log.warn("Chunk loading execution failed for chunk ({}, {})", chunkX, chunkZ, e);
                 } catch (TimeoutException e) {
-                    log.warn("read chunk timeout {} {}", chunkX, chunkZ);
+                    log.warn("Timeout while loading chunk ({} {})", chunkX, chunkZ);
                 }
             } else {
                 enqueue.add(chunkHash);

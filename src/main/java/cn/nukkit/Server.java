@@ -122,9 +122,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -306,7 +306,7 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
-        while(convertLegacyConfiguration());
+        while (convertLegacyConfiguration()) { /* repeat until all legacy configurations are converted */ }
 
         File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage = null;
@@ -358,7 +358,7 @@ public class Server {
             }
         }
         this.settings.save();
-        while(updateConfiguration());
+        while (updateConfiguration()) { /* repeat until all configuration updates are applied */ }
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
@@ -807,7 +807,7 @@ public class Server {
             log.debug("Unloading all levels");
             for (Level level : this.levelArray) {
                 this.unloadLevel(level, true);
-                while(level.isThreadRunning()) Thread.sleep(1);
+                while (level.isThreadRunning()) Thread.sleep(10); // TODO: This is just a workaround, we need to apply proper thread synchronization to ensure the level thread is stopped before proceeding with the shutdown process.
             }
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
@@ -826,7 +826,9 @@ public class Server {
             }
             NukkitMetrics.closeNow(this);
             //close threadPool
-            ForkJoinPool.commonPool().shutdownNow();
+            try (ForkJoinPool pool = ForkJoinPool.commonPool()) {
+                pool.shutdownNow();
+            }
             this.computeThreadPool.shutdownNow();
             //todo other things
         } catch (Exception e) {
