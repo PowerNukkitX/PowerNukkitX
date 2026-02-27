@@ -61,7 +61,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build project (parallel, optimized)
-        run: ./gradlew assemble --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
+        run: ./gradlew build --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
 
       - name: Upload JAR artifact (on success)
         if: success()
@@ -69,6 +69,9 @@ jobs:
         with:
           name: powernukkitx-jar
           path: build/libs/*.jar
+
+      - name: Ensure test-results directory exists
+        run: mkdir -p build/test-results
 
       - name: Upload test results (always)
         if: always()
