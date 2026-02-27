@@ -96,6 +96,9 @@ public class Skin {
     }
 
     public boolean isValid() {
+        if (this.isPersona()) {
+            return true;
+        }
         return isValidSkin() && isValidResourcePatch();
     }
 
