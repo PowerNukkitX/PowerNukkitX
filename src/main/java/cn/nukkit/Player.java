@@ -636,7 +636,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.noDamageTicks = 60;
 
-        synchronized (playerChunkManager) {
+        synchronized (playerChunkManager.getUsedChunks()) {
             for (long index : playerChunkManager.getUsedChunks()) {
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
@@ -2141,7 +2141,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         entity.despawnFrom(this);
                     }
                 }
-                playerChunkManager.getUsedChunks().remove(index);
+                synchronized (playerChunkManager.getUsedChunks()) {
+                    playerChunkManager.getUsedChunks().remove(index);
+                }
             }
         }
     }
@@ -2187,7 +2189,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         this.chunkLoadCount++;
-        this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
+        synchronized (playerChunkManager.getUsedChunks()) {
+            this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
+        }
         this.dataPacket(packet);
 
         if (this.spawned) {
