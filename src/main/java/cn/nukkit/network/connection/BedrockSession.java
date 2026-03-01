@@ -53,8 +53,10 @@ import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
@@ -539,15 +541,19 @@ public class BedrockSession {
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
         final Map<String, Command> commands = Server.getInstance().getCommandMap().getCommands();
+        // Snapshot the command list under the lock, then release immediately.
+        // Permission checks and data generation happen outside the lock to minimise contention.
+        List<Command> snapshot;
         synchronized (commands) {
-            for (Command command : commands.values()) {
-                if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
-                    continue;
-                }
-                ++count;
-                CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
-                data.put(command.getName(), data0);
+            snapshot = new ArrayList<>(commands.values());
+        }
+        for (Command command : snapshot) {
+            if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
+                continue;
             }
+            ++count;
+            CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
+            data.put(command.getName(), data0);
         }
         if (count > 0) {
             Map<String, CommandDataVersions> filtered = getStringCommandDataVersionsMap(data);
@@ -616,8 +622,7 @@ public class BedrockSession {
             player.getEnderChestInventory().sendContents(player);
 
             //Send bundle content
-            PlayerHandle handle = new PlayerHandle(player);
-            handle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
+            this.handle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
                 for (int index : inventory.getContents().keySet()) {
                     Item item = inventory.getUnclonedItem(index);
                     if (item instanceof ItemBundle bundle) {

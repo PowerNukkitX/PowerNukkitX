@@ -1056,8 +1056,8 @@ public class HandleByteBuf extends ByteBuf {
         int tintsLength = this.readIntLE();
         for (int i = 0; i < tintsLength; i++) {
             String pieceType = this.readString();
-            List<String> colors = new ArrayList<>();
             int colorsLength = this.readIntLE();
+            List<String> colors = new ArrayList<>(colorsLength);
             for (int i2 = 0; i2 < colorsLength; i2++) {
                 colors.add(this.readString());
             }
