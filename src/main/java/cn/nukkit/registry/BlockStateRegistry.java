@@ -70,6 +70,14 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
         return Set.copyOf(REGISTRY.values());
     }
 
+    static void writeColorsToCache(java.io.DataOutputStream out) throws java.io.IOException {
+        RegistryCache.writeBlockColors(out);
+    }
+
+    static void restoreColorsFromCache(java.io.DataInputStream in) throws java.io.IOException {
+        RegistryCache.readBlockColors(in);
+    }
+
     @Override
     public void trim() {
         REGISTRY.trim();

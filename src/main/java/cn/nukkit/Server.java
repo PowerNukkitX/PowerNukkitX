@@ -86,6 +86,7 @@ import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.registry.RecipeRegistry;
+import cn.nukkit.registry.RegistryCache;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
@@ -447,6 +448,16 @@ public class Server {
         // Initialize metrics
         NukkitMetrics.startNow(this);
 
+        final RegistryCache registryCache;
+        Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
+        {
+            RegistryCache cache = null;
+            if (settings.performanceSettings().registryCacheEnabled()) {
+                cache = RegistryCache.tryLoad(registryCachePath);
+            }
+            registryCache = cache;
+        }
+
         {//init
             CompletableFuture<Void> blockF       = CompletableFuture.runAsync(Registries.BLOCK::init,           computeThreadPool);
             CompletableFuture<Void> itemF        = CompletableFuture.runAsync(Registries.ITEM::init,            computeThreadPool);
@@ -454,8 +465,16 @@ public class Server {
             CompletableFuture<Void> packetF      = CompletableFuture.runAsync(Registries.PACKET::init,          computeThreadPool);
             CompletableFuture<Void> entityF      = CompletableFuture.runAsync(Registries.ENTITY::init,          computeThreadPool);
             CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init,     computeThreadPool);
-            CompletableFuture<Void> itemRtIdF    = CompletableFuture.runAsync(Registries.ITEM_RUNTIMEID::init,  computeThreadPool);
-            CompletableFuture<Void> biomeF       = CompletableFuture.runAsync(Registries.BIOME::init,           computeThreadPool);
+            CompletableFuture<Void> itemRtIdF    = CompletableFuture.runAsync(
+                    registryCache != null
+                            ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
+                            : Registries.ITEM_RUNTIMEID::init,
+                    computeThreadPool);
+            CompletableFuture<Void> biomeF       = CompletableFuture.runAsync(
+                    registryCache != null
+                            ? () -> registryCache.restoreBiome(Registries.BIOME)
+                            : Registries.BIOME::init,
+                    computeThreadPool);
             CompletableFuture<Void> fuelF        = CompletableFuture.runAsync(Registries.FUEL::init,            computeThreadPool);
             CompletableFuture<Void> generatorF   = CompletableFuture.runAsync(Registries.GENERATOR::init,       computeThreadPool);
             CompletableFuture<Void> genStageF    = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init,  computeThreadPool);
@@ -463,16 +482,31 @@ public class Server {
             CompletableFuture<Void> genFeatF     = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init,computeThreadPool);
             CompletableFuture<Void> effectF      = CompletableFuture.runAsync(Registries.EFFECT::init,          computeThreadPool);
 
-            CompletableFuture<Void> blockStateF  = blockF.thenRunAsync(Registries.BLOCKSTATE::init, computeThreadPool);
-            CompletableFuture<Void> structureF  = blockF.thenRunAsync(Registries.STRUCTURE::init,  computeThreadPool);
+            CompletableFuture<Void> blockStateF  = blockF.thenRunAsync(
+                    registryCache != null
+                            ? registryCache::restoreBlockStateColors
+                            : Registries.BLOCKSTATE::init,
+                    computeThreadPool);
+            CompletableFuture<Void> structureF   = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
             CompletableFuture<Void> creativeF    = CompletableFuture.allOf(itemF, blockStateF)
-                    .thenRunAsync(Registries.CREATIVE::init, computeThreadPool);
-
-            CompletableFuture<Void> recipeF      = creativeF.thenRunAsync(Registries.RECIPE::init, computeThreadPool);
+                    .thenRunAsync(
+                            registryCache != null
+                                    ? () -> registryCache.restoreCreative(Registries.CREATIVE)
+                                    : Registries.CREATIVE::init,
+                            computeThreadPool);
+            CompletableFuture<Void> recipeF      = creativeF.thenRunAsync(
+                    registryCache != null
+                            ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
+                            : Registries.RECIPE::init,
+                    computeThreadPool);
 
             CompletableFuture.allOf(potionF, packetF, entityF, blockEntityF, itemRtIdF, biomeF,
                     fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
                     creativeF, recipeF).join();
+
+            if (settings.performanceSettings().registryCacheEnabled() && registryCache == null) {
+                RegistryCache.save(registryCachePath);
+            }
 
             Profession.init();
             String a = BlockTags.ACACIA;
