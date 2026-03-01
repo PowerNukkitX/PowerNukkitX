@@ -59,7 +59,9 @@ public class AddPlayerPacket extends DataPacket {
         byteBuf.writeFloatLE(this.yaw);
         byteBuf.writeSlot(this.item);
         byteBuf.writeVarInt(this.gameType);
-        byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
+        synchronized (this.entityData) {
+            byteBuf.writeBytes(Binary.writeEntityData(this.entityData));
+        }
         byteBuf.writePropertySyncData(syncedProperties);
 //        byteBuf.writeUnsignedVarInt(0); //TODO: Adventure settings
 //        byteBuf.writeUnsignedVarInt(0);
