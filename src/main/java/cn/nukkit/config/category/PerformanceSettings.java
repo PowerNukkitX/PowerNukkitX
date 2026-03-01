@@ -15,7 +15,7 @@ public class PerformanceSettings extends OkaeriConfig {
     @Comment("pnx.settings.performance.registrycache.enable")
     boolean registryCacheEnabled = false;
     @Comment("pnx.settings.performance.registrycache.path")
-    String registryCachePath = "registry_cache.bin";
+    String registryCachePath = "path/to/your/registry_cache.bin";
     @Comment("pnx.settings.performance.freezearray.enable")
     boolean enable = true;
     int slots = 32;
