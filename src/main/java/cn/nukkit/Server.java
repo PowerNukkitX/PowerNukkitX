@@ -281,25 +281,27 @@ public class Server {
         instance = this;
 
         this.filePath = filePath;
-        if (!new File(dataPath + "worlds/").exists()) {
-            new File(dataPath + "worlds/").mkdirs();
+
+        File worlds, players, structures, pluginFile, commandDataFile;
+        if (!(worlds = new File(dataPath + "worlds/")).exists()) {
+            worlds.mkdirs();
         }
-        if (!new File(dataPath + "players/").exists()) {
-            new File(dataPath + "players/").mkdirs();
+        if (!(players = new File(dataPath + "players/")).exists()) {
+            players.mkdirs();
         }
-        if (!new File(dataPath + "structures/").exists()) {
-            new File(dataPath + "structures/").mkdirs();
+        if (!(structures = new File(dataPath + "structures/")).exists()) {
+            structures.mkdirs();
         }
-        if (!new File(pluginPath).exists()) {
-            new File(pluginPath).mkdirs();
+        if (!(pluginFile = new File(pluginPath)).exists()) {
+            pluginFile.mkdirs();
         }
 
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
-        this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
-        this.structurePath = new File(dataPath).getAbsolutePath() + "/structures/";
-        String commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
-        if (!new File(commandDataPath).exists()) {
-            new File(commandDataPath).mkdirs();
+        this.pluginPath = pluginFile.getAbsolutePath() + "/";
+        this.structurePath = this.dataPath + "structures/";
+        String commandDataPath = this.dataPath + "/command_data";
+        if (!(commandDataFile = new File(commandDataPath)).exists()) {
+            commandDataFile.mkdirs();
         }
 
         this.console = new NukkitConsole(this);
@@ -309,7 +311,7 @@ public class Server {
         while (convertLegacyConfiguration()) { /* repeat until all legacy configurations are converted */ }
 
         File config = new File(this.dataPath + "pnx.yml");
-        String chooseLanguage = null;
+        String chooseLanguage;
 
         if (!config.exists()) {
             // Config doesn't exist - use wizard config if provided, otherwise use predefined or default
@@ -446,24 +448,32 @@ public class Server {
         NukkitMetrics.startNow(this);
 
         {//init
-            Registries.POTION.init();
-            Registries.PACKET.init();
-            Registries.ENTITY.init();
-            Registries.BLOCKENTITY.init();
-            Registries.ITEM_RUNTIMEID.init();
-            Registries.BLOCK.init();
-            Registries.BLOCKSTATE.init();
-            Registries.ITEM.init();
-            Registries.CREATIVE.init();
-            Registries.BIOME.init();
-            Registries.FUEL.init();
-            Registries.GENERATOR.init();
-            Registries.GENERATE_STAGE.init();
-            Registries.POPULATOR.init();
-            Registries.GENERATE_FEATURE.init();
-            Registries.STRUCTURE.init();
-            Registries.EFFECT.init();
-            Registries.RECIPE.init();
+            CompletableFuture<Void> blockF       = CompletableFuture.runAsync(Registries.BLOCK::init,           computeThreadPool);
+            CompletableFuture<Void> itemF        = CompletableFuture.runAsync(Registries.ITEM::init,            computeThreadPool);
+            CompletableFuture<Void> potionF      = CompletableFuture.runAsync(Registries.POTION::init,          computeThreadPool);
+            CompletableFuture<Void> packetF      = CompletableFuture.runAsync(Registries.PACKET::init,          computeThreadPool);
+            CompletableFuture<Void> entityF      = CompletableFuture.runAsync(Registries.ENTITY::init,          computeThreadPool);
+            CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init,     computeThreadPool);
+            CompletableFuture<Void> itemRtIdF    = CompletableFuture.runAsync(Registries.ITEM_RUNTIMEID::init,  computeThreadPool);
+            CompletableFuture<Void> biomeF       = CompletableFuture.runAsync(Registries.BIOME::init,           computeThreadPool);
+            CompletableFuture<Void> fuelF        = CompletableFuture.runAsync(Registries.FUEL::init,            computeThreadPool);
+            CompletableFuture<Void> generatorF   = CompletableFuture.runAsync(Registries.GENERATOR::init,       computeThreadPool);
+            CompletableFuture<Void> genStageF    = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init,  computeThreadPool);
+            CompletableFuture<Void> populatorF   = CompletableFuture.runAsync(Registries.POPULATOR::init,       computeThreadPool);
+            CompletableFuture<Void> genFeatF     = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init,computeThreadPool);
+            CompletableFuture<Void> effectF      = CompletableFuture.runAsync(Registries.EFFECT::init,          computeThreadPool);
+
+            CompletableFuture<Void> blockStateF  = blockF.thenRunAsync(Registries.BLOCKSTATE::init, computeThreadPool);
+            CompletableFuture<Void> structureF  = blockF.thenRunAsync(Registries.STRUCTURE::init,  computeThreadPool);
+            CompletableFuture<Void> creativeF    = CompletableFuture.allOf(itemF, blockStateF)
+                    .thenRunAsync(Registries.CREATIVE::init, computeThreadPool);
+
+            CompletableFuture<Void> recipeF      = creativeF.thenRunAsync(Registries.RECIPE::init, computeThreadPool);
+
+            CompletableFuture.allOf(potionF, packetF, entityF, blockEntityF, itemRtIdF, biomeF,
+                    fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
+                    creativeF, recipeF).join();
+
             Profession.init();
             String a = BlockTags.ACACIA;
             String b = ItemTags.ARROW;
