@@ -943,6 +943,7 @@ public class Server {
                 } catch (Exception e) {
                     log.error(this.getLanguage().tr("nukkit.level.tickError",
                             level.getFolderPath(), Utils.getExceptionMessage(e)), e);
+                    e.printStackTrace();
                 }
             }
         }

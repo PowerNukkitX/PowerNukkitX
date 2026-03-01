@@ -997,7 +997,9 @@ public class Level implements Metadatable {
 
         if (!this.loaders.containsKey(hash)) {
             this.loaderCounter.put(hash, 1);
-            this.loaders.put(hash, loader);
+            synchronized (this.loaders) {
+                this.loaders.put(hash, loader);
+            }
         } else {
             this.loaderCounter.put(hash, this.loaderCounter.get(hash) + 1);
         }
@@ -1025,7 +1027,9 @@ public class Level implements Metadatable {
                 int count = this.loaderCounter.get(loaderId);
                 if (--count == 0) {
                     this.loaderCounter.remove(loaderId);
-                    this.loaders.remove(loaderId);
+                    synchronized (this.loaders) {
+                        this.loaders.remove(loaderId);
+                    }
                 } else {
                     this.loaderCounter.put(loaderId, count);
                 }
@@ -1072,29 +1076,33 @@ public class Level implements Metadatable {
     }
 
     private void doTick(GameLoop gameLoop) {
-        int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
-        long levelTime = System.currentTimeMillis();
-        int tickMs = (int) (System.currentTimeMillis() - levelTime);
-        doTick(gameLoop.getTick());
-        if (getServer().getSettings().levelSettings().autoTickRate()) {
-            if (tickMs < 50 && this.getTickRate() > baseTickRate) {
-                int r;
-                this.setTickRate(r = this.getTickRate() - 1);
-                if (r > baseTickRate) {
+        try {
+            int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
+            long levelTime = System.currentTimeMillis();
+            int tickMs = (int) (System.currentTimeMillis() - levelTime);
+            doTick(gameLoop.getTick());
+            if (getServer().getSettings().levelSettings().autoTickRate()) {
+                if (tickMs < 50 && this.getTickRate() > baseTickRate) {
+                    int r;
+                    this.setTickRate(r = this.getTickRate() - 1);
+                    if (r > baseTickRate) {
+                        this.tickRateCounter = this.getTickRate();
+                    }
+                    log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
+                } else if (tickMs >= 50) {
+                    int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
+                    if (this.getTickRate() == baseTickRate) {
+                        this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                        log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                    } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
+                        this.setTickRate(this.getTickRate() + 1);
+                        log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                    }
                     this.tickRateCounter = this.getTickRate();
                 }
-                log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
-            } else if (tickMs >= 50) {
-                int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
-                if (this.getTickRate() == baseTickRate) {
-                    this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
-                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
-                } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
-                    this.setTickRate(this.getTickRate() + 1);
-                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
-                }
-                this.tickRateCounter = this.getTickRate();
             }
+        } catch (Exception e) {
+            log.error("Failed to tick levelThread for " + getName(), e);
         }
     }
 
