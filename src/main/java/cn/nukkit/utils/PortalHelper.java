@@ -33,6 +33,13 @@ import static cn.nukkit.level.Level.DIMENSION_THE_END;
  */
 @Slf4j
 public final class PortalHelper implements BlockID {
+
+    /**
+     * Maximum horizontal distance (in blocks) around the current position to search for an existing portal.
+     * <p>
+     * A radius of 128 blocks roughly mirrors vanilla Minecraft's portal search behavior and provides a
+     * balance between finding nearby portals and keeping the block scan performant on large worlds.
+     */
     private static final int PORTAL_SEARCH_RADIUS = 128;
 
     /**
@@ -114,7 +121,7 @@ public final class PortalHelper implements BlockID {
         Comparator<Block> byDistance = Comparator.comparingDouble(block -> currentPosV2.distanceSquared(block.getFloorX(), block.getFloorZ()));
         Comparator<Block> byHeight = Comparator.comparingDouble(block -> Math.pow(baseY - block.y, 2));
         return blocks.stream()
-                .filter(block -> !block.down().getId().equals(BlockID.PORTAL))
+                .filter(block -> !Objects.equals(block.down().getId(), BlockID.PORTAL))
                 .min(byDistance.thenComparing(byHeight))
                 .map(block -> new Position(block.x, block.y, block.z, block.level));
     }

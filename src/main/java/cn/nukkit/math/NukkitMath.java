@@ -7,17 +7,13 @@ import java.math.BigInteger;
  * @author MagicDroidX (Nukkit Project)
  */
 public class NukkitMath {
-    private static final Byte ZERO_BYTE = 0;
-    private static final Integer ZERO_INTEGER = 0;
-    private static final Short ZERO_SHORT = 0;
-    private static final Long ZERO_LONG = 0L;
-
     public static boolean isZero(Number storage) {
-        return ZERO_BYTE.equals(storage)
-                || ZERO_INTEGER.equals(storage)
-                || ZERO_SHORT.equals(storage)
-                || ZERO_LONG.equals(storage)
-                || BigInteger.ZERO.equals(storage);
+        if (storage instanceof Integer i)    return i == 0;
+        if (storage instanceof Long l)       return l == 0L;
+        if (storage instanceof Byte b)       return b == 0;
+        if (storage instanceof Short s)      return s == 0;
+        if (storage instanceof BigInteger bi) return bi.signum() == 0;
+        return false;
     }
 
     public static int floorDouble(double n) {
@@ -59,12 +55,17 @@ public class NukkitMath {
         return Math.min(start, end) + NukkitMath.randomRange(random, 0, heightDiffHalf2) + NukkitMath.randomRange(random, 0, heightDiffHalf);
     }
 
+    /** Pre-computed powers of 10 to avoid Math.pow() for common precisions. */
+    private static final double[] POW10 = {
+        1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10
+    };
+
     public static double round(double d) {
         return round(d, 0);
     }
 
     public static double round(double d, int precision) {
-        double pow = Math.pow(10, precision);
+        double pow = (precision >= 0 && precision < POW10.length) ? POW10[precision] : Math.pow(10, precision);
         return ((double) Math.round(d * pow)) / pow;
     }
 

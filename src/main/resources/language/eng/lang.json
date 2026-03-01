@@ -151,6 +151,8 @@
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Whether to enable debug commands",
   "pnx.settings.debug.ignoredpackets": "Ignored packet logs at TRACE level",
+  "pnx.settings.performance.registrycache.enable": "Whether to enable the registry cache. Recommended for larger networks that often boot subservers.",
+  "pnx.settings.performance.registrycache.path": "Path to the registry cache file",
   "pnx.settings.performance.asyncworkers": "Number of threads used by the server scheduler, 'auto' means automatic allocation",
   "pnx.settings.performance.freezearray.enable": "Whether to enable the freeze array",
 

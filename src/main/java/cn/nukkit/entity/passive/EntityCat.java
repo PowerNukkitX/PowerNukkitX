@@ -177,7 +177,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     @Override
     public boolean attackTarget(Entity entity) {
-        return switch (entity.getIdentifier().toString()) {
+        return switch (entity.getIdentifier()) {
             case RABBIT, TURTLE -> true;
             default -> false;
         };
@@ -221,7 +221,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
+        if (Objects.equals(item.getId(), Item.NAME_TAG) && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
         int healable = this.getHealingAmount(item);
@@ -262,7 +262,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityOwn
                 getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
                 return true;
             }
-        } else if (item.getId() == Item.DYE) {
+        } else if (Objects.equals(item.getId(), Item.DYE)) {
             if (this.hasOwner() && player.equals(this.getOwner())) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 this.setColor(((ItemDye) item).getDyeColor());

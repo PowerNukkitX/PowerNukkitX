@@ -21,6 +21,7 @@ import com.google.common.collect.Collections2;
 import com.google.gson.internal.LinkedTreeMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.collection.CharObjectHashMap;
 import io.netty.util.internal.EmptyArrays;
@@ -30,6 +31,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -379,12 +381,26 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         buffer = craftingPacket.retain();
     }
 
+    void writePktCache(DataOutputStream out) throws java.io.IOException {
+        byte[] bytes = new byte[buffer.readableBytes()];
+        buffer.getBytes(buffer.readerIndex(), bytes);
+        out.write(bytes);
+    }
+
     @Override
     public void init() {
+        this.init(null);
+    }
+
+    public void init(byte[] pktBytes) {
         if (isLoad.getAndSet(true)) return;
         log.info("Loading recipes...");
         this.loadRecipes();
-        this.rebuildPacket();
+        if (pktBytes != null) {
+            ByteBuf buf = Unpooled.wrappedBuffer(pktBytes);
+            setCraftingPacket(buf);
+            buf.release(); // setCraftingPacket retains it; release the initial reference
+        } else this.rebuildPacket();
         log.info("Loaded {} recipes.", getRecipeCount());
     }
 

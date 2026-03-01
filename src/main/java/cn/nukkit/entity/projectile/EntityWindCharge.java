@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EntityWindCharge extends EntityProjectile {
 
-    public Entity directionChanged;
+    private Entity directionChanged;
 
     public EntityWindCharge(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -36,7 +36,7 @@ public class EntityWindCharge extends EntityProjectile {
     @Override
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
 
-        if(collisionBlock instanceof BlockDoor
+        if (collisionBlock instanceof BlockDoor
                 || collisionBlock instanceof BlockTrapdoor
                 || collisionBlock instanceof BlockFenceGate
                 || collisionBlock instanceof BlockButton
@@ -46,16 +46,15 @@ public class EntityWindCharge extends EntityProjectile {
             collisionBlock.onActivate(Item.AIR, null, getDirection(), 0, 0, 0);
         }
 
-        if(collisionBlock instanceof BlockChorusFlower
-                    || collisionBlock instanceof BlockDecoratedPot) {
+        if (collisionBlock instanceof BlockChorusFlower
+                || collisionBlock instanceof BlockDecoratedPot) {
             this.getLevel().useBreakOn(collisionBlock, Item.AIR);
         }
 
-        for(Entity entity : level.getEntities()) {
-            if(entity instanceof EntityLiving entityLiving) {
-                if(entityLiving.distance(this) < getBurstRadius()) {
-                    this.knockBack(entityLiving);
-                }
+        double radius = getBurstRadius();
+        for (Entity entity : level.getNearbyEntities(getBoundingBox().grow(radius, radius, radius))) {
+            if (entity instanceof EntityLiving entityLiving && entityLiving.distance(this) < radius) {
+                this.knockBack(entityLiving);
             }
         }
         level.addLevelSoundEvent(position.add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
@@ -66,8 +65,8 @@ public class EntityWindCharge extends EntityProjectile {
 
     @Override
     public void onCollideWithEntity(Entity entity) {
-        if(directionChanged != null) {
-            if(directionChanged == entity) return;
+        if (directionChanged != null) {
+            if (directionChanged == entity) return;
         }
         entity.attack(new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, 1f));
         level.addLevelSoundEvent(entity.getPosition().add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);

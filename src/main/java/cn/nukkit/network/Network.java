@@ -42,7 +42,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class Network implements NetworkInterface {
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
     private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
     private final Map<InetSocketAddress, BedrockSession> sessionMap = new ConcurrentHashMap<>();
-    private final Map<InetAddress, LocalDateTime> blockIpMap = new HashMap<>();
+    private final Map<InetAddress, LocalDateTime> blockIpMap = new ConcurrentHashMap<>();
     private final RakServerChannel channel;
     private BedrockPong pong;
     @Getter @Setter
@@ -167,10 +166,12 @@ public class Network implements NetworkInterface {
     }
 
     public double getUpload() {
+        if (netWorkStatisticDataList.size() < 2) return 0;
         return netWorkStatisticDataList.get(1).upload - netWorkStatisticDataList.get(0).upload;
     }
 
     public double getDownload() {
+        if (netWorkStatisticDataList.size() < 2) return 0;
         return netWorkStatisticDataList.get(1).download - netWorkStatisticDataList.get(0).download;
     }
 
@@ -283,19 +284,19 @@ public class Network implements NetworkInterface {
      * whether the address is blocked
      */
     public boolean isAddressBlocked(InetSocketAddress address) {
-        InetAddress a = address.getAddress();
-        if (this.blockIpMap.containsKey(a)) {
-            LocalDateTime localDateTime = this.blockIpMap.get(a);
-            return LocalDateTime.now().isBefore(localDateTime);
-        }
-        return false;
+        LocalDateTime until = this.blockIpMap.get(address.getAddress());
+        return until != null && LocalDateTime.now().isBefore(until);
     }
 
     /**
      * A function of tick for network session
      */
     public void process() {
-        this.sessionMap.values().stream().filter(session -> session.isConnected() && session.getPlayer() == null).forEach(BedrockSession::tick);
+        for (BedrockSession session : this.sessionMap.values()) {
+            if (session.isConnected() && session.getPlayer() == null) {
+                session.tick();
+            }
+        }
     }
 
     /**

@@ -191,7 +191,8 @@ public class Vector3f implements Cloneable {
     }
 
     public double distanceSquared(Vector3f pos) {
-        return Math.pow(this.x - pos.x, 2) + Math.pow(this.y - pos.y, 2) + Math.pow(this.z - pos.z, 2);
+        float dx = this.x - pos.x, dy = this.y - pos.y, dz = this.z - pos.z;
+        return dx * dx + dy * dy + dz * dz;
     }
 
     public float maxPlainDistance() {
