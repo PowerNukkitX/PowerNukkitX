@@ -636,7 +636,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.noDamageTicks = 60;
 
-        synchronized (playerChunkManager.getUsedChunks()) {
+        synchronized (playerChunkManager) {
             for (long index : playerChunkManager.getUsedChunks()) {
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
