@@ -4593,7 +4593,7 @@ public class Level implements Metadatable {
                     long time = entry.getValue();
                     if (maxUnload <= 0) {
                         break;
-                    } else if (time < (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
+                    } else if (time > (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
                         continue;
                     }
                 }
