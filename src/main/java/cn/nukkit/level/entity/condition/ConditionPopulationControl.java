@@ -9,14 +9,20 @@ import cn.nukkit.level.format.IChunk;
 
 public class ConditionPopulationControl extends Condition {
 
+    public boolean ignoreHeight;
     public int[] densityCap;
     private final Class<? extends EntityIntelligent> checkForClass;
 
     public ConditionPopulationControl(Class<? extends EntityIntelligent> checkForClass, int[] densityCap) {
+        this(checkForClass, densityCap, false);
+    }
+
+    public ConditionPopulationControl(Class<? extends EntityIntelligent> checkForClass, int[] densityCap, boolean ignoreHeight) {
         super("minecraft:population_control");
         this.checkForClass = checkForClass;
         if(densityCap.length != DimensionEnum.values().length) throw new IllegalArgumentException("Density Cap array does not match dimensions");
         this.densityCap = densityCap;
+        this.ignoreHeight = ignoreHeight;
     }
 
     @Override
@@ -30,9 +36,11 @@ public class ConditionPopulationControl extends Condition {
             for(int z = -5; z <=5; z++) {
                 for(Entity entity : level.getChunkEntities(chunkX + x, chunkZ + z, false).values()) {
                     if(checkForClass.isAssignableFrom(entity.getClass())) {
-                        if(entity.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) == block.getFloorY()-1) {
-                            if(surface) entityDensity++;
-                        } else if(!surface) entityDensity++;
+                        if(!ignoreHeight) {
+                            if(entity.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) == block.getFloorY()-1) {
+                                if(surface) entityDensity++;
+                            } else if(!surface) entityDensity++;
+                        } else entityDensity++;
                     }
                 }
             }

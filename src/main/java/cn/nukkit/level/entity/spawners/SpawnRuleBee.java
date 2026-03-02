@@ -18,7 +18,7 @@ public class SpawnRuleBee extends SpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(7, 15),
                 new ConditionBiomeFilter(BiomeTags.PLAINS, BiomeTags.FLOWER_FOREST, BiomeTags.SUNFLOWER_PLAINS),
-                new ConditionPopulationControl(EntityAnimal.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(EntityAnimal.class, new int[]{4, 0, 4}, true)
         );
     }
 
