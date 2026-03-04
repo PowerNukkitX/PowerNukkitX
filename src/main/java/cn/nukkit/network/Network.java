@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
+import org.cloudburstmc.netty.channel.raknet.config.RakServerCookieMode;
 import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
@@ -112,7 +113,7 @@ public class Network implements NetworkInterface {
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
-                .option(RakChannelOption.RAK_SEND_COOKIE, true)
+                .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, RakServerCookieMode.ACTIVE)
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
