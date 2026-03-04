@@ -54,7 +54,7 @@ public class BlockDirt extends BlockSolid implements Natural {
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
 
-        if(item.getId().equals(Item.POTION) && item.getDamage() == 0) { // Water Bottle
+        if(player != null && item.getId().equals(Item.POTION) && item.getDamage() == 0) { // Water Bottle
             item.useOn(this);
             HumanInventory inventory = player.getInventory();
             Item glassBottle = Item.get(Item.GLASS_BOTTLE);
