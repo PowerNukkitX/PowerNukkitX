@@ -26,7 +26,6 @@ import cn.nukkit.block.BlockPumpkin;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -64,7 +63,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author joserobjr
  * @since 2021-01-13
  */
-public class EntityIronGolem extends EntityGolem implements EntityOwnable {
+public class EntityIronGolem extends EntityGolem {
     @Override
     @NotNull public String getIdentifier() {
         return IRON_GOLEM;
