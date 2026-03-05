@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -51,6 +53,19 @@ public class BlockDirt extends BlockSolid implements Natural {
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
+
+        if(player != null && item.getId().equals(Item.POTION) && item.getDamage() == 0) { // Water Bottle
+            item.useOn(this);
+            HumanInventory inventory = player.getInventory();
+            Item glassBottle = Item.get(Item.GLASS_BOTTLE);
+            if(!player.isCreative()) {
+                 inventory.setItemInHand(glassBottle);
+            } else inventory.addItem(glassBottle);
+            this.getLevel().addSound(this, Sound.BOTTLE_EMPTY);
+            this.getLevel().setBlock(this, get(MUD));
+            return true;
+        }
+
         if (!this.up().canBeReplaced()) {
             return false;
         }
