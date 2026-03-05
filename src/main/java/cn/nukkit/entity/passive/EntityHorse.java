@@ -382,7 +382,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
-        // 2) Default: mount
         mountEntity(player, true);
         return false;
     }
