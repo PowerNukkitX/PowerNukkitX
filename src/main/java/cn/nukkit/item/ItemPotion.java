@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -108,7 +109,7 @@ public class ItemPotion extends Item {
         }
 
         if (potion != null) {
-            potion.applyEffects(player, false, 1);
+            potion.applyEffects(player, PotionApplicationMode.DRINK, 1);
         }
         return true;
     }
