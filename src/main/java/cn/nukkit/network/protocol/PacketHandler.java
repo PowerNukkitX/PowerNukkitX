@@ -599,9 +599,6 @@ public interface PacketHandler {
     default void handle(ServerboundDataStorePacket pk) {
     }
 
-    default void handle(ClientboundDataDrivenUICloseAllScreensPacket pk) {
-    }
-
     default void handle(ClientboundDataDrivenUIReloadPacket pk) {
     }
 
@@ -627,5 +624,17 @@ public interface PacketHandler {
     }
 
     default void handle(PartyChangedPacket pk) {
+    }
+
+    default void handle(ClientboundDataDrivenUICloseScreenPacket pk) {
+    }
+
+    default void handle(ServerboundDataDrivenClosedPacket pk) {
+    }
+
+    default void handle(ResourcePacksReadyForValidationPacket pk) {
+    }
+
+    default void handle(LocatorBarPacket pk) {
     }
 }

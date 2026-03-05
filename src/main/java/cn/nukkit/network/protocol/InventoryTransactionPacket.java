@@ -102,6 +102,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 itemData.clickPos = byteBuf.readVector3f();
                 itemData.blockRuntimeId = byteBuf.readUnsignedVarInt();
                 itemData.clientInteractPrediction = UseItemData.PredictedResult.values()[byteBuf.readUnsignedVarInt()];
+                itemData.clientCooldownState = byteBuf.readUnsignedVarInt();
 
                 this.transactionData = itemData;
                 break;
@@ -167,6 +168,7 @@ public class InventoryTransactionPacket extends DataPacket {
                 byteBuf.writeVector3f(useItemData.clickPos);
                 byteBuf.writeUnsignedVarInt(useItemData.blockRuntimeId);
                 byteBuf.writeUnsignedVarInt(useItemData.clientInteractPrediction.ordinal());
+                byteBuf.writeUnsignedVarInt(useItemData.clientCooldownState);
                 break;
             case TYPE_USE_ITEM_ON_ENTITY:
                 UseItemOnEntityData useItemOnEntityData = (UseItemOnEntityData) this.transactionData;
