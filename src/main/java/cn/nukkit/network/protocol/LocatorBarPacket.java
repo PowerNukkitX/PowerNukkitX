@@ -46,7 +46,7 @@ public class LocatorBarPacket extends DataPacket {
     protected void writeLocatorBarWaypointPayload(HandleByteBuf byteBuf, LocatorBarWaypointPayload payload) {
         byteBuf.writeUUID(payload.getGroupHandle());
         this.writeServerWaypointPayload(byteBuf, payload.getServerWaypointPayload());
-        byteBuf.writeUnsignedVarInt(payload.getActionFlag().ordinal());
+        byteBuf.writeByte(payload.getActionFlag().ordinal());
     }
 
     protected LocatorBarWaypointPayload readLocatorBarWaypointPayload(HandleByteBuf byteBuf) {

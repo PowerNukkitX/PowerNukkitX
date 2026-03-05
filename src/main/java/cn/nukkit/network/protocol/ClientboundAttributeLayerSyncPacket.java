@@ -146,7 +146,7 @@ public class ClientboundAttributeLayerSyncPacket extends DataPacket {
             byteBuf.writeString(settings.getWeight().getAsString());
         }
         byteBuf.writeBoolean(settings.isEnabled());
-        byteBuf.writeBoolean(settings.isTransitionPaused());
+        byteBuf.writeBoolean(settings.isTransitionsPaused());
     }
 
     private AttributeLayerSettings readAttributeLayerSettings(HandleByteBuf byteBuf) {
@@ -160,7 +160,7 @@ public class ClientboundAttributeLayerSyncPacket extends DataPacket {
             settings.setWeight(new AttributeLayerSettings.WeightData(weightType, byteBuf.readString()));
         }
         settings.setEnabled(byteBuf.readBoolean());
-        settings.setTransitionPaused(byteBuf.readBoolean());
+        settings.setTransitionsPaused(byteBuf.readBoolean());
         return settings;
     }
 

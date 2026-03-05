@@ -334,6 +334,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.SERVERBOUND_DATA_DRIVEN_SCREEN_CLOSED, ServerboundDataDrivenClosedPacket.class);
         this.register0(ProtocolInfo.RESOURCE_PACKS_READY_FOR_VALIDATION_PACKET, ResourcePacksReadyForValidationPacket.class);
         this.register0(ProtocolInfo.LOCATOR_BAR_PACKET, LocatorBarPacket.class);
+        this.register0(ProtocolInfo.SYNC_WORLD_CLOCKS_PACKET, SyncWorldClocksPacket.class);
 
         this.PACKET_POOL.trim();
     }

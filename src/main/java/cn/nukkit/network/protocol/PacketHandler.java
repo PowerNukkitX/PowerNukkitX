@@ -637,4 +637,7 @@ public interface PacketHandler {
 
     default void handle(LocatorBarPacket pk) {
     }
+
+    default void handle(SyncWorldClocksPacket pk) {
+    }
 }
