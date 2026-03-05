@@ -17,7 +17,6 @@ import java.util.Set;
 public class UpdateClientInputLocksPacket extends DataPacket {
 
     private int lockComponentData;
-    public Vector3f serverPosition;
 
     public void setFlags(Set<ClientInputLocksFlag> flags) {
         this.lockComponentData = ClientInputLocksFlag.toBitSet(flags);
@@ -30,13 +29,11 @@ public class UpdateClientInputLocksPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.lockComponentData = byteBuf.readUnsignedVarInt();
-        this.serverPosition = byteBuf.readVector3f();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(lockComponentData);
-        byteBuf.writeVector3f(serverPosition);
     }
 
     @Override

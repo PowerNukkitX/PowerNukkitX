@@ -89,7 +89,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -5586,14 +5585,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected void sendClientInputLocks() {
         UpdateClientInputLocksPacket pk = new UpdateClientInputLocksPacket();
-        Vector3f pos = this.getPosition().asVector3f();
-        pos = new Vector3f(
-                pos.getX(),
-                pos.getY() + this.getEyeHeight(),
-                pos.getZ()
-        );
-
-        pk.setServerPosition(pos);
         pk.setFlags(this.clientInputLocks);
         this.dataPacket(pk);
     }

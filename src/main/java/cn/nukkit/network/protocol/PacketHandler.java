@@ -625,4 +625,7 @@ public interface PacketHandler {
 
     default void handle(ClientboundAttributeLayerSyncPacket pk) {
     }
+
+    default void handle(PartyChangedPacket pk) {
+    }
 }

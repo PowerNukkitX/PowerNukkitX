@@ -330,6 +330,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.VOXEL_SHAPES_PACKET, VoxelShapesPacket.class);
         this.register0(ProtocolInfo.CAMERA_AIM_ASSIST_ACTOR_PRIORITY_PACKET, CameraAimAssistActorPriorityPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_ATTRIBUTE_LAYER_SYNC_PACKET, ClientboundAttributeLayerSyncPacket.class);
+        this.register0(ProtocolInfo.PARTY_CHANGED_PACKET, PartyChangedPacket.class);
 
         this.PACKET_POOL.trim();
     }

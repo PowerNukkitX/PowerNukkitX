@@ -52,6 +52,7 @@ public class InventoryTransactionPacket extends DataPacket {
     public int legacyRequestId;
     private UseItemData.TriggerType triggerType;
     private UseItemData.PredictedResult clientInteractPrediction;
+    private int clientCooldownState;
 
     /**
      * NOTE: THESE FIELDS DO NOT EXIST IN THE PROTOCOL, it's merely used for convenience for us to easily
