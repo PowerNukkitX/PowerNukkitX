@@ -7,6 +7,7 @@ import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.entity.item.EntityAreaEffectCloud;
 import cn.nukkit.level.Location;
@@ -62,7 +63,7 @@ public class PerchingExecutor implements EntityControl, IBehaviorExecutor {
                                     .putFloat("RadiusPerTick", 0)
                     );
 
-                    List<Effect> effects = PotionType.get(PotionType.HARMING.id()).getEffects(false);
+                    List<Effect> effects = PotionType.get(PotionType.HARMING.id()).getEffects(PotionApplicationMode.DRINK);
                     for (Effect effect : effects) {
                         if (effect != null && areaEffectCloud != null) {
                             areaEffectCloud.cloudEffects.add(effect.setVisible(false).setAmbient(false));
