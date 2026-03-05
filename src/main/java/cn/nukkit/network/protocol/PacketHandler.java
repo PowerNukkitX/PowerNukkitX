@@ -622,4 +622,7 @@ public interface PacketHandler {
 
     default void handle(GraphicsParameterOverridePacket pk) {
     }
+
+    default void handle(ClientboundAttributeLayerSyncPacket pk) {
+    }
 }

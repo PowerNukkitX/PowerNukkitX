@@ -509,10 +509,7 @@ public class Server {
             }
 
             Profession.init();
-            String a = BlockTags.ACACIA;
-            String b = ItemTags.ARROW;
-            String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;
+            Updater updater = BlockStateUpdaterBase.INSTANCE;
             Enchantment.init();
             Attribute.init();
             BlockComposter.init();

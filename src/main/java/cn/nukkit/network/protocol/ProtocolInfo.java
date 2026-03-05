@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(924);
+    int CURRENT_PROTOCOL = dynamic(944);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.26.0");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.26.10");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 26, 0, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 26, 10, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
@@ -253,6 +253,11 @@ public interface ProtocolInfo {
     int VOXEL_SHAPES_PACKET = 337;
     int CAMERA_SPLINE_PACKET = 338;
     int CAMERA_AIM_ASSIST_ACTOR_PRIORITY_PACKET = 339;
-
+    int RESOURCE_PACKS_READY_FOR_VALIDATION_PACKET = 340;
+    int LOCATOR_BAR_PACKET = 341;
+    int PARTY_CHANGED_PACKET = 342;
+    int SERVERBOUND_DDUI_SCREEN_CLOSED = 343;
+    int SYNC_WORLD_CLOCKS_PACKET = 344;
+    int CLIENTBOUND_ATTRIBUTE_LAYER_SYNC_PACKET = 345;
 
 }
