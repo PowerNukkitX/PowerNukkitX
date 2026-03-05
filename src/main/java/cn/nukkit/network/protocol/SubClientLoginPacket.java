@@ -89,12 +89,18 @@ public class SubClientLoginPacket extends DataPacket {
 
             if (payload.containsKey("Certificate") && payload.get("Certificate") instanceof String certJson && !((String) payload.get("Certificate")).isEmpty()) {
                 Map<String, Object> certData = JsonUtil.parseJson(certJson);
-                if (!certData.containsKey("chain") || !(certData.get("chain") instanceof List)) {
+                Object chainObj = certData.get("chain");
+                if (chainObj == null) {
                     throw new IllegalArgumentException("Invalid Certificate chain in JWT");
                 }
-                List<String> chain = (List<String>) certData.get("chain");
-                return new CertificateChainPayload(chain, authType);
-            } else if (payload.containsKey("Token") && payload.get("Token") instanceof String token && !((String) payload.get("Token")).isEmpty()) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    List<String> chain = (List<String>) chainObj;
+                    return new CertificateChainPayload(chain, authType);
+                } catch (ClassCastException e) {
+                    throw new IllegalArgumentException("Certificate chain is not a valid list of strings", e);
+                }
+            } else if (payload.get("Token") instanceof String token && !token.isEmpty()) {
                 return new TokenPayload(token, authType);
             } else {
                 throw new IllegalArgumentException("Invalid AuthPayload in JWT");

@@ -4,6 +4,7 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.TakeAction;
@@ -23,9 +24,10 @@ public class TakeActionProcessor extends TransferItemActionProcessor<TakeAction>
 
     @Override
     public ActionResponse handle(TakeAction action, Player player, ItemStackRequestContext context) {
-        ContainerSlotType sourceSlotType = action.getSource().getContainer();
+        FullContainerName containerName = action.getSource().getContainerName();
+        ContainerSlotType sourceSlotType = containerName.getContainer();
         if (sourceSlotType == ContainerSlotType.CREATED_OUTPUT) {
-            Integer dynamicId = action.getSource().getContainerName().getDynamicId();
+            Integer dynamicId = containerName.getDynamicId();
             Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicId);
             Item sourItem = source.getUnclonedItem(0);
             int count = action.getCount();

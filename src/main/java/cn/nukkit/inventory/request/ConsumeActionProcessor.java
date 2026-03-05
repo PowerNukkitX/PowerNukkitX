@@ -3,6 +3,7 @@ package cn.nukkit.inventory.request;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ConsumeAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
@@ -31,8 +32,9 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
 
             return context.error();
         }
-        Integer dynamicId = action.getSource().getContainerName().getDynamicId();
-        Inventory sourceContainer = NetworkMapping.getInventory(player, action.getSource().getContainer(), dynamicId);
+        FullContainerName containerName = action.getSource().getContainerName();
+        Integer dynamicId = containerName.getDynamicId();
+        Inventory sourceContainer = NetworkMapping.getInventory(player, containerName.getContainer(), dynamicId);
         int slot = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
         Item item = sourceContainer.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
@@ -62,7 +64,7 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         }
 
         Boolean isEnchRecipe = context.get(ENCH_RECIPE_KEY);
-        if (isEnchRecipe != null && isEnchRecipe && action.getSource().getContainer() == ContainerSlotType.ENCHANTING_INPUT) {
+        if (isEnchRecipe != null && isEnchRecipe && containerName.getContainer() == ContainerSlotType.ENCHANTING_INPUT) {
             return null;
         }
 
@@ -84,7 +86,7 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
                                         item.getDamage()
                                 )
                         ),
-                        action.getSource().getContainerName()
+                        containerName
                 )
         ));
     }
