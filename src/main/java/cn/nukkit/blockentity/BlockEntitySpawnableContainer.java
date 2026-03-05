@@ -25,7 +25,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
             this.namedTag.putList("Items", new ListTag<CompoundTag>());
         }
 
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
+        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
             this.inventory.setItemInternal(compound.getByte("Slot"), item);

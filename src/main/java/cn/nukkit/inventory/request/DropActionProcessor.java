@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.player.PlayerDropItemEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
@@ -27,8 +28,9 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
 
     @Override
     public ActionResponse handle(DropAction action, Player player, ItemStackRequestContext context) {
-        Integer dynamicId = action.getSource().getContainerName().getDynamicId();
-        Inventory inventory = NetworkMapping.getInventory(player, action.getSource().getContainer(), dynamicId);
+        FullContainerName containerName = action.getSource().getContainerName();
+        Integer dynamicId = containerName.getDynamicId();
+        Inventory inventory = NetworkMapping.getInventory(player, containerName.getContainer(), dynamicId);
         var count = action.getCount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
         var item = inventory.getItem(slot);
@@ -76,7 +78,7 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
                                         item.getDamage()
                                 )
                         ),
-                        action.getSource().getContainerName()
+                        containerName
                 )
         ));
     }

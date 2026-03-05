@@ -147,7 +147,7 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         if (objectiveName == null) return null;
         IScoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
         Object linesObj = map.get("lines");
-        if (!(linesObj instanceof List<?>)) return scoreboard;
+        if (!(linesObj instanceof List)) return scoreboard;
 
         for (Map<String, Object> line : (List<Map<String, Object>>) linesObj) {
             if (!line.containsKey("score") || !line.containsKey("scorerType")) continue;

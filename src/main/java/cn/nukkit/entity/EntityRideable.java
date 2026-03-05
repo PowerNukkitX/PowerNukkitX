@@ -4,6 +4,7 @@ package cn.nukkit.entity;
  * @author MagicDroidX (Nukkit Project)
  * @deprecated Use Entity#isRideable, Entity#mountEntity and Entity#dismountEntity instead.
  */
+@Deprecated
 public interface EntityRideable {
 
     /**

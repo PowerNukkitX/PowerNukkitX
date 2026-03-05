@@ -19,6 +19,7 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_VERTICAL_HALF;
@@ -219,15 +220,22 @@ public class ObjectDesertPyramid extends RuledObjectGenerator {
         builder.setBlockStateAt(new BlockVector3(10, 3, 10), STONE_PRESSURE_PLATE);
 
         builder.setBlockStateAt(new BlockVector3(10, 3, 12), CHEST_N);
-        CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) builder.getBlockAt(10, 3, 12)).getOrCreateBlockEntity().getInventory(), random);
+        this.populateChestAt(builder, 10, 3, 12, random);
         builder.setBlockStateAt(new BlockVector3(8, 3, 10), CHEST_E);
-        CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) builder.getBlockAt(8, 3, 10)).getOrCreateBlockEntity().getInventory(), random);
+        this.populateChestAt(builder, 8, 3, 10, random);
         builder.setBlockStateAt(new BlockVector3(10, 3, 8), CHEST_S);
-        CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) builder.getBlockAt(10, 3, 8)).getOrCreateBlockEntity().getInventory(), random);
+        this.populateChestAt(builder, 10, 3, 8, random);
         builder.setBlockStateAt(new BlockVector3(12, 3, 10), CHEST_W);
-        CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) builder.getBlockAt(12, 3, 10)).getOrCreateBlockEntity().getInventory(), random);
+        this.populateChestAt(builder, 12, 3, 10, random);
         manager.merge(builder);
         return true;
+    }
+
+    private void populateChestAt(StructureHelper builder, int x, int y, int z, Xoroshiro128 random) {
+        var block = builder.getBlockAt(x, y, z);
+        if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityChest chest) {
+            CHEST_POPULATOR.create(chest.getInventory(), random);
+        }
     }
 
     @Override
