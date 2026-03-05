@@ -64,6 +64,8 @@ dependencies {
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
@@ -201,6 +203,9 @@ tasks.test {
     finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
 
+tasks.withType<Test>().configureEach {
+    onlyIf { !project.hasProperty("skipTests") }
+}
 
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {
