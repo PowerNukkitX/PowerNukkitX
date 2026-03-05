@@ -5,6 +5,7 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.types.CompressionAlgorithm;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.AbstractReferenceCounted;
+import io.netty.util.Recycler;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.ReferenceCounted;
 import io.netty.util.internal.ObjectPool;
@@ -19,7 +20,14 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class BedrockBatchWrapper extends AbstractReferenceCounted {
-    private static final ObjectPool<BedrockBatchWrapper> RECYCLER = ObjectPool.newPool(BedrockBatchWrapper::new);
+    private static final Recycler<BedrockBatchWrapper> RECYCLER =
+            new Recycler<>() {
+                @Override
+                protected BedrockBatchWrapper newObject(Handle<BedrockBatchWrapper> handle) {
+                    return new BedrockBatchWrapper(handle);
+                }
+            };
+
     private final ObjectPool.Handle<BedrockBatchWrapper> handle;
 
     private ByteBuf compressed;
@@ -31,7 +39,7 @@ public class BedrockBatchWrapper extends AbstractReferenceCounted {
     private boolean modified;
     private Set<BatchFlag> flags = new ObjectOpenHashSet<>();
 
-    private BedrockBatchWrapper(ObjectPool.Handle<BedrockBatchWrapper> handle) {
+    private BedrockBatchWrapper(Recycler.Handle<BedrockBatchWrapper> handle) {
         this.handle = handle;
     }
 

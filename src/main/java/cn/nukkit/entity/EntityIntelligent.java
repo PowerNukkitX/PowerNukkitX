@@ -38,17 +38,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     public EntityIntelligent(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        var storage = getMemoryStorage();
+        IMemoryStorage storage = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, getLevel().getTick());
-            MemoryType.getPersistentMemories().forEach(memory -> {
-                var mem = (MemoryType<Object>) memory;
-                var codec = mem.getCodec();
-                var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
-                if (data != null) {
-                    storage.put(mem, data);
-                }
-            });
+            MemoryType.getPersistentMemories().forEach(memory -> processMemoryStorage(storage, memory));
         }
     }
 
@@ -76,6 +69,15 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
      */
     protected IBehaviorGroup requireBehaviorGroup() {
         return new EmptyBehaviorGroup(this);
+    }
+
+    private <D> void processMemoryStorage(IMemoryStorage storage, MemoryType<D> mem) {
+        var codec = mem.getCodec();
+        var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+
+        if (data != null) {
+            storage.put(mem, data);
+        }
     }
 
     @Override

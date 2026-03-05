@@ -19,19 +19,18 @@ import java.util.Map;
 public class BundleInventory extends BaseInventory {
 
     private static final int MAX_FILL = 64;
-
-    private static AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
+    private static final AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
 
     public BundleInventory(ItemBundle holder) {
         super(holder, InventoryType.NONE, 64);
         this.holder = holder;
-        CompoundTag tag = holder.getNamedTag();
+        CompoundTag tag = holder.getOrCreateNamedTag();
         tag.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
         if (!tag.containsList("storage_item_component_content")) {
             tag.putList("storage_item_component_content", new ListTag<CompoundTag>());
         }
 
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) tag.getList("storage_item_component_content");
+        ListTag<CompoundTag> list = tag.getList("storage_item_component_content", CompoundTag.class);
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
             this.setItemInternal(compound.getByte("Slot"), item);
