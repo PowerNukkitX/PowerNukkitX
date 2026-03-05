@@ -134,7 +134,9 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .absoluteZero(perfOld.absoluteZero())
                 .melting(perfOld.melting())
                 .singleOperation(perfOld.singleOperation())
-                .batchOperation(perfOld.batchOperation());
+                .batchOperation(perfOld.batchOperation())
+                .registryCacheEnabled(perfOld.registryCacheEnabled())
+                .registryCachePath(perfOld.registryCachePath());
 
         PlayerSettings pl = settings.playerSettings();
         LegacyServerSettings.PlayerSettings plOld = legacyNukkit.playerSettings();
