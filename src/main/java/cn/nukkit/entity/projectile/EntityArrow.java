@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.item.ItemArrow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -145,7 +146,7 @@ public class EntityArrow extends SlenderProjectile {
         if (hadCollision) {
             if(getArrowItem() != null) {
                 if(getArrowItem().getTippedArrowPotion() != null) {
-                    getArrowItem().getTippedArrowPotion().getEffects(false).forEach(entity::addEffect);
+                    getArrowItem().getTippedArrowPotion().getEffects(PotionApplicationMode.ARROW).forEach(entity::addEffect);
                 }
             }
             close();

@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
@@ -85,7 +86,7 @@ public class EntityAreaEffectCloud extends Entity {
             color[0] = 255;
 
             PotionType potion = PotionType.get(getPotionId());
-            for (Effect effect : potion.getEffects(true)) {
+            for (Effect effect : potion.getEffects(PotionApplicationMode.SPLASH)) {
                 Color effectColor = effect.getColor();
                 color[1] += effectColor.getRed() * effect.getLevel();
                 color[2] += effectColor.getGreen() * effect.getLevel();

@@ -2,6 +2,7 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.entity.item.EntityAreaEffectCloud;
 import cn.nukkit.entity.mob.EntityEnderDragon;
@@ -94,7 +95,7 @@ public class EntityDragonFireball extends EntityProjectile {
                         .putFloat("RadiusPerTick", 0)
         );
 
-        List<Effect> effects = PotionType.get(PotionType.HARMING_STRONG.id()).getEffects(false);
+        List<Effect> effects = PotionType.get(PotionType.HARMING_STRONG.id()).getEffects(PotionApplicationMode.DRINK);
         for (Effect effect : effects) {
             if (effect != null && entity != null) {
                 entity.cloudEffects.add(effect.setVisible(false).setAmbient(false));
