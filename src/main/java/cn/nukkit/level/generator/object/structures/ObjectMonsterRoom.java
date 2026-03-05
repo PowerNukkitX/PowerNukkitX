@@ -57,13 +57,21 @@ public class ObjectMonsterRoom extends RuledObjectGenerator {
                 BlockFace face = faceOptional.get();
                 helper.setBlockStateAt(x, 0, z, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.valueOf(face.getName().toUpperCase()))));
                 object.getLevel().getScheduler().scheduleDelayedTask(() -> {
-                    CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) helper.getBlockAt(x, 0, z)).getOrCreateBlockEntity().getInventory(), random);
+                    Block block = helper.getBlockAt(x, 0, z);
+                    if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityChest chest) {
+                        CHEST_POPULATOR.create(chest.getInventory(), random);
+                    }
                 }, 10);
             }
         }
         helper.setBlockStateAt(0, 0, 0, MOB_SPAWNER);
         object.getLevel().getScheduler().scheduleDelayedTask(() -> {
-            ((BlockEntityHolder<BlockEntityMobSpawner>) helper.getBlockAt(0, 0, 0)).getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(MOBS[random.nextInt(MOBS.length)]));
+            Block block = helper.getBlockAt(0, 0, 0);
+            if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityMobSpawner spawner) {
+                int randomIndex = random.nextInt(MOBS.length);
+                int entityId = Registries.ENTITY.getEntityNetworkId(MOBS[randomIndex]);
+                spawner.setSpawnEntityType(entityId);
+            }
         }, 10);
         object.merge(helper);
         return true;
