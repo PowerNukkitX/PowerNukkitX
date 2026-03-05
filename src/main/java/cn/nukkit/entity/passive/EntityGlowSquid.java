@@ -19,8 +19,6 @@ public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
         super(chunk, nbt);
     }
 
-    
-
     @Override
     public float getHeight() {
         return 0.95f;

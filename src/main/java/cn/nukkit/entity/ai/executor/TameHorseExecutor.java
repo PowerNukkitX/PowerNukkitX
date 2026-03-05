@@ -11,16 +11,21 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
+
 /**
- * 代表玩家驯服马时，马的行为
- * <p>
- * Represents the behavior of a horse when the player tames it
+ * @deprecated Since 2.0.0 (2026-02-19).
+ * Replaced by {@link RideableTameExecutor}, which provides a generic
+ * ride-based taming behavior usable by any rideable entity, not only horses.
+ *
+ * This executor was specific to {@link EntityHorse} and is kept temporarily
+ * for backward compatibility.
+ *
+ * Planned removal: after 6 months (>= 2026-08-26).
  */
-
-
+@Deprecated(since = "2.0.0", forRemoval = true)
 public class TameHorseExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;
-    private int tick1;//control the stopTameFailAnimation
+    private int tick1; //control the stopTameFailAnimation
 
     public TameHorseExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
@@ -33,14 +38,14 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
     /**
      * Instantiates a new Flat random roam executor.
      *
-     * @param speed                    移动速度<br>Movement speed
-     * @param maxRoamRange             随机行走目标点的范围<br>The range of the target point that is randomly walked
-     * @param frequency                更新目标点的频率<br>How often the target point is updated
-     * @param calNextTargetImmediately 是否立即选择下一个目标点,不管执行频率<br>Whether to select the next target point immediately, regardless of the frequency of execution
-     * @param runningTime              马儿随机跑动的时间，跑动结束后会判断是否驯服成功<br>The time when the horse runs randomly, after the run, will judge whether the taming is successful
-     * @param avoidWater               是否避开水行走<br>Whether to walk away from water
-     * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
-     * @param tameProbability          马被驯服的概率(取值范围1-100)<br>Probability of a horse being tamed (value range 1-100)
+     * @param speed                    Movement speed
+     * @param maxRoamRange             The range of the target point that is randomly walked
+     * @param frequency                How often the target point is updated
+     * @param calNextTargetImmediately Whether to select the next target point immediately, regardless of the frequency of execution
+     * @param runningTime              The time when the horse runs randomly, after the run, will judge whether the taming is successful
+     * @param avoidWater               Whether to walk away from water
+     * @param maxRetryTime             Pick the maximum number of attempts at the target point
+     * @param tameProbability          Probability of a horse being tamed (value range 1-100)
      */
     public TameHorseExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime, int tameProbability) {
         super(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, avoidWater, maxRetryTime);
@@ -55,7 +60,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
         if (tick1 != 0) {
             if (tick1 > 13) {
                 var horse = (EntityHorse) entity;
-                horse.stopTameFailAnimation();
+                //horse.stopTameFailAnimation();
                 return false;
             }
             tick1++;
@@ -77,9 +82,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
             }
             if (entity.getMovementSpeed() != speed)
                 entity.setMovementSpeed(speed);
-            //更新寻路target
             setRouteTarget(entity, target);
-            //更新视线target
             setLookTarget(entity, target);
             currentTargetCalTick = 0;
             entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
@@ -110,7 +113,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                     return false;
                 }
                 player.dataPacket(packet);
-                horse.playTameFailAnimation();
+                //horse.playTameFailAnimation();
                 horse.dismountEntity(horse.getRider());
                 horse.setPersistent(true);
                 tick1++;

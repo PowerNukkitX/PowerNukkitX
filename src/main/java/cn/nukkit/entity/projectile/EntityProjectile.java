@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
@@ -25,7 +26,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -73,6 +73,11 @@ public abstract class EntityProjectile extends Entity {
 
     public int getResultDamage() {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
+    }
+
+    @Override
+    public NameableComponent getNameable() {
+        return DEFAULT_NOT_NAMEABLE;
     }
 
     @Override
@@ -158,11 +163,16 @@ public abstract class EntityProjectile extends Entity {
      * @return the boolean
      */
     protected boolean collideEntityFilter(Entity entity) {
-        if ((entity == this.shootingEntity && this.ticksLived < 5) ||
-                (entity instanceof Player player && player.getGamemode() == Player.SPECTATOR)
-                || (this.shootingEntity instanceof Player && Optional.ofNullable(this.shootingEntity.riding).map(e -> e.equals(entity)).orElse(false))) {
-            return false;
-        } else return true;
+        if (entity == this.shootingEntity && this.ticksLived < 5) return false;
+        if (entity instanceof Player player && player.getGamemode() == Player.SPECTATOR) return false;
+
+        if (this.shootingEntity != null) {
+            Entity shooterVehicle = this.shootingEntity.riding;
+            if (shooterVehicle != null && shooterVehicle == entity) return false;
+            if (shooterVehicle != null && entity.riding == shooterVehicle) return false;
+        }
+
+        return true;
     }
 
     @Override

@@ -6,15 +6,16 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.item.Item;
 
-//TODO: 需要进一步抽象
 
 /**
- * 搜索狼最近携带食物的玩家,与{@link NearestFeedingPlayerSensor}相比它特判了Bone.
- * <p>
- * Search for wolves carrying food to the nearest player, compared to {@link NearestFeedingPlayerSensor}, which is specially awarded to Bone.
+ * @deprecated Since 2.0.0 (2026-02-19).
+ * This wolf-specific feeding sensor has been replaced by the generic
+ * {@link NearestFeedingPlayerSensor}, which supports configurable item
+ * checks and can be used by any entity.
+ *
+ * Planned removal: after 6 months (>= 2026-08-26).
  */
-
-
+@Deprecated(since = "2.0.0", forRemoval = true)
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange) {

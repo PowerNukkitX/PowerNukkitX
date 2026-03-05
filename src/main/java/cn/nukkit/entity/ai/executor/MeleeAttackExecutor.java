@@ -34,9 +34,6 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected Vector3 oldTarget;
 
-    /** Used to specify a specific attack target. */
-    protected Entity target;
-
     /** Used to specify a specific look target. */
     protected Vector3 lookTarget;
 
@@ -78,17 +75,17 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
 
         //first is null
-        if (this.target == null) {
-            this.target = newTarget;
+        if (entity.targetEntity == null) {
+            entity.targetEntity = newTarget;
         }
         if (this.lookTarget == null) {
-            this.lookTarget = target.getLocation();
+            this.lookTarget = entity.targetEntity.getLocation();
         }
 
         //some check
-        if (!target.isAlive()) return false;
-        else if (entity.distanceSquared(target) > maxSenseRangeSquared) return false;
-        else if (target instanceof Player player) {
+        if (!entity.targetEntity.isAlive()) return false;
+        else if (entity.distanceSquared(entity.targetEntity) > maxSenseRangeSquared) return false;
+        else if (entity.targetEntity instanceof Player player) {
             if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
@@ -96,8 +93,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
 
         //update target and look target
-        if (!this.target.getPosition().equals(newTarget.getPosition())) {
-            target = newTarget;
+        if (!entity.targetEntity.getPosition().equals(newTarget.getPosition())) {
+            entity.targetEntity = newTarget;
         }
         if (!this.lookTarget.equals(newTarget.getLocation())) {
             lookTarget = newTarget.getLocation();
@@ -107,15 +104,15 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
         //set target and look target
-        setRouteTarget(entity, this.target.getLocation());
+        setRouteTarget(entity, entity.targetEntity.getLocation());
         setLookTarget(entity, this.lookTarget);
 
-        var floor = target.floor();
+        var floor = entity.targetEntity.floor();
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
         oldTarget = floor;
 
         //attack logic
-        if (entity.distanceSquared(target) <= attackRange && attackTick > coolDown) {
+        if (entity.distanceSquared(entity.targetEntity) <= attackRange && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.AIR;
 
             float defaultDamage = 0;
@@ -129,7 +126,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             Enchantment[] enchantments = item.getEnchantments();
             if (item.applyEnchantments()) {
                 for (Enchantment enchantment : enchantments) {
-                    itemDamage += enchantment.getDamageBonus(target, entity);
+                    itemDamage += enchantment.getDamageBonus(entity.targetEntity, entity);
                 }
             }
 
@@ -144,23 +141,23 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
                 }
             }
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, entity.targetEntity, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
 
             ev.setBreakShield(item.canBreakShield());
 
-            target.attack(ev);
+            entity.targetEntity.attack(ev);
             if (!ev.isCancelled()) {
                 for (var e : effects) {
-                    target.addEffect(e);
+                    entity.targetEntity.addEffect(e);
                 }
 
                 playAttackAnimation(entity);
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_TIME, entity.getLevel().getTick());
-                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_ENTITY, target);
+                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_ENTITY, entity.targetEntity);
                 attackTick = 0;
             }
 
-            return target.getHealth() != 0;
+            return entity.targetEntity.getHealth() != 0;
         }
         return true;
     }
@@ -175,7 +172,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
-        this.target = null;
+        entity.targetEntity = null;
         this.lookTarget = null;
     }
 
@@ -189,7 +186,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
         entity.setEnablePitch(false);
-        this.target = null;
+        entity.targetEntity = null;
         this.lookTarget = null;
     }
 

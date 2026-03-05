@@ -13,6 +13,9 @@ import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.components.*;
+import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.custom.CustomEntityComponents;
@@ -30,8 +33,10 @@ import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.item.EntityVehicle;
 import cn.nukkit.entity.mob.EntityBoss;
 import cn.nukkit.entity.mob.EntityEnderDragon;
+import cn.nukkit.entity.passive.EntityNpc;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.block.FarmLandDecayEvent;
@@ -40,11 +45,11 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.EnchantmentWindBurst;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -53,6 +58,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ExplodeParticle;
+import cn.nukkit.level.particle.HappyVillagerParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
@@ -73,6 +79,7 @@ import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.network.protocol.types.SwingSource;
 import cn.nukkit.plugin.Plugin;
@@ -84,6 +91,8 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
+import cn.nukkit.utils.Utils;
+
 import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -95,7 +104,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.Optional;
 
 /**
  * @author MagicDroidX
@@ -110,11 +118,32 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
     protected final Map<EffectType, Effect> effects = new ConcurrentHashMap<>();
     /**
-     * 这个实体骑在谁身上
-     * <p>
      * Who is this entity riding on
      */
+    public static final String NBT_RIDING_UUID = "RidingUUID";
+    public final float SEATED_FACTOR = 0.75308642f;
     public Entity riding = null;
+    private int passengerCount = 0;
+    protected int restoreMountTries = 0;
+    protected Vector3f seatRawOffset;
+
+    /** The entity is this targeting to */
+    public Entity targetEntity = null;
+
+    /** Tolerance factor to compute onGround state */
+    private static final double GROUND_PROBE_DEPTH = 0.06d; // ~1/16 block
+    private static final double GROUND_EPS = 1.0e-4;        // tolerant eps for BB rounding
+
+    public final static float DEFAULT_SPEED = 0.1f;
+    public final static float DEFAULT_FLYING_SPEED = 0.03f;
+    public final static float DEFAULT_UNDER_WATER_SPEED = 0.07f;
+    public final static float DEFAULT_LAVA_MOVEMENT_SPEED = 0.05f;
+    protected float movementSpeed = (this instanceof EntityLiving) ? DEFAULT_SPEED : 0;
+    protected float flyingSpeed = (this instanceof EntityLiving) ? DEFAULT_FLYING_SPEED : 0;
+    protected float lavaMovementSpeed = (this instanceof EntityLiving) ? DEFAULT_LAVA_MOVEMENT_SPEED : 0;
+
+    public final static int DEFAULT_HEALTH = 20;
+
     public IChunk chunk;
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
@@ -199,6 +228,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     protected static final int DEFAULT_HARD_DESPAWN_DISTANCE = 128;
     protected static final int DEFAULT_SOFT_DESPAWN_GRACE_TICKS = 20 * 45;
 
+    /** Entity growth */
+    public static final String TAG_ENTITY_BIRTH_DATE = "entity_birth_date";
+    public static final String TAG_ENTITY_GROW_LEFT = "entity_grow_left";
+    public static final String TAG_ENTITY_GROW_PAUSED = "entity_grow_paused";
+    public static final String TAG_ENTITY_GROW_LAST_SYNC = "entity_grow_last_sync";
+    protected int ticksGrowLeft = -1;
+    protected boolean growDirty = false;
+
+    /** Nameable Entity */
+    protected static final NameableComponent DEFAULT_NAMEABLE = new NameableComponent(true, false);
+    protected static final NameableComponent DEFAULT_NOT_NAMEABLE = new NameableComponent(false, false);
+
+    /** Entity Boostable ticks */
+    protected int boostableTicks = -1;
+
     private String idConvertToName() {
         var path = getIdentifier().split(":")[1];
         StringBuilder result = new StringBuilder();
@@ -220,8 +264,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 从mc标准实体标识符创建实体，形如(minecraft:sheep)
-     * <p>
      * Create an entity from the entity identifier, like (minecraft:sheep)
      *
      * @param identifier the identifier
@@ -235,8 +277,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 创建一个实体从实体名,名称从{@link Entity#init registerEntities}源代码查询
-     * <p>
      * Create an entity from entity name, name from {@link Entity#init registerEntities} source code query
      *
      * @param name the name
@@ -250,8 +290,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 创建一个实体从网络id
-     * <p>
      * Create an entity from the network id
      *
      * @param type 网络ID<br> network id
@@ -267,8 +305,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 创建一个实体从网络id
-     * <p>
      * Create an entity from the network id
      *
      * @param type  网络ID<br> network id
@@ -291,8 +327,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 获取指定网络id实体的标识符
-     * <p>
      * Get the identifier of the specified network id entity
      *
      * @return the identifier
@@ -324,8 +358,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 获得该实体的默认NBT，带有位置,motion，yaw pitch等信息
-     * <p>
      * Get the default NBT of the entity, with information such as position, motion, yaw pitch, etc.
      *
      * @param pos    the pos
@@ -352,14 +384,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * Batch play animation on entity groups<br/>
-     * This method is recommended if you need to play the same animation on a large number of entities at the same time, as it only sends packets once for each player, which greatly reduces bandwidth pressure
-     * <p>
-     * 在实体群上批量播放动画<br/>
-     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
+     * This method is recommended if you need to play the same animation on a large number of entities at the same time,
+     * as it only sends packets once for each player, which greatly reduces bandwidth pressure
      *
-     * @param animation 动画对象 Animation objects
-     * @param entities  需要播放动画的实体群 Group of entities that need to play animations
-     * @param players   可视玩家 Visible Player
+     * @param animation Animation objects
+     * @param entities  Group of entities that need to play animations
+     * @param players   Visible Player
      */
     public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
@@ -381,8 +411,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 获取该实体的标识符
-     * <p>
      * Get the identifier of the entity
      *
      * @return the identifier
@@ -397,13 +425,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return getSneakingHeight();
         } else if (isCrawling()) {
             return getCrawlingHeight();
+        } else if (this.riding != null) {
+            return getSeatingHeight();
         } else {
             return getHeight();
         }
     }
 
     public float getEyeHeight() {
-        return getCurrentHeight() / 2 + 0.1f;
+        return getCurrentHeight() * 0.90f;
     }
 
     /**
@@ -419,8 +449,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * Entity Height
-     * @return the height
+     * Entity Default Height
+     * @return the default height
      */
     public float getHeight() {
         if (!hasCollision()) return 0f;
@@ -474,10 +504,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean isPersistent() {
-        return true;
+        return !this.despawnable;
     }
 
     public void setPersistent(boolean persistent) {
+        this.despawnable = !persistent;
         namedTag.putBoolean("Persistent", persistent);
     }
 
@@ -554,17 +585,27 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
+        this.applyInitialHealthFromRange();
+        this.applyInitialRideJumpStrengthFromRange();
+        this.applyInitialMovementSpeedFromRange();
 
         // =========================================================
         // Send initial data + default flags
         // =========================================================
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        if (this.isFireImmune()) {
+            this.setFireImmune(true);
+        }
         this.setDataFlags(EnumSet.of(
+            EntityFlag.CAN_WALK,
             EntityFlag.CAN_CLIMB,
             EntityFlag.BREATHING,
             EntityFlag.HAS_COLLISION,
             EntityFlag.HAS_GRAVITY
         ));
+
+        this.applyInitialInputControlFlags();
+        this.applyInitialPowerJumpFlags();
     }
 
     protected final void init(IChunk chunk, CompoundTag nbt) {
@@ -681,34 +722,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.close(false);
             throw e;
         }
-    }
-
-    public boolean hasCustomName() {
-        return !this.getNameTag().isEmpty();
-    }
-
-    public String getNameTag() {
-        return this.getDataProperty(NAME, "");
-    }
-
-    public void setNameTag(String name) {
-        this.setDataProperty(NAME, name);
-    }
-
-    public boolean isNameTagVisible() {
-        return this.getDataFlag(EntityFlag.CAN_SHOW_NAME);
-    }
-
-    public void setNameTagVisible(boolean value) {
-        this.setDataFlag(EntityFlag.CAN_SHOW_NAME, value);
-    }
-
-    public boolean isNameTagAlwaysVisible() {
-        return this.getDataProperty(NAMETAG_ALWAYS_SHOW, (byte) 0) == 1;
-    }
-
-    public void setNameTagAlwaysVisible(boolean value) {
-        this.setDataProperty(NAMETAG_ALWAYS_SHOW, value ? 1 : 0);
     }
 
     public Set<String> typeFamily() {
@@ -851,28 +864,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return getHeight();
     }
 
-    public List<Entity> getPassengers() {
-        return passengers;
-    }
-
-    public Entity getPassenger() {
-        return Iterables.getFirst(this.passengers, null);
-    }
-
-    public boolean isPassenger(Entity entity) {
-        return this.passengers.contains(entity);
-    }
-
-    public boolean isControlling(Entity entity) {
-        return this.passengers.indexOf(entity) == 0;
-    }
-
-    public boolean hasControllingPassenger() {
-        return !this.passengers.isEmpty() && isControlling(this.passengers.get(0));
-    }
-
-    public Entity getRiding() {
-        return riding;
+    public float getSeatingHeight() {
+        return getHeight() * SEATED_FACTOR;
     }
 
     public Map<EffectType, Effect> getEffects() {
@@ -1183,8 +1176,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 将这个实体在客户端生成，让该玩家可以看到它
-     * <p>
      * Spawn this entity on the client side so that the player can see it
      *
      * @param player the player
@@ -1228,10 +1219,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         addEntity.speedZ = (float) this.motionZ;
         addEntity.entityData = this.entityDataMap;
 
+        if (!this.isPlayer && this.attributes != null && !this.attributes.isEmpty()) {
+            addEntity.attributes = this.attributes.values().toArray(Attribute.EMPTY_ARRAY);
+        }
+
+        int controlSeat = getControllingSeatIndex();
         addEntity.links = new EntityLink[this.passengers.size()];
         for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+            EntityLink.Type t = (i == controlSeat ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER);
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), t, false, false, 0f);
         }
+
         addEntity.syncedProperties = this.getClientSyncProperties();
 
         return addEntity;
@@ -1405,47 +1403,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
     }
 
-
     public int getAge() {
         return this.age;
     }
 
     public int getNetworkId() {
         return Registries.ENTITY.getEntityNetworkId(getIdentifier());
-    }
-
-    public void heal(EntityRegainHealthEvent source) {
-        this.server.getPluginManager().callEvent(source);
-        if (source.isCancelled()) {
-            return;
-        }
-        this.setHealth(this.getHealth() + source.getAmount());
-    }
-
-    public void heal(float amount) {
-        this.heal(new EntityRegainHealthEvent(this, amount, EntityRegainHealthEvent.CAUSE_REGEN));
-    }
-
-    public float getHealth() {
-        return health;
-    }
-
-    public void setHealth(float health) {
-        if (this.health == health) {
-            return;
-        }
-
-        if (health < 1) {
-            if (this.isAlive()) {
-                this.kill();
-            }
-        } else if (health <= this.getMaxHealth() || health < this.health) {
-            this.health = health;
-        } else {
-            this.health = this.getMaxHealth();
-        }
-
-        setDataProperty(STRUCTURAL_INTEGRITY, (int) this.health);
     }
 
     public boolean isAlive() {
@@ -1464,15 +1427,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.lastDamageCause = type;
     }
 
-    public int getMaxHealth() {
-        if (isCustomEntity()) {
-            return meta().getInt(CustomEntityComponents.MAX_HEALTH, 20);
-        }
-        return maxHealth;
+    public boolean isNpc() {
+        return this instanceof EntityNpc;
     }
 
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
+    public boolean isArmorStand() {
+        return this instanceof EntityArmorStand;
     }
 
     public boolean canCollideWith(Entity entity) {
@@ -1636,6 +1596,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             riding.dismountEntity(this);
         }
         updatePassengers();
+
+        // Boostable timer tickdown
+        if (this.boostableTicks > -1 && this.isBoostable()) {
+            this.boostableTicks -= tickDiff;
+            if (this.boostableTicks <= 0) {
+                this.boostableTicks = -1;
+            }
+        }
 
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
@@ -1821,8 +1789,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * 增加运动 (仅发送数据包，如果需要请使用{@link #setMotion})
-     * <p>
      * Add motion (just sending packet will not make the entity actually move, use {@link #setMotion} if needed)
      *
      * @param x       x
@@ -1836,13 +1802,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.level.addEntityMovement(this, x, y, z, yaw, pitch, headYaw);
     }
 
-    /*
-     * 请注意此方法仅向客户端发motion包，并不会真正的将motion数值加到实体的motion(x|y|z)上<p/>
-     * 如果你想在实体的motion基础上增加，请直接将要添加的motion数值加到实体的motion(x|y|z)上，像这样：<p/>
-     * entity.motionX += vector3.x;<p/>
-     * entity.motionY += vector3.y;<p/>
-     * entity.motionZ += vector3.z;<p/>
-     * 对于玩家实体，你不应该使用此方法！
+    /**
+    * Please note that this method only sends a motion packet to the client and does not actually add the motion value to the entity's motion(x|y|z).<p/>
+    * If you want to add to the entity's motion, please directly add the motion value to the entity's motion(x|y|z), like this:<p/>
+    * entity.motionX += vector3.x;<p/>
+    * entity.motionY += vector3.y;<p/>
+    * entity.motionZ += vector3.z;<p/>
+    * You should not use this method for player entities!
      */
     public void addMotion(double motionX, double motionY, double motionZ) {
         SetEntityMotionPacket pk = new SetEntityMotionPacket();
@@ -1897,105 +1863,726 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return hasUpdate;
     }
 
-    public boolean mountEntity(Entity entity) {
-        return mountEntity(entity, EntityLink.Type.RIDER);
+
+    //////////////////////////////////////////////
+    ////////////// RIDEABLE APIS /////////////////
+    //////////////////////////////////////////////
+
+    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
+        return false;
+    }
+
+    /** Return true if getRideableData() is not null. */
+    public boolean isRideable() {
+        return getRideableData() != null;
+    }
+
+    public boolean isRiding() {
+        return this.riding != null;
+    }
+
+    public List<Entity> getPassengers() {
+        return passengers;
+    }
+
+    @SuppressWarnings("null")
+    public Entity getPassenger() {
+        return Iterables.getFirst(this.passengers, null);
+    }
+
+    public boolean isPassenger(Entity entity) {
+        return this.passengers.contains(entity);
+    }
+
+    public boolean isControlling(Entity entity) {
+        Entity rider = getRider();
+        return rider != null && rider == entity;
+    }
+
+    public boolean hasControllingPassenger() {
+        return getRider() != null;
+    }
+
+    public Entity getRiding() {
+        return riding;
+    }
+
+    public Entity getRider() {
+        if (this.passengers == null || this.passengers.isEmpty()) return null;
+
+        int seat = this.getControllingSeatIndex();
+        if (seat < 0) seat = 0;
+
+        Entity rider = this.passengers.get(seat);
+        if (rider == null || !rider.isAlive()) return null;
+
+        return rider;
     }
 
     /**
-     * Mount an Entity from a/into vehicle
-     *
-     * @param entity The target Entity
-     * @return {@code true} if the mounting successful
+     * Returns whether this entity can accept passengers (rideable/vehicle).
+     * <p>
+     * Default: false
+     * Custom entities: true only if minecraft:rideable is present.
      */
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
-        Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
+    public boolean canBeSaddled() {
+        if (isCustomEntity()) {
+            return meta().has(CustomEntityComponents.PNX_CAN_BE_SADDLED);
+        }
+        return false;
+    }
 
-        if (isPassenger(entity) || entity.riding != null && !entity.riding.dismountEntity(entity, false)) {
-            return false;
+    public boolean requireSaddleToMount() {
+        return false;
+    }
+
+    public boolean canBeChested() {
+        return false;
+    }
+
+    public boolean isChested() {
+        return this.getDataFlag(EntityFlag.CHESTED);
+    }
+
+    public void setChest(boolean chested) {
+        this.setDataFlag(EntityFlag.CHESTED, chested);
+    }
+
+    public boolean isEquine() {
+        return false;
+    }
+
+    /** Play an animation failed to tame */
+    public void equinePlayTameFailAnimation() {
+        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
+        this.setDataFlag(EntityFlag.STANDING);
+    }
+
+    /** Stop playing animation failed to tame */
+    public void equineStopTameFailAnimation() {
+        this.setDataFlag(EntityFlag.STANDING, false);
+    }
+
+    /**
+     * Gets the maximum number of passengers this entity can hold.
+     * <p>
+     * Default: 1
+     */
+    public int getSeatCount() {
+        RideableComponent r = getRideableData();
+        return r != null ? Math.max(1, r.seatCount()) : 1;
+    }
+
+    /**
+     * Gets the maximum number of passengers this entity can hold.
+     * <p>
+     * Default: 1
+     */
+    public String getInteractText() {
+        RideableComponent r = getRideableData();
+        return r != null ? r.interactText() : "action.interact.ride.horse";
+    }
+
+    /**
+     * Returns passenger max width. If 0, ignored.
+     */
+    public float getPassengerMaxWidth() {
+        RideableComponent r = getRideableData();
+        return r != null ? r.passengerMaxWidth() : 0.0f;
+    }
+
+    /**
+     * Returns allowed rider family types (Bedrock rideable family_types).
+     */
+        public Set<String> getAllowedRiderFamilyTypes() {
+            RideableComponent r = getRideableData();
+            return r != null ? r.familyTypes() : Collections.emptySet();
         }
 
-        // Entity entering a vehicle
-        EntityVehicleEnterEvent ev = new EntityVehicleEnterEvent(entity, this);
-        server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return false;
+    /**
+     * Checks whether a rider entity is allowed to ride this entity.
+     * <p>
+     * Default rules:
+     * - if allowed set is empty => allow
+     * - if allowed contains "player" => allow Player
+     * - otherwise rider.typeFamily must intersect allowed set
+     */
+    public boolean isAllowedRider(Entity rider) {
+        Set<String> allowed = getAllowedRiderFamilyTypes();
+        if (allowed == null || allowed.isEmpty()) return true;
+
+        if (rider instanceof Player) {
+            return allowed.contains("player");
         }
 
-        broadcastLinkPacket(entity, mode);
+        // typeFamily() exists on many entities (you already use it)
+        Set<String> fam = rider.typeFamily();
+        if (fam == null || fam.isEmpty()) return false;
 
-        // Add variables to entity
-        entity.riding = this;
-        entity.setDataFlag(EntityFlag.RIDING);
-        passengers.add(entity);
+        for (String f : fam) {
+            if (f == null) continue;
+            if (allowed.contains(f)) return true;
+        }
+        return false;
+    }
 
-        entity.setSeatPosition(getMountedOffset(entity));
-        updatePassengerPosition(entity);
+    public int getControllingSeatIndex() {
+        RideableComponent r = getRideableData();
+        return r != null ? r.controllingSeat() : 0;
+    }
+
+    /**
+     * Returns the {@link RideableComponent} associated with this entity.
+     * <p>
+     * The rideable component defines seat configuration, rider interaction rules,
+     * and which seat controls entity movement.
+     * </p>
+     *
+     * @return the {@link RideableComponent} if defined for this custom entity,
+     *         or {@code null} if the entity is not custom or does not have
+     *         the {@code minecraft:rideable} component.
+     */
+    public @Nullable RideableComponent getRideableData() {
+        if (!isCustomEntity()) return null;
+        return meta().getRideableComponent(CustomEntityComponents.RIDEABLE);
+    }
+
+    /** Return the default base mounted offset for a passenger. */
+    public Vector3f getMountedOffset(Entity passenger) {
+        if (passenger.isPlayer) {
+            float standingEyeHeight = passenger.getHeight() * 0.9f;
+            float mountedOffsetY = standingEyeHeight * SEATED_FACTOR;
+            return new Vector3f(0f, mountedOffsetY, 0f);
+        }
+        float mountedOffsetY = -passenger.getHeight() * 0.24691358f;
+        return new Vector3f(0f, mountedOffsetY, 0f);
+    }
+
+    /** Set ride to allow input controls. */
+    public boolean setInputControls(boolean enabled) {
+        if (enabled && !this.canEnableWASDControls()) return false;
+
+        switch (getInputControlType()) {
+            case GROUND: {
+                this.setDataFlag(EntityFlag.WASD_CONTROLLED, enabled);
+                this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, false);
+
+                if (enabled) {
+                    this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
+                    this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                }
+                return true;
+            }
+            case AIR: {
+                this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, enabled);
+                this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
+
+                if (enabled) {
+                    this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, true);
+                    this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, true);
+                } else {
+                    this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
+                    this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                }
+                return true;
+            }
+            case WATER: {
+                this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, enabled);
+                this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
+                this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
+                return true;
+            }
+            default: return false;
+        }
+    }
+
+    public boolean canEnableWASDControls() {
+        return this.isRideable() && (!this.canBeSaddled() || this.isSaddled());
+    }
+
+    public boolean rideCanJump() {
+        return this.isRideable() && (this.getRideJumpStrength() > 0f && this.getDataFlag(EntityFlag.CAN_POWER_JUMP));
+    }
+
+    public boolean rideHasVerticalMove() {
+        return this.isRideable() && this.isAirControlled();
+    }
+
+    public boolean isSaddled() {
+        return this.getDataFlag(EntityFlag.SADDLED);
+    }
+
+    public boolean setSaddle(boolean saddled) {
+        if (!this.isRideable()) return false;
+        if (!this.canBeSaddled()) return false;
+
+        boolean current = this.getDataFlag(EntityFlag.SADDLED);
+        if (current == saddled) return false;
+
+        this.setDataFlag(EntityFlag.SADDLED, saddled);
         return true;
     }
+
+    public boolean removeSaddle() {
+        if (!this.isRideable()) return false;
+        if (!this.canBeSaddled()) return false;
+        if (!this.getDataFlag(EntityFlag.SADDLED)) return false;
+
+        this.setDataFlag(EntityFlag.SADDLED, false);
+        return true;
+    }
+
+    public boolean setCanPowerJump(boolean enabled) {
+        if (enabled && !this.isRideable()) return false;
+        this.setDataFlag(EntityFlag.CAN_POWER_JUMP, enabled);
+        return true;
+    }
+
+    public boolean canPowerJump() {
+        return this.getDataFlag(EntityFlag.CAN_POWER_JUMP);
+    }
+
+    public boolean setCanDash(boolean enabled) {
+        if (enabled && !this.isRideable()) return false;
+        this.setDataFlag(EntityFlag.CAN_DASH, enabled);
+        return true;
+    }
+
+    public void setDashCooldown(boolean value) {
+        this.setDataFlag(EntityFlag.HAS_DASH_COOLDOWN, value);
+    }
+
+    public boolean hasDashCooldown() {
+        return this.getDataFlag(EntityFlag.HAS_DASH_COOLDOWN);
+    }
+
+    public boolean canDash() {
+        return this.getDataFlag(EntityFlag.CAN_DASH);
+    }
+
+    /** Returns runtime state of entity has any WASD controls */
+    public boolean hasWASDControls() {
+        return this.isGroundControlled() || this.isAirControlled();
+    }
+
+    /** Returns runtime state of entity if is ground controlled */
+    public boolean isGroundControlled() {
+        return this.getDataFlag(EntityFlag.WASD_CONTROLLED);
+    }
+
+    /** Returns runtime state of entity if is air controlled */
+    public boolean isAirControlled() {
+        return this.getDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED);
+    }
+
+    /** Define the default input control type */
+    public RideableComponent.InputType getInputControlType() {
+        return null;
+    }
+
+
+
+    //////////////////////////////////////////////
+    /////////////// MOUNT CHAIN //////////////////
+    //////////////////////////////////////////////
+
+    public boolean mountEntity(Entity entity) {
+        return mountEntity(entity, false);
+    }
+
+    /**
+     * @deprecated Use {@link #mountEntity(Entity, boolean)}. Link type is derived from seat index.
+     * Planned removal: after 6 months (>= 2026-08-26).
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+        boolean ok = mountEntity(entity, false); // not rider initiated by default
+        if (!ok || entity.riding != this) return ok;
+
+        // Preserve legacy intent:
+        if (mode == EntityLink.Type.RIDER) {
+            forcePassengerToSeat(entity, 0);
+        } else if (mode == EntityLink.Type.PASSENGER) {
+            forcePassengerToPassengerSeat(entity);
+        }
+        // refresh seats/positions/links after forcing
+        updatePassengers(true, false);
+        return true;
+    }
+
+    /**
+     * INTERNAL LEGACY COMPATIBILITY HELPER.
+     *
+     * Forces a passenger to occupy a given seat index (list index).
+     * <p>
+     * This exists ONLY to preserve behavior of deprecated
+     * {@link #mountEntity(Entity, EntityLink.Type)} and MUST NOT be exposed
+     * to plugins or subclasses.
+     * <p>
+     * Does not broadcast or reposition passengers; caller must invoke
+     * {@link #updatePassengers(boolean, boolean)} afterwards.
+     *
+     * @return true if passenger order changed
+     */
+    private boolean forcePassengerToSeat(Entity entity, int seatIndex) {
+        if (entity == null) return false;
+        int cur = passengers.indexOf(entity);
+        if (cur < 0) return false;
+
+        int maxSeat = Math.max(0, passengers.size() - 1);
+        int dst = Math.max(0, Math.min(seatIndex, maxSeat));
+        if (cur == dst) return false;
+
+        passengers.remove(cur);
+        passengers.add(dst, entity);
+        return true;
+    }
+
+    /**
+     * INTERNAL LEGACY COMPATIBILITY HELPER.
+     *
+     * Forces a passenger to be placed in a non-rider seat (index >= 1),
+     * preserving old PASSENGER semantics from
+     * {@link #mountEntity(Entity, EntityLink.Type)}.
+     *
+     * @return true if passenger order changed
+     */
+    private boolean forcePassengerToPassengerSeat(Entity entity) {
+        if (entity == null) return false;
+
+        int cur = passengers.indexOf(entity);
+        if (cur < 0) return false;
+
+        if (cur != 0) return false;
+        if (passengers.size() < 2) return false;
+
+        passengers.remove(0);
+        passengers.add(1, entity);
+        return true;
+    }
+
+    public boolean mountEntity(@NotNull Entity entity, boolean riderInitiated) {
+        if (!isRideable() || entity.isSneaking()) return false;
+
+        if (isPassenger(entity) || (entity.riding != null && !entity.riding.dismountEntity(entity, false))) {
+            return false;
+        }
+
+        int seatCount = Math.max(1, getSeatCount());
+        if (passengers.size() >= seatCount) return false;
+
+        if (!isAllowedRider(entity)) return false;
+
+        float maxW = getPassengerMaxWidth();
+        if (maxW > 0f && entity.getWidth() > maxW) return false;
+
+        EntityVehicleEnterEvent ev = new EntityVehicleEnterEvent(entity, this);
+        server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) return false;
+
+        entity.riding = this;
+        entity.setDataFlag(EntityFlag.RIDING, true);
+        passengers.add(entity);
+
+        if (!this.isPlayer && !(entity instanceof Player)) {
+            entity.namedTag.putString(NBT_RIDING_UUID, this.getUniqueId().toString());
+        }
+
+        updatePassengers(true, riderInitiated);
+
+        return true;
+    }
+
+    protected void updatePassengerPosition(Entity passenger) {
+        Vector3f seat = passenger.getSeatPosition();
+        if (seat == null) seat = new Vector3f(0, getHeight() * SEATED_FACTOR, 0);
+
+        double yawRad = Math.toRadians(this.yaw);
+        double cos = Math.cos(yawRad);
+        double sin = Math.sin(yawRad);
+
+        // rotate local seat X/Z into world X/Z
+        double ox = seat.x * cos - seat.z * sin;
+        double oz = seat.x * sin + seat.z * cos;
+
+        passenger.setPosition(new Vector3(
+                this.x + ox,
+                this.y + seat.y,
+                this.z + oz
+        ));
+    }
+
+    public void updatePassengers(boolean sendLinks, boolean riderInitiated) {
+        if (passengers.isEmpty()) {
+            refreshRideMemory();
+            return;
+        }
+
+        for (Entity passenger : new ArrayList<>(passengers)) {
+            if (!passenger.isAlive()) dismountEntity(passenger, sendLinks);
+        }
+        if (passengers.isEmpty()) {
+            refreshRideMemory();
+            return;
+        }
+
+        boolean reordered = reorderPassengers(passengers);
+        boolean countChanged = (passengers.size() != passengerCount);
+        passengerCount = passengers.size();
+
+        if (reordered || riderInitiated || countChanged) {
+            applySeatOffsets();
+        }
+        refreshRideMemory();
+
+        for (Entity p : passengers) {
+            updatePassengerPosition(p);
+        }
+
+        if (sendLinks || reordered) {
+            broadcastLinksForAllPassengers(riderInitiated);
+        }
+    }
+
+    public void updatePassengers(boolean sendLinks) {
+        updatePassengers(sendLinks, false);
+    }
+
+    public void updatePassengers() {
+        updatePassengers(false, false);
+    }
+
+    protected boolean reorderPassengers(List<Entity> passengers) {
+        if (passengers.size() < 2) return false;
+
+        int controlSeat = getControllingSeatIndex();
+        if (controlSeat < 0) controlSeat = 0;
+        if (controlSeat >= passengers.size()) controlSeat = passengers.size() - 1;
+
+        Entity current = passengers.get(controlSeat);
+
+        // Only reorder if controlling seat is not a player and there is a player aboard
+        if (current instanceof Player) return false;
+
+        int bestIdx = -1;
+        for (int i = 0; i < passengers.size(); i++) {
+            if (passengers.get(i) instanceof Player) { bestIdx = i; break; }
+        }
+        if (bestIdx == -1 || bestIdx == controlSeat) return false;
+
+        Entity best = passengers.remove(bestIdx);
+        if (bestIdx < controlSeat) controlSeat--;
+        passengers.add(controlSeat, best);
+        return true;
+    }
+
+    protected void refreshRideMemory() {
+        if (!(this instanceof EntityIntelligent ei)) return;
+
+        Entity controller = null;
+        int controlSeat = getControllingSeatIndex();
+        if (controlSeat < 0) controlSeat = 0;
+        if (controlSeat < passengers.size()) controller = passengers.get(controlSeat);
+
+        if (controller != null && controller.isAlive()) {
+            ei.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, controller.getName());
+        } else {
+            ei.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, null);
+        }
+    }
+
+    /** Resolves the seat offset to apply to a passenger for a specific seat index. */
+    public @Nullable RideableComponent.Seat getRideSeatFor(int seatIndex) {
+        RideableComponent r = getRideableData();
+        if (r == null) return null;
+
+        List<RideableComponent.Seat> seats = r.seats();
+        if (seats == null || seats.isEmpty()) return null;
+
+        if (seatIndex < 0 || seatIndex >= seats.size()) return null;
+        return seats.get(seatIndex);
+    }
+
+    public Vector3f getSeatOffsetFor(int seatIndex, Entity passenger) {
+        Vector3f seat = null;
+
+        RideableComponent.Seat sm = getRideSeatFor(seatIndex);
+        if (sm != null) seat = sm.position();
+        if (seat == null) seat = new Vector3f(0f, 0f, 0f);
+
+        Vector3f base = getMountedOffset(passenger);
+
+        return new Vector3f(
+            base.x + seat.x,
+            base.y + seat.y,
+            base.z + seat.z
+        );
+    }
+
+    protected void applySeatOffsets() {
+        for (int i = 0; i < passengers.size(); i++) {
+            Entity p = passengers.get(i);
+
+            p.setSeatPosition(getSeatOffsetFor(i, p));
+
+            RideableComponent.Seat sm = getRideSeatFor(i);
+            if (sm == null) continue;
+
+            Vector3f raw = sm.position();
+            if (raw == null) raw = new Vector3f(0f, 0f, 0f);
+            p.seatRawOffset = raw;
+
+            Float tpc = sm.thirdPersonCameraRadius();
+            if (tpc != null) p.setSeatThirdPersonCameraRadius(tpc);
+
+            Float relax = sm.cameraRelaxDistanceSmoothing();
+            if (relax != null) p.setSeatCameraRelaxDistanceSmoothing(relax);
+
+            Float lock = sm.lockRiderRotationDegrees();
+            if (lock != null) p.setSeatLockRiderRotationDegrees(lock);
+
+            Float rot = sm.rotateRiderByDegrees();
+            if (rot != null) p.setSeatRotateRiderByDegrees(rot);
+        }
+    }
+
+
+    //////////////////////////////////////////////
+    ///////////// DISMOUNT CHAIN /////////////////
+    //////////////////////////////////////////////
 
     public boolean dismountEntity(Entity entity) {
         return this.dismountEntity(entity, true);
     }
 
     public boolean dismountEntity(Entity entity, boolean sendLinks) {
-        // Run the events
+        int seatIndex = passengers.indexOf(entity);
+
         EntityVehicleExitEvent ev = new EntityVehicleExitEvent(entity, this);
         server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
-            int seatIndex = this.passengers.indexOf(entity);
             if (seatIndex == 0) {
-                this.broadcastLinkPacket(entity, EntityLink.Type.RIDER);
+                broadcastLinkPacket(entity, EntityLink.Type.RIDER);
             } else if (seatIndex != -1) {
-                this.broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
+                broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
             }
             return false;
         }
 
+        if (entity instanceof Player p) clearSeatData(p);
         if (sendLinks) {
-            broadcastLinkPacket(entity, EntityLink.Type.REMOVE);
+            broadcastLinkPacket(entity, EntityLink.Type.REMOVE, false);
         }
 
-        // refresh the entity
         entity.riding = null;
         entity.setDataFlag(EntityFlag.RIDING, false);
+        entity.setSeatPosition(new Vector3f());
+        entity.seatRawOffset = null;
         passengers.remove(entity);
 
-        entity.setSeatPosition(new Vector3f());
-        updatePassengerPosition(entity);
-
-        if (entity instanceof Player player) {
-            player.resetFallDistance();
+        // Dismount placement 
+        // TODO: need a few improvements
+        Vector3 dismount = resolveDismountPosition(entity);
+        if (entity instanceof Player p) {
+            p.teleport(dismount);
+            p.resetFallDistance();
+        } else {
+            entity.setPosition(dismount);
         }
+
+        // Remaining passengers may need reordering/offsets
+        updatePassengers(sendLinks, false);
+
+        if (entity instanceof Player p) p.resetFallDistance();
         return true;
     }
 
-    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
-        SetEntityLinkPacket pk = new SetEntityLinkPacket();
-        pk.vehicleUniqueId = getId();         // To the?
-        pk.riderUniqueId = rider.getId(); // From who?
-        pk.type = type;
-        pk.riderInitiated = type != EntityLink.Type.REMOVE;
-        Server.broadcastPacket(this.hasSpawned.values(), pk);
+    public RideableComponent.DismountMode getDismountMode() {
+        RideableComponent r = getRideableData();
+        return r != null ? r.dismountMode() : RideableComponent.DismountMode.DEFAULT;
     }
 
-    public void updatePassengers() {
-        if (this.passengers.isEmpty()) {
-            return;
-        }
+    protected Vector3 resolveDismountPosition(Entity passenger) {
+        RideableComponent.DismountMode mode = getDismountMode();
 
-        for (Entity passenger : new ArrayList<>(this.passengers)) {
-            if (!passenger.isAlive()) {
-                dismountEntity(passenger);
-                continue;
+        double cx = this.x;
+        double cz = this.z;
+
+        switch (mode) {
+            case ON_TOP_CENTER: {
+                double y = this.y + this.getHeight() + 0.01;
+                return new Vector3(cx, y, cz);
             }
-
-            updatePassengerPosition(passenger);
+            case DEFAULT:
+            default: {
+                Vector3 found = findValidGroundDismountAround(passenger);
+                if (found != null) return found;
+                return new Vector3(cx, this.y + 0.5, cz);
+            }
         }
     }
 
-    protected void updatePassengerPosition(Entity passenger) {
-        passenger.setPosition(this.add(passenger.getSeatPosition().asVector3()));
+    protected Vector3 findValidGroundDismountAround(Entity passenger) {
+        final double r = Math.max(0.6, (this.getWidth() * 0.5) + 0.3);
+
+        final double[][] offsets = new double[][]{
+                { r, 0 }, {-r, 0 }, { 0, r }, { 0, -r },
+                { r, r }, { r, -r }, {-r, r }, {-r, -r }
+        };
+
+        for (double[] o : offsets) {
+            double px = this.x + o[0];
+            double pz = this.z + o[1];
+            int baseY = (int) Math.floor(this.y);
+            Vector3 pos = findGroundSpotAt(px, baseY, pz, passenger);
+            if (pos != null) return pos;
+        }
+        return null;
     }
+
+    protected Vector3 findGroundSpotAt(double x, int y, double z, Entity passenger) {
+        final int bx = (int) Math.floor(x);
+        final int bz = (int) Math.floor(z);
+
+        final int minStandY = (int) Math.floor(this.y + 0.001);
+
+        for (int dy = 2; dy >= -3; dy--) {
+            int fy = y + dy;
+            if (fy < minStandY) continue;
+
+            Block ground = this.level.getBlock(bx, fy - 1, bz);
+            if (ground == null || !ground.isSolid()) continue;
+            if (ground.up().isSolid()) continue;
+            if (!hasSpaceToDismount(x, fy, z, passenger)) continue;
+            return new Vector3(x, fy + 0.01, z);
+        }
+        return null;
+    }
+
+    protected boolean hasSpaceToDismount(double x, int y, double z, Entity passenger) {
+        Block feet = this.level.getBlock((int)Math.floor(x), y, (int)Math.floor(z));
+        Block head = this.level.getBlock((int)Math.floor(x), y + 1, (int)Math.floor(z));
+
+        if (feet != null && feet.isSolid()) return false;
+        if (head != null && head.isSolid()) return false;
+
+        return true;
+    }
+
+    public void clearSeatData(Player passenger) {
+        passenger.setDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, 0.0f, false);
+        passenger.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 0.0f, false);
+        passenger.setDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS, 0.0f, false);
+        passenger.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, 0.0f, false);
+        passenger.setDataProperty(SEAT_HAS_ROTATION, false, true);
+        passenger.sendData(passenger);
+    }
+
+
+    //////////////////////////////////////////////
+    //////// PASSENGER SEAT META SYNC ////////////
+    //////////////////////////////////////////////
 
     public Vector3f getSeatPosition() {
         return this.getDataProperty(SEAT_OFFSET);
@@ -2005,8 +2592,1296 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.setDataProperty(SEAT_OFFSET, pos);
     }
 
-    public Vector3f getMountedOffset(Entity entity) {
-        return new Vector3f(0, getHeight() * 0.75f);
+    public @Nullable Float getSeatThirdPersonCameraRadius() {
+        return this.getDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS);
+    }
+
+    public void setSeatThirdPersonCameraRadius(@Nullable Float v) {
+        if (v == null) return;
+        this.setDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS, v);
+    }
+
+    public @Nullable Float getSeatCameraRelaxDistanceSmoothing() {
+        return this.getDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING);
+    }
+
+    public void setSeatCameraRelaxDistanceSmoothing(@Nullable Float v) {
+        if (v == null) return;
+        this.setDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, v);
+    }
+
+    public @Nullable Float getSeatLockRiderRotationDegrees() {
+        return this.getDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES);
+    }
+
+    public void setSeatLockRiderRotationDegrees(@Nullable Float v) {
+        if (v == null) return;
+        this.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, v);
+    }
+
+    public @Nullable Float getSeatRotateRiderByDegrees() {
+        return this.getDataProperty(SEAT_ROTATION_OFFSET_DEGREES);
+    }
+
+    public void setSeatRotateRiderByDegrees(@Nullable Float v) {
+        if (v == null) return;
+        this.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, v);
+    }
+
+
+
+    //////////////////////////////////////////////
+    /////////// UPDATE LINK PACKETS //////////////
+    //////////////////////////////////////////////
+
+    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
+        broadcastLinkPacket(rider, type, type != EntityLink.Type.REMOVE);
+    }
+
+    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type, boolean riderInitiated) {
+        SetEntityLinkPacket pk = new SetEntityLinkPacket();
+        pk.vehicleUniqueId = getId();
+        pk.riderUniqueId = rider.getId();
+        pk.type = type;
+        pk.riderInitiated = riderInitiated;
+        Server.broadcastPacket(this.hasSpawned.values(), pk);
+    }
+
+    protected void broadcastLinksForAllPassengers(boolean riderInitiated) {
+        int controlSeat = getControllingSeatIndex();
+
+        for (int i = 0; i < passengers.size(); i++) {
+            Entity p = passengers.get(i);
+            broadcastLinkPacket(p, i == controlSeat ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, riderInitiated);
+        }
+    }
+
+    //////////////////////////////////////////////
+    /////////// FINISH RIDABLE APIs //////////////
+    //////////////////////////////////////////////
+
+
+    /**
+     * Returns the item identifier that can control this entity when held by a rider.
+     * <p>
+     * This corresponds to the {@code minecraft:item_controllable} component and
+     * defines which item allows the rider to steer or trigger special movement
+     * behavior (for example, warped fungus on a stick for striders).
+     * </p>
+     *
+     * @return the controlling item identifier, or {@code null} if the entity is
+     *         not custom or no controllable item is defined.
+     */
+    public @Nullable String getItemControllable() {
+        if (!isCustomEntity()) return null;
+
+        CustomEntityDefinition.Meta.ItemControllable ic = meta().getItemControllable(CustomEntityComponents.ITEM_CONTROLLABLE);
+        if (ic == null) return null;
+
+        String v = ic.controlItems();
+        return (v == null || v.isBlank()) ? null : v;
+    }
+
+    /**
+     * Returns the {@link EquippableComponent} associated with this entity.
+     * <p>
+     * The equippable component defines which equipment slots the entity supports
+     * and what items can be equipped into those slots.
+     * </p>
+     *
+     * @return the {@link EquippableComponent} if defined for this custom entity,
+     *         or {@code null} if the entity is not custom or does not define the
+     *         {@code minecraft:equippable} component.
+     */
+    public @Nullable EquippableComponent getEquippableData() {
+        if (!isCustomEntity()) return null;
+        return meta().getEquippableComponent(CustomEntityComponents.EQUIPPABLE);
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        if (this.isPlayer) {
+            this.maxHealth = maxHealth;
+            return;
+        }
+
+        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+        if (attr == null) {
+            attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
+            if (attr == null) return;
+        }
+
+        float v = (float) maxHealth;
+        attr.setMaxValue(v);
+        this.attributes.put(attr.getId(), attr);
+    }
+
+    public void heal(EntityRegainHealthEvent source) {
+        this.server.getPluginManager().callEvent(source);
+        if (source.isCancelled()) {
+            return;
+        }
+        this.setHealth(this.getHealth() + source.getAmount());
+    }
+
+    public void heal(float amount) {
+        this.heal(new EntityRegainHealthEvent(this, amount, EntityRegainHealthEvent.CAUSE_REGEN));
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public void setHealth(float health) {
+        if (this.health == health) {
+            return;
+        }
+
+        if (health < 1) {
+            if (this.isAlive()) {
+                this.kill();
+            }
+        } else if (health <= this.getMaxHealth() || health < this.health) {
+            this.health = health;
+        } else {
+            this.health = this.getMaxHealth();
+        }
+
+        setDataProperty(STRUCTURAL_INTEGRITY, (int) this.health);
+    }
+
+    public int getMaxHealth() {
+        if (this.isPlayer) return maxHealth;
+
+        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+        if (attr != null) {
+            return (int) attr.getMaxValue();
+        }
+
+        if (isCustomEntity() && meta().has(CustomEntityComponents.HEALTH)) {
+            HealthComponent hp = meta().getDefinitionHealthComponent(CustomEntityComponents.HEALTH);
+            if (hp != null) {
+                Integer iv = hp.value();
+                if (iv != null && iv > 0) return iv.intValue();
+            }
+        }
+
+        return DEFAULT_HEALTH;
+    }
+
+    /** Returns the default min health of the entity (genetics only). */
+    public float getDefaultMinHealth() {
+        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+        if (attr != null) {
+            float v = attr.getDefaultMinimum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return 0f;
+    }
+
+    /** Returns the default max health of the entity (genetics only). */
+    public float getDefaultMaxHealth() {
+        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+        if (attr != null) {
+            float v = attr.getDefaultMaximum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return getMaxHealth();
+    }
+
+    /**
+     * Returns the health attribute range defined for this custom entity.
+     * <p>
+     * This reads the {@code minecraft:health} component when it specifies a
+     * minimum and maximum value. Only true ranges are returned; fixed values
+     * or invalid ranges are ignored.
+     * </p>
+     *
+     * @return an {@link AttributesFloatRange} representing the entity health range,
+     *         or {@code null} if the entity is not custom or no valid range is defined.
+     */
+    public @Nullable AttributesFloatRange getHealthRange() {
+        if (!isCustomEntity()) return null;
+        if (!meta().has(CustomEntityComponents.HEALTH)) return null;
+
+        var hp = meta().getDefinitionHealthComponent(CustomEntityComponents.HEALTH);
+        if (hp == null) return null;
+
+        // Only ranges should be applied here. Fixed value must not.
+        Integer mn = hp.rangeMin();
+        Integer mx = hp.rangeMax();
+        if (mn == null || mx == null) return null;
+
+        float min = (float) mn.intValue();
+        float max = (float) mx.intValue();
+
+        // Only accept a real range
+        if (!Float.isFinite(min) || !Float.isFinite(max)) return null;
+        if (min <= 0f || max <= 0f) return null;
+        if (min == max) return null;
+
+        // Normalize order
+        if (min > max) {
+            float t = min;
+            min = max;
+            max = t;
+        }
+
+        // Must be strictly increasing
+        if (min >= max) return null;
+
+        return new AttributesFloatRange(min, max);
+    }
+
+    protected void applyInitialHealthFromRange() {
+        if (this.isPlayer) return;
+
+        // 0) Respect persisted NBT (never overwrite / never reroll)
+        Attribute existing = this.attributes.get(Attribute.MAX_HEALTH);
+        if (existing != null) return;
+
+        float newDefaultMin = 0f;
+        float newDefaultMax = getMaxHealth();
+        if (newDefaultMax <= 0f) newDefaultMax = DEFAULT_HEALTH;
+
+        // 1) Read meta range (range-only; fixed values are ignored)
+        AttributesFloatRange range = getHealthRange();
+        if (range != null) {
+            // Build per-entity genetics if range was set
+            float value1 = range.roll();
+            float value2 = range.roll();
+            newDefaultMin = Math.min(value1, value2);
+            newDefaultMax = Math.max(value1, value2);
+        };
+
+        // 2) Persist attribute
+        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
+        if (attr == null) return;
+
+        attr.setMinValue(0f);
+        attr.setMaxValue(newDefaultMax);
+
+        attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
+
+        attr.setDefaultValue(newDefaultMax);
+        attr.setValue(newDefaultMax);
+
+        this.attributes.put(attr.getId(), attr);
+    }
+
+    /** Returns the ride jump strength. */
+    public float getRideJumpStrength() {
+        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
+        return attr != null ? attr.getValue() : 0.0f;
+    }
+
+    /** Returns the default min ride jump strength (genetics only). */
+    public float getDefaultMinRideJumpStrength() {
+        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
+        if (attr != null) {
+            float v = attr.getDefaultMinimum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return 0.0f;
+    }
+
+    /** Returns the default max ride jump strength (genetics only). */
+    public float getDefaultMaxRideJumpStrength() {
+        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
+        if (attr != null) {
+            float v = attr.getDefaultMaximum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return 0.0f;
+    }
+
+    /**
+     * Returns the horse jump strength attribute defined for this custom entity.
+     * <p>
+     * This reads the {@code minecraft:horse.jump_strength} component and returns
+     * either a fixed value or a min–max range depending on how the component was defined.
+     * </p>
+     *
+     * @return an {@link AttributesFloatRange} representing the jump strength,
+     *         or {@code null} if the entity is not custom or the component is not defined.
+     */
+    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
+        if (!isCustomEntity()) return null;
+        if (!meta().has(CustomEntityComponents.HORSE_JUMP_STRENGTH)) return null;
+
+        var js = meta().getDefinitionJumpStrengthComponent(CustomEntityComponents.HORSE_JUMP_STRENGTH);
+        if (js == null) return null;
+
+        if (js.value() != null) return new AttributesFloatRange(js.value());
+        return new AttributesFloatRange(js.rangeMin(), js.rangeMax());
+    }
+
+    protected void applyInitialRideJumpStrengthFromRange() {
+        if (this.isPlayer) return;
+
+        // 0) Respect persisted NBT (never overwrite / never reroll)
+        Attribute existing = this.attributes.get(Attribute.HORSE_JUMP_STRENGTH);
+        if (existing != null) return;
+
+        // 1) Read meta range (can be fixed too)
+        AttributesFloatRange range = getHorseJumpStrengthRange();
+        if (range == null) return;
+
+        float metaMin = range.min();
+        float metaMax = range.max();
+        if (!Float.isFinite(metaMin) || !Float.isFinite(metaMax)) return;
+        if (metaMin <= 0f || metaMax <= 0f || metaMin > metaMax) return;
+
+        // 2) Build per-entity genetics
+        float value1 = range.roll();
+        float value2 = range.roll();
+        float newDefaultMin = Math.min(value1, value2);
+        float newDefaultMax = Math.max(value1, value2);
+
+        // 3) Persist attribute
+        Attribute attr = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH);
+        if (attr == null) return;
+
+        attr.setMinValue(0f);
+        attr.setMaxValue(newDefaultMax);
+
+        attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
+
+        attr.setDefaultValue(newDefaultMax);
+        attr.setValue(newDefaultMax);
+
+        this.attributes.put(attr.getId(), attr);
+    }
+
+    /**
+     * Returns the {@link DashActionComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:dash} action component and
+     * defines dash-related behavior such as cooldowns and movement boosts.
+     * </p>
+     *
+     * @return the {@link DashActionComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not present.
+     */
+    public @Nullable DashActionComponent getDashAction() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.DASH_ACTION)) {
+            var dash = meta().getDefinitionDashActionComponent(CustomEntityComponents.DASH_ACTION);
+            if (dash != null && !dash.isEmpty()) return dash;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the {@link BoostableComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:boostable} component and
+     * controls temporary speed boosts that can be triggered while riding
+     * the entity.
+     * </p>
+     *
+     * @return the {@link BoostableComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not present.
+     */
+    public @Nullable BoostableComponent getBoostable() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.BOOSTABLE)) {
+            var boost = meta().getDefinitionBoostableComponent(CustomEntityComponents.BOOSTABLE);
+            if (boost != null && !boost.isEmpty()) return boost;
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks whether this entity has the {@code minecraft:boostable} component.
+     *
+     * @return {@code true} if the entity defines a boostable component,
+     *         otherwise {@code false}.
+     */
+    public boolean isBoostable() {
+        return getBoostable() != null;
+    }
+
+    public int getBoostableTicks() {
+        return this.boostableTicks;
+    }
+
+    public boolean isBoosting() {
+        return this.boostableTicks > 0;
+    }
+
+    /**
+     * Starts boost using duration in seconds.
+     * @param durationSeconds Boost duration in seconds.
+     */
+    public void setBoostableDuration(float durationSeconds) {
+        if (!Float.isFinite(durationSeconds) || durationSeconds <= 0f) {
+            this.boostableTicks = -1;
+            return;
+        }
+        this.boostableTicks = Math.max(1, (int) (durationSeconds * 20f));
+    }
+
+    /** Stops the current boost immediately. */
+    public void clearBoostable() {
+        this.boostableTicks = -1;
+    }
+
+    /**
+     * Returns the {@link InventoryComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:inventory} component and defines
+     * the inventory container attached to the entity.
+     * </p>
+     *
+     * @return the {@link InventoryComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not present.
+     */
+    public @Nullable InventoryComponent getInventoryComponent() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.INVENTORY)) {
+            var inv = meta().getDefinitionInventoryComponent(CustomEntityComponents.INVENTORY);
+            if (inv != null && !inv.isEmpty()) return inv;
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks whether this entity defines an inventory component.
+     *
+     * @return {@code true} if the entity has an {@link InventoryComponent},
+     *         otherwise {@code false}.
+     */
+    public boolean hasInventory() {
+        return getInventoryComponent() != null;
+    }
+
+    public void updateInventoryFlags() {
+        if (!hasInventory()) return;
+
+        if ((this instanceof EntityLiving ei) && ei.isTamed()) {
+            this.setDataProperty(Entity.CONTAINER_TYPE, getInventoryComponent().typeId());
+            this.setDataProperty(Entity.CONTAINER_SIZE, getInventoryComponent().size());
+            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, getInventoryComponent().strengthModifier());
+            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, getInventoryComponent().isRestrictedToOwner());
+            return;
+        }
+        if (this instanceof EntityVehicle) {
+            this.setDataProperty(Entity.CONTAINER_TYPE, getInventoryComponent().typeId());
+            this.setDataProperty(Entity.CONTAINER_SIZE, getInventoryComponent().size());
+        }
+    }
+
+    /**
+     * Returns the {@link HomeComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:home} component and defines
+     * the entity's home location behavior and movement restrictions.
+     * </p>
+     *
+     * @return the {@link HomeComponent} if defined and present,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not configured.
+     */
+    public @Nullable HomeComponent getHome() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.HOME)) {
+            HomeComponent hm = meta().getDefinitionHomeComponent(CustomEntityComponents.HOME);
+            if (hm != null && hm.isPresent()) return hm;
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether this entity defines a home component.
+     *
+     * @return {@code true} if the entity has a {@link HomeComponent},
+     *         otherwise {@code false}.
+     */
+    public boolean hasHome() {
+        return getHome() != null;
+    }
+
+    /**
+     * Returns the {@link BreedableComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:breedable} component and defines
+     * breeding rules such as allowed breeding items, cooldowns, and offspring behavior.
+     * </p>
+     *
+     * @return the {@link BreedableComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not configured.
+     */
+    public @Nullable BreedableComponent getBreedable() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.BREEDABLE)) {
+            BreedableComponent bd = meta().getDefinitionBreedableComponent(CustomEntityComponents.BREEDABLE);
+            if (bd != null && !bd.isEmpty()) return bd;
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether this entity supports breeding behavior.
+     *
+     * @return {@code true} if the entity defines a valid {@link BreedableComponent},
+     *         otherwise {@code false}.
+     */
+    public boolean isBreedable() {
+        BreedableComponent breedable = getBreedable();
+        return breedable != null && !breedable.isEmpty();
+    }
+
+    /**
+     * Checks whether this entity is currently marked as pregnant.
+     * <p>
+     * This value is stored in the entity AI memory under
+     * {@link CoreMemoryTypes#IS_PREGNANT}.
+     * </p>
+     *
+     * @return {@code true} if the entity is pregnant, otherwise {@code false}.
+     */
+    public boolean isPregnant() {
+        if (!(this instanceof EntityIntelligent ei)) return false;
+        return ei.getMemoryStorage().get(CoreMemoryTypes.IS_PREGNANT);
+    }
+
+    /**
+     * Sets the pregnancy state of this entity.
+     * <p>
+     * This updates both the AI memory and the {@link EntityFlag#IS_PREGNANT}
+     * entity data flag for client synchronization.
+     * </p>
+     *
+     * @param value {@code true} to mark the entity as pregnant, otherwise {@code false}.
+     */
+    public void setPregnant(boolean value) {
+        if (!(this instanceof EntityIntelligent ei)) return;
+        ei.getMemoryStorage().put(CoreMemoryTypes.IS_PREGNANT, value);
+        ei.setDataFlag(EntityFlag.IS_PREGNANT, value);
+    }
+
+    /**
+     * Checks whether this entity is currently angry.
+     * <p>
+     * This state is stored in the entity AI memory under
+     * {@link CoreMemoryTypes#IS_ANGRY}.
+     * </p>
+     *
+     * @return {@code true} if the entity is angry, otherwise {@code false}.
+     */
+    public boolean isAngry() {
+        if (!(this instanceof EntityIntelligent ei)) return false;
+        return ei.getMemoryStorage().get(CoreMemoryTypes.IS_ANGRY);
+    }
+
+    /**
+     * Sets the angry state of this entity.
+     * <p>
+     * This updates both the AI memory and the {@link EntityFlag#ANGRY}
+     * entity data flag for client synchronization.
+     * </p>
+     *
+     * @param value {@code true} to mark the entity as angry, otherwise {@code false}.
+     */
+    public void setAngry(boolean value) {
+        if (!(this instanceof EntityIntelligent ei)) return;
+        ei.getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, value);
+        ei.setDataFlag(EntityFlag.ANGRY, value);
+    }
+
+    /**
+     * Marks this entity as angry and assigns a specific attack target.
+     * <p>
+     * The target is stored in the AI memory under
+     * {@link CoreMemoryTypes#ATTACK_TARGET}, and the angry state is enabled.
+     * </p>
+     *
+     * @param entity the entity that becomes the attack target.
+     */
+    public void setAngryOnTarget(Entity entity) {
+        if (!(this instanceof EntityIntelligent ei)) return;
+        ei.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity);
+        ei.getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, true);
+        ei.setDataFlag(EntityFlag.ANGRY, true);
+    }
+
+    /**
+     * Returns the {@link NameableComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:nameable} component and controls
+     * whether the entity can be renamed with name tags.
+     * </p>
+     *
+     * @return the {@link NameableComponent} if defined and not empty,
+     *         otherwise a default nameable configuration.
+     */
+    public NameableComponent getNameable() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.NAMEABLE)) {
+            NameableComponent nm = meta().getDefinitionNameableComponent(CustomEntityComponents.NAMEABLE);
+            if (nm != null && !nm.isEmpty()) return nm;
+        }
+        return DEFAULT_NAMEABLE;
+    }
+
+    /**
+     * Checks whether this entity can be renamed using a name tag.
+     *
+     * @return {@code true} if name tag renaming is allowed, otherwise {@code false}.
+     */
+    public boolean isNameable() {
+        return getNameable().resolvedAllowNameTagRenaming();
+    }
+
+    public boolean hasCustomName() {
+        return !this.getNameTag().isEmpty();
+    }
+
+    public String getNameTag() {
+        return this.getDataProperty(NAME, "");
+    }
+
+    public void setNameTag(String name) {
+        this.setDataProperty(NAME, name);
+    }
+
+    public boolean isNameTagVisible() {
+        return this.getDataFlag(EntityFlag.CAN_SHOW_NAME);
+    }
+
+    public void setNameTagVisible(boolean value) {
+        this.setDataFlag(EntityFlag.CAN_SHOW_NAME, value);
+    }
+
+    public boolean isNameTagAlwaysVisible() {
+        return this.getDataProperty(NAMETAG_ALWAYS_SHOW, (byte) 0) == 1;
+    }
+
+    public void setNameTagAlwaysVisible(boolean value) {
+        this.setDataProperty(NAMETAG_ALWAYS_SHOW, value ? 1 : 0);
+    }
+
+    /**
+     * Returns the {@link HealableComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:healable} component and defines
+     * which items can restore health to the entity and how healing is applied.
+     * </p>
+     *
+     * @return the {@link HealableComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not configured.
+     */
+    public HealableComponent getHealable() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.HEALABLE)) {
+            HealableComponent hl = meta().getDefinitionHealableComponent(CustomEntityComponents.HEALABLE);
+            if (hl != null && !hl.isEmpty()) return hl;
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether this entity supports healing via items.
+     *
+     * @return {@code true} if the entity defines a valid {@link HealableComponent},
+     *         otherwise {@code false}.
+     */
+    public boolean isHealable() {
+        HealableComponent healable = getHealable();
+        return healable != null && !healable.isEmpty();
+    }
+
+    /**
+     * Returns the {@link AgeableComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:ageable} component and defines
+     * growth behavior such as baby/adult state transitions and growth timing.
+     * </p>
+     *
+     * @return the {@link AgeableComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not configured.
+     */
+    public AgeableComponent getAgeable() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.AGEABLE)) {
+            AgeableComponent hl = meta().getDefinitionAgeableComponent(CustomEntityComponents.AGEABLE);
+            if (hl != null && !hl.isEmpty()) return hl;
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether this entity supports age and growth behavior.
+     *
+     * @return {@code true} if the entity defines a valid {@link AgeableComponent},
+     *         otherwise {@code false}.
+     */
+    public boolean isAgeable() {
+        AgeableComponent ageable = getAgeable();
+        return ageable != null && !ageable.isEmpty();
+    }
+
+    /**
+     * Checks whether the growth process of this entity is currently paused.
+     * <p>
+     * Growth can be paused only for baby entities and is stored in the entity
+     * NBT using {@link #TAG_ENTITY_GROW_PAUSED}.
+     * </p>
+     *
+     * @return {@code true} if growth is paused, otherwise {@code false}.
+     */
+    public final boolean isGrowthPaused() {
+        if (!isAgeable() || !isBaby()) return false;
+        return this.namedTag.contains(TAG_ENTITY_GROW_PAUSED) && this.namedTag.getBoolean(TAG_ENTITY_GROW_PAUSED);
+    }
+
+    /**
+     * Checks whether this entity is currently a baby.
+     *
+     * @return {@code true} if the {@link EntityFlag#BABY} data flag is set,
+     *         otherwise {@code false}.
+     */
+    public boolean isBaby() {
+        return ((Entity) this).getDataFlag(EntityFlag.BABY);
+    }
+
+    /**
+     * Sets whether this entity is a baby.
+     * <p>
+     * Updates the {@link EntityFlag#BABY} data flag and applies the corresponding scale.
+     * For ageable entities, this also initializes or clears growth-related NBT
+     * (birth date, remaining growth ticks, and pause state) and marks growth data as dirty.
+     * </p>
+     *
+     * @param value {@code true} to set as baby, {@code false} to set as adult.
+     */
+    public void setBaby(boolean value) {
+        this.setDataFlag(EntityFlag.BABY, value);
+        this.setScale(value ? 0.5f : 1f);
+
+        if (this.isAgeable()) {
+            if (!value) {
+                this.namedTag.remove(TAG_ENTITY_GROW_LEFT);
+                this.namedTag.remove(TAG_ENTITY_GROW_PAUSED);
+                ticksGrowLeft = -1;
+                growDirty = true;
+            } else {
+                if (!this.namedTag.contains(Entity.TAG_ENTITY_BIRTH_DATE)) {
+                    long nowSec = System.currentTimeMillis() / 1000L;
+                    this.namedTag.putLong(Entity.TAG_ENTITY_BIRTH_DATE, nowSec);
+                }
+                ticksGrowLeft = -1;
+                growDirty = true;
+            }
+        }
+    }
+
+    /**
+     * Sets whether growth is paused for this entity.
+     * <p>
+     * This applies only to baby, ageable entities and is stored in NBT using
+     * {@link #TAG_ENTITY_GROW_PAUSED}. Growth data is marked as dirty after updating.
+     * </p>
+     *
+     * @param paused {@code true} to pause growth, {@code false} to resume growth.
+     */
+    public final void setGrowthPaused(boolean paused) {
+        if (!isAgeable() || !isBaby()) return;
+
+        if (paused) {
+            this.namedTag.putBoolean(TAG_ENTITY_GROW_PAUSED, true);
+        } else {
+            this.namedTag.remove(TAG_ENTITY_GROW_PAUSED);
+        }
+        growDirty = true;
+    }
+
+    public int getBabyGrowTotalTicks() {
+        AgeableComponent ageable = getAgeable();
+        if (ageable == null || ageable.isEmpty()) return -1;
+
+        float d = ageable.resolvedDuration();
+        if (d == -1.0f) return -1;
+
+        int total = (int) (d * 20f);
+        if (total < 0) total = 0;
+        return total;
+    }
+
+    public final int getTicksGrowLeft() {
+        if (!isAgeable() || !isBaby()) return -1;
+        ensureGrowLoaded();
+        return ticksGrowLeft;
+    }
+
+    public final void reduceGrowLeft(int ticks) {
+        if (!isAgeable() || !isBaby() || isGrowthPaused()) return;
+
+        int total = getBabyGrowTotalTicks();
+        if (total == -1) return;
+
+        ensureGrowLoaded();
+        if (ticksGrowLeft <= 0) return;
+
+        ticksGrowLeft = Math.max(0, ticksGrowLeft - Math.max(0, ticks));
+        growDirty = true;
+    }
+
+    protected final void ensureGrowLoaded() {
+        if (!isAgeable() || !isBaby()) return;
+        if (ticksGrowLeft >= 0) return;
+
+        int total = getBabyGrowTotalTicks();
+        if (total == -1) {
+            this.namedTag.remove(TAG_ENTITY_GROW_LEFT);
+            ticksGrowLeft = -1;
+            growDirty = false;
+            return;
+        }
+
+        int left = this.namedTag.contains(TAG_ENTITY_GROW_LEFT) ? this.namedTag.getInt(TAG_ENTITY_GROW_LEFT) : total;
+
+        if (left < 0 || left > total) left = total;
+        ticksGrowLeft = left;
+    }
+
+    public final void babyFeedGrowBoost(Item item) {
+        if (!isAgeable() || !isBaby() || isGrowthPaused()) return;
+        if (item.isNull()) return;
+
+        AgeableComponent ageable = getAgeable();
+        if (ageable == null || ageable.isEmpty()) return;
+
+        int total = getBabyGrowTotalTicks();
+        if (total == -1) return;
+
+        ensureGrowLoaded();
+        if (ticksGrowLeft <= 0) return;
+
+        String id = item.getId();
+
+        Float growth = null;
+        for (AgeableComponent.FeedItem fi : ageable.resolvedFeedItems()) {
+            if (fi == null || fi.isEmpty()) continue;
+            if (id.equals(fi.item())) {
+                growth = fi.resolvedGrowth();
+                break;
+            }
+        }
+
+        total = Math.max(1, total);
+
+        if (growth == null) return;
+
+        int reduce = (int) Math.floor(growth * total);
+        reduce = Math.max(1, reduce);
+
+        ticksGrowLeft = Math.max(0, ticksGrowLeft - reduce);
+        growDirty = true;
+        this.playBabyGrowthParticle();
+
+        if (ticksGrowLeft == 0) {
+            setBaby(false);
+        }
+    }
+
+    protected final void restoreBabyStateFromNbt() {
+        if (!isAgeable()) return;
+
+        int total = getBabyGrowTotalTicks();
+        if (total == -1) {
+            namedTag.remove(TAG_ENTITY_GROW_LEFT);
+            namedTag.remove(TAG_ENTITY_GROW_PAUSED);
+            ticksGrowLeft = -1;
+            growDirty = false;
+            setDataFlag(EntityFlag.BABY, false, false);
+            setScale(1f);
+            return;
+        }
+
+        if (!namedTag.contains(TAG_ENTITY_GROW_LEFT)) {
+            setDataFlag(EntityFlag.BABY, false, false);
+            setScale(1f);
+            ticksGrowLeft = -1;
+            return;
+        }
+
+        int left = namedTag.getInt(TAG_ENTITY_GROW_LEFT);
+
+        if (left < 0) left = 0;
+        if (left > total) left = total;
+
+        boolean baby = left > 0;
+
+        setDataFlag(EntityFlag.BABY, baby, false);
+        setScale(baby ? 0.5f : 1f);
+
+        ticksGrowLeft = left;
+
+        if (!baby) {
+            namedTag.remove(TAG_ENTITY_GROW_PAUSED);
+        }
+    }
+
+    public final void playBabyGrowthParticle() {
+        for (int i = 0; i < 6; i++) {
+            this.level.addParticle(
+                new HappyVillagerParticle(
+                    this.add(
+                        Utils.rand(-0.3, 0.3),
+                        Utils.rand(0.3, 1.0),
+                        Utils.rand(-0.3, 0.3)
+                    )
+                )
+            );
+        }
+    }
+
+
+    public boolean canSit() {
+        return (this instanceof EntityCanSit);
+    }
+
+    public boolean isSitting() {
+        if (!(this instanceof EntityIntelligent ei)) return false;
+        return ei.getMemoryStorage().get(CoreMemoryTypes.IS_SITTING);
+    }
+
+    /** Returns the default movement speed of the entity */
+    public float getDefaultSpeed() {
+        Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
+        if (attr != null) {
+            return attr.getDefaultValue();
+        }
+
+        if (isCustomEntity() && meta().has(CustomEntityComponents.MOVEMENT)) {
+            MovementComponent mv = meta().getDefinitionMovementComponent(CustomEntityComponents.MOVEMENT);
+            if (mv != null) {
+                float v = mv.moveSpeed();
+                if (Float.isFinite(v) && v > 0f) return v;
+            }
+        }
+
+        return DEFAULT_SPEED;
+    }
+
+    /** Returns the default min movement speed of the entity (genetics only). */
+    public float getDefaultMinSpeed() {
+        Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
+        if (attr != null) {
+            float v = attr.getDefaultMinimum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return 0f;
+    }
+
+    /** Returns the default max movement speed of the entity (genetics only). */
+    public float getDefaultMaxSpeed() {
+        Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
+        if (attr != null) {
+            float v = attr.getDefaultMaximum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return getDefaultSpeed();
+    }
+
+    /**
+     * Returns the movement speed attribute range defined for this custom entity.
+     * <p>
+     * This reads the {@code minecraft:movement} component when it specifies a
+     * minimum and maximum speed value.
+     * </p>
+     *
+     * @return an {@link AttributesFloatRange} representing the movement speed range,
+     *         or {@code null} if the entity is not custom or no valid range is defined.
+     */
+    protected @Nullable AttributesFloatRange getMovementSpeedRange() {
+        if (!isCustomEntity()) return null;
+        if (!meta().has(CustomEntityComponents.MOVEMENT)) return null;
+
+        var mv = meta().getDefinitionMovementComponent(CustomEntityComponents.MOVEMENT);
+        if (mv == null) return null;
+
+        Float min = mv.rangeMin();
+        Float max = mv.rangeMax();
+        if (min == null || max == null) return null;
+
+        return new AttributesFloatRange(min, max);
+    }
+
+    protected void applyInitialMovementSpeedFromRange() {
+        if (this.isPlayer) return;
+
+        // 0) If NBT already has it, respect it
+        Attribute persisted = this.attributes.get(Attribute.MOVEMENT_SPEED);
+        if (persisted != null) {
+            this.movementSpeed = persisted.getDefaultValue();
+            return;
+        }
+
+        float newDefaultMin = 0f;
+        float newDefaultMax = getDefaultSpeed();
+        if (newDefaultMax <= 0f) newDefaultMax = DEFAULT_SPEED;
+
+        // 1) Meta range
+        AttributesFloatRange range = getMovementSpeedRange();
+        if (range != null) {
+            // Build per-entity genetics if range was set
+            float value1 = range.roll();
+            float value2 = range.roll();
+            newDefaultMin = Math.min(value1, value2);
+            newDefaultMax = Math.max(value1, value2);
+        }
+
+        // 2) Persist attribute
+        Attribute attr = Attribute.getAttribute(Attribute.MOVEMENT_SPEED);
+        if (attr == null) return;
+
+        attr.setMinValue(0f);
+        attr.setMaxValue(newDefaultMax);
+
+        attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
+
+        attr.setDefaultValue(newDefaultMax);
+        attr.setValue(newDefaultMax);
+
+        this.attributes.put(attr.getId(), attr);
+        this.movementSpeed = newDefaultMax;
+    }
+
+    /** Returns the current movement speed of the entity */
+    public float getMovementSpeed() {
+        return this.movementSpeed;
+    }
+
+    /**
+     * @deprecated Movement multipliers should be implemented in behavior executors.
+     *
+     * <p>
+     * This method is kept for backward compatibility only.
+     * Bedrock entity definitions do not store movement multipliers;
+     * speed scaling is controlled by runtime behaviors such as
+     * follow, tempt, boost, or rider input.
+     * </p>
+     *
+     * <p>
+     * This field is currently used as a server-side tuning knob for
+     * legacy entities and will be removed once all movement behaviors
+     * implement proper runtime multipliers.
+     * </p>
+     *
+     * Planned removal: after 6 months (>= 2026-08-26).
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public float getSpeedMultiplier() {
+        if (isCustomEntity()) {
+            Float sm = meta().getSpeedMultiplier(CustomEntityComponents.DEFAULT_MOVEMENT_MULTIPLIER);
+            if (sm != null) return sm;
+        }
+        return 1.0f;
+    }
+
+    /** Returns the default flying speed of the entity */
+    public float getDefaultFlyingSpeed() {
+        return DEFAULT_FLYING_SPEED;
+    }
+
+    /** Returns the default flying speed of the entity */
+    public float getDefaultUnderWaterSpeed() {
+        return DEFAULT_UNDER_WATER_SPEED;
+    }
+
+    /** Returns the default movement speed of the entity inside lava */
+    public float getDefaultLavaMovementSpeed() {
+        return DEFAULT_LAVA_MOVEMENT_SPEED;
+    }
+
+    protected void applyInitialPowerJumpFlags() {
+        if (this.isPlayer) return;
+        if (!isRideable()) return;
+        if (!hasJumpStrength()) return;
+
+        this.setDataFlag(EntityFlag.CAN_POWER_JUMP, true);
+        this.entityDataMap.put(CHARGE_AMOUNT, (byte) 0);
+    }
+
+    public boolean hasGroundInputControlsMeta() {
+        if (!isCustomEntity()) return false;
+        return meta().has(CustomEntityComponents.INPUT_GROUND_CONTROLLED);
+    }
+
+    public boolean hasAirInputControlsMeta() {
+        if (!isCustomEntity()) return false;
+        return meta().has(CustomEntityComponents.INPUT_AIR_CONTROLLED);
+    }
+
+    protected boolean hasAnyInputControlMeta() {
+        return hasGroundInputControlsMeta() || hasAirInputControlsMeta();
+    }
+
+    protected void applyInitialInputControlFlags() {
+        if (this.isPlayer) return;
+        if (!isRideable()) return;
+        if (!hasAnyInputControlMeta()) return;
+
+        if (hasAirInputControlsMeta()) {
+            this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, true, false);
+            this.setDataFlag(EntityFlag.WASD_CONTROLLED, false, false);
+
+            this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, true, false);
+            this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, true, true);
+        } else {
+            this.setDataFlag(EntityFlag.WASD_CONTROLLED, true, false);
+            this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, false, false);
+
+            this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false, false);
+            this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false, true);
+        }
+    }
+
+    /** Relative offset used for attaching follower entities (fishing hook, lead, etc). */
+    public Vector3f getAttachmentOffset(Entity follower) {
+        return new Vector3f(0f, getHeight() * SEATED_FACTOR, 0f);
+    }
+
+    /**
+     * Returns the {@link TameableComponent} defined for this custom entity.
+     * <p>
+     * This corresponds to the {@code minecraft:tameable} component and defines
+     * taming behavior such as required items and taming conditions.
+     * </p>
+     *
+     * @return the {@link TameableComponent} if defined and not empty,
+     *         or {@code null} if the entity is not custom or the component
+     *         is not configured.
+     */
+    public TameableComponent getTameable() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.TAMEABLE)) {
+            TameableComponent tm = meta().getDefinitionTameableComponent(CustomEntityComponents.TAMEABLE);
+            if (tm != null && !tm.isEmpty()) return tm;
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether this entity supports taming behavior.
+     *
+     * @return {@code true} if the entity defines a valid {@link TameableComponent},
+     *         otherwise {@code false}.
+     */
+    public boolean isTameable() {
+        TameableComponent tameable = getTameable();
+        return tameable != null && !tameable.isEmpty();
+    }
+
+    /**
+     * Checks whether this entity is currently tamed.
+     *
+     * @return {@code true} if the {@link EntityFlag#TAMED} data flag is set,
+     *         otherwise {@code false}.
+     */
+    public boolean isTamed() {
+        return this.getDataFlag(EntityFlag.TAMED);
+    }
+
+    /**
+     * Sets the tamed state of this entity.
+     * <p>
+     * This updates the {@link EntityFlag#TAMED} data flag and stores the
+     * corresponding value in the entity NBT.
+     * </p>
+     *
+     * @param value {@code true} to mark the entity as tamed, otherwise {@code false}.
+     */
+    public void setTamed(boolean value) {
+        this.setDataFlag(EntityFlag.TAMED, value);
+        this.namedTag.putBoolean("Tamed", true);
+    }
+
+    /**
+     * Returns the owner name of this entity.
+     * <p>
+     * The owner name is stored in the AI memory under
+     * {@link CoreMemoryTypes#OWNER_NAME}.
+     * </p>
+     *
+     * @return the owner's player name, or {@code null} if no owner is assigned.
+     */
+    public String getOwnerName() {
+        if (!(this instanceof EntityIntelligent ei)) return null;
+        return ei.getMemoryStorage().get(CoreMemoryTypes.OWNER_NAME);
+    }
+
+    /**
+     * Sets the owner name for this entity.
+     *
+     * @param playerName the name of the player that owns the entity,
+     *                   or {@code null} to clear the owner.
+     */
+    public void setOwnerName(@Nullable String playerName) {
+        if (this instanceof EntityIntelligent ei) {
+            ei.getMemoryStorage().put(CoreMemoryTypes.OWNER_NAME, playerName);
+        }
+    }
+
+    public void onTameSuccess(Player player) {
+        EntityEventPacket packet = new EntityEventPacket();
+        this.setOwnerName(player.getName());
+        this.setTamed(true);
+        packet.eid = this.getId();
+        packet.event = EntityEventPacket.TAME_SUCCESS;
+        player.dataPacket(packet);
+
+        this.saveNBT();
+    }
+
+    public void onTameFail(Player player) {
+        EntityEventPacket packet = new EntityEventPacket();
+        packet.eid = this.getId();
+        packet.event = EntityEventPacket.TAME_FAIL;
+        player.dataPacket(packet);
+    }
+
+    /**
+     * Returns the owner player of this entity, if available.
+     * <p>
+     * The owner is primarily retrieved from the AI memory under
+     * {@link CoreMemoryTypes#OWNER}. If the stored reference is not available
+     * or the player is offline, the method attempts to resolve the owner using
+     * the stored owner name.
+     * </p>
+     *
+     * @return the owning {@link Player} if found and online,
+     *         otherwise {@code null}.
+     */
+    @Nullable public Player getOwner() {
+        if (this instanceof EntityIntelligent ei) {
+            var owner = ei.getMemoryStorage().get(CoreMemoryTypes.OWNER);
+            if (owner != null && owner.isOnline()) return owner;
+            else {
+                var ownerName = getOwnerName();
+                if (ownerName == null) return null;
+                owner = this.getServer().getPlayerExact(ownerName);
+            }
+            return owner;
+        }
+        return null;
+    }
+
+    public boolean hasOwner() {
+        return hasOwner(true);
+    }
+
+    public boolean hasOwner(boolean checkOnline) {
+        if (checkOnline) {
+            return getOwner() != null;
+        } else {
+            return getOwnerName() != null;
+        }
     }
 
     public final void scheduleUpdate() {
@@ -2022,6 +3897,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (ticks > this.fireTicks) {
             this.fireTicks = ticks;
         }
+    }
+
+    /**
+     * Checks whether this entity is immune to fire damage.
+     *
+     * @return {@code true} if the entity is fire immune, otherwise {@code false}.
+     */
+    public boolean isFireImmune() {
+        return fireProof;
+    }
+
+    /**
+     * Sets whether this entity is immune to fire damage.
+     * <p>
+     * This updates both the internal fire-proof state and the
+     * {@link EntityFlag#FIRE_IMMUNE} data flag for client synchronization.
+     * </p>
+     *
+     * @param isFireImmune {@code true} to make the entity immune to fire,
+     *                     otherwise {@code false}.
+     */
+    public void setFireImmune(boolean isFireImmune) {
+        this.fireProof = isFireImmune;
+        this.setDataFlag(EntityFlag.FIRE_IMMUNE, isFireImmune);
     }
 
     public float getAbsorption() {
@@ -2051,8 +3950,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * @deprecated Use {@link #canBePushedByEntities()} and/or {@link #canBePushedByPiston()} instead. <p>
      * If custom entitye use simpleBuilder.pusable() to define.
+     * Planned removal: after 6 months (>= 2026-08-26).
      */
-    @Deprecated
+    @Deprecated(since = "2.0.0", forRemoval = true)
     public boolean canBePushed() {
         return canBePushedByPiston();
     }
@@ -2171,7 +4071,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? this.getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
-            float damage = fallDistance - 3.255f - jumpBoost;
+            boolean rideable = this.isRideable();
+            boolean isRideJumping = rideable && (this instanceof EntityPhysical ef) && ef.isRideJumping();
+            float jumpReduction = this.canPowerJump() ? this.getRideJumpStrength() : 0f;
+            float damage = fallDistance - 3.255f - jumpBoost - jumpReduction;
 
             if (damage > 0) {
                 if (!this.isSneaking()) {
@@ -2180,7 +4083,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.getVector3(), VibrationType.HIT_GROUND));
                     }
                 }
-                this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
+                if (!rideable || !isRideJumping) {
+                    this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
+                }
             }
         }
 
@@ -2299,28 +4204,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
-    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
-        return false; //if false, normal player movement will proceed
-    }
-
-    public boolean isRideable() {
-        if (isCustomEntity()) {
-            return meta().getBoolean(CustomEntityComponents.RIDEABLE, false);
-        }
-
-        return false;
-    }
-
-    public boolean isRiderControl() {
-        if (isCustomEntity()) {
-            return meta().getBoolean(CustomEntityComponents.RIDE_CONTROL, false);
-        }
-
-        return false;
-    }
-
+    /** 
+     * return true if opening inventory, otherwise players inventory will be opnened. <p>
+     * If inventory is restricted to owner no inventory UI is opened
+     * */
     public boolean openInventory(Player player) {
-        return false; //return true if opening inventory, otherwise players inventory will be opnened
+        if (!this.hasInventory()) return false;
+        boolean isRestricted = this.getInventoryComponent().restrictToOwner();
+
+        if (this.isTamed()) {
+            if (isRestricted && !player.getName().equals(getOwnerName())) return false;
+            if (this instanceof InventoryHolder io) {
+                player.addWindow(io.getInventory());
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean onInteract(Player player, Item item) {
@@ -2411,7 +4310,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean isInsideOfSolid() {
-        double y = this.y + this.getEyeHeight();
+        double probeBaseY = this.y;
+
+        if (this.riding != null && this.seatRawOffset != null) {
+            probeBaseY = this.riding.y + this.seatRawOffset.y;
+        }
+
+        double y = probeBaseY + this.getEyeHeight();
         Block block = this.level.getBlock(
                 this.temporalVector.setComponents(
                         NukkitMath.floorDouble(this.x),
@@ -2420,9 +4325,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         );
 
         AxisAlignedBB bb = block.getBoundingBox();
-
-        return bb != null && block.isSolid() && !block.isTransparent() && bb.intersectsWith(this.getBoundingBox());
-
+        return bb != null && block.isSolid() && !block.isTransparent() && bb.isVectorInside(this.x, y, this.z);
     }
 
     public boolean isInsideOfFire() {
@@ -2435,7 +4338,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return false;
     }
 
-
     public <T extends Block> boolean collideWithBlock(Class<T> classType) {
         for (Block block : this.getCollisionBlocks()) {
             if (classType.isInstance(block)) {
@@ -2444,7 +4346,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
         return false;
     }
-
 
     public boolean isInsideOfLava() {
         for (Block block : this.getCollisionBlocks()) {
@@ -2580,19 +4481,49 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
-
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (this.noClip) {
             this.isCollidedVertically = false;
             this.isCollidedHorizontally = false;
             this.isCollided = false;
             this.onGround = false;
-        } else {
-            this.isCollidedVertically = movY != dy;
-            this.isCollidedHorizontally = (movX != dx || movZ != dz);
-            this.isCollided = (this.isCollidedHorizontally || this.isCollidedVertically);
-            this.onGround = (movY != dy && movY < 0);
+            return;
         }
+
+        this.isCollidedVertically = movY != dy;
+        this.isCollidedHorizontally = (movX != dx || movZ != dz);
+        this.isCollided = (this.isCollidedHorizontally || this.isCollidedVertically);
+
+        boolean onGroundByCollision = (movY < 0 && movY != dy);
+
+        boolean onGroundBySupport = false;
+        if (!onGroundByCollision && movY <= 0.0d && dy == movY) {
+            onGroundBySupport = hasSolidSupportBelow();
+        }
+
+        this.onGround = onGroundByCollision || onGroundBySupport;
+    }
+
+    private boolean hasSolidSupportBelow() {
+        if (this.noClip || this.boundingBox == null || this.level == null) return false;
+
+        AxisAlignedBB bb = this.boundingBox;
+        double feetY = bb.getMinY();
+
+        AxisAlignedBB below = new SimpleAxisAlignedBB(
+                bb.getMinX(), feetY - GROUND_PROBE_DEPTH, bb.getMinZ(),
+                bb.getMaxX(), feetY + GROUND_EPS,         bb.getMaxZ()
+        );
+
+        var cubes = this.level.fastCollisionCubes(this, below, false);
+        if (cubes.isEmpty()) return false;
+
+        for (AxisAlignedBB c : cubes) {
+            double top = c.getMaxY();
+            double d = feetY - top;
+            if (d >= -GROUND_EPS && d <= GROUND_PROBE_DEPTH) return true;
+        }
+        return false;
     }
 
     public List<Block> getBlocksAround() {
@@ -3399,8 +5330,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * @deprecated Use {@link #hasTag(String)} instead.
+     * Planned removal: after 6 months (>= 2026-08-26).
      */
-    @Deprecated
+    @Deprecated(since = "2.0.0", forRemoval = true)
     public boolean containTag(String tag) {
         return hasTag(tag);
     }
@@ -3773,4 +5705,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         CustomEntityDefinition def = getCustomEntityDefinition();
         return def == null ? new CustomEntityDefinition.Meta() : CustomEntityDefinition.metaOf(def.id());
     }
+
+    public boolean hasJumpStrength() {
+        Attribute existing = this.attributes.get(Attribute.HORSE_JUMP_STRENGTH);
+        return existing != null;
+    }
+
+    public boolean hasDashAction() {
+        return getDashAction() != null;
+    }
+
 }

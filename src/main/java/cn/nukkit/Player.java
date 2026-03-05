@@ -24,6 +24,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.components.NameableComponent;
+import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -587,6 +589,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
 
         this.needDimensionChangeACK = true;
+    }
+
+    @Override
+    public NameableComponent getNameable() {
+        return new NameableComponent(false, true);
     }
 
     @Override
@@ -2582,14 +2589,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public float getHeight() {
-        if (this.riding instanceof EntityHorse) {
-            return 1.1f;
-        }
-        return super.getHeight();
-    }
-
-    @Override
     public void setSwimming(boolean value) {
         // Stopping a swim at a height of 1 block will still send a STOPSWIMMING ACTION from the client, but the player will still be swimming height,so skip the action
         if (!value && level.getBlock(up()).isSolid() && level.getBlock(down()).isSolid()) {
@@ -4564,6 +4563,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Check if player has any UI opened.
+     */
+    public boolean isAnyUiOpen() {
+        if (openSignFront != null) return true;
+        if (!formWindows.isEmpty()) return true;
+        if (dialogWindows.estimatedSize() > 0) return true;
+        if (getTopWindow().isPresent()) return true;
+        if (inventoryOpen || enderChestOpen || fakeInventoryOpen) return true;
+        return !clientInputLocks.isEmpty();
+    }
 
     /**
      * Gets cursor inventory of the player.

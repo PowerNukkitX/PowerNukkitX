@@ -59,7 +59,7 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
     }
 
     @Override
-    public boolean isRiderControl() {
+    public boolean hasGroundInputControlsMeta() {
         return true;
     }
 

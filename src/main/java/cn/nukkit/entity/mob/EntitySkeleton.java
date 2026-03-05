@@ -18,6 +18,9 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.weather.EntityLightningBolt;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -90,6 +93,18 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
             drops.add(Item.get(Item.ARROW, 0, arrows));
         }
 
+        for (Item equipped : this.getEquipmentInventory().getContents().values()) {
+            if (!equipped.isNull() && !equipped.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                drops.add(equipped.clone());
+            }
+        }
+
+        for (Item armor : this.getArmorInventory().getContents().values()) {
+            if (!armor.isNull() && !armor.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                drops.add(armor.clone());
+            }
+        }
+
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
@@ -109,6 +124,17 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
             burn(this);
         }
         return super.onUpdate(currentTick);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source instanceof EntityDamageByEntityEvent ev) {
+            if (ev.getDamager() instanceof EntityLightningBolt) {
+                ev.setCancelled(true);
+                return false;
+            }
+        }
+        return super.attack(source);
     }
 
     @Override

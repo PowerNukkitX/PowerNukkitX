@@ -9,13 +9,14 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
@@ -39,23 +40,6 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
 
     public EntityPolarBear(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(),
-                Set.of(
-                        new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 4, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
     }
 
     @Override
@@ -120,4 +104,63 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
     public Set<String> typeFamily() {
         return Set.of("polarbear", "mob");
     }
+
+    @Override
+    public AgeableComponent getAgeable() {
+        return new AgeableComponent(
+                null,
+                1200f,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                    new Behavior(
+                        new AnimalGrowExecutor(),
+                            all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                            ),
+                        1, 1, 1200
+                    )
+                ),
+                Set.of(
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
+                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                        4, 1
+                    ),
+                    new Behavior(
+                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                            new ProbabilityEvaluator(4, 10),
+                        1, 1, 100
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                            (entity -> true),
+                        1, 1
+                    )
+                ),
+                Set.of(
+                    new NearestPlayerSensor(8, 0, 20)
+                ),
+                Set.of(
+                    new WalkController(),
+                    new LookController(true, true),
+                    new FluctuateController()
+                ),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                this
+        );
+    }
+
 }

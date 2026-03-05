@@ -8,10 +8,25 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * An entity which can be named by name tags.
+ * @deprecated Use {@link Entity#getNameable()}, {@link Entity#isNameable()} and
+ * {@link Entity#setNameTag(String)} instead.
+ *
+ * <p>
+ * This interface is kept for backward compatibility only.
+ * Naming (name tag) logic has been centralized in {@link Entity} to provide a
+ * consistent API and interaction behavior across all entity types.
+ * </p>
+ *
+ * <p>
+ * Entity implementations that support name tags should override
+ * {@link Entity#getNameable()} (or {@link Entity#isNameable()}) instead of
+ * implementing this interface.
+ * 
+ * Planned removal: after 6 months (>= 2026-08-26).
  */
-
+@Deprecated(since = "2.0.0", forRemoval = true)
 public interface EntityNameable {
+    /*
     String getNameTag();
 
     void setNameTag(String nameTag);
@@ -52,4 +67,5 @@ public interface EntityNameable {
         }
         return false;
     }
+     */
 }

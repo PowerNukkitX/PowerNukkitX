@@ -21,7 +21,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
+ * {@code EntityIntelligent} abstracts an entity with a behavior group {@link IBehaviorGroup} (that is, with AI).
  */
 
 
@@ -31,7 +31,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     protected IBehaviorGroup behaviorGroup;
 
     /**
-     * 是否为活跃实体，如果实体不活跃，就应当降低AI运行频率
+     * Is it an active entity? If the entity is inactive, the AI's operating frequency should be reduced.
      */
     @Getter
     protected boolean isActive = true;
@@ -54,24 +54,25 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.behaviorGroup = requireBehaviorGroup();
+        super.initEntity();
     }
 
     /**
-     * 返回此实体持有的行为组{@link IBehaviorGroup} <br/>
-     * 默认实现只会返回一个空行为{@link EmptyBehaviorGroup}常量，若你想让实体具有AI，你需要覆写此方法
+     * Returns the behavior group {@link IBehaviorGroup} held by this entity. <p>
+     * The default implementation will only return an empty behavior constant {@link EmptyBehaviorGroup}.
+     * If you want the entity to have AI, you need to override this method.
      *
-     * @return 此实体持有的行为组
+     * @return This entity holds the behavioral group
      */
     public IBehaviorGroup getBehaviorGroup() {
         return behaviorGroup;
     }
 
     /**
-     * 请求一个行为组实例，此方法在实体初始化行为组时调用
+     * This method requests an instance of a behavior group; it is called when the entity initializes the behavior group.
      *
-     * @return 新创建的行为组
+     * @return Newly created behavior group
      */
     protected IBehaviorGroup requireBehaviorGroup() {
         return new EmptyBehaviorGroup(this);
@@ -80,9 +81,9 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Override
     public void asyncPrepare(int currentTick) {
         if (!isAlive()) return;
-        // 计算是否活跃
+        // Calculate whether it is active
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
-        if (!this.isImmobile()) { // immobile会禁用实体AI
+        if (!this.isImmobile()) { // immobile will disable physical AI.
             var behaviorGroup = getBehaviorGroup();
             if (behaviorGroup == null) return;
             behaviorGroup.collectSensorData(this);
@@ -144,10 +145,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     /**
-     * 返回实体在跳跃时要增加的motion y
+     * Return the motion y that the entity should increase when jumping.
      *
-     * @param jumpY 跳跃的高度
-     * @return 实体要增加的motion y
+     * @param jumpY Jump height
+     * @return The entity needs to increase motion y
      */
     public double getJumpingMotion(double jumpY) {
         if (this.isTouchingWater()) {

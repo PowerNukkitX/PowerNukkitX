@@ -19,6 +19,11 @@ public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    public boolean isAgeable() {
+        return true;
+    }
+
+    @Override
     public float getWidth() {
         return 0.6f;
     }

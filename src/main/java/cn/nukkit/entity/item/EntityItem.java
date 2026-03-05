@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -82,6 +83,11 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    public NameableComponent getNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
 
@@ -125,7 +131,7 @@ public class EntityItem extends Entity {
         this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
 
         if (this.item.isLavaResistant()) {
-            this.fireProof = true; // Netherite items are fireproof
+            this.setFireImmune(true);
         }
 
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
@@ -364,7 +370,7 @@ public class EntityItem extends Entity {
         return isDisplayOnly;
     }
 
-    public String getOwner() {
+    public String getOwnerName() {
         return owner;
     }
 

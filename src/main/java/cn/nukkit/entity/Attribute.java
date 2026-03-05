@@ -3,17 +3,13 @@ package cn.nukkit.entity;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
-import lombok.Getter;
 
-import javax.annotation.processing.Generated;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * 属性是作用于{@link Entity}上一个的增益/减益系统。
- * <p>
  * Attributes are buffs/debuffs systems that act on {@link Entity}.
  *
  * @author Box, MagicDroidX(code), PeratX @ Nukkit Project
@@ -28,14 +24,10 @@ public class Attribute implements Cloneable {
     public static final Attribute[] EMPTY_ARRAY = new Attribute[0];
 
     /**
-     * 伤害吸收
-     * <p>
      * ABSORPTION
      */
     public static final int ABSORPTION = 0;
     /**
-     * 饱食度
-     * <p>
      * SATURATION
      */
     public static final int SATURATION = 1;
@@ -95,7 +87,7 @@ public class Attribute implements Cloneable {
         addAttribute(HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0, 0.7101778f, 0.7101778f);
     }
 
-    //SINCE 1.21.30
+    // Since 1.21.30
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue) {
         return addAttribute(id, name, minValue, maxValue, defaultValue, true);
     }
@@ -117,8 +109,6 @@ public class Attribute implements Cloneable {
     }
 
     /**
-     * 将这个Attribute转换成NBT
-     * <p>
      * Convert this attribute to NBT
      * <p>
      * like
@@ -148,8 +138,6 @@ public class Attribute implements Cloneable {
     }
 
     /**
-     * 从NBT获取Attribute
-     * <p>
      * Get the Attribute from NBT
      * <p>
      * like
@@ -172,22 +160,27 @@ public class Attribute implements Cloneable {
         if (NBT.containsString("Name")
                 && NBT.containsFloat("Base")
                 && NBT.containsFloat("Current")
-                && NBT.containsFloat("DefaultMax")
-                && NBT.containsFloat("DefaultMin")
                 && NBT.containsFloat("Max")
                 && NBT.containsFloat("Min")) {
-            return Attribute.getAttributeByName(NBT.getString("Name"))
-                    .setMinValue(NBT.getFloat("Min"))
-                    .setMaxValue(NBT.getFloat("Max"))
-                    .setValue(NBT.getFloat("Current"))
-                    .setDefaultValue(NBT.getFloat("Base"));
+            Attribute attr = Attribute.getAttributeByName(NBT.getString("Name"));
+            attr.setMinValue(NBT.getFloat("Min"));
+            attr.setMaxValue(NBT.getFloat("Max"));
+
+            // backward compat: if DefaultMin/DefaultMax missing, fall back to Min/Max
+            float defMax = NBT.containsFloat("DefaultMax") ? NBT.getFloat("DefaultMax") : NBT.getFloat("Max");
+            float defMin = NBT.containsFloat("DefaultMin") ? NBT.getFloat("DefaultMin") : NBT.getFloat("Min");
+            attr.setDefaultMaximum(defMax);
+            attr.setDefaultMinimum(defMin);
+            attr.setDefaultValue(Math.min(Math.max(NBT.getFloat("Base"), attr.getMinValue()), attr.getMaxValue()));
+            attr.setValue(NBT.getFloat("Current"), true);
+
+            return attr;
         }
         throw new IllegalArgumentException("NBT format error");
     }
 
+
     /**
-     * 获取对应id的{@link Attribute}。
-     * <p>
      * Get the {@link Attribute} of the corresponding id.
      *
      * @param id the id
@@ -201,8 +194,6 @@ public class Attribute implements Cloneable {
     }
 
     /**
-     * 获取对应名字的{@link Attribute}。
-     * <p>
      * Get the {@link Attribute} of the corresponding name.
      *
      * @param name name
@@ -269,6 +260,22 @@ public class Attribute implements Cloneable {
             value = Math.min(Math.max(value, this.getMinValue()), this.getMaxValue());
         }
         this.currentValue = value;
+        return this;
+    }
+
+    public Attribute setDefaultMinimum(float defaultMinimum) {
+        if (defaultMinimum > this.defaultMaximum) {
+            throw new IllegalArgumentException("DefaultMinimum " + defaultMinimum + " is bigger than DefaultMaximum " + this.defaultMaximum);
+        }
+        this.defaultMinimum = defaultMinimum;
+        return this;
+    }
+
+    public Attribute setDefaultMaximum(float defaultMaximum) {
+        if (defaultMaximum < this.defaultMinimum) {
+            throw new IllegalArgumentException("DefaultMaximum " + defaultMaximum + " is smaller than DefaultMinimum " + this.defaultMinimum);
+        }
+        this.defaultMaximum = defaultMaximum;
         return this;
     }
 

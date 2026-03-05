@@ -12,7 +12,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.Damage;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -86,6 +86,16 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
+    public boolean isFireImmune() {
+        return true;
+    }
+
+    @Override
+    public NameableComponent getNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
 
@@ -100,8 +110,8 @@ public class EntityFallingBlock extends Entity {
 
             breakOnLava = namedTag.getBoolean("BreakOnLava");
             breakOnGround = namedTag.getBoolean("BreakOnGround");
-            this.fireProof = true;
-            this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
+            //this.fireProof = true;
+            //this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
 
             setDataProperty(VARIANT, blockState.blockStateHash());
         }

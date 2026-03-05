@@ -2,6 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
@@ -94,6 +95,11 @@ public class EntityXpOrb extends Entity {
     @Override
     public boolean canCollide() {
         return false;
+    }
+
+    @Override
+    public NameableComponent getNameable() {
+        return DEFAULT_NOT_NAMEABLE;
     }
 
     @Override

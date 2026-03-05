@@ -4,21 +4,26 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySwimmable;
+import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.PlayerAuthInputPacket;
 import cn.nukkit.utils.MinecartType;
 
+import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Snake1999
  * @since 2016/1/30
  */
+// TODO: sitting offset is wrong when over rails
 public class EntityMinecart extends EntityMinecartAbstract {
 
     @Override
@@ -51,8 +56,21 @@ public class EntityMinecart extends EntityMinecartAbstract {
     }
 
     @Override
-    public boolean isRideable() {
-        return true;
+    public @Nullable RideableComponent getRideableData() {
+        return new RideableComponent(
+            0,
+            true,
+            RideableComponent.DismountMode.DEFAULT,
+            Set.of(),
+            "action.interact.ride.minecart",
+            1.375f,
+            true,
+            false,
+            1,
+            List.of(
+                new RideableComponent.Seat(0, 1, new Vector3f(0.0f, -0.2f, 0.0f), null, null, null, null)
+            )
+        );
     }
 
     @Override
@@ -84,7 +102,7 @@ public class EntityMinecart extends EntityMinecartAbstract {
                     continue;
                 }
 
-                this.mountEntity(entity);
+                this.mountEntity(entity, false);
                 update = true;
                 break;
             }

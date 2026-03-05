@@ -1,15 +1,10 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDirt;
-import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.block.BlockTurtleEgg;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityMarkVariant;
-import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
@@ -23,74 +18,61 @@ import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
+import cn.nukkit.entity.ai.executor.BreedingExecutor;
+import cn.nukkit.entity.ai.executor.RideableTameExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.TameHorseExecutor;
+import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
-import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.components.AgeableComponent;
+import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.EquippableComponent;
+import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.RideableComponent;
+import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.event.block.FarmLandDecayEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.entity.EntityFallEvent;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Location;
-import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.AuthInputAction;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
-import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, EntityOwnable, InventoryHolder {
+public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {
         return HORSE;
     }
 
-    private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
-    private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
-    private Map<String, Attribute> attributeMap;
-    private HorseInventory horseInventory;
-    private final AtomicInteger jumping = new AtomicInteger(-1);
-
-    private int jumpingTicks = 0;
-
     public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+
+    private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6};
+    private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4};
+    private HorseInventory<EntityHorse> entityInventory;
 
     @Override
     public float getWidth() {
@@ -109,150 +91,108 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
+    public boolean isEquine() {
+        return true;
+    }
+
+    @Override
     public boolean isRideable() {
+        if (this.isBaby()) return false;
         return true;
     }
 
     @Override
-    public boolean isRiderControl() {
+    public @Nullable RideableComponent getRideableData() {
+        boolean crounchingSkipInteract = this.isTamed();
+        Set<String> riders = crounchingSkipInteract ? Set.of("player") : Set.of("player", "baby_zombie", "baby_husk");
+
+        return new RideableComponent(
+                0,
+                crounchingSkipInteract,
+                RideableComponent.DismountMode.DEFAULT,
+                riders,
+                "action.interact.mount",
+                0.0f,
+                false,
+                false,
+                1,
+                List.of(
+                    new RideableComponent.Seat(
+                        0,
+                        1,
+                        new Vector3f(0.0f, 1.1f, -0.2f),
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                )
+        );
+    }
+
+    @Override
+    public RideableComponent.InputType getInputControlType() {
+        return RideableComponent.InputType.GROUND;
+    }
+
+    @Override
+    public boolean canBeSaddled() {
         return true;
     }
 
     @Override
-    public boolean openInventory(Player player) {
-        if (hasOwner(false) && getOwnerName().equals(player.getName())) {
-            player.addWindow(getInventory());
-            return true;
-        }
-
-        return false;
+    public @Nullable EquippableComponent getEquippableData() {
+        return new EquippableComponent(List.of(
+                new EquippableComponent.Slot(
+                        0,
+                        EquippableComponent.Type.SADDLE,
+                        Set.of("minecraft:saddle"),
+                        null
+                ),
+                new EquippableComponent.Slot(
+                        1,
+                        EquippableComponent.Type.HORSE_ARMOR,
+                        Set.of(
+                            ItemID.LEATHER_HORSE_ARMOR,
+                            ItemID.IRON_HORSE_ARMOR,
+                            ItemID.GOLDEN_HORSE_ARMOR,
+                            ItemID.DIAMOND_HORSE_ARMOR,
+                            ItemID.COPPER_HORSE_ARMOR,
+                            ItemID.NETHERITE_HORSE_ARMOR
+                        ),
+                        null
+                )
+            ));
     }
 
     @Override
-    public void initEntity() {
-        attributeMap = new HashMap<>();
-        if (this.namedTag.containsList("Attributes")) {
-            for (var nbt : this.namedTag.getList("Attributes", CompoundTag.class).getAll()) {
-                attributeMap.put(nbt.getString("Name"), Attribute.fromNBT(nbt));
-            }
-        } else {
-            for (var attribute : randomizeAttributes()) {
-                attributeMap.put(attribute.getName(), attribute);
-            }
-        }
-        this.setMaxHealth((int) Math.ceil(attributeMap.get("minecraft:health").getMaxValue()));
-        this.setMovementSpeed(attributeMap.get("minecraft:movement").getValue());
-        super.initEntity();
-
-        this.horseInventory = new HorseInventory(this);
-
-        ListTag<CompoundTag> inventoryTag;
-        if (this.namedTag.containsList("Inventory")) {
-            inventoryTag = this.namedTag.getList("Inventory", CompoundTag.class);
-            Item item0 = NBTIO.getItemHelper(inventoryTag.get(0));
-            Item item1 = NBTIO.getItemHelper(inventoryTag.get(1));
-
-            if (item0.isNull()) {
-                this.setDataFlag(EntityFlag.SADDLED, false);
-                this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
-                this.setDataFlag(EntityFlag.CAN_POWER_JUMP, false);
-            } else {
-                this.getInventory().setItem(0, item0);
-            }
-
-            if (!item1.isNull()){
-                this.getInventory().setItem(1, item1);
-            }
-        } else {
-            this.setDataFlag(EntityFlag.SADDLED, false);
-            this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
-            this.setDataFlag(EntityFlag.CAN_POWER_JUMP, false);
-        }
-        this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
-        this.setDataFlag(EntityFlag.CAN_CLIMB, true);
-        this.setDataFlag(EntityFlag.HAS_COLLISION, true);
-
-        if (!hasVariant()) {
-            this.setVariant(randomVariant());
-        }
-        if (!hasMarkVariant()) {
-            this.setMarkVariant(randomMarkVariant());
-        }
+    public @Nullable AttributesFloatRange getHealthRange() {
+        return new AttributesFloatRange(15f, 30f);
     }
 
     @Override
-    public void saveNBT() {
-        super.saveNBT();
-        ListTag<CompoundTag> inventoryTag = new ListTag<>();
-        if (this.getInventory() != null) {
-            Item item0 = this.getInventory().getItem(0);
-            Item item1 = this.getInventory().getItem(1);
-            inventoryTag.add(NBTIO.putItemHelper(item0, 0));
-            inventoryTag.add(NBTIO.putItemHelper(item1, 1));
-        }
-        this.namedTag.putList("Inventory", inventoryTag);
-
-        ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
-        for (var attribute : this.attributeMap.values()) {
-            compoundTagListTag.add(Attribute.toNBT(attribute));
-        }
-        this.namedTag.putList("Attributes", compoundTagListTag);
+    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
+        return new AttributesFloatRange(0.4f, 1.0f);
     }
 
     @Override
-    public void setHealth(float health) {
-        super.setHealth(health);
-        if (this.isAlive()) {
-            Attribute attr = this.attributeMap.get("minecraft:health")
-                    .setDefaultValue(this.getMaxHealth())
-                    .setMaxValue(this.getMaxHealth())
-                    .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
-            pk.entityId = this.getId();
-            Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
-        }
+    protected @Nullable AttributesFloatRange getMovementSpeedRange() {
+        return new AttributesFloatRange(0.1125f, 0.3375f);
     }
 
     @Override
-    public void setMaxHealth(int maxHealth) {
-        super.setMaxHealth(maxHealth);
-        Attribute attr = this.attributeMap.get("minecraft:health")
-                .setMaxValue(maxHealth)
-                .setDefaultValue(maxHealth)
-                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        if (this.isAlive()) {
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
-            pk.entityId = this.getId();
-            Server.broadcastPacket(this.getViewers().values().toArray(Player.EMPTY_ARRAY), pk);
-        }
+    protected double getStepHeight() {
+        return 1.0625f;
     }
 
     @Override
-    public Item[] getDrops(@NotNull Item weapon) {
-        List<Item> drops = new ArrayList<>();
+    protected double getStepHeightControlled() {
+        return 1.0625f;
+    }
 
-        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
-
-        if (Utils.rand(0, 2) != 0) {
-            int leatherAmount = Utils.rand(0, 2 + looting);
-            if (leatherAmount > 0) {
-                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
-            }
-        }
-
-        Item armor = getHorseArmor();
-        if (!armor.isNull()) {
-            drops.add(armor);
-        }
-
-        Item saddle = getSaddle();
-        if (!saddle.isNull()) {
-            drops.add(saddle);
-        }
-
-        return drops.toArray(Item.EMPTY_ARRAY);
+    @Override
+    protected double getStepHeightJumpPrevented() {
+        return 0.5625;
     }
 
     @Override
@@ -280,36 +220,261 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return MARK_VARIANTS;
     }
 
-    public AtomicInteger getJumping() {
-        return jumping;
+    @Override
+    public @Nullable BreedableComponent getBreedable() {
+        return new BreedableComponent(
+                null,
+                null,
+                BreedableComponent.blendAttributesOf(
+                    Attribute.MAX_HEALTH,
+                    Attribute.MOVEMENT_SPEED,
+                    Attribute.HORSE_JUMP_STRENGTH
+                ),
+                null,
+                Set.of(
+                    ItemID.GOLDEN_CARROT,
+                    ItemID.GOLDEN_APPLE,
+                    ItemID.ENCHANTED_GOLDEN_APPLE
+                ),
+                List.of(
+                    new BreedableComponent.BreedsWith(EntityID.HORSE, EntityID.HORSE),
+                    new BreedableComponent.BreedsWith(EntityID.DONKEY, EntityID.MULE)
+                ),
+                null,
+                null,
+                null,
+                null,
+                false,
+                new BreedableComponent.MutationFactor(0.111f, 0.2f, null),
+                null,
+                null,
+                true,
+                null
+        );
     }
+
+    @Override
+    public HealableComponent getHealable() {
+        return new HealableComponent(
+                List.of(
+                    new HealableComponent.Item(BlockID.WHEAT, 2),
+                    new HealableComponent.Item(BlockID.HAY_BLOCK, 20),
+                    new HealableComponent.Item(ItemID.SUGAR, 1),
+                    new HealableComponent.Item(ItemID.APPLE, 3),
+                    new HealableComponent.Item(ItemID.CARROT, 3),
+                    new HealableComponent.Item(ItemID.GOLDEN_CARROT, 4),
+                    new HealableComponent.Item(ItemID.GOLDEN_APPLE, 10),
+                    new HealableComponent.Item(ItemID.ENCHANTED_GOLDEN_APPLE, 10)
+                )
+        );
+    }
+
+    @Override
+    public AgeableComponent getAgeable() {
+        return new AgeableComponent(
+                null,
+                1200f,
+                List.of(
+                    new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
+                    new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.15f),
+                    new AgeableComponent.FeedItem(ItemID.SUGAR, 0.025f),
+                    new AgeableComponent.FeedItem(ItemID.APPLE, 0.05f),
+                    new AgeableComponent.FeedItem(ItemID.CARROT, 0.05f),
+                    new AgeableComponent.FeedItem(ItemID.GOLDEN_CARROT, 0.05f),
+                    new AgeableComponent.FeedItem(ItemID.GOLDEN_APPLE, 0.2f),
+                    new AgeableComponent.FeedItem(ItemID.ENCHANTED_GOLDEN_APPLE, 0.2f)
+                ),
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public @Nullable InventoryComponent getInventoryComponent() {
+        return new InventoryComponent(
+                null,
+                false,
+                InventoryComponent.Type.HORSE,
+                2,
+                false,
+                false
+        );
+    }
+
+    @Override
+    public HorseInventory<EntityHorse> getInventory() {
+        ensureInventories();
+        return entityInventory;
+    }
+
+    private void ensureInventories() {
+        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getInventoryComponent().size());
+    }
+
+    @Override
+    public void initEntity() {
+        super.initEntity();
+
+        // Load items
+        ensureInventories();
+        if (namedTag.containsList("Inventory")) {
+            entityInventory.load(namedTag.getList("Inventory", CompoundTag.class));
+        }
+
+        if (!hasVariant()) {
+            this.setVariant(randomVariant());
+        }
+        if (!hasMarkVariant()) {
+            this.setMarkVariant(randomMarkVariant());
+        }
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+        getInventory().sendEquippedVisuals(player);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        var inv = getInventory();
+        namedTag.putList("Inventory", inv.save(isChested()));
+    }
+
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        ArrayList<Item> drops = new ArrayList<>();
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+
+        if (Utils.rand(0, 2) != 0) {
+            int leatherAmount = Utils.rand(0, 2 + looting);
+            if (leatherAmount > 0) {
+                drops.add(Item.get(Item.LEATHER, 0, leatherAmount));
+            }
+        }
+
+        // Drop Ride Inventory
+        ensureInventories();
+        drops.addAll(Arrays.asList(HorseInventory.getInventoryDrops(getInventory(), this)));
+
+        if (drops.isEmpty()) return Item.EMPTY_ARRAY;
+        return drops.toArray(new Item[0]);
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        boolean b = super.onUpdate(currentTick);
+
+        if (currentTick % 2 == 0) {
+            if (getRideJumping() != null && currentTick - getRideJumping().get() > 5 && this.isOnGround()) {
+                this.setDataFlag(EntityFlag.STANDING, false);
+                this.rideJumping.set(-1);
+            }
+        }
+        return b;
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        boolean superResult = super.onInteract(player, item, clickedPos);
+        if (superResult) return true;
+
+        // 2) Default: mount
+        mountEntity(player, true);
+        return false;
+    }
+
+    private static final Set<String> TEMPT_ITEMS = Set.of(
+        ItemID.GOLDEN_APPLE,
+        ItemID.ENCHANTED_GOLDEN_APPLE,
+        ItemID.GOLDEN_CARROT
+    );
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        //todo breed
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                //todo：Growth rate
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
-                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()
-                                )
-                                , 1, 1, 1200
-                        )
+                    new Behavior(
+                        new LoveTimeoutExecutor(20 * 30),
+                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                        3, 1
+                    ),
+                    new Behavior(
+                        new AnimalGrowExecutor(),
+                            all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                            ),
+                        1, 1, 1200
+                    )
                 ),
                 Set.of(
-                        new Behavior(new TameHorseExecutor(0.4f, 12, 40, true, 100, true, 10, 35), all(
+                    new Behavior(
+                        new BreedingExecutor(16, 200, 0.25f),
+                            all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                            ),
+                        5, 1
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
+                            all(
+                                e -> !e.isTamed(),
+                                e -> e.passengers.isEmpty(),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                            ),
+                        4, 1
+                    ),
+                    new Behavior(
+                        new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
+                            all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
                                 e -> !this.hasOwner(false)
-                        ), 4, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                            ),
+                        3, 1
+                    ),
+                    new Behavior(
+                        new TemptExecutor(1.2f, TEMPT_ITEMS),
+                            all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                            ),
+                        2, 1
+                    ),
+                    new Behavior(
+                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                            all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers == null || e.passengers.isEmpty()
+                            ),
+                        1, 1, 100
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                            (entity -> true),
+                        1, 1
+                    )
                 ),
-                Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                Set.of(
+                    new NearestPlayerSensor(8, 0, 20)
+                ),
+                Set.of(
+                    new WalkController(),
+                    new LookController(true, true),
+                    new FluctuateController()
+                ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
@@ -317,7 +482,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public void asyncPrepare(int currentTick) {
-        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) {
+        if (this.getRider() == null || !this.isTamed() || !this.isSaddled()) {
             isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
             if (!this.isImmobile()) {
                 var behaviorGroup = getBehaviorGroup();
@@ -344,314 +509,6 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 handlePassableBlockFrictionMovement();
             }
         }
-    }
-
-    @Override
-    public void fall(float fallDistance) {
-        if (this.hasEffect(EffectType.SLOW_FALLING)) {
-            return;
-        }
-
-        Location floorLocation = this.floor();
-        Block down = this.level.getBlock(floorLocation.down());
-
-        EntityFallEvent event = new EntityFallEvent(this, down, fallDistance);
-        this.server.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
-        }
-        fallDistance = event.getFallDistance();
-
-        if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
-            int jumpBoost = this.hasEffect(EffectType.JUMP_BOOST) ? getEffect(EffectType.JUMP_BOOST).getLevel() : 0;
-            float damage = fallDistance - 3 - jumpBoost - getClientMaxJumpHeight();
-
-            if (damage > 0 && (!isJumping())) {
-                this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.FALL, damage));
-            }
-        }
-
-        down.onEntityFallOn(this, fallDistance);
-
-        if (fallDistance > 0.75) {//todo: moving these into their own classes (method "onEntityFallOn()")
-            if (down.getId().equals(Block.FARMLAND)) {
-                if (onPhysicalInteraction(down, false)) {
-                    return;
-                }
-                var farmEvent = new FarmLandDecayEvent(this, down);
-                this.server.getPluginManager().callEvent(farmEvent);
-                if (farmEvent.isCancelled()) return;
-                this.level.setBlock(down, new BlockDirt(), false, true);
-                return;
-            }
-
-            Block floor = this.level.getTickCachedBlock(floorLocation);
-            if (floor instanceof BlockTurtleEgg) {
-                if (onPhysicalInteraction(floor, ThreadLocalRandom.current().nextInt(10) >= 3)) {
-                    return;
-                }
-                this.level.useBreakOn(this, null, null, true);
-            }
-        }
-    }
-
-    public boolean isJumping() {
-        return this.jumping.get() != -1;
-    }
-
-    @Override
-    public boolean onUpdate(int currentTick) {
-        boolean b = super.onUpdate(currentTick);
-        if (currentTick % 2 == 0) {
-            if (getJumping() != null && currentTick - getJumping().get() > 5 && this.isOnGround()) {
-                this.setDataFlag(EntityFlag.STANDING, false);
-                this.jumping.set(-1);
-            }
-        }
-        return b;
-    }
-
-    @Override
-    public boolean canCollideWith(Entity entity) {
-        return super.canCollideWith(entity) && entity != this.getRider();
-    }
-
-    @Override
-    public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
-        if (this.getRider() == null || this.getOwner() == null || this.getSaddle().isNull()) return false;
-        this.setMoveTarget(null);
-        this.setLookTarget(null);
-        if(pk.inputData.contains(AuthInputAction.JUMPING)){
-            jumpingTicks++;
-        } else if(jumpingTicks != -1) {
-            if(isOnGround()) {
-                float jumpStrength = jumpingTicks < 10 ? jumpingTicks * 0.1f : 0.8f + 2.0f / (jumpingTicks - 9) * 0.1f;
-                float maxMotionY = this.getClientMaxJumpHeight();
-                double motion = maxMotionY * jumpStrength * 8;
-                this.getJumping().set(this.getLevel().getTick());
-                this.motionX = 0;
-                this.motionY = 0;
-                this.motionZ = 0;
-                this.addTmpMoveMotion(new Vector3(0, motion, 0));
-                this.setDataFlag(EntityFlag.STANDING);
-            }
-            jumpingTicks = -1;
-            return true;
-        }
-
-        if (isOnGround() || level.getTick() - getJumping().get() <= 5) {
-            this.motionX = 0;
-            this.motionY = 0;
-            this.motionZ = 0;
-            Vector2 motion = pk.motion.normalize();
-            double yawRad = Math.toRadians(pk.yaw);
-
-            double cos = Math.cos(yawRad);
-            double sin = Math.sin(yawRad);
-
-            double x = motion.x * cos - motion.y * sin;
-            double y = motion.x * sin + motion.y * cos;
-
-            Vector2 rotated = new Vector2(x, y).multiply(getMovementSpeed());
-            Vector3 direction = getDirectionVector().normalize();
-
-            var dy = 0.0d;
-            if(pk.motion.length() != 0) {
-                Block[] collisionBlocks = level.getCollisionBlocks(this.getBoundingBox().getOffsetBoundingBox(direction.x, 0, direction.z));
-                // Calculate the height you need to move upward
-                double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
-                double diffY = maxY - this.getY();
-                if (diffY > 0.01 && diffY <= 1.1) { // 1.1 gives some leeway for stairs etc.
-                    dy += this.getJumpingMotion(diffY);
-                }
-            }
-            this.addTmpMoveMotion(new Vector3(rotated.x, dy, rotated.y));
-        } else {
-            if(!isJumping() || level.getTick() - getJumping().get() > 5) {
-                handleGravity();
-                handleFloatingMovement();
-            }
-        }
-        this.yaw = pk.yaw;
-        this.headYaw = 0;
-        broadcastMovement(false);
-        return true;
-    }
-
-    @Override
-    public @Nullable String getOwnerName() {
-        String ownerName = EntityOwnable.super.getOwnerName();
-        if (ownerName == null) {
-            this.setDataProperty(Entity.CONTAINER_TYPE, 0);
-            this.setDataProperty(Entity.CONTAINER_SIZE, 0);
-        } else {
-            //添加两个metadata这个才能交互物品栏
-            this.setDataProperty(Entity.CONTAINER_TYPE, 12);
-            this.setDataProperty(Entity.CONTAINER_SIZE, 2);
-        }
-        return ownerName;
-    }
-
-    @Override
-    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (this.getRider() != null) {
-            return false;
-        }
-        mountEntity(player);
-        return false;
-    }
-
-    @Override
-    public boolean mountEntity(Entity entity) {
-        this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, entity.getName());
-        super.mountEntity(entity, EntityLink.Type.RIDER);
-        return true;
-    }
-
-    @Override
-    public boolean dismountEntity(Entity entity) {
-        this.getMemoryStorage().put(CoreMemoryTypes.RIDER_NAME, null);
-        return super.dismountEntity(entity);
-    }
-
-    @Override
-    public Vector3f getMountedOffset(Entity entity) {
-        return new Vector3f(0, 2.42f, 0);
-    }
-
-    @Override
-    public HorseInventory getInventory() {
-        return horseInventory;
-    }
-
-    public @Nullable Entity getRider() {
-        String name = this.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME);
-        if (name != null) {
-            return Server.getInstance().getPlayerExact(name);
-        } else return null;
-    }
-
-    public float getClientMaxJumpHeight() {
-        return getAttributes().get(Attribute.HORSE_JUMP_STRENGTH).getValue();
-    }
-
-    /**
-     * @see HorseInventory#setSaddle(Item)
-     */
-    public void setSaddle(Item item) {
-        this.getInventory().setSaddle(item);
-    }
-
-    /**
-     * @see HorseInventory#setHorseArmor(Item)
-     */
-    public void setHorseArmor(Item item) {
-        this.getInventory().setHorseArmor(item);
-    }
-
-    /**
-     * @see HorseInventory#getSaddle()
-     */
-    public Item getSaddle() {
-        if(this.getInventory() == null) return Item.AIR;
-        return this.getInventory().getSaddle();
-    }
-
-    /**
-     * @see HorseInventory#getHorseArmor()
-     */
-    public Item getHorseArmor() {
-        if(this.getInventory() == null) return Item.AIR;
-        return this.getInventory().getHorseArmor();
-    }
-
-    /**
-     * 播放驯服失败的动画
-     * <p>
-     * Play an animation of a failed tamer
-     */
-    public void playTameFailAnimation() {
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
-        this.setDataFlag(EntityFlag.STANDING);
-    }
-
-    /**
-     * 停止播放驯服失败的动画
-     * <p>
-     * Stop playing the animation that failed to tame
-     */
-    public void stopTameFailAnimation() {
-        this.setDataFlag(EntityFlag.STANDING, false);
-    }
-
-    @Override
-    public void spawnTo(Player player) {
-        super.spawnTo(player);
-        Attribute attr = this.attributeMap.get("minecraft:health")
-                .setDefaultValue(this.getMaxHealth())
-                .setMaxValue(this.getMaxHealth())
-                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new Attribute[]{attr};
-        pk.entityId = this.getId();
-        player.dataPacket(pk);
-    }
-
-    protected float generateRandomMaxHealth() {
-        return 15.0F + (float) Utils.rand(0, 8) + (float) Utils.rand(0, 9);
-    }
-
-    protected float generateRandomJumpStrength() {
-        return (float) (0.4F + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D + Utils.random.nextDouble() * 0.2D);
-    }
-
-    protected float generateRandomSpeed() {
-        return (float) ((0.45F + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D + Utils.random.nextDouble() * 0.3D) * 0.25D);
-    }
-
-    protected Attribute[] randomizeAttributes() {
-        Attribute[] attributes = new Attribute[3];
-        attributes[0] = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(generateRandomSpeed());
-        float maxHealth = generateRandomMaxHealth();
-        attributes[1] = Attribute.getAttribute(Attribute.MAX_HEALTH).setMinValue(0).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(maxHealth);
-        attributes[2] = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setValue(generateRandomJumpStrength());
-        ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
-        compoundTagListTag.add(Attribute.toNBT(attributes[0])).add(Attribute.toNBT(attributes[1])).add(Attribute.toNBT(attributes[2]));
-        this.namedTag.putList("Attributes", compoundTagListTag);
-        return attributes;
-    }
-
-    @Override
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = this.getNetworkId();
-        addEntity.entityUniqueId = this.getId();
-        if (this instanceof CustomEntity) {
-            addEntity.id = this.getIdentifier();
-        }
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap.copy();
-        addEntity.attributes = this.attributeMap.values().toArray(Attribute.EMPTY_ARRAY);
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
-        }
-
-        return addEntity;
-    }
-
-    @Override
-    public boolean isBreedingItem(Item item) {
-        return item.getId().equals(Item.GOLDEN_APPLE) || item.getId().equals(Item.GOLDEN_CARROT);
     }
 
 }

@@ -24,7 +24,6 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
     @NotNull public String getIdentifier() {
         return BAT;
     }
-    
 
     public EntityBat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

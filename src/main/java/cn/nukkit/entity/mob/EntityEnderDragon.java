@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockEndGateway;
-import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTorch;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
 import cn.nukkit.entity.Attribute;
@@ -33,6 +32,7 @@ import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -64,6 +64,11 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
 
     public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public NameableComponent getNameable() {
+        return DEFAULT_NOT_NAMEABLE;
     }
 
     @Override

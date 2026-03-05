@@ -6,20 +6,29 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import javax.annotation.Nullable;
 
 /**
- * 实现这个接口的实体可以被驯服
+ * @deprecated Since 2.0.0 (2026-02-19).
+ * EntityOwnable handling was moved to {@link Entity}.
+ * Use {@link Entity#getTameable()} and {@link Entity#isTameable()} for the core, others methods still exist in {@link Entity}.
  *
+ * Planned removal: after 6 months (>= 2026-08-26).
  * @author BeYkeRYkt (Nukkit Project)
  */
+@Deprecated(since = "2.0.0", forRemoval = true)
 public interface EntityOwnable extends EntityComponent {
+    /*
     @Nullable
     default String getOwnerName() {
         return getMemoryStorage().get(CoreMemoryTypes.OWNER_NAME);
     }
+     */
 
+    /*
     default void setOwnerName(@Nullable String playerName) {
         getMemoryStorage().put(CoreMemoryTypes.OWNER_NAME, playerName);
     }
+     */
 
+    /*
     @Nullable
     default Player getOwner() {
         var owner = getMemoryStorage().get(CoreMemoryTypes.OWNER);
@@ -43,4 +52,5 @@ public interface EntityOwnable extends EntityComponent {
             return getOwnerName() != null;
         }
     }
+     */
 }

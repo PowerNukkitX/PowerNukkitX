@@ -37,6 +37,11 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    public boolean isAgeable() {
+        return true;
+    }
+
+    @Override
     public float getWidth() {
         if (this.isBaby()) {
             return 0.3f;

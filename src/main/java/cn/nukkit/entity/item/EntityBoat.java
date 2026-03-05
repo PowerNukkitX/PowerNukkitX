@@ -5,8 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.EntitySwimmable;
+import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
@@ -35,9 +34,10 @@ import cn.nukkit.network.protocol.types.AuthInteractionModel;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.InputMode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -230,7 +230,6 @@ public class EntityBoat extends EntityVehicle {
                 ticksInWater = 0;
                 hasUpdated = true;
             }
-            //hasUpdated = collectCollidingEntities() || hasUpdated;
         } else {
             hasUpdated = true;
             ticksInWater += tickDiff;
@@ -293,26 +292,6 @@ public class EntityBoat extends EntityVehicle {
         }
     }
 
-    private boolean collectCollidingEntities() {
-        if (this.passengers.size() >= 2) {
-            return false;
-        }
-
-        for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
-            if (entity.riding != null || !(entity instanceof EntityLiving) || entity instanceof Player || entity instanceof EntitySwimmable || isPassenger(entity)) {
-                continue;
-            }
-
-            this.mountEntity(entity);
-
-            if (this.passengers.size() >= 2) {
-                break;
-            }
-        }
-
-        return true;
-    }
-
     private boolean computeBuoyancy(double waterDiff) {
         if (waterDiff == Double.MAX_VALUE) {
             motionY -= getGravity();
@@ -342,64 +321,46 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    public void updatePassengers() {
-        updatePassengers(false);
+    public void updatePassengers(boolean sendLinks, boolean riderInitiated) {
+        super.updatePassengers(sendLinks, riderInitiated);
+        if (!passengers.isEmpty()) {
+            applyBoatSeatFlagsForAll();
+        }
     }
 
-    public void updatePassengers(boolean sendLinks) {
-        if (this.passengers.isEmpty()) {
-            return;
+    @Override
+    public @Nullable RideableComponent getRideableData() {
+        return new RideableComponent(
+            0,
+            true,
+            RideableComponent.DismountMode.DEFAULT,
+            Set.of(),
+            "action.interact.ride.boat",
+            1.375f,
+            true,
+            false,
+            2,
+            List.of(
+                new RideableComponent.Seat(0, 1, new Vector3f(0.0f, -0.2f, 0.0f), null, null, null, null),
+                new RideableComponent.Seat(1, 2, new Vector3f(0.2f, -0.2f, 0.0f), null, null, null, null)
+            )
+        );
+    }
+
+    @Override
+    public Vector3f getSeatOffsetFor(int seatIndex, Entity passenger) {
+        if (seatIndex < 0 || seatIndex > 1) {
+            return super.getSeatOffsetFor(seatIndex, passenger);
         }
 
-        for (Entity passenger : new ArrayList<>(passengers)) {
-            if (!passenger.isAlive()) {
-                dismountEntity(passenger);
-            }
-        }
+        Vector3f base = (passenger instanceof Player) ? RIDER_PLAYER_OFFSET : RIDER_OFFSET;
+        Vector3f extra = (seatIndex == 0) ? RIDER_PASSENGER_OFFSET : PASSENGER_OFFSET;
 
-        Entity ent;
-
-        if (passengers.size() == 1) {
-            (ent = this.passengers.get(0)).setSeatPosition(getMountedOffset(ent));
-            super.updatePassengerPosition(ent);
-
-            if (sendLinks) {
-                broadcastLinkPacket(ent, EntityLink.Type.RIDER);
-            }
-        } else if (passengers.size() == 2) {
-            if (!((ent = passengers.get(0)) instanceof Player)) { //swap
-                Entity passenger2 = passengers.get(1);
-
-                if (passenger2 instanceof Player) {
-                    this.passengers.set(0, passenger2);
-                    this.passengers.set(1, ent);
-
-                    ent = passenger2;
-                }
-            }
-
-            ent.setSeatPosition(getMountedOffset(ent).add(RIDER_PASSENGER_OFFSET));
-            super.updatePassengerPosition(ent);
-            if (sendLinks) {
-                broadcastLinkPacket(ent, EntityLink.Type.RIDER);
-            }
-
-            (ent = this.passengers.get(1)).setSeatPosition(getMountedOffset(ent).add(PASSENGER_OFFSET));
-
-            super.updatePassengerPosition(ent);
-
-            if (sendLinks) {
-                broadcastLinkPacket(ent, EntityLink.Type.PASSENGER);
-            }
-
-            //float yawDiff = ent.getId() % 2 == 0 ? 90 : 270;
-            //ent.setRotation(this.yaw + yawDiff, ent.pitch);
-            //ent.updateMovement();
-        } else {
-            for (Entity passenger : passengers) {
-                super.updatePassengerPosition(passenger);
-            }
-        }
+        return new Vector3f(
+            base.x + extra.x,
+            base.y + extra.y,
+            base.z + extra.z
+        );
     }
 
     public double getWaterLevel() {
@@ -430,50 +391,24 @@ public class EntityBoat extends EntityVehicle {
         return consumer.get();
     }
 
+    /**
+     * @deprecated seat link type is computed from seat index (0=RIDER, others=PASSENGER).
+     * Planned removal: after 6 months (>= 2026-08-26).
+     */
+    @Deprecated
     @Override
-    public boolean mountEntity(Entity entity) {
-        boolean player = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
-        EntityLink.Type mode = EntityLink.Type.PASSENGER;
-
-        if (!player && (entity instanceof Player || this.passengers.isEmpty())) {
-            mode = EntityLink.Type.RIDER;
-        }
-
+    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return super.mountEntity(entity, mode);
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
-        boolean r = super.mountEntity(entity, mode);
-        if (entity.riding == this) {
-            updatePassengers(true);
-
-            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
-            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
-            entity.setDataProperty(SEAT_HAS_ROTATION, this.passengers.indexOf(entity) != 1);
-            entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
-            entity.setRotation(yaw, entity.pitch);
-            entity.updateMovement();
-        }
-        return r;
-    }
-
-    @Override
-    protected void updatePassengerPosition(Entity passenger) {
-        updatePassengers();
-    }
-
-    @Override
     public boolean dismountEntity(Entity entity, boolean sendLinks) {
-        boolean r = super.dismountEntity(entity, sendLinks);
-
-        updatePassengers();
-        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false);
-        if (entity instanceof EntityHuman) {
-            ignoreCollision.add(entity);
+        boolean ok = super.dismountEntity(entity, sendLinks);
+        if (ok) {
+            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false);
+            if (entity instanceof EntityHuman) ignoreCollision.add(entity);
         }
-
-        return r;
+        return ok;
     }
 
     @Override
@@ -487,7 +422,7 @@ public class EntityBoat extends EntityVehicle {
             return false;
         }
 
-        super.mountEntity(player);
+        super.mountEntity(player, true);
         return super.onInteract(player, item, clickedPos);
     }
 
@@ -544,7 +479,6 @@ public class EntityBoat extends EntityVehicle {
     public boolean canPassThrough() {
         return false;
     }
-
 
     @Override
     public void kill() {
@@ -698,6 +632,27 @@ public class EntityBoat extends EntityVehicle {
         } else {
             paddleTimeRight += animationSpeed;
             paddleTimeLeft = 0f;
+        }
+    }
+
+    private void applyBoatSeatFlags(Entity entity, int idx) {
+        if (idx < 0) return;
+
+        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
+        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
+
+        entity.setDataProperty(SEAT_HAS_ROTATION, idx == 0);
+        if (idx == 0) {
+            entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
+        }
+
+        entity.setRotation(yaw, entity.pitch);
+        entity.updateMovement();
+    }
+
+    private void applyBoatSeatFlagsForAll() {
+        for (int i = 0; i < passengers.size(); i++) {
+            applyBoatSeatFlags(passengers.get(i), i);
         }
     }
 }

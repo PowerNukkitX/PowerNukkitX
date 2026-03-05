@@ -6,8 +6,10 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
-import cn.nukkit.entity.EntityNameable;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.effect.EffectType;
+import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityWanderingTrader;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerChangeArmorStandEvent;
@@ -36,7 +38,7 @@ import java.util.Objects;
 import java.util.Set;
 
 
-public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
+public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -122,6 +124,21 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
+    protected boolean trySetNameTag(Player player, Item item) {
+        NameableComponent nameable = getNameable();
+        if (nameable == null || nameable.isEmpty()) return false;
+
+        if (!item.hasCustomName()) return false;
+        if (!nameable.resolvedAllowNameTagRenaming()) return false;
+        if (!player.isSneaking()) return false;
+
+        this.setNameTag(item.getCustomName());
+        this.setNameTagVisible(nameable.resolvedAlwaysShow());
+        this.setPersistent(true);
+
+        return true;
+    }
+
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (player.isSpectator() || !isValid()) {
@@ -129,8 +146,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         // Name tag
-        if (!item.isNull() && item.getId() == ItemID.NAME_TAG && playerApplyNameTag(player, item, false)) {
-            return true;
+        if (!item.isNull() && item.getId().equals(Item.NAME_TAG) && isNameable()) {
+            if (trySetNameTag(player, item)) return true;
         }
 
         //Pose

@@ -27,6 +27,7 @@ import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
@@ -77,8 +78,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     public abstract MinecartType getType();
-
-    public abstract boolean isRideable();
 
     @Override
     public float getHeight() {
@@ -202,16 +201,16 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
 
             // Collisions
-            for (cn.nukkit.entity.Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
+            for (Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
                 if (!passengers.contains(entity) && entity instanceof EntityMinecartAbstract) {
                     entity.applyEntityCollision(this);
                 }
             }
 
-            Iterator<cn.nukkit.entity.Entity> linkedIterator = this.passengers.iterator();
+            Iterator<Entity> linkedIterator = this.passengers.iterator();
 
             while (linkedIterator.hasNext()) {
-                cn.nukkit.entity.Entity linked = linkedIterator.next();
+                Entity linked = linkedIterator.next();
 
                 if (!linked.isAlive()) {
                     if (linked.riding == this) {
@@ -296,26 +295,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
 
         if (blockInside == null) {
-            mountEntity(p);
+            mountEntity(p, true);
         }
 
         return super.onInteract(p, item, clickedPos);
     }
 
     @Override
-    public void applyEntityCollision(cn.nukkit.entity.Entity entity) {
+    public void applyEntityCollision(Entity entity) {
         if (entity != riding && !(entity instanceof Player && ((Player) entity).isSpectator())) {
-            if (entity instanceof EntityLiving
-                    && !(entity instanceof EntityHuman)
-                    && motionX * motionX + motionZ * motionZ > 0.01D
-                    && passengers.isEmpty()
-                    && entity.riding == null
-                    && blockInside == null) {
-                if (riding == null && devs) {
-                    mountEntity(entity);// TODO: rewrite (weird riding)
-                }
-            }
-
             double motiveX = entity.x - x;
             double motiveZ = entity.z - z;
             double square = motiveX * motiveX + motiveZ * motiveZ;
@@ -442,8 +430,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         motionZ = NukkitMath.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
 
         if (!hasUpdated) {
-            for (cn.nukkit.entity.Entity linked : passengers) {
-                linked.setSeatPosition(getMountedOffset(linked).add(0, 0.35f));
+            for (int i = 0; i < passengers.size(); i++) {
+                Entity linked = passengers.get(i);
+                Vector3f off = getSeatOffsetFor(i, linked);
+                linked.setSeatPosition(new Vector3f(off.x, off.y + 0.35f, off.z));
                 updatePassengerPosition(linked);
             }
 
@@ -520,7 +510,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         double playerYawPos; // PlayerYawPositive
         double motion;
 
-        cn.nukkit.entity.Entity linked = getPassenger();
+        Entity linked = getPassenger();
 
         if (linked instanceof EntityLiving) {
             expectedSpeed = currentSpeed;

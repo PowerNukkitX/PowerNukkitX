@@ -64,7 +64,6 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.network.protocol.UpdateTradePacket;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.Utils;
@@ -81,6 +80,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+
+// TODO: Rework villagers, it seems to be broken, movement stucked in walls, breeding logic not reliable, professions not changing when breaking blocks, etc...
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override
     @NotNull
@@ -217,7 +218,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.GOSSIP_TARGET),
                                 entity -> !isBaby()
                         ), 3, 1),
-                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE), 2, 1),
+                        new Behavior(
+                            new VillagerBreedingExecutor(16, 100, 0.5f),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE),
+                            2, 1
+                        ),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(
@@ -373,6 +378,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     public Block getSite() {
         return getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
+    }
+
+    @Override
+    public boolean isAgeable() {
+        return true;
     }
 
     @Override

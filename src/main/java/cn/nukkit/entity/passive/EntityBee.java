@@ -22,7 +22,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BeeMemorizedBlockSensor;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -169,20 +168,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return 0.5f;
     }
 
-    public boolean isAngry() {
-        return getMemoryStorage().get(CoreMemoryTypes.IS_ANGRY);
-    }
-
-    public void setAngry(boolean angry) {
-        getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, angry);
-        setDataFlag(EntityFlag.ANGRY, angry);
-    }
-
-    public void setAngry(Entity entity) {
-        setAngry(true);
-        getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity);
-    }
-
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (source.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
@@ -194,7 +179,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         if (source instanceof EntityDamageByEntityEvent event) {
             for (Entity entity : getLevel().getCollidingEntities(this.getBoundingBox().grow(4, 4, 4))) {
                 if (entity instanceof EntityBee bee && bee.hasSting()) {
-                    bee.setAngry(event.getDamager());
+                    bee.setAngryOnTarget(event.getDamager());
                 }
             }
         }

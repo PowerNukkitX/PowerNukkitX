@@ -1,7 +1,6 @@
 package cn.nukkit.entity.ai.executor.panda;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.data.EntityDataTypes;
