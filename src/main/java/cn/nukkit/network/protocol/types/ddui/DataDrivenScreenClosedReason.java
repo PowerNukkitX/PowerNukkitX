@@ -1,4 +1,4 @@
-package cn.nukkit.network.protocol.types;
+package cn.nukkit.network.protocol.types.ddui;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -25,7 +25,7 @@ public class ClientboundDataDrivenUIShowScreenPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeString(this.screenId);
         byteBuf.writeIntLE(this.formId);
-        byteBuf.writeOptional(OptionalValue.of(this.dataInstanceId), byteBuf::writeIntLE);
+        byteBuf.writeNotNull(this.dataInstanceId, byteBuf::writeIntLE);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.types.DataDrivenScreenClosedReason;
+import cn.nukkit.network.protocol.types.ddui.DataDrivenScreenClosedReason;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

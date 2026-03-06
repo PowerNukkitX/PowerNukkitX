@@ -2236,11 +2236,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sends data packet to network session
+     * Sends a data packet to network session
      * @param packet packet to send
      */
     public void dataPacket(DataPacket packet) {
         this.getSession().sendPacket(packet);
+    }
+
+    /**
+     * Sends a bunch of data packets to network session
+     * @param packets packets to send
+     */
+    public void sendDataPackets(DataPacket... packets) {
+        for (DataPacket packet : packets) {
+            this.dataPacket(packet);
+        }
     }
 
     /**
