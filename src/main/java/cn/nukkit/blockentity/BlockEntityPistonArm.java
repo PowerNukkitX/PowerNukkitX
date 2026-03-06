@@ -231,6 +231,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 }
             }
         } else namedTag.putList("AttachedBlocks", new ListTag<>());
+
+        // If the chunk was unloaded mid-move, resume ticking so the movement can complete.
+        if (this.state == 1 || this.state == 3 || (this.progress > 0f && this.progress < 1f)) {
+            this.scheduleUpdate();
+        }
     }
 
     public void saveNBT() {
