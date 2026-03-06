@@ -689,7 +689,11 @@ public class NetherBridgePieces {
                     IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
                         level.getLevel().getScheduler().scheduleDelayedTask(() -> {
-                            ((BlockEntityHolder<BlockEntityMobSpawner>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.BLAZE));
+                            Block block = level.getBlockAt(vec.x, vec.y, vec.z);
+                            if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityMobSpawner spawner) {
+                                int entityId = Registries.ENTITY.getEntityNetworkId(EntityID.BLAZE);
+                                spawner.setSpawnEntityType(entityId);
+                            }
                         },20);
                     }
                 }
@@ -1113,7 +1117,10 @@ public class NetherBridgePieces {
                 if (boundingBox.isInside(vec)) {
                     IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
-                        CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.getX(), vec.getY(), vec.getZ())).getOrCreateBlockEntity().getInventory(), random);
+                        Block block = level.getBlockAt(vec.getX(), vec.getY(), vec.getZ());
+                        if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityChest chest) {
+                            CHEST_POPULATOR.create(chest.getInventory(), random);
+                        }
                     }
                 }
             }
@@ -1192,7 +1199,10 @@ public class NetherBridgePieces {
                 if (boundingBox.isInside(vec)) {
                     IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
-                        CHEST_POPULATOR.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.getX(), vec.getY(), vec.getZ())).getOrCreateBlockEntity().getInventory(), random);
+                        Block block = level.getBlockAt(vec.getX(), vec.getY(), vec.getZ());
+                        if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityChest chest) {
+                            CHEST_POPULATOR.create(chest.getInventory(), random);
+                        }
                     }
                 }
             }
