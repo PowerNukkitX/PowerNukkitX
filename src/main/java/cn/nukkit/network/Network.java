@@ -112,7 +112,6 @@ public class Network implements NetworkInterface {
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
-                .option(RakChannelOption.RAK_PROTOCOL_VERSION, 11)
                 .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[] {11})
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
                 .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, RakServerCookieMode.ACTIVE)
