@@ -20,7 +20,6 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class LocatorBarPacket extends DataPacket {
     private final List<LocatorBarWaypointPayload> waypoints = new ObjectArrayList<>();
 

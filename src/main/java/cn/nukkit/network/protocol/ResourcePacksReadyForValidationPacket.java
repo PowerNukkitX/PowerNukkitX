@@ -11,7 +11,6 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class ResourcePacksReadyForValidationPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {

@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.utils.OptionalValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,12 @@ public class PartyChangedPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        setPartyId(byteBuf.readString());
+        setPartyId(byteBuf.readOptional(null, byteBuf::readString));
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeString(partyId);
+        byteBuf.writeNotNull(partyId, byteBuf::writeString);
     }
 
     @Override
