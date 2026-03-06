@@ -15,6 +15,9 @@ public class MemoryCategoryCounter {
         ACTOR,
         ACTOR_ANIMATION,
         ACTOR_RENDERING,
+        /**
+         * @deprecated since v944
+         */
         BALANCER,
         BLOCK_TICKING_QUEUES,
         BIOME_STORAGE,
@@ -90,6 +93,18 @@ public class MemoryCategoryCounter {
         SCRIPTING_CONTEXT_BINDINGS_GT,
         SCRIPTING_CONTEXT_RUN,
         DATA_DRIVEN_UI,
-        DATA_DRIVEN_UI_DEFS
+        DATA_DRIVEN_UI_DEFS,
+        LIGHT_VOLUME_MANAGER,
+        GAMEFACE,
+        GAMEFACE_SYSTEM,
+        GAMEFACE_DOM,
+        GAMEFACE_CSS,
+        GAMEFACE_DISPLAY,
+        GAMEFACE_TEMP_ALLOCATOR,
+        GAMEFACE_POOL_ALLOCATOR,
+        GAMEFACE_DUMP,
+        GAMEFACE_MEDIA,
+        GAMEFACE_JSON,
+        GAMEFACE_SCRIPT_ENGINE,
     }
 }

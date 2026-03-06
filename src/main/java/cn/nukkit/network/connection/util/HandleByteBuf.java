@@ -15,6 +15,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
+import cn.nukkit.network.protocol.types.ddui.DataStoreUpdate;
 import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
 import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
@@ -1922,5 +1924,47 @@ public class HandleByteBuf extends ByteBuf {
         final ArmorSlot slot = ArmorSlot.from(buffer.readUnsignedByte());
         final short damage = buffer.readShortLE();
         return new ArmorSlotAndDamagePair(slot, damage);
+    }
+
+    public void writeDataStoreUpdate(DataStoreUpdate update) {
+        writeString(update.getDataStoreName());
+        writeString(update.getProperty());
+        writeString(update.getPath());
+        writeUnsignedVarInt(update.getType().ordinal());
+        switch (update.getType()) {
+            case INT64:
+                writeLongLE((long) update.getData());
+                break;
+            case BOOLEAN:
+                writeBoolean((boolean) update.getData());
+                break;
+            case STRING:
+                writeString((String) update.getData());
+                break;
+        }
+        writeIntLE(update.getPropertyUpdateCount());
+        writeIntLE(update.getPathUpdateCount());
+    }
+
+    public DataStoreUpdate readDataStoreUpdate() {
+        final DataStoreUpdate update = new DataStoreUpdate();
+        update.setDataStoreName(readString());
+        update.setProperty(readString());
+        update.setPath(readString());
+        update.setType(DataStorePropertyType.from(readUnsignedVarInt()));
+        switch (update.getType()) {
+            case INT64:
+                update.setData(readLongLE());
+                break;
+            case BOOLEAN:
+                update.setData(readBoolean());
+                break;
+            case STRING:
+                update.setData(readString());
+                break;
+        }
+        update.setPropertyUpdateCount(readIntLE());
+        update.setPathUpdateCount(readIntLE());
+        return update;
     }
 }

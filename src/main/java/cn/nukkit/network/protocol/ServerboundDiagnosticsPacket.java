@@ -11,8 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ServerboundDiagnosticsPacket extends DataPacket {
     public float avgFps;
     public float avgServerSimTickTimeMS;

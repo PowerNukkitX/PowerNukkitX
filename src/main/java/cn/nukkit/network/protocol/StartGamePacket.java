@@ -6,6 +6,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.ExperimentEntry;
+import cn.nukkit.network.protocol.types.gathering.*;
 import cn.nukkit.network.protocol.types.telemetry.ServerTelemetryData;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -124,7 +125,7 @@ public class StartGamePacket extends DataPacket {
     /**
      * @since v924
      */
-    private boolean hasServerJoinInformation = false;
+    private ServerJoinInfo serverJoinInfo;
     /**
      * @since v924
      */
@@ -181,7 +182,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.clientSideGenerationEnabled);
         byteBuf.writeBoolean(this.blockNetworkIdsHashed); // blockIdsAreHashed
         byteBuf.writeBoolean(this.isSoundsServerAuthoritative); // serverAuthSounds
-        byteBuf.writeBoolean(this.hasServerJoinInformation); // hasServerJoinInformation
+        byteBuf.writeNotNull(this.serverJoinInfo, info -> writeServerJoinInfo(byteBuf, info)); // serverJoinInformation
 
         // Server telemetry data
         byteBuf.writeString(this.serverTelemetryData.getServerId()); // serverId
@@ -248,6 +249,33 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeByte(this.chatRestrictionLevel);
         byteBuf.writeBoolean(this.disablePlayerInteractions);
         /* Level settings end */
+    }
+
+    private void writeServerJoinInfo(HandleByteBuf byteBuf, ServerJoinInfo joinInfo) {
+        byteBuf.writeNotNull(joinInfo.getGatheringJoinInfo(), info -> writeGatheringJoinInfo(byteBuf, info));
+        byteBuf.writeNotNull(joinInfo.getStoreEntryPointInfo(), info -> writeStoreEntryPointInfo(byteBuf, info));
+        byteBuf.writeNotNull(joinInfo.getPresenceInfo(), info -> writePresenceInfo(byteBuf, info));
+    }
+
+    private void writeGatheringJoinInfo(HandleByteBuf byteBuf, GatheringJoinInfo info) {
+        byteBuf.writeUUID(info.getExperienceID());
+        byteBuf.writeString(info.getExperienceName());
+        byteBuf.writeUUID(info.getExperienceWorldID());
+        byteBuf.writeString(info.getExperienceWorldName());
+        byteBuf.writeString(info.getCreatorID());
+        byteBuf.writeUUID(info.getUnk());
+        byteBuf.writeUUID(info.getUnk1());
+        byteBuf.writeString(info.getServerID());
+    }
+
+    private void writeStoreEntryPointInfo(HandleByteBuf byteBuf, StoreEntryPointInfo info) {
+        byteBuf.writeString(info.getStoreID());
+        byteBuf.writeString(info.getStoreName());
+    }
+
+    private void writePresenceInfo(HandleByteBuf byteBuf, PresenceInfo info) {
+        byteBuf.writeString(info.getExperienceName());
+        byteBuf.writeString(info.getWorldName());
     }
 
     @Override
