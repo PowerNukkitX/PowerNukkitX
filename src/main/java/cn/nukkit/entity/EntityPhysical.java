@@ -435,7 +435,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     @Override
     public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
         if (rider.isAnyUiOpen()) return false;
+
         RideableComponent.InputType type = getInputControlType();
+        if (type == null) {
+            log.warn("Entity {} ({}) received rider input but has no RideableComponent.InputType defined.", this.getId(), this.getIdentifier());
+            return false;
+        }
+
         if (type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) {
             if (handleRideJumpOrDash(pk, type)) return true;
         }
@@ -444,7 +450,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             case GROUND -> onRiderInputGroundControlled(rider, pk);
             case AIR    -> onRiderInputAirControlled(rider, pk);
             case WATER  -> onRiderInputWaterControlled(rider, pk);
-            default     -> false;
         };
     }
 
