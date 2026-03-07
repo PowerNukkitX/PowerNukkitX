@@ -370,6 +370,7 @@ public class EntityItem extends Entity {
         return isDisplayOnly;
     }
 
+    @Override
     public String getOwnerName() {
         return owner;
     }

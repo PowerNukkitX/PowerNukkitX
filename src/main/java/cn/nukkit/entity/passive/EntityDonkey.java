@@ -346,23 +346,6 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
-        if (player.isSneaking()) {
-            Attribute attr = this.attributes.get(Attribute.MOVEMENT_SPEED);
-
-            if (attr != null) {
-                player.sendMessage("§e[Movement Debug]");
-                player.sendMessage("minValue: " + attr.getMinValue());
-                player.sendMessage("maxValue: " + attr.getMaxValue());
-                player.sendMessage("defaultMin: " + attr.getDefaultMinimum());
-                player.sendMessage("defaultMax: " + attr.getDefaultMaximum());
-                player.sendMessage("defaultValue: " + attr.getDefaultValue());
-                player.sendMessage("currentValue: " + attr.getValue());
-                player.sendMessage("entity.movementSpeed: " + this.movementSpeed);
-            } else {
-                player.sendMessage("§cMovement attribute not present.");
-            }
-        }
-
         if (this.isBaby()) return false;
 
         if (!item.isNull() && this.isTamed()) {
