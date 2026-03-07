@@ -8,7 +8,6 @@ import cn.nukkit.block.BlockGoldenRail;
 import cn.nukkit.block.BlockRail;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -27,7 +26,6 @@ import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
@@ -69,6 +67,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private double flyingZ = 0.95;
     private double maxSpeed = 0.4D;
     private boolean hasUpdated = false;
+    private boolean lastRailMountedState = false;
 
     public EntityMinecartAbstract(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -110,6 +109,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
         prepareDataProperty();
         setDataFlag(EntityFlag.COLLIDABLE);
+        lastRailMountedState = isOnRailForMountOffset();
     }
 
     @Override
@@ -158,6 +158,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
             // Ensure that the block is a rail
             if (Rail.isRailBlock(block)) {
+                hasUpdated = false;
                 processMovement(dx, dy, dz, (BlockRail) block);
                 // Activate the minecart/TNT
                 if (block instanceof BlockActivatorRail activator && activator.isActive()) {
@@ -172,6 +173,16 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             } else {
                 setFalling();
             }
+
+            boolean railMountedState = isOnRailForMountOffset();
+            if (railMountedState != lastRailMountedState) {
+                applySeatOffsets();
+                for (Entity passenger : passengers) {
+                    updatePassengerPosition(passenger);
+                }
+                lastRailMountedState = railMountedState;
+            }
+
             checkBlockCollision();
 
             // Minecart head
@@ -430,13 +441,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         motionZ = NukkitMath.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
 
         if (!hasUpdated) {
-            for (int i = 0; i < passengers.size(); i++) {
-                Entity linked = passengers.get(i);
-                Vector3f off = getSeatOffsetFor(i, linked);
-                linked.setSeatPosition(new Vector3f(off.x, off.y + 0.35f, off.z));
+            applySeatOffsets();
+            for (Entity linked : passengers) {
                 updatePassengerPosition(linked);
             }
-
             hasUpdated = true;
         }
 
@@ -858,5 +866,17 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public void setMaximumSpeed(double speed) {
         maxSpeed = speed;
+    }
+
+    protected boolean isOnRailForMountOffset() {
+        int dx = MathHelper.floor(this.x);
+        int dy = MathHelper.floor(this.y);
+        int dz = MathHelper.floor(this.z);
+
+        if (Rail.isRailBlock(level.getBlockIdAt(dx, dy, dz))) {
+            return true;
+        }
+
+        return Rail.isRailBlock(level.getBlockIdAt(dx, dy - 1, dz));
     }
 }

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Snake1999
  * @since 2016/1/30
  */
-// TODO: sitting offset is wrong when over rails
+// TODO: physics, movement and speed still do not match BDS
 public class EntityMinecart extends EntityMinecartAbstract {
 
     @Override
@@ -71,6 +71,17 @@ public class EntityMinecart extends EntityMinecartAbstract {
                 new RideableComponent.Seat(0, 1, new Vector3f(0.0f, -0.2f, 0.0f), null, null, null, null)
             )
         );
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity passenger) {
+        Vector3f base = super.getMountedOffset(passenger);
+
+        if (isOnRailForMountOffset()) {
+            return new Vector3f(base.x, base.y - 0.5f, base.z);
+        }
+
+        return base;
     }
 
     @Override
