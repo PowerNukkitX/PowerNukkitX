@@ -1,7 +1,6 @@
 package cn.nukkit.entity.ai.executor.panda;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.data.EntityDataTypes;
@@ -49,6 +48,6 @@ public class SittingExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataFlag(EntityFlag.SITTING, false);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 0);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 0);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
     }
 }

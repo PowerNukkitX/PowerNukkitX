@@ -17,12 +17,12 @@ public abstract class EntityBoss extends EntityMob {
     protected Sound blockBreakSound = null;
 
     @Override
-    public void setHealth(float health) {
-        super.setHealth(health);
+    public void setHealthCurrent(float health) {
+        super.setHealthCurrent(health);
         BossEventPacket pkBoss = new BossEventPacket();
         pkBoss.bossEid = this.id;
         pkBoss.type = BossEventPacket.TYPE_HEALTH_PERCENT;
-        pkBoss.healthPercent = health / getMaxHealth();
+        pkBoss.healthPercent = health / getHealthMax();
         Server.broadcastPacket(getViewers().values(), pkBoss);
     }
 

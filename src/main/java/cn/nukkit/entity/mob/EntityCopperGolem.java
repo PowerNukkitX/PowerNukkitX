@@ -32,6 +32,8 @@ import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -64,6 +66,7 @@ import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -160,7 +163,6 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(12);
         super.initEntity();
         if(!namedTag.containsString("oxidationLevel")) {
             namedTag.putString("oxidationLevel", Oxidation.UNOXIDIZED.getName());
@@ -305,6 +307,16 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     @Override
     public float getWidth() {
         return 0.49f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(12);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.2f);
     }
 
     @Override

@@ -22,8 +22,12 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
+import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -47,6 +51,8 @@ public class EntityHusk extends EntityZombie {
     public EntityHusk(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+
+    private static final String NBT_HUSK_RIDER = "IsHuskRider";
 
 
     @Override
@@ -78,7 +84,6 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL, 8);
@@ -100,13 +105,19 @@ public class EntityHusk extends EntityZombie {
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
     public String getOriginalName() {
         return "Husk";
     }
 
     @Override
     public Set<String> typeFamily() {
-        return Set.of("husk", "zombie", "undead", "monster", "mob");
+        if (this.namedTag == null || !this.namedTag.getBoolean(NBT_HUSK_RIDER)) return Set.of("husk", "zombie", "undead", "monster", "mob");
+        return Set.of("husk_rider", "husk", "zombie", "undead", "monster", "mob");
     }
 
     @Override
@@ -132,5 +143,23 @@ public class EntityHusk extends EntityZombie {
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();
         drowned.level.addSound(drowned, Sound.MOB_HUSK_CONVERT_TO_ZOMBIE);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source instanceof EntityDamageByEntityEvent ev) {
+            Entity damager = ev.getDamager();
+
+            if (damager instanceof EntityProjectile proj) {
+                Entity shooter = proj.shootingEntity;
+                if (shooter != null && shooter.riding != null) {
+                    if (this.riding != null && this.riding == shooter.riding) {
+                        ev.setCancelled(true);
+                        return false;
+                    }
+                }
+            }
+        }
+        return super.attack(source);
     }
 }

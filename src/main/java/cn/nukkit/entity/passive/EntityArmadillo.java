@@ -2,6 +2,8 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFilter;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -11,14 +13,14 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AnyMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
+import cn.nukkit.entity.ai.executor.BreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
+import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.PeekExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.RelaxingExecutor;
 import cn.nukkit.entity.ai.executor.armadillo.RollUpExecutor;
@@ -27,8 +29,11 @@ import cn.nukkit.entity.ai.executor.armadillo.UnrollingExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.AgeableComponent;
+import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -36,6 +41,7 @@ import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBrush;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -43,8 +49,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Set;
 
 public class EntityArmadillo extends EntityAnimal {
@@ -72,53 +79,149 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(12);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.14f);
+    }
+
+    @Override
     public Set<String> typeFamily() {
         return Set.of("armadillo", "mob");
     }
+
+    @Override
+    public @Nullable BreedableComponent getComponentBreedable() {
+        return new BreedableComponent(
+                EntityFilter.all(
+                    (self, ctx) -> self instanceof EntityArmadillo armadillo && armadillo.getRollState() == EntityArmadillo.RollState.UNROLLED
+                ),
+                Set.of(
+                    ItemID.SPIDER_EYE
+                ),
+                List.of(
+                    new BreedableComponent.BreedsWith(EntityID.ARMADILLO, EntityID.ARMADILLO)
+                ),
+                false
+        );
+    }
+
+    @Override
+    public AgeableComponent getComponentAgeable() {
+        return new AgeableComponent(
+                EntityFilter.all(
+                    (self, ctx) -> self instanceof EntityArmadillo armadillo && armadillo.getRollState() == EntityArmadillo.RollState.UNROLLED
+                ),
+                1200f,
+                List.of(
+                    new AgeableComponent.FeedItem(ItemID.SPIDER_EYE)
+                ),
+                null,
+                null,
+                null
+        );
+    }
+
+    private static final Set<String> TEMPT_ITEMS = Set.of(
+        ItemID.SPIDER_EYE
+    );
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                        //用于刷新InLove状态的核心行为
-                        new Behavior(
-                                new InLoveExecutor(400),
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                ),
-                                1, 1, 1, false
-                        )
+                    new Behavior(
+                        new LoveTimeoutExecutor(20 * 30),
+                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                        2, 1
+                    ),
+                    new Behavior(
+                        new AnimalGrowExecutor(),
+                            all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                            ),
+                        1, 1, 1200
+                    )
                 ),
                 Set.of(
-                        new Behavior(new UnrollingExecutor(), entity -> getRollState() == RollState.ROLLED_UP_UNROLLING, 8, 1),
-                        new Behavior(new PeekExecutor(), any(
+                    new Behavior(
+                        new UnrollingExecutor(), 
+                            entity -> getRollState() == RollState.ROLLED_UP_UNROLLING,
+                        7, 1
+                    ),
+                    new Behavior(
+                        new PeekExecutor(),
+                            any(
                                 entity -> getRollState() == RollState.ROLLED_UP_PEEKING,
                                 all(
-                                        entity -> getRollState() == RollState.ROLLED_UP_RELAXING,
-                                        new ProbabilityEvaluator(1,0xFFF)
+                                    entity -> getRollState() == RollState.ROLLED_UP_RELAXING,
+                                    new ProbabilityEvaluator(1,0xFFF)
                                 )
-                        ), 7, 1),
-                        new Behavior(new RollUpExecutor(), new RollupEvaluator(), 6, 1),
-                        new Behavior(new RelaxingExecutor(), new ProbabilityEvaluator(1,0xFFFF), 5, 1),
-                        new Behavior(new ShedExecutor(), all(
+                            ),
+                        6, 1
+                    ),
+                    new Behavior(
+                        new RollUpExecutor(), new RollupEvaluator(),
+                        5, 1
+                    ),
+                    new Behavior(
+                        new RelaxingExecutor(), new ProbabilityEvaluator(1,0xFFFF),
+                        4, 1
+                    ),
+                    new Behavior(
+                        new ShedExecutor(),
+                            all(
                                 entity -> getRollState() == RollState.UNROLLED,
                                 new PassByTimeEvaluator(CoreMemoryTypes.NEXT_SHED, 0)
-                        ), 5, 1),
-                        new Behavior(new EntityBreedingExecutor<>(EntityArmadillo.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 7, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER),
-                                entity -> getRollState() == RollState.UNROLLED
-                        ), 2, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), all(
+                            ),
+                        4, 1
+                    ),
+                    new Behavior(
+                        new BreedingExecutor(16, 200, 0.35f),
+                            all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                            ),
+                        3, 1
+                    ),
+                    new Behavior(
+                        new TemptExecutor(1.25f, TEMPT_ITEMS),
+                            all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> this.getRollState() == RollState.UNROLLED,
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                            ),
+                        2, 1
+                    ),
+                    new Behavior(
+                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                            all(
                                 new ProbabilityEvaluator(4, 10),
                                 entity -> getRollState() == RollState.UNROLLED
-                        ), 1, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 20, false, -1, true, 40), entity -> getRollState() == RollState.UNROLLED, 1, 1)
+                            ),
+                        1, 1, 100
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.2f, 12, 20, false, -1, true, 40),
+                            entity -> getRollState() == RollState.UNROLLED,
+                        1, 1
+                    )
                 ),
-                Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
+                Set.of(
+                    new NearestPlayerSensor(8, 0, 20)
+                ),
+                Set.of(
+                    new WalkController(),
+                    new LookController(true, true),
+                    new FluctuateController()
+                ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
         );
@@ -126,6 +229,9 @@ public class EntityArmadillo extends EntityAnimal {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        boolean superResult = super.onInteract(player, item, clickedPos);
+        if (superResult) return true;
+
         if(player.getInventory().getUnclonedItem(player.getInventory().getHeldItemIndex()) instanceof ItemBrush brush) {
             getLevel().dropItem(this, Item.get(Item.ARMADILLO_SCUTE));
             getLevel().addSound(player, Sound.MOB_ARMADILLO_BRUSH);
@@ -135,14 +241,13 @@ public class EntityArmadillo extends EntityAnimal {
                 player.getInventory().clear(player.getInventory().getHeldItemIndex());
             }
         }
-        return super.onInteract(player, item, clickedPos);
+
+        return superResult;
     }
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(12);
         super.initEntity();
-        setMovementSpeed(0.5f);
         setRollState(RollState.UNROLLED);
         getMemoryStorage().put(CoreMemoryTypes.NEXT_SHED, getLevel().getTick() + Utils.rand(6_000, 10_800));
     }
@@ -169,11 +274,6 @@ public class EntityArmadillo extends EntityAnimal {
             source.setDamage((source.getDamage()-1)/2f);
         }
         return super.attack(source);
-    }
-
-    @Override
-    public boolean isBreedingItem(Item item) {
-        return Objects.equals(item.getId(), Item.SPIDER_EYE);
     }
 
     public void setRollState(RollState state) {

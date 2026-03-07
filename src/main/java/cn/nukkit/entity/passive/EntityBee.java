@@ -22,7 +22,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BeeMemorizedBlockSensor;
-import cn.nukkit.entity.data.EntityFlag;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -32,6 +33,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -169,18 +171,14 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         return 0.5f;
     }
 
-    public boolean isAngry() {
-        return getMemoryStorage().get(CoreMemoryTypes.IS_ANGRY);
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
     }
 
-    public void setAngry(boolean angry) {
-        getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, angry);
-        setDataFlag(EntityFlag.ANGRY, angry);
-    }
-
-    public void setAngry(Entity entity) {
-        setAngry(true);
-        getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity);
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override
@@ -194,7 +192,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         if (source instanceof EntityDamageByEntityEvent event) {
             for (Entity entity : getLevel().getCollidingEntities(this.getBoundingBox().grow(4, 4, 4))) {
                 if (entity instanceof EntityBee bee && bee.hasSting()) {
-                    bee.setAngry(event.getDamager());
+                    bee.setAngryOnTarget(event.getDamager());
                 }
             }
         }
@@ -350,7 +348,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(10);
         super.initEntity();
 
         if (this.namedTag.contains("HomeHiveX")) {

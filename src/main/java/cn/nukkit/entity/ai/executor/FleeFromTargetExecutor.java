@@ -1,7 +1,7 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.level.Position;
@@ -85,7 +85,7 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(EntityIntelligent.DEFAULT_SPEED);
+        entity.setMovementSpeed(Entity.DEFAULT_SPEED);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
@@ -95,7 +95,7 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);

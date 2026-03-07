@@ -6,8 +6,10 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
-import cn.nukkit.entity.EntityNameable;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.effect.EffectType;
+import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityWanderingTrader;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerChangeArmorStandEvent;
@@ -36,7 +38,7 @@ import java.util.Objects;
 import java.util.Set;
 
 
-public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
+public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable {
     @Override
     @NotNull
     public String getIdentifier() {
@@ -54,8 +56,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
     public EntityArmorStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        setMaxHealth(6);
-        setHealth(6);
+        setHealthMax(6);
+        setHealthCurrent(6);
 
         if (nbt.contains(TAG_POSE_INDEX)) {
             this.setPose(nbt.getInt(TAG_POSE_INDEX));
@@ -93,8 +95,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     @Override
     protected void initEntity() {
 
-        this.setHealth(6);
-        this.setMaxHealth(6);
+        this.setHealthCurrent(6);
+        this.setHealthMax(6);
         this.setImmobile(true);
 
         super.initEntity();
@@ -122,6 +124,21 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
+    protected boolean trySetNameTag(Player player, Item item) {
+        NameableComponent nameable = getComponentNameable();
+        if (nameable == null || nameable.isEmpty()) return false;
+
+        if (!item.hasCustomName()) return false;
+        if (!nameable.resolvedAllowNameTagRenaming()) return false;
+        if (!player.isSneaking()) return false;
+
+        this.setNameTag(item.getCustomName());
+        this.setNameTagVisible(nameable.resolvedAlwaysShow());
+        this.setPersistent(true);
+
+        return true;
+    }
+
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (player.isSpectator() || !isValid()) {
@@ -129,8 +146,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         // Name tag
-        if (!item.isNull() && item.getId() == ItemID.NAME_TAG && playerApplyNameTag(player, item, false)) {
-            return true;
+        if (!item.isNull() && item.getId().equals(Item.NAME_TAG) && isNameable()) {
+            if (trySetNameTag(player, item)) return true;
         }
 
         //Pose
@@ -407,7 +424,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         setLastDamageCause(source);
 
         if (getDataProperty(HURT_TICKS) > 0) {
-            setHealth(0);
+            setHealthCurrent(0);
             return true;
         }
 
@@ -482,8 +499,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         boolean hasUpdate = entityBaseTick(tickDiff);
 
         if (isAlive()) {
-            if (getHealth() < getMaxHealth()) {
-                setHealth(getHealth() + 0.001f);
+            if (getHealthCurrent() < getHealthMax()) {
+                setHealthCurrent(getHealthCurrent() + 0.001f);
             }
             motionY -= getGravity();
 

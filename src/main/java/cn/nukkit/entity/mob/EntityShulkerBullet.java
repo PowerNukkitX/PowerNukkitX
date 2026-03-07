@@ -52,7 +52,7 @@ public class EntityShulkerBullet extends EntityMob implements EntityFlyable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(1);
+        this.setHealthMax(1);
         super.initEntity();
     }
 

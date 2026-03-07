@@ -114,7 +114,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
                     bowShoot(bow, entity);
                     stopBowAnimation(entity);
                     tick2 = 0;
-                    return target.getHealth() != 0;
+                    return target.getHealthCurrent() != 0;
                 }
             }
         }
@@ -126,7 +126,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -140,7 +140,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

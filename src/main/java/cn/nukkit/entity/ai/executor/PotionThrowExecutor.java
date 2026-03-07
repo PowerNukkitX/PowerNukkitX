@@ -96,7 +96,7 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
                 throwPotion(entity);
                 entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> endShootSequence(entity), 20);
                 tick2 = 0;
-                return target.getHealth() != 0;
+                return target.getHealthCurrent() != 0;
             }
         }
         return true;
@@ -106,7 +106,7 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -119,7 +119,7 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -183,7 +183,7 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
                     return 17; //SLOWNESS
                 } else if(distance < 3 && !target.hasEffect(EffectType.WEAKNESS) && ThreadLocalRandom.current().nextInt(4) == 0) {
                     return 34; //WEAKNESS
-                } else if(target.getHealth() > 8 && !target.hasEffect(EffectType.POISON)) {
+                } else if(target.getHealthCurrent() > 8 && !target.hasEffect(EffectType.POISON)) {
                     return 25; //POISON
                 }
             }

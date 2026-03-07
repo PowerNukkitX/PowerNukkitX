@@ -3,12 +3,10 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityAngryable;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityCanSit;
 import cn.nukkit.entity.EntityColor;
-import cn.nukkit.entity.EntityHealable;
-import cn.nukkit.entity.EntityOwnable;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -19,14 +17,14 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
+import cn.nukkit.entity.ai.executor.BegExecutor;
+import cn.nukkit.entity.ai.executor.BreedingExecutor;
 import cn.nukkit.entity.ai.executor.EntityMoveToOwnerExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
-import cn.nukkit.entity.ai.executor.LookAtFeedingPlayerExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
 import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -34,7 +32,12 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
-import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
+import cn.nukkit.entity.components.AgeableComponent;
+import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
+import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -49,17 +52,16 @@ import cn.nukkit.item.ItemWolfArmor;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -67,9 +69,9 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  * @author Cool_Loong (PowerNukkitX Project)
- * todo 野生狼不会被刷新
+ * TODO: Wild wolves will not be refreshed.
  */
-public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOwnable, EntityCanAttack, EntityCanSit, EntityAngryable, EntityHealable, EntityColor, EntityVariant, InventoryHolder {
+public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCanAttack, EntityCanSit, EntityColor, EntityVariant, InventoryHolder {
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
         new BooleanEntityProperty("minecraft:is_armorable", false),
         new BooleanEntityProperty("minecraft:has_increased_max_health", false),
@@ -117,109 +119,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
 
     @Override
-    public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
-                        //用于刷新InLove状态的核心行为
-                        new Behavior(
-                                new InLoveExecutor(400),
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
-                                        //只有拥有主人的狼才能交配
-                                        //Only wolves with a master can mate
-                                        (entity) -> this.hasOwner()
-                                ),
-                                1, 1, 1, false
-                        ),
-                        //刷新攻击目标
-                        new Behavior(
-                                entity -> {
-                                    var storage = getMemoryStorage();
-                                    var hasOwner = hasOwner();
-                                    Entity attackTarget = null;
-                                    var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                    EntityDamageByEntityEvent attackByEntityEvent = null;
-                                    if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
-                                        attackByEntityEvent = attackByEntityEv;
-                                    boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
-                                    if (hasOwner) {
-                                        //已驯服
-                                        if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
-                                            //攻击攻击主人的生物(排除自己)
-                                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                        } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
-                                            //攻击主人攻击的生物
-                                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
-                                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
-                                        } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
-                                            //攻击攻击自己的生物（主人例外）
-                                            attackTarget = attackByEntityEvent.getDamager();
-                                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
-                                            //攻击最近的骷髅
-                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
-                                            storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
-                                        }
-                                    } else {
-                                        //未驯服
-                                        if (validAttacker) {
-                                            //攻击攻击自己的生物
-                                            attackTarget = attackByEntityEvent.getDamager();
-                                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                            //攻击最近的合适生物
-                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                            storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                        }
-                                    }
-                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                    return false;
-                                },
-                                entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
-                        )
-                ),
-                Set.of(
-                        //坐下锁定
-                        new Behavior(entity -> false, entity -> this.isSitting(), 7),
-                        //攻击仇恨目标 todo 召集同伴
-                        new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                                , 6, 1),
-                        new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
-                        new Behavior(new EntityMoveToOwnerExecutor(0.7f, true, 15), entity -> {
-                            if (this.hasOwner()) {
-                                var player = getOwner();
-                                if (!player.isOnGround()) return false;
-                                var distanceSquared = this.distanceSquared(player);
-                                return distanceSquared >= 100;
-                            } else return false;
-                        }, 4, 1),
-                        new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
-                                1, 1, 25),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
-                                new ProbabilityEvaluator(5, 10), 1, 1, 50)
-                ),
-                Set.of(new WolfNearestFeedingPlayerSensor(7, 0),
-                        new NearestPlayerSensor(8, 0, 20),
-                        new NearestTargetEntitySensor<>(0, 20, 20,
-                                List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
-                                entity -> switch (entity.getIdentifier()) {
-                                    case SKELETON, WITHER_SKELETON, STRAY -> true;
-                                    default -> false;
-                                }),
-                        new EntityAttackedByOwnerSensor(5, false)
-                ),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
-    }
-
-    @Override
     public float getWidth() {
         if (isBaby()) {
             return 0.3f;
@@ -246,13 +145,130 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(8);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
+    }
+
+    @Override
+    public @Nullable TameableComponent getComponentTameable() {
+        return new TameableComponent(
+                0.33f,
+                Set.of(
+                    ItemID.BONE
+                )
+        );
+    }
+
+    @Override
+    public void onTameSuccess(Player player) {
+        this.setHealthMax(20);
+        this.setHealthCurrent(20);
+        if (!this.hasColor()) {
+            this.setColor(DyeColor.RED);
+        }
+        this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
+
+        super.onTameSuccess(player);
+    }
+
+    @Override
+    public @Nullable BreedableComponent getComponentBreedable() {
+        return new BreedableComponent(
+                null,
+                null,
+                null,
+                null,
+                Set.of(
+                    ItemID.CHICKEN,
+                    ItemID.COOKED_CHICKEN,
+                    ItemID.BEEF,
+                    ItemID.COOKED_BEEF,
+                    ItemID.MUTTON,
+                    ItemID.COOKED_MUTTON,
+                    ItemID.PORKCHOP,
+                    ItemID.COOKED_PORKCHOP,
+                    ItemID.RABBIT,
+                    ItemID.COOKED_RABBIT,
+                    ItemID.ROTTEN_FLESH
+                ),
+                List.of(
+                    new BreedableComponent.BreedsWith(EntityID.WOLF, EntityID.WOLF)
+                ),
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                true,
+                true,
+                true,
+                null
+        );
+    }
+
+    @Override
+    public HealableComponent getComponentHealable() {
+        return new HealableComponent(
+                List.of(
+                    new HealableComponent.Item(ItemID.PORKCHOP, 6),
+                    new HealableComponent.Item(ItemID.COOKED_PORKCHOP, 16),
+                    new HealableComponent.Item(ItemID.COD, 4),
+                    new HealableComponent.Item(ItemID.SALMON, 4),
+                    new HealableComponent.Item(ItemID.TROPICAL_FISH, 2),
+                    new HealableComponent.Item(ItemID.PUFFERFISH, 2),
+                    new HealableComponent.Item(ItemID.COOKED_COD, 10),
+                    new HealableComponent.Item(ItemID.COOKED_SALMON, 12),
+                    new HealableComponent.Item(ItemID.BEEF, 6),
+                    new HealableComponent.Item(ItemID.COOKED_BEEF, 16),
+                    new HealableComponent.Item(ItemID.CHICKEN, 4),
+                    new HealableComponent.Item(ItemID.COOKED_CHICKEN, 12),
+                    new HealableComponent.Item(ItemID.MUTTON, 4),
+                    new HealableComponent.Item(ItemID.COOKED_MUTTON, 12),
+                    new HealableComponent.Item(ItemID.ROTTEN_FLESH, 8),
+                    new HealableComponent.Item(ItemID.RABBIT, 6),
+                    new HealableComponent.Item(ItemID.COOKED_RABBIT, 10),
+                    new HealableComponent.Item(ItemID.RABBIT_STEW, 20)
+                )
+        );
+    }
+
+    @Override
+    public AgeableComponent getComponentAgeable() {
+        return new AgeableComponent(
+                null,
+                1200f,
+                List.of(
+                    new AgeableComponent.FeedItem(ItemID.CHICKEN),
+                    new AgeableComponent.FeedItem(ItemID.COOKED_CHICKEN),
+                    new AgeableComponent.FeedItem(ItemID.BEEF),
+                    new AgeableComponent.FeedItem(ItemID.COOKED_BEEF),
+                    new AgeableComponent.FeedItem(ItemID.MUTTON),
+                    new AgeableComponent.FeedItem(ItemID.COOKED_MUTTON),
+                    new AgeableComponent.FeedItem(ItemID.PORKCHOP),
+                    new AgeableComponent.FeedItem(ItemID.COOKED_PORKCHOP),
+                    new AgeableComponent.FeedItem(ItemID.RABBIT),
+                    new AgeableComponent.FeedItem(ItemID.COOKED_RABBIT),
+                    new AgeableComponent.FeedItem(ItemID.ROTTEN_FLESH)
+                ),
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
     public void initEntity() {
-        setMaxHealth(8);
         super.initEntity();
         if (!hasVariant()) {
             this.setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
         }
-        //update CollarColor to Color
+        // Update CollarColor to Color
         if (namedTag.contains("CollarColor")) {
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
         }
@@ -268,7 +284,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
     @Override
     public boolean onUpdate(int currentTick) {
-        //同步owner eid
+        // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
             if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
@@ -280,64 +296,28 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
-            return applyNameTag(player, item);
+        boolean superResult = super.onInteract(player, item, clickedPos);
+        if (superResult) return true;
+
+        if (!item.isNull() && this.isTamed()) {
+            if (item instanceof ItemDye dyeItem) {
+                if (this.hasOwner() && player.equals(this.getOwner())) {
+                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                    this.setColor(dyeItem.getDyeColor());
+                    return true;
+                }
+            } else if (item instanceof ItemWolfArmor armor) {
+                if (this.hasOwner() && player.equals(this.getOwner())) {
+                    if(armorInventory.getChestplate().isNull()) {
+                        armorInventory.setChestplate(armor);
+                        player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                    }
+                    return true;
+                }
+            }
         }
 
-        int healable = this.getHealingAmount(item);
-        //对于狼，只有骨头才能驯服，故此需要特判
-        if (item.getId() == ItemID.BONE) {
-            if (!this.hasOwner() && !this.isAngry()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                if (Utils.rand(1, 3) == 3) {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_SUCCESS;
-                    player.dataPacket(packet);
-
-                    this.setMaxHealth(20);
-                    this.setHealth(20);
-                    this.setOwnerName(player.getName());
-                    this.setColor(DyeColor.RED);
-                    this.saveNBT();
-
-                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
-
-                    return true;
-                } else {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_FAIL;
-                    player.dataPacket(packet);
-                }
-            }
-        } else if (item instanceof ItemDye) {
-            if (this.hasOwner() && player.equals(this.getOwner())) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                this.setColor(((ItemDye) item).getDyeColor());
-                return true;
-            }
-        } else if (item instanceof ItemWolfArmor armor) {
-            if (this.hasOwner() && player.equals(this.getOwner())) {
-                if(armorInventory.getChestplate().isNull()) {
-                    armorInventory.setChestplate(armor);
-                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                }
-                return true;
-            }
-        } else if (this.isBreedingItem(item)) {
-            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            this.getLevel().addSound(this, Sound.RANDOM_EAT);
-            this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
-
-            if (healable != 0) {
-                this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
-            }
-
-            getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
-            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, getLevel().getTick());
-            return true;
-        } else if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
+        if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {
             this.setSitting(!this.isSitting());
             return false;
         }
@@ -357,41 +337,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
         }
     }
 
-    @Override
-    public boolean isBreedingItem(Item item) {
-        return item.getId() == ItemID.CHICKEN ||
-                item.getId() == ItemID.COOKED_CHICKEN ||
-                item.getId() == ItemID.BEEF ||
-                item.getId() == ItemID.COOKED_BEEF ||
-                item.getId() == ItemID.MUTTON ||
-                item.getId() == ItemID.COOKED_MUTTON ||
-                item.getId() == ItemID.PORKCHOP ||
-                item.getId() == ItemID.COOKED_PORKCHOP ||
-                item.getId() == ItemID.RABBIT ||
-                item.getId() == ItemID.COOKED_RABBIT ||
-                item.getId() == ItemID.ROTTEN_FLESH;
-    }
-
-    /**
-     * 获得可以治疗狼的物品的治疗量
-     */
-    public int getHealingAmount(Item item) {
-        return switch (item.getId()) {
-            case ItemID.PORKCHOP, ItemID.BEEF, ItemID.RABBIT -> 3;
-            case ItemID.COOKED_PORKCHOP, ItemID.COOKED_BEEF -> 8;
-            case ItemID.COD, ItemID.SALMON, ItemID.CHICKEN, ItemID.MUTTON -> 2;
-            case ItemID.TROPICAL_FISH, ItemID.PUFFERFISH -> 1;
-            case ItemID.COOKED_COD, ItemID.COOKED_RABBIT -> 5;
-            case ItemID.COOKED_SALMON, ItemID.COOKED_CHICKEN, ItemID.COOKED_MUTTON -> 6;
-            case ItemID.ROTTEN_FLESH -> 4;
-            case ItemID.RABBIT_STEW -> 10;
-            default -> 0;
-        };
-    }
-
-    //兔子、狐狸、骷髅及其变种、羊驼、绵羊和小海龟。然而它们被羊驼啐唾沫时会逃跑。
-
-
+    // Rabbits, foxes, skeletons and their variants, alpacas, sheep, and baby turtles. However, they will run away when an alpaca spits at them.
     @Override
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier()) {
@@ -399,7 +345,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
             default -> false;
         };
     }
-
 
     @Override
     public float[] getDiffHandDamage() {
@@ -409,21 +354,6 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
     @Override
     public int[] getAllVariant() {
         return VARIANTS;
-    }
-
-    public static int getBiomeVariant(int biomeId) {
-        BiomeDefinition definition = Registries.BIOME.get(biomeId);
-        Set<String> tags = definition.getTags();
-        String name = definition.getName();
-        if(name.equals("cold_taiga")) return ASHEN;
-        if(name.equals("mega_taiga")) return BLACK;
-        if(name.equals("redwood_taiga_mutated")) return CHESSNUT;
-        if(tags.contains("jungle")) return RUSTY;
-        if(name.equals("grove") || tags.contains("frozen")) return SNOWY;
-        if(tags.contains("mesa")) return STRIPPED;
-        if(tags.contains("savanna")) return SPOTTED;
-        if(name.equals("forest")) return WOODS;
-        return PALE;
     }
 
     @Override
@@ -490,4 +420,179 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityOw
 
         return armor;
     }
+
+    public static int getBiomeVariant(int biomeId) {
+        BiomeDefinition definition = Registries.BIOME.get(biomeId);
+        Set<String> tags = definition.getTags();
+        String name = definition.getName();
+        if(name.equals("cold_taiga")) return ASHEN;
+        if(name.equals("mega_taiga")) return BLACK;
+        if(name.equals("redwood_taiga_mutated")) return CHESSNUT;
+        if(tags.contains("jungle")) return RUSTY;
+        if(name.equals("grove") || tags.contains("frozen")) return SNOWY;
+        if(tags.contains("mesa")) return STRIPPED;
+        if(tags.contains("savanna")) return SPOTTED;
+        if(name.equals("forest")) return WOODS;
+        return PALE;
+    }
+
+    private static final Set<String> BEG_ITEMS = Set.of(
+        ItemID.BONE,
+        ItemID.PORKCHOP,
+        ItemID.COOKED_PORKCHOP,
+        ItemID.CHICKEN,
+        ItemID.COOKED_CHICKEN,
+        ItemID.BEEF,
+        ItemID.COOKED_BEEF,
+        ItemID.ROTTEN_FLESH,
+        ItemID.MUTTON,
+        ItemID.COOKED_MUTTON,
+        ItemID.RABBIT,
+        ItemID.COOKED_RABBIT
+    );
+
+    @Override
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                    new Behavior(
+                        new LoveTimeoutExecutor(20 * 30),
+                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                        3, 1
+                    ),
+                    new Behavior(
+                        new AnimalGrowExecutor(),
+                            all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                            ),
+                        2, 1, 1200
+                    ),
+                    new Behavior( // Refresh attack target
+                            entity -> {
+                                var storage = getMemoryStorage();
+                                var hasOwner = hasOwner();
+                                Entity attackTarget = null;
+                                var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                EntityDamageByEntityEvent attackByEntityEvent = null;
+                                if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
+                                    attackByEntityEvent = attackByEntityEv;
+                                boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
+                                if (hasOwner) {
+                                    // Tamed
+                                    if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
+                                        // Attacks creatures that attack their master (excluding themselves).
+                                        attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                                        storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                                    } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
+                                        // The creature that attacks its master
+                                        attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                                        storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                                    } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
+                                        // Attacks creatures that attack themselves (except their owners).
+                                        attackTarget = attackByEntityEvent.getDamager();
+                                        storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                    } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
+                                        // Attack the nearest skeleton
+                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
+                                        storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
+                                    }
+                                } else {
+                                    // Untamed
+                                    if (validAttacker) {
+                                        // Attack the creature that attacks itself
+                                        attackTarget = attackByEntityEvent.getDamager();
+                                        storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                    } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                                        // Attack the nearest suitable creature
+                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                        storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                    }
+                                }
+                                storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                                return false;
+                            },
+                            entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
+                    )
+                ),
+                Set.of(
+                    new Behavior(
+                        new BegExecutor(true, 8, BEG_ITEMS),
+                            all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> BegExecutor.hasBeggingPlayer(e, false, 10, BEG_ITEMS)
+                            ),
+                        5, 1
+                    ),
+                    // Attack the target of hatred (todo) and summon allies.
+                    new Behavior(
+                        new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
+                            all(
+                                e -> !this.isSitting(),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                            ),
+                        4, 1
+                    ),
+                    new Behavior(
+                        new BreedingExecutor(16, 200, 0.35f),
+                            all(
+                                e -> !this.isSitting(),
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                            ),
+                        3, 1
+                    ),
+                    new Behavior(
+                        new EntityMoveToOwnerExecutor(0.7f, true, 15),
+                            entity -> {
+                                if (this.isSitting()) return false;
+
+                                if (this.hasOwner()) {
+                                    var player = getOwner();
+                                    if (!player.isOnGround()) return false;
+                                    var distanceSquared = this.distanceSquared(player);
+                                    return distanceSquared >= 100;
+                                } else return false;
+                            }, 
+                        2, 1
+                    ),
+                    new Behavior(
+                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                            all(
+                                new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10)
+                            ),
+                        1, 1, 25
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
+                            all(
+                                e -> !this.isSitting(),
+                                new ProbabilityEvaluator(5, 10)
+                            ),
+                        1, 1, 50
+                    )
+                ),
+                Set.of(
+                    new NearestPlayerSensor(8, 0, 20),
+                    new NearestTargetEntitySensor<>(0, 20, 20,
+                        List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
+                        entity -> switch (entity.getIdentifier()) {
+                            case SKELETON, WITHER_SKELETON, STRAY -> true;
+                            default -> false;
+                        }),
+                    new EntityAttackedByOwnerSensor(5, false)
+                ),
+                Set.of(
+                    new WalkController(),
+                    new LookController(true, true),
+                    new FluctuateController()
+                ),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                this
+        );
+    }
+
 }

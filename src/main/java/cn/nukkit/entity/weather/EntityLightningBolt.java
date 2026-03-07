@@ -54,8 +54,8 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
     protected void initEntity() {
         super.initEntity();
 
-        this.setHealth(4);
-        this.setMaxHealth(4);
+        this.setHealthCurrent(4);
+        this.setHealthMax(4);
 
         this.state = 2;
         this.liveTime = ThreadLocalRandom.current().nextInt(3) + 1;

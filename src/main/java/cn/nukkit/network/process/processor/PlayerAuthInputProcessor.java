@@ -5,8 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.passive.EntityHorse;
+import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerJumpEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -28,8 +27,11 @@ import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.types.AuthInputAction;
 import cn.nukkit.network.protocol.types.PlayerActionType;
 import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import lombok.extern.slf4j.Slf4j;
+
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInputPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
@@ -199,9 +201,8 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         }
         if(pk.inputData.contains(AuthInputAction.JUMP_RELEASED_RAW)) {
             if(player.getRiding() != null) {
-                if (playerHandle.player.riding instanceof EntityHorse horse && horse.isAlive() && !horse.isJumping()) {
-                    horse.getJumping().set(player.getLevel().getTick());
-                    horse.setDataFlag(EntityFlag.STANDING);
+                if ((playerHandle.player.riding instanceof EntityPhysical ride) && ride.isAlive() && (ride.rideCanJump() && !ride.isRideJumping() || ride.rideHasVerticalMove())) {
+                    ride.getRideJumping().set(player.getLevel().getTick());
                 }
             }
         }
@@ -219,8 +220,8 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
 
         Entity vehicle = null;
-        if((vehicle = player.getRiding()) != null && (vehicle.getDataFlag(EntityFlag.WASD_CONTROLLED) || vehicle.isRiderControl())) {
-          if(!check(clientLoc, player)) return; 
+        if((vehicle = player.getRiding()) != null && (vehicle.hasWASDControls())) {
+          if(!check(clientLoc, player)) return;
           if(vehicle.onRiderInput(player, pk)) return;
         }
 
