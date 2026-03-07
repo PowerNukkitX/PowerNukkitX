@@ -13,6 +13,8 @@ import cn.nukkit.item.Item;
  * target, damager, parent, player, block, or item involved in the evaluation.
  * <p>
  * Includes utility combinators ({@code all}, {@code any}, {@code not}) for composing filters.
+ * 
+ * @author Curse
  */
 @FunctionalInterface
 public interface EntityFilter {

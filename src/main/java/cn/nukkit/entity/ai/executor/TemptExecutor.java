@@ -20,6 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * and sets {@link EntityFlag#TEMPTED} while active. Optional mechanics include
  * vertical temptation, rider checks, scare reactions to sudden player movement,
  * and periodic tempt sounds.
+ * 
+ * @author Curse
  */
 public class TemptExecutor implements EntityControl, IBehaviorExecutor {
     protected final float speedMultiplier;

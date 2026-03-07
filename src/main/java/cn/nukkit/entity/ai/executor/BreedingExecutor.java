@@ -51,6 +51,8 @@ import org.jetbrains.annotations.Nullable;
  *     1
  * );
  * }</pre>
+ * 
+ * @author Curse
  */
 public class BreedingExecutor implements IBehaviorExecutor {
     protected final int findingRangeSquared;

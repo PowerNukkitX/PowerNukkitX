@@ -36,6 +36,8 @@ import java.util.*;
  * A movement behavior such as
  * {@link cn.nukkit.entity.ai.executor.MoveToTargetExecutor}
  * must be present to guide the entity back toward its home position.</p>
+ * 
+ * @author Curse
  */
 public record HomeComponent(boolean enabled, Set<String> homeBlockList, Integer restrictionRadius, RestrictionType restrictionType) {
 

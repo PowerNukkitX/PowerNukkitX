@@ -29,9 +29,8 @@ import java.util.random.RandomGenerator;
  * <pre>{@code
  * health = random(rangeMin, rangeMax)
  * }</pre>
- *
- * <p>This component normalizes invalid values and provides helper methods
- * to resolve the effective health used during entity initialization.</p>
+ * 
+ * @author Curse
  */
 public record HealthComponent(Integer value, Integer rangeMin, Integer rangeMax) {
     public HealthComponent {

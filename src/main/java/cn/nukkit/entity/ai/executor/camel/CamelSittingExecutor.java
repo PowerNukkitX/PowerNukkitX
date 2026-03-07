@@ -13,6 +13,8 @@ import cn.nukkit.utils.Utils;
  * When started, the camel sits if there is no rider and the location allows
  * sitting. The sitting state lasts for a random time based on the configured
  * minimum duration, after which the camel stands up again.
+ * 
+ * @author Curse
  */
 public class CamelSittingExecutor implements EntityControl, IBehaviorExecutor {
 

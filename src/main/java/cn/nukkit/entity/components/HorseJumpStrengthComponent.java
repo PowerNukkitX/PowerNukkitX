@@ -29,6 +29,8 @@ import java.util.random.RandomGenerator;
  * <pre>{@code
  * jumpStrength = random(rangeMin, rangeMax)
  * }</pre>
+ * 
+ * @author Curse
  */
 public record HorseJumpStrengthComponent(Float value, Float rangeMin, Float rangeMax) {
     public HorseJumpStrengthComponent {

@@ -11,6 +11,8 @@ import cn.nukkit.entity.passive.EntitySkeletonHorse;
  * When a naturally spawned trapped skeleton horse detects a nearby player,
  * it triggers the trap event, spawning the lightning ambush and disabling
  * the trap state afterward.
+ * 
+ * @author Curse
  */
 public class SkeletonHorseTrapExecutor implements IBehaviorExecutor, EntityControl {
 

@@ -12,6 +12,8 @@ import cn.nukkit.item.Item;
  *
  * Used for item-based rider control mechanics (e.g. carrot on a stick,
  * warped fungus on a stick), matching the item ID.
+ * 
+ * @author Curse
  */
 public class RiderItemControllableEvaluator implements IBehaviorEvaluator {
 

@@ -17,6 +17,8 @@ import java.util.Set;
  *
  * Unlike {@link TemptExecutor}, this does not apply any movement/follow logic;
  * it only locks the look target (optionally considering vertical distance).
+ * 
+ * @author Curse
  */
 public class BegExecutor implements EntityControl, IBehaviorExecutor {
 

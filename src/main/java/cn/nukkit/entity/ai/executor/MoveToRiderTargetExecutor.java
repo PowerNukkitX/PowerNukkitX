@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
  * If the rider has an attack target, the entity moves toward it; otherwise,
  * it follows the rider's current movement target. Updates look and route
  * targets and optionally refreshes pathfinding when the destination changes.
+ * 
+ * @author Curse
  */
 public class MoveToRiderTargetExecutor implements EntityControl, IBehaviorExecutor {
     protected final float speed;

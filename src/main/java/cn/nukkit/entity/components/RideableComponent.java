@@ -33,6 +33,8 @@ import java.util.*;
  *
  * <p>Bedrock behavior also allows input handling (ground, air, water) to be
  * implemented separately via input components.</p>
+ * 
+ * @author Curse
  */
 // TODO: Auto pull-in entities
 public record RideableComponent(

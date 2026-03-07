@@ -36,6 +36,8 @@ import java.util.*;
  *   <li>{@code duration} — Duration in ticks/seconds depending on the consumer (0+).</li>
  *   <li>{@code amplifier} — Effect amplifier/level (0+).</li>
  * </ul>
+ * 
+ * @author Curse
  */
 public record HealableComponent(EntityFilter filters, Boolean forceUse, List<Item> items) {
 

@@ -28,9 +28,8 @@ import java.util.random.RandomGenerator;
  * <pre>{@code
  * movement = random(rangeMin, rangeMax)
  * }</pre>
- *
- * <p>This component normalizes invalid values and provides helper methods
- * to resolve the effective movement used during entity initialization.</p>
+ * 
+ * @author Curse
  */
 public record MovementComponent(Float value, Float rangeMin, Float rangeMax) {
     public MovementComponent {
