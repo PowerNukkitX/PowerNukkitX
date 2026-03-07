@@ -75,8 +75,8 @@ public class EntityBoat extends EntityVehicle {
     public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
-        this.setMaxHealth(40);
-        this.setHealth(40);
+        this.setHealthMax(40);
+        this.setHealthCurrent(40);
     }
 
     @Override
@@ -329,7 +329,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         return new RideableComponent(
             0,
             true,
@@ -393,7 +393,6 @@ public class EntityBoat extends EntityVehicle {
 
     /**
      * @deprecated seat link type is computed from seat index (0=RIDER, others=PASSENGER).
-     * Planned removal: after 6 months (>= 2026-08-26).
      */
     @Deprecated
     @Override

@@ -12,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 @Getter
 public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor {
-    // Instructs the actuator to retrieve the target location from which memory
+
+    //指示执行器应该从哪个Memory获取目标位置
     protected MemoryType<? extends Vector3> memory;
     protected float speed;
     protected Vector3 oldTarget;
@@ -94,7 +95,7 @@ public class FleeFromTargetExecutor implements EntityControl, IBehaviorExecutor 
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);

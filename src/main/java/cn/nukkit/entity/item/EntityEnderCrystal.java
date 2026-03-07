@@ -72,7 +72,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     @Override
-    public NameableComponent getNameable() {
+    public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;
     }
 

@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
  * and then rolls a probability check to either become tamed (assigning
  * the rider as owner) or fail and dismount the rider, triggering the
  * corresponding tame event feedback.
- * 
- * @author Curse
  */
 public class RideableTameExecutor extends FlatRandomRoamExecutor {
     protected final int tameProbability;

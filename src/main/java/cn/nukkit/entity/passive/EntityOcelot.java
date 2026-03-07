@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -61,13 +63,13 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 10;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.3f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override
@@ -81,7 +83,7 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     ItemID.COD,
@@ -95,7 +97,7 @@ public class EntityOcelot extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

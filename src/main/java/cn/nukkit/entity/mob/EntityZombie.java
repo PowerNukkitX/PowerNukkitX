@@ -26,6 +26,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.passive.EntityTurtle;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -38,6 +40,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +88,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(getHealth()-source.getFinalDamage() <= 1) {
+        if(getHealthCurrent()-source.getFinalDamage() <= 1) {
             if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
                 transform();
                 return true;
@@ -96,7 +99,6 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
     }
@@ -109,6 +111,17 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     @Override
     public float getHeight() {
         return 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        float ageMovement = this.isBaby() ? 0.35f : 0.23f;
+        return MovementComponent.value(ageMovement);
     }
 
     @Override

@@ -32,9 +32,11 @@ import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.EquippableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.HorseJumpStrengthComponent;
 import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -102,7 +104,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         boolean crounchingSkipInteract = this.isTamed();
         Set<String> riders = crounchingSkipInteract ? Set.of("player") : Set.of("player", "baby_zombie", "baby_husk");
 
@@ -141,7 +143,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public @Nullable EquippableComponent getEquippableData() {
+    public @Nullable EquippableComponent getComponentEquippable() {
         return new EquippableComponent(List.of(
                 new EquippableComponent.Slot(
                         0,
@@ -166,18 +168,18 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public @Nullable AttributesFloatRange getHealthRange() {
-        return new AttributesFloatRange(15f, 30f);
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.range(15, 30);
     }
 
     @Override
-    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
-        return new AttributesFloatRange(0.4f, 1.0f);
+    public @Nullable HorseJumpStrengthComponent getComponentHorseJumpStrength() {
+        return HorseJumpStrengthComponent.range(0.4f, 1.0f);
     }
 
     @Override
-    protected @Nullable AttributesFloatRange getMovementSpeedRange() {
-        return new AttributesFloatRange(0.1125f, 0.3375f);
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.range(0.1125f, 0.3375f);
     }
 
     @Override
@@ -221,12 +223,12 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
                 BreedableComponent.blendAttributesOf(
-                    Attribute.MAX_HEALTH,
+                    Attribute.HEALTH,
                     Attribute.MOVEMENT_SPEED,
                     Attribute.HORSE_JUMP_STRENGTH
                 ),
@@ -254,7 +256,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(BlockID.WHEAT, 2),
@@ -270,7 +272,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -291,7 +293,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     @Override
-    public @Nullable InventoryComponent getInventoryComponent() {
+    public @Nullable InventoryComponent getComponentInventory() {
         return new InventoryComponent(
                 null,
                 false,
@@ -309,7 +311,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     private void ensureInventories() {
-        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getInventoryComponent().size());
+        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getComponentInventory().size());
     }
 
     @Override
@@ -381,6 +383,26 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
+
+        if (player.isSneaking()) {
+            Attribute attr = this.attributes.get(Attribute.MOVEMENT_SPEED);
+
+            if (attr != null) {
+                player.sendMessage("§e[Movement Debug]");
+                player.sendMessage("minValue: " + attr.getMinValue());
+                player.sendMessage("maxValue: " + attr.getMaxValue());
+                player.sendMessage("defaultMin: " + attr.getDefaultMinimum());
+                player.sendMessage("defaultMax: " + attr.getDefaultMaximum());
+                player.sendMessage("defaultValue: " + attr.getDefaultValue());
+                player.sendMessage("currentValue: " + attr.getValue());
+                player.sendMessage("entity.movementSpeed: " + this.movementSpeed);
+            } else {
+                player.sendMessage("§cMovement attribute not present.");
+            }
+        }
+
+
+        if (this.isBaby()) return false;
 
         mountEntity(player, true);
         return false;

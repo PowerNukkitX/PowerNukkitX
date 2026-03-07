@@ -34,8 +34,6 @@ import java.util.Locale;
  *   <li>{@code private}: false</li>
  *   <li>{@code restrict_to_owner}: false</li>
  * </ul>
- * 
- * @author Curse
  */
 // TODO: Siphoned
 public record InventoryComponent(

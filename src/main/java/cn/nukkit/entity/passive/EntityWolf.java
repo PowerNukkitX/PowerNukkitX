@@ -35,6 +35,8 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
@@ -143,20 +145,17 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     }
 
     @Override
-    public int getMaxHealth() {
-        if (this.isTamed()) {
-            return 20;
-        }
-        return 8;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(8);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.3f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override
-    public @Nullable TameableComponent getTameable() {
+    public @Nullable TameableComponent getComponentTameable() {
         return new TameableComponent(
                 0.33f,
                 Set.of(
@@ -167,8 +166,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public void onTameSuccess(Player player) {
-        this.setMaxHealth(20);
-        this.setHealth(20);
+        this.setHealthMax(20);
+        this.setHealthCurrent(20);
         if (!this.hasColor()) {
             this.setColor(DyeColor.RED);
         }
@@ -178,7 +177,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -214,7 +213,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(ItemID.PORKCHOP, 6),
@@ -240,7 +239,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

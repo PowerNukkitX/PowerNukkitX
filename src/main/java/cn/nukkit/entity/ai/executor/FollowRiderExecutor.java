@@ -52,13 +52,13 @@ public class FollowRiderExecutor implements IBehaviorExecutor, EntityControl {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
     }
 
     protected void updateRideSpeed(EntityIntelligent entity) {
-        float base = entity.getDefaultSpeed();
+        float base = entity.getMovementSpeedDefault();
 
-        BoostableComponent boostable = entity.getBoostable();
+        BoostableComponent boostable = entity.getComponentBoostable();
         int ticks = entity.getBoostableTicks();
 
         boolean boosting = boostable != null && ticks > 0;

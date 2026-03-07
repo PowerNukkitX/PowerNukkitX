@@ -12,8 +12,6 @@ import cn.nukkit.entity.passive.EntitySkeletonHorse;
  * When a player enters the configured range of a naturally spawned
  * trapped skeleton horse, it flags the entity to trigger the trap
  * behavior handled by the corresponding executor.
- * 
- * @author Curse
  */
 public class SkeletonHorseTrapSensor implements ISensor {
 

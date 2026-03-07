@@ -28,6 +28,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
@@ -81,13 +83,13 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
-    public int getMaxHealth() {
-        return 8;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(8);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.25f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override
@@ -101,7 +103,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -127,7 +129,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

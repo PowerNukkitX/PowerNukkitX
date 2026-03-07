@@ -73,8 +73,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public EntityMinecartAbstract(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
-        setMaxHealth(40);
-        setHealth(40);
+        setHealthMax(40);
+        setHealthCurrent(40);
     }
 
     public abstract MinecartType getType();
@@ -136,8 +136,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             super.onUpdate(currentTick);
 
             // The damage token
-            if (getHealth() < 20) {
-                setHealth(getHealth() + 1);
+            if (getHealthCurrent() < 20) {
+                setHealthCurrent(getHealthCurrent() + 1);
             }
 
             // Entity variables

@@ -25,8 +25,10 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.SkeletonHorseTrapSensor;
 import cn.nukkit.entity.components.AgeableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.HorseJumpStrengthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -95,7 +97,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         return new RideableComponent(
                 0,
                 false,
@@ -126,18 +128,18 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     }
 
     @Override
-    public int getMaxHealth() {
-        return 15;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(15);
     }
 
     @Override
-    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
-        return new AttributesFloatRange(0.4f, 1.0f);
+    public @Nullable HorseJumpStrengthComponent getComponentHorseJumpStrength() {
+        return HorseJumpStrengthComponent.range(0.4f, 1.0f);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.2f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.2f);
     }
 
     @Override
@@ -166,7 +168,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

@@ -80,7 +80,7 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     @Override
-    public RideableComponent getRideableData() {
+    public RideableComponent getComponentRideable() {
         return new RideableComponent(
                 0,
                 true,
@@ -125,12 +125,12 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return null;
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(ItemID.RABBIT_FOOT, 2)
@@ -139,7 +139,7 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return null;
     }
 
@@ -272,12 +272,12 @@ public class EntityCamelHusk extends EntityCamel {
                 ),
                 Set.of(
                     new Behavior(
-                        new MoveToRiderTargetExecutor(this.getDefaultSpeed() * 4.00f, true),
+                        new MoveToRiderTargetExecutor(this.getMovementSpeedDefault() * 4.00f, true),
                             e -> this.isRiddenByMob(),
                         5, 1
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed() * 1.25f, 18, 8, true, 80, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
                             all(
                                 e -> !this.isRiddenByMob(),
                                 e -> e.passengers.isEmpty(),
@@ -318,7 +318,7 @@ public class EntityCamelHusk extends EntityCamel {
                         2, 1, 200
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed(), 12, 100, false, -1, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
                             all(
                                 e -> !this.isRiddenByMob(),
                                 e -> !((EntityCamel) e).isSitting()

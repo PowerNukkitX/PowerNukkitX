@@ -22,6 +22,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -83,7 +84,6 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
         this.setDataProperty(Entity.AMBIENT_SOUND_INTERVAL, 8);
@@ -102,6 +102,11 @@ public class EntityHusk extends EntityZombie {
     @Override
     public float getHeight() {
         return this.isBaby() ? 0.95f : 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
     }
 
     @Override

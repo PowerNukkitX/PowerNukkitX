@@ -23,6 +23,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -67,13 +69,13 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 3;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(3);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.3f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override
@@ -87,7 +89,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -115,7 +117,7 @@ public class EntityRabbit extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

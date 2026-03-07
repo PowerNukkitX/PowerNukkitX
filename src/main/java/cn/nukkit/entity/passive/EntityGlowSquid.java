@@ -1,12 +1,15 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntitySwimmable;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
 
@@ -30,9 +33,13 @@ public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
     }
 
     @Override
-    protected void initEntity() {
-        this.setMaxHealth(10);
-        super.initEntity();
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.2f);
     }
 
     @Override

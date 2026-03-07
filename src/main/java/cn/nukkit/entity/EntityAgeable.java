@@ -17,7 +17,7 @@ package cn.nukkit.entity;
  * entity class rather than implementing this interface.
  * </p>
  *
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  * @author MagicDroidX
  */
 @Deprecated(since = "2.0.0", forRemoval = true)

@@ -3,6 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -26,9 +27,11 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.EquippableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.HorseJumpStrengthComponent;
 import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -92,7 +95,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         boolean crounchingSkipInteract = this.isTamed();
         Set<String> riders = crounchingSkipInteract ? Set.of("player") : Set.of("player", "baby_zombie", "baby_husk");
         float yOffset = crounchingSkipInteract ? 0.925f : 0.975f;
@@ -131,7 +134,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     @Override
-    public @Nullable EquippableComponent getEquippableData() {
+    public @Nullable EquippableComponent getComponentEquippable() {
         return new EquippableComponent(List.of(
                     new EquippableComponent.Slot(
                         0,
@@ -143,18 +146,18 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     @Override
-    public @Nullable AttributesFloatRange getHealthRange() {
-        return new AttributesFloatRange(15f, 30f);
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.range(15, 30);
     }
 
     @Override
-    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
-        return new AttributesFloatRange(0.5f, 0.5f);
+    public @Nullable HorseJumpStrengthComponent getComponentHorseJumpStrength() {
+        return HorseJumpStrengthComponent.range(0.5f, 0.5f);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.175f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.175f);
     }
 
     @Override
@@ -183,7 +186,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(BlockID.WHEAT, 2),
@@ -199,7 +202,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -220,7 +223,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     @Override
-    public @Nullable InventoryComponent getInventoryComponent() {
+    public @Nullable InventoryComponent getComponentInventory() {
         return new InventoryComponent(
                 null,
                 false,
@@ -240,8 +243,8 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
     }
 
     protected void ensureInventories() {
-        if (this.invNoChest == null) this.invNoChest = new HorseInventory<>(this, getEquippableData().getEquipCount());    // Only equipments slots
-        if (this.invChested == null) this.invChested = new HorseInventory<>(this, getInventoryComponent().size());         // Equipments + inventory
+        if (this.invNoChest == null) this.invNoChest = new HorseInventory<>(this, getComponentEquippable().getEquipCount());    // Only equipments slots
+        if (this.invChested == null) this.invChested = new HorseInventory<>(this, getComponentInventory().size());         // Equipments + inventory
     }
 
     @Override
@@ -312,6 +315,23 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
+        if (player.isSneaking()) {
+            Attribute attr = this.attributes.get(Attribute.MOVEMENT_SPEED);
+
+            if (attr != null) {
+                player.sendMessage("§e[Movement Debug]");
+                player.sendMessage("minValue: " + attr.getMinValue());
+                player.sendMessage("maxValue: " + attr.getMaxValue());
+                player.sendMessage("defaultMin: " + attr.getDefaultMinimum());
+                player.sendMessage("defaultMax: " + attr.getDefaultMaximum());
+                player.sendMessage("defaultValue: " + attr.getDefaultValue());
+                player.sendMessage("currentValue: " + attr.getValue());
+                player.sendMessage("entity.movementSpeed: " + this.movementSpeed);
+            } else {
+                player.sendMessage("§cMovement attribute not present.");
+            }
+        }
+
         if (this.isBaby()) return false;
 
         if (!item.isNull() && this.isTamed()) {
@@ -361,7 +381,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
                 ),
                 Set.of(
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed() * 1.2f, 18, 8, true, 80, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.2f, 18, 8, true, 80, true, 10),
                             all(
                                 e -> !e.isTamed(),
                                 e -> e.passengers.isEmpty(),
@@ -399,7 +419,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
                         1, 1, 100
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed(), 12, 100, false, -1, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
                             (entity -> true),
                         1, 1
                     )

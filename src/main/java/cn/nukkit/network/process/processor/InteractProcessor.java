@@ -66,7 +66,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
 
                     // If it was denied because of owner restriction: do nothing
                     if (targetEntity.hasInventory() && targetEntity.isTamed()) {
-                        boolean restricted = targetEntity.getInventoryComponent().isRestrictedToOwner();
+                        boolean restricted = targetEntity.getComponentInventory().isRestrictedToOwner();
                         if (restricted && !player.getName().equals(targetEntity.getOwnerName())) return;
                     }
                 } else if (targetEntity.getId() != player.getId()) {

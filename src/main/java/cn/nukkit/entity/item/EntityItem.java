@@ -83,7 +83,7 @@ public class EntityItem extends Entity {
     }
 
     @Override
-    public NameableComponent getNameable() {
+    public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;
     }
 
@@ -91,8 +91,8 @@ public class EntityItem extends Entity {
     protected void initEntity() {
         super.initEntity();
 
-        this.setMaxHealth(5);
-        this.setHealth(this.namedTag.getShort("Health"));
+        this.setHealthMax(5);
+        this.setHealthCurrent(this.namedTag.getShort("Health"));
 
         if (this.namedTag.contains("Age")) {
             this.age = this.namedTag.getShort("Age");
@@ -305,7 +305,7 @@ public class EntityItem extends Entity {
         super.saveNBT();
         if (this.item != null) { // Yes, a item can be null... I don't know what causes this, but it can happen.
             this.namedTag.putCompound("Item", NBTIO.putItemHelper(this.item, -1));
-            this.namedTag.putShort("Health", (int) this.getHealth());
+            this.namedTag.putShort("Health", (int) this.getHealthCurrent());
             this.namedTag.putShort("Age", this.age);
             this.namedTag.putShort("PickupDelay", this.pickupDelay);
             this.namedTag.putBoolean("ShouldDespawn", this.shouldDespawn);

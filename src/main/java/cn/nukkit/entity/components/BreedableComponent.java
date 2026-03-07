@@ -33,8 +33,6 @@ import java.util.*;
  *   <li>{@code require_tame} — If true, entity must be tamed to breed (default: true).</li>
  *   <li>{@code property_inheritance} — Set of entity properties to inherit from parents (normalized to namespaced ids).</li>
  * </ul>
- * 
- * @author Curse
  */
 public record BreedableComponent(
         EntityFilter loveFilters,

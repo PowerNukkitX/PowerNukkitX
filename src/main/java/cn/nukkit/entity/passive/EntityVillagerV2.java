@@ -36,6 +36,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.profession.Profession;
@@ -71,6 +73,7 @@ import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -416,6 +419,16 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return 1.9f;
     }
 
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
+    }
+
     public boolean isSleeping() {
         return getDataFlag(EntityFlag.SLEEPING);
     }
@@ -448,7 +461,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void initEntity() {
-        this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
         if (!this.namedTag.contains("tradeSeed")) {

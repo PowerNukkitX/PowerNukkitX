@@ -32,6 +32,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -77,13 +79,13 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 12;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(12);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.14f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.14f);
     }
 
     @Override
@@ -92,7 +94,7 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 EntityFilter.all(
                     (self, ctx) -> self instanceof EntityArmadillo armadillo && armadillo.getRollState() == EntityArmadillo.RollState.UNROLLED
@@ -108,7 +110,7 @@ public class EntityArmadillo extends EntityAnimal {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 EntityFilter.all(
                     (self, ctx) -> self instanceof EntityArmadillo armadillo && armadillo.getRollState() == EntityArmadillo.RollState.UNROLLED

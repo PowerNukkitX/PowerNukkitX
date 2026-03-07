@@ -157,7 +157,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
                 attackTick = 0;
             }
 
-            return entity.targetEntity.getHealth() != 0;
+            return entity.targetEntity.getHealthCurrent() != 0;
         }
         return true;
     }
@@ -167,7 +167,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         // Reset Speed
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -181,7 +181,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         // Reset Speed
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

@@ -56,8 +56,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
     public EntityArmorStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        setMaxHealth(6);
-        setHealth(6);
+        setHealthMax(6);
+        setHealthCurrent(6);
 
         if (nbt.contains(TAG_POSE_INDEX)) {
             this.setPose(nbt.getInt(TAG_POSE_INDEX));
@@ -95,8 +95,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     @Override
     protected void initEntity() {
 
-        this.setHealth(6);
-        this.setMaxHealth(6);
+        this.setHealthCurrent(6);
+        this.setHealthMax(6);
         this.setImmobile(true);
 
         super.initEntity();
@@ -125,7 +125,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     protected boolean trySetNameTag(Player player, Item item) {
-        NameableComponent nameable = getNameable();
+        NameableComponent nameable = getComponentNameable();
         if (nameable == null || nameable.isEmpty()) return false;
 
         if (!item.hasCustomName()) return false;
@@ -424,7 +424,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         setLastDamageCause(source);
 
         if (getDataProperty(HURT_TICKS) > 0) {
-            setHealth(0);
+            setHealthCurrent(0);
             return true;
         }
 
@@ -499,8 +499,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         boolean hasUpdate = entityBaseTick(tickDiff);
 
         if (isAlive()) {
-            if (getHealth() < getMaxHealth()) {
-                setHealth(getHealth() + 0.001f);
+            if (getHealthCurrent() < getHealthMax()) {
+                setHealthCurrent(getHealthCurrent() + 0.001f);
             }
             motionY -= getGravity();
 

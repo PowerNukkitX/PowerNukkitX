@@ -56,7 +56,7 @@ public class EntityMinecart extends EntityMinecartAbstract {
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         return new RideableComponent(
             0,
             true,
@@ -75,7 +75,7 @@ public class EntityMinecart extends EntityMinecartAbstract {
 
     @Override
     protected void activate(int x, int y, int z, boolean flag) {
-        if (flag && this.getHealth() > 15
+        if (flag && this.getHealthCurrent() > 15
                 && this.attack(new EntityDamageByBlockEvent(this.level.getBlock(x, y, z), this, DamageCause.CONTACT, 1))
                 && !this.passengers.isEmpty()) {
             this.dismountEntity(this.getPassenger());

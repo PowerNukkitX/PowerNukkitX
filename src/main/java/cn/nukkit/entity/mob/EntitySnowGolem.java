@@ -19,6 +19,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -38,6 +40,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -117,8 +120,17 @@ public class EntitySnowGolem extends EntityGolem {
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(4);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.2f);
+    }
+
+    @Override
     protected void initEntity() {
-        this.setMaxHealth(4);
         setSheared(false);
         super.initEntity();
     }

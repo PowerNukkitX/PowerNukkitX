@@ -7,11 +7,11 @@ import cn.nukkit.item.Item;
  */
 
 /**
- * @deprecated Since 2.0.0 (2026-03-26).
+ * @deprecated Since 2.0.0 (2026-02-19).
  * EntityHealable state handling was moved to {@link Entity}.
  * Use {@link Entity#getHealable()} and {@link Entity#isHealable()} instead.
  *
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
 public interface EntityHealable {

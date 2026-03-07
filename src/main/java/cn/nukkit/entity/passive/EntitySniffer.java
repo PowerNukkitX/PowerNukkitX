@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -61,13 +63,13 @@ public class EntitySniffer extends EntityAnimal {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 14;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(14);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.09f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.09f);
     }
 
     @Override
@@ -81,7 +83,7 @@ public class EntitySniffer extends EntityAnimal {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -107,7 +109,7 @@ public class EntitySniffer extends EntityAnimal {
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(ItemID.TORCHFLOWER_SEEDS, 2)
@@ -116,7 +118,7 @@ public class EntitySniffer extends EntityAnimal {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 2400f,

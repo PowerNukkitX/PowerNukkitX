@@ -15,7 +15,6 @@ import cn.nukkit.block.BlockTurtleEgg;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.components.*;
-import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.custom.CustomEntityComponents;
@@ -104,6 +103,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.random.RandomGenerator;
 
 /**
  * @author MagicDroidX
@@ -540,7 +540,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(SCALE, 1f);
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
-        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealth());
+        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
 
         // =========================================================
         // Load Effects from NBT
@@ -585,9 +585,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.attributes.put(attribute.getId(), attribute);
             }
         }
-        this.applyInitialHealthFromRange();
-        this.applyInitialRideJumpStrengthFromRange();
-        this.applyInitialMovementSpeedFromRange();
+        this.applyInitialHealth();
+        this.applyInitialRideJumpStrength();
+        this.applyInitialMovementSpeed();
 
         // =========================================================
         // Send initial data + default flags
@@ -1345,7 +1345,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         setLastDamageCause(source);
 
         // Calculating blood volume
-        float newHealth = getHealth() - source.getFinalDamage();
+        float newHealth = getHealthCurrent() - source.getFinalDamage();
 
         // Only player
         if (newHealth < 1 && this instanceof Player player) {
@@ -1365,7 +1365,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
                     this.extinguish();
                     this.removeAllEffects();
-                    this.setHealth(1);
+                    this.setHealthCurrent(1);
 
                     this.addEffect(Effect.get(EffectType.REGENERATION).setDuration(800).setAmplifier(1));
                     this.addEffect(Effect.get(EffectType.FIRE_RESISTANCE).setDuration(800));
@@ -1390,7 +1390,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         Entity attacker = source instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) source).getDamager() : null;
 
-        setHealth(newHealth);
+        setHealthCurrent(newHealth);
 
         if (!(this instanceof EntityArmorStand)) {
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(attacker, this.getVector3(), VibrationType.ENTITY_DAMAGE));
@@ -1872,9 +1872,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return false;
     }
 
-    /** Return true if getRideableData() is not null. */
+    /** Return true if getComponentRideable() is not null. */
     public boolean isRideable() {
-        return getRideableData() != null;
+        return getComponentRideable() != null;
     }
 
     public boolean isRiding() {
@@ -1969,7 +1969,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Default: 1
      */
     public int getSeatCount() {
-        RideableComponent r = getRideableData();
+        RideableComponent r = getComponentRideable();
         return r != null ? Math.max(1, r.seatCount()) : 1;
     }
 
@@ -1979,7 +1979,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Default: 1
      */
     public String getInteractText() {
-        RideableComponent r = getRideableData();
+        RideableComponent r = getComponentRideable();
         return r != null ? r.interactText() : "action.interact.ride.horse";
     }
 
@@ -1987,7 +1987,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Returns passenger max width. If 0, ignored.
      */
     public float getPassengerMaxWidth() {
-        RideableComponent r = getRideableData();
+        RideableComponent r = getComponentRideable();
         return r != null ? r.passengerMaxWidth() : 0.0f;
     }
 
@@ -1995,7 +1995,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Returns allowed rider family types (Bedrock rideable family_types).
      */
         public Set<String> getAllowedRiderFamilyTypes() {
-            RideableComponent r = getRideableData();
+            RideableComponent r = getComponentRideable();
             return r != null ? r.familyTypes() : Collections.emptySet();
         }
 
@@ -2027,7 +2027,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public int getControllingSeatIndex() {
-        RideableComponent r = getRideableData();
+        RideableComponent r = getComponentRideable();
         return r != null ? r.controllingSeat() : 0;
     }
 
@@ -2042,7 +2042,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or does not have
      *         the {@code minecraft:rideable} component.
      */
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         if (!isCustomEntity()) return null;
         return meta().getRideableComponent(CustomEntityComponents.RIDEABLE);
     }
@@ -2193,9 +2193,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * @deprecated Use {@link #mountEntity(Entity, boolean)}. Link type is derived from seat index.
-     * Planned removal: after 6 months (>= 2026-08-26).
      */
-    @Deprecated(since = "2.0.0", forRemoval = true)
+    @Deprecated
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         boolean ok = mountEntity(entity, false); // not rider initiated by default
         if (!ok || entity.riding != this) return ok;
@@ -2224,7 +2223,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * {@link #updatePassengers(boolean, boolean)} afterwards.
      *
      * @return true if passenger order changed
+     * Planned removal: after 6 months (>= 2026-08-19).
      */
+    @Deprecated(since = "2.0.0", forRemoval = true)
     private boolean forcePassengerToSeat(Entity entity, int seatIndex) {
         if (entity == null) return false;
         int cur = passengers.indexOf(entity);
@@ -2247,7 +2248,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * {@link #mountEntity(Entity, EntityLink.Type)}.
      *
      * @return true if passenger order changed
+     * Planned removal: after 6 months (>= 2026-08-19).
      */
+    @Deprecated(since = "2.0.0", forRemoval = true)
     private boolean forcePassengerToPassengerSeat(Entity entity) {
         if (entity == null) return false;
 
@@ -2394,7 +2397,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /** Resolves the seat offset to apply to a passenger for a specific seat index. */
     public @Nullable RideableComponent.Seat getRideSeatFor(int seatIndex) {
-        RideableComponent r = getRideableData();
+        RideableComponent r = getComponentRideable();
         if (r == null) return null;
 
         List<RideableComponent.Seat> seats = r.seats();
@@ -2482,7 +2485,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         passengers.remove(entity);
 
         // Dismount placement 
-        // TODO: need a few improvements
+        // TODO: need a few improvements when dismounting default, it will must select safe place
         Vector3 dismount = resolveDismountPosition(entity);
         if (entity instanceof Player p) {
             p.teleport(dismount);
@@ -2499,7 +2502,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public RideableComponent.DismountMode getDismountMode() {
-        RideableComponent r = getRideableData();
+        RideableComponent r = getComponentRideable();
         return r != null ? r.dismountMode() : RideableComponent.DismountMode.DEFAULT;
     }
 
@@ -2693,20 +2696,131 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or does not define the
      *         {@code minecraft:equippable} component.
      */
-    public @Nullable EquippableComponent getEquippableData() {
+    public @Nullable EquippableComponent getComponentEquippable() {
         if (!isCustomEntity()) return null;
         return meta().getEquippableComponent(CustomEntityComponents.EQUIPPABLE);
     }
 
+    /**
+     * Returns the {@code minecraft:health} component definition used by this entity.
+     *
+     * <p>This method defines the initial health model of the entity, including fixed
+     * health values and ranged health values used for genetics/randomized initialization.</p>
+     *
+     * <p>Example (fixed value):</p>
+     * <pre>{@code
+     * @Override
+     * public HealthComponent getComponentHealth() {
+     *     return HealthComponent.value(8);
+     * }
+     * }</pre>
+     *
+     * <p>Example (range/genetics):</p>
+     * <pre>{@code
+     * @Override
+     * public HealthComponent getComponentHealth() {
+     *     return HealthComponent.range(15, 30);
+     * }
+     * }</pre>
+     *
+     * @return The resolved health component definition for this entity.
+     */
+    public HealthComponent getComponentHealth() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.HEALTH)) {
+            HealthComponent ht = meta().getDefinitionHealthComponent(CustomEntityComponents.HEALTH);
+            if (ht != null) return ht;
+        }
+        return HealthComponent.defaults();
+    }
+
+    /**
+     * Applies the initial health attribute state for a non-player entity.
+     *
+     * <p>This method is intended to run only during initial entity setup. If the entity
+     * already has a persisted {@link Attribute#HEALTH} attribute loaded from NBT, the
+     * existing values are preserved and no reroll is performed.</p>
+     *
+     * <p>When the resolved {@link HealthComponent} defines a range, two random values are
+     * rolled to generate the entity genetics, which are then stored as
+     * {@code defaultMinimum} and {@code defaultMaximum}. The higher value is also used as
+     * the initial runtime max health and current health.</p>
+     *
+     * <p>When the resolved {@link HealthComponent} defines a fixed value, the fixed value
+     * is used as the initial runtime max health, default health, and current health.
+     */
+    protected void applyInitialHealth() {
+        if (this.isPlayer) return;
+
+        // 0) Respect persisted NBT (never overwrite / never reroll)
+        Attribute existing = this.attributes.get(Attribute.HEALTH);
+        if (existing != null) return;
+
+        // 1) Resolve component health
+        HealthComponent health = getComponentHealth();
+        if (health == null) return;
+
+        RandomGenerator rnd = RandomGenerator.getDefault();
+
+        float newDefaultMin = 0f;
+        float newDefaultMax;
+        float resolvedMaxHealth;
+
+        if (health.hasRange()) {
+            int value1 = health.resolveSpawnValue(rnd);
+            int value2 = health.resolveSpawnValue(rnd);
+
+            newDefaultMin = Math.min(value1, value2);
+            newDefaultMax = Math.max(value1, value2);
+            resolvedMaxHealth = newDefaultMax;
+        } else {
+            resolvedMaxHealth = Math.max(1, health.resolveSpawnValue(rnd));
+            newDefaultMax = resolvedMaxHealth;
+        }
+
+        // 2) Persist attribute
+        Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
+        if (attr == null) return;
+
+        attr.setMinValue(0f);
+        attr.setMaxValue(resolvedMaxHealth);
+
+        attr.setDefaultMinimum(newDefaultMin);
+        attr.setDefaultMaximum(newDefaultMax);
+
+        attr.setDefaultValue(resolvedMaxHealth);
+        attr.setValue(resolvedMaxHealth);
+
+        this.attributes.put(attr.getId(), attr);
+    }
+
+    /**
+     * Sets the current runtime maximum health of the entity.
+     *
+     * @param maxHealth The new runtime maximum health value.
+     */
+    public void setHealthMax(int maxHealth) {
+        setMaxHealth(maxHealth);
+        return;
+    }
+
+    /**
+     * @deprecated Since 2.0.0 (2026-02-19).
+     * Naming was standardized to {@link #setHealthMax(int)} so health-related methods are grouped
+     * consistently under the {@code getHealth...}/{@code setHealth...} naming pattern.
+     *
+     * Planned removal: after 6 months (>= 2026-08-19). <p>
+     * Obs: When removing this method the logic under this must be moved to {@link #setHealthMax(int)}
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
     public void setMaxHealth(int maxHealth) {
         if (this.isPlayer) {
             this.maxHealth = maxHealth;
             return;
         }
 
-        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+        Attribute attr = this.getAttributes().get(Attribute.HEALTH);
         if (attr == null) {
-            attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
+            attr = Attribute.getAttribute(Attribute.HEALTH);
             if (attr == null) return;
         }
 
@@ -2715,243 +2829,390 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.attributes.put(attr.getId(), attr);
     }
 
-    public void heal(EntityRegainHealthEvent source) {
-        this.server.getPluginManager().callEvent(source);
-        if (source.isCancelled()) {
-            return;
-        }
-        this.setHealth(this.getHealth() + source.getAmount());
+    /**
+     * Returns the current runtime maximum health of the entity.
+     *
+     * @return The current runtime maximum health.
+     */
+    public int getHealthMax() {
+        return getMaxHealth();
     }
 
-    public void heal(float amount) {
-        this.heal(new EntityRegainHealthEvent(this, amount, EntityRegainHealthEvent.CAUSE_REGEN));
-    }
-
-    public float getHealth() {
-        return health;
-    }
-
-    public void setHealth(float health) {
-        if (this.health == health) {
-            return;
-        }
-
-        if (health < 1) {
-            if (this.isAlive()) {
-                this.kill();
-            }
-        } else if (health <= this.getMaxHealth() || health < this.health) {
-            this.health = health;
-        } else {
-            this.health = this.getMaxHealth();
-        }
-
-        setDataProperty(STRUCTURAL_INTEGRITY, (int) this.health);
-    }
-
+    /**
+     * @deprecated Since 2.0.0 (2026-02-19).
+     * Naming was standardized to {@link #getHealthMax()} so health-related methods are grouped
+     * consistently under the {@code getHealth...}/{@code setHealth...} naming pattern.
+     *
+     * Planned removal: after 6 months (>= 2026-08-19). <p>
+     * Obs: When removing this method the logic under this must be moved to {@link #getHealthMax()}
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
     public int getMaxHealth() {
         if (this.isPlayer) return maxHealth;
 
-        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
-        if (attr != null) {
-            return (int) attr.getMaxValue();
-        }
+        Attribute attr = this.getAttributes().get(Attribute.HEALTH);
+        if (attr != null) return (int) attr.getMaxValue();
 
-        if (isCustomEntity() && meta().has(CustomEntityComponents.HEALTH)) {
-            HealthComponent hp = meta().getDefinitionHealthComponent(CustomEntityComponents.HEALTH);
-            if (hp != null) {
-                Integer iv = hp.value();
-                if (iv != null && iv > 0) return iv.intValue();
+        HealthComponent health = getComponentHealth();
+        if (health != null) {
+            if (health.isFixed()) {
+                Integer v = health.value();
+                if (v != null && v > 0) return v;
+            }
+
+            if (health.hasRange()) {
+                Integer max = health.rangeMax();
+                if (max != null && max > 0) return max;
             }
         }
 
         return DEFAULT_HEALTH;
     }
 
-    /** Returns the default min health of the entity (genetics only). */
-    public float getDefaultMinHealth() {
-        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+    /**
+     * Returns the default/base health value of the entity.
+     *
+     * <p>For players, this returns the player max health field.</p>
+     *
+     * <p>For non-player entities, this first reads the persisted/runtime
+     * {@link Attribute#HEALTH} default value. If the attribute is not yet initialized, the
+     * value is derived from the resolved {@link HealthComponent} definition.</p>
+     *
+     * @return The default/base health value.
+     */
+    public int getHealthDefault() {
+        if (this.isPlayer) return maxHealth;
+
+        Attribute attr = this.getAttributes().get(Attribute.HEALTH);
+        if (attr != null) return (int) attr.getDefaultValue();
+
+        HealthComponent health = getComponentHealth();
+        if (health != null) {
+            if (health.isFixed()) {
+                Integer v = health.value();
+                if (v != null && v > 0) return v;
+            }
+
+            if (health.hasRange()) {
+                Integer max = health.rangeMax();
+                if (max != null && max > 0) return max;
+            }
+        }
+
+        return DEFAULT_HEALTH;
+    }
+
+    /**
+     * Sets the current runtime health of the entity.
+     *
+     * <p>If the provided health is less than {@code 1}, the entity is killed if still alive.
+     * Otherwise, the value is clamped so it does not exceed the current runtime maximum
+     * health.</p>
+     *
+     * @param health The new current health value.
+     */
+    public void setHealthCurrent(float health) {
+        setHealth(health);
+        return;
+    }
+
+    /**
+     * @deprecated Since 2.0.0 (2026-02-19).
+     * Naming was standardized to {@link #setHealthCurrent(float)} so health-related
+     * methods follow the {@code setHealth...} naming pattern and are easier to
+     * discover through API filtering.
+     *
+     * Planned removal: after 6 months (>= 2026-08-19). <p>
+     * Obs: When removing this method the logic under this must be moved to {@link #setHealthCurrent(float)}
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public void setHealth(float health) {
+        if (this.health == health) return;
+
+        if (health < 1) {
+            if (this.isAlive()) this.kill();
+        } else if (health <= this.getHealthMax() || health < this.health) {
+            this.health = health;
+        } else {
+            this.health = this.getHealthMax();
+        }
+
+        Attribute attr = this.attributes.get(Attribute.HEALTH);
+        if (attr != null) attr.setValue(this.health, true);
+        setDataProperty(STRUCTURAL_INTEGRITY, (int) this.health);
+    }
+
+    /**
+     * Returns the current runtime health of the entity.
+     *
+     * <p>This value represents the entity live health state used for damage, healing,
+     * death handling, and runtime persistence.</p>
+     *
+     * @return The current runtime health value.
+     */
+    public float getHealthCurrent() {
+        return getHealth();
+    }
+
+    /**
+     * @deprecated Since 2.0.0 (2026-02-19).
+     * Naming was standardized to {@link #getHealthCurrent()} so health-related methods are grouped
+     * consistently under the {@code getHealth...}/{@code setHealth...} naming pattern.
+     *
+     * Planned removal: after 6 months (>= 2026-08-19). <p>
+     * Obs: When removing this method the logic under this must be moved to {@link #getHealthCurrent()}
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public float getHealth() {
+        return health;
+    }
+
+    /**
+     * Returns the default minimum health genetics value of the entity.
+     *
+     * <p>If a persisted {@link Attribute#HEALTH} attribute exists, this reads the stored
+     * default minimum directly from the attribute.</p>
+     *
+     * <p>If the attribute is not yet initialized, the value is derived from the resolved
+     * {@link HealthComponent}. Fixed health definitions return {@code 0}, while ranged
+     * definitions return the configured lower bound.</p>
+     *
+     * @return The default minimum health genetics value, or {@code 0} when not applicable.
+     */
+    public float getHealthDefaultMin() {
+        Attribute attr = this.getAttributes().get(Attribute.HEALTH);
         if (attr != null) {
             float v = attr.getDefaultMinimum();
-            if (Float.isFinite(v) && v > 0f) return v;
+            if (Float.isFinite(v) && v >= 0f) return v;
         }
+
+        HealthComponent health = getComponentHealth();
+        if (health == null) return 0f;
+
+        if (health.hasRange()) {
+            Integer min = health.rangeMin();
+            if (min != null && min > 0) return min.floatValue();
+        }
+
         return 0f;
     }
 
-    /** Returns the default max health of the entity (genetics only). */
-    public float getDefaultMaxHealth() {
-        Attribute attr = this.getAttributes().get(Attribute.MAX_HEALTH);
+    /**
+     * Returns the default maximum health genetics value of the entity.
+     *
+     * <p>If a persisted {@link Attribute#HEALTH} attribute exists, this reads the stored
+     * default maximum directly from the attribute.</p>
+     *
+     * <p>If the attribute is not yet initialized, the value is derived from the resolved
+     * {@link HealthComponent}. Ranged definitions return the configured upper bound, while
+     * fixed definitions return the fixed configured value.</p>
+     *
+     * @return The default maximum health genetics value.
+     */
+    public float getHealthDefaultMax() {
+        Attribute attr = this.getAttributes().get(Attribute.HEALTH);
         if (attr != null) {
             float v = attr.getDefaultMaximum();
             if (Float.isFinite(v) && v > 0f) return v;
         }
-        return getMaxHealth();
+
+        HealthComponent health = getComponentHealth();
+        if (health == null) return DEFAULT_HEALTH;
+
+        if (health.hasRange()) {
+            Integer max = health.rangeMax();
+            if (max != null && max > 0) return max.floatValue();
+        }
+
+        if (health.isFixed()) {
+            Integer value = health.value();
+            if (value != null && value > 0) return value.floatValue();
+        }
+
+        return DEFAULT_HEALTH;
     }
 
     /**
-     * Returns the health attribute range defined for this custom entity.
-     * <p>
-     * This reads the {@code minecraft:health} component when it specifies a
-     * minimum and maximum value. Only true ranges are returned; fixed values
-     * or invalid ranges are ignored.
-     * </p>
+     * Heals the entity using the provided regain health event.
      *
-     * @return an {@link AttributesFloatRange} representing the entity health range,
-     *         or {@code null} if the entity is not custom or no valid range is defined.
+     * @param source The regain health event describing the heal operation.
      */
-    public @Nullable AttributesFloatRange getHealthRange() {
-        if (!isCustomEntity()) return null;
-        if (!meta().has(CustomEntityComponents.HEALTH)) return null;
-
-        var hp = meta().getDefinitionHealthComponent(CustomEntityComponents.HEALTH);
-        if (hp == null) return null;
-
-        // Only ranges should be applied here. Fixed value must not.
-        Integer mn = hp.rangeMin();
-        Integer mx = hp.rangeMax();
-        if (mn == null || mx == null) return null;
-
-        float min = (float) mn.intValue();
-        float max = (float) mx.intValue();
-
-        // Only accept a real range
-        if (!Float.isFinite(min) || !Float.isFinite(max)) return null;
-        if (min <= 0f || max <= 0f) return null;
-        if (min == max) return null;
-
-        // Normalize order
-        if (min > max) {
-            float t = min;
-            min = max;
-            max = t;
+    public void heal(EntityRegainHealthEvent source) {
+        this.server.getPluginManager().callEvent(source);
+        if (source.isCancelled()) {
+            return;
         }
-
-        // Must be strictly increasing
-        if (min >= max) return null;
-
-        return new AttributesFloatRange(min, max);
-    }
-
-    protected void applyInitialHealthFromRange() {
-        if (this.isPlayer) return;
-
-        // 0) Respect persisted NBT (never overwrite / never reroll)
-        Attribute existing = this.attributes.get(Attribute.MAX_HEALTH);
-        if (existing != null) return;
-
-        float newDefaultMin = 0f;
-        float newDefaultMax = getMaxHealth();
-        if (newDefaultMax <= 0f) newDefaultMax = DEFAULT_HEALTH;
-
-        // 1) Read meta range (range-only; fixed values are ignored)
-        AttributesFloatRange range = getHealthRange();
-        if (range != null) {
-            // Build per-entity genetics if range was set
-            float value1 = range.roll();
-            float value2 = range.roll();
-            newDefaultMin = Math.min(value1, value2);
-            newDefaultMax = Math.max(value1, value2);
-        };
-
-        // 2) Persist attribute
-        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
-        if (attr == null) return;
-
-        attr.setMinValue(0f);
-        attr.setMaxValue(newDefaultMax);
-
-        attr.setDefaultMaximum(newDefaultMax);
-        attr.setDefaultMinimum(newDefaultMin);
-
-        attr.setDefaultValue(newDefaultMax);
-        attr.setValue(newDefaultMax);
-
-        this.attributes.put(attr.getId(), attr);
-    }
-
-    /** Returns the ride jump strength. */
-    public float getRideJumpStrength() {
-        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
-        return attr != null ? attr.getValue() : 0.0f;
-    }
-
-    /** Returns the default min ride jump strength (genetics only). */
-    public float getDefaultMinRideJumpStrength() {
-        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
-        if (attr != null) {
-            float v = attr.getDefaultMinimum();
-            if (Float.isFinite(v) && v > 0f) return v;
-        }
-        return 0.0f;
-    }
-
-    /** Returns the default max ride jump strength (genetics only). */
-    public float getDefaultMaxRideJumpStrength() {
-        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
-        if (attr != null) {
-            float v = attr.getDefaultMaximum();
-            if (Float.isFinite(v) && v > 0f) return v;
-        }
-        return 0.0f;
+        this.setHealthCurrent(this.getHealthCurrent() + source.getAmount());
     }
 
     /**
-     * Returns the horse jump strength attribute defined for this custom entity.
-     * <p>
-     * This reads the {@code minecraft:horse.jump_strength} component and returns
-     * either a fixed value or a min–max range depending on how the component was defined.
-     * </p>
+     * Heals the entity by the specified amount using
+     * {@link EntityRegainHealthEvent#CAUSE_REGEN}.
      *
-     * @return an {@link AttributesFloatRange} representing the jump strength,
-     *         or {@code null} if the entity is not custom or the component is not defined.
+     * @param amount The amount of health to restore.
      */
-    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
-        if (!isCustomEntity()) return null;
-        if (!meta().has(CustomEntityComponents.HORSE_JUMP_STRENGTH)) return null;
-
-        var js = meta().getDefinitionJumpStrengthComponent(CustomEntityComponents.HORSE_JUMP_STRENGTH);
-        if (js == null) return null;
-
-        if (js.value() != null) return new AttributesFloatRange(js.value());
-        return new AttributesFloatRange(js.rangeMin(), js.rangeMax());
+    public void heal(float amount) {
+        this.heal(new EntityRegainHealthEvent(this, amount, EntityRegainHealthEvent.CAUSE_REGEN));
     }
 
-    protected void applyInitialRideJumpStrengthFromRange() {
+    /**
+     * Retrieves the {@link HorseJumpStrengthComponent} definition for this entity.
+     *
+     * <p>This component defines the horse jump strength configuration used when
+     * initializing {@link Attribute#HORSE_JUMP_STRENGTH}. It may represent either
+     * a fixed jump strength value or a spawn-time range used to generate genetic
+     * variation.</p>
+     *
+     * <p>The component is only available for custom entities that define
+     * {@code minecraft:horse_jump_strength} in their entity metadata.</p>
+     *
+     * @return the horse jump strength component definition for this entity, or
+     *         {@code null} if the entity does not define this component.
+     */
+    protected @Nullable HorseJumpStrengthComponent getComponentHorseJumpStrength() {
+        if (isCustomEntity() && meta().has(CustomEntityComponents.HORSE_JUMP_STRENGTH)) {
+            HorseJumpStrengthComponent js = meta().getDefinitionJumpStrengthComponent(CustomEntityComponents.HORSE_JUMP_STRENGTH);
+            if (js != null) return js;
+        }
+        return null;
+    }
+
+    /**
+     * Applies the initial horse jump strength attribute state for a non-player entity.
+     *
+     * <p>This method is intended to run only during initial entity setup. If the entity
+     * already has a persisted {@link Attribute#HORSE_JUMP_STRENGTH} attribute loaded
+     * from NBT, the existing values are preserved and no reroll is performed.</p>
+     *
+     * <p>The jump strength configuration is read from the entity's
+     * {@link HorseJumpStrengthComponent}. When the component defines a range,
+     * two random values are rolled to generate the entity genetics. These values
+     * are stored as {@code defaultMinimum} and {@code defaultMaximum}, representing
+     * the genetic jump strength envelope for the entity.</p>
+     *
+     * <p>The higher of the two rolled values is used as the initial runtime jump
+     * strength and is stored as both the attribute default and current value.</p>
+     *
+     * <p>When the component defines a fixed value, that value is used as the
+     * entity's default and current horse jump strength.</p>
+     *
+     * <p>The resulting values are persisted in the
+     * {@link Attribute#HORSE_JUMP_STRENGTH} attribute so that the generated
+     * genetics remain consistent across saves.</p>
+     */
+    protected void applyInitialRideJumpStrength() {
         if (this.isPlayer) return;
 
         // 0) Respect persisted NBT (never overwrite / never reroll)
         Attribute existing = this.attributes.get(Attribute.HORSE_JUMP_STRENGTH);
         if (existing != null) return;
 
-        // 1) Read meta range (can be fixed too)
-        AttributesFloatRange range = getHorseJumpStrengthRange();
-        if (range == null) return;
+        // 1) Read meta range
+        HorseJumpStrengthComponent jumpStrength = getComponentHorseJumpStrength();
+        if (jumpStrength == null) return;
 
-        float metaMin = range.min();
-        float metaMax = range.max();
-        if (!Float.isFinite(metaMin) || !Float.isFinite(metaMax)) return;
-        if (metaMin <= 0f || metaMax <= 0f || metaMin > metaMax) return;
+        RandomGenerator rnd = RandomGenerator.getDefault();
+
+        float newDefaultMin = 0f;
+        float newDefaultMax;
+        float resolvedJumpStrength;
 
         // 2) Build per-entity genetics
-        float value1 = range.roll();
-        float value2 = range.roll();
-        float newDefaultMin = Math.min(value1, value2);
-        float newDefaultMax = Math.max(value1, value2);
+        if (jumpStrength.hasRange()) {
+            float value1 = jumpStrength.resolveSpawnValue(rnd);
+            float value2 = jumpStrength.resolveSpawnValue(rnd);
 
-        // 3) Persist attribute
+            newDefaultMin = Math.min(value1, value2);
+            newDefaultMax = Math.max(value1, value2);
+            resolvedJumpStrength = newDefaultMax;
+        } else {
+            resolvedJumpStrength = jumpStrength.resolveSpawnValue(rnd);
+            newDefaultMax = resolvedJumpStrength;
+        }
+
         Attribute attr = Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH);
         if (attr == null) return;
 
+        // 3) Persist attribute
         attr.setMinValue(0f);
-        attr.setMaxValue(newDefaultMax);
+        attr.setMaxValue(resolvedJumpStrength);
 
-        attr.setDefaultMaximum(newDefaultMax);
         attr.setDefaultMinimum(newDefaultMin);
+        attr.setDefaultMaximum(newDefaultMax);
 
-        attr.setDefaultValue(newDefaultMax);
-        attr.setValue(newDefaultMax);
+        attr.setDefaultValue(resolvedJumpStrength);
+        attr.setValue(resolvedJumpStrength);
 
         this.attributes.put(attr.getId(), attr);
+    }
+
+    /**
+     * Returns the current runtime horse jump strength for this entity.
+     *
+     * <p>This value represents the effective jump strength currently stored in
+     * {@link Attribute#HORSE_JUMP_STRENGTH}. If the entity does not have this
+     * attribute, {@code 0.0f} is returned.</p>
+     *
+     * @return the current horse jump strength.
+     */
+    public float getRideJumpStrength() {
+        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
+        return attr != null ? attr.getValue() : 0.0f;
+    }
+
+    /**
+     * Returns the current runtime horse jump strength for this entity.
+     *
+     * <p>This is an alias of {@link #getRideJumpStrength()}.</p>
+     *
+     * @return the current horse jump strength.
+     */
+    public float getHorseJumpStrength() {
+        return getRideJumpStrength();
+    }
+
+    /**
+     * Returns the default minimum horse jump strength for this entity.
+     *
+     * <p>This value represents the lower bound of the jump strength genetics
+     * envelope generated during entity initialization. It corresponds to
+     * {@link Attribute#getDefaultMinimum()} of
+     * {@link Attribute#HORSE_JUMP_STRENGTH}.</p>
+     *
+     * <p>If the entity does not have a horse jump strength attribute or the
+     * value is invalid, {@code 0.0f} is returned.</p>
+     *
+     * @return the default minimum horse jump strength (genetics bound).
+     */
+    public float getRideJumpStrengthDefaultMin() {
+        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
+        if (attr != null) {
+            float v = attr.getDefaultMinimum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return 0.0f;
+    }
+
+    /**
+     * Returns the default maximum horse jump strength for this entity.
+     *
+     * <p>This value represents the upper bound of the jump strength genetics
+     * envelope generated during entity initialization. It corresponds to
+     * {@link Attribute#getDefaultMaximum()} of
+     * {@link Attribute#HORSE_JUMP_STRENGTH}.</p>
+     *
+     * <p>If the entity does not have a horse jump strength attribute or the
+     * value is invalid, {@code 0.0f} is returned.</p>
+     *
+     * @return the default maximum horse jump strength (genetics bound).
+     */
+    public float getRideJumpStrengthDefaultMax() {
+        Attribute attr = this.getAttributes().get(Attribute.HORSE_JUMP_STRENGTH);
+        if (attr != null) {
+            float v = attr.getDefaultMaximum();
+            if (Float.isFinite(v) && v > 0f) return v;
+        }
+        return 0.0f;
     }
 
     /**
@@ -2965,7 +3226,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not present.
      */
-    public @Nullable DashActionComponent getDashAction() {
+    public @Nullable DashActionComponent getComponentDashAction() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.DASH_ACTION)) {
             var dash = meta().getDefinitionDashActionComponent(CustomEntityComponents.DASH_ACTION);
             if (dash != null && !dash.isEmpty()) return dash;
@@ -2986,7 +3247,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not present.
      */
-    public @Nullable BoostableComponent getBoostable() {
+    public @Nullable BoostableComponent getComponentBoostable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.BOOSTABLE)) {
             var boost = meta().getDefinitionBoostableComponent(CustomEntityComponents.BOOSTABLE);
             if (boost != null && !boost.isEmpty()) return boost;
@@ -3002,7 +3263,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean isBoostable() {
-        return getBoostable() != null;
+        return getComponentBoostable() != null;
     }
 
     public int getBoostableTicks() {
@@ -3041,7 +3302,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not present.
      */
-    public @Nullable InventoryComponent getInventoryComponent() {
+    public @Nullable InventoryComponent getComponentInventory() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.INVENTORY)) {
             var inv = meta().getDefinitionInventoryComponent(CustomEntityComponents.INVENTORY);
             if (inv != null && !inv.isEmpty()) return inv;
@@ -3057,22 +3318,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean hasInventory() {
-        return getInventoryComponent() != null;
+        return getComponentInventory() != null;
     }
 
     public void updateInventoryFlags() {
         if (!hasInventory()) return;
 
         if ((this instanceof EntityLiving ei) && ei.isTamed()) {
-            this.setDataProperty(Entity.CONTAINER_TYPE, getInventoryComponent().typeId());
-            this.setDataProperty(Entity.CONTAINER_SIZE, getInventoryComponent().size());
-            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, getInventoryComponent().strengthModifier());
-            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, getInventoryComponent().isRestrictedToOwner());
+            this.setDataProperty(Entity.CONTAINER_TYPE, getComponentInventory().typeId());
+            this.setDataProperty(Entity.CONTAINER_SIZE, getComponentInventory().size());
+            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, getComponentInventory().strengthModifier());
+            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, getComponentInventory().isRestrictedToOwner());
             return;
         }
         if (this instanceof EntityVehicle) {
-            this.setDataProperty(Entity.CONTAINER_TYPE, getInventoryComponent().typeId());
-            this.setDataProperty(Entity.CONTAINER_SIZE, getInventoryComponent().size());
+            this.setDataProperty(Entity.CONTAINER_TYPE, getComponentInventory().typeId());
+            this.setDataProperty(Entity.CONTAINER_SIZE, getComponentInventory().size());
         }
     }
 
@@ -3087,7 +3348,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not configured.
      */
-    public @Nullable HomeComponent getHome() {
+    public @Nullable HomeComponent getComponentHome() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.HOME)) {
             HomeComponent hm = meta().getDefinitionHomeComponent(CustomEntityComponents.HOME);
             if (hm != null && hm.isPresent()) return hm;
@@ -3102,7 +3363,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean hasHome() {
-        return getHome() != null;
+        return getComponentHome() != null;
     }
 
     /**
@@ -3116,7 +3377,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not configured.
      */
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.BREEDABLE)) {
             BreedableComponent bd = meta().getDefinitionBreedableComponent(CustomEntityComponents.BREEDABLE);
             if (bd != null && !bd.isEmpty()) return bd;
@@ -3131,7 +3392,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean isBreedable() {
-        BreedableComponent breedable = getBreedable();
+        BreedableComponent breedable = getComponentBreedable();
         return breedable != null && !breedable.isEmpty();
     }
 
@@ -3219,7 +3480,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return the {@link NameableComponent} if defined and not empty,
      *         otherwise a default nameable configuration.
      */
-    public NameableComponent getNameable() {
+    public NameableComponent getComponentNameable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.NAMEABLE)) {
             NameableComponent nm = meta().getDefinitionNameableComponent(CustomEntityComponents.NAMEABLE);
             if (nm != null && !nm.isEmpty()) return nm;
@@ -3233,7 +3494,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return {@code true} if name tag renaming is allowed, otherwise {@code false}.
      */
     public boolean isNameable() {
-        return getNameable().resolvedAllowNameTagRenaming();
+        return getComponentNameable().resolvedAllowNameTagRenaming();
     }
 
     public boolean hasCustomName() {
@@ -3275,7 +3536,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not configured.
      */
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.HEALABLE)) {
             HealableComponent hl = meta().getDefinitionHealableComponent(CustomEntityComponents.HEALABLE);
             if (hl != null && !hl.isEmpty()) return hl;
@@ -3290,7 +3551,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean isHealable() {
-        HealableComponent healable = getHealable();
+        HealableComponent healable = getComponentHealable();
         return healable != null && !healable.isEmpty();
     }
 
@@ -3305,7 +3566,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not configured.
      */
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.AGEABLE)) {
             AgeableComponent hl = meta().getDefinitionAgeableComponent(CustomEntityComponents.AGEABLE);
             if (hl != null && !hl.isEmpty()) return hl;
@@ -3320,7 +3581,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean isAgeable() {
-        AgeableComponent ageable = getAgeable();
+        AgeableComponent ageable = getComponentAgeable();
         return ageable != null && !ageable.isEmpty();
     }
 
@@ -3400,7 +3661,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public int getBabyGrowTotalTicks() {
-        AgeableComponent ageable = getAgeable();
+        AgeableComponent ageable = getComponentAgeable();
         if (ageable == null || ageable.isEmpty()) return -1;
 
         float d = ageable.resolvedDuration();
@@ -3452,7 +3713,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!isAgeable() || !isBaby() || isGrowthPaused()) return;
         if (item.isNull()) return;
 
-        AgeableComponent ageable = getAgeable();
+        AgeableComponent ageable = getComponentAgeable();
         if (ageable == null || ageable.isEmpty()) return;
 
         int total = getBabyGrowTotalTicks();
@@ -3550,26 +3811,165 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return ei.getMemoryStorage().get(CoreMemoryTypes.IS_SITTING);
     }
 
-    /** Returns the default movement speed of the entity */
-    public float getDefaultSpeed() {
-        Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
-        if (attr != null) {
-            return attr.getDefaultValue();
-        }
-
+    /**
+     * Retrieves the {@link MovementComponent} definition for this entity.
+     *
+     * <p>This component defines the movement speed configuration used when initializing
+     * the entity's {@link Attribute#MOVEMENT_SPEED}. It may represent either a fixed
+     * movement speed or a spawn-time range used to generate genetic variation.</p>
+     *
+     * @return the movement component definition for this entity, or {@code null}
+     *         if the entity does not define a movement component.
+     */
+    protected @Nullable MovementComponent getComponentMovement() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.MOVEMENT)) {
             MovementComponent mv = meta().getDefinitionMovementComponent(CustomEntityComponents.MOVEMENT);
-            if (mv != null) {
-                float v = mv.moveSpeed();
-                if (Float.isFinite(v) && v > 0f) return v;
+            if (mv != null) return mv;
+        }
+        return null;
+    }
+
+    /**
+     * Applies the initial movement speed attribute state for a non-player entity.
+     *
+     * <p>This method is intended to run only during initial entity setup. If the entity
+     * already has a persisted {@link Attribute#MOVEMENT_SPEED} attribute loaded from NBT,
+     * the existing values are preserved and no reroll is performed.</p>
+     *
+     * <p>When the resolved {@link MovementComponent} defines a range, two random values are
+     * rolled to generate the entity genetics. These values are stored as
+     * {@code defaultMinimum} and {@code defaultMaximum}, representing the genetic movement
+     * envelope for the entity. The higher value is used as the initial runtime movement
+     * speed and stored as both the attribute default and current value.</p>
+     *
+     * <p>When the resolved {@link MovementComponent} defines a fixed value, that value is
+     * used as the entity's default and current movement speed.</p>
+     *
+     * <p>The resolved movement speed is stored in the {@link Attribute#MOVEMENT_SPEED}
+     * attribute and cached into {@link #movementSpeed} for fast runtime access by
+     * physics and AI systems.</p>
+     */
+    protected void applyInitialMovementSpeed() {
+        if (this.isPlayer) return;
+
+        // 0) If NBT already has it, respect it
+        Attribute existing = this.attributes.get(Attribute.MOVEMENT_SPEED);
+        if (existing != null) {
+            this.movementSpeed = existing.getDefaultValue();
+            return;
+        }
+
+        MovementComponent movement = getComponentMovement();
+        if (movement == null) return;
+
+        RandomGenerator rnd = RandomGenerator.getDefault();
+
+        float newDefaultMin = 0f;
+        float newDefaultMax;
+        float resolvedSpeed;
+
+        if (movement.hasRange()) {
+            float value1 = movement.resolveSpawnValue(rnd);
+            float value2 = movement.resolveSpawnValue(rnd);
+
+            newDefaultMin = Math.min(value1, value2);
+            newDefaultMax = Math.max(value1, value2);
+            resolvedSpeed = newDefaultMax;
+        } else {
+            resolvedSpeed = movement.resolveSpawnValue(rnd);
+            newDefaultMax = resolvedSpeed;
+        }
+
+        Attribute attr = Attribute.getAttribute(Attribute.MOVEMENT_SPEED);
+        if (attr == null) return;
+
+        attr.setMinValue(0f);
+        attr.setMaxValue(resolvedSpeed);
+
+        attr.setDefaultMinimum(newDefaultMin);
+        attr.setDefaultMaximum(newDefaultMax);
+
+        attr.setDefaultValue(resolvedSpeed);
+        attr.setValue(resolvedSpeed);
+
+        this.attributes.put(attr.getId(), attr);
+        this.movementSpeed = resolvedSpeed;
+    }
+
+    /**
+     * Returns the current runtime movement speed for this entity.
+     *
+     * <p>This value represents the effective movement speed currently used by
+     * physics and AI systems. It reflects the resolved movement speed stored
+     * during entity initialization and may differ from the configured default
+     * if modified dynamically at runtime.</p>
+     *
+     * @return the current movement speed.
+     */
+    public float getMovementSpeed() {
+        return this.movementSpeed;
+    }
+
+    /**
+     * Returns the default movement speed configured for this entity.
+     *
+     * <p>This method resolves the base movement speed used by the entity,
+     * considering both the {@link MovementComponent} configuration and any
+     * persisted {@link Attribute#MOVEMENT_SPEED} attribute values.</p>
+     *
+     * @return the resolved default movement speed for the entity.
+     */
+    public float getMovementSpeedDefault() {
+        return getDefaultSpeed();
+    }
+
+    /**
+     * @deprecated Since 2.0.0 (2026-02-19).
+     * Naming was standardized to {@link #getMovementSpeedDefault()} so movement-related methods are grouped
+     * consistently under the {@code getMovement...}/{@code setMovement...} naming pattern.
+     *
+     * Planned removal: after 6 months (>= 2026-08-19). <p>
+     * Obs: When removing this method the logic under this must be moved to {@link #getMovementSpeedDefault()}
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public float getDefaultSpeed() {
+        if (this.isPlayer) return DEFAULT_SPEED;
+
+        MovementComponent mv = getComponentMovement();
+        if (mv != null) {
+            if (mv.isFixed()) {
+                Float v = mv.value();
+                if (v != null) return v;
+            }
+
+            if (mv.hasRange()) {
+                Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
+                if (attr != null) return attr.getDefaultValue();
+
+                Float max = mv.rangeMax();
+                if (max != null) return max;
             }
         }
 
-        return DEFAULT_SPEED;
+        Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
+        if (attr != null) return attr.getDefaultValue();
+
+        return 0f;
     }
 
-    /** Returns the default min movement speed of the entity (genetics only). */
-    public float getDefaultMinSpeed() {
+    /**
+     * Returns the default minimum movement speed for this entity.
+     *
+     * <p>This value represents the lower bound of the movement genetics
+     * envelope generated during entity initialization. It corresponds to
+     * {@link Attribute#getDefaultMinimum()} of {@link Attribute#MOVEMENT_SPEED}.</p>
+     *
+     * <p>If the entity does not have a movement attribute or the value is
+     * invalid, {@code 0f} is returned.</p>
+     *
+     * @return the default minimum movement speed (genetics bound).
+     */
+    public float getMovementSpeedDefaultMin() {
         Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
         if (attr != null) {
             float v = attr.getDefaultMinimum();
@@ -3578,8 +3978,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return 0f;
     }
 
-    /** Returns the default max movement speed of the entity (genetics only). */
-    public float getDefaultMaxSpeed() {
+    /**
+     * Returns the default maximum movement speed for this entity.
+     *
+     * <p>This value represents the upper bound of the movement genetics
+     * envelope generated during entity initialization. It corresponds to
+     * {@link Attribute#getDefaultMaximum()} of {@link Attribute#MOVEMENT_SPEED}.</p>
+     *
+     * <p>If the entity does not have a movement attribute or the value is
+     * invalid, the entity's resolved default movement speed is returned.</p>
+     *
+     * @return the default maximum movement speed (genetics bound).
+     */
+    public float getMovementSpeedDefaultMax() {
         Attribute attr = this.getAttributes().get(Attribute.MOVEMENT_SPEED);
         if (attr != null) {
             float v = attr.getDefaultMaximum();
@@ -3589,73 +4000,40 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * Returns the movement speed attribute range defined for this custom entity.
-     * <p>
-     * This reads the {@code minecraft:movement} component when it specifies a
-     * minimum and maximum speed value.
-     * </p>
+     * Returns the default flying speed for this entity.
      *
-     * @return an {@link AttributesFloatRange} representing the movement speed range,
-     *         or {@code null} if the entity is not custom or no valid range is defined.
+     * <p>This value represents the baseline movement speed used when the
+     * entity is flying. It is independent of the ground movement speed
+     * defined by {@link MovementComponent}.</p>
+     *
+     * @return the default flying speed.
      */
-    protected @Nullable AttributesFloatRange getMovementSpeedRange() {
-        if (!isCustomEntity()) return null;
-        if (!meta().has(CustomEntityComponents.MOVEMENT)) return null;
-
-        var mv = meta().getDefinitionMovementComponent(CustomEntityComponents.MOVEMENT);
-        if (mv == null) return null;
-
-        Float min = mv.rangeMin();
-        Float max = mv.rangeMax();
-        if (min == null || max == null) return null;
-
-        return new AttributesFloatRange(min, max);
+    public float getDefaultFlyingSpeed() {
+        return DEFAULT_FLYING_SPEED;
     }
 
-    protected void applyInitialMovementSpeedFromRange() {
-        if (this.isPlayer) return;
-
-        // 0) If NBT already has it, respect it
-        Attribute persisted = this.attributes.get(Attribute.MOVEMENT_SPEED);
-        if (persisted != null) {
-            this.movementSpeed = persisted.getDefaultValue();
-            return;
-        }
-
-        float newDefaultMin = 0f;
-        float newDefaultMax = getDefaultSpeed();
-        if (newDefaultMax <= 0f) newDefaultMax = DEFAULT_SPEED;
-
-        // 1) Meta range
-        AttributesFloatRange range = getMovementSpeedRange();
-        if (range != null) {
-            // Build per-entity genetics if range was set
-            float value1 = range.roll();
-            float value2 = range.roll();
-            newDefaultMin = Math.min(value1, value2);
-            newDefaultMax = Math.max(value1, value2);
-        }
-
-        // 2) Persist attribute
-        Attribute attr = Attribute.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (attr == null) return;
-
-        attr.setMinValue(0f);
-        attr.setMaxValue(newDefaultMax);
-
-        attr.setDefaultMaximum(newDefaultMax);
-        attr.setDefaultMinimum(newDefaultMin);
-
-        attr.setDefaultValue(newDefaultMax);
-        attr.setValue(newDefaultMax);
-
-        this.attributes.put(attr.getId(), attr);
-        this.movementSpeed = newDefaultMax;
+    /**
+     * Returns the default underwater movement speed for this entity.
+     *
+     * <p>This value represents the baseline movement speed used when the
+     * entity moves through water.</p>
+     *
+     * @return the default underwater movement speed.
+     */
+    public float getDefaultUnderWaterSpeed() {
+        return DEFAULT_UNDER_WATER_SPEED;
     }
 
-    /** Returns the current movement speed of the entity */
-    public float getMovementSpeed() {
-        return this.movementSpeed;
+    /**
+     * Returns the default movement speed for this entity while inside lava.
+     *
+     * <p>This value represents the baseline movement speed used when the
+     * entity moves through lava.</p>
+     *
+     * @return the default lava movement speed.
+     */
+    public float getDefaultLavaMovementSpeed() {
+        return DEFAULT_LAVA_MOVEMENT_SPEED;
     }
 
     /**
@@ -3674,7 +4052,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * implement proper runtime multipliers.
      * </p>
      *
-     * Planned removal: after 6 months (>= 2026-08-26).
+     * Planned removal: after behavior parity is complete (>= 2026-09-05).
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
     public float getSpeedMultiplier() {
@@ -3683,21 +4061,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             if (sm != null) return sm;
         }
         return 1.0f;
-    }
-
-    /** Returns the default flying speed of the entity */
-    public float getDefaultFlyingSpeed() {
-        return DEFAULT_FLYING_SPEED;
-    }
-
-    /** Returns the default flying speed of the entity */
-    public float getDefaultUnderWaterSpeed() {
-        return DEFAULT_UNDER_WATER_SPEED;
-    }
-
-    /** Returns the default movement speed of the entity inside lava */
-    public float getDefaultLavaMovementSpeed() {
-        return DEFAULT_LAVA_MOVEMENT_SPEED;
     }
 
     protected void applyInitialPowerJumpFlags() {
@@ -3759,7 +4122,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         or {@code null} if the entity is not custom or the component
      *         is not configured.
      */
-    public TameableComponent getTameable() {
+    public TameableComponent getComponentTameable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.TAMEABLE)) {
             TameableComponent tm = meta().getDefinitionTameableComponent(CustomEntityComponents.TAMEABLE);
             if (tm != null && !tm.isEmpty()) return tm;
@@ -3774,7 +4137,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code false}.
      */
     public boolean isTameable() {
-        TameableComponent tameable = getTameable();
+        TameableComponent tameable = getComponentTameable();
         return tameable != null && !tameable.isEmpty();
     }
 
@@ -3950,9 +4313,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * @deprecated Use {@link #canBePushedByEntities()} and/or {@link #canBePushedByPiston()} instead. <p>
      * If custom entitye use simpleBuilder.pusable() to define.
-     * Planned removal: after 6 months (>= 2026-08-26).
      */
-    @Deprecated(since = "2.0.0", forRemoval = true)
+    @Deprecated
     public boolean canBePushed() {
         return canBePushedByPiston();
     }
@@ -4210,7 +4572,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * */
     public boolean openInventory(Player player) {
         if (!this.hasInventory()) return false;
-        boolean isRestricted = this.getInventoryComponent().restrictToOwner();
+        boolean isRestricted = this.getComponentInventory().restrictToOwner();
 
         if (this.isTamed()) {
             if (isRestricted && !player.getName().equals(getOwnerName())) return false;
@@ -5330,9 +5692,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * @deprecated Use {@link #hasTag(String)} instead.
-     * Planned removal: after 6 months (>= 2026-08-26).
      */
-    @Deprecated(since = "2.0.0", forRemoval = true)
+    @Deprecated
     public boolean containTag(String tag) {
         return hasTag(tag);
     }
@@ -5712,7 +6073,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean hasDashAction() {
-        return getDashAction() != null;
+        return getComponentDashAction() != null;
     }
 
 }

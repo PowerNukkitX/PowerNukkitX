@@ -34,6 +34,7 @@ import cn.nukkit.entity.ai.sensor.StriderLavaSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BoostableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -128,7 +129,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         boolean saddled = this.isSaddled();
 
         Set<String> riders;
@@ -198,8 +199,9 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return isWarm() ? getDefaultLavaMovementSpeed() : 0.16f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        float envMovement = isWarm() ? getDefaultLavaMovementSpeed() : 0.16f;
+        return MovementComponent.value(envMovement);
     }
 
     @Override
@@ -224,7 +226,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     BlockID.WARPED_FUNGUS
@@ -237,7 +239,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -251,12 +253,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public @Nullable BoostableComponent getBoostable() {
-        BoostableComponent custom = super.getBoostable();
-        if (custom != null) {
-            return custom;
-        }
-
+    public @Nullable BoostableComponent getComponentBoostable() {
         return new BoostableComponent(
             1.35f,
             16.0f,
@@ -517,7 +514,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                     new Behavior(
                         new PlaySoundExecutor(Sound.MOB_STRIDER_IDLE), new RandomSoundEvaluator(), 8,1),
                     new Behavior(
-                        new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getDefaultSpeed() * 1.10f, true),
+                        new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true),
                             all(
                                 e -> e.isBaby(),
                                 e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
@@ -539,7 +536,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                         7, 1
                     ),
                     new Behavior(
-                        new StriderMoveToLavaExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultSpeed() * 3.0f),
+                        new StriderMoveToLavaExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getMovementSpeedDefault() * 3.0f),
                             all(
                                 e -> !(e.getRider() instanceof Player),
                                 e -> !((EntityStrider) e).isWarm(),
@@ -549,7 +546,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                         6, 1
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed() * 1.25f, 18, 8, true, 80, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
                             all(
                                 e -> e.passengers.isEmpty(),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
@@ -578,7 +575,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                         1, 1, 100
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed(), 12, 100, false, -1, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
                             (entity -> true),
                         1, 1
                     )

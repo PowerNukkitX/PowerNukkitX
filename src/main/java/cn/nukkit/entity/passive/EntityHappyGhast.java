@@ -25,6 +25,7 @@ import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.HomeComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
@@ -90,7 +91,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -104,7 +105,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
-    public @Nullable HomeComponent getHome() {
+    public @Nullable HomeComponent getComponentHome() {
         return new HomeComponent(
                     32,
                     HomeComponent.RestrictionType.RANDOM_MOVEMENT
@@ -153,9 +154,9 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
-    public float getDefaultSpeed() {
-        if (this.isBaby()) return 0.03f;
-        return 0.016f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        float ageMovement = this.isBaby() ? 0.03f : 0.016f;
+        return MovementComponent.value(ageMovement);
     }
 
     @Override
@@ -165,14 +166,10 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
-    public boolean isRideable() {
-        if (this.isHarnessed()) return true;
-        return false;
-    }
+    public RideableComponent getComponentRideable() {
+        if (!this.isHarnessed() || this.isBaby()) return null;
 
-    @Override
-    public RideableComponent getRideableData() {
-        if (this.isHarnessed()) return new RideableComponent(
+        return new RideableComponent(
                 0,
                 true,
                 RideableComponent.DismountMode.ON_TOP_CENTER,
@@ -221,7 +218,6 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                         )
                 )
         );
-        return null;
     }
 
     @Override
@@ -409,7 +405,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         this.getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, true);
 
         this.getBehaviorGroup().setForceUpdateRoute(true);
-        this.setMovementSpeed(this.getDefaultSpeed());
+        this.setMovementSpeed(this.getMovementSpeedDefault());
     }
 
 

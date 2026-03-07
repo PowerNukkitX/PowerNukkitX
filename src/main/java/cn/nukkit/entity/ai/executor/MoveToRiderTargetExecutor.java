@@ -15,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
  * If the rider has an attack target, the entity moves toward it; otherwise,
  * it follows the rider's current movement target. Updates look and route
  * targets and optionally refreshes pathfinding when the destination changes.
- * 
- * @author Curse
  */
 public class MoveToRiderTargetExecutor implements EntityControl, IBehaviorExecutor {
     protected final float speed;
@@ -72,8 +70,8 @@ public class MoveToRiderTargetExecutor implements EntityControl, IBehaviorExecut
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (combat && entity.getMovementSpeed() != speed) {
             entity.setMovementSpeed(speed);
-        } else if (!combat && entity.getMovementSpeed() != entity.getDefaultSpeed()) {
-            entity.setMovementSpeed(entity.getDefaultSpeed());
+        } else if (!combat && entity.getMovementSpeed() != entity.getMovementSpeedDefault()) {
+            entity.setMovementSpeed(entity.getMovementSpeedDefault());
         }
 
         setRouteTarget(entity, routeTarget);
@@ -94,7 +92,7 @@ public class MoveToRiderTargetExecutor implements EntityControl, IBehaviorExecut
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         oldTargetFloor = null;
     }
@@ -103,7 +101,7 @@ public class MoveToRiderTargetExecutor implements EntityControl, IBehaviorExecut
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         oldTargetFloor = null;
     }

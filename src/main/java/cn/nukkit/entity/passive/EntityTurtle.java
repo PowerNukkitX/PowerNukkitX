@@ -24,6 +24,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
@@ -64,7 +66,7 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -90,7 +92,7 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -122,9 +124,13 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
 
     @Override
-    public void initEntity() {
-        this.setMaxHealth(30);
-        super.initEntity();
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(30);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
     }
 
     @Override

@@ -31,9 +31,11 @@ import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.EquippableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.HorseJumpStrengthComponent;
 import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -92,13 +94,49 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
     }
 
     @Override
-    public boolean isRideable() {
-        if (this.isBaby()) return false;
+    public RideableComponent.InputType getInputControlType() {
+        return RideableComponent.InputType.GROUND;
+    }
+
+    @Override
+    public boolean canBeSaddled() {
         return true;
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public boolean canBeChested() {
+        return true;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.range(15, 30);
+    }
+
+    @Override
+    public @Nullable HorseJumpStrengthComponent getComponentHorseJumpStrength() {
+        return HorseJumpStrengthComponent.range(0.5f, 0.5f);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.175f);
+    }
+
+    @Override
+    public @Nullable EquippableComponent getComponentEquippable() {
+        return new EquippableComponent(List.of(
+                    new EquippableComponent.Slot(
+                        0,
+                        EquippableComponent.Type.SADDLE,
+                        Set.of("minecraft:saddle"),
+                        null
+                    )
+                ));
+    }
+
+    @Override
+    public @Nullable RideableComponent getComponentRideable() {
         if (this.isBaby()) return null;
 
         boolean crounchingSkipInteract = this.isTamed();
@@ -123,45 +161,83 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
     }
 
     @Override
-    public RideableComponent.InputType getInputControlType() {
-        return RideableComponent.InputType.GROUND;
+    public @Nullable BreedableComponent getComponentBreedable() {
+        return new BreedableComponent(
+                null,
+                null,
+                BreedableComponent.blendAttributesOf(
+                    Attribute.HEALTH
+                ),
+                null,
+                Set.of(
+                    ItemID.GOLDEN_CARROT,
+                    ItemID.GOLDEN_APPLE,
+                    ItemID.ENCHANTED_GOLDEN_APPLE
+                ),
+                List.of(
+                    new BreedableComponent.BreedsWith(EntityID.DONKEY, EntityID.DONKEY),
+                    new BreedableComponent.BreedsWith(EntityID.HORSE, EntityID.MULE)
+                ),
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                true,
+                null
+        );
     }
 
     @Override
-    public boolean canBeSaddled() {
-        return true;
+    public HealableComponent getComponentHealable() {
+        return new HealableComponent(
+                List.of(
+                    new HealableComponent.Item(BlockID.WHEAT, 2),
+                    new HealableComponent.Item(BlockID.HAY_BLOCK, 20),
+                    new HealableComponent.Item(ItemID.SUGAR, 1),
+                    new HealableComponent.Item(ItemID.APPLE, 3),
+                    new HealableComponent.Item(ItemID.CARROT, 3),
+                    new HealableComponent.Item(ItemID.GOLDEN_CARROT, 4),
+                    new HealableComponent.Item(ItemID.GOLDEN_APPLE, 10),
+                    new HealableComponent.Item(ItemID.ENCHANTED_GOLDEN_APPLE, 10)
+                )
+        );
     }
 
     @Override
-    public boolean canBeChested() {
-        return true;
+    public AgeableComponent getComponentAgeable() {
+        return new AgeableComponent(
+                null,
+                1200f,
+                List.of(
+                    new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
+                    new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.15f),
+                    new AgeableComponent.FeedItem(ItemID.SUGAR, 0.025f),
+                    new AgeableComponent.FeedItem(ItemID.APPLE, 0.05f),
+                    new AgeableComponent.FeedItem(ItemID.CARROT, 0.05f),
+                    new AgeableComponent.FeedItem(ItemID.GOLDEN_CARROT, 0.05f),
+                    new AgeableComponent.FeedItem(ItemID.GOLDEN_APPLE, 0.2f),
+                    new AgeableComponent.FeedItem(ItemID.ENCHANTED_GOLDEN_APPLE, 0.2f)
+                ),
+                null,
+                null,
+                null
+        );
     }
 
     @Override
-    public @Nullable EquippableComponent getEquippableData() {
-        return new EquippableComponent(List.of(
-                    new EquippableComponent.Slot(
-                        0,
-                        EquippableComponent.Type.SADDLE,
-                        Set.of("minecraft:saddle"),
-                        null
-                    )
-                ));
-    }
-
-    @Override
-    public @Nullable AttributesFloatRange getHealthRange() {
-        return new AttributesFloatRange(15f, 30f);
-    }
-
-    @Override
-    public @Nullable AttributesFloatRange getHorseJumpStrengthRange() {
-        return new AttributesFloatRange(0.5f, 0.5f);
-    }
-
-    @Override
-    public float getDefaultSpeed() {
-        return 0.175f;
+    public @Nullable InventoryComponent getComponentInventory() {
+        return new InventoryComponent(
+                null,
+                false,
+                InventoryComponent.Type.HORSE,
+                16,
+                false,
+                false
+        );
     }
 
     @Override
@@ -189,86 +265,6 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
         return Set.of("donkey", "mob");
     }
 
-    @Override
-    public @Nullable BreedableComponent getBreedable() {
-        return new BreedableComponent(
-                null,
-                null,
-                BreedableComponent.blendAttributesOf(
-                    Attribute.MAX_HEALTH
-                ),
-                null,
-                Set.of(
-                    ItemID.GOLDEN_CARROT,
-                    ItemID.GOLDEN_APPLE,
-                    ItemID.ENCHANTED_GOLDEN_APPLE
-                ),
-                List.of(
-                    new BreedableComponent.BreedsWith(EntityID.DONKEY, EntityID.DONKEY),
-                    new BreedableComponent.BreedsWith(EntityID.HORSE, EntityID.MULE)
-                ),
-                null,
-                null,
-                null,
-                null,
-                false,
-                null,
-                null,
-                null,
-                true,
-                null
-        );
-    }
-
-    @Override
-    public HealableComponent getHealable() {
-        return new HealableComponent(
-                List.of(
-                    new HealableComponent.Item(BlockID.WHEAT, 2),
-                    new HealableComponent.Item(BlockID.HAY_BLOCK, 20),
-                    new HealableComponent.Item(ItemID.SUGAR, 1),
-                    new HealableComponent.Item(ItemID.APPLE, 3),
-                    new HealableComponent.Item(ItemID.CARROT, 3),
-                    new HealableComponent.Item(ItemID.GOLDEN_CARROT, 4),
-                    new HealableComponent.Item(ItemID.GOLDEN_APPLE, 10),
-                    new HealableComponent.Item(ItemID.ENCHANTED_GOLDEN_APPLE, 10)
-                )
-        );
-    }
-
-    @Override
-    public AgeableComponent getAgeable() {
-        return new AgeableComponent(
-                null,
-                1200f,
-                List.of(
-                    new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
-                    new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.15f),
-                    new AgeableComponent.FeedItem(ItemID.SUGAR, 0.025f),
-                    new AgeableComponent.FeedItem(ItemID.APPLE, 0.05f),
-                    new AgeableComponent.FeedItem(ItemID.CARROT, 0.05f),
-                    new AgeableComponent.FeedItem(ItemID.GOLDEN_CARROT, 0.05f),
-                    new AgeableComponent.FeedItem(ItemID.GOLDEN_APPLE, 0.2f),
-                    new AgeableComponent.FeedItem(ItemID.ENCHANTED_GOLDEN_APPLE, 0.2f)
-                ),
-                null,
-                null,
-                null
-        );
-    }
-
-    @Override
-    public @Nullable InventoryComponent getInventoryComponent() {
-        return new InventoryComponent(
-                null,
-                false,
-                InventoryComponent.Type.HORSE,
-                16,
-                false,
-                false
-        );
-    }
-
     // This sync inventories when entity have more than one (with or without chest)
     protected void syncEquippableInventories() {
         ensureInventories();
@@ -278,8 +274,8 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
     }
 
     protected void ensureInventories() {
-        if (this.invNoChest == null) this.invNoChest = new HorseInventory<>(this, getEquippableData().getEquipCount());    // Only equipments slots
-        if (this.invChested == null) this.invChested = new HorseInventory<>(this, getInventoryComponent().size());         // Equipments + inventory
+        if (this.invNoChest == null) this.invNoChest = new HorseInventory<>(this, getComponentEquippable().getEquipCount());    // Only equipments slots
+        if (this.invChested == null) this.invChested = new HorseInventory<>(this, getComponentInventory().size());         // Equipments + inventory
     }
 
     @Override
@@ -349,6 +345,23 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
+
+        if (player.isSneaking()) {
+            Attribute attr = this.attributes.get(Attribute.MOVEMENT_SPEED);
+
+            if (attr != null) {
+                player.sendMessage("§e[Movement Debug]");
+                player.sendMessage("minValue: " + attr.getMinValue());
+                player.sendMessage("maxValue: " + attr.getMaxValue());
+                player.sendMessage("defaultMin: " + attr.getDefaultMinimum());
+                player.sendMessage("defaultMax: " + attr.getDefaultMaximum());
+                player.sendMessage("defaultValue: " + attr.getDefaultValue());
+                player.sendMessage("currentValue: " + attr.getValue());
+                player.sendMessage("entity.movementSpeed: " + this.movementSpeed);
+            } else {
+                player.sendMessage("§cMovement attribute not present.");
+            }
+        }
 
         if (this.isBaby()) return false;
 

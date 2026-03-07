@@ -43,6 +43,8 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -264,12 +266,17 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     }
 
     @Override
-    public int getMaxHealth() {
-        return 14;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(14);
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
+    }
+
+    @Override
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -295,7 +302,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

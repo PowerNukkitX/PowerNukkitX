@@ -51,8 +51,6 @@ import org.jetbrains.annotations.Nullable;
  *     1
  * );
  * }</pre>
- * 
- * @author Curse
  */
 public class BreedingExecutor implements IBehaviorExecutor {
     protected final int findingRangeSquared;
@@ -76,7 +74,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
             return false;
         }
 
-        BreedableComponent breedable = entity.getBreedable();
+        BreedableComponent breedable = entity.getComponentBreedable();
         if (breedable == null || breedable.isEmpty()) return false;
 
         if (shouldFindingSpouse(entity)) {
@@ -150,7 +148,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
         entity.setMoveTarget(null);
         entity.setLookTarget(null);
 
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
     }
 
     protected void updateMove(EntityIntelligent entity1, EntityIntelligent entity2) {
@@ -228,7 +226,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
             if (!Boolean.TRUE.equals(other.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))) continue;
             if (!other.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE)) continue;
 
-            BreedableComponent bBreedable = other.getBreedable();
+            BreedableComponent bBreedable = other.getComponentBreedable();
             if (bBreedable == null) continue;
 
             if (!isValidMatePair(entity, aBreedable, other, bBreedable)) continue;
@@ -265,8 +263,8 @@ public class BreedingExecutor implements IBehaviorExecutor {
 
     // Breeding (spawn babies)
     protected void breed(EntityIntelligent parent1, EntityIntelligent parent2) {
-        BreedableComponent b1 = parent1.getBreedable();
-        BreedableComponent b2 = parent2.getBreedable();
+        BreedableComponent b1 = parent1.getComponentBreedable();
+        BreedableComponent b2 = parent2.getComponentBreedable();
         if (b1 == null || b2 == null) return;
 
         int now = parent1.level.getTick();
@@ -445,7 +443,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
         float newDefaultMin = Math.min(v1, v2);
         float newDefaultMax = Math.max(v1, v2);
 
-        if (id == Attribute.MAX_HEALTH) {
+        if (id == Attribute.HEALTH) {
             out.setMinValue(0f);
             out.setMaxValue(newDefaultMax);
         }

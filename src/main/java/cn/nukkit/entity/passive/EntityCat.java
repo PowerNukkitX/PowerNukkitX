@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityCanSit;
@@ -34,6 +35,8 @@ import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
@@ -87,6 +90,27 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         return this.isBaby() ? 0.28f : 0.56f;
     }
 
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
+    }
+
+    @Override
+    public @Nullable TameableComponent getComponentTameable() {
+        return new TameableComponent(
+                0.33f,
+                Set.of(
+                    ItemID.COD,
+                    ItemID.SALMON
+                )
+        );
+    }
+
     //Attack Selectors
     //Stray cats will attack rabbits and baby turtles
     @Override
@@ -137,6 +161,23 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
+        // Debug: show health attribute values
+        if (player.isSneaking()) {
+            Attribute attr = this.getAttributes().get(Attribute.HEALTH);
+            if (attr != null) {
+                player.sendMessage("§7[HealthAttr] " +
+                        "min=" + attr.getMinValue() +
+                        " max=" + attr.getMaxValue() +
+                        " defMin=" + attr.getDefaultMinimum() +
+                        " defMax=" + attr.getDefaultMaximum() +
+                        " def=" + attr.getDefaultValue() +
+                        " current=" + attr.getValue() +
+                        " rutimeCurrent=" + this.getHealthCurrent());
+            } else {
+                player.sendMessage("§7[HealthAttr] attribute not initialized");
+            }
+        }
+
         if (!item.isNull() && this.isTamed()) {
             if (item instanceof ItemDye dyeItem) {
                 if (this.hasOwner() && player.equals(this.getOwner())) {
@@ -178,30 +219,9 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     }
 
     @Override
-    public int getMaxHealth() {
-        return 10;
-    }
-
-    @Override
-    public float getDefaultSpeed() {
-        return 0.3f;
-    }
-
-    @Override
-    public @Nullable TameableComponent getTameable() {
-        return new TameableComponent(
-                0.33f,
-                Set.of(
-                    ItemID.COD,
-                    ItemID.SALMON
-                )
-        );
-    }
-
-    @Override
     public void onTameSuccess(Player player) {
-        this.setMaxHealth(20);
-        this.setHealth(20);
+        this.setHealthMax(20);
+        this.setHealthCurrent(20);
         if (!this.hasColor()) {
             this.setColor(DyeColor.RED);
         }
@@ -210,7 +230,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 true,
@@ -237,7 +257,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(ItemID.COD, 2),
@@ -247,7 +267,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

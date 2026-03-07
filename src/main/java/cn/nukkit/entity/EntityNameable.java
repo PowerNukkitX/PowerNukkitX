@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 /**
- * @deprecated Use {@link Entity#getNameable()}, {@link Entity#isNameable()} and
+ * @deprecated Use {@link Entity#getComponentNameable()}, {@link Entity#isNameable()} and
  * {@link Entity#setNameTag(String)} instead.
  *
  * <p>
@@ -19,10 +19,10 @@ import java.util.Objects;
  *
  * <p>
  * Entity implementations that support name tags should override
- * {@link Entity#getNameable()} (or {@link Entity#isNameable()}) instead of
+ * {@link Entity#getComponentNameable()} (or {@link Entity#isNameable()}) instead of
  * implementing this interface.
  * 
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
 public interface EntityNameable {

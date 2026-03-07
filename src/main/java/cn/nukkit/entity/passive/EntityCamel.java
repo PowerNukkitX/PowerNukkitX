@@ -31,7 +31,9 @@ import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.DashActionComponent;
 import cn.nukkit.entity.components.EquippableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
@@ -104,7 +106,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public RideableComponent getRideableData() {
+    public RideableComponent getComponentRideable() {
         return new RideableComponent(
                 0,
                 true,
@@ -149,7 +151,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public @Nullable EquippableComponent getEquippableData() {
+    public @Nullable EquippableComponent getComponentEquippable() {
         return new EquippableComponent(List.of(
                     new EquippableComponent.Slot(
                         0,
@@ -161,13 +163,13 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 32;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(32);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.09f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.09f);
     }
 
     @Override
@@ -176,7 +178,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public @Nullable DashActionComponent getDashAction() {
+    public @Nullable DashActionComponent getComponentDashAction() {
         return new DashActionComponent(
             false,
             2.75f,
@@ -229,7 +231,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     BlockID.CACTUS
@@ -242,7 +244,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(BlockID.CACTUS, 2)
@@ -251,7 +253,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -265,7 +267,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
-    public @Nullable InventoryComponent getInventoryComponent() {
+    public @Nullable InventoryComponent getComponentInventory() {
         return new InventoryComponent(
                 null,
                 false,
@@ -283,7 +285,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     protected void ensureInventories() {
-        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getInventoryComponent().size());
+        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getComponentInventory().size());
     }
 
     @Override
@@ -389,7 +391,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
         this.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 0f);
         this.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 0f);
 
-        this.setMovementSpeed(this.getDefaultSpeed());
+        this.setMovementSpeed(this.getMovementSpeedDefault());
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
@@ -427,7 +429,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
                         6, 1
                     ),
                     new Behavior(
-                        new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getDefaultSpeed() * 1.10f, true),
+                        new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true),
                         all(
                             e -> e.isBaby(),
                             e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
@@ -436,7 +438,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
                         5, 1
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed() * 1.25f, 18, 8, true, 80, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
                             all(
                                 e -> e.passengers.isEmpty(),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
@@ -474,7 +476,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
                         2, 1, 200
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed(), 12, 100, false, -1, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
                             all(
                                 e -> !((EntityCamel) e).isSitting()
                             ),

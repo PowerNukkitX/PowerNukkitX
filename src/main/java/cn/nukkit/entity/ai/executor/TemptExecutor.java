@@ -20,8 +20,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * and sets {@link EntityFlag#TEMPTED} while active. Optional mechanics include
  * vertical temptation, rider checks, scare reactions to sudden player movement,
  * and periodic tempt sounds.
- * 
- * @author Curse
  */
 public class TemptExecutor implements EntityControl, IBehaviorExecutor {
     protected final float speedMultiplier;
@@ -264,7 +262,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataFlag(EntityFlag.TEMPTED, true);
         entity.getBehaviorGroup().setForceUpdateRoute(true);
 
-        float scaredSpeed = entity.getDefaultSpeed() * 1.8f;
+        float scaredSpeed = entity.getMovementSpeedDefault() * 1.8f;
         if (entity.getMovementSpeed() != scaredSpeed) {
             entity.setMovementSpeed(scaredSpeed);
             changedSpeed = true;
@@ -333,7 +331,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected float resolveDesiredSpeed(Entity entity) {
-        return entity.getDefaultSpeed() * speedMultiplier;
+        return entity.getMovementSpeedDefault() * speedMultiplier;
     }
 
     @Override
@@ -461,7 +459,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         if (changedSpeed) {
-            entity.setMovementSpeed(entity.getDefaultSpeed());
+            entity.setMovementSpeed(entity.getMovementSpeedDefault());
             changedSpeed = false;
         }
 

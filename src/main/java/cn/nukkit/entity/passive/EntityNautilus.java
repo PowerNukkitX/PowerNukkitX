@@ -28,8 +28,10 @@ import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.DashActionComponent;
 import cn.nukkit.entity.components.EquippableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.HomeComponent;
 import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.entity.data.EntityFlag;
@@ -90,7 +92,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public @Nullable TameableComponent getTameable() {
+    public @Nullable TameableComponent getComponentTameable() {
         return new TameableComponent(
                 0.33f,
                 Set.of(
@@ -110,7 +112,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public RideableComponent getRideableData() {
+    public RideableComponent getComponentRideable() {
         return new RideableComponent(
                 0,
                 true,
@@ -146,7 +148,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public @Nullable EquippableComponent getEquippableData() {
+    public @Nullable EquippableComponent getComponentEquippable() {
         return new EquippableComponent(List.of(
                 new EquippableComponent.Slot(
                         0,
@@ -170,13 +172,13 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public int getMaxHealth() {
-        return 15;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(15);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.15f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.15f);
     }
 
     @Override
@@ -192,7 +194,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public @Nullable DashActionComponent getDashAction() {
+    public @Nullable DashActionComponent getComponentDashAction() {
         return new DashActionComponent(
             true,
             2.0f,
@@ -218,7 +220,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     ItemID.PUFFERFISH_BUCKET,
@@ -240,7 +242,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(ItemID.PUFFERFISH_BUCKET, 2),
@@ -258,7 +260,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -281,12 +283,12 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     @Override
-    public @Nullable HomeComponent getHome() {
+    public @Nullable HomeComponent getComponentHome() {
         return new HomeComponent(true, null, null, null);
     }
 
     @Override
-    public @Nullable InventoryComponent getInventoryComponent() {
+    public @Nullable InventoryComponent getComponentInventory() {
         return new InventoryComponent(
                 null,
                 false,
@@ -304,7 +306,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     protected void ensureInventories() {
-        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getInventoryComponent().size());
+        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getComponentInventory().size());
     }
 
     @Override
@@ -471,7 +473,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
     }
 
     public float getEnvironmentalMoveSpeed() {
-        if (!this.isInsideOfWater()) return getDefaultSpeed();
+        if (!this.isInsideOfWater()) return getMovementSpeedDefault();
         return this.getDefaultUnderWaterSpeed();
     }
 

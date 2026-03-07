@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 /**
  * @deprecated Since 2.0.0 (2026-02-19).
  * EntityOwnable handling was moved to {@link Entity}.
- * Use {@link Entity#getTameable()} and {@link Entity#isTameable()} for the core, others methods still exist in {@link Entity}.
+ * Use {@link Entity#getComponentTameable()} and {@link Entity#isTameable()} for the core, others methods still exist in {@link Entity}.
  *
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  * @author BeYkeRYkt (Nukkit Project)
  */
 @Deprecated(since = "2.0.0", forRemoval = true)

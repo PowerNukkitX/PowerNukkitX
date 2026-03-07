@@ -15,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
  * When the entity moves beyond the configured start distance, the sensor
  * writes the target entity position to the follow target memory. When the
  * entity comes within the stop distance, the follow target is cleared.
- * 
- * @author Curse
  */
 public class FollowEntitySensor implements ISensor {
     protected final MemoryType<Entity> entityMemory;

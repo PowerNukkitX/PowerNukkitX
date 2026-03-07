@@ -10,7 +10,7 @@ import cn.nukkit.entity.data.EntityFlag;
  * Anger state handling was moved to {@link Entity}.
  * Use {@link Entity#isAngry()} and {@link Entity#setAngry(boolean)} instead.
  *
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
 public interface EntityAngryable extends EntityComponent {

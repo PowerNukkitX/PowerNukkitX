@@ -38,6 +38,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -55,6 +57,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -130,8 +133,17 @@ public class EntityIronGolem extends EntityGolem {
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(100);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
+    }
+
+    @Override
     protected void initEntity() {
-        this.setMaxHealth(100);
         super.initEntity();
         this.syncAttribute(getHealthAttribute());
     }
@@ -144,7 +156,7 @@ public class EntityIronGolem extends EntityGolem {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if(item instanceof ItemIronIngot && getHealth() <= getMaxHealth()*0.75f) {
+        if(item instanceof ItemIronIngot && getHealthCurrent() <= getHealthMax()*0.75f) {
             this.level.addSound(this, Sound.MOB_IRONGOLEM_REPAIR);
             if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().decrement(1);
             heal(25);
@@ -170,15 +182,15 @@ public class EntityIronGolem extends EntityGolem {
 
 
     private Attribute getHealthAttribute() {
-        return Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(getMaxHealth()).setValue(this.health < getMaxHealth() ? this.health : getMaxHealth());
+        return Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getHealthMax()).setValue(this.health < getHealthMax() ? this.health : getHealthMax());
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        float health = getHealth();
+        float health = getHealthCurrent();
         if(!super.attack(source)) return false;
         for(int i : new int[] {74, 50, 25}) {
-            if(health > i && getHealth() <= i) {
+            if(health > i && getHealthCurrent() <= i) {
                 this.level.addSound(this, Sound.MOB_IRONGOLEM_CRACK);
             }
         }
@@ -186,8 +198,8 @@ public class EntityIronGolem extends EntityGolem {
     }
 
     @Override
-    public void setHealth(float health) {
-        super.setHealth(health);
+    public void setHealthCurrent(float health) {
+        super.setHealthCurrent(health);
         syncAttribute(getHealthAttribute());
     }
 

@@ -130,7 +130,7 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
                 return false;
         }
 
-        if (instantKill || getHealth() - source.getFinalDamage() < 1) {
+        if (instantKill || getHealthCurrent() - source.getFinalDamage() < 1) {
             if (source instanceof EntityDamageByEntityEvent) {
                 final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
                 final VehicleDestroyByEntityEvent byDestroyEvent = new VehicleDestroyByEntityEvent(this, damagingEntity);

@@ -31,9 +31,10 @@ import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.EquippableComponent;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.InventoryComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.components.utils.AttributesFloatRange;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
@@ -79,13 +80,14 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     @Override
-    public boolean isRideable() {
-        if (this.isBaby()) return false;
+    public boolean canBeChested() {
         return true;
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
+        if (this.isBaby()) return null;
+
         boolean controllable = this.isTamed();
         return new RideableComponent(
             0,
@@ -106,12 +108,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     @Override
-    public boolean canBeChested() {
-        return true;
-    }
-
-    @Override
-    public @Nullable EquippableComponent getEquippableData() {
+    public @Nullable EquippableComponent getComponentEquippable() {
         return new EquippableComponent(List.of(
                     new EquippableComponent.Slot(
                         1,
@@ -140,32 +137,22 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     @Override
-    public @Nullable AttributesFloatRange getHealthRange() {
-        return new AttributesFloatRange(15f, 30f);
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.range(15, 30);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.25f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override
-    public String getOriginalName() {
-        return "LLama";
-    }
-
-    @Override
-    public Set<String> typeFamily() {
-        return Set.of("llama", "mob");
-    }
-
-    @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
                 BreedableComponent.blendAttributesOf(
-                    Attribute.MAX_HEALTH
+                    Attribute.HEALTH
                 ),
                 null,
                 Set.of(
@@ -188,7 +175,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
                     new HealableComponent.Item(BlockID.WHEAT, 2),
@@ -198,7 +185,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -213,7 +200,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     @Override
-    public @Nullable InventoryComponent getInventoryComponent() {
+    public @Nullable InventoryComponent getComponentInventory() {
         return new InventoryComponent(
                 3,
                 false,
@@ -222,6 +209,16 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
                 false,
                 false
         );
+    }
+
+    @Override
+    public String getOriginalName() {
+        return "LLama";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("llama", "mob");
     }
 
     /** This sync inventories when entity have more than one (with or without chest for instance) */
@@ -233,7 +230,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     protected void ensureInventories() {
-        EquippableComponent eq = this.getEquippableData();
+        EquippableComponent eq = this.getComponentEquippable();
         int equipCount = (eq != null) ? eq.getEquipCount() : 0;
 
         if (this.invNoChest == null) this.invNoChest = new HorseInventory<>(this, equipCount);

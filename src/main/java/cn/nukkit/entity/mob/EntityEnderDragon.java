@@ -32,6 +32,8 @@ import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.item.EntityEnderCrystal;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -47,6 +49,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.plugin.InternalPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,11 +67,6 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
 
     public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    public NameableComponent getNameable() {
-        return DEFAULT_NOT_NAMEABLE;
     }
 
     @Override
@@ -120,7 +118,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
         addEntity.entityData = this.entityDataMap;
-        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(200).setValue(200)};
+        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.HEALTH).setMaxValue(200).setValue(200)};
         return addEntity;
     }
 
@@ -153,8 +151,8 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
             for (Entity e : this.getLevel().getEntities()) {
                 if (e instanceof EntityEnderCrystal) {
                     if (e.distance(this) <= 28) {
-                        float health = this.getHealth();
-                        if (health < this.getMaxHealth() && health != 0) {
+                        float health = this.getHealthCurrent();
+                        if (health < this.getHealthMax() && health != 0) {
                             this.heal(0.2f);
                         }
                     }
@@ -231,9 +229,23 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(200);
+    }
+
+    @Override
+    public NameableComponent getComponentNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
+    }
+
+    @Override
     public void initEntity() {
         this.diffHandDamage = new float[]{6f, 10f, 15f};
-        this.setMaxHealth(200);
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.STAY_NEARBY, new Vector3(0, 84, 0));
         isActive = false;
@@ -272,7 +284,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         pkBoss.type = BossEventPacket.TYPE_SHOW;
         pkBoss.title = this.getName();
         pkBoss.color = 5;
-        pkBoss.healthPercent = health / getMaxHealth();
+        pkBoss.healthPercent = health / getHealthMax();
         player.dataPacket(pkBoss);
     }
 

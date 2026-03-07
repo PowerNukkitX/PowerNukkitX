@@ -118,11 +118,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (!this.namedTag.contains("Health") || !(this.namedTag.get("Health") instanceof FloatTag)) {
-            this.namedTag.putFloat("Health", this.getMaxHealth());
+            this.namedTag.putFloat("Health", this.getHealthMax());
         }
 
-        this.setMaxHealth(this.getMaxHealth());
-        setHealth(this.namedTag.getFloat("Health"));
+        this.setHealthMax(this.getHealthMax());
+        setHealthCurrent(this.namedTag.getFloat("Health"));
 
         // Load Tame and Chest from NBT
         if (this.namedTag.contains("Tamed")) {
@@ -254,9 +254,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
-    public void setHealth(float health) {
+    public void setHealthCurrent(float health) {
         boolean wasAlive = this.isAlive();
-        super.setHealth(health);
+        super.setHealthCurrent(health);
         if (this.isAlive() && !wasAlive) {
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
@@ -268,7 +268,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putFloat("Health", this.getHealth());
+        this.namedTag.putFloat("Health", this.getHealthCurrent());
 
         if (!isAgeable()) return;
         if (!isBaby()) {
@@ -408,7 +408,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
-            pk.event = this.getHealth() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
+            pk.event = this.getHealthCurrent() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
             this.attackTime = source.getAttackCooldown();
@@ -832,7 +832,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void recalcMovementSpeedFromEffects() {
-        float base = this.getDefaultSpeed() * this.getSpeedMultiplier();
+        float base = this.getMovementSpeedDefault() * this.getSpeedMultiplier();
         float mul = 1.0f;
 
         Effect speed = this.getEffect(EffectType.SPEED);
@@ -952,7 +952,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     // Try tame by using item / food
     protected boolean tryTame(Player player, Item item) {
         if (!this.isTameable()) return false;
-        TameableComponent tameable = getTameable();
+        TameableComponent tameable = getComponentTameable();
         if (!isTameableItem(item, tameable)) return false;
 
         float p = tameable.resolvedProbability();
@@ -977,7 +977,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     // Try breed by using item / food
     protected boolean tryBreed(Player player, Item item, int currentTick) {
-        BreedableComponent breedable = getBreedable();
+        BreedableComponent breedable = getComponentBreedable();
         if (breedable == null || breedable.isEmpty()) return false;
 
         if (!(this instanceof EntityIntelligent ei)) return false;
@@ -1003,7 +1003,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         // 4) Check if entity is required to be full health before breeding
         if (breedable.resolvedRequireFullHealth()) {
-            if (this.getHealth() < this.getMaxHealth()) return false;
+            if (this.getHealthCurrent() < this.getHealthMax()) return false;
         }
 
         if (Boolean.TRUE.equals(ei.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))) {
@@ -1119,7 +1119,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     // Try force growth by using item / food
     protected boolean tryGrow(Player player, Item item) {
         if (this.isBaby() && this.isAgeable()) {
-            AgeableComponent ageable = getAgeable();
+            AgeableComponent ageable = getComponentAgeable();
 
             // 1) Entity filters gate
             EntityFilter filter = ageable.interactFilters();
@@ -1156,7 +1156,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     // Try heal entity by using item / food
     protected boolean tryHeal(Player player, Item item) {
-        HealableComponent healable = getHealable();
+        HealableComponent healable = getComponentHealable();
         if (healable == null || healable.isEmpty()) return false;
 
         String itemId = item.getId();
@@ -1179,13 +1179,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         // 2) If full health and not force_use deny
-        if (!healable.resolvedForceUse() && this.getHealth() >= this.getMaxHealth()) return false;
+        if (!healable.resolvedForceUse() && this.getHealthCurrent() >= this.getHealthMax()) return false;
 
         // 3) Apply heal
         int healAmount = entry.resolvedHealAmount();
         if (healAmount > 0) {
-            float newHp = Math.min(this.getMaxHealth(), this.getHealth() + healAmount);
-            this.setHealth(newHp);
+            float newHp = Math.min(this.getHealthMax(), this.getHealthCurrent() + healAmount);
+            this.setHealthCurrent(newHp);
         }
 
         // 4) Apply effects
@@ -1236,7 +1236,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     // Try set name, gating by nameable component
     protected boolean trySetNameTag(Player player, Item item) {
-        NameableComponent nameable = getNameable();
+        NameableComponent nameable = getComponentNameable();
         if (nameable == null || nameable.isEmpty()) return false;
 
         if (!item.hasCustomName()) return false;

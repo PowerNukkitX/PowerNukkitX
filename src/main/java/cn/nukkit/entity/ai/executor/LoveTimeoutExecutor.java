@@ -13,8 +13,6 @@ import cn.nukkit.network.protocol.EntityEventPacket;
  * Tracks how long the entity remains in love, periodically emits love
  * particles, and clears the love state and spouse memory when the
  * configured timeout expires.
- * 
- * @author Curse
  */
 public class LoveTimeoutExecutor implements IBehaviorExecutor {
 

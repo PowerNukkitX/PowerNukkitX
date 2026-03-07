@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.passive.EntityArmadillo;
 import cn.nukkit.item.Item;
@@ -114,7 +116,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         Set<String> riders = Set.of("baby_zombie", "baby_husk");
         float y = 0.54f;
         float z = -0.1f;
@@ -166,13 +168,13 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.3f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override
-    public int getMaxHealth() {
-        return 16;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(16);
     }
 
     @Override

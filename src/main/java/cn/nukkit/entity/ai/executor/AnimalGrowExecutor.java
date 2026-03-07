@@ -53,7 +53,7 @@ public class AnimalGrowExecutor implements IBehaviorExecutor {
 
         // If fully grown, finalize + particles + drop items
         if (entity.getTicksGrowLeft() == 0) {
-            AgeableComponent ageable = entity.getAgeable();
+            AgeableComponent ageable = entity.getComponentAgeable();
             if (ageable != null) {
                 for (String id : ageable.resolvedDropItems()) {
                     if (id == null || id.isEmpty()) continue;

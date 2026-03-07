@@ -89,7 +89,7 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     @Override
-    public NameableComponent getNameable() {
+    public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;
     }
 

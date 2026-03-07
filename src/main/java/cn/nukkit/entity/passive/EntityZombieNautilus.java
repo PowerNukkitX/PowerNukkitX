@@ -86,7 +86,7 @@ public class EntityZombieNautilus extends EntityNautilus {
     }
 
     @Override
-    public RideableComponent getRideableData() {
+    public RideableComponent getComponentRideable() {
         boolean crounchingSkipInteract = this.isTamed() ? true : false;
         String interactText = crounchingSkipInteract ? "action.interact.ride.horse" : null;
         Set<String> ridersFamily = crounchingSkipInteract ? Set.of("player") : Set.of("drowned");
@@ -128,12 +128,12 @@ public class EntityZombieNautilus extends EntityNautilus {
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return null;
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return null;
     }
 

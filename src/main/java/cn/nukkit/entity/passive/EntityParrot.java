@@ -3,6 +3,8 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.EntityFilter;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -51,12 +53,17 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 6;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(6);
     }
 
     @Override
-    public @Nullable TameableComponent getTameable() {
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.4f);
+    }
+
+    @Override
+    public @Nullable TameableComponent getComponentTameable() {
         return new TameableComponent(
                 0.33f,
                 Set.of(
@@ -71,7 +78,7 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable {
     }
 
     @Override
-    public HealableComponent getHealable() {
+    public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 EntityFilter.all(
                         (self, ctx) -> !self.isRiding()

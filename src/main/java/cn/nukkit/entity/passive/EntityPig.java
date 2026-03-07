@@ -30,6 +30,8 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BoostableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -101,7 +103,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
-    public @Nullable RideableComponent getRideableData() {
+    public @Nullable RideableComponent getComponentRideable() {
         boolean crounchingSkipInteract = this.isSaddled();
         Set<String> riders = crounchingSkipInteract ? Set.of("player") : Set.of("baby_zombie", "baby_husk");
         float yOffset = crounchingSkipInteract ? 0.63f : 0.7f;
@@ -140,13 +142,13 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
-    public int getMaxHealth() {
-        return 10;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.25f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override
@@ -160,7 +162,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     ItemID.CARROT,
@@ -175,7 +177,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -191,12 +193,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
-    public @Nullable BoostableComponent getBoostable() {
-        BoostableComponent custom = super.getBoostable();
-        if (custom != null) {
-            return custom;
-        }
-
+    public @Nullable BoostableComponent getComponentBoostable() {
         return new BoostableComponent(
             1.35f,
             3.0f,
@@ -314,7 +311,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
                         6, 1
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed() * 1.25f, 18, 8, true, 80, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
                             all(
                                 e -> e.passengers.isEmpty(),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
@@ -343,7 +340,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
                         1, 1, 100
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(this.getDefaultSpeed(), 12, 100, false, -1, true, 10),
+                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
                             (entity -> true),
                         1, 1
                     )

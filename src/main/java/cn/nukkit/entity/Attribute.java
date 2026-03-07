@@ -33,7 +33,10 @@ public class Attribute implements Cloneable {
     public static final int SATURATION = 1;
     public static final int EXHAUSTION = 2;
     public static final int KNOCKBACK_RESISTANCE = 3;
-    public static final int MAX_HEALTH = 4;
+    public static final int HEALTH = 4;
+    /** @deprecated Use {@link #HEALTH}. Planned removal: after 6 months (>= 2026-08-19). */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public static final int MAX_HEALTH = HEALTH;
     public static final int MOVEMENT_SPEED = 5;
     public static final int FOLLOW_RANGE = 6;
     public static final int MAX_HUNGER = 7;
@@ -74,7 +77,7 @@ public class Attribute implements Cloneable {
         addAttribute(SATURATION, "minecraft:player.saturation", 0.00f, 20.00f, 5.00f);
         addAttribute(EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 5.00f, 0.41f);
         addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00f, 1.00f, 0.00f);
-        addAttribute(MAX_HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
+        addAttribute(HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
         addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
         addAttribute(UNDER_WATER_MOVEMENT_SPEED, "minecraft:underwater_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);
         addAttribute(LAVA_MOVEMENT_SPEED, "minecraft:lava_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);

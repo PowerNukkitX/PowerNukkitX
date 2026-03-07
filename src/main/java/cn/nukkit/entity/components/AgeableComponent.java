@@ -19,8 +19,6 @@ import java.util.*;
  *   <li>{@code drop_items}: items dropped when the entity grows up.</li>
  *   <li>{@code interact_filters}: optional filter gating when age interactions are allowed.</li>
  * </ul>
- * 
- * @author Curse
  */
 public record AgeableComponent(EntityFilter interactFilters, Float duration, List<FeedItem> feedItems, Set<String> pauseGrowthItems, Set<String> resetGrowthItems, Set<String> dropItems) {
 

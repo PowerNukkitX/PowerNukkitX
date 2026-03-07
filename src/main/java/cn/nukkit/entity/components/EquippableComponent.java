@@ -18,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
  *   <li>{@code acceptedItems} — Accepted item identifiers. If empty, the slot accepts any item.</li>
  *   <li>{@code interactText} — Optional interaction text key shown to the player (defaults to "").</li>
  * </ul>
- * 
- * @author Curse
  */
 public record EquippableComponent(List<EquippableComponent.Slot> slots) {
     public EquippableComponent {

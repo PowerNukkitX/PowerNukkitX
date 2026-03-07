@@ -26,8 +26,6 @@ import java.util.Locale;
  *   <li>{@code horizontal_momentum} — Horizontal momentum applied during the dash (default: 1.0).</li>
  *   <li>{@code vertical_momentum} — Vertical momentum applied during the dash (default: 1.0).</li>
  * </ul>
- * 
- * @author Curse
  */
 public record DashActionComponent(Boolean canDashUnderwater, Float cooldownTime, Direction direction, Float horizontalMomentum, Float verticalMomentum) {
     public DashActionComponent {

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * This executor was specific to {@link EntityHorse} and is kept temporarily
  * for backward compatibility.
  *
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
 public class TameHorseExecutor extends FlatRandomRoamExecutor {

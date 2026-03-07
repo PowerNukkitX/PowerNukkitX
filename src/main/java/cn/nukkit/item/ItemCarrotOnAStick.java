@@ -31,7 +31,7 @@ public class ItemCarrotOnAStick extends ItemTool {
         if (!(e instanceof EntityLiving ride) || !ride.isBoostable()) return false;
         if (ride.getBoostableTicks() > -1) return false;
 
-        BoostableComponent boostable = ride.getBoostable();
+        BoostableComponent boostable = ride.getComponentBoostable();
         if (boostable == null) return false;
 
         BoostableComponent.BoostItem entry = boostable.resolveBoostItem(this);

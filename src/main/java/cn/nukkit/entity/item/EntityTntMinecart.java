@@ -160,6 +160,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
         super.namedTag.putInt("TNTFuse", this.fuse);
     }
 
+    
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);

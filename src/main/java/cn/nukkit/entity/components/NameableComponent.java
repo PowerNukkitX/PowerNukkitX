@@ -11,8 +11,6 @@ package cn.nukkit.entity.components;
  *   <li>{@code allow_name_tag_renaming} — If true, players can rename the entity using a name tag (default: true).</li>
  *   <li>{@code always_show} — If true, the custom name is always visible above the entity (default: false).</li>
  * </ul>
- * 
- * @author Curse
  */
 public record NameableComponent(Boolean allowNameTagRenaming, Boolean alwaysShow) {
 

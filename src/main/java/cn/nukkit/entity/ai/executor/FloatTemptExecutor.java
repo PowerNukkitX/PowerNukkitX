@@ -12,8 +12,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
  *
  * Enables lift force while active and adjusts movement speed based on multiplier.
  * Restores previous lift and speed state when stopped.
- * 
- * @author Curse
  */
 public class FloatTemptExecutor extends TemptExecutor {
     private static final float INTERNAL_FLYING_SPEED_TUNING = 8.0f;

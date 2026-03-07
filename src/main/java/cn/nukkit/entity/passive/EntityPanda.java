@@ -47,6 +47,8 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEnderDragon;
@@ -114,13 +116,15 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
-    public int getMaxHealth() {
-        return getVariant() == WEAK ? 10 : 20;
+    public HealthComponent getComponentHealth() {
+        int variantHealth = getVariant() == WEAK ? 10 : 20;
+        return HealthComponent.value(variantHealth);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return getVariant() == LAZY ? 0.07f : 0.15f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        float varMovement = getVariant() == LAZY ? 0.07f : 0.15f;
+        return MovementComponent.value(varMovement);
     }
 
     @Override
@@ -134,7 +138,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,
@@ -162,7 +166,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,

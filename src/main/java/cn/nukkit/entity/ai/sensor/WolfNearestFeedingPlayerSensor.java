@@ -13,7 +13,7 @@ import cn.nukkit.item.Item;
  * {@link NearestFeedingPlayerSensor}, which supports configurable item
  * checks and can be used by any entity.
  *
- * Planned removal: after 6 months (>= 2026-08-26).
+ * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {

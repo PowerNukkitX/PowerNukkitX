@@ -17,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
  * and routes the entity toward the lava center until it is standing on it.
  * Optionally enforces follow range checks and clears the memory when the
  * target is lost.
- * 
- * @author Curse
  */
 @Getter
 public class StriderMoveToLavaExecutor implements EntityControl, IBehaviorExecutor {
@@ -180,7 +178,7 @@ public class StriderMoveToLavaExecutor implements EntityControl, IBehaviorExecut
         oldTargetFloor = null;
 
         if (entity instanceof EntityStrider s) {
-            entity.setMovementSpeed(s.getDefaultSpeed());
+            entity.setMovementSpeed(s.getMovementSpeedDefault());
         } else {
             entity.setMovementSpeed(0.1f);
         }

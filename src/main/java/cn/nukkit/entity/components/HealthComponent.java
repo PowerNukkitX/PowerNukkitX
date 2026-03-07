@@ -1,5 +1,7 @@
 package cn.nukkit.entity.components;
 
+import cn.nukkit.entity.Entity;
+
 import java.util.random.RandomGenerator;
 
 
@@ -28,7 +30,8 @@ import java.util.random.RandomGenerator;
  * health = random(rangeMin, rangeMax)
  * }</pre>
  *
- * @author Curse
+ * <p>This component normalizes invalid values and provides helper methods
+ * to resolve the effective health used during entity initialization.</p>
  */
 public record HealthComponent(Integer value, Integer rangeMin, Integer rangeMax) {
     public HealthComponent {
@@ -104,18 +107,14 @@ public record HealthComponent(Integer value, Integer rangeMin, Integer rangeMax)
     }
 
     public static HealthComponent defaults() {
-        return new HealthComponent(20, null, null);
+        return value(Entity.DEFAULT_HEALTH);
     }
 
-    public static HealthComponent fixed(int v) {
-        return new HealthComponent(v, null, null);
+    public static HealthComponent value(int value) {
+        return new HealthComponent(value, null, null);
     }
 
     public static HealthComponent range(int min, int max) {
         return new HealthComponent(null, min, max);
-    }
-
-    public static HealthComponent fromVanillaRange(int min, int max) {
-        return range(min, max);
     }
 }

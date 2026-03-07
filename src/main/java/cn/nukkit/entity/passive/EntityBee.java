@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BeeMemorizedBlockSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,6 +33,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -166,6 +169,16 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
             return 0.25f;
         }
         return 0.5f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override
@@ -335,7 +348,6 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(10);
         super.initEntity();
 
         if (this.namedTag.contains("HomeHiveX")) {

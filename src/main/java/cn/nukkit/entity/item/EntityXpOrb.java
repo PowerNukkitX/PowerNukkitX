@@ -98,7 +98,7 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
-    public NameableComponent getNameable() {
+    public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;
     }
 
@@ -106,11 +106,11 @@ public class EntityXpOrb extends Entity {
     protected void initEntity() {
         super.initEntity();
 
-        setMaxHealth(5);
-        setHealth(5);
+        setHealthMax(5);
+        setHealthCurrent(5);
 
         if (namedTag.contains("Health")) {
-            this.setHealth(namedTag.getShort("Health"));
+            this.setHealthCurrent(namedTag.getShort("Health"));
         }
         if (namedTag.contains("Age")) {
             this.age = namedTag.getShort("Age");
@@ -240,7 +240,7 @@ public class EntityXpOrb extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putShort("Health", (int) getHealth());
+        this.namedTag.putShort("Health", (int) getHealthCurrent());
         this.namedTag.putShort("Age", age);
         this.namedTag.putShort("PickupDelay", pickupDelay);
         this.namedTag.putShort("Value", exp);

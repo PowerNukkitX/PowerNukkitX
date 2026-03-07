@@ -22,8 +22,6 @@ import java.util.Set;
  *   <li>{@code duration}: duration of the boost effect.</li>
  *   <li>{@code boost_items}: list of items that can trigger the boost.</li>
  * </ul>
- * 
- * @author Curse
  */
 public record BoostableComponent(Float speedMultiplier, Float duration, List<BoostItem> boostItems) {
     public BoostableComponent {

@@ -23,6 +23,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
@@ -93,27 +95,17 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     @Override
-    public int getMaxHealth() {
-        return 4;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(4);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.25f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override
-    public String getOriginalName() {
-        return "Chicken";
-    }
-
-    @Override
-    public Set<String> typeFamily() {
-        return Set.of("chicken", "mob");
-    }
-
-    @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     ItemID.WHEAT_SEEDS,
@@ -131,7 +123,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -147,6 +139,16 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
                 null,
                 null
         );
+    }
+
+    @Override
+    public String getOriginalName() {
+        return "Chicken";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("chicken", "mob");
     }
 
     @Override

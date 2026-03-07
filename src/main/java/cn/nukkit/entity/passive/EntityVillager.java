@@ -1,6 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.mob.EntityDrowned;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.entity.mob.EntityZombieVillager;
@@ -13,6 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Pub4Game
@@ -58,6 +61,16 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
+    }
+
+    @Override
     public String getOriginalName() {
         return "Villager";
     }
@@ -74,7 +87,6 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     @Override
     public void initEntity() {
-        this.setMaxHealth(20);
         super.initEntity();
 
         if (!this.namedTag.contains("Profession")) {
@@ -92,7 +104,7 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(getHealth()-source.getFinalDamage() <= 1) {
+        if(getHealthCurrent()-source.getFinalDamage() <= 1) {
             if(source instanceof EntityDamageByEntityEvent entityEvent) {
                 if(entityEvent.getDamager() instanceof EntityThrownTrident trident) {
                     if(trident.shootingEntity instanceof EntityDrowned) {

@@ -20,6 +20,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -52,13 +54,13 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
     }
 
     @Override
-    public int getMaxHealth() {
-        return 10;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.1f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
     }
 
     @Override
@@ -80,7 +82,7 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 null,
                 null,

@@ -48,6 +48,6 @@ public class SittingExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataFlag(EntityFlag.SITTING, false);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT, 0);
         entity.setDataProperty(EntityDataTypes.SITTING_AMOUNT_PREVIOUS, 0);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
     }
 }

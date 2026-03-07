@@ -20,8 +20,6 @@ import java.util.*;
  *       to tame the entity. If empty or not defined, taming items must be handled
  *       by other logic.</li>
  * </ul>
- * 
- * @author Curse
  */
 public record TameableComponent(Float probability, Set<String> tameItems) {
     public TameableComponent {

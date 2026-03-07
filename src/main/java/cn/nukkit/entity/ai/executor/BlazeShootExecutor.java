@@ -102,7 +102,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
                 }
                 entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> stopOnFire(entity), 20);
                 tick2 = 0;
-                return target.getHealth() != 0;
+                return target.getHealthCurrent() != 0;
             }
         }
         return true;
@@ -112,7 +112,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -125,7 +125,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

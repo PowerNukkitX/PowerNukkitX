@@ -210,12 +210,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          */
         public SimpleBuilder movementRange(float rangeMin, float rangeMax) {
             Preconditions.checkArgument(rangeMax >= rangeMin, "rangeMax value must be higher or equal to min value.");
-            MovementComponent base = this.meta.getDefinitionMovementComponent(CustomEntityComponents.MOVEMENT);
-            return withObject(CustomEntityComponents.MOVEMENT, new MovementComponent(
-                    base.moveSpeed(),
-                    rangeMin,
-                    rangeMax
-            ));
+            return withObject(CustomEntityComponents.MOVEMENT, new MovementComponent(null, rangeMin, rangeMax));
         }
 
         /**
@@ -1245,7 +1240,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * Calling this method simply delegates to {@link #rideable(boolean)}.
          * </p>
          *
-         * Planned removal: after 6 months (>= 2026-08-26).
+         * Planned removal: after 6 months (>= 2026-09-05).
          */
         @Deprecated(since = "2.0.0", forRemoval = true)
         public SimpleBuilder isRideControllable(boolean value) {
@@ -1266,7 +1261,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * Calling this method simply delegates to {@link #health(int)}.
          * </p>
          *
-         * Planned removal: after 6 months (>= 2026-08-26).
+         * Planned removal: after 6 months (>= 2026-09-05).
          */
         @Deprecated(since = "2.0.0", forRemoval = true)
         public SimpleBuilder maxHealth(int maxHealth) {
@@ -1287,7 +1282,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * The method now safely delegates to {@link #rideable(boolean)}.
          * </p>
          *
-         * Planned removal: after 6 months (>= 2026-08-26).
+         * Planned removal: after 6 months (>= 2026-09-05).
          */
         @Deprecated(since = "2.0.0", forRemoval = true)
         public SimpleBuilder isRideable(boolean value) {
@@ -1309,7 +1304,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * rely on definition-time movement multipliers.
          * </p>
          *
-         * Planned removal: after behavior parity is complete (>= 2026-08-26).
+         * Planned removal: after behavior parity is complete (>= 2026-09-05).
          */
         @Deprecated(since = "2.0.0", forRemoval = true)
         public SimpleBuilder movement(float moveSpeed, float multiplier) {
@@ -1333,7 +1328,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * implement proper runtime multipliers.
          * </p>
          *
-         * Planned removal: after behavior parity is complete (>= 2026-08-26).
+         * Planned removal: after behavior parity is complete (>= 2026-09-05).
          */
         @Deprecated(since = "2.0.0", forRemoval = true)
         public SimpleBuilder defaultMovementMultiplier(float speedMultiplier) {
@@ -1643,24 +1638,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
 
 
 
-        /**
-         * @deprecated Movement multipliers should be implemented in behavior executors.
-         *
-         * <p>
-         * This method is kept for backward compatibility only.
-         * Bedrock entity definitions do not store movement multipliers;
-         * speed scaling is controlled by runtime behaviors such as
-         * follow, tempt, boost, or rider input.
-         * </p>
-         *
-         * <p>
-         * This field is currently used as a server-side tuning knob for
-         * legacy entities and will be removed once all movement behaviors
-         * implement proper runtime multipliers.
-         * </p>
-         *
-         * Planned removal: after behavior parity is complete (>= 2026-08-26).
-         */
+
         @Deprecated(since = "2.0.0", forRemoval = true)
         public @Nullable Float getSpeedMultiplier(String key) {
             Object obj = components.get(key);

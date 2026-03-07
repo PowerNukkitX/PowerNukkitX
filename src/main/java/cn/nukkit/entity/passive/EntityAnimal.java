@@ -35,7 +35,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
      * than hardcoded entity methods.
      * </p>
      *
-     * Planned removal: after 6 months (>= 2026-08-26).
+     * Planned removal: after 6 months (>= 2026-09-05).
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
     protected boolean useBreedingItem(Player player, Item item) {
@@ -60,7 +60,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
      * This legacy implementation defaults to wheat-only behavior.
      * </p>
      *
-     * Planned removal: after 6 months (>= 2026-08-26).
+     * Planned removal: after 6 months (>= 2026-09-05).
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
     public boolean isBreedingItem(Item item) {

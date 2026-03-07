@@ -507,7 +507,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 if (strength < 0.0) strength = 0.0;
                 strength = Math.pow(strength, CURVE_EXP);
 
-                double maxSpeed = this.getDefaultSpeed();
+                double maxSpeed = this.getMovementSpeedDefault();
                 if (pk.inputData.contains(AuthInputAction.SPRINTING)) {
                     maxSpeed *= this.getSpeedMultiplier();
                     rideSprintingTicks++;
@@ -842,7 +842,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 powerDashingTicks = -1;
 
                 if (type == RideableComponent.InputType.WATER) {
-                    final DashActionComponent dash = this.getDashAction();
+                    final DashActionComponent dash = this.getComponentDashAction();
                     if (dash == null) {
                         waterDashChargeStartedInWater = false;
                         return true;
@@ -864,7 +864,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected boolean tryDash(PlayerAuthInputPacket pk, float charge) {
         if (this.isDashOnCooldown()) return false;
 
-        final DashActionComponent dash = this.getDashAction();
+        final DashActionComponent dash = this.getComponentDashAction();
         if (dash == null) return false;
 
         if (this.isTouchingWater() && !dash.resolvedCanDashUnderwater()) return false;

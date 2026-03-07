@@ -76,7 +76,7 @@ public abstract class EntityProjectile extends Entity {
     }
 
     @Override
-    public NameableComponent getNameable() {
+    public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;
     }
 
@@ -130,8 +130,8 @@ public abstract class EntityProjectile extends Entity {
         this.closeOnCollide = true;
         super.initEntity();
 
-        this.setMaxHealth(1);
-        this.setHealth(1);
+        this.setHealthMax(1);
+        this.setHealthCurrent(1);
         if (this.namedTag.contains("Age") && !this.noAge) {
             this.age = this.namedTag.getShort("Age");
         }

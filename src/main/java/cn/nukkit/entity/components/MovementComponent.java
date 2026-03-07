@@ -1,97 +1,119 @@
 package cn.nukkit.entity.components;
 
-import java.util.random.RandomGenerator;
+import cn.nukkit.entity.Entity;
 
+import java.util.random.RandomGenerator;
 
 /**
  * Bedrock component: {@code minecraft:movement}.
  *
- * Defines the base movement speed of an entity. This value represents the
- * base movement capability.
+ * Defines the base movement speed of an entity.
  *
- * <p>Optionally, a genetic range may be defined. When a range is present,
- * a random value within the range is sampled when the entity spawns,
- * allowing natural variation between entities.</p>
+ * <p>The movement value may be configured either as a fixed value or as a
+ * range. When a range is provided, a random value is generated at spawn
+ * time to simulate natural variation between entities.</p>
  *
  * <p><b>Properties:</b></p>
  * <ul>
- *   <li>{@code value} — Base movement speed of the entity.</li>
- *   <li>{@code range_min} — Minimum genetic variation factor.</li>
- *   <li>{@code range_max} — Maximum genetic variation factor.</li>
+ *   <li>{@code value} — Fixed movement speed value.</li>
+ *   <li>{@code range_min} — Minimum movement value used for spawn variation.</li>
+ *   <li>{@code range_max} — Maximum movement value used for spawn variation.</li>
  * </ul>
  *
- * <p>If no range is defined, the entity always uses the base movement
- * speed. If a range is defined, the final movement value used by the
- * entity at spawn time becomes:</p>
+ * <p>If {@code value} is defined, the range values are ignored.</p>
+ *
+ * <p>If a range is defined, the effective movement value is resolved at
+ * spawn time using:</p>
  *
  * <pre>{@code
- * finalSpeed = moveSpeed * random(rangeMin, rangeMax)
+ * movement = random(rangeMin, rangeMax)
  * }</pre>
- * 
- * @author Curse
+ *
+ * <p>This component normalizes invalid values and provides helper methods
+ * to resolve the effective movement used during entity initialization.</p>
  */
-public record MovementComponent(float moveSpeed, Float rangeMin, Float rangeMax) {
+public record MovementComponent(Float value, Float rangeMin, Float rangeMax) {
     public MovementComponent {
-        // Sanitize base values
-        moveSpeed   = Float.isFinite(moveSpeed) ? Math.max(0f, moveSpeed) : 0f;
+        Float v  = value;
+        Float mn = rangeMin;
+        Float mx = rangeMax;
 
-        Float rMin = rangeMin;
-        Float rMax = rangeMax;
-
-        if (rMin != null && !Float.isFinite(rMin)) rMin = null;
-        if (rMax != null && !Float.isFinite(rMax)) rMax = null;
-
-        // If exactly one is set -> fixed range
-        if (rMin != null && rMax == null) rMax = rMin;
-        if (rMax != null && rMin == null) rMin = rMax;
-
-        // If neither set -> keep both null (IMPORTANT)
-        if (rMin == null && rMax == null) {
-            rangeMin = null;
-            rangeMax = null;
+        // sanitize fixed value
+        if (v != null) {
+            if (!Float.isFinite(v) || v < 0f) v = 0f;
+            mn = null;
+            mx = null;
         } else {
-            // Normalize order + clamp
-            @SuppressWarnings("null")
-            float mn = Math.max(0f, Math.min(rMin, rMax));
-            @SuppressWarnings("null")
-            float mx = Math.max(0f, Math.max(rMin, rMax));
+            // sanitize range
+            if (mn != null && (!Float.isFinite(mn) || mn < 0f)) mn = 0f;
+            if (mx != null && (!Float.isFinite(mx) || mx < 0f)) mx = 0f;
 
-            rangeMin = mn;
-            rangeMax = mx;
+            // exactly one side set -> fixed
+            if (mn != null && mx == null) {
+                v  = mn;
+                mn = null;
+                mx = null;
+            } else if (mx != null && mn == null) {
+                v  = mx;
+                mn = null;
+                mx = null;
+            } else if (mn != null && mx != null) {
+                float a = Math.min(mn, mx);
+                float b = Math.max(mn, mx);
+
+                // equal -> fixed
+                if (Float.compare(a, b) == 0) {
+                    v  = a;
+                    mn = null;
+                    mx = null;
+                } else {
+                    // real range
+                    v  = null;
+                    mn = a;
+                    mx = b;
+                }
+            } else {
+                // neither set
+                v  = null;
+                mn = null;
+                mx = null;
+            }
         }
+
+        value    = v;
+        rangeMin = mn;
+        rangeMax = mx;
     }
 
+    /** True only for real ranges (genetics) */
     public boolean hasRange() {
-        return rangeMin != null && rangeMax != null;
+        return value == null
+                && rangeMin != null
+                && rangeMax != null
+                && rangeMin < rangeMax;
     }
 
-    public boolean isFixedRange() {
-        return rangeMin != null && rangeMax != null && Float.compare(rangeMin, rangeMax) == 0;
+    public boolean isFixed() {
+        return value != null;
     }
 
-    /**
-     * Resolves the "genetics" factor from the optional range.
-     * Returns 1.0f when no range is defined.
-     */
-    public float resolveRangeFactor(RandomGenerator rnd) {
-        if (rangeMin == null || rangeMax == null) return 1.0f;
-
-        float mn = rangeMin;
-        float mx = rangeMax;
-
+    public float resolveSpawnValue(RandomGenerator rnd) {
+        if (value != null) return value;
+        float mn = (rangeMin == null) ? Entity.DEFAULT_SPEED : Math.max(0f, rangeMin);
+        float mx = (rangeMax == null) ? mn : Math.max(mn, rangeMax);
         if (mx <= mn) return mn;
         return mn + (rnd.nextFloat() * (mx - mn));
     }
 
     public static MovementComponent defaults() {
-        return new MovementComponent(0.1125f, null, null);
+        return value(Entity.DEFAULT_SPEED);
     }
 
-    public static MovementComponent fixed(float moveSpeed) {
-        return new MovementComponent(moveSpeed, null, null);
+    public static MovementComponent value(float value) {
+        return new MovementComponent(value, null, null);
     }
 
-    public static MovementComponent withRange(float moveSpeed, float min, float max) {
-        return new MovementComponent(moveSpeed, min, max);
+    public static MovementComponent range(float min, float max) {
+        return new MovementComponent(null, min, max);
     }
 }

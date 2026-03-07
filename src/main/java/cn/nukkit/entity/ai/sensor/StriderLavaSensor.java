@@ -15,8 +15,6 @@ import cn.nukkit.level.Level;
  * valid adjacent standing position near the lava. The chosen block is
  * stored in {@link CoreMemoryTypes#NEAREST_BLOCK} so movement executors
  * can route the Strider toward it to warm up.
- * 
- * @author Curse
  */
 public class StriderLavaSensor implements ISensor {
     private final int radius;

@@ -23,6 +23,8 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
@@ -53,27 +55,17 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 10;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(10);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.4f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.4f);
     }
 
     @Override
-    public String getOriginalName() {
-        return "Goat";
-    }
-
-    @Override
-    public Set<String> typeFamily() {
-        return Set.of("goat", "animal");
-    }
-
-    @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     BlockID.WHEAT
@@ -86,7 +78,7 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -97,6 +89,16 @@ public class EntityGoat extends EntityAnimal implements EntityWalkable {
                 null,
                 null
         );
+    }
+
+    @Override
+    public String getOriginalName() {
+        return "Goat";
+    }
+
+    @Override
+    public Set<String> typeFamily() {
+        return Set.of("goat", "animal");
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(

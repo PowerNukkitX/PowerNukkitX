@@ -95,7 +95,7 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
             if (tick2 > fireTick) {
                 shootSnowball(entity);
                 tick2 = 0;
-                return target.getHealth() != 0;
+                return target.getHealthCurrent() != 0;
             }
         }
         return true;
@@ -105,7 +105,7 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -117,7 +117,7 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

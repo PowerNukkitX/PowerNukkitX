@@ -34,6 +34,8 @@ import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
@@ -117,17 +119,17 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public int getMaxHealth() {
-        return 40;
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(40);
     }
 
     @Override
-    public float getDefaultSpeed() {
-        return 0.36f;
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.36f);
     }
 
     @Override
-    public @Nullable BreedableComponent getBreedable() {
+    public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
                     BlockID.CRIMSON_FUNGUS
@@ -140,7 +142,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
     }
 
     @Override
-    public AgeableComponent getAgeable() {
+    public AgeableComponent getComponentAgeable() {
         return new AgeableComponent(
                 null,
                 1200f,
@@ -273,7 +275,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                         3, 1
                     ),
                     new Behavior(
-                        new MoveToTargetExecutor(CoreMemoryTypes.PARENT, this.getDefaultSpeed() * 1.9f, true, 64, 3),
+                        new MoveToTargetExecutor(CoreMemoryTypes.PARENT, this.getMovementSpeedDefault() * 1.9f, true, 64, 3),
                             all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.PARENT),
                                 new DistanceEvaluator(CoreMemoryTypes.PARENT, 5),

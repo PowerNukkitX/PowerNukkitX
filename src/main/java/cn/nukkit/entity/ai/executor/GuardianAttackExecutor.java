@@ -93,7 +93,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
                 }
                 endSequence(entity);
                 tick2 = 0;
-                return target.getHealth() != 0;
+                return target.getHealthCurrent() != 0;
             }
         }
         return true;
@@ -102,7 +102,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     @Override
     public void onStop(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -114,7 +114,7 @@ public class GuardianAttackExecutor implements EntityControl, IBehaviorExecutor 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

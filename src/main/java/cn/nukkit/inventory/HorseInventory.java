@@ -49,7 +49,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
 
     private static EquippableComponent resolveEquippable(Object holder) {
         if (holder instanceof EntityCreature ec) {
-            return ec.getEquippableData();
+            return ec.getComponentEquippable();
         }
         return null;
     }
@@ -459,7 +459,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
     }
 
     public static Item[] getInventoryDrops(HorseInventory<?> inv, Entity holder) {
-        InventoryComponent ic = holder.getInventoryComponent();
+        InventoryComponent ic = holder.getComponentInventory();
         if (ic != null && ic.isPrivateInventory()) return Item.EMPTY_ARRAY;
 
         ArrayList<Item> out = new ArrayList<>();
