@@ -1,5 +1,6 @@
 package cn.nukkit.nbt.stream;
 
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -158,7 +159,7 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
     }
 
     public void writeTag(Tag tag) throws IOException {
-        this.writeTag(tag, 16);
+        this.writeTag(tag, NBTIO.MAX_NBT_DEPTH);
     }
 
     public void writeTag(Tag tag, int maxDepth) throws IOException {
@@ -174,7 +175,7 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
     }
 
     public void writeValue(Tag tag) throws IOException {
-        this.writeValue(tag, 16);
+        this.writeValue(tag, NBTIO.MAX_NBT_DEPTH);
     }
 
     public void writeValue(Tag tag, int maxDepth) throws IOException {
