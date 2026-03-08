@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -11,6 +12,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.ddui.CustomForm;
 import cn.nukkit.ddui.Observable;
 import cn.nukkit.ddui.element.options.SliderElementOptions;
+import cn.nukkit.ddui.element.options.TextFieldOptions;
 import cn.nukkit.ddui.properties.DataDrivenProperty;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.Item;
@@ -43,6 +45,7 @@ import cn.nukkit.utils.TextFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -352,14 +355,21 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     private int exampleDDUI(CommandSender sender) {
         if (!sender.isPlayer()) return 0;
 
+        var server = sender.getServer();
+
         Observable<String> name = new Observable<>("");
+        Observable<String> echo = new Observable<>("");
         Observable<String> bio = new Observable<>("");
         Observable<Long> age = new Observable<>(18L);
         Observable<Long> difficulty = new Observable<>(3L);
 
         CustomForm form = new CustomForm("My Form")
-                .textField("Name", name)
-                .textField("Biography", bio)
+                .textField("Name", name, TextFieldOptions.builder()
+                        .description("Max 10 characters")
+                        .build())
+                .textField("Biography", bio, TextFieldOptions.builder()
+                        .description("This is your biography. You can write anything you want here.")
+                        .build())
                 .slider("Age", 1L, 100L, age)
                 .slider("Difficulty",
                         1L, 5L,
@@ -370,7 +380,16 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 );
 
 
-        form.button("Confirm", player -> {
+        form
+                .button("Reset", player -> {
+                    CompletableFuture.runAsync(() -> {
+                        name.setValue("");
+                        bio.setValue("");
+                        age.setValue(18L);
+                        difficulty.setValue(3L);
+                    });
+                })
+                .button("Confirm", player -> {
                     player.sendMessage("Confirmed successfully!");
                     String _name = name.getValue();
                     String _bio = bio.getValue();
@@ -385,13 +404,20 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 })
                 .closeButton();
 
-        age.subscribe(new Observable.Listener<Long>() {
+        name.subscribe(new Observable.Listener<String>() {
             @Override
-            public DataDrivenProperty<?, ?> onValue(Long value) {
-                sender.sendMessage("Age is now: " + value);
+            public DataDrivenProperty<?, ?> onValue(String value) {
+                String normalized = value.length() > 10 ? value.substring(0, 10) : value;
+                server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+                    if (!normalized.equals(value)) {
+                        name.setValue(normalized);
+                    }
+                });
+
                 return null;
             }
         });
+
 
         form.show(sender.asPlayer());
         return 1;

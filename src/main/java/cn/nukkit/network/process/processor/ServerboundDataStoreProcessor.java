@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.ddui.DataDrivenScreen;
+import cn.nukkit.ddui.Observable;
 import cn.nukkit.ddui.properties.BooleanProperty;
 import cn.nukkit.ddui.properties.DataDrivenProperty;
 import cn.nukkit.ddui.properties.LongProperty;
@@ -18,42 +19,44 @@ public class ServerboundDataStoreProcessor extends DataPacketProcessor<Serverbou
         Player player = playerHandle.player;
         if (player == null) return;
 
-        var update = pk.getUpdate();
-        if (update == null) return;
+        Observable.withOutboundSuppressed(() -> {
+            var update = pk.getUpdate();
+            if (update == null) return;
 
-        DataDrivenScreen screen = DataDrivenScreen.getActiveScreen(player);
-        if (screen == null) return;
+            DataDrivenScreen screen = DataDrivenScreen.getActiveScreen(player);
+            if (screen == null) return;
 
-        String dataStore = screen.getIdentifier().split(":")[0];
-        if (!dataStore.equals(update.getDataStoreName())) return;
-        if (!screen.getProperty().equals(update.getProperty())) return;
+            String dataStore = screen.getIdentifier().split(":")[0];
+            if (!dataStore.equals(update.getDataStoreName())) return;
+            if (!screen.getProperty().equals(update.getProperty())) return;
 
-        DataDrivenProperty<?, ?> property = screen.resolvePath(update.getPath());
-        if (property == null) return;
+            DataDrivenProperty<?, ?> property = screen.resolvePath(update.getPath());
+            if (property == null) return;
 
-        Object data = update.getData();
-        if (property instanceof LongProperty) {
-            if (data instanceof Number n) {
-                property.triggerListeners(player, n.longValue());
-            } else {
-                property.triggerListeners(player, 0L);
+            Object data = update.getData();
+            if (property instanceof LongProperty) {
+                if (data instanceof Number n) {
+                    property.triggerListeners(player, n.longValue());
+                } else {
+                    property.triggerListeners(player, 0L);
+                }
+                return;
             }
-            return;
-        }
-        if (property instanceof BooleanProperty) {
-            if (data instanceof Boolean b) {
-                property.triggerListeners(player, b);
+            if (property instanceof BooleanProperty) {
+                if (data instanceof Boolean b) {
+                    property.triggerListeners(player, b);
+                }
+                return;
             }
-            return;
-        }
-        if (property instanceof StringProperty) {
-            if (data instanceof String s) {
-                property.triggerListeners(player, s);
+            if (property instanceof StringProperty) {
+                if (data instanceof String s) {
+                    property.triggerListeners(player, s);
+                }
+                return;
             }
-            return;
-        }
 
-        property.triggerListeners(player, data);
+            property.triggerListeners(player, data);
+        });
     }
 
     @Override

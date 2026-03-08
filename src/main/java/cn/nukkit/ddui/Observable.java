@@ -32,6 +32,7 @@ public class Observable<T> {
 
     private final Set<Listener<T>> listeners = new LinkedHashSet<>();
     private T value;
+    private static final ThreadLocal<Integer> SUPPRESS_OUTBOUND = ThreadLocal.withInitial(() -> 0);
 
     public Observable(T value) {
         this.value = value;
@@ -58,6 +59,10 @@ public class Observable<T> {
             DataDrivenScreen screen = element.getRootScreen();
             if (screen == null) continue;
 
+            if (SUPPRESS_OUTBOUND.get() > 0) {
+                continue;
+            }
+
             DataStoreUpdate update = new DataStoreUpdate();
 
             update.setDataStoreName(screen.getIdentifier().split(":")[0]);
@@ -73,6 +78,20 @@ public class Observable<T> {
 
             for (Player viewer : screen.getAllViewers()) {
                 viewer.dataPacket(cbDataStore);
+            }
+        }
+    }
+
+    public static void withOutboundSuppressed(Runnable runnable) {
+        int depth = SUPPRESS_OUTBOUND.get();
+        SUPPRESS_OUTBOUND.set(depth + 1);
+        try {
+            runnable.run();
+        } finally {
+            if (depth == 0) {
+                SUPPRESS_OUTBOUND.remove();
+            } else {
+                SUPPRESS_OUTBOUND.set(depth);
             }
         }
     }
