@@ -8,9 +8,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.ddui.CustomForm;
-import cn.nukkit.ddui.Observable;
-import cn.nukkit.ddui.element.options.SliderElementOptions;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
@@ -85,9 +82,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin"}),
                 CommandParameter.newType("plugin", true, CommandParamType.STRING)
         });
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("ddui", true, CommandParamType.STRING)
-        });
         this.enableParamTree();
     }
 
@@ -102,7 +96,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "chunk" -> handleChunk(sender, result.getValue());
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
-            case "default" -> handleDDUI(sender, result.getValue(), log);
             default -> 0;
         };
     }
@@ -344,31 +337,6 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 pm.reloadPlugin(plugin);
             }
         }
-        return 1;
-    }
-
-    private int handleDDUI(CommandSender sender, ParamList list, CommandLogger log) {
-        Observable<String> name = new Observable<>("");
-        Observable<String> bio = new Observable<>("");
-        Observable<Long> age = new Observable<>(18L);
-        Observable<Long> difficulty = new Observable<>(3L);
-
-        CustomForm form = new CustomForm("My Form")
-                .textField("Name", name)
-                .textField("Biography", bio)
-                .slider("Age", 1L, 100L, age)
-                .slider("Difficulty",
-                        1L, 5L,
-                        difficulty,
-                        SliderElementOptions.builder()
-                                .description("1 = Peaceful - 5 = Hardcore")
-                                .build()
-                )
-
-                .button("Confirm", player -> player.sendMessage("Confirmed successfully!"))
-                .closeButton();
-
-        form.show(sender.asPlayer());
         return 1;
     }
 }
