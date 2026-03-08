@@ -21,7 +21,6 @@ import java.util.Set;
  * @author Curse
  */
 public class BegExecutor implements EntityControl, IBehaviorExecutor {
-
     protected final boolean canBegVertically;
     protected final int withinRadiusSquared;
     protected final Set<String> begItems;
@@ -57,9 +56,7 @@ public class BegExecutor implements EntityControl, IBehaviorExecutor {
             if (canBegVertically) {
                 d2 = entity.distanceSquared(p);
             } else {
-                double dx = entity.getX() - p.getX();
-                double dz = entity.getZ() - p.getZ();
-                d2 = (dx * dx) + (dz * dz);
+                d2 = horizontalDistanceSquared(entity, p);
             }
 
             if (d2 <= withinRadiusSquared) return true;
@@ -68,7 +65,7 @@ public class BegExecutor implements EntityControl, IBehaviorExecutor {
         return false;
     }
 
-    protected double horizontalDistanceSquared(EntityIntelligent entity, Player p) {
+    protected static double horizontalDistanceSquared(EntityIntelligent entity, Player p) {
         double dx = entity.getX() - p.getX();
         double dz = entity.getZ() - p.getZ();
         return (dx * dx) + (dz * dz);

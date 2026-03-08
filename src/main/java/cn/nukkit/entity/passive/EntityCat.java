@@ -1,7 +1,6 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityCanSit;
@@ -56,7 +55,6 @@ import java.util.Set;
 
 
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCanSit, EntityCanAttack, EntityVariant, EntityColor {
-
     @Override
     @NotNull
     public String getIdentifier() {
@@ -70,7 +68,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     public EntityCat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
 
     @Override
     public void updateMovement() {
@@ -160,23 +157,6 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
-
-        // Debug: show health attribute values
-        if (player.isSneaking()) {
-            Attribute attr = this.getAttributes().get(Attribute.HEALTH);
-            if (attr != null) {
-                player.sendMessage("§7[HealthAttr] " +
-                        "min=" + attr.getMinValue() +
-                        " max=" + attr.getMaxValue() +
-                        " defMin=" + attr.getDefaultMinimum() +
-                        " defMax=" + attr.getDefaultMaximum() +
-                        " def=" + attr.getDefaultValue() +
-                        " current=" + attr.getValue() +
-                        " rutimeCurrent=" + this.getHealthCurrent());
-            } else {
-                player.sendMessage("§7[HealthAttr] attribute not initialized");
-            }
-        }
 
         if (!item.isNull() && this.isTamed()) {
             if (item instanceof ItemDye dyeItem) {

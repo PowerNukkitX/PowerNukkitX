@@ -53,7 +53,6 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     @NotNull public String getIdentifier() {
         return SPIDER;
     }
-    
 
     public EntitySpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -122,26 +121,18 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         float z = -0.1f;
 
         switch (this.jockeyType) {
-            case SKELETON_JOCKEY -> {
+            case SKELETON_JOCKEY, STRAY_JOCKEY, WITHER_SKELETON_JOCKEY -> {
                 riders = Set.of("skeleton");
-                y = 0.54f; z = 0f;
+                y = 0.54f;
+                z = 0f;
             }
-            case STRAY_JOCKEY -> {
+
+            case BOGGED_JOCKEY, PARCHED_JOCKEY -> {
                 riders = Set.of("skeleton");
-                y = 0.54f; z = 0f;
+                y = 0.325f;
+                z = -0.1f;
             }
-            case BOGGED_JOCKEY -> {
-                riders = Set.of("skeleton");
-                y = 0.325f; z = -0.1f;
-            }
-            case PARCHED_JOCKEY -> {
-                riders = Set.of("skeleton");
-                y = 0.325f; z = -0.1f;
-            }
-            case WITHER_SKELETON_JOCKEY -> {
-                riders = Set.of("skeleton");
-                y = 0.54f; z = 0f;
-            }
+
             default -> { }
         }
 

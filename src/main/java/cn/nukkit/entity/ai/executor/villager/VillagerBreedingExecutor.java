@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 
 public class VillagerBreedingExecutor extends BreedingExecutor {
-
     public VillagerBreedingExecutor(int findingRange, int duration, float moveSpeed) {
         super(findingRange, duration, moveSpeed);
     }
@@ -24,35 +23,44 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
     public boolean execute(EntityIntelligent entity) {
         // Villagers don't use BreedableComponent mate search
         if (entity == null || entity.level == null) return false;
-        if (!finded) {
-            Object spouse = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_SPOUSE);
-            if (!(spouse instanceof EntityIntelligent s)) return false;
 
-            another = s;
-            finded = true;
+        if (!isBreeding(entity)) {
+            EntityIntelligent spouse = getSpouse(entity);
+            if (spouse == null) return false;
 
             entity.setMovementSpeed(moveSpeed);
-            another.setMovementSpeed(moveSpeed);
+            spouse.setMovementSpeed(moveSpeed);
+
+            setBreeding(entity, true);
+            setBreedingTick(entity, 0);
+            setBreeding(spouse, true);
+            setBreedingTick(spouse, 0);
         }
 
-        if (another == null) return false;
+        EntityIntelligent spouse = getSpouse(entity);
+        if (spouse == null) {
+            clearBreedingState(entity);
+            return false;
+        }
 
-        currentTick++;
+        updateMove(entity, spouse);
 
-        updateMove(entity, another);
+        if (!isBreedingLeader(entity, spouse)) return true;
+
+        int currentTick = getBreedingTick(entity) + 1;
+        setBreedingTick(entity, currentTick);
 
         if (currentTick > duration) {
-            breed(entity, another);
+            breed(entity, spouse);
 
             clearData(entity);
-            clearData(another);
+            clearData(spouse);
 
-            currentTick = 0;
-            finded = false;
+            clearBreedingState(entity);
+            clearBreedingState(spouse);
 
             entity.setEnablePitch(false);
-            another.setEnablePitch(false);
-            another = null;
+            spouse.setEnablePitch(false);
 
             return false;
         }
@@ -62,18 +70,18 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
+        EntityIntelligent spouse = entity != null ? getSpouse(entity) : null;
+
         if (entity != null) {
             clearData(entity);
+            clearBreedingState(entity);
             entity.setEnablePitch(false);
         }
 
-        currentTick = 0;
-        finded = false;
-
-        if (another != null) {
-            clearData(another);
-            another.setEnablePitch(false);
-            another = null;
+        if (spouse != null) {
+            clearData(spouse);
+            clearBreedingState(spouse);
+            spouse.setEnablePitch(false);
         }
     }
 

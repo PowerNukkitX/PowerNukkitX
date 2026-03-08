@@ -166,15 +166,41 @@ public class Attribute implements Cloneable {
                 && NBT.containsFloat("Max")
                 && NBT.containsFloat("Min")) {
             Attribute attr = Attribute.getAttributeByName(NBT.getString("Name"));
-            attr.setMinValue(NBT.getFloat("Min"));
-            attr.setMaxValue(NBT.getFloat("Max"));
+            if (attr == null) {
+                throw new IllegalArgumentException("Unknown attribute: " + NBT.getString("Name"));
+            }
 
-            // backward compat: if DefaultMin/DefaultMax missing, fall back to Min/Max
-            float defMax = NBT.containsFloat("DefaultMax") ? NBT.getFloat("DefaultMax") : NBT.getFloat("Max");
-            float defMin = NBT.containsFloat("DefaultMin") ? NBT.getFloat("DefaultMin") : NBT.getFloat("Min");
-            attr.setDefaultMaximum(defMax);
-            attr.setDefaultMinimum(defMin);
-            attr.setDefaultValue(Math.min(Math.max(NBT.getFloat("Base"), attr.getMinValue()), attr.getMaxValue()));
+            float min = NBT.getFloat("Min");
+            float max = NBT.getFloat("Max");
+            if (min > max) {
+                float t = min;
+                min = max;
+                max = t;
+            }
+
+            float defMin = NBT.containsFloat("DefaultMin") ? NBT.getFloat("DefaultMin") : min;
+            float defMax = NBT.containsFloat("DefaultMax") ? NBT.getFloat("DefaultMax") : max;
+            if (defMin > defMax) {
+                float t = defMin;
+                defMin = defMax;
+                defMax = t;
+            }
+
+            defMin = Math.max(min, Math.min(defMin, max));
+            defMax = Math.max(min, Math.min(defMax, max));
+
+            if (defMin > defMax) {
+                defMin = min;
+                defMax = max;
+            }
+
+            attr.setMinValue(min);
+            attr.setMaxValue(max);
+
+            attr.defaultMinimum = defMin;
+            attr.defaultMaximum = defMax;
+
+            attr.setDefaultValue(Math.min(Math.max(NBT.getFloat("Base"), min), max));
             attr.setValue(NBT.getFloat("Current"), true);
 
             return attr;

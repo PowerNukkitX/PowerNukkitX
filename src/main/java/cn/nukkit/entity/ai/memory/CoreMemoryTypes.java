@@ -125,8 +125,10 @@ public interface CoreMemoryTypes {
 
         /** Currently only used in Warden */
         MemoryType<Integer> ROUTE_UNREACHABLE_TIME = new MemoryType<>("minecraft:route_unreachable_time", 0);
-        /** Entity's spouse */
+        /** Entity's Breeding Memory */
         MemoryType<Entity> ENTITY_SPOUSE = new MemoryType<>("minecraft:entity_spouse");
+        MemoryType<Integer> BREEDING_TICK = new MemoryType<>("minecraft:breeding_tick", 0);
+        MemoryType<Boolean> IS_BREEDING = new MemoryType<>("minecraft:is_breeding", false);
         /** Currently only used in Warden */
         MemoryType<Map<Entity, Integer>> WARDEN_ANGER_VALUE = new MemoryType<>("minecraft:warden_anger_value", new HashMap<>());
         /** Track nearest skeleton entity */

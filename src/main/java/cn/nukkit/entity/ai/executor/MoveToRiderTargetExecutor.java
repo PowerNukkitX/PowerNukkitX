@@ -92,15 +92,15 @@ public class MoveToRiderTargetExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        removeRouteTarget(entity);
-        removeLookTarget(entity);
-        entity.setMovementSpeed(entity.getMovementSpeedDefault());
-        entity.setEnablePitch(false);
-        oldTargetFloor = null;
+        clearState(entity);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
+        clearState(entity);
+    }
+
+    protected void clearState(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         entity.setMovementSpeed(entity.getMovementSpeedDefault());

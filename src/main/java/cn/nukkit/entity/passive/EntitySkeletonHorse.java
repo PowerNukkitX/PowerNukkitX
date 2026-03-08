@@ -42,7 +42,6 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
@@ -291,19 +290,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     public void skeletonTrap() {
         Vector3 vector = this.getPosition();
 
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(vector.x))
-                        .add(new DoubleTag(vector.y))
-                        .add(new DoubleTag(vector.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(this.yaw))
-                        .add(new FloatTag(this.pitch)));
-
+        CompoundTag nbt = Entity.getDefaultNBT(vector, null, (float) this.yaw, (float) this.pitch);
         EntityLightningBolt bolt = new EntityLightningBolt(this.chunk, nbt);
 
         bolt.spawnToAll();

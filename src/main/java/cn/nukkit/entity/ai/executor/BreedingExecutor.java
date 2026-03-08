@@ -58,9 +58,6 @@ public class BreedingExecutor implements IBehaviorExecutor {
     protected final int findingRangeSquared;
     protected final int duration;
     protected final float moveSpeed;
-    protected int currentTick = 0;
-    protected boolean finded;
-    protected EntityIntelligent another;
 
     public BreedingExecutor(int findingRange, int duration, float moveSpeed) {
         this.findingRangeSquared = findingRange > 0 ? findingRange * findingRange : findingRange;
@@ -82,34 +79,47 @@ public class BreedingExecutor implements IBehaviorExecutor {
         if (shouldFindingSpouse(entity)) {
             if (!entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
 
-            another = getNearestValidInLoveMate(entity, breedable);
-            if (another == null) return true;
+            EntityIntelligent spouse = getNearestValidInLoveMate(entity, breedable);
+            if (spouse == null) return true;
 
-            setSpouse(entity, another);
+            setSpouse(entity, spouse);
 
             entity.setMovementSpeed(moveSpeed);
-            another.setMovementSpeed(moveSpeed);
+            spouse.setMovementSpeed(moveSpeed);
 
-            finded = true;
+            setBreeding(entity, true);
+            setBreedingTick(entity, 0);
+            setBreeding(spouse, true);
+            setBreedingTick(spouse, 0);
         }
 
-        if (finded) {
-            currentTick++;
+        if (isBreeding(entity)) {
+            EntityIntelligent spouse = getSpouse(entity);
+            if (spouse == null) {
+                clearBreedingState(entity);
+                return false;
+            }
 
-            updateMove(entity, another);
+            updateMove(entity, spouse);
+
+            if (!isBreedingLeader(entity, spouse)) return true;
+
+            int currentTick = getBreedingTick(entity) + 1;
+            setBreedingTick(entity, currentTick);
 
             if (currentTick > duration) {
-                breed(entity, another);
+                breed(entity, spouse);
 
                 clearData(entity);
-                clearData(another);
+                clearData(spouse);
 
-                currentTick = 0;
-                finded = false;
+                setBreedingTick(entity, 0);
+                setBreeding(entity, false);
+                setBreedingTick(spouse, 0);
+                setBreeding(spouse, false);
 
                 entity.setEnablePitch(false);
-                another.setEnablePitch(false);
-                another = null;
+                spouse.setEnablePitch(false);
 
                 return false;
             }
@@ -120,17 +130,17 @@ public class BreedingExecutor implements IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        clearData(entity);
+        EntityIntelligent spouse = getSpouse(entity);
 
-        currentTick = 0;
-        finded = false;
+        clearData(entity);
+        clearBreedingState(entity);
 
         entity.setEnablePitch(false);
 
-        if (another != null) {
-            clearData(another);
-            another.setEnablePitch(false);
-            another = null;
+        if (spouse != null) {
+            clearData(spouse);
+            clearBreedingState(spouse);
+            spouse.setEnablePitch(false);
         }
     }
 
@@ -167,47 +177,22 @@ public class BreedingExecutor implements IBehaviorExecutor {
         var cloned1 = entity1.clone();
         var cloned2 = entity2.clone();
 
-        // both sitting -> no movement
-        if (s1 && s2) {
-            entity1.setMoveTarget(null);
-            entity2.setMoveTarget(null);
-
-            entity1.setLookTarget(cloned2);
-            entity2.setLookTarget(cloned1);
-            return;
-        }
-
-        // entity2 sitting -> only entity1 walks
-        if (!s1 && s2) {
-            entity1.setMoveTarget(cloned2);
-            entity1.setLookTarget(cloned2);
-            entity1.getBehaviorGroup().setForceUpdateRoute(true);
-
-            entity2.setMoveTarget(null);
-            entity2.setLookTarget(cloned1);
-            return;
-        }
-
-        // entity1 sitting -> only entity2 walks
-        if (s1 && !s2) {
-            entity2.setMoveTarget(cloned1);
-            entity2.setLookTarget(cloned1);
-            entity2.getBehaviorGroup().setForceUpdateRoute(true);
-
-            entity1.setMoveTarget(null);
-            entity1.setLookTarget(cloned2);
-            return;
-        }
-
-        // neither sitting -> both move
-        entity1.setMoveTarget(cloned2);
-        entity2.setMoveTarget(cloned1);
-
         entity1.setLookTarget(cloned2);
         entity2.setLookTarget(cloned1);
 
-        entity1.getBehaviorGroup().setForceUpdateRoute(true);
-        entity2.getBehaviorGroup().setForceUpdateRoute(true);
+        if (s1) {
+            entity1.setMoveTarget(null);
+        } else {
+            entity1.setMoveTarget(cloned2);
+            entity1.getBehaviorGroup().setForceUpdateRoute(true);
+        }
+
+        if (s2) {
+            entity2.setMoveTarget(null);
+        } else {
+            entity2.setMoveTarget(cloned1);
+            entity2.getBehaviorGroup().setForceUpdateRoute(true);
+        }
     }
 
     @Nullable
@@ -403,7 +388,6 @@ public class BreedingExecutor implements IBehaviorExecutor {
     }
 
     protected void writeBabyGeneticsNBT(CompoundTag nbt, BreedableComponent b1, BreedableComponent b2, EntityIntelligent p1, EntityIntelligent p2) {
-
         Set<String> common = new LinkedHashSet<>(b1.resolvedBlendAttributes());
         common.retainAll(b2.resolvedBlendAttributes());
 
@@ -776,5 +760,37 @@ public class BreedingExecutor implements IBehaviorExecutor {
             if (enumDef.findIndex(s) == -1) return;
             e.setEnumEntityProperty(key, s);
         }
+    }
+
+    protected boolean isBreedingLeader(EntityIntelligent entity, EntityIntelligent spouse) {
+        return entity.getId() < spouse.getId();
+    }
+
+    protected void clearBreedingState(EntityIntelligent entity) {
+        setBreedingTick(entity, 0);
+        setBreeding(entity, false);
+    }
+
+    protected int getBreedingTick(EntityIntelligent entity) {
+        Integer tick = entity.getMemoryStorage().get(CoreMemoryTypes.BREEDING_TICK);
+        return tick != null ? tick : 0;
+    }
+
+    protected void setBreedingTick(EntityIntelligent entity, int tick) {
+        entity.getMemoryStorage().put(CoreMemoryTypes.BREEDING_TICK, tick);
+    }
+
+    protected boolean isBreeding(EntityIntelligent entity) {
+        Boolean value = entity.getMemoryStorage().get(CoreMemoryTypes.IS_BREEDING);
+        return Boolean.TRUE.equals(value);
+    }
+
+    protected void setBreeding(EntityIntelligent entity, boolean value) {
+        entity.getMemoryStorage().put(CoreMemoryTypes.IS_BREEDING, value);
+    }
+
+    protected @Nullable EntityIntelligent getSpouse(EntityIntelligent entity) {
+        Entity spouse = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_SPOUSE);
+        return spouse instanceof EntityIntelligent intelligent ? intelligent : null;
     }
 }
