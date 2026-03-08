@@ -358,9 +358,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         var server = sender.getServer();
 
         Observable<String> name = new Observable<>("");
-        Observable<String> echo = new Observable<>("");
         Observable<String> bio = new Observable<>("");
         Observable<Long> age = new Observable<>(18L);
+        Observable<String> ageGroup = new Observable<>("Adult");
         Observable<Long> difficulty = new Observable<>(3L);
 
         CustomForm form = new CustomForm("My Form")
@@ -371,6 +371,10 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         .description("This is your biography. You can write anything you want here.")
                         .build())
                 .slider("Age", 1L, 100L, age)
+                .textField("Age Group", ageGroup, TextFieldOptions.builder()
+                        .description("Automatically set based on age")
+                        .disabled(true)
+                        .build())
                 .slider("Difficulty",
                         1L, 5L,
                         difficulty,
@@ -397,7 +401,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     long _difficulty = difficulty.getValue();
                     player.sendMessage("Name: " + _name);
                     player.sendMessage("Biography: " + _bio);
-                    player.sendMessage("Age: " + _age);
+                    player.sendMessage("Age: " + _age + " (" + ageGroup.getValue() + ")");
                     player.sendMessage("Difficulty: " + _difficulty);
 
                     form.close(player);
@@ -411,6 +415,30 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
                     if (!normalized.equals(value)) {
                         name.setValue(normalized);
+                    }
+                });
+
+                return null;
+            }
+        });
+
+        age.subscribe(new Observable.Listener<Long>() {
+            @Override
+            public DataDrivenProperty<?, ?> onValue(Long value) {
+                CompletableFuture.runAsync(() -> {
+                    //Kid: 1 - 12
+                    //Teen: 13 - 17
+                    //Adult: 18 - 64
+                    //Senior: 65+
+
+                    if(value <= 12) {
+                        ageGroup.setValue("Kid");
+                    } else if (value <= 17) {
+                        ageGroup.setValue("Teen");
+                    } else if (value <= 64) {
+                        ageGroup.setValue("Adult");
+                    } else {
+                        ageGroup.setValue("Senior");
                     }
                 });
 
