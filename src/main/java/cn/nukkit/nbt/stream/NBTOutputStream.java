@@ -158,7 +158,6 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
         this.stream.close();
     }
 
-    /// Uses configurable recursion depth when writing NBT tags.
     public void writeTag(Tag tag) throws IOException {
         this.writeTag(tag, NBTIO.MAX_NBT_DEPTH);
     }
@@ -175,7 +174,6 @@ public class NBTOutputStream implements DataOutput, AutoCloseable {
         }
     }
 
-    /// Uses configurable recursion depth when writing NBT tags.
     public void writeValue(Tag tag) throws IOException {
         this.writeValue(tag, NBTIO.MAX_NBT_DEPTH);
     }
