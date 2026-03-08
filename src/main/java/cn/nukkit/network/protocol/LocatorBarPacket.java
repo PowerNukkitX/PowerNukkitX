@@ -38,6 +38,7 @@ public class LocatorBarPacket extends DataPacket {
         return ProtocolInfo.LOCATOR_BAR_PACKET;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
