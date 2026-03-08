@@ -362,8 +362,10 @@ public class Server {
         }
         this.settings.save();
         while (updateConfiguration()) { /* repeat until all configuration updates are applied */ }
-        
-        // A minimum of 1 is enforced to prevent invalid recursion values.
+        /*    Load configurable NBT recursion depth from pnx.yml before any NBT
+        parsing operations occur. This ensures that all NBTInputStream and
+        NBTOutputStream operations respect the configured depth limit.
+        A minimum of 1 is enforced to prevent invalid recursion values.    */
         NBTIO.MAX_NBT_DEPTH = Math.max(1, this.settings.performanceSettings().nbtMaxDepth());
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
