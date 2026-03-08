@@ -91,7 +91,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
         debug.deprecatedVerbose(legacyNukkit.baseSettings().deprecatedVerbose())
                 .level(debugOld.level())
                 .command(debugOld.command())
-                .ignoredPackets(debugOld.ignoredPackets());
+                .packetList(debugOld.ignoredPackets());
 
         GameplaySettings game = settings.gameplaySettings();
         LegacyServerSettings.GameplaySettings gameOld = legacyNukkit.gameplaySettings();
