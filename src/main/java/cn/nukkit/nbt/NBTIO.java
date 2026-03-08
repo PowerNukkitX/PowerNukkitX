@@ -44,6 +44,13 @@ import static cn.nukkit.network.protocol.ProtocolInfo.BLOCK_STATE_VERSION_NO_REV
 @Slf4j
 public class NBTIO {
 
+    /// Global maximum recursion depth used when reading and writing NBT.
+    ///
+    /// This value is initialized with the default (16) and later overridden
+    /// during server startup using the value from pnx.yml
+    /// (performance-settings.nbt-max-depth).
+    public static int MAX_NBT_DEPTH = 16;
+
     public static CompoundTag putItemHelper(Item item) {
         return putItemHelper(item, null);
     }

@@ -1,5 +1,6 @@
 package cn.nukkit.nbt.stream;
 
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.VarInt;
 
@@ -169,8 +170,9 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         this.stream.close();
     }
 
+    /// Uses configurable recursion depth for nested NBT tag reading.
     public Object readTag() throws IOException {
-        return this.readTag(16);
+        return this.readTag(NBTIO.MAX_NBT_DEPTH);
     }
 
     public Object readTag(int maxDepth) throws IOException {
@@ -183,8 +185,9 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         }
     }
 
+    /// Uses configurable recursion depth for nested NBT tag reading.
     public <T extends Tag> T readValue(int type) throws IOException {
-        return this.readValue(type, 16);
+        return this.readValue(type, NBTIO.MAX_NBT_DEPTH);
     }
 
     public <T extends Tag> T readValue(int type, int maxDepth) throws IOException {
