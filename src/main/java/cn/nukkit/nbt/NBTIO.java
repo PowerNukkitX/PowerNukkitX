@@ -44,6 +44,8 @@ import static cn.nukkit.network.protocol.ProtocolInfo.BLOCK_STATE_VERSION_NO_REV
 @Slf4j
 public class NBTIO {
 
+    public static int MAX_NBT_DEPTH = 16;
+
     public static CompoundTag putItemHelper(Item item) {
         return putItemHelper(item, null);
     }

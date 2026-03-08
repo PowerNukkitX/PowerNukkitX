@@ -155,6 +155,7 @@
   "pnx.settings.performance.registrycache.path": "Path to the registry cache file",
   "pnx.settings.performance.asyncworkers": "Number of threads used by the server scheduler, 'auto' means automatic allocation",
   "pnx.settings.performance.freezearray.enable": "Whether to enable the freeze array",
+  "pnx.settings.performance.maxNbtDepth": "Maximum allowed recursion depth for NBT reading and writing. Increase if loading worlds with deeply nested containers.",
 
   "chat.type.achievement": "{%0} has just earned the achievement {%1}",
   "chat.type.admin": "[{%0}: {%1}]",
