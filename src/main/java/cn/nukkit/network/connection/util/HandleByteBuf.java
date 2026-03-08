@@ -1933,26 +1933,49 @@ public class HandleByteBuf extends ByteBuf {
         writeString(update.getDataStoreName());
         writeString(update.getProperty());
         writeString(update.getPath());
-        writeIntLE(update.getType().getId());
-        switch (update.getType()) {
-            case INT64:
-                writeLongLE((long) update.getData());
-                break;
-            case BOOLEAN:
-                writeBoolean((boolean) update.getData());
-                break;
-            case STRING:
-                writeString((String) update.getData());
-                break;
-            case OBJECT:
-                final Map<String, DataStorePropertyValue> map = (Map<String, DataStorePropertyValue>) update.getData();
-                writeUnsignedVarInt(map.size());
-                for (Map.Entry<String, DataStorePropertyValue> entry : map.entrySet()) {
-                    writeString(entry.getKey());
-                    writeIntLE(entry.getValue().getType().getId());
-                    writeDataStorePropertyValue(entry.getValue());
+        Object value = update.getData();
+        DataStorePropertyType type = update.getType();
+
+        if (type == null) {
+            if (value instanceof Boolean) {
+                type = DataStorePropertyType.BOOLEAN;
+            } else if (value instanceof String) {
+                type = DataStorePropertyType.STRING;
+            } else if (value instanceof Number) {
+                type = DataStorePropertyType.INT64;
+            }
+        }
+
+        int control;
+        if (type == DataStorePropertyType.BOOLEAN) {
+            control = 1;
+        } else if (type == DataStorePropertyType.STRING) {
+            control = 2;
+        } else if (type == DataStorePropertyType.INT64) {
+            control = 0;
+        } else {
+            throw new IllegalStateException("Invalid data store update type: " + type);
+        }
+
+        writeUnsignedVarInt(control);
+        switch (control) {
+            case 0:
+                if (value instanceof Double d) {
+                    writeDoubleLE(d);
+                } else if (value instanceof Number n) {
+                    writeDoubleLE(n.doubleValue());
+                } else {
+                    throw new IllegalStateException("Invalid numeric data store update value: " + value);
                 }
                 break;
+            case 1:
+                writeBoolean((boolean) value);
+                break;
+            case 2:
+                writeString((String) value);
+                break;
+            default:
+                throw new IllegalStateException("Invalid data store update control: " + control);
         }
         writeIntLE(update.getPropertyUpdateCount());
         writeIntLE(update.getPathUpdateCount());
@@ -1963,27 +1986,22 @@ public class HandleByteBuf extends ByteBuf {
         update.setDataStoreName(readString());
         update.setProperty(readString());
         update.setPath(readString());
-        update.setType(DataStorePropertyType.from(readIntLE()));
-        switch (update.getType()) {
-            case INT64:
-                update.setData(readLongLE());
+        int control = readUnsignedVarInt();
+        switch (control) {
+            case 0:
+                update.setData(readDoubleLE());
+                update.setType(DataStorePropertyType.INT64);
                 break;
-            case BOOLEAN:
+            case 1:
                 update.setData(readBoolean());
+                update.setType(DataStorePropertyType.BOOLEAN);
                 break;
-            case STRING:
+            case 2:
                 update.setData(readString());
+                update.setType(DataStorePropertyType.STRING);
                 break;
-            case OBJECT:
-                final int length = readUnsignedVarInt();
-                final Map<String, DataStorePropertyValue> map = new HashMap<>();
-                for (int i = 0; i < length; i++) {
-                    final String key = readString();
-                    final DataStorePropertyValue.Type valueType = DataStorePropertyValue.Type.from(readIntLE());
-                    map.put(key, readDataStorePropertyValue(valueType));
-                }
-                update.setData(map);
-                break;
+            default:
+                throw new IllegalStateException("Invalid data store update control: " + control);
         }
         update.setPropertyUpdateCount(readIntLE());
         update.setPathUpdateCount(readIntLE());

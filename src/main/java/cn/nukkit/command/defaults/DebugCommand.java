@@ -11,6 +11,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.ddui.CustomForm;
 import cn.nukkit.ddui.Observable;
 import cn.nukkit.ddui.element.options.SliderElementOptions;
+import cn.nukkit.ddui.properties.DataDrivenProperty;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
@@ -31,6 +32,7 @@ import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
+import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginManager;
@@ -122,6 +124,14 @@ public class DebugCommand extends TestCommand implements CoreCommand {
 
                         .button("Confirm", player -> player.sendMessage("Confirmed successfully!"))
                         .closeButton();
+
+                age.subscribe(new Observable.Listener<Long>() {
+                    @Override
+                    public DataDrivenProperty<?, ?> onValue(Long value) {
+                            sender.sendMessage("Age is now: " + value);
+                            return null;
+                    }
+                });
 
                 form.show(sender.asPlayer());
 

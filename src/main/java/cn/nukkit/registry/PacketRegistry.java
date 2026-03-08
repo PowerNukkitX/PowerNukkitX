@@ -323,6 +323,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.SERVER_SCRIPT_DEBUG_DRAWER_PACKET, ServerScriptDebugDrawerPacket.class);
         this.register0(ProtocolInfo.SHOW_STORE_OFFER_PACKET, ShowStoreOfferPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_DATA_STORE_PACKET, ClientboundDataStorePacket.class);
+        this.register0(ProtocolInfo.SERVERBOUND_DATA_STORE_PACKET, ServerboundDataStorePacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_DDUI_SHOW_SCREEN, ClientboundDataDrivenUIShowScreenPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_DDUI_RELOAD, ClientboundDataDrivenUIReloadPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_TEXTURE_SHIFT, ClientboundTextureShiftPacket.class);

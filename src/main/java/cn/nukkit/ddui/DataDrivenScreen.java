@@ -2,6 +2,7 @@ package cn.nukkit.ddui;
 
 import cn.nukkit.Player;
 import cn.nukkit.ddui.element.LayoutElement;
+import cn.nukkit.ddui.properties.DataDrivenProperty;
 import cn.nukkit.ddui.properties.ObjectProperty;
 import cn.nukkit.network.protocol.ClientboundDataDrivenUICloseScreenPacket;
 import cn.nukkit.network.protocol.ClientboundDataDrivenUIShowScreenPacket;
@@ -18,6 +19,9 @@ import java.util.Set;
  * @since 06/03/2026
  */
 public abstract class DataDrivenScreen extends ObjectProperty<Object> {
+
+    private static final java.util.Map<Player, DataDrivenScreen> ACTIVE_SCREENS =
+            new java.util.concurrent.ConcurrentHashMap<>();
 
     public abstract String getIdentifier();
 
@@ -48,10 +52,12 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
         player.sendDataPackets(data, show);
 
         viewers.add(player);
+        ACTIVE_SCREENS.put(player, this);
     }
 
     public void close(Player player) {
         viewers.remove(player);
+        ACTIVE_SCREENS.remove(player);
 
         ClientboundDataDrivenUICloseScreenPacket packet = new ClientboundDataDrivenUICloseScreenPacket();
         packet.setFormId(0);
@@ -59,6 +65,52 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
 
     public List<Player> getAllViewers() {
         return new ArrayList<>(viewers);
+    }
+
+    public static DataDrivenScreen getActiveScreen(Player player) {
+        return ACTIVE_SCREENS.get(player);
+    }
+
+    public DataDrivenProperty<?, ?> resolvePath(String path) {
+        if (path == null || path.isEmpty()) {
+            return this;
+        }
+
+        DataDrivenProperty<?, ?> current = this;
+        int i = 0;
+        while (i < path.length()) {
+            char c = path.charAt(i);
+            if (c == '.') {
+                i++;
+                continue;
+            }
+            String token;
+            if (c == '[') {
+                int end = path.indexOf(']', i + 1);
+                if (end < 0) {
+                    return null;
+                }
+                token = path.substring(i + 1, end);
+                i = end + 1;
+            } else {
+                int end = i;
+                while (end < path.length() && path.charAt(end) != '.' && path.charAt(end) != '[') {
+                    end++;
+                }
+                token = path.substring(i, end);
+                i = end;
+            }
+
+            if (!(current instanceof ObjectProperty<?> obj)) {
+                return null;
+            }
+            current = obj.getProperty(token);
+            if (current == null) {
+                return null;
+            }
+        }
+
+        return current;
     }
 
     @Override
