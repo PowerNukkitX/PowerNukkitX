@@ -170,7 +170,6 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         this.stream.close();
     }
 
-    /// Uses configurable recursion depth for nested NBT tag reading.
     public Object readTag() throws IOException {
         return this.readTag(NBTIO.MAX_NBT_DEPTH);
     }
@@ -185,7 +184,6 @@ public class NBTInputStream implements DataInput, AutoCloseable {
         }
     }
 
-    /// Uses configurable recursion depth for nested NBT tag reading.
     public <T extends Tag> T readValue(int type) throws IOException {
         return this.readValue(type, NBTIO.MAX_NBT_DEPTH);
     }
