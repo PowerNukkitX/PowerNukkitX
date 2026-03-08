@@ -363,7 +363,7 @@ public class Server {
         this.settings.save();
         while (updateConfiguration()) { /* repeat until all configuration updates are applied */ }
         
-        /// A minimum of 1 is enforced to prevent invalid recursion values.
+        // A minimum of 1 is enforced to prevent invalid recursion values.
         NBTIO.MAX_NBT_DEPTH = Math.max(1, this.settings.performanceSettings().nbtMaxDepth());
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
