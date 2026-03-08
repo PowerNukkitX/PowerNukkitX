@@ -19,20 +19,19 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.generator.biome.BiomePicker;
+import cn.nukkit.level.generator.biome.OverworldBiomePicker;
+import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.level.generator.biome.BiomePicker;
-import cn.nukkit.level.generator.biome.OverworldBiomePicker;
-import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.nbt.tag.LongTag;
 import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
-import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginManager;
@@ -104,39 +103,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "chunk" -> handleChunk(sender, result.getValue());
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
-            case "ddui" -> {
-                Observable<String> name = new Observable<>("");
-                Observable<String> bio = new Observable<>("");
-                Observable<Long> age = new Observable<>(18L);
-                Observable<Long> difficulty = new Observable<>(3L);
-
-                CustomForm form = new CustomForm("My Form")
-                        .textField("Name", name)
-                        .textField("Biography", bio)
-                        .slider("Age", 1L, 100L, age)
-                        .slider("Difficulty",
-                                1L, 5L,
-                                difficulty,
-                                SliderElementOptions.builder()
-                                        .description("1 = Peaceful - 5 = Hardcore")
-                                        .build()
-                        )
-
-                        .button("Confirm", player -> player.sendMessage("Confirmed successfully!"))
-                        .closeButton();
-
-                age.subscribe(new Observable.Listener<Long>() {
-                    @Override
-                    public DataDrivenProperty<?, ?> onValue(Long value) {
-                            sender.sendMessage("Age is now: " + value);
-                            return null;
-                    }
-                });
-
-                form.show(sender.asPlayer());
-
-                yield 0;
-            }
+            case "ddui" -> exampleDDUI(sender);
             default -> 0;
         };
     }
@@ -303,7 +270,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     }
                 }
             }
-            case "extras" -> player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
+            case "extras" ->
+                    player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
             case "reload" -> {
                 player.sendMessage("§eReloading chunk...");
                 int cx = player.getChunkX();
@@ -378,6 +346,54 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 pm.reloadPlugin(plugin);
             }
         }
+        return 1;
+    }
+
+    private int exampleDDUI(CommandSender sender) {
+        if (!sender.isPlayer()) return 0;
+
+        Observable<String> name = new Observable<>("");
+        Observable<String> bio = new Observable<>("");
+        Observable<Long> age = new Observable<>(18L);
+        Observable<Long> difficulty = new Observable<>(3L);
+
+        CustomForm form = new CustomForm("My Form")
+                .textField("Name", name)
+                .textField("Biography", bio)
+                .slider("Age", 1L, 100L, age)
+                .slider("Difficulty",
+                        1L, 5L,
+                        difficulty,
+                        SliderElementOptions.builder()
+                                .description("1 = Peaceful - 5 = Hardcore")
+                                .build()
+                );
+
+
+        form.button("Confirm", player -> {
+                    player.sendMessage("Confirmed successfully!");
+                    String _name = name.getValue();
+                    String _bio = bio.getValue();
+                    long _age = age.getValue();
+                    long _difficulty = difficulty.getValue();
+                    player.sendMessage("Name: " + _name);
+                    player.sendMessage("Biography: " + _bio);
+                    player.sendMessage("Age: " + _age);
+                    player.sendMessage("Difficulty: " + _difficulty);
+
+                    form.close(player);
+                })
+                .closeButton();
+
+        age.subscribe(new Observable.Listener<Long>() {
+            @Override
+            public DataDrivenProperty<?, ?> onValue(Long value) {
+                sender.sendMessage("Age is now: " + value);
+                return null;
+            }
+        });
+
+        form.show(sender.asPlayer());
         return 1;
     }
 }

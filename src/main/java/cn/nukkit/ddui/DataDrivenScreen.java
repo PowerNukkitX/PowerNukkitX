@@ -61,6 +61,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
 
         ClientboundDataDrivenUICloseScreenPacket packet = new ClientboundDataDrivenUICloseScreenPacket();
         packet.setFormId(0);
+        player.dataPacket(packet);
     }
 
     public List<Player> getAllViewers() {
