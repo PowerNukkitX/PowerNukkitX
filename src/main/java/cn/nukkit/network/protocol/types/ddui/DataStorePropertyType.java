@@ -2,17 +2,29 @@ package cn.nukkit.network.protocol.types.ddui;
 
 public enum DataStorePropertyType {
 
-    BOOLEAN,
-    INT64,
-    STRING,
-    OBJECT;
+    BOOLEAN(1),
+    INT64(2),
+    STRING(4),
+    OBJECT(6);
 
     private static final DataStorePropertyType[] VALUES = values();
 
-    public static DataStorePropertyType from(int ordinal) {
-        if (ordinal < 0 || ordinal >= VALUES.length) {
-            throw new UnsupportedOperationException("Received unknown DataStorePropertyType ID: " + ordinal);
+    private final int id;
+
+    DataStorePropertyType(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public static DataStorePropertyType from(int id) {
+        for (DataStorePropertyType value : VALUES) {
+            if (value.id == id) {
+                return value;
+            }
         }
-        return VALUES[ordinal];
+        throw new UnsupportedOperationException("Received unknown DataStorePropertyType ID: " + id);
     }
 }

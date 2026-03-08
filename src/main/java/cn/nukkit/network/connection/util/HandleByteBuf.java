@@ -16,6 +16,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
+import cn.nukkit.network.protocol.types.ddui.DataStorePropertyValue;
 import cn.nukkit.network.protocol.types.ddui.DataStoreUpdate;
 import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
 import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
@@ -38,6 +39,8 @@ import cn.nukkit.utils.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import io.netty.util.ByteProcessor;
 import io.netty.util.internal.ObjectUtil;
 import io.netty.util.internal.StringUtil;
@@ -1930,7 +1933,7 @@ public class HandleByteBuf extends ByteBuf {
         writeString(update.getDataStoreName());
         writeString(update.getProperty());
         writeString(update.getPath());
-        writeUnsignedVarInt(update.getType().ordinal());
+        writeIntLE(update.getType().getId());
         switch (update.getType()) {
             case INT64:
                 writeLongLE((long) update.getData());
@@ -1940,6 +1943,15 @@ public class HandleByteBuf extends ByteBuf {
                 break;
             case STRING:
                 writeString((String) update.getData());
+                break;
+            case OBJECT:
+                final Map<String, DataStorePropertyValue> map = (Map<String, DataStorePropertyValue>) update.getData();
+                writeUnsignedVarInt(map.size());
+                for (Map.Entry<String, DataStorePropertyValue> entry : map.entrySet()) {
+                    writeString(entry.getKey());
+                    writeIntLE(entry.getValue().getType().getId());
+                    writeDataStorePropertyValue(entry.getValue());
+                }
                 break;
         }
         writeIntLE(update.getPropertyUpdateCount());
@@ -1951,7 +1963,7 @@ public class HandleByteBuf extends ByteBuf {
         update.setDataStoreName(readString());
         update.setProperty(readString());
         update.setPath(readString());
-        update.setType(DataStorePropertyType.from(readUnsignedVarInt()));
+        update.setType(DataStorePropertyType.from(readIntLE()));
         switch (update.getType()) {
             case INT64:
                 update.setData(readLongLE());
@@ -1962,9 +1974,68 @@ public class HandleByteBuf extends ByteBuf {
             case STRING:
                 update.setData(readString());
                 break;
+            case OBJECT:
+                final int length = readUnsignedVarInt();
+                final Map<String, DataStorePropertyValue> map = new HashMap<>();
+                for (int i = 0; i < length; i++) {
+                    final String key = readString();
+                    final DataStorePropertyValue.Type valueType = DataStorePropertyValue.Type.from(readIntLE());
+                    map.put(key, readDataStorePropertyValue(valueType));
+                }
+                update.setData(map);
+                break;
         }
         update.setPropertyUpdateCount(readIntLE());
         update.setPathUpdateCount(readIntLE());
         return update;
+    }
+
+    private void writeDataStorePropertyValue(DataStorePropertyValue value) {
+        switch (value.getType()) {
+            case NONE:
+                break;
+            case BOOL:
+                writeBoolean((boolean) value.getValue());
+                break;
+            case INT64:
+                writeLongLE((long) value.getValue());
+                break;
+            case STRING:
+                writeString((String) value.getValue());
+                break;
+            case TYPE:
+                final Map<String, DataStorePropertyValue> map = (Map<String, DataStorePropertyValue>) value.getValue();
+                writeUnsignedVarInt(map.size());
+                for (Map.Entry<String, DataStorePropertyValue> entry : map.entrySet()) {
+                    writeString(entry.getKey());
+                    writeIntLE(entry.getValue().getType().getId());
+                    writeDataStorePropertyValue(entry.getValue());
+                }
+                break;
+        }
+    }
+
+    private DataStorePropertyValue readDataStorePropertyValue(DataStorePropertyValue.Type type) {
+        switch (type) {
+            case NONE:
+                return null;
+            case BOOL:
+                return DataStorePropertyValue.ofBoolean(readBoolean());
+            case INT64:
+                return DataStorePropertyValue.ofLong(readLongLE());
+            case STRING:
+                return DataStorePropertyValue.ofString(readString());
+            case TYPE:
+                final int length = readUnsignedVarInt();
+                final Map<String, DataStorePropertyValue> map = new HashMap<>();
+                for (int i = 0; i < length; i++) {
+                    final String key = readString();
+                    final DataStorePropertyValue.Type valueType = DataStorePropertyValue.Type.from(readIntLE());
+                    map.put(key, readDataStorePropertyValue(valueType));
+                }
+                return DataStorePropertyValue.ofObject(map);
+            default:
+                throw new IllegalStateException("Read invalid DataStorePropertyValueType");
+        }
     }
 }

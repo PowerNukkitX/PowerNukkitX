@@ -7,12 +7,9 @@ import cn.nukkit.network.protocol.ClientboundDataDrivenUICloseScreenPacket;
 import cn.nukkit.network.protocol.ClientboundDataDrivenUIShowScreenPacket;
 import cn.nukkit.network.protocol.ClientboundDataStorePacket;
 import cn.nukkit.network.protocol.types.ddui.DataStoreChange;
-import cn.nukkit.network.protocol.types.ddui.DataStorePropertyValue;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,12 +34,13 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
     }
 
     public void show(Player player) {
+        String dataStore = getIdentifier().split(":")[0];
         DataStoreChange change = new DataStoreChange(
-                "minecraft", "custom_form_data", 1,
-                new DataStorePropertyValue(DataStorePropertyValue.Type.TYPE, toPropertyValue()));
+                dataStore, getProperty(), 1,
+                toPropertyValue());
 
         ClientboundDataStorePacket data = new ClientboundDataStorePacket();
-        data.setUpdates(List.of(change))
+        data.setUpdates(List.of(change));
 
         ClientboundDataDrivenUIShowScreenPacket show = new ClientboundDataDrivenUIShowScreenPacket();
         show.setScreenId(getIdentifier());

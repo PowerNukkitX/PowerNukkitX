@@ -70,7 +70,7 @@ public class ClientboundDataStorePacket extends DataPacket {
         buffer.writeString(change.getDataStoreName());
         buffer.writeString(change.getProperty());
         buffer.writeIntLE(change.getUpdateCount());
-        buffer.writeIntLE(change.getTheNewPropertyValue().getType().ordinal());
+        buffer.writeIntLE(change.getTheNewPropertyValue().getType().getId());
         this.writeTheNewPropertyValue(buffer, change.getTheNewPropertyValue());
     }
 
@@ -92,7 +92,7 @@ public class ClientboundDataStorePacket extends DataPacket {
                 buffer.writeUnsignedVarInt(map.size());
                 for (Map.Entry<String, DataStorePropertyValue> entry : map.entrySet()) {
                     buffer.writeString(entry.getKey());
-                    buffer.writeIntLE(entry.getValue().getType().ordinal());
+                    buffer.writeIntLE(entry.getValue().getType().getId());
                     this.writeTheNewPropertyValue(buffer, entry.getValue());
                 }
                 break;
