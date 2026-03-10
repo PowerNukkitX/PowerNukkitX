@@ -2,7 +2,6 @@ package cn.nukkit.utils;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPortal;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
@@ -149,8 +148,8 @@ public final class PortalHelper implements BlockID {
                 return null;
             
             // Converts coordinates using the configurable nether scale
-            int x = (int) Math.floor(current.getX() / scale);
-            int z = (int) Math.floor(current.getZ() / scale);
+            int x = (int) current.getFloorX() / scale;
+            int z = (int) current.getFloorZ() / scale;
 
             /* Prevent portal overlap when Nether scale is 1:1.
             * Without this offset, portals may generate at identical coordinates

@@ -959,7 +959,7 @@ public class LevelDBProvider implements LevelProvider {
         return levelDat;
     }
     
-    // Returns the Nether coordinate scale for thie world
+    // Returns the Nether coordinate scale for the world
     public int getNetherScale() {
         return this.netherScale;
     }
