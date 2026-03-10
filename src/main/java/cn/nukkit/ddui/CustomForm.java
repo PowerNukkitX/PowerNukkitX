@@ -2,10 +2,12 @@ package cn.nukkit.ddui;
 
 import cn.nukkit.Player;
 import cn.nukkit.ddui.element.ButtonElement;
+import cn.nukkit.ddui.element.LabelElement;
 import cn.nukkit.ddui.element.options.ButtonOptions;
 import cn.nukkit.ddui.element.CloseButtonElement;
 import cn.nukkit.ddui.element.options.CloseButtonOptions;
 import cn.nukkit.ddui.element.SliderElement;
+import cn.nukkit.ddui.element.options.LabelOptions;
 import cn.nukkit.ddui.element.options.SliderElementOptions;
 import cn.nukkit.ddui.element.TextFieldElement;
 import cn.nukkit.ddui.element.options.TextFieldOptions;
@@ -109,6 +111,24 @@ public class CustomForm extends DataDrivenScreen {
     public CustomForm slider(String label, long minValue, long maxValue, Observable<Long> currentValue, SliderElementOptions options) {
         SliderElement slider = new SliderElement(label, currentValue, minValue, maxValue, options, layout);
         layout.setProperty(slider);
+        return this;
+    }
+
+    public CustomForm label(String text) {
+        return label(text, LabelOptions.builder().build());
+    }
+
+    public CustomForm label(String text, LabelOptions options) {
+        layout.setProperty(new LabelElement(text, options, layout));
+        return this;
+    }
+
+    public CustomForm label(Observable<String> text) {
+        return label(text, LabelOptions.builder().build());
+    }
+
+    public CustomForm label(Observable<String> text, LabelOptions options) {
+        layout.setProperty(new LabelElement(text, options, layout));
         return this;
     }
 }

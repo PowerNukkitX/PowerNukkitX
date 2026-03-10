@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -13,7 +12,6 @@ import cn.nukkit.ddui.CustomForm;
 import cn.nukkit.ddui.Observable;
 import cn.nukkit.ddui.element.options.SliderElementOptions;
 import cn.nukkit.ddui.element.options.TextFieldOptions;
-import cn.nukkit.ddui.properties.DataDrivenProperty;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
@@ -364,6 +362,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         Observable<Long> difficulty = new Observable<>(3L);
 
         CustomForm form = new CustomForm("My Form")
+                .label("Personal informations")
                 .textField("Name", name, TextFieldOptions.builder()
                         .description("Max 10 characters")
                         .build())
@@ -381,19 +380,14 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         SliderElementOptions.builder()
                                 .description("1 = Peaceful - 5 = Hardcore")
                                 .build()
-                );
-
-
-        form
-                .button("Reset", player -> {
-                    CompletableFuture.runAsync(() -> {
-                        name.setValue("");
-                        bio.setValue("");
-                        age.setValue(18L);
-                        difficulty.setValue(3L);
-                    });
-                })
-                .button("Confirm", player -> {
+                )
+                .button("Reset", player -> CompletableFuture.runAsync(() -> {
+                    name.setValue("");
+                    bio.setValue("");
+                    age.setValue(18L);
+                    difficulty.setValue(3L);
+                }));
+                form.button("Confirm", player -> {
                     player.sendMessage("Confirmed successfully!");
                     String _name = name.getValue();
                     String _bio = bio.getValue();
@@ -408,42 +402,36 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 })
                 .closeButton();
 
-        name.subscribe(new Observable.Listener<String>() {
-            @Override
-            public DataDrivenProperty<?, ?> onValue(String value) {
-                String normalized = value.length() > 10 ? value.substring(0, 10) : value;
-                server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
-                    if (!normalized.equals(value)) {
-                        name.setValue(normalized);
-                    }
-                });
+        name.subscribe(value -> {
+            String normalized = value.length() > 10 ? value.substring(0, 10) : value;
+            server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+                if (!normalized.equals(value)) {
+                    name.setValue(normalized);
+                }
+            });
 
-                return null;
-            }
+            return null;
         });
 
-        age.subscribe(new Observable.Listener<Long>() {
-            @Override
-            public DataDrivenProperty<?, ?> onValue(Long value) {
-                CompletableFuture.runAsync(() -> {
-                    //Kid: 1 - 12
-                    //Teen: 13 - 17
-                    //Adult: 18 - 64
-                    //Senior: 65+
+        age.subscribe(value -> {
+            CompletableFuture.runAsync(() -> {
+                //Kid: 1 - 12
+                //Teen: 13 - 17
+                //Adult: 18 - 64
+                //Senior: 65+
 
-                    if(value <= 12) {
-                        ageGroup.setValue("Kid");
-                    } else if (value <= 17) {
-                        ageGroup.setValue("Teen");
-                    } else if (value <= 64) {
-                        ageGroup.setValue("Adult");
-                    } else {
-                        ageGroup.setValue("Senior");
-                    }
-                });
+                if (value <= 12) {
+                    ageGroup.setValue("Kid");
+                } else if (value <= 17) {
+                    ageGroup.setValue("Teen");
+                } else if (value <= 64) {
+                    ageGroup.setValue("Adult");
+                } else {
+                    ageGroup.setValue("Senior");
+                }
+            });
 
-                return null;
-            }
+            return null;
         });
 
 
