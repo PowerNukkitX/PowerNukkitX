@@ -138,26 +138,104 @@ public final class PortalHelper implements BlockID {
             log.warn("Cannot convert position: position or level is null");
             return null;
         }
+        // Allow for a Custom Nether Scale to be used
+        int scale = current.level.getNetherScale();
+
         DimensionData dimensionData;
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
             dimensionData = DimensionEnum.NETHER.getDimensionData();
             Level netherLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_NETHER);
-            if (netherLevel == null) return null;
-            return new Position(current.getFloorX() >> 3, NukkitMath.clamp(current.getFloorY(), dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1, current.getFloorZ() >> 3, netherLevel);
-        } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
-            dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
-            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
-            if (overworldLevel == null) return null;
-            int x = current.getFloorX() << 3;
-            int z = current.getFloorZ() << 3;
-            int y = overworldLevel.getHighestBlockAt(x, z);
-            for (int i = overworldLevel.getMinHeight(); i < y; i++) {
-                if (overworldLevel.getBlock(x, i, z) instanceof BlockPortal) {
+            if (netherLevel == null)
+                return null;
+            
+            // Converts coordinates using the configurable nether scale
+            int x = (int) Math.floor(current.getX() / scale);
+            int z = (int) Math.floor(current.getZ() / scale);
+
+            /* Prevent portal overlap when Nether scale is 1:1.
+            * Without this offset, portals may generate at identical coordinates
+            * in both dimensions, causing immediate teleport loops. */
+            if (scale == 1) {
+                x += 2;
+                z += 2;
+            }
+
+            int y = Math.min(netherLevel.getHighestBlockAt(x, z) + 1, 120);
+
+            // Search downward for a safe portal spawn location
+            for (int i = y; i > netherLevel.getMinHeight() + 2; i--) {
+
+                Block feet = netherLevel.getBlock(x, i, z);
+                Block head = netherLevel.getBlock(x, i + 1, z);
+                Block ground = netherLevel.getBlock(x, i - 1, z);
+
+                if (feet.isAir()
+                        && head.isAir()
+                        && ground.isSolid()
+                        && ground.getId() != BlockID.LAVA
+                        && ground.getId() != BlockID.BEDROCK) {
+
                     y = i;
                     break;
                 }
             }
-            return new Position(x, NukkitMath.clamp(y, dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1, z, overworldLevel);
+
+            Position target = new Position(
+                    x,
+                    NukkitMath.clamp(y, dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1,
+                    z,
+                    netherLevel);
+            // Use existing portal instead of spawning a new one
+            Optional<Position> portal = getNearestValidPortal(target);
+            if (portal.isPresent()) {
+                return portal.get();
+            }
+
+            return target;
+
+        } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
+
+            dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
+            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
+            if (overworldLevel == null)
+                return null;
+            // Converts coordinates using the configurable nether scale
+            int x = current.getFloorX() * scale;
+            int z = current.getFloorZ() * scale;
+
+            int y = overworldLevel.getHighestBlockAt(x, z);
+
+            // Search downward for safe portal spawn
+            for (int i = y; i > overworldLevel.getMinHeight() + 2; i--) {
+
+                Block feet = overworldLevel.getBlock(x, i, z);
+                Block head = overworldLevel.getBlock(x, i + 1, z);
+                Block ground = overworldLevel.getBlock(x, i - 1, z);
+
+                if (feet.isAir()
+                        && head.isAir()
+                        && ground.isSolid()
+                        && ground.getId() != BlockID.WATER
+                        && ground.getId() != BlockID.LAVA) {
+
+                    y = i;
+                    break;
+                }
+            }
+
+            Position target = new Position(
+                    x,
+                    NukkitMath.clamp(y, dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1,
+                    z,
+                    overworldLevel);
+            // Use existing portal instead of spawning a new one
+            Optional<Position> portal = getNearestValidPortal(target);
+            if (portal.isPresent()) {
+                return portal.get();
+            }
+
+            return target;
+
         } else {
             throw new IllegalArgumentException("Position must be in Nether or Overworld!");
         }

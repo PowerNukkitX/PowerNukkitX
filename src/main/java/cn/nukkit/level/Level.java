@@ -46,6 +46,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.BiomedGenerator;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.biome.BiomePicker;
@@ -5297,5 +5298,20 @@ public class Level implements Metadatable {
         @NotNull
         private Block block;
         private BlockFace neighbor;
+    }
+    /**
+     * Returns the Nether coordinate scale for this level.
+     * Delegates to the LevelProvider for custom portal ratios
+     * Falls back to the vanilla default of 8 if the provider does not expose it.
+     */
+    public int getNetherScale() {
+
+        LevelProvider provider = this.requireProvider();
+
+        if (provider instanceof LevelDBProvider dbProvider) {
+            return dbProvider.getNetherScale();
+        }
+
+        return 8;
     }
 }

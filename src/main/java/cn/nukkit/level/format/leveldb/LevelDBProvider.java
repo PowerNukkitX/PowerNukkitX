@@ -75,7 +75,9 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties = new CompoundTag();
     protected boolean worldDynamicPropertiesDirty = false;
-
+    // Keeps netherScale default to 8
+    private int netherScale = 8;
+    
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
@@ -96,6 +98,30 @@ public class LevelDBProvider implements LevelProvider {
             saveLevelData();
         } else {
             this.levelDat = levelDat;
+        }
+        // Read NetherScale from level.dat to support custom portal ratios
+        try {
+
+            File levelDatFile = new File(this.path, "level.dat");
+
+            if (levelDatFile.exists()) {
+
+                try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(levelDatFile))) {
+
+                    fis.skip(8);
+
+                    CompoundTag tag = NBTIO.read(fis, ByteOrder.LITTLE_ENDIAN);
+
+                    if (tag.contains("NetherScale")) {
+                        this.netherScale = tag.getInt("NetherScale");
+                    }
+
+                }
+
+            } else {
+            }
+
+        } catch (Exception e) {
         }
 
         CompoundTag dp = this.storage.readWorldDynamicProperties();
@@ -808,7 +834,6 @@ public class LevelDBProvider implements LevelProvider {
             }
             return levelDatBuilder.build();
         } catch (FileNotFoundException e) {
-            log.error("The level.dat file does not exist!");
         }
         throw new IllegalStateException("level.dat is null!");
     }
@@ -932,5 +957,10 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putBoolean("thundering", worldData.isThundering());
         levelDat.putInt("nosleepnights", worldData.getNoSleepNight());
         return levelDat;
+    }
+    
+    // Returns the Nether coordinate scale for thie world
+    public int getNetherScale() {
+        return this.netherScale;
     }
 }
