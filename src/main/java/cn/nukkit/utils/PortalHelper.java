@@ -162,7 +162,8 @@ public final class PortalHelper implements BlockID {
 
             /* Prevent portal overlap when Nether scale is 1:1.
             * Without this offset, portals may generate at identical coordinates
-            * in both dimensions, causing immediate teleport loops. */
+            * in both dimensions, causing immediate teleport loops. 
+            */
             if (scale == 1) {
                 x += 2;
                 z += 2;
