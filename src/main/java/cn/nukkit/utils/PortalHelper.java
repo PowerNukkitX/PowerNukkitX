@@ -211,20 +211,16 @@ public final class PortalHelper implements BlockID {
 
             // Search downward for safe portal spawn
             for (int i = y; i > overworldLevel.getMinHeight() + 2; i--) {
-
                 Block ground = overworldLevel.getBlock(x, i - 1, z);
-
                 boolean space = overworldLevel.getBlock(x, i, z).isAir() &&
                         overworldLevel.getBlock(x, i + 1, z).isAir() &&
                         overworldLevel.getBlock(x, i + 2, z).isAir() &&
                         overworldLevel.getBlock(x, i + 3, z).isAir() &&
                         overworldLevel.getBlock(x, i + 4, z).isAir();
-
                 if (space
                         && ground.isSolid()
                         && ground.getId() != BlockID.WATER
                         && ground.getId() != BlockID.LAVA) {
-
                     y = i;
                     break;
                 }
@@ -237,11 +233,7 @@ public final class PortalHelper implements BlockID {
                     overworldLevel);
             
             // Use existing portal instead of spawning a new one
-            Optional<Position> portal = getNearestValidPortal(target);
-            if (portal.isPresent()) {
-                return portal.get();
-            }
-            return target;
+            return portal.orElse(target)
         } else {
             throw new IllegalArgumentException("Position must be in Nether or Overworld!");
         }
