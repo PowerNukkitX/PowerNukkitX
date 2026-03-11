@@ -187,7 +187,6 @@ public final class PortalHelper implements BlockID {
                     z,
                     netherLevel);
             
-            // Use existing portal instead of spawning a new one
             Optional<Position> portal = getNearestValidPortal(target);
             if (portal.isPresent()) {
                 return portal.get();
