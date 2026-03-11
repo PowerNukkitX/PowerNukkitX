@@ -34,6 +34,7 @@ public class ServerboundDataDrivenClosedPacket extends DataPacket {
         return ProtocolInfo.SERVERBOUND_DATA_DRIVEN_SCREEN_CLOSED;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
