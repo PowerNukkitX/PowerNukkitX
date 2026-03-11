@@ -812,6 +812,7 @@ public class LevelDBProvider implements LevelProvider {
             }
             return levelDatBuilder.build();
         } catch (FileNotFoundException e) {
+            log.error("The level.dat file does not exist!");
         }
         throw new IllegalStateException("level.dat is null!");
     }
