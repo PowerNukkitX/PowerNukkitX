@@ -103,7 +103,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     @Nullable
     static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(@NotNull H holder) {
-        return setBlockAndCreateEntity(holder, true, true);
+        return setBlockAndCreateEntity(holder, false, true);
     }
 
     @Nullable
