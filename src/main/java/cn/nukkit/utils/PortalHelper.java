@@ -59,12 +59,10 @@ public final class PortalHelper implements BlockID {
 
         Block obsidian = Block.get(OBSIDIAN);
         Block netherPortal = Block.get(PORTAL);
-        // Clear area enough to fit portal safely before building
         for (int xx = -2; xx <= 4; xx++) {
             for (int yy = -1; yy <= 5; yy++) {
                 for (int zz = -1; zz <= 1; zz++) {
-                    Block block = lvl.getBlock(x + xx, y + yy, z + zz);
-                    // Never break bedrock
+                    Block block = lvl.getBlock(x + xx, y + yy, z + zz);           
                     if (block.getId() != BlockID.BEDROCK) {
                         lvl.setBlock(x + xx, y + yy, z + zz, Block.get(AIR), false, true);
                     }
