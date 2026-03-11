@@ -5299,19 +5299,15 @@ public class Level implements Metadatable {
         private Block block;
         private BlockFace neighbor;
     }
-    /**
-     * Returns the Nether coordinate scale for this level.
+    /** Returns the Nether coordinate scale for this level.
      * Delegates to the LevelProvider for custom portal ratios
      * Falls back to the vanilla default of 8 if the provider does not expose it.
      */
     public int getNetherScale() {
-
         LevelProvider provider = this.requireProvider();
-
         if (provider instanceof LevelDBProvider dbProvider) {
             return dbProvider.getNetherScale();
         }
-
         return 8;
     }
 }
