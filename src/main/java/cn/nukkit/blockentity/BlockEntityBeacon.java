@@ -52,7 +52,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public boolean isBlockEntityValid() {
         String blockID = getBlock().getId();
-        return blockID == Block.BEACON;
+        return blockID.equals(Block.BEACON);
     }
 
     @Override
@@ -68,6 +68,10 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public boolean onUpdate() {
+        if(!isBlockEntityValid()) {
+            this.close();
+        }
+        if(closed) return true;
         //Only apply effects every 4 secs
         if (currentTick++ % 80 != 0) {
             return true;
