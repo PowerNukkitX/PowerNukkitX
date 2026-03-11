@@ -57,17 +57,26 @@ public final class PortalHelper implements BlockID {
         int y = pos.getFloorY();
         int z = pos.getFloorZ();
 
-        Block air = Block.get(AIR);
         Block obsidian = Block.get(OBSIDIAN);
         Block netherPortal = Block.get(PORTAL);
-        // Clear the portal area
-        for (int xx = -1; xx < 4; xx++) {
-            for (int yy = 1; yy < 4; yy++) {
-                for (int zz = -1; zz < 3; zz++) {
-                    lvl.setBlock(x + xx, y + yy, z + zz, air, false, true);
+        // Clear area enough to fit portal safely before building
+        for (int xx = -2; xx <= 4; xx++) {
+            for (int yy = -1; yy <= 5; yy++) {
+                for (int zz = -1; zz <= 1; zz++) {
+
+                    Block block = lvl.getBlock(x + xx, y + yy, z + zz);
+
+                    // Never break bedrock
+                    if (block.getId() != BlockID.BEDROCK) {
+                        lvl.setBlock(x + xx, y + yy, z + zz, Block.get(AIR), false, true);
+                    }
+
                 }
             }
         }
+        // Shift portal so target position becomes the center of the frame
+        x -= 1;
+        z -= 1;
         // Build the frame (bottom)
         lvl.setBlock(x + 1, y, z, obsidian, false, true);
         lvl.setBlock(x + 2, y, z, obsidian, false, true);
@@ -148,8 +157,8 @@ public final class PortalHelper implements BlockID {
                 return null;
             
             // Converts coordinates using the configurable nether scale
-            int x = (int) current.getFloorX() / scale;
-            int z = (int) current.getFloorZ() / scale;
+            int x = current.getFloorX() / scale;
+            int z = current.getFloorZ() / scale;
 
             /* Prevent portal overlap when Nether scale is 1:1.
             * Without this offset, portals may generate at identical coordinates
@@ -158,18 +167,21 @@ public final class PortalHelper implements BlockID {
                 x += 2;
                 z += 2;
             }
-
-            int y = Math.min(netherLevel.getHighestBlockAt(x, z) + 1, 120);
+            // Nether Roof begins at y=121 setting a hard limit for 115 allows for a 5 block space to 120, never reaching bedrock.
+            int y = Math.min(netherLevel.getHighestBlockAt(x, z),115);
 
             // Search downward for a safe portal spawn location
             for (int i = y; i > netherLevel.getMinHeight() + 2; i--) {
 
-                Block feet = netherLevel.getBlock(x, i, z);
-                Block head = netherLevel.getBlock(x, i + 1, z);
                 Block ground = netherLevel.getBlock(x, i - 1, z);
 
-                if (feet.isAir()
-                        && head.isAir()
+                boolean space = netherLevel.getBlock(x, i, z).isAir() &&
+                        netherLevel.getBlock(x, i + 1, z).isAir() &&
+                        netherLevel.getBlock(x, i + 2, z).isAir() &&
+                        netherLevel.getBlock(x, i + 3, z).isAir() &&
+                        netherLevel.getBlock(x, i + 4, z).isAir();
+
+                if (space
                         && ground.isSolid()
                         && ground.getId() != BlockID.LAVA
                         && ground.getId() != BlockID.BEDROCK) {
@@ -207,12 +219,15 @@ public final class PortalHelper implements BlockID {
             // Search downward for safe portal spawn
             for (int i = y; i > overworldLevel.getMinHeight() + 2; i--) {
 
-                Block feet = overworldLevel.getBlock(x, i, z);
-                Block head = overworldLevel.getBlock(x, i + 1, z);
                 Block ground = overworldLevel.getBlock(x, i - 1, z);
 
-                if (feet.isAir()
-                        && head.isAir()
+                boolean space = overworldLevel.getBlock(x, i, z).isAir() &&
+                        overworldLevel.getBlock(x, i + 1, z).isAir() &&
+                        overworldLevel.getBlock(x, i + 2, z).isAir() &&
+                        overworldLevel.getBlock(x, i + 3, z).isAir() &&
+                        overworldLevel.getBlock(x, i + 4, z).isAir();
+
+                if (space
                         && ground.isSolid()
                         && ground.getId() != BlockID.WATER
                         && ground.getId() != BlockID.LAVA) {
