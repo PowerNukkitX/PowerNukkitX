@@ -165,7 +165,6 @@ public final class PortalHelper implements BlockID {
             // Nether Roof begins at y=121 setting a hard limit for 115 allows for a 5 block space to 120, never reaching bedrock.
             int y = Math.min(netherLevel.getHighestBlockAt(x, z),115);
 
-            // Search downward for a safe portal spawn location
             for (int i = y; i > netherLevel.getMinHeight() + 2; i--) {
                 Block ground = netherLevel.getBlock(x, i - 1, z);
                 boolean space = netherLevel.getBlock(x, i, z).isAir() &&
