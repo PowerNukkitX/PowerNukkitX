@@ -75,7 +75,9 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties = new CompoundTag();
     protected boolean worldDynamicPropertiesDirty = false;
-    
+    /**
+     * @return int The nether coordinate scale for the world
+     */
     public int getNetherScale() {
         return this.levelDat.getNetherScale();
     }
