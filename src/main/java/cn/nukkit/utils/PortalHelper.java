@@ -74,7 +74,7 @@ public final class PortalHelper implements BlockID {
                 }
             }
         }
-        // Shift portal so target position becomes the center of the frame
+        // Shift portal so target build location becomes center of cleared location
         x -= 1;
         z -= 1;
         // Build the frame (bottom)
