@@ -204,7 +204,6 @@ public final class PortalHelper implements BlockID {
 
             int y = overworldLevel.getHighestBlockAt(x, z);
 
-            // Search downward for safe portal spawn
             for (int i = y; i > overworldLevel.getMinHeight() + 2; i--) {
                 Block ground = overworldLevel.getBlock(x, i - 1, z);
                 boolean space = overworldLevel.getBlock(x, i, z).isAir() &&
