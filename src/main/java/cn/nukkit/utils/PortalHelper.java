@@ -191,7 +191,7 @@ public final class PortalHelper implements BlockID {
             if (portal.isPresent()) {
                 return portal.get();
             }
-            return target
+            return target;
         } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
 
             dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
@@ -226,7 +226,8 @@ public final class PortalHelper implements BlockID {
                     overworldLevel);
             
             // Use existing portal instead of spawning a new one
-            return portal.orElse(target)
+            Optional<Position> portal = getNearestValidPortal(target);
+            return portal.orElse(target);
         } else {
             throw new IllegalArgumentException("Position must be in Nether or Overworld!");
         }
