@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CloseButtonOptions {
+public class CloseButtonOptions implements ElementOptions {
 
     /** Label shown on the button. */
     @Builder.Default

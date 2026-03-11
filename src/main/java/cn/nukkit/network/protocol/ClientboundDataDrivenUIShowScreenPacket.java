@@ -33,6 +33,7 @@ public class ClientboundDataDrivenUIShowScreenPacket extends DataPacket {
         return ProtocolInfo.CLIENTBOUND_DDUI_SHOW_SCREEN;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }

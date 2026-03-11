@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ButtonOptions {
+public class ButtonOptions implements ElementOptions {
 
     /**
      * Whether the button is disabled (grayed-out, non-interactive).

@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TextFieldOptions implements ElementOptions {
-
+public class DropdownOptions implements ElementOptions {
     @Builder.Default
     private final Object description = "";
 

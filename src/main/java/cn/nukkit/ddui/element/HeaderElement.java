@@ -1,29 +1,33 @@
 package cn.nukkit.ddui.element;
 
 import cn.nukkit.ddui.Observable;
-import cn.nukkit.ddui.element.options.LabelOptions;
+import cn.nukkit.ddui.element.options.HeaderOptions;
 import cn.nukkit.ddui.properties.BooleanProperty;
 import cn.nukkit.ddui.properties.ObjectProperty;
 import cn.nukkit.ddui.properties.StringProperty;
 
-public class LabelElement extends Element<String> {
+/**
+ * @author xRookieFight
+ * @since 11/03/2026
+ */
+public class HeaderElement extends Element<String> {
 
-    public LabelElement(String text, ObjectProperty parent) {
-        this(text, LabelOptions.builder().build(), parent);
+    public HeaderElement(String text, ObjectProperty parent) {
+        this(text, HeaderOptions.builder().build(), parent);
     }
 
-    public LabelElement(String text, LabelOptions options, ObjectProperty parent) {
-        super("label", parent);
+    public HeaderElement(String text, HeaderOptions options, ObjectProperty parent) {
+        super("header", parent);
         setText(text);
         applyVisibility(options);
     }
 
-    public LabelElement(Observable<String> text, ObjectProperty parent) {
-        this(text, LabelOptions.builder().build(), parent);
+    public HeaderElement(Observable<String> text, ObjectProperty parent) {
+        this(text, HeaderOptions.builder().build(), parent);
     }
 
-    public LabelElement(Observable<String> text, LabelOptions options, ObjectProperty parent) {
-        super("label", parent);
+    public HeaderElement(Observable<String> text, HeaderOptions options, ObjectProperty parent) {
+        super("header", parent);
         setText(text);
         applyVisibility(options);
     }
@@ -34,14 +38,14 @@ public class LabelElement extends Element<String> {
         return "";
     }
 
-    public LabelElement setText(String text) {
+    public HeaderElement setText(String text) {
         StringProperty property = resolveTextProperty();
         property.setValue(text);
         setProperty(property);
         return this;
     }
 
-    public LabelElement setText(Observable<String> text) {
+    public HeaderElement setText(Observable<String> text) {
         StringProperty property = resolveTextProperty();
         property.setValue(text.getValue());
 
@@ -55,16 +59,16 @@ public class LabelElement extends Element<String> {
     }
 
     @Override
-    public LabelElement setVisibility(boolean visible) {
+    public HeaderElement setVisibility(boolean visible) {
         super.setVisibility(visible);
-        setProperty(new BooleanProperty("label_visible", visible, this));
+        setProperty(new BooleanProperty("header_visible", visible, this));
         return this;
     }
 
     @Override
-    public LabelElement setVisibility(Observable<Boolean> visible) {
+    public HeaderElement setVisibility(Observable<Boolean> visible) {
         super.setVisibility(visible);
-        var property = new BooleanProperty("label_visible", visible.getValue(), this);
+        var property = new BooleanProperty("header_visible", visible.getValue(), this);
         visible.subscribe(value -> {
             setVisibility(value);
             return property;
@@ -81,7 +85,7 @@ public class LabelElement extends Element<String> {
     }
 
     @SuppressWarnings("unchecked")
-    private void applyVisibility(LabelOptions options) {
+    private void applyVisibility(HeaderOptions options) {
         if (options.getVisible() instanceof Observable<?> obs) {
             setVisibility((Observable<Boolean>) obs);
         } else {

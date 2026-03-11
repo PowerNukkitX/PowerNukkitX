@@ -1,18 +1,11 @@
 package cn.nukkit.ddui;
 
 import cn.nukkit.Player;
-import cn.nukkit.ddui.element.ButtonElement;
-import cn.nukkit.ddui.element.LabelElement;
-import cn.nukkit.ddui.element.options.ButtonOptions;
-import cn.nukkit.ddui.element.CloseButtonElement;
-import cn.nukkit.ddui.element.options.CloseButtonOptions;
-import cn.nukkit.ddui.element.SliderElement;
-import cn.nukkit.ddui.element.options.LabelOptions;
-import cn.nukkit.ddui.element.options.SliderElementOptions;
-import cn.nukkit.ddui.element.TextFieldElement;
-import cn.nukkit.ddui.element.options.TextFieldOptions;
+import cn.nukkit.ddui.element.*;
+import cn.nukkit.ddui.element.options.*;
 import cn.nukkit.ddui.properties.StringProperty;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -129,6 +122,55 @@ public class CustomForm extends DataDrivenScreen {
 
     public CustomForm label(Observable<String> text, LabelOptions options) {
         layout.setProperty(new LabelElement(text, options, layout));
+        return this;
+    }
+
+    public CustomForm spacer() {
+        return spacer(true);
+    }
+
+    public CustomForm spacer(boolean visible) {
+        return spacer(SpacerOptions.builder().visible(visible).build());
+    }
+
+    public CustomForm spacer(SpacerOptions options) {
+        layout.setProperty(new SpacerElement(options, layout));
+        return this;
+    }
+
+    public CustomForm toggle(String label, Observable<Boolean> toggled) {
+        return toggle(label, toggled, ToggleOptions.builder().build());
+    }
+
+    public CustomForm toggle(String label, Observable<Boolean> toggled, ToggleOptions options) {
+        layout.setProperty(new ToggleElement(label, toggled, options, layout));
+        return this;
+    }
+
+    public CustomForm header(String text) {
+        return header(text, HeaderOptions.builder().build());
+    }
+
+    public CustomForm header(String text, HeaderOptions options) {
+        layout.setProperty(new HeaderElement(text, options, layout));
+        return this;
+    }
+
+    public CustomForm header(Observable<String> text) {
+        return header(text, HeaderOptions.builder().build());
+    }
+
+    public CustomForm header(Observable<String> text, HeaderOptions options) {
+        layout.setProperty(new HeaderElement(text, options, layout));
+        return this;
+    }
+
+    public CustomForm dropdown(String label, List<DropdownElement.Item> items, Observable<Long> selected) {
+        return dropdown(label, items, selected, DropdownOptions.builder().build());
+    }
+
+    public CustomForm dropdown(String label, List<DropdownElement.Item> items, Observable<Long> selected, DropdownOptions options) {
+        layout.setProperty(new DropdownElement(label, items, selected, options, layout));
         return this;
     }
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SliderElementOptions {
+public class SliderElementOptions implements ElementOptions {
 
     /** Helper text displayed below the slider. */
     @Builder.Default

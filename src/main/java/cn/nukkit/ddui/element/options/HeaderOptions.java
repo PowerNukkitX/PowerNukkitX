@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class LabelOptions implements ElementOptions {
+public class HeaderOptions {
 
     @Builder.Default
     private final Object visible = true;

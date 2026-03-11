@@ -31,6 +31,7 @@ public class PartyChangedPacket extends DataPacket {
         return ProtocolInfo.PARTY_CHANGED_PACKET;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
