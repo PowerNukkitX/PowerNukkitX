@@ -141,7 +141,6 @@ public final class PortalHelper implements BlockID {
             log.warn("Cannot convert position: position or level is null");
             return null;
         }
-        // Allow for a Custom Nether Scale to be used
         int scale = current.level.getNetherScale();
 
         DimensionData dimensionData;
