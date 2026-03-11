@@ -198,7 +198,6 @@ public final class PortalHelper implements BlockID {
             Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
             if (overworldLevel == null)
                 return null;
-            // Converts coordinates using the configurable nether scale
             int x = current.getFloorX() * scale;
             int z = current.getFloorZ() * scale;
 
