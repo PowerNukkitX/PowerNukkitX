@@ -63,14 +63,11 @@ public final class PortalHelper implements BlockID {
         for (int xx = -2; xx <= 4; xx++) {
             for (int yy = -1; yy <= 5; yy++) {
                 for (int zz = -1; zz <= 1; zz++) {
-
                     Block block = lvl.getBlock(x + xx, y + yy, z + zz);
-
                     // Never break bedrock
                     if (block.getId() != BlockID.BEDROCK) {
                         lvl.setBlock(x + xx, y + yy, z + zz, Block.get(AIR), false, true);
                     }
-
                 }
             }
         }
@@ -173,38 +170,33 @@ public final class PortalHelper implements BlockID {
 
             // Search downward for a safe portal spawn location
             for (int i = y; i > netherLevel.getMinHeight() + 2; i--) {
-
                 Block ground = netherLevel.getBlock(x, i - 1, z);
-
                 boolean space = netherLevel.getBlock(x, i, z).isAir() &&
                         netherLevel.getBlock(x, i + 1, z).isAir() &&
                         netherLevel.getBlock(x, i + 2, z).isAir() &&
                         netherLevel.getBlock(x, i + 3, z).isAir() &&
                         netherLevel.getBlock(x, i + 4, z).isAir();
-
                 if (space
                         && ground.isSolid()
                         && ground.getId() != BlockID.LAVA
                         && ground.getId() != BlockID.BEDROCK) {
-
                     y = i;
                     break;
                 }
             }
-
+            
             Position target = new Position(
                     x,
                     NukkitMath.clamp(y, dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1,
                     z,
                     netherLevel);
+            
             // Use existing portal instead of spawning a new one
             Optional<Position> portal = getNearestValidPortal(target);
             if (portal.isPresent()) {
                 return portal.get();
             }
-
-            return target;
-
+            return target
         } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
 
             dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
@@ -243,14 +235,13 @@ public final class PortalHelper implements BlockID {
                     NukkitMath.clamp(y, dimensionData.getMinHeight(), dimensionData.getMaxHeight()) + 1,
                     z,
                     overworldLevel);
+            
             // Use existing portal instead of spawning a new one
             Optional<Position> portal = getNearestValidPortal(target);
             if (portal.isPresent()) {
                 return portal.get();
             }
-
             return target;
-
         } else {
             throw new IllegalArgumentException("Position must be in Nether or Overworld!");
         }
