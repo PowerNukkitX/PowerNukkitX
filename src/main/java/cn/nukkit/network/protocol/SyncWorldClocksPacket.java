@@ -61,6 +61,7 @@ public class SyncWorldClocksPacket extends DataPacket {
         return ProtocolInfo.SYNC_WORLD_CLOCKS_PACKET;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
