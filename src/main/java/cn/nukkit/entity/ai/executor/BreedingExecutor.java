@@ -361,19 +361,16 @@ public class BreedingExecutor implements IBehaviorExecutor {
         List<BreedableComponent.BreedsWith> bw = breedable.breedsWith();
         if (bw == null) return null;
 
-        String babyType = null;
-
         for (BreedableComponent.BreedsWith it : bw) {
             if (it == null) continue;
             if (it.mateType() == null) continue;
             if (!it.mateType().equals(mateId)) continue;
 
-            babyType = it.babyType();
-            if (babyType == null || babyType.isEmpty())  babyType = null;
-            break;
+            String babyType = it.babyType();
+            return (babyType == null || babyType.isEmpty()) ? null : babyType;
         }
 
-        return babyType;
+        return null;
     }
 
     // Genetics / attributes blending (written to baby NBT)
