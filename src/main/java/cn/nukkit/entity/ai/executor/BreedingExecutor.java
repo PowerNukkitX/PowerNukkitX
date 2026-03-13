@@ -511,10 +511,8 @@ public class BreedingExecutor implements IBehaviorExecutor {
 
                 babyVar.setVariant(out);
 
-                if (mut != null && mut.extraVariant() != null && mut.extraVariant() > 0.0f) {
-                    if (ThreadLocalRandom.current().nextFloat() < mut.extraVariant()) {
-                        tryMutateExtraVariant(baby, pickDenyParentsVariant(b1, b2));
-                    }
+                if (mut != null && mut.extraVariant() != null && mut.extraVariant() > 0.0f && ThreadLocalRandom.current().nextFloat() < mut.extraVariant()) {
+                    tryMutateExtraVariant(baby, pickDenyParentsVariant(b1, b2));
                 }
             }
         }
