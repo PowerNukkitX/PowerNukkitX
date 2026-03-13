@@ -512,10 +512,7 @@ public class Server {
             }
 
             Profession.init();
-            String a = BlockTags.ACACIA;
-            String b = ItemTags.ARROW;
-            String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;
+            Updater updater = BlockStateUpdaterBase.INSTANCE;
             Enchantment.init();
             Attribute.init();
             BlockComposter.init();
@@ -2776,8 +2773,11 @@ public class Server {
         return this.allowTheEnd;
     }
 
-    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
-        return this.getSettings().debugSettings().ignoredPackets().contains(clazz.getSimpleName());
+    public boolean canLogPacket(Class<? extends DataPacket> clazz) {
+        if(!this.getSettings().debugSettings().mode()) // ignored mode
+            return !this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
+        else //allow mode
+            return this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
     }
 
     public int getServerAuthoritativeMovement() {

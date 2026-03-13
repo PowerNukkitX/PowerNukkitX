@@ -48,6 +48,7 @@ public final class DataPacketManager {
                 new LecternUpdateProcessor(),
                 new MapInfoRequestProcessor(),
                 new ServerSettingsRequestProcessor(),
+                new ServerboundDataStoreProcessor(),
                 new RespawnProcessor(),
                 new BookEditProcessor(),
                 new SetDifficultyProcessor(),
