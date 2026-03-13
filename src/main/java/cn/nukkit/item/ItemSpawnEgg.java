@@ -84,10 +84,8 @@ public class ItemSpawnEgg extends Item {
         Entity entity = Entity.createEntity(networkId, chunk, nbt);
         if (entity == null) return false;
 
-        if (entity.isAgeable()) {
-            if (ThreadLocalRandom.current().nextInt(6) == 0) {
-                entity.setBaby(true);
-            }
+        if (entity.isAgeable() && ThreadLocalRandom.current().nextInt(6) == 0) {
+            entity.setBaby(true);
         }
 
         if (player.isSurvival()) {

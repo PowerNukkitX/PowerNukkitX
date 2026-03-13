@@ -47,13 +47,8 @@ public record InventoryComponent(
         Boolean restrictToOwner
     ) {
     public InventoryComponent {
-        if (additionalSlotsPerStrength != null) {
-            if (additionalSlotsPerStrength < 0) additionalSlotsPerStrength = 0;
-        }
-
-        if (inventorySize != null) {
-            if (inventorySize < 0) inventorySize = 0;
-        }
+        if (additionalSlotsPerStrength != null && additionalSlotsPerStrength < 0) additionalSlotsPerStrength = 0;
+        if (inventorySize != null && inventorySize < 0) inventorySize = 0;
     }
 
     /** True when NOTHING is defined -> treat as "component not present". */

@@ -749,8 +749,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 if (headroom <= 0) desiredY = 0;
                 else if (desiredY > headroom) desiredY = headroom;
             }
-        } else if (!inWaterColumn) {
-            if (desiredY > 0) desiredY = 0;
+        } else if (!inWaterColumn && desiredY > 0) {
+            desiredY = 0;
         }
 
         // Gravity feel AFTER breaching water

@@ -119,8 +119,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
     @Override
     public boolean isRideable() {
-        if (this.isBaby()) return false;
-        return true;
+        return !this.isBaby();
     }
 
     @Override

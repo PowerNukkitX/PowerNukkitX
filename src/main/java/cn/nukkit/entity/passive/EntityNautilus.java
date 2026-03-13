@@ -87,8 +87,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
 
     @Override
     public boolean isRideable() {
-        if (this.isBaby()) return false;
-        return true;
+        return !this.isBaby();
     }
 
     @Override

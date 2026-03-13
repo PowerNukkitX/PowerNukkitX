@@ -146,9 +146,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         // Name tag
-        if (!item.isNull() && item.getId().equals(Item.NAME_TAG) && isNameable()) {
-            if (trySetNameTag(player, item)) return true;
-        }
+        if (!item.isNull() && item.getId().equals(Item.NAME_TAG) && isNameable() && trySetNameTag(player, item)) return true;
 
         //Pose
         if (player.isSneaking()) {

@@ -152,11 +152,9 @@ public class EntityHusk extends EntityZombie {
 
             if (damager instanceof EntityProjectile proj) {
                 Entity shooter = proj.shootingEntity;
-                if (shooter != null && shooter.riding != null) {
-                    if (this.riding != null && this.riding == shooter.riding) {
-                        ev.setCancelled(true);
-                        return false;
-                    }
+                if (shooter != null && shooter.riding != null && this.riding != null && this.riding == shooter.riding) {
+                    ev.setCancelled(true);
+                    return false;
                 }
             }
         }

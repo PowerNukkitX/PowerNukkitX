@@ -99,8 +99,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
     @Override
     public boolean isRideable() {
-        if (this.isBaby()) return false;
-        return true;
+        return !this.isBaby();
     }
 
     @Override

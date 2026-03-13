@@ -158,14 +158,10 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
-        if (!item.isNull() && this.isTamed()) {
-            if (item instanceof ItemDye dyeItem) {
-                if (this.hasOwner() && player.equals(this.getOwner())) {
-                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                    this.setColor(dyeItem.getDyeColor());
-                    return true;
-                }
-            }
+        if (!item.isNull() && this.isTamed() && (item instanceof ItemDye dyeItem) && this.hasOwner() && player.equals(this.getOwner())) {
+            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+            this.setColor(dyeItem.getDyeColor());
+            return true;
         }
 
         if (this.hasOwner() && player.getName().equals(getOwnerName()) && !this.isTouchingWater()) {

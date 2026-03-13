@@ -45,10 +45,7 @@ public class ItemSnowball extends ProjectileItem {
 
     @Override
     public boolean useOn(Entity entity) {
-        if (entity instanceof EntityHappyGhast) {
-            return true;
-        }
-        return false;
+        return entity instanceof EntityHappyGhast;
     }
 
     @Override

@@ -997,13 +997,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         // 3) Validate if the entity can be start breeding state while sitting
-        if (!breedable.resolvedAllowSitting()) {
-            if (this instanceof EntityCanSit ecs && ecs.isSitting()) return false;
+        if (!breedable.resolvedAllowSitting() && (this instanceof EntityCanSit ecs) && ecs.isSitting()) {
+            return false;
         }
 
         // 4) Check if entity is required to be full health before breeding
-        if (breedable.resolvedRequireFullHealth()) {
-            if (this.getHealthCurrent() < this.getHealthMax()) return false;
+        if (breedable.resolvedRequireFullHealth() && this.getHealthCurrent() < this.getHealthMax()) {
+            return false;
         }
 
         if (Boolean.TRUE.equals(ei.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))) {

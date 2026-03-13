@@ -93,8 +93,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
 
     @Override
     public boolean isRideable() {
-        if (this.isBaby()) return false;
-        return true;
+        return !this.isBaby();
     }
 
     @Override
