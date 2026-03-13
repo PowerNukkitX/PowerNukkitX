@@ -283,6 +283,7 @@ public class StartGamePacket extends DataPacket {
         return ProtocolInfo.START_GAME_PACKET;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
