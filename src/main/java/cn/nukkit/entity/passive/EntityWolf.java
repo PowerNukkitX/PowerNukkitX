@@ -300,20 +300,12 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         if (superResult) return true;
 
         if (!item.isNull() && this.isTamed()) {
-            if (item instanceof ItemDye dyeItem) {
-                if (this.hasOwner() && player.equals(this.getOwner())) {
-                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                    this.setColor(dyeItem.getDyeColor());
-                    return true;
-                }
-            } else if (item instanceof ItemWolfArmor armor) {
-                if (this.hasOwner() && player.equals(this.getOwner())) {
-                    if(armorInventory.getChestplate().isNull()) {
-                        armorInventory.setChestplate(armor);
-                        player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                    }
-                    return true;
-                }
+            if ((item instanceof ItemDye dyeItem) && this.hasOwner() && player.equals(this.getOwner())) {
+                this.setColor(dyeItem.getDyeColor());
+                return true;
+            } else if ((item instanceof ItemWolfArmor armor) && this.hasOwner() && player.equals(this.getOwner()) && armorInventory.getChestplate().isNull()) {
+                armorInventory.setChestplate(armor);
+                return true;
             }
         }
 
