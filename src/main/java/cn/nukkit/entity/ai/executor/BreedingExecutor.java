@@ -361,16 +361,14 @@ public class BreedingExecutor implements IBehaviorExecutor {
         List<BreedableComponent.BreedsWith> bw = breedable.breedsWith();
         if (bw == null) return null;
 
-        for (BreedableComponent.BreedsWith it : bw) {
-            if (it == null) continue;
-            if (it.mateType() == null) continue;
-            if (!it.mateType().equals(mateId)) continue;
-
-            String babyType = it.babyType();
-            return (babyType == null || babyType.isEmpty()) ? null : babyType;
-        }
-
-        return null;
+        return bw.stream()
+            .filter(Objects::nonNull)
+            .filter(it -> it.mateType() != null)
+            .filter(it -> it.mateType().equals(mateId))
+            .map(BreedableComponent.BreedsWith::babyType)
+            .filter(b -> b != null && !b.isEmpty())
+            .findFirst()
+            .orElse(null);
     }
 
     // Genetics / attributes blending (written to baby NBT)
