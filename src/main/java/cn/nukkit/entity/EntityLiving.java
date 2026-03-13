@@ -1089,9 +1089,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block b = this.level.getBlock(x, y, z);
-                    if (b != null && matcher.test(b)) {
-                        if (++count >= needed) return count;
-                    }
+                    if (b != null && matcher.test(b) && ++count >= needed) return count;
                 }
             }
         }

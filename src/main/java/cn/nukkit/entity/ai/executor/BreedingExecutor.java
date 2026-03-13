@@ -490,25 +490,23 @@ public class BreedingExecutor implements IBehaviorExecutor {
                     }
                 }
 
-                if (mut != null && mut.variant() != null && mut.variant() > 0.0f) {
-                    if (ThreadLocalRandom.current().nextFloat() < mut.variant()) {
-                        int mn;
-                        int mx;
+                if (mut != null && mut.variant() != null && mut.variant() > 0.0f && ThreadLocalRandom.current().nextFloat() < mut.variant()) {
+                    int mn;
+                    int mx;
 
-                        if (deny != null && (deny.minVariant() != null || deny.maxVariant() != null)) {
-                            mn = (deny.minVariant() != null) ? deny.minVariant() : 0;
-                            mx = (deny.maxVariant() != null) ? deny.maxVariant() : mn;
-                        } else {
-                            int a = (p1Var != null) ? p1Var : out;
-                            int b = (p2Var != null) ? p2Var : out;
-                            int lo = Math.min(a, b);
-                            int hi = Math.max(a, b);
-                            mn = Math.max(0, lo - 1);
-                            mx = Math.max(mn, hi + 1);
-                        }
-
-                        out = rollIntInclusive(mn, mx);
+                    if (deny != null && (deny.minVariant() != null || deny.maxVariant() != null)) {
+                        mn = (deny.minVariant() != null) ? deny.minVariant() : 0;
+                        mx = (deny.maxVariant() != null) ? deny.maxVariant() : mn;
+                    } else {
+                        int a = (p1Var != null) ? p1Var : out;
+                        int b = (p2Var != null) ? p2Var : out;
+                        int lo = Math.min(a, b);
+                        int hi = Math.max(a, b);
+                        mn = Math.max(0, lo - 1);
+                        mx = Math.max(mn, hi + 1);
                     }
+
+                    out = rollIntInclusive(mn, mx);
                 }
 
                 babyVar.setVariant(out);

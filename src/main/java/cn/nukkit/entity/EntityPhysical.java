@@ -442,8 +442,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             return false;
         }
 
-        if (type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) {
-            if (handleRideJumpOrDash(pk, type)) return true;
+        if ((type == RideableComponent.InputType.GROUND || type == RideableComponent.InputType.WATER) && handleRideJumpOrDash(pk, type)) {
+            return true;
         }
 
         return switch (type) {

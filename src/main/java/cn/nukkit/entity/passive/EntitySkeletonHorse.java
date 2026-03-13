@@ -252,11 +252,9 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (source instanceof EntityDamageByEntityEvent ev) {
-            if (ev.getDamager() instanceof EntityLightningBolt) {
-                ev.setCancelled(true);
-                return false;
-            }
+        if ((source instanceof EntityDamageByEntityEvent ev) && ev.getDamager() instanceof EntityLightningBolt) {
+            ev.setCancelled(true);
+            return false;
         }
         return super.attack(source);
     }
