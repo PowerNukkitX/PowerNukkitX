@@ -106,7 +106,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
                 throwTrident(entity);
                 stopTridentAnimation(entity);
                 tick2 = 0;
-                return target.getHealth() != 0;
+                return target.getHealthCurrent() != 0;
             }
         }
         return true;
@@ -117,7 +117,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -131,7 +131,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

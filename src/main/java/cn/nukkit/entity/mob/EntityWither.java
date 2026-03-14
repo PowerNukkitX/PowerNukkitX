@@ -32,6 +32,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -49,6 +51,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -81,7 +84,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                         entity -> getDataFlag(EntityFlag.CAN_DASH)
                                 ),
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 65, 3),
-                                entity -> getHealth() <= getMaxHealth()/2f,
+                                entity -> getHealthCurrent() <= getHealthMax()/2f,
                                 entity -> age >= 200
                         ), 10, 1),
                         new Behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1f, true, 64, 0), all(
@@ -91,7 +94,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                         entity -> getDataFlag(EntityFlag.CAN_DASH)
                                 ),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 65, 3),
-                                entity -> getHealth() <= getMaxHealth()/2f,
+                                entity -> getHealthCurrent() <= getHealthMax()/2f,
                                 entity -> age >= 200
                         ), 9, 1),
                         new Behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1f, true, 64, 0), all(
@@ -101,7 +104,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                         entity -> getDataFlag(EntityFlag.CAN_DASH)
                                 ),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 65, 3),
-                                entity -> getHealth() <= getMaxHealth()/2f,
+                                entity -> getHealthCurrent() <= getHealthMax()/2f,
                                 entity -> age >= 200
                         ), 8, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, true, 64, 16), all(
@@ -167,10 +170,10 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
     
     @Override
-    public void setHealth(float health) {
-        float healthBefore = getHealth();
-        float halfHealth = getMaxHealth()/2f;
-        super.setHealth(health);
+    public void setHealthCurrent(float health) {
+        float healthBefore = getHealthCurrent();
+        float halfHealth = getHealthMax()/2f;
+        super.setHealthCurrent(health);
         if(health <= halfHealth && healthBefore > halfHealth) {
             if(!isInvulnerable()) {
                 this.explode();
@@ -207,6 +210,17 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        int diffHealth = getMaxDiffHealth();
+        return HealthComponent.value(diffHealth);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
+    }
+
+    @Override
     protected DataPacket createAddEntityPacket() {
         AddEntityPacket addEntity = new AddEntityPacket();
         addEntity.type = getNetworkId();
@@ -222,7 +236,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
         addEntity.entityData = this.entityDataMap;
-        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth())};
+        addEntity.attributes = new Attribute[]{Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth())};
         return addEntity;
     }
 
@@ -239,11 +253,10 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(getMaxDiffHealth());
         super.initEntity();
         this.blockBreakSound = Sound.MOB_WITHER_BREAK_BLOCK;
         this.setInvulnerable(200);
-        this.setHealth(1);
+        this.setHealthCurrent(1);
     }
 
     @Override
@@ -259,10 +272,10 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
             }
             if (this.age == 200) {
                 this.explode();
-                setHealth(getMaxHealth());
+                setHealthCurrent(getHealthMax());
                 getLevel().addSound(this, Sound.MOB_WITHER_SPAWN);
             } else if(age < 200) {
-                heal(getMaxHealth()/200f);
+                heal(getHealthMax()/200f);
             }
         }
         return super.onUpdate(currentTick);

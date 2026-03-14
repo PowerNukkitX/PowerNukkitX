@@ -2,18 +2,16 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.data.EntityFlag;
 
 /**
- * 使有主人的生物在主人睡觉时睡到主人床上<br/>
- * 只能在实现了接口 {@link EntityOwnable} 的实体上使用<br/>
- * 需要保证实体的getOwner()方法返回非空
+ * Allows a creature with an owner to sleep in the owner's bed while the owner sleeps. <p>
+ * It is necessary to ensure that the entity's getOwner() method returns a non-null value.
  */
 public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
-        Player owner = ((EntityOwnable) entity).getOwner();
+        Player owner = entity.getOwner();
         if (entity.distanceSquared(owner) <= 4) {
             setSleeping(entity, true);
         }
@@ -22,7 +20,7 @@ public class SleepOnOwnerBedExecutor implements IBehaviorExecutor {
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        Player owner = ((EntityOwnable) entity).getOwner();
+        Player owner = entity.getOwner();
         entity.setMoveTarget(owner);
         entity.setLookTarget(owner);
     }

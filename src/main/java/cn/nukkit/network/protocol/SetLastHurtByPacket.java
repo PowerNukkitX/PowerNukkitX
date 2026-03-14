@@ -8,6 +8,9 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class SetLastHurtByPacket extends DataPacket {
+    public int entityTypeId;
+
+
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -15,7 +18,7 @@ public class SetLastHurtByPacket extends DataPacket {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        //TODO: Implement
+        byteBuf.writeUnsignedVarLong(this.entityTypeId);
     }
 
     @Override

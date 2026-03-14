@@ -17,6 +17,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -25,6 +27,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +45,6 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(16);
         super.initEntity();
         if (getItemInHand().isNull()) {
             setItemInHand(Item.get(ItemID.BOW));
@@ -57,6 +59,16 @@ public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmi
     @Override
     public float getHeight() {
         return 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(16);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override

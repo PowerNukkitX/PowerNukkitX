@@ -21,6 +21,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
@@ -30,6 +32,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +101,6 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{5f, 8f, 12f};
         super.initEntity();
         // 判断凋零骷髅是否手持石剑如果没有就给它石剑
@@ -117,6 +119,16 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     @Override
     public float getHeight() {
         return 2.4f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override

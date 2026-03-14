@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
@@ -14,14 +13,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.entity.spawners.SpawnRule;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
@@ -30,12 +27,9 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.StampedLock;
@@ -574,6 +568,7 @@ public class Chunk implements IChunk {
                         Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(spawnPos));
                         if (entity != null) {
                             spawnedEntityCount++;
+                            entity.namedTag.putString("SpawnReason", "NATURAL");
                             entity.despawnable = true;
                             entity.spawnToAll();
                         }

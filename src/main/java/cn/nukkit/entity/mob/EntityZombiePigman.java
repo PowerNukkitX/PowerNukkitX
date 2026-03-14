@@ -24,13 +24,22 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.MemorizedBlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
+import cn.nukkit.utils.Utils;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -83,7 +92,6 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, BlockTurtleEgg.class);
@@ -100,6 +108,16 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.23f);
+    }
+
+    @Override
     public String getOriginalName() {
         return "Zombified Piglin";
     }
@@ -111,6 +129,11 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
 
     @Override
     public boolean isUndead() {
+        return true;
+    }
+
+    @Override
+    public boolean isFireImmune() {
         return true;
     }
 
@@ -131,6 +154,49 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     @Override
     public Integer getExperienceDrops() {
         return isBaby() ? 7 : 5;
+    }
+    
+    @Override
+    public Item[] getDrops(@NotNull Item weapon) {
+        int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
+        List<Item> drops = new ArrayList<>();
+
+        int flesh = Utils.rand(0, 1 + looting);
+        if (flesh > 0) {
+            drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
+        }
+
+        int nuggets = Utils.rand(0, 1 + looting);
+        if (nuggets > 0) {
+            drops.add(Item.get(Item.GOLD_NUGGET, 0, nuggets));
+        }
+
+        Item hand = getEquipmentInventory().getItemInHand();
+        if (!hand.isNull() && hand.getId() == Item.WARPED_FUNGUS_ON_A_STICK) {
+            drops.add(hand.clone());
+        }
+
+        if (weapon != Item.AIR) {
+            if (Utils.rand(0, 199) < (5 + looting)) {
+                Item sword = Item.get(Item.GOLDEN_SWORD);
+                drops.add(sword);
+            }
+
+            if (/* TODO: isPiglinBruteZoombified() &&*/ Utils.rand(0, 199) < (5 + looting)) {
+                Item axe = Item.get(Item.GOLDEN_AXE);
+                drops.add(axe);
+            }
+
+            if (hand.getId() == Item.CROSSBOW) {
+                drops.add(hand.clone());
+            }
+
+            if (Utils.rand(0, 999) < (10 + looting * 5)) {
+                drops.add(Item.get(Item.GOLD_INGOT, 0, 1));
+            }
+        }
+
+        return drops.toArray(Item.EMPTY_ARRAY);
     }
 
     @Override

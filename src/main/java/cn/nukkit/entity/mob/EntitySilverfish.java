@@ -16,9 +16,12 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -78,8 +81,17 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(8);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
+    }
+
+    @Override
     public void initEntity() {
-        this.setMaxHealth(8);
         this.diffHandDamage = new float[]{1f, 1f, 1.5f};
         super.initEntity();
     }

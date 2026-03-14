@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
@@ -34,6 +36,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -87,7 +90,6 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(80);
         super.initEntity();
         this.diffHandDamage = new float[]{5f, 8f, 12f};
         this.setDataFlag(EntityFlag.ELDER, true);
@@ -101,6 +103,16 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     @Override
     public float getHeight() {
         return 1.99f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(80);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
     }
 
     @Override

@@ -40,8 +40,8 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
     public void initEntity() {
         super.initEntity();
 
-        this.setMaxHealth(1);
-        this.setHealth(1);
+        this.setHealthMax(1);
+        this.setHealthCurrent(1);
 
         this.setDataProperty(NAMETAG_ALWAYS_SHOW, (byte) 0, false);
         this.setDataFlag(EntityFlag.CAN_SHOW_NAME, false);

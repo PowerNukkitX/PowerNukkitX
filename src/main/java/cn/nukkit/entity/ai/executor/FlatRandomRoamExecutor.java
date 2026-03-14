@@ -32,13 +32,13 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
     /**
      * Instantiates a new Flat random roam executor.
      *
-     * @param speed                    移动速度<br>Movement speed
-     * @param maxRoamRange             随机行走目标点的范围<br>The range of the target point that is randomly walked
-     * @param frequency                更新目标点的频率<br>How often the target point is updated
-     * @param calNextTargetImmediately 是否立即选择下一个目标点,不管执行频率<br>Whether to select the next target point immediately, regardless of the frequency of execution
-     * @param runningTime              执行最大的用时,-1代表不限制<br>Maximum time to execute,-1 means no limit
-     * @param avoidWater               是否避开水行走<br>Whether to walk away from water
-     * @param maxRetryTime             选取目标点的最大尝试次数<br>Pick the maximum number of attempts at the target point
+     * @param speed                    Movement speed
+     * @param maxRoamRange             The range of the target point that is randomly walked
+     * @param frequency                How often the target point is updated
+     * @param calNextTargetImmediately Whether to select the next target point immediately, regardless of the frequency of execution
+     * @param runningTime              Maximum time to execute,-1 means no limit
+     * @param avoidWater               Whether to walk away from water
+     * @param maxRetryTime             Pick the maximum number of attempts at the target point
      */
     public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
         this.speed = speed;
@@ -53,6 +53,12 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
 
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
+        if (entity.canSit() && entity.isSitting()) {
+            stop(entity);
+            entity.getBehaviorGroup().setForceUpdateRoute(true);
+            return false;
+        }
+
         currentTargetCalTick++;
         durationTick++;
         if (entity.isEnablePitch()) entity.setEnablePitch(false);
@@ -66,11 +72,9 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
                     time++;
                 }
             }
-            if (entity.getMovementSpeed() != speed)
-                entity.setMovementSpeed(speed);
-            //更新寻路target
+            if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
+
             setRouteTarget(entity, target);
-            //更新视线target
             setLookTarget(entity, target);
             currentTargetCalTick = 0;
             entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
