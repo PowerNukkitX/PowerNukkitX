@@ -3322,7 +3322,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void updateInventoryFlags() {
-        if (!hasInventory()) return;
+        if (!hasInventory()) {
+            this.setDataProperty(Entity.CONTAINER_TYPE, (byte) 0);
+            this.setDataProperty(Entity.CONTAINER_SIZE, 0);
+            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, 0);
+            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, false);
+            return;
+        }
 
         if ((this instanceof EntityLiving ei) && ei.isTamed()) {
             this.setDataProperty(Entity.CONTAINER_TYPE, getComponentInventory().typeId());
@@ -3331,9 +3337,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, getComponentInventory().isRestrictedToOwner());
             return;
         }
+
         if (this instanceof EntityVehicle) {
             this.setDataProperty(Entity.CONTAINER_TYPE, getComponentInventory().typeId());
             this.setDataProperty(Entity.CONTAINER_SIZE, getComponentInventory().size());
+            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, 0);
+            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, false);
         }
     }
 
