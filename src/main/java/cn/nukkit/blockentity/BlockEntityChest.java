@@ -114,11 +114,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean pairWith(BlockEntityChest chest) {
-        if(this.getBlock() instanceof BlockCopperChest && !(chest.getBlock() instanceof BlockCopperChest)) {
-            return false;
-        }
-
-        if(chest.getBlock() instanceof BlockCopperChest && !(this.getBlock() instanceof BlockCopperChest)) {
+        if ((this.getBlock() instanceof BlockCopperChest) != (chest.getBlock() instanceof BlockCopperChest)) {
             return false;
         }
 
