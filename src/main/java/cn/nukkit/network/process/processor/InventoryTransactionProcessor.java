@@ -3,7 +3,6 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -16,6 +15,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemMace;
@@ -51,10 +51,6 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
         Player player = playerHandle.player;
-        if (player.isSpectator()) {
-            player.sendAllInventories();
-            return;
-        }
         if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM) {
             handleUseItem(playerHandle, pk);
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY) {
@@ -79,9 +75,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                             player.getInventory().sendContents(player);
                         }
                     }
-                    case InventoryTransactionPacket.RELEASE_ITEM_ACTION_CONSUME -> {
-                        log.debug("Unexpected release item action consume from {}", player.getName());
-                    }
+                    case InventoryTransactionPacket.RELEASE_ITEM_ACTION_CONSUME -> log.debug("Unexpected release item action consume from {}", player.getName());
                 }
             } finally {
                 player.removeLastUseTick(releaseItemData.itemInHand.getId());
@@ -150,7 +144,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
                 PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
-                if (player.isSpectator()) playerInteractEntityEvent.setCancelled();
+                if (player.isSpectator() || (player.getDataFlag(EntityFlag.SILENT) && !(target instanceof InventoryHolder))) playerInteractEntityEvent.setCancelled();
                 playerHandle.setInteract();
                 player.getServer().getPluginManager().callEvent(playerInteractEntityEvent);
                 if (playerInteractEntityEvent.isCancelled()) {
