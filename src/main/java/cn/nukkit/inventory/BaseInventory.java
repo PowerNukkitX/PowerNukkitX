@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -424,6 +425,12 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Set<Player> getViewers() {
         return viewers;
+    }
+
+    public long getVisibleViewersCount() {
+        return this.getViewers().stream()
+                .filter(v -> !v.getDataFlag(EntityFlag.SILENT))
+                .count();
     }
 
     @Override

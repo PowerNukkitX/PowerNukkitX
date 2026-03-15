@@ -36,7 +36,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
     public void onOpen(Player who) {
         super.onOpen(who);
 
-        if (this.getViewers().size() == 1) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
@@ -54,7 +54,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
 
     @Override
     public void onClose(Player who) {
-        if (this.getViewers().size() == 1) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();

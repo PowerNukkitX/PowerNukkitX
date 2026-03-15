@@ -123,7 +123,7 @@ public class DoubleChestInventory extends ContainerInventory {
         this.left.viewers.add(who);
         this.right.viewers.add(who);
 
-        if (this.getViewers().size() == 1) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEventPacket pk1 = new BlockEventPacket();
             pk1.x = (int) this.left.getHolder().getX();
             pk1.y = (int) this.left.getHolder().getY();
@@ -153,7 +153,7 @@ public class DoubleChestInventory extends ContainerInventory {
 
     @Override
     public void onClose(Player who) {
-        if (this.getViewers().size() == 1) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEventPacket pk1 = new BlockEventPacket();
             pk1.x = (int) this.right.getHolder().getX();
             pk1.y = (int) this.right.getHolder().getY();
