@@ -481,6 +481,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         namedTag.putBoolean("Persistent", persistent);
     }
 
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+        this.namedTag.putBoolean("Invulnerable", invulnerable);
+    }
+
     /**
      * Entity initialization order, first initialize the Entity class field->Entity constructor->Enter the init method->Call the init Entity method-> subclass field initialization-> subclass constructor
      * <p>
