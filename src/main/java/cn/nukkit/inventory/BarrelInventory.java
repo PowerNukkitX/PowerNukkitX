@@ -34,7 +34,7 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
     public void onOpen(Player who) {
         super.onOpen(who);
 
-        if (this.getViewers().size() == 1) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEntityBarrel barrel = this.getHolder();
             Level level = barrel.getLevel();
             if (level != null) {
@@ -52,9 +52,7 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
 
     @Override
     public void onClose(Player who) {
-        super.onClose(who);
-
-        if (this.getViewers().isEmpty()) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEntityBarrel barrel = this.getHolder();
             Level level = barrel.getLevel();
             if (level != null) {
@@ -68,6 +66,8 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
                 }
             }
         }
+
+        super.onClose(who);
     }
 
     @Override

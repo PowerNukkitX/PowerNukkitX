@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockTrappedChest;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.blockentity.BlockEntityNameable;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
@@ -54,7 +55,11 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     public void onOpen(Player who) {
         super.onOpen(who);
 
-        if (this.getViewers().size() == 1) {
+        if (who.getDataFlag(EntityFlag.SILENT)) {
+            return;
+        }
+
+        if (this.getVisibleViewersCount() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
@@ -82,7 +87,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
 
     @Override
     public void onClose(Player who) {
-        if (this.getViewers().size() == 1) {
+        if (this.getVisibleViewersCount() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
             pk.y = (int) this.getHolder().getY();
