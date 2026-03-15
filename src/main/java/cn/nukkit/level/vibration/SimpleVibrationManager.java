@@ -2,6 +2,7 @@ package cn.nukkit.level.vibration;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.level.VibrationArriveEvent;
 import cn.nukkit.event.level.VibrationOccurEvent;
 import cn.nukkit.level.Level;
@@ -29,6 +30,8 @@ public class SimpleVibrationManager implements VibrationManager {
 
     @Override
     public void callVibrationEvent(VibrationEvent event) {
+        if(event.initiator() instanceof Entity e && e.getDataFlag(EntityFlag.SILENT)) return;
+
         VibrationOccurEvent vibrationOccurPluginEvent = new VibrationOccurEvent(event);
         this.level.getServer().getPluginManager().callEvent(vibrationOccurPluginEvent);
         if (vibrationOccurPluginEvent.isCancelled()) {
@@ -60,6 +63,8 @@ public class SimpleVibrationManager implements VibrationManager {
     }
 
     protected void createVibration(VibrationListener listener, VibrationEvent event) {
+        if(event.initiator() instanceof Entity e && e.getDataFlag(EntityFlag.SILENT)) return;
+
         var listenerPos = listener.getListenerVector().asVector3f();
         var sourcePos = event.source().asVector3f();
         var tag = new CompoundTag()
@@ -70,7 +75,7 @@ public class SimpleVibrationManager implements VibrationManager {
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.eventId = LevelEventPacket.EVENT_PARTICLE_VIBRATION_SIGNAL;
         packet.tag = tag;
-        //todo: 只对在视野范围内的玩家发包
+        //todo: Packets are only sent to players within the player's field of view.
         Server.broadcastPacket(level.getPlayers().values(), packet);
     }
 
