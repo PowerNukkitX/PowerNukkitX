@@ -788,7 +788,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     // INPUT CONTROLS HELPERS START
 
-    private boolean handleRideJumpOrDash(PlayerAuthInputPacket pk, RideableComponent.InputType type) {
+    protected boolean handleRideJumpOrDash(PlayerAuthInputPacket pk, RideableComponent.InputType type) {
         final boolean dashHeld =
                 pk.inputData.contains(AuthInputAction.WANT_UP) ||
                 pk.inputData.contains(AuthInputAction.JUMP_DOWN) ||

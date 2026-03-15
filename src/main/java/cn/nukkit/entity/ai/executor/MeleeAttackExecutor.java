@@ -86,7 +86,7 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         if (!entity.targetEntity.isAlive()) return false;
         else if (entity.distanceSquared(entity.targetEntity) > maxSenseRangeSquared) return false;
         else if (entity.targetEntity instanceof Player player) {
-            if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
+            if (player.isIgnoredByEntities() || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
         }
