@@ -97,7 +97,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         new Behavior((entity) -> {
                             //为玩家附加黑暗效果
                             for (var player : entity.level.getPlayers().values()) {
-                                if (!player.isCreative() && !player.isSpectator()
+                                if (!player.isIgnoredByEntities()
                                         && entity.distanceSquared(player) <= 400) {
                                     var effect = player.getEffect(EffectType.DARKNESS);
                                     if (effect == null) {
@@ -144,7 +144,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                                     } else {
                                         Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
                                         if (e instanceof Player player) {
-                                            return player.isSurvival() || player.isAdventure();
+                                            return !player.isIgnoredByEntities();
                                         }
                                         return true;
                                     }

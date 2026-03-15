@@ -66,7 +66,7 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (this.target == null) target = newTarget;
 
-        if (!target.isAlive() || (target instanceof Player player && (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())))) {
+        if (!target.isAlive() || (target instanceof Player player && (player.isIgnoredByEntities() || !entity.level.getName().equals(player.level.getName())))) {
             return false;
         }
 

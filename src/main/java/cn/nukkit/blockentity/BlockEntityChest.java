@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockChest;
+import cn.nukkit.block.copper.chest.BlockCopperChest;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.inventory.ContainerInventory;
@@ -47,8 +48,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public boolean isBlockEntityValid() {
-        String blockID = this.getBlock().getId();
-        return blockID.equals(Block.CHEST) || blockID.equals(Block.TRAPPED_CHEST);
+        return getBlock() instanceof BlockChest;
     }
 
     public int getSize() {
@@ -114,6 +114,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean pairWith(BlockEntityChest chest) {
+        if ((this.getBlock() instanceof BlockCopperChest) != (chest.getBlock() instanceof BlockCopperChest)) {
+            return false;
+        }
+
         if (this.isPaired()) {
             int x1 = this.namedTag.getInt("pairx");
             int z1 = this.namedTag.getInt("pairz");

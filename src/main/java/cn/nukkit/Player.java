@@ -2476,6 +2476,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.gamemode == ADVENTURE;
     }
 
+    public boolean isIgnoredByEntities() {
+        return this.isCreative() || this.isSpectator() || !this.isOnline() || adventureSettings.get(PlayerAbility.INVULNERABLE);
+    }
+
+    @Override
+    public void setInvulnerable(boolean value) {
+        invulnerable = value;
+        this.getAdventureSettings().set(PlayerAbility.INVULNERABLE, value).update();
+    }
+
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         if (!this.isCreative() && !this.isSpectator()) {
@@ -3537,9 +3547,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void kill() {
-        if (!this.spawned) {
+        if (!this.spawned)
             return;
-        }
+
+        if(adventureSettings.get(PlayerAbility.INVULNERABLE))
+            return;
 
         boolean showMessages = this.level.getGameRules().getBoolean(GameRule.SHOW_DEATH_MESSAGES);
         String message = "";
@@ -4016,7 +4028,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
 
-        if (this.isSpectator() || this.isCreative()) {
+        if (this.isSpectator() || this.isCreative() || this.getAdventureSettings().get(PlayerAbility.INVULNERABLE)) {
             return false;
         } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
             return false;

@@ -66,7 +66,7 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
 
         if (!target.isAlive()) return false;
         else if (target instanceof Player player) {
-            if (player.isCreative() || player.isSpectator() || !player.isOnline() || !entity.level.getName().equals(player.level.getName())) {
+            if (player.isIgnoredByEntities() || !entity.level.getName().equals(player.level.getName())) {
                 return false;
             }
         }

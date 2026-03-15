@@ -8,6 +8,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
@@ -161,12 +162,16 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
         BlockEntityShulkerBox box = getOrCreateBlockEntity();
         Block block = this.getSide(BlockFace.fromIndex(box.namedTag.getByte("facing")));
-        if (!(block instanceof BlockAir) && !(block instanceof BlockLiquid) && !(block instanceof BlockFlowable)) {
+        if (!player.getDataFlag(EntityFlag.SILENT) && !this.canBeOpened(block)) {
             return false;
         }
 
         player.addWindow(box.getInventory());
         return true;
+    }
+
+    protected boolean canBeOpened(Block block) {
+        return block instanceof BlockAir || block instanceof BlockLiquid || block instanceof BlockFlowable;
     }
 
     @Override
