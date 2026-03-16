@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.passive.EntitySkeletonHorse;
 
-
 /**
  * Sensor that periodically checks for nearby players to activate the
  * skeleton horse trap mechanic.
@@ -16,7 +15,6 @@ import cn.nukkit.entity.passive.EntitySkeletonHorse;
  * @author Curse
  */
 public class SkeletonHorseTrapSensor implements ISensor {
-
     private final int range;
     private final int period;
     private int tick;

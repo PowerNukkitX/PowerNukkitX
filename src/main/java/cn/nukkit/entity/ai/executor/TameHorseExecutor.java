@@ -11,7 +11,6 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * @deprecated Since 2.0.0 (2026-02-19).
  * Replaced by {@link RideableTameExecutor}, which provides a generic
@@ -59,8 +58,6 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
         //Fail Animation
         if (tick1 != 0) {
             if (tick1 > 13) {
-                var horse = (EntityHorse) entity;
-                //horse.stopTameFailAnimation();
                 return false;
             }
             tick1++;
@@ -113,7 +110,6 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                     return false;
                 }
                 player.dataPacket(packet);
-                //horse.playTameFailAnimation();
                 horse.dismountEntity(horse.getRider());
                 horse.setPersistent(true);
                 tick1++;

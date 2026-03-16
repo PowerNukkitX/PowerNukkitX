@@ -6,7 +6,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
-
 /**
  * Handles the duration of the "in love" breeding state for entities.
  *

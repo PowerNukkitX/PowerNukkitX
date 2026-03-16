@@ -7,7 +7,6 @@ import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * Sensor that monitors the distance to a target entity and updates a movement
  * target memory to follow it.

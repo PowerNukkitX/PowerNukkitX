@@ -2,7 +2,6 @@ package cn.nukkit.entity.components;
 
 import java.util.*;
 
-
 /**
  * Bedrock component: {@code minecraft:home}.
  *

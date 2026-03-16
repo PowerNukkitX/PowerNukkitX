@@ -32,20 +32,18 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
     protected final int coolDownTick;
     protected final int pullBowTick;
     /**
-     * 用来指定特定的攻击目标.
-     * <p>
      * Used to specify a specific attack target.
      **/
     protected Entity target;
     /**
-     * 用来射击的物品
+     * Items used for shooting
      */
     protected Supplier<Item> item;
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
 
     /**
-     * 射击执行器
+     * Shooting actuator
      *
      * @param item              the item
      * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
@@ -120,7 +118,6 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
@@ -134,7 +131,6 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);

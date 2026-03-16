@@ -2,7 +2,6 @@ package cn.nukkit.entity.components;
 
 import java.util.Locale;
 
-
 /**
  * Bedrock component: {@code minecraft:inventory}.
  *

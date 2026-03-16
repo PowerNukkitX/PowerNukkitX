@@ -110,8 +110,6 @@ public class EntityFallingBlock extends Entity {
 
             breakOnLava = namedTag.getBoolean("BreakOnLava");
             breakOnGround = namedTag.getBoolean("BreakOnGround");
-            //this.fireProof = true;
-            //this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
 
             setDataProperty(VARIANT, blockState.blockStateHash());
         }

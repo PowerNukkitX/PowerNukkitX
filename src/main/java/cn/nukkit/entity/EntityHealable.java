@@ -3,7 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.item.Item;
 
 /**
- * 实体可通过喂食食物被治疗
+ * The body can be treated by feeding it food.
  */
 
 /**
@@ -16,7 +16,7 @@ import cn.nukkit.item.Item;
 @Deprecated(since = "2.0.0", forRemoval = true)
 public interface EntityHealable {
     /**
-     * 获得可以治疗食物的治疗量
+     * Obtain the healing amount that can be used to treat food.
      */
     /*
     int getHealingAmount(Item item);

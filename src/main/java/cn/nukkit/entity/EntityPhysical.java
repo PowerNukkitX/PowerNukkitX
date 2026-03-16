@@ -785,7 +785,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         return true;
     }
 
-
     // INPUT CONTROLS HELPERS START
 
     protected boolean handleRideJumpOrDash(PlayerAuthInputPacket pk, RideableComponent.InputType type) {

@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.passive.EntitySkeletonHorse;
 
-
 /**
  * Handles the skeleton horse trap mechanic.
  *

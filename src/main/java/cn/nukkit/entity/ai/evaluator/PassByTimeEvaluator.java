@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.evaluator;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 
-
 /**
  * An evaluator used to determine whether a time type of memory is within a specified range
  */
@@ -12,7 +11,6 @@ public class PassByTimeEvaluator implements IBehaviorEvaluator {
     protected MemoryType<Integer> timedMemory;
     protected int minPassByTimeRange;
     protected int maxPassByTimeRange;
-
 
     public PassByTimeEvaluator(MemoryType<Integer> timedMemory, int minPassByTimeRange) {
         this(timedMemory, minPassByTimeRange, Integer.MAX_VALUE);

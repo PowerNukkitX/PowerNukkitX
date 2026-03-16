@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-
 /**
  * "Beg" behavior: makes the entity look at the nearest nearby player holding
  * one of the configured beg items, and sets {@link EntityFlag#INTERESTED}

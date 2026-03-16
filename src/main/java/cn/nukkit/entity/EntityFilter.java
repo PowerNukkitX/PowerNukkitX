@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 
-
 /**
  * Functional predicate used to evaluate whether an {@link Entity} satisfies a given condition
  * under a specific interaction context.

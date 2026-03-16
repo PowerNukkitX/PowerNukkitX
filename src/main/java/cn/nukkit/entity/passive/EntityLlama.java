@@ -54,7 +54,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 public class EntityLlama extends EntityAnimal implements EntityWalkable, InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {

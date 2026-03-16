@@ -4,7 +4,6 @@ import cn.nukkit.math.Vector3f;
 
 import java.util.*;
 
-
 /**
  * Bedrock component: {@code minecraft:rideable}.
  *

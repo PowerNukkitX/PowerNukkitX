@@ -6,7 +6,6 @@ import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import org.jetbrains.annotations.Nullable;
 
-
 /**
  * Legacy breeding executor that pairs nearby in-love entities of the same {@code entityClass} and spawns a single baby.
  * <p>

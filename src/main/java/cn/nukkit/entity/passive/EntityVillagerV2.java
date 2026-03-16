@@ -83,7 +83,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-
 // TODO: Rework villagers, it seems to be broken, movement stucked in walls, breeding logic not reliable, professions not changing when breaking blocks, etc...
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override

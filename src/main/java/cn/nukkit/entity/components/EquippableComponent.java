@@ -4,7 +4,6 @@ import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
-
 /**
  * Bedrock component: {@code minecraft:equippable}.
  *

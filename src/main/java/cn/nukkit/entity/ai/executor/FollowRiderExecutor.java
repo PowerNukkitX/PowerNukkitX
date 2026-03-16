@@ -7,7 +7,6 @@ import cn.nukkit.entity.components.BoostableComponent;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 
-
 /**
  * Ride control behavior that moves a rideable entity in the rider's
  * forward direction.

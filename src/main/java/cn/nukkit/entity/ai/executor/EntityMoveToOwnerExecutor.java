@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-
 /**
  * The entity moves to the master's side)
  */

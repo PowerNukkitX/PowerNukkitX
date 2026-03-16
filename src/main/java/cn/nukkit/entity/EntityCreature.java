@@ -5,7 +5,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-
 /**
  * Creature Entities
  *

@@ -33,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-
 // TODO: Pregnant logic / Behavior
 public class EntitySniffer extends EntityAnimal {
 

@@ -8,7 +8,6 @@ import cn.nukkit.math.Vector3;
 
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * Makes a rideable entity follow the movement or combat target of its rider.
  *

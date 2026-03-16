@@ -6,7 +6,6 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.item.Item;
 
-
 /**
  * Handles real-time growth progression for ageable baby entities.
  *

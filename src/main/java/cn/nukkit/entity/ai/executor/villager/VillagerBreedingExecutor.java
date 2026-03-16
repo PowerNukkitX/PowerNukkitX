@@ -13,7 +13,6 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 
 import java.util.Arrays;
 
-
 public class VillagerBreedingExecutor extends BreedingExecutor {
     public VillagerBreedingExecutor(int findingRange, int duration, float moveSpeed) {
         super(findingRange, duration, moveSpeed);

@@ -27,7 +27,6 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Enumeration of memory types used by the core
  */

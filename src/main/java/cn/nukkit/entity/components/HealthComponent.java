@@ -4,7 +4,6 @@ import cn.nukkit.entity.Entity;
 
 import java.util.random.RandomGenerator;
 
-
 /**
  * Bedrock component: {@code minecraft:health}.
  *

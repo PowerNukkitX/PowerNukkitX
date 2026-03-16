@@ -5,7 +5,6 @@ import cn.nukkit.entity.EntityFilter;
 
 import java.util.*;
 
-
 /**
  * Bedrock component: {@code minecraft:breedable}.
  *

@@ -11,7 +11,6 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  * Handles ride-based taming behavior for rideable animals.
  *

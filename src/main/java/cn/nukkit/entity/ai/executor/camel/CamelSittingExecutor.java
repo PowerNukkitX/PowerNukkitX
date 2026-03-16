@@ -6,7 +6,6 @@ import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.passive.EntityCamel;
 import cn.nukkit.utils.Utils;
 
-
 /**
  * Camel idle behavior that makes the entity sit down for a random duration.
  *

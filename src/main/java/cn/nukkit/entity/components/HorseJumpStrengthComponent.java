@@ -2,7 +2,6 @@ package cn.nukkit.entity.components;
 
 import java.util.random.RandomGenerator;
 
-
 /**
  * Bedrock component: {@code minecraft:horse_jump_strength}.
  *

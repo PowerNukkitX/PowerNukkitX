@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 /**
  * Tempt behavior that makes an entity follow the nearest player holding
  * one of the configured tempt items.

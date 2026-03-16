@@ -5,7 +5,6 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.passive.EntityWolf;
 
-
 /**
  * The wolf performs an attack with a wolf animation.
  */

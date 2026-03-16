@@ -6,7 +6,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
-
 /**
  * Floating variant of {@link TemptExecutor} for flying or levitating entities.
  *

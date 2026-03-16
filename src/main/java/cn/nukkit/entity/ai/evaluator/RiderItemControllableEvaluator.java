@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.item.Item;
 
-
 /**
  * Evaluates whether the entity is currently being ridden by a player
  * holding the configured control item in hand. <p>

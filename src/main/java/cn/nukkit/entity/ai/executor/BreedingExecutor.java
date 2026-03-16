@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import org.jetbrains.annotations.Nullable;
 
-
 /**
  * Breeding executor driven by {@link BreedableComponent}.
  * <p>
@@ -361,14 +360,19 @@ public class BreedingExecutor implements IBehaviorExecutor {
         List<BreedableComponent.BreedsWith> bw = breedable.breedsWith();
         if (bw == null) return null;
 
-        return bw.stream()
-            .filter(Objects::nonNull)
-            .filter(it -> it.mateType() != null)
-            .filter(it -> it.mateType().equals(mateId))
-            .map(BreedableComponent.BreedsWith::babyType)
-            .filter(b -> b != null && !b.isEmpty())
-            .findFirst()
-            .orElse(null);
+        String babyType = null;
+
+        for (BreedableComponent.BreedsWith it : bw) {
+            if (it == null) continue;
+            if (it.mateType() == null) continue;
+            if (!it.mateType().equals(mateId)) continue;
+
+            babyType = it.babyType();
+            if (babyType == null || babyType.isEmpty())  babyType = null;
+            break;
+        }
+
+        return babyType;
     }
 
     // Genetics / attributes blending (written to baby NBT)

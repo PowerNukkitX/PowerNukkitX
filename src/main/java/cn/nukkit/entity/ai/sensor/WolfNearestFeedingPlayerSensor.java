@@ -6,7 +6,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.item.Item;
 
-
 /**
  * @deprecated Since 2.0.0 (2026-02-19).
  * This wolf-specific feeding sensor has been replaced by the generic
@@ -32,7 +31,7 @@ public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
             Player player = null;
             double rangeSquared = this.range * this.range;
             double minRangeSquared = this.minRange * this.minRange;
-            //寻找范围内最近满足乞食要求的玩家
+            // Find the player within range who most recently meets the begging requirements.
             for (Player p : entity.getLevel().getPlayers().values()) {
                 if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && (p.getInventory().getItemInHand().getId() == Item.BONE || entityAnimal.isBreedingItem(p.getInventory().getItemInHand()))) {
                     if (player == null) {

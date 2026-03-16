@@ -3,8 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 
-
-
 /**
  * @deprecated Since 2.0.0 (2026-02-19).
  * Anger state handling was moved to {@link Entity}.

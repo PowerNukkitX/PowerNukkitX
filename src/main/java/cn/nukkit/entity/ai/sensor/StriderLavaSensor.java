@@ -7,7 +7,6 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityStrider;
 import cn.nukkit.level.Level;
 
-
 /**
  * Sensor that searches for nearby lava when the Strider is cold.
  *

@@ -24,7 +24,6 @@ import java.io.UncheckedIOException;
 import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
-
 public class HorseInventory<T extends EntityCreature & InventoryHolder> extends BaseInventory {
     protected final T equineHolder;
     private boolean revertingSlot = false;
@@ -380,7 +379,9 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
             // 1) Equippable by UI slotNumber
             if (eq != null) {
                 EquippableComponent.Type type = eq.getTypeByUiSlot(slot);
-                if (type != null && this.setEquippedItem(type, it)) continue;
+                if (type != null) {
+                    if (this.setEquippedItem(type, it)) continue;
+                }
             }
 
             // 2) Storage by UI slotNumber

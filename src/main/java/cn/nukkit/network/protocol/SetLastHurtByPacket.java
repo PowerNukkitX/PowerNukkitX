@@ -10,10 +10,8 @@ import lombok.*;
 public class SetLastHurtByPacket extends DataPacket {
     public int entityTypeId;
 
-
     @Override
     public void decode(HandleByteBuf byteBuf) {
-
     }
 
     @Override
