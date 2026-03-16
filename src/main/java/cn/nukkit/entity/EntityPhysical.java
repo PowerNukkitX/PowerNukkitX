@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 @Slf4j
 public abstract class EntityPhysical extends EntityCreature implements EntityAsyncPrepare {
     /** Movement accuracy threshold. Movements with an absolute value less than this threshold are considered as no movement. */
