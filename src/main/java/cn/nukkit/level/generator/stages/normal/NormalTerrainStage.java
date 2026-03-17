@@ -15,6 +15,7 @@ import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.level.generator.noise.spline.JaggednessSpline;
 import cn.nukkit.level.generator.noise.spline.OffsetSpline;
+import cn.nukkit.level.generator.stages.normal.sampler.CarvingSampler;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
 

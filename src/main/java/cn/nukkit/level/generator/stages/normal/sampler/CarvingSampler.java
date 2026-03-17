@@ -1,10 +1,10 @@
-package cn.nukkit.level.generator.stages.normal;
+package cn.nukkit.level.generator.stages.normal.sampler;
 
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoiseSampler;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
 
-final class CarvingSampler {
+public final class CarvingSampler {
 
     private static final double CARVING_THRESHOLD = 0.85;
     private static final int CARVING_MIN_HEIGHT = -63;
@@ -48,7 +48,7 @@ final class CarvingSampler {
     private final SimplexNoiseSampler megaCaves;
     private final long seed;
 
-    CarvingSampler(long seed) {
+    public CarvingSampler(long seed) {
         this.seed = seed;
         this.simplex2Octave0 = new SimplexNoiseSampler(new NukkitRandom(seed ^ 0x2F4A1C3D5B6E7081L));
         this.simplex2Octave1 = new SimplexNoiseSampler(new NukkitRandom(seed ^ 0x13E9B46D9A52F17CL));
@@ -59,7 +59,7 @@ final class CarvingSampler {
         this.megaCaves = new SimplexNoiseSampler(new NukkitRandom(seed + 777L));
     }
 
-    boolean shouldCarve(int x, int y, int z, boolean oceanBiome) {
+    public boolean shouldCarve(int x, int y, int z, boolean oceanBiome) {
         return sample(x, y, z, oceanBiome ? OCEAN_CARVING_MAX_HEIGHT : CARVING_MAX_HEIGHT) > 0;
     }
 
