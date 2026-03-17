@@ -89,6 +89,26 @@ public class NukkitMath {
         return remap(input, inMin, inMax, -1, 1);
     }
 
+    public static double lerp(double t, double at, double a, double bt, double b) {
+        if (at < bt) {
+            if (t <= at) {
+                return a;
+            }
+            if (t >= bt) {
+                return b;
+            }
+        } else {
+            if (t >= at) {
+                return a;
+            }
+            if (t <= bt) {
+                return b;
+            }
+        }
+
+        return a * (t - bt) / (at - bt) + b * (t - at) / (bt - at);
+    }
+
     public static double getDirection(double diffX, double diffZ) {
         diffX = Math.abs(diffX);
         diffZ = Math.abs(diffZ);

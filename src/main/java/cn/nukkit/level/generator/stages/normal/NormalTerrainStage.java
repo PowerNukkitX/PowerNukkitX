@@ -35,6 +35,7 @@ public class NormalTerrainStage extends GenerateStage {
     private OverworldBiomePicker picker;
     private SimplexNoise surfaceNoise;
     private SimplexNoise jagged;
+    private volatile CarvingSampler carver;
 
     private final ThreadLocal<Map<String, Double>> depthSplineMap = ThreadLocal.withInitial(HashMap::new);
     private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
@@ -53,10 +54,12 @@ public class NormalTerrainStage extends GenerateStage {
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
         if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
         if(jagged == null) jagged = new SimplexNoise(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
+        if (carver == null) carver = new CarvingSampler(level.getSeed());
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 OverworldBiomeResult result = picker.pick(baseX + x, SEA_LEVEL, baseZ + z);
                 int biomeId = result.getBiomeId();
+                boolean oceanBiome = isOceanBiome(biomeId);
                 float baseHeightSum = 0.0F;
                 float biomeWeightSum = 0.0F;
                 int smoothFactor = 0;
@@ -87,24 +90,26 @@ public class NormalTerrainStage extends GenerateStage {
                 }
 
                 baseHeightSum = baseHeightSum / Math.max(biomeWeightSum, 1);
-                for(int y = level.getMinHeight(); y < level.getMaxHeight(); y++) {
+                boolean solidBlockAbove = false;
+                for(int y = level.getMaxHeight() - 1; y >= level.getMinHeight(); y--) {
                     float density = surfaceNoise.getValue((x + baseX), y,z + baseZ);
                     float densityMod = ((baseHeightSum + 0.18f) - NukkitMath.remapNormalized(y, level.getMinHeight(), level.getMaxHeight())) * 24;
-                    if(density + densityMod > 0) {
-                        chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, STONE, 0);
+                    boolean shouldCarve = carver.shouldCarve(baseX + x, y, baseZ + z, oceanBiome);
+                    if(density + densityMod > 0 && !shouldCarve) {
+                        chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, y < 0 ? DEEPSLATE : STONE, 0);
+                        solidBlockAbove = true;
                     } else {
-                        if(y <= SEA_LEVEL) chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, WATER, 0);
+                        if(y <= SEA_LEVEL && (!shouldCarve || (((isOceanBiome(biomeId) || isRiver(biomeId)) && !solidBlockAbove)))) {
+                            chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, WATER, 0);
+                        }
                     }
                 }
             }
         }
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                for(int y = level.getMinHeight(); y < 0; y++) {
-                    chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, DEEPSLATE, 0);
-                }
                 for (int y = 0; y < 8; y++) {
-                    if (random.nextBoundedInt(y) == 0) {
+                    if (random.nextBoundedInt(y) == 0 && chunk.getBlockState(x, y, z) == STONE) {
                         chunk.getSection(0).setBlockState(x, y & 0x0f, z, DEEPSLATE, 0);
                     }
                 }
@@ -123,5 +128,24 @@ public class NormalTerrainStage extends GenerateStage {
     @Override
     public String name() {
         return NAME;
+    }
+
+    private static boolean isOceanBiome(int biomeId) {
+        return biomeId == BiomeID.OCEAN
+                || biomeId == BiomeID.DEEP_OCEAN
+                || biomeId == BiomeID.WARM_OCEAN
+                || biomeId == BiomeID.DEEP_WARM_OCEAN
+                || biomeId == BiomeID.LUKEWARM_OCEAN
+                || biomeId == BiomeID.DEEP_LUKEWARM_OCEAN
+                || biomeId == BiomeID.COLD_OCEAN
+                || biomeId == BiomeID.DEEP_COLD_OCEAN
+                || biomeId == BiomeID.FROZEN_OCEAN
+                || biomeId == BiomeID.DEEP_FROZEN_OCEAN
+                || biomeId == BiomeID.LEGACY_FROZEN_OCEAN;
+    }
+
+    private static boolean isRiver(int biomeId) {
+        return biomeId == BiomeID.RIVER
+                || biomeId == BiomeID.FROZEN_RIVER;
     }
 }
