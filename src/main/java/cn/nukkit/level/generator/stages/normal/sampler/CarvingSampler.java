@@ -21,7 +21,7 @@ public final class CarvingSampler {
     private static final double CHEESE_STRENGTH = 0.6;
     private static final double CHEESE_HORIZONTAL_FREQUENCY = 1.5;
     private static final double CHEESE_VERTICAL_FREQUENCY = 3.0;
-    private static final int CHEESE_MAX_HEIGHT = 60;
+    private static final int CHEESE_MAX_HEIGHT = 30;
     private static final int CHEESE_MAX_TAPER = 60;
     private static final double CHEESE_CEILING_WARP = 12.0;
     private static final double CHEESE_CEILING_WARP_FREQUENCY = 0.6;
@@ -29,11 +29,11 @@ public final class CarvingSampler {
     private static final double SPAGHETTI_STRENGTH_LARGE = 0.89;
     private static final double SPAGHETTI_STRENGTH_SMALL = 0.85;
 
-    private static final double PILLAR_STRENGTH = 0.5;
+    private static final double PILLAR_STRENGTH = 0.3;
     private static final double PILLAR_RADIUS = 0.03;
 
     private static final double MEGA_CAVE_STRENGTH = 0.1;
-    private static final double MEGA_CAVE_SIZE = 0.1;
+    private static final double MEGA_CAVE_SIZE = 0.2;
 
     private static final double SIMPLEX_BASE_FREQUENCY = 0.0075;
     private static final double CELLULAR_FREQUENCY = 0.05;

@@ -89,6 +89,10 @@ public class NukkitMath {
         return remap(input, inMin, inMax, -1, 1);
     }
 
+    public static float remapFromNormalized(float input, float outMin, float outMax) {
+        return remap(input, -1, 1, outMin, outMax);
+    }
+
     public static double lerp(double t, double at, double a, double bt, double b) {
         if (at < bt) {
             if (t <= at) {

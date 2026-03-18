@@ -105,8 +105,12 @@ public class LocateCommand extends VanillaCommand {
         for (int step = 0; step < maxSteps; step++) {
             Vector3 check = new Vector3(centerX + (x << 4), pos.y, centerZ + (z << 4));
 
-            if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
-                return check;
+            int height = SEA_LEVEL;
+            while (height > pos.level.getMinHeight()) {
+                if (pos.getLevel().pickBiome(check.getFloorX(), height, check.getFloorZ()) == biomeId) {
+                    return check;
+                }
+                height -= 8;
             }
 
             if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
