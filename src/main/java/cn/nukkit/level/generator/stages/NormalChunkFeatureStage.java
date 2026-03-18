@@ -78,6 +78,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                     } catch (Exception e) {
                         log.error("Error while applying feature {}", key, e);
                     }
+                    break;
                 }
             }
         }

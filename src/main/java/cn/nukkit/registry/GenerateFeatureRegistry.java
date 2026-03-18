@@ -134,6 +134,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(MossSnapToCeilingFeature.NAME, MossSnapToCeilingFeature.class);
             this.register(MossPatchSnapToFloorFeature.NAME, MossPatchSnapToFloorFeature.class);
             this.register(RandomClayWithDripleavesSnapToFloorFeature.NAME, RandomClayWithDripleavesSnapToFloorFeature.class);
+            this.register(DripstoneClusterFeature.NAME, DripstoneClusterFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

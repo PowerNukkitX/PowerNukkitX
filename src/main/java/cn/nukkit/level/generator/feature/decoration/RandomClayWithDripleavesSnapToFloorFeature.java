@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.*;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.BigDripleafTilt;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.level.Level;
@@ -17,15 +16,12 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static cn.nukkit.block.BlockID.AIR;
 import static cn.nukkit.block.BlockID.DEEPSLATE;
 import static cn.nukkit.block.BlockID.STONE;
 import static cn.nukkit.block.BlockID.WATER;
 import static cn.nukkit.block.property.CommonBlockProperties.BIG_DRIPLEAF_HEAD;
 import static cn.nukkit.block.property.CommonBlockProperties.BIG_DRIPLEAF_TILT;
-import static cn.nukkit.block.property.CommonBlockProperties.GROWTH;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.UPPER_BLOCK_BIT;
 
@@ -34,7 +30,7 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
     public static final String NAME = "minecraft:random_clay_with_dripleaves_snap_to_floor_feature";
 
     private static final BlockState CLAY = BlockClay.PROPERTIES.getDefaultState();
-    public static final BlockState STILL_WATER = BlockWater.PROPERTIES.getDefaultState();
+    private static final BlockState STILL_WATER = BlockWater.PROPERTIES.getDefaultState();
 
     private SimplexF noise;
 
@@ -135,6 +131,7 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
         }
         return blockYs;
     }
+
     @Override
     public String name() {
         return NAME;
