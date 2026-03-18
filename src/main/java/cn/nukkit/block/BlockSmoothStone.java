@@ -27,7 +27,7 @@ public class BlockSmoothStone extends BlockSolid {
     
     @Override
     public double getHardness() {
-        return 1.5;
+        return 2.0;
     }
     
     @Override
