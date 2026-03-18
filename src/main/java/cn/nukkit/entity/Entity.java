@@ -4240,17 +4240,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      *         otherwise {@code null}.
      */
     @Nullable public Player getOwner() {
-        if (this instanceof EntityIntelligent ei) {
-            var owner = ei.getMemoryStorage().get(CoreMemoryTypes.OWNER);
-            if (owner != null && owner.isOnline()) return owner;
-            else {
-                var ownerName = getOwnerName();
-                if (ownerName == null) return null;
-                owner = this.getServer().getPlayerExact(ownerName);
-            }
-            return owner;
+        if (!(this instanceof EntityIntelligent ei)) return null;
+
+        var owner = ei.getMemoryStorage().get(CoreMemoryTypes.OWNER);
+        if (owner == null || !owner.isOnline()) {
+            var ownerName = getOwnerName();
+            if (ownerName == null) return null;
+            owner = this.getServer().getPlayerExact(ownerName);
         }
-        return null;
+
+        return owner;
     }
 
     public boolean hasOwner() {

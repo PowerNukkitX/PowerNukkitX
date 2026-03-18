@@ -5,6 +5,7 @@ import java.util.Set;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.data.EntityFlag;
 
 /**
  * Floating variant of {@link TemptExecutor} for flying or levitating entities.
@@ -143,7 +144,7 @@ public class FloatTemptExecutor extends TemptExecutor {
     protected void clearTempt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        entity.setDataFlag(cn.nukkit.entity.data.EntityFlag.TEMPTED, false);
+        entity.setDataFlag(EntityFlag.TEMPTED, false);
 
         if (enabledPitch) {
             entity.setEnablePitch(false);

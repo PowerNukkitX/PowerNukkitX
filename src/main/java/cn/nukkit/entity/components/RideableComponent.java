@@ -166,12 +166,9 @@ public record RideableComponent(
             };
         }
 
+        @Override
         public String toString() {
-            return switch (this) {
-                case AIR -> "air";
-                case GROUND -> "ground";
-                case WATER -> "water";
-            };
+            return this.name().toLowerCase();
         }
     }
 }

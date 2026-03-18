@@ -587,7 +587,6 @@ public class BreedingExecutor implements IBehaviorExecutor {
                                 BreedableComponent b1, BreedableComponent b2,
                                 EntityIntelligent p1, EntityIntelligent p2,
                                 @Nullable BreedableComponent.MutationFactor mut) {
-
         if (!(baby instanceof EntityColor babyColor)) return;
         if (!(p1 instanceof EntityColor c1)) return;
         if (!(p2 instanceof EntityColor c2)) return;
@@ -732,8 +731,6 @@ public class BreedingExecutor implements IBehaviorExecutor {
     }
 
     private void writePropValue(EntityIntelligent e, EntityProperty def, String key, Object value) {
-        if (value == null) return;
-
         if (def instanceof IntEntityProperty) {
             if (value instanceof Number n) e.setIntEntityProperty(key, n.intValue());
             return;

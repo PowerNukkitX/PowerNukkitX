@@ -470,15 +470,15 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         // AIR / GROUND
         if (isOnGround() || level.getTick() - getRideJumping().get() <= 5) {
-        Vector2 raw = pk.motion;
-        final double GROUND_BACKWARDS_MOVEMENT_MODIFIER = 0.5d;
-        double inX = raw.x;
-        double inY = raw.y;
-        if (inY < 0.0d) {
-            inY *= GROUND_BACKWARDS_MOVEMENT_MODIFIER;
-        }
-        Vector2 adjusted = new Vector2(inX, inY);
-        double mag = adjusted.length();
+            Vector2 raw = pk.motion;
+            final double GROUND_BACKWARDS_MOVEMENT_MODIFIER = 0.5d;
+            double inX = raw.x;
+            double inY = raw.y;
+            if (inY < 0.0d) {
+                inY *= GROUND_BACKWARDS_MOVEMENT_MODIFIER;
+            }
+            Vector2 adjusted = new Vector2(inX, inY);
+            double mag = adjusted.length();
 
             double curX = this.motionX;
             double curZ = this.motionZ;
@@ -496,7 +496,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 this.addTmpMoveMotion(new Vector3(newX - curX, 0, newZ - curZ));
 
             } else {
-            Vector2 dir = adjusted.normalize();
+                Vector2 dir = adjusted.normalize();
 
                 double yawRad = Math.toRadians(pk.yaw);
                 double cos = Math.cos(yawRad);
@@ -869,7 +869,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         final DashActionComponent dash = this.getComponentDashAction();
         if (dash == null) return false;
-
         if (this.isTouchingWater() && !dash.resolvedCanDashUnderwater()) return false;
 
         final float  MIN_CHARGE = 0.05f;

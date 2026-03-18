@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.item.Item;
+import cn.nukkit.utils.Identifier;
 
 /**
  * Evaluates whether the entity is currently being ridden by a player
@@ -23,31 +24,22 @@ public class RiderItemControllableEvaluator implements IBehaviorEvaluator {
         Entity rider = e.getPassenger();
         if (!(rider instanceof Player player)) return false;
 
-        String controlItem = e.getItemControllable();
-        if (controlItem == null || controlItem.isBlank()) return false;
+        String wanted = normalizeId(e.getItemControllable());
+        if (wanted == null) return false;
 
         Item hand = player.getInventory().getItemInHand();
         if (hand.isNull()) return false;
 
-        String wanted = normalizeControlId(controlItem);
-        String inHand = normalizeItemId(hand);
-
+        String inHand = normalizeId(hand.getId());
         if (inHand == null) return false;
 
-        return wanted.equalsIgnoreCase(inHand);
+        return wanted.equals(inHand);
     }
 
-    private static String normalizeItemId(Item item) {
-        String ns = item.getId();
-        if (ns == null || ns.isBlank()) return null;
-        return ns.trim();
-    }
+    private static String normalizeId(String id) {
+        if (id == null || id.isBlank()) return null;
 
-    private static String normalizeControlId(String id) {
-        String v = id.trim();
-        if (v.isEmpty()) return null;
-
-        if (v.indexOf(':') >= 0) { return v; }
-        return "minecraft:" + v;
+        Identifier identifier = Identifier.tryParse(id.trim());
+        return identifier != null ? identifier.toString() : null;
     }
 }

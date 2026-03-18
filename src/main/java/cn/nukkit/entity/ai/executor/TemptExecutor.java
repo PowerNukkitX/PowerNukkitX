@@ -370,8 +370,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
             if (p == null || !p.isOnline() || !p.isAlive()) continue;
 
             var item = p.getInventory().getItemInHand();
-            if (item == null || item.isNull()) continue;
-            if (!temptItems.contains(item.getId())) continue;
+            if (item.isNull() || !temptItems.contains(item.getId())) continue;
 
             double d2 = canTemptVertically ? entity.distanceSquared(p) : horizontalDistanceSquared(entity, p);
             if (d2 > withinRadiusSquared) continue;

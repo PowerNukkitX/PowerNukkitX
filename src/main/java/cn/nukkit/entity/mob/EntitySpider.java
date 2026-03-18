@@ -53,6 +53,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     @NotNull public String getIdentifier() {
         return SPIDER;
     }
+    
 
     public EntitySpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -76,6 +77,20 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         private final int id;
 
+        private static final SpawnRiderType[] BY_ID;
+
+        static {
+            int max = 0;
+            for (SpawnRiderType t : values()) {
+                if (t.id > max) max = t.id;
+            }
+
+            BY_ID = new SpawnRiderType[max + 1];
+            for (SpawnRiderType t : values()) {
+                BY_ID[t.id] = t;
+            }
+        }
+
         SpawnRiderType(int id) {
             this.id = id;
         }
@@ -85,17 +100,9 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         }
 
         public static SpawnRiderType fromId(int id) {
-            return switch (id) {
-                case 0 -> NORMAL;
-                case 1 -> SKELETON_JOCKEY;
-                case 2 -> STRAY_JOCKEY;
-                case 3 -> BOGGED_JOCKEY;
-                case 4 -> PARCHED_JOCKEY;
-                case 5 -> WITHER_SKELETON_JOCKEY;
-                case 6 -> BABY_ZOMBIE_JOCKEY;
-                case 7 -> BABY_HUSK_JOCKEY;
-                default -> NORMAL;
-            };
+            return (id >= 0 && id < BY_ID.length && BY_ID[id] != null)
+                    ? BY_ID[id]
+                    : NORMAL;
         }
     }
 
