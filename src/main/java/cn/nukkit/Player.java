@@ -402,32 +402,35 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
             Block block = this.level.getBlock(pos, false);
-
             double miningTimeRequired;
+
             if (this.breakingBlock instanceof CustomBlock customBlock) {
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
 
             if (miningTimeRequired > 0) {
-                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
-                pk.x = (float) this.breakingBlock.x;
-                pk.y = (float) this.breakingBlock.y;
-                pk.z = (float) this.breakingBlock.z;
-                pk.data = 65535 / breakTick;
-                this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                this.level.addParticle(new PunchBlockParticle(pos, block));
-
                 Item hand = this.inventory.getItemInHand();
                 boolean hasCustomDigger = hand != null && !hand.isNull() && hand.getCustomItemComponent("minecraft:digger") != null;
-                boolean useServerSideBreakProgress = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
+                boolean useServerSideBreakVisuals = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
 
-                if (useServerSideBreakProgress) {
-                    var timeDiff = time - breakingBlockTime;
-                    blockBreakProgress += timeDiff / (miningTimeRequired * 1000.0);
+                if (useServerSideBreakVisuals) {
+                    int breakTick = (int) Math.ceil(miningTimeRequired * 20);
 
-                    if (blockBreakProgress > 0.99) {
+                    LevelEventPacket pk = new LevelEventPacket();
+                    pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
+                    pk.x = (float) this.breakingBlock.x;
+                    pk.y = (float) this.breakingBlock.y;
+                    pk.z = (float) this.breakingBlock.z;
+                    pk.data = 65535 / breakTick;
+                    this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
+                    this.level.addParticle(new PunchBlockParticle(pos, block));
+                }
+
+                long timeDiff = time - breakingBlockTime;
+                blockBreakProgress += timeDiff / (miningTimeRequired * 1000.0);
+
+                if (blockBreakProgress >= 0.99) {
+                    if (useServerSideBreakVisuals) {
                         LevelEventPacket stopPk = new LevelEventPacket();
                         stopPk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
                         stopPk.x = (float) pos.x;
@@ -435,17 +438,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         stopPk.z = (float) pos.z;
                         stopPk.data = 0;
                         this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, stopPk);
-
-                        this.blockBreakProgress = 0;
-                        this.breakingBlock = null;
-                        this.breakingBlockFace = null;
-
-                        this.onBlockBreakComplete(pos.asBlockVector3(), face);
-                        return;
                     }
 
-                    breakingBlockTime = time;
+                    this.blockBreakProgress = 0;
+                    this.breakingBlock = null;
+                    this.breakingBlockFace = null;
+
+                    this.onBlockBreakComplete(pos.asBlockVector3(), face);
+                    return;
                 }
+
+                breakingBlockTime = time;
             }
         }
     }
@@ -511,11 +514,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.isSurvival() || this.isAdventure()) {
             this.breakingBlockTime = currentBreak;
             this.blockBreakProgress = 0;
-            double miningTimeRequired;
-            if (target instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
+
+            Item hand = this.inventory.getItemInHand();
+            double miningTimeRequired = target instanceof CustomBlock customBlock ? customBlock.breakTime(hand, this) : target.calculateBreakTime(hand, this);
             int breakTime = (int) Math.ceil(miningTimeRequired * 20);
+
             if (breakTime > 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
