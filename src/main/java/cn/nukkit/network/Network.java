@@ -64,7 +64,7 @@ public class Network implements NetworkInterface {
     private final Map<InetSocketAddress, BedrockSession> sessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, LocalDateTime> blockIpMap = new ConcurrentHashMap<>();
     private final RakServerChannel channel;
-    @Getter
+    @Getter(onMethod_ = {@Override})
     private final BotnetDetector botnetDetector;
     private BedrockPong pong;
     @Getter @Setter
