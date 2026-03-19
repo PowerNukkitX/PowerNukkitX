@@ -139,7 +139,7 @@ public class SculkPatchFeature extends GenerateFeature {
             int currentBits = 0;
             if (existing instanceof BlockSculkVein) {
                 currentBits = existing.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
-            }*
+            }
 
             int mergedBits = currentBits | entry.getValue();
             if (mergedBits == 0) continue;
