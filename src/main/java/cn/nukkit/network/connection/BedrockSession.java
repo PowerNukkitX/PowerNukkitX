@@ -7,6 +7,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandOverload;
+import cn.nukkit.config.category.NetworkSettings;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.server.DataPacketDecodeEvent;
@@ -15,6 +16,7 @@ import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
+import cn.nukkit.network.NetworkInterface;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
@@ -462,7 +464,7 @@ public class BedrockSession {
         if (player != null) {
             player.close(BedrockDisconnectReasons.DISCONNECTED);
         }
-        var network = Server.getInstance().getNetwork();
+        NetworkInterface network = Server.getInstance().getNetwork();
         network.onSessionDisconnect(getAddress());
         BotnetDetector detector = network.getBotnetDetector();
         if (detector != null) {
@@ -776,10 +778,10 @@ public class BedrockSession {
     }
 
     private RateLimitConfig loadRateLimitConfigSafely() {
-        var net = Server.getInstance().getSettings().networkSettings();
-        boolean en = net.rateLimitEnabled();
-        int maxInbound = clamp(net.maxInboundPacketsPerSecond(), 100, 10_000);
-        int maxPerTick = clamp(net.maxPacketsPerTick(), 50, 5_000);
+        NetworkSettings settings = Server.getInstance().getSettings().networkSettings();
+        boolean en = settings.rateLimitEnabled();
+        int maxInbound = clamp(settings.maxInboundPacketsPerSecond(), 100, 10_000);
+        int maxPerTick = clamp(settings.maxPacketsPerTick(), 50, 5_000);
         return new RateLimitConfig(en, maxInbound, maxPerTick);
     }
 
