@@ -48,18 +48,12 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
             for(int z = 0; z < 16; z++) {
                 int baseZ = ((chunk.getZ() << 4) + z);
                 if(noise.noise2D(baseX * 0.25f, baseZ * 0.25f, true) > 0.3) {
-                    boolean hasLush = false;
-                    for (int y = chunk.getHeightMap(x, z); y > level.getMinHeight(); y--) {
-                        if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
-                            hasLush = true;
-                            break;
-                        }
-                    }
-                    if(!hasLush) continue;
                     for(int y : getHighestWorkableBlocks(chunk, x, z)) {
                         int depth = (int) NukkitMath.clamp(NukkitMath.remapFromNormalized(noise.noise3D(baseX, y, baseZ, true), 3, 5), 3, 4);
                         for(int i = 0; i < depth; i++) {
-                            manager.setBlockStateAt(baseX, y-i, baseZ, CLAY);
+                            if(chunk.getSection(i >> 4).getBiomeId(x, i & 0x0f, z) == BiomeID.LUSH_CAVES) {
+                                manager.setBlockStateAt(baseX, y - i, baseZ, CLAY);
+                            }
                         }
                     }
                 }
@@ -89,7 +83,7 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
                     if(random.nextInt(9) < 8) {
                         BlockState HEAD = BlockBigDripleaf.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(direction), BIG_DRIPLEAF_HEAD.createValue(true), BIG_DRIPLEAF_TILT.createValue(BigDripleafTilt.NONE));
                         BlockState STEM = BlockBigDripleaf.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(direction));
-                        int size = random.nextInt(block instanceof BlockWater ? 1 : 0, 3);
+                        int size = random.nextInt(block instanceof BlockWater ? 1 : 0, 4);
                         for(int i = 0; i < size; i++) {
                             BlockVector3 vector3 = block.asBlockVector3().up(i);
                             Block block1 = manager.getBlockIfCachedOrLoaded(vector3.asVector3());
@@ -124,9 +118,11 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
         int y;
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = chunk.getHeightMap(x, z); y > chunk.getLevel().getMinHeight(); --y) {
-            String b = chunk.getBlockState(x, y, z).getIdentifier();
-            if ((b == STONE || b == DEEPSLATE || b == BlockID.CLAY) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
-                blockYs.add(y);
+            if (chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
+                String b = chunk.getBlockState(x, y, z).getIdentifier();
+                if ((b == STONE || b == DEEPSLATE || b == BlockID.CLAY) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
+                    blockYs.add(y);
+                }
             }
         }
         return blockYs;

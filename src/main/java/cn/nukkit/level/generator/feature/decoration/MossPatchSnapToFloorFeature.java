@@ -50,14 +50,6 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
             for(int z = 0; z < 16; z++) {
                 int baseZ = ((chunk.getZ() << 4) + z);
                 if(noise.noise2D(baseX * 0.25f, baseZ * 0.25f, true) > 0.5) {
-                    boolean hasLush = false;
-                    for (int y = chunk.getHeightMap(x, z); y > level.getMinHeight(); y--) {
-                        if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
-                            hasLush = true;
-                            break;
-                        }
-                    }
-                    if(!hasLush) continue;
                     for(int y : getHighestWorkableBlocks(chunk, x, z)) {
                         manager.setBlockStateAt(baseX, y, baseZ, MOSS);
                         int rnd = random.nextInt(20);
@@ -82,9 +74,11 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
         int y;
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = chunk.getHeightMap(x, z); y > chunk.getLevel().getMinHeight(); --y) {
-            String b = chunk.getBlockState(x, y, z).getIdentifier();
-            if ((b == STONE || b == DEEPSLATE) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
-                blockYs.add(y);
+            if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
+                String b = chunk.getBlockState(x, y, z).getIdentifier();
+                if ((b == STONE || b == DEEPSLATE) && chunk.getBlockState(x, y + 1, z) == BlockAir.STATE) {
+                    blockYs.add(y);
+                }
             }
         }
         return blockYs;

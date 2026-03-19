@@ -45,37 +45,31 @@ public class MossSnapToCeilingFeature extends GenerateFeature {
             for(int z = 0; z < 16; z++) {
                 int baseZ = z + chunkZ << 4;
                 if(noise.noise2D(baseX * 0.25f, baseZ * 0.25f, true) > 0) {
-                    boolean hasLush = false;
                     for (int y = chunk.getHeightMap(x, z); y > level.getMinHeight(); y--) {
-                        if(chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
-                            hasLush = true;
-                            break;
-                        }
-                    }
-                    if(!hasLush) continue;
-                    for (int y = chunk.getHeightMap(x, z); y > level.getMinHeight(); y--) {
-                        if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
-                            for (int _y = 1; _y <= 2; _y++) {
-                                int yy = y + _y;
-                                BlockState state = chunk.getBlockState(x, yy, z);
-                                if(_y == 2) {
-                                    switch (state.getIdentifier()) {
-                                        case STONE,
-                                             DEEPSLATE -> {
-                                            manager.setBlockStateAt(x, yy, z, MOSS);
-                                            if (random.nextFloat() < 0.1f) {
-                                                float rnd = random.nextFloat();
-                                                if (rnd < 0.003f) {
-                                                    manager.setBlockStateAt(x, yy - 1, z, SPORE);
-                                                } else {
-                                                    int i = random.nextInt(0, 4);
-                                                    int org = i;
-                                                    while (i > 0) {
-                                                        i--;
-                                                        int yyy = yy - (org - i);
-                                                        manager.setBlockStateAt(x, yyy, z, random.nextFloat() > 0.3 ? VINE : BERRY_BODY);
+                        if (chunk.getSection(y >> 4).getBiomeId(x, y & 0x0f, z) == BiomeID.LUSH_CAVES) {
+                            if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {
+                                for (int _y = 1; _y <= 2; _y++) {
+                                    int yy = y + _y;
+                                    BlockState state = chunk.getBlockState(x, yy, z);
+                                    if (_y == 2) {
+                                        switch (state.getIdentifier()) {
+                                            case STONE,
+                                                 DEEPSLATE -> {
+                                                manager.setBlockStateAt(x, yy, z, MOSS);
+                                                if (random.nextFloat() < 0.1f) {
+                                                    float rnd = random.nextFloat();
+                                                    if (rnd < 0.003f) {
+                                                        manager.setBlockStateAt(x, yy - 1, z, SPORE);
+                                                    } else {
+                                                        int i = random.nextInt(0, 4);
+                                                        int org = i;
+                                                        while (i > 0) {
+                                                            i--;
+                                                            int yyy = yy - (org - i);
+                                                            manager.setBlockStateAt(x, yyy, z, random.nextFloat() > 0.3 ? VINE : BERRY_BODY);
+                                                        }
+                                                        manager.setBlockStateAt(x, (yy - org) - 1, z, random.nextFloat() > 0.3 ? VINE : BERRY_HEAD);
                                                     }
-                                                    manager.setBlockStateAt(x, (yy - org) - 1, z, random.nextFloat() > 0.3 ? VINE : BERRY_HEAD);
                                                 }
                                             }
                                         }
