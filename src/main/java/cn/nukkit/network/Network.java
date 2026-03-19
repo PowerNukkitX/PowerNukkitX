@@ -76,9 +76,9 @@ public class Network implements NetworkInterface {
 
     public Network(Server server, int nettyThreadNumber, ThreadFactory threadFactory) {
         this.server = server;
-        var ns = server.getSettings().networkSettings();
-        this.botnetDetector = ns.botnetDetectionEnabled()
-                ? new BotnetDetector(ns.botnetSuspiciousThreshold(), ns.botnetMinSuspiciousIps(), ns.botnetMinScore())
+        var bns = server.getSettings().networkSettings().botnetSettings();
+        this.botnetDetector = bns.detectionEnabled()
+                ? new BotnetDetector(bns.suspiciousThreshold(), bns.minSuspiciousIps(), bns.minScore())
                 : null;
         server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
             List<NetworkIF> tmpIfs = null;
@@ -303,10 +303,10 @@ public class Network implements NetworkInterface {
      */
     public void process() {
         if (botnetDetector != null) {
-            var ns = server.getSettings().networkSettings();
+            var bns = server.getSettings().networkSettings().botnetSettings();
             botnetDetector.tick().ifPresent(report -> {
                 ServerBotnetAttackEvent event = new ServerBotnetAttackEvent(
-                        report, ns.botnetAutoBlock(), ns.botnetAutoBlockDurationSeconds());
+                        report, bns.autoBlock(), bns.autoBlockDurationSeconds());
                 server.getPluginManager().callEvent(event);
                 if (event.isAutoBlock()) {
                     int durationMs = event.getBlockDurationSeconds() * 1000;

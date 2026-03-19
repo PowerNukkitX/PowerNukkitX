@@ -7,7 +7,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandOverload;
-import cn.nukkit.config.category.NetworkSettings;
+import cn.nukkit.config.category.network.RateLimitSettings;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.server.DataPacketDecodeEvent;
@@ -778,7 +778,7 @@ public class BedrockSession {
     }
 
     private RateLimitConfig loadRateLimitConfigSafely() {
-        NetworkSettings settings = Server.getInstance().getSettings().networkSettings();
+        RateLimitSettings settings = Server.getInstance().getSettings().networkSettings().rateLimitSettings();
         boolean en = settings.rateLimitEnabled();
         int maxInbound = clamp(settings.maxInboundPacketsPerSecond(), 100, 10_000);
         int maxPerTick = clamp(settings.maxPacketsPerTick(), 50, 5_000);

@@ -38,7 +38,7 @@ public final class PlayerHandle {
     public PlayerHandle(@NotNull Player player) {
         this.player = player;
         this.packetRateLimiter = new PacketRateLimiter(
-                Server.getInstance().getSettings().networkSettings()
+                Server.getInstance().getSettings().networkSettings().rateLimitSettings()
         );
     }
 

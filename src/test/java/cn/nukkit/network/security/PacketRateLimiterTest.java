@@ -1,6 +1,6 @@
 package cn.nukkit.network.security;
 
-import cn.nukkit.config.category.NetworkSettings;
+import cn.nukkit.config.category.network.RateLimitSettings;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class PacketRateLimiterTest {
 
-    private static NetworkSettings settingsWith(int commands, int chat, int forms, int movement) {
-        NetworkSettings s = Mockito.mock(NetworkSettings.class);
+    private static RateLimitSettings settingsWith(int commands, int chat, int forms, int movement) {
+        RateLimitSettings s = Mockito.mock(RateLimitSettings.class);
         Mockito.when(s.maxCommandsPerSecondPerPlayer()).thenReturn(commands);
         Mockito.when(s.maxChatPerSecondPerPlayer()).thenReturn(chat);
         Mockito.when(s.maxFormResponsesPerSecondPerPlayer()).thenReturn(forms);

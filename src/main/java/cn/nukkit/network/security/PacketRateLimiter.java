@@ -1,6 +1,6 @@
 package cn.nukkit.network.security;
 
-import cn.nukkit.config.category.NetworkSettings;
+import cn.nukkit.config.category.network.RateLimitSettings;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
@@ -17,7 +17,7 @@ public final class PacketRateLimiter {
     private final RateLimiter formResponse;
     private final RateLimiter movement;
 
-    public PacketRateLimiter(NetworkSettings settings) {
+    public PacketRateLimiter(RateLimitSettings settings) {
         this.command = RateLimiter.create(settings.maxCommandsPerSecondPerPlayer());
         this.chat = RateLimiter.create(settings.maxChatPerSecondPerPlayer());
         this.formResponse = RateLimiter.create(settings.maxFormResponsesPerSecondPerPlayer());
