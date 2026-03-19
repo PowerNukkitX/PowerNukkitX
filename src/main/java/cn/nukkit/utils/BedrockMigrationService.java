@@ -274,4 +274,41 @@ public class BedrockMigrationService {
 
         return NBTIO.putItemHelper(nukkitItem, slot);
     }
+    public boolean hasBedrockData(UUID uuid) {
+        try {
+            Level level = server.getDefaultLevel();
+
+            if (!(level.getProvider() instanceof LevelDBProvider provider)) {
+                return false;
+            }
+
+            DB db = provider.getStorage().getDb();
+
+            String identityKey = "player_" + uuid;
+            byte[] identityBytes = db.get(identityKey.getBytes(StandardCharsets.UTF_8));
+
+            if (identityBytes == null) {
+                return false;
+            }
+
+            // Optional deeper validation (recommended)
+            CompoundTag identity = NBTIO.read(
+                    new ByteArrayInputStream(identityBytes),
+                    ByteOrder.LITTLE_ENDIAN
+            );
+
+            String serverId = identity.getString("ServerId");
+
+            if (serverId == null || serverId.isEmpty()) {
+                return false;
+            }
+
+            byte[] gameplayBytes = db.get(serverId.getBytes(StandardCharsets.UTF_8));
+
+            return gameplayBytes != null && gameplayBytes.length > 0;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

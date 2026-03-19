@@ -1807,10 +1807,16 @@ public class Server {
             buffer.putLong(uuid.getLeastSignificantBits());
             byte[] bytes = playerDataDB.get(buffer.array());
             if (bytes != null) {
-                CompoundTag existing = NBTIO.readCompressed(bytes);
+                return NBTIO.readCompressed(bytes);
+            }
 
-                if (existing.contains("BedrockMigrated")) {
-                    return existing;
+            if (migrationService.hasBedrockData(uuid)) {
+                CompoundTag migrated = migrationService.migrate(uuid);
+
+                if (migrated != null) {
+                    migrated.putBoolean("BedrockMigrated", true);
+                    saveOfflinePlayerData(uuid, migrated, true);
+                    return migrated;
                 }
             }
         } catch (IOException e) {
