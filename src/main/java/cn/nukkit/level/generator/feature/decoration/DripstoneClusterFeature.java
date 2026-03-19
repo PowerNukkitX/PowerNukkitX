@@ -77,7 +77,7 @@ public class DripstoneClusterFeature extends GenerateFeature {
                             } else manager.setBlockStateAt(baseX, y-i, baseZ, DRIPSTONE_BLOCK);
 
                         }
-                        if(!wa  ter && random.nextFloat() < 0.1) {
+                        if(!water && random.nextFloat() < 0.1) {
                             placePointedDripstone(manager, baseX, y + 1, baseZ, false, random.nextInt(1, 3));
                         }
                     }

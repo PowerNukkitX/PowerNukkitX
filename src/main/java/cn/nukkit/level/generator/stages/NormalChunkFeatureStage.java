@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.stages;
 
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -16,7 +15,6 @@ import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.OptionalValue;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -40,7 +38,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                 OverworldBiomeResult result = (OverworldBiomeResult) chunk.getLevel().getBiomePicker().pick(x + chunk.getX() << 4, SEA_LEVEL, z + chunk.getZ() << 4);
                 int y = chunk.getHeightMap(x, z);
                 for(int i = y; i > chunk.getLevel().getMinHeight(); i--) {
-                    result.correct(i);
+                    result.correct(i - chunk.getHeightMap(x, z));
                     biomes.add(result.getBiomeId());
                 }
                 for(int biomeId : biomes) {

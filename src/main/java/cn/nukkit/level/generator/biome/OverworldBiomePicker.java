@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.biome;
 
+import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -28,14 +29,17 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     private final SimplexNoise weirdnessNoise;
     private final SimplexNoise offsetNoise;
 
-    public OverworldBiomePicker(NukkitRandom random) {
-        super(random);
+    private final Level level;
+
+    public OverworldBiomePicker(Level level) {
+        super(new NukkitRandom(level.getSeed()));
         continentalNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
         temperatureNoise = new SimplexNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
         humidityNoise = new SimplexNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
         erosionNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
         weirdnessNoise = new SimplexNoise(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
         offsetNoise = new SimplexNoise(random.fork(), -3, new float[]{ 1, 1, 1, 0 });
+        this.level = level;
     }
 
     @Override
@@ -69,7 +73,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
             default -> getInlandBiome(pvLevel, erosionLevel, humidityLevel, temperatureLevel, weird, continentalLevel);
         };
 
-        return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv).correct(y);
+        return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv).correct(y - level.getHeightMap(x, z));
     }
 
     protected int getNonInlandBiome(int temperatureLevel, int continentalLevel) {

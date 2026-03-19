@@ -187,6 +187,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "pick" -> {
                 BiomePicker picker = loc.getLevel().getBiomePicker();
                 if (picker instanceof OverworldBiomePicker p) {
+                    Player player = sender.asPlayer();
                     OverworldBiomeResult res = p.pick(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ());
                     sender.sendMessage("Continental: " + res.getContinental());
                     sender.sendMessage("Temperature: " + res.getTemperature());
@@ -194,7 +195,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage("Erosion: " + res.getErosion());
                     sender.sendMessage("Weirdness: " + res.getWeirdness());
                     sender.sendMessage("Peaks: " + res.getPv());
-                    sender.sendMessage("Depths: " + (-loc.getFloorY() / 128f));
+                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4)))  / 128f));
                     sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
                 }
             }

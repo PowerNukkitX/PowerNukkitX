@@ -30,8 +30,8 @@ public class Normal extends BiomedGenerator {
 
     @Override
     public void stages(GenerateStage.Builder builder) {
-        builder.start(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
-        builder.next(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
+        builder.start(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceDataStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceOverwriteStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(ChunkPlacementQueueStage.NAME));
@@ -43,7 +43,7 @@ public class Normal extends BiomedGenerator {
 
     @Override
     public BiomePicker<OverworldBiomeResult> createBiomePicker(Level level) {
-        return new OverworldBiomePicker(new NukkitRandom(level.getSeed()));
+        return new OverworldBiomePicker(level);
     }
 
     @Override

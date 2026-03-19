@@ -97,11 +97,11 @@ public class NormalTerrainStage extends GenerateStage {
                     float densityMod = ((baseHeightSum + 0.18f) - NukkitMath.remapNormalized(y, level.getMinHeight(), level.getMaxHeight())) * 24;
                     boolean shouldCarve = carver.shouldCarve(baseX + x, y, baseZ + z, oceanBiome);
                     if(density + densityMod > 0 && !shouldCarve) {
-                        chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, y < 0 ? DEEPSLATE : STONE, 0);
+                        chunk.setBlockState(x, y, z, y < 0 ? DEEPSLATE : STONE, 0);
                         solidBlockAbove = true;
                     } else {
                         if(y <= SEA_LEVEL && (!shouldCarve || (((isOceanBiome(biomeId) || isRiver(biomeId)) && !solidBlockAbove)))) {
-                            chunk.getSection(y >> 4).setBlockState(x, y & 0x0f, z, WATER, 0);
+                            chunk.setBlockState(x, y, z, WATER, 0);
                         }
                     }
                 }
@@ -111,13 +111,13 @@ public class NormalTerrainStage extends GenerateStage {
             for (int z = 0; z < 16; z++) {
                 for (int y = 0; y < 8; y++) {
                     if (random.nextBoundedInt(y) == 0 && chunk.getBlockState(x, y, z) == STONE) {
-                        chunk.getSection(0).setBlockState(x, y & 0x0f, z, DEEPSLATE, 0);
+                        chunk.setBlockState(x, y, z, DEEPSLATE, 0);
                     }
                 }
-                chunk.getSection(level.getMinHeight() >> 4).setBlockState(x, level.getMinHeight() & 0x0f, z, BEDROCK, 0);
+                chunk.setBlockState(x, level.getMinHeight(), z, BEDROCK, 0);
                 for (int i = 1; i < 5; i++) {
                     if (random.nextBoundedInt(i) == 0) {
-                        chunk.getSection(level.getMinHeight() >> 4).setBlockState(x, (level.getMinHeight() + i) & 0x0f, z, STONE, 0);
+                        chunk.setBlockState(x, (level.getMinHeight() + i), z, STONE, 0);
                     }
                 }
             }

@@ -1,8 +1,6 @@
 package cn.nukkit.level.generator.stages;
 
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -41,10 +39,10 @@ public class BiomeMapStage extends GenerateStage {
                 ChunkSection section = unsafeChunk.getOrCreateSection(y >> 4);
                 for(int x = 0; x < 16; x++) {
                     for(int z = 0; z < 16; z++) {
-                        section.setBlockState(x, y & 0x0f, z, BlockAir.STATE, 0);
                         BiomeResult result = biomes[x * 16 + z];
-                        if(result instanceof OverworldBiomeResult biomeResult) biomeResult.correct(y);
+                        if(result instanceof OverworldBiomeResult biomeResult) biomeResult.correct(y - unsafeChunk.getHeightMap(x, z));
                         section.setBiomeId(x, y & 0x0f, z, result.getBiomeId());
+                        if(result instanceof OverworldBiomeResult biomeResult) biomeResult.reset();
                     }
                 }
             }

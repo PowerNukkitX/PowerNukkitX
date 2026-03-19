@@ -17,8 +17,11 @@ public class OverworldBiomeResult extends BiomeResult {
     final float weirdness;
     final float pv;
 
+    final int original;
+
     public OverworldBiomeResult(int biomeId, float continental, float temperature, float humidity, float erosion, float weirdness, float pv) {
         super(biomeId);
+        this.original = biomeId;
         this.continental = continental;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -41,13 +44,17 @@ public class OverworldBiomeResult extends BiomeResult {
                 } else if (humidity > 0.3f) {
                     biomeId = LUSH_CAVES;
                 }
-            } else {
+            } else if(depth > 1.1){
                 if (erosion > -1f && erosion < -0.375f) {
                     biomeId = DEEP_DARK;
                 }
             }
         }
         return this;
+    }
+
+    public void reset() {
+        biomeId = original;
     }
 
 }
