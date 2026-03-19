@@ -23,7 +23,7 @@ public class BedrockMigrationService {
 
     public CompoundTag migrate(UUID uuid) {
 
-        server.getLogger().info("Started Migration for " + uuid);
+        server.getLogger().debug("Started Migration for " + uuid);
 
         Level level = server.getDefaultLevel();
 
@@ -67,7 +67,7 @@ public class BedrockMigrationService {
 
             CompoundTag converted = convertBedrockNBT(gameplay, level);
 
-            server.getLogger().info("Migration Successful for " + uuid);
+            server.getLogger().debug("Migration Successful for " + uuid);
 
             return converted;
 
@@ -207,7 +207,6 @@ public class BedrockMigrationService {
             int sy = tag.getInt("SpawnY");
             int sz = tag.getInt("SpawnZ");
 
-            // 🔥 reject invalid spawn (0,0,0 or y <= 0)
             if (!(sx == 0 && sy == 0 && sz == 0) && sy > 0) {
                 pnx.putInt("SpawnX", sx);
                 pnx.putInt("SpawnY", sy);
