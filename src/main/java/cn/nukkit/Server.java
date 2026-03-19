@@ -275,6 +275,8 @@ public class Server {
     private boolean allowTheEnd;
     private List<ExperimentEntry> experiments;
 
+    private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
+
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
@@ -1805,12 +1807,21 @@ public class Server {
             buffer.putLong(uuid.getLeastSignificantBits());
             byte[] bytes = playerDataDB.get(buffer.array());
             if (bytes != null) {
-                return NBTIO.readCompressed(bytes);
+                CompoundTag existing = NBTIO.readCompressed(bytes);
+
+                if (existing.contains("BedrockMigrated")) {
+                    return existing;
+                }
             }
         } catch (IOException e) {
             log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
         }
+        CompoundTag migrated = migrationService.migrate(uuid);
 
+        if (migrated != null) {
+            saveOfflinePlayerData(uuid, migrated, true);
+            return migrated;
+        }
         if (create) {
             if (this.getSettings().playerSettings().savePlayerData()) {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
