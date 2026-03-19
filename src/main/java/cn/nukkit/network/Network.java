@@ -6,10 +6,12 @@ import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
+import cn.nukkit.event.server.ServerBotnetAttackEvent;
 import cn.nukkit.network.process.NetworkState;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.codec.QueryPacketCodec;
 import cn.nukkit.network.query.handler.QueryPacketHandler;
+import cn.nukkit.network.security.BotnetDetector;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
@@ -62,6 +64,8 @@ public class Network implements NetworkInterface {
     private final Map<InetSocketAddress, BedrockSession> sessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, LocalDateTime> blockIpMap = new ConcurrentHashMap<>();
     private final RakServerChannel channel;
+    @Getter
+    private final BotnetDetector botnetDetector;
     private BedrockPong pong;
     @Getter @Setter
     private NetworkState state = NetworkState.STARTING;
@@ -72,6 +76,10 @@ public class Network implements NetworkInterface {
 
     public Network(Server server, int nettyThreadNumber, ThreadFactory threadFactory) {
         this.server = server;
+        var ns = server.getSettings().networkSettings();
+        this.botnetDetector = ns.botnetDetectionEnabled()
+                ? new BotnetDetector(ns.botnetSuspiciousThreshold(), ns.botnetMinSuspiciousIps(), ns.botnetMinScore())
+                : null;
         server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
             List<NetworkIF> tmpIfs = null;
             try {
@@ -294,6 +302,21 @@ public class Network implements NetworkInterface {
      * A function of tick for network session
      */
     public void process() {
+        if (botnetDetector != null) {
+            var ns = server.getSettings().networkSettings();
+            botnetDetector.tick().ifPresent(report -> {
+                ServerBotnetAttackEvent event = new ServerBotnetAttackEvent(
+                        report, ns.botnetAutoBlock(), ns.botnetAutoBlockDurationSeconds());
+                server.getPluginManager().callEvent(event);
+                if (event.isAutoBlock()) {
+                    int durationMs = event.getBlockDurationSeconds() * 1000;
+                    for (var ip : event.getSuspiciousAddresses()) {
+                        blockAddress(ip, durationMs);
+                    }
+                }
+            });
+        }
+
         for (BedrockSession session : this.sessionMap.values()) {
             if (session.isConnected() && session.getPlayer() == null) {
                 session.tick();

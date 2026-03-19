@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.network.connection.BedrockPong;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.NetworkState;
+import cn.nukkit.network.security.BotnetDetector;
 import oshi.hardware.NetworkIF;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,4 +59,6 @@ public interface NetworkInterface {
     boolean isAddressBlocked(InetSocketAddress address);
 
     BedrockPong getPong();
+
+    BotnetDetector getBotnetDetector();
 }
