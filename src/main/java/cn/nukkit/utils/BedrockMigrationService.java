@@ -290,7 +290,7 @@ public class BedrockMigrationService {
                 return false;
             }
 
-            // Optional deeper validation (recommended)
+            // Deeper Validation
             CompoundTag identity = NBTIO.read(
                     new ByteArrayInputStream(identityBytes),
                     ByteOrder.LITTLE_ENDIAN
