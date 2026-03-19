@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-cn-powernukkitx-libdeflate-java                 = "0.0.2-PNX"
+libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 pnx-terra-binary                                = "6.6.1-BETA"
 fastreflection                                  = "8733a599fa"
 com-github-oshi-oshi-core                       = "6.4.10"
@@ -42,7 +42,7 @@ disruptor                                       = "4.0.0"
 [libraries]
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
 terra                = { module = "org.powernukkitx:Terra",                         version.ref = "pnx-terra-binary"                                }
-libdeflate           = { module = "cn.powernukkitx:libdeflate-java",                version.ref = "cn-powernukkitx-libdeflate-java"                 }
+libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
 fastreflection       = { module = "com.github.AllayMC:fast-reflection",             version.ref = "fastreflection"                                  }
 oshi                 = { module = "com.github.oshi:oshi-core",                      version.ref = "com-github-oshi-oshi-core"                       }
 jsr305               = { module = "com.google.code.findbugs:jsr305",                version.ref = "com-google-code-findbugs-jsr305"                 }

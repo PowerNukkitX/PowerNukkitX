@@ -2487,33 +2487,25 @@ public abstract class Item implements Cloneable, ItemID {
         if (rules == null || rules.size() == 0) return null;
 
         final String blockId = block.getId();
-        Integer speed = null;
 
         for (CompoundTag rule : rules.getAll()) {
             CompoundTag blk = rule.getCompound("block");
 
             String name = blk.contains("name") ? blk.getString("name") : "";
-            if (!name.isEmpty() && name.equals(blockId)) {
-                speed = rule.getInt("speed");
-                break;
-            }
+            if (!name.isEmpty() && name.equals(blockId)) return rule.getInt("speed");
+        }
+
+        for (CompoundTag rule : rules.getAll()) {
+            CompoundTag blk = rule.getCompound("block");
 
             String tagsExpr = blk.contains("tags") ? blk.getString("tags") : "";
-            if (!tagsExpr.isEmpty() && anyTagMatches(block, tagsExpr)) {
-                speed = rule.getInt("speed");
-                break;
-            }
+            if (tagsExpr.isEmpty()) continue;
+
+            boolean matched = anyTagMatches(block, tagsExpr);
+            if (matched) return rule.getInt("speed");
         }
 
-        if (speed == null) return null;
-
-        if (digger.getBoolean("use_efficiency")) {
-            int level = this.getEnchantmentLevel(Enchantment.ID_EFFICIENCY);
-            if (level > 0) {
-                speed += (level * level) + 1; // Efficiency bonus
-            }
-        }
-        return speed;
+        return null;
     }
 
     /** 
@@ -2620,7 +2612,7 @@ public abstract class Item implements Cloneable, ItemID {
         return comps.contains("item_properties") ? comps.getCompound("item_properties") : null;
     }
 
-    private CompoundTag getCustomItemComponent(String key) {
+    public CompoundTag getCustomItemComponent(String key) {
         CompoundTag comps = customComponents();
         if (comps == null) return null;
         if (comps.contains(key)) {
