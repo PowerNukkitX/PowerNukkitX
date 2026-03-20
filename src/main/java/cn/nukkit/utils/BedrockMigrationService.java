@@ -123,14 +123,15 @@ public class BedrockMigrationService {
         if (armorRaw != null) {
             for (int i = 0; i < armorRaw.size(); i++) {
 
-                int slot;
-                switch (i) {
-                    case 0: slot = 36; break; // helmet
-                    case 1: slot = 37; break; // chestplate / elytra
-                    case 2: slot = 38; break; // leggings
-                    case 3: slot = 39; break; // boots
-                    default: continue;
-                }
+                int slot = switch (i) {
+                    case 0 -> 36; // helmet
+                    case 1 -> 37; // chestplate
+                    case 2 -> 38; // leggings
+                    case 3 -> 39; // boots
+                    default -> -1;
+                };
+
+                if (slot == -1) continue;
 
                 CompoundTag converted = convertItem(armorRaw.get(i), slot);
                 if (converted != null) {
@@ -171,26 +172,27 @@ public class BedrockMigrationService {
         }
 
         // Stats
-        float health = tag.contains("Health") ? tag.getFloat("Health") : 20f;
-        int food = tag.contains("foodLevel") ? tag.getInt("foodLevel") : 20;
-        float saturation = tag.contains("foodSaturationLevel") ? tag.getFloat("foodSaturationLevel") : 20f;
+        float health = tag.getFloat("Health", 20f);
+        int food = tag.getInt("foodLevel", 20);
+        float saturation = tag.getFloat("foodSaturationLevel", 20f);
 
-        int exp = tag.contains("EXP") ? tag.getInt("EXP") : 0;
-        int expLevel = tag.contains("expLevel") ? tag.getInt("expLevel") : 0;
-        float expProgress = tag.contains("EXPProgress") ? tag.getFloat("EXPProgress") : 0f;
+        int exp = tag.getInt("EXP");
+        int expLevel = tag.getInt("expLevel");
+        float expProgress = tag.getFloat("EXPProgress");
 
-        int gamemode = tag.contains("playerGameType") ? tag.getInt("playerGameType") : 0;
-        int selectedSlot = tag.contains("SelectedInventorySlot") ? tag.getInt("SelectedInventorySlot") : 0;
+        int gamemode = tag.getInt("playerGameType");
+        int selectedSlot = tag.getInt("SelectedInventorySlot");
 
-        short air = tag.contains("Air") ? tag.getShort("Air") : 300;
-        short fire = tag.contains("Fire") ? tag.getShort("Fire") : 0;
-        float fallDistance = tag.contains("FallDistance") ? tag.getFloat("FallDistance") : 0f;
-        boolean onGround = tag.contains("OnGround") && tag.getBoolean("OnGround");
+        short air = tag.getShort("Air", (short) 300);
+        short fire = tag.getShort("Fire");
+        float fallDistance = tag.getFloat("FallDistance");
+        boolean onGround = tag.getBoolean("OnGround");
 
         // Active Effects
-        ListTag<CompoundTag> effects = tag.contains("ActiveEffects")
-                ? tag.getList("ActiveEffects", CompoundTag.class)
-                : new ListTag<>();
+        ListTag<CompoundTag> effects = tag.getList("ActiveEffects", CompoundTag.class);
+        if (effects == null) {
+            effects = new ListTag<>();
+        }
 
         // Convert BDS -> PNX
         CompoundTag pnx = new CompoundTag();
@@ -199,7 +201,7 @@ public class BedrockMigrationService {
         pnx.putList("Motion", motion);
         pnx.putList("Rotation", rotation);
         pnx.putString("Level", level.getName());
-        pnx.putInt("DimensionId", tag.contains("DimensionId") ? tag.getInt("DimensionId") : 0);
+        pnx.putInt("DimensionId", tag.getInt("DimensionId"));
         pnx.putString("SpawnLevel", level.getName());
         if (tag.contains("SpawnX") && tag.contains("SpawnY") && tag.contains("SpawnZ")) {
 
@@ -220,8 +222,7 @@ public class BedrockMigrationService {
         pnx.putFloat("Health", health);
         pnx.putInt("foodLevel", food);
         pnx.putFloat("foodSaturationLevel", saturation);
-        pnx.putFloat("AbsorptionAmount",
-                tag.contains("AbsorptionAmount") ? tag.getFloat("AbsorptionAmount") : 0f);
+        pnx.putFloat("AbsorptionAmount", tag.getFloat("AbsorptionAmount"));
 
         pnx.putInt("EXP", exp);
         pnx.putInt("expLevel", expLevel);
