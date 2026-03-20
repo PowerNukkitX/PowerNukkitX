@@ -17,6 +17,9 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
         if (Server.getInstance().getServerAuthoritativeMovement() > 0) {
             return;
         }
+        if (!playerHandle.packetRateLimiter.tryMovement()) {
+            return;
+        }
         Vector3 newPos = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);
 
         pk.yaw %= 360;

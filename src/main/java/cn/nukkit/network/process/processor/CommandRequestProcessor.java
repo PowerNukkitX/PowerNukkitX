@@ -6,22 +6,19 @@ import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CommandRequestPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import com.google.common.util.concurrent.RateLimiter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.TimeUnit;
-
 public class CommandRequestProcessor extends DataPacketProcessor<CommandRequestPacket> {
-    final RateLimiter rateLimiter = RateLimiter.create(500);
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandRequestPacket pk) {
-        int length = pk.command.length();
-        if (!rateLimiter.tryAcquire(length, 300, TimeUnit.MILLISECONDS)) {
-            PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(playerHandle.player, PlayerHackDetectedEvent.HackType.COMMAND_SPAM);
+        if (!playerHandle.packetRateLimiter.tryCommand()) {
+            PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(
+                    playerHandle.player, PlayerHackDetectedEvent.HackType.COMMAND_SPAM);
             playerHandle.player.getServer().getPluginManager().callEvent(event);
-
-            if(event.isKick()) playerHandle.player.getSession().close("kick because hack");
+            if (event.isKick()) {
+                playerHandle.player.getSession().close("Exceeding command spam rate-limit");
+            }
             return;
         }
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
