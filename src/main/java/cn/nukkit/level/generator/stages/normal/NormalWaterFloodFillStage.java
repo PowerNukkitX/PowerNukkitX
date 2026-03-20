@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.math.BlockFace;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -37,10 +38,9 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         chunkCache.put(chunk.getIndex(), chunk);
 
         seedCurrentChunk(level, chunkCache, queue, visited, chunk, minY, maxY);
-        seedWestBorder(level, chunkCache, queue, visited, chunkX, chunkZ, minY, maxY);
-        seedEastBorder(level, chunkCache, queue, visited, chunkX, chunkZ, minY, maxY);
-        seedNorthBorder(level, chunkCache, queue, visited, chunkX, chunkZ, minY, maxY);
-        seedSouthBorder(level, chunkCache, queue, visited, chunkX, chunkZ, minY, maxY);
+        for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
+            seedBorder(level, chunkCache, queue, visited, chunkX, chunkZ, face, minY, maxY);
+        }
 
         boolean changed = false;
         while (!queue.isEmpty()) {
@@ -85,65 +85,30 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         }
     }
 
-    private static void seedWestBorder(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
-                                       int chunkX, int chunkZ, int minY, int maxY) {
-        IChunk west = getGeneratedChunk(level, chunkCache, chunkX - 1, chunkZ);
+    private static void seedBorder(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
+                                   int chunkX, int chunkZ, BlockFace face, int minY, int maxY) {
+        int chunkOffsetX = face.getXOffset();
+        int chunkOffsetZ = face.getZOffset();
+        IChunk adjacent = getGeneratedChunk(level, chunkCache, chunkX + chunkOffsetX, chunkZ + chunkOffsetZ);
         IChunk current = getGeneratedChunk(level, chunkCache, chunkX, chunkZ);
-        if (west == null || current == null) {
+        if (adjacent == null || current == null) {
             return;
         }
-        for (int z = 0; z < 16; z++) {
-            for (int y = minY; y <= maxY; y++) {
-                if (west.getBlockState(15, y, z) == WATER && current.getBlockState(0, y, z) == AIR) {
-                    enqueue(queue, visited, ((chunkX - 1) << 4) + 15, y, (chunkZ << 4) + z);
-                }
-            }
-        }
-    }
 
-    private static void seedEastBorder(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
-                                       int chunkX, int chunkZ, int minY, int maxY) {
-        IChunk east = getGeneratedChunk(level, chunkCache, chunkX + 1, chunkZ);
-        IChunk current = getGeneratedChunk(level, chunkCache, chunkX, chunkZ);
-        if (east == null || current == null) {
-            return;
-        }
-        for (int z = 0; z < 16; z++) {
-            for (int y = minY; y <= maxY; y++) {
-                if (east.getBlockState(0, y, z) == WATER && current.getBlockState(15, y, z) == AIR) {
-                    enqueue(queue, visited, ((chunkX + 1) << 4), y, (chunkZ << 4) + z);
-                }
-            }
-        }
-    }
+        boolean xAligned = face.getXOffset() == 0;
+        int fixedAdjacent = face == BlockFace.WEST || face == BlockFace.NORTH ? 15 : 0;
+        int fixedCurrent = face == BlockFace.EAST || face == BlockFace.SOUTH ? 15 : 0;
+        int worldBaseX = (chunkX + chunkOffsetX) << 4;
+        int worldBaseZ = (chunkZ + chunkOffsetZ) << 4;
 
-    private static void seedNorthBorder(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
-                                        int chunkX, int chunkZ, int minY, int maxY) {
-        IChunk north = getGeneratedChunk(level, chunkCache, chunkX, chunkZ - 1);
-        IChunk current = getGeneratedChunk(level, chunkCache, chunkX, chunkZ);
-        if (north == null || current == null) {
-            return;
-        }
-        for (int x = 0; x < 16; x++) {
+        for (int axis = 0; axis < 16; axis++) {
             for (int y = minY; y <= maxY; y++) {
-                if (north.getBlockState(x, y, 15) == WATER && current.getBlockState(x, y, 0) == AIR) {
-                    enqueue(queue, visited, (chunkX << 4) + x, y, ((chunkZ - 1) << 4) + 15);
-                }
-            }
-        }
-    }
-
-    private static void seedSouthBorder(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
-                                        int chunkX, int chunkZ, int minY, int maxY) {
-        IChunk south = getGeneratedChunk(level, chunkCache, chunkX, chunkZ + 1);
-        IChunk current = getGeneratedChunk(level, chunkCache, chunkX, chunkZ);
-        if (south == null || current == null) {
-            return;
-        }
-        for (int x = 0; x < 16; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                if (south.getBlockState(x, y, 0) == WATER && current.getBlockState(x, y, 15) == AIR) {
-                    enqueue(queue, visited, (chunkX << 4) + x, y, ((chunkZ + 1) << 4));
+                int adjacentX = xAligned ? axis : fixedAdjacent;
+                int adjacentZ = xAligned ? fixedAdjacent : axis;
+                int currentX = xAligned ? axis : fixedCurrent;
+                int currentZ = xAligned ? fixedCurrent : axis;
+                if (adjacent.getBlockState(adjacentX, y, adjacentZ) == WATER && current.getBlockState(currentX, y, currentZ) == AIR) {
+                    enqueue(queue, visited, worldBaseX + adjacentX, y, worldBaseZ + adjacentZ);
                 }
             }
         }
