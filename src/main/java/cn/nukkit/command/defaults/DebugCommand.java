@@ -82,6 +82,10 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin"}),
                 CommandParameter.newType("plugin", true, CommandParamType.STRING)
         });
+        this.commandParameters.put("toggle", new CommandParameter[]{
+                CommandParameter.newEnum("toggle", new String[]{"toggle"}),
+                CommandParameter.newEnum("type", new String[]{"invulnerable"}),
+        });
         this.enableParamTree();
     }
 
@@ -96,8 +100,23 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "chunk" -> handleChunk(sender, result.getValue());
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
+            case "toggle" -> handleToggle(sender, result.getValue(), log);
             default -> 0;
         };
+    }
+
+    private int handleToggle(CommandSender sender, ParamList value, CommandLogger log) {
+        switch (value.getResult(1).toString()) {
+            case "invulnerable" -> {
+                if (!sender.isPlayer()) return 0;
+                Player player = sender.asPlayer();
+                boolean newValue = !player.isInvulnerable();
+                player.setInvulnerable(newValue);
+                log.addSuccess("Set invulnerable to " + newValue).output();
+                return 1;
+            }
+        }
+        return 0;
     }
 
     private int handleStructure(CommandSender sender, ParamList list, CommandLogger log) {

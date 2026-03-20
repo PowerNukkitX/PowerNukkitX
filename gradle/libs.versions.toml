@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-cn-powernukkitx-libdeflate-java                 = "0.0.2-PNX"
+libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 pnx-terra-binary                                = "6.6.1-BETA"
 fastreflection                                  = "8733a599fa"
 com-github-oshi-oshi-core                       = "6.4.10"
@@ -24,6 +24,7 @@ org-jline-jline-reader                          = "3.25.0"
 org-jline-jline-terminal                        = "3.25.0"
 org-jline-jline-terminal-jna                    = "3.25.0"
 org-junit-jupiter-junit-jupiter                 = "5.10.1"
+org-junit-platform-launcher                     = "1.10.1"
 org-lz4-lz4-java                                = "1.10.2"
 org-mockito-mockito-junit-jupiter               = "5.8.0"
 org-openjdk-jmh-jmh-core                        = "1.37"
@@ -41,7 +42,7 @@ disruptor                                       = "4.0.0"
 [libraries]
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
 terra                = { module = "org.powernukkitx:Terra",                         version.ref = "pnx-terra-binary"                                }
-libdeflate           = { module = "cn.powernukkitx:libdeflate-java",                version.ref = "cn-powernukkitx-libdeflate-java"                 }
+libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
 fastreflection       = { module = "com.github.AllayMC:fast-reflection",             version.ref = "fastreflection"                                  }
 oshi                 = { module = "com.github.oshi:oshi-core",                      version.ref = "com-github-oshi-oshi-core"                       }
 jsr305               = { module = "com.google.code.findbugs:jsr305",                version.ref = "com-google-code-findbugs-jsr305"                 }
@@ -70,6 +71,7 @@ jline-reader         = { module = "org.jline:jline-reader",                     
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
 jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "org-junit-platform-launcher"                    }
 lz4                  = { module = "at.yawk.lz4:lz4-java",                               version.ref = "org-lz4-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }

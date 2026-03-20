@@ -34,7 +34,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
  * CustomItemDefinition defines custom items from behavior packs. <p>
  *
@@ -583,6 +582,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
          */
         public SimpleBuilder useEfficiency(boolean useEfficiency) {
             this.diggerUseEfficiency = useEfficiency;
+            ensureDigger().putBoolean("use_efficiency", useEfficiency);
             return this;
         }
 
