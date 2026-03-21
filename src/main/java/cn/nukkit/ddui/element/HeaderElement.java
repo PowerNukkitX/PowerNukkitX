@@ -19,7 +19,12 @@ public class HeaderElement extends Element<String> {
     public HeaderElement(String text, HeaderOptions options, ObjectProperty parent) {
         super("header", parent);
         setText(text);
-        applyVisibility(options);
+
+        if (options.getVisible() instanceof Observable<?> obs) {
+            setVisibility((Observable<Boolean>) obs);
+        } else {
+            setVisibility((Boolean) options.getVisible());
+        }
     }
 
     public HeaderElement(Observable<String> text, ObjectProperty parent) {
@@ -29,7 +34,12 @@ public class HeaderElement extends Element<String> {
     public HeaderElement(Observable<String> text, HeaderOptions options, ObjectProperty parent) {
         super("header", parent);
         setText(text);
-        applyVisibility(options);
+
+        if (options.getVisible() instanceof Observable<?> obs) {
+            setVisibility((Observable<Boolean>) obs);
+        } else {
+            setVisibility((Boolean) options.getVisible());
+        }
     }
 
     public String getText() {
@@ -82,14 +92,5 @@ public class HeaderElement extends Element<String> {
         return (existing instanceof StringProperty sp)
                 ? sp
                 : new StringProperty("text", "", this);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void applyVisibility(HeaderOptions options) {
-        if (options.getVisible() instanceof Observable<?> obs) {
-            setVisibility((Observable<Boolean>) obs);
-        } else {
-            setVisibility((Boolean) options.getVisible());
-        }
     }
 }

@@ -55,6 +55,7 @@ public class ClientboundAttributeLayerSyncPacket extends DataPacket {
         return ProtocolInfo.CLIENTBOUND_ATTRIBUTE_LAYER_SYNC_PACKET;
     }
 
+    @Override
     public void handle(PacketHandler handler) {
         handler.handle(this);
     }
