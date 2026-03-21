@@ -17,7 +17,6 @@ public class ServerboundDataStoreProcessor extends DataPacketProcessor<Serverbou
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ServerboundDataStorePacket pk) {
         Player player = playerHandle.player;
-        if (player == null) return;
 
         Observable.withOutboundSuppressed(() -> {
             var update = pk.getUpdate();
@@ -34,28 +33,13 @@ public class ServerboundDataStoreProcessor extends DataPacketProcessor<Serverbou
             if (property == null) return;
 
             Object data = update.getData();
-            if (property instanceof LongProperty) {
-                if (data instanceof Number n) {
-                    property.triggerListeners(player, n.longValue());
-                } else {
-                    property.triggerListeners(player, 0L);
-                }
-                return;
+            switch (property) {
+                case LongProperty ignored when data instanceof Number n -> property.triggerListeners(player, n.longValue());
+                case LongProperty ignored -> property.triggerListeners(player, 0L);
+                case BooleanProperty ignored when data instanceof Boolean b -> property.triggerListeners(player, b);
+                case StringProperty ignored when data instanceof String s -> property.triggerListeners(player, s);
+                default -> {}
             }
-            if (property instanceof BooleanProperty) {
-                if (data instanceof Boolean b) {
-                    property.triggerListeners(player, b);
-                }
-                return;
-            }
-            if (property instanceof StringProperty) {
-                if (data instanceof String s) {
-                    property.triggerListeners(player, s);
-                }
-                return;
-            }
-
-            property.triggerListeners(player, data);
         });
     }
 

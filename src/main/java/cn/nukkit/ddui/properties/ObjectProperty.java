@@ -48,15 +48,12 @@ public class ObjectProperty<T> extends DataDrivenProperty<Map<String, DataDriven
     }
 
     private static DataStorePropertyValue convertProperty(DataDrivenProperty<?, ?> prop) {
-        if (prop instanceof ObjectProperty<?> obj) {
-            return obj.toPropertyValue();
-        } else if (prop instanceof BooleanProperty bp) {
-            return DataStorePropertyValue.ofBoolean(bp.getValue());
-        } else if (prop instanceof LongProperty lp) {
-            return DataStorePropertyValue.ofLong(lp.getValue());
-        } else if (prop instanceof StringProperty sp) {
-            return DataStorePropertyValue.ofString(sp.getValue());
-        }
-        return DataStorePropertyValue.ofString(String.valueOf(prop.getValue()));
+        return switch (prop) {
+            case ObjectProperty<?> obj -> obj.toPropertyValue();
+            case BooleanProperty bp -> DataStorePropertyValue.ofBoolean(bp.getValue());
+            case LongProperty lp -> DataStorePropertyValue.ofLong(lp.getValue());
+            case StringProperty sp -> DataStorePropertyValue.ofString(sp.getValue());
+            default -> DataStorePropertyValue.ofString(String.valueOf(prop.getValue()));
+        };
     }
 }

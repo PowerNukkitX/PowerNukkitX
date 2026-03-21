@@ -23,22 +23,12 @@ public class ClientboundAttributeLayerSyncPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         final AttributeLayerSyncData.Type type = AttributeLayerSyncData.Type.from(byteBuf.readUnsignedVarInt());
-        switch (type) {
-            case UPDATE_ATTRIBUTE_LAYERS:
-                data = readUpdateAttributeLayersData(byteBuf);
-                break;
-            case UPDATE_ATTRIBUTE_LAYER_SETTINGS:
-                data = readUpdateAttributeLayerSettingsData(byteBuf);
-                break;
-            case UPDATE_ENVIRONMENT_ATTRIBUTES:
-                data = readUpdateEnvironmentAttributesData(byteBuf);
-                break;
-            case REMOVE_ENVIRONMENT_ATTRIBUTES:
-                data = readRemoveEnvironmentAttributesData(byteBuf);
-                break;
-            default:
-                throw new IllegalStateException("Read unknown AttributeLayerSyncPacketData.Type");
-        }
+        data = switch (type) {
+            case UPDATE_ATTRIBUTE_LAYERS -> readUpdateAttributeLayersData(byteBuf);
+            case UPDATE_ATTRIBUTE_LAYER_SETTINGS ->  readUpdateAttributeLayerSettingsData(byteBuf);
+            case UPDATE_ENVIRONMENT_ATTRIBUTES -> readUpdateEnvironmentAttributesData(byteBuf);
+            case REMOVE_ENVIRONMENT_ATTRIBUTES -> readRemoveEnvironmentAttributesData(byteBuf);
+        };
     }
 
     @Override

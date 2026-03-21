@@ -19,22 +19,12 @@ public class SyncWorldClocksPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         final ClockPayloadData.Type type = ClockPayloadData.Type.from(byteBuf.readUnsignedVarInt());
-        switch (type) {
-            case SYNC_STATE_DATA:
-                setPayloadData(readSyncStateData(byteBuf));
-                break;
-            case INITIALIZE_REGISTRY_DATA:
-                setPayloadData(readInitializeRegistryData(byteBuf));
-                break;
-            case ADD_TIME_MARKER_DATA:
-                setPayloadData(readAddTimeMarkerData(byteBuf));
-                break;
-            case REMOVE_TIME_MARKER_DATA:
-                setPayloadData(readRemoveTimeMarkerData(byteBuf));
-                break;
-            default:
-                throw new IllegalStateException("Read unknown ClockPayloadData.Type");
-        }
+        this.setPayloadData(switch (type) {
+            case SYNC_STATE_DATA -> readSyncStateData(byteBuf);
+            case INITIALIZE_REGISTRY_DATA -> readInitializeRegistryData(byteBuf);
+            case ADD_TIME_MARKER_DATA -> readAddTimeMarkerData(byteBuf);
+            case REMOVE_TIME_MARKER_DATA -> readRemoveTimeMarkerData(byteBuf);
+        });
     }
 
     @Override

@@ -66,25 +66,24 @@ public class BedrockSessionPacketHandler implements PacketHandler {
         if (property == null) return;
 
         Object data = update.getData();
-        if (property instanceof LongProperty) {
-            if (data instanceof Number n) {
+        switch (property) {
+            case LongProperty ignored when data instanceof Number n -> {
                 property.triggerListeners(player, n.longValue());
-            } else {
+                return;
+            }
+            case LongProperty ignored -> {
                 property.triggerListeners(player, 0L);
+                return;
             }
-            return;
-        }
-        if (property instanceof BooleanProperty) {
-            if (data instanceof Boolean b) {
+            case BooleanProperty ignored when data instanceof Boolean b -> {
                 property.triggerListeners(player, b);
+                return;
             }
-            return;
-        }
-        if (property instanceof StringProperty) {
-            if (data instanceof String s) {
+            case StringProperty ignored when data instanceof String s -> {
                 property.triggerListeners(player, s);
+                return;
             }
-            return;
+            default -> {}
         }
 
         property.triggerListeners(player, data);

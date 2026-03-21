@@ -1937,24 +1937,20 @@ public class HandleByteBuf extends ByteBuf {
         DataStorePropertyType type = update.getType();
 
         if (type == null) {
-            if (value instanceof Boolean) {
-                type = DataStorePropertyType.BOOLEAN;
-            } else if (value instanceof String) {
-                type = DataStorePropertyType.STRING;
-            } else if (value instanceof Number) {
-                type = DataStorePropertyType.INT64;
-            }
+            type = switch (value) {
+                case Boolean ignored -> DataStorePropertyType.BOOLEAN;
+                case String ignored -> DataStorePropertyType.STRING;
+                default -> DataStorePropertyType.INT64;
+            };
         }
 
         int control;
-        if (type == DataStorePropertyType.BOOLEAN) {
-            control = 1;
-        } else if (type == DataStorePropertyType.STRING) {
-            control = 2;
-        } else if (type == DataStorePropertyType.INT64) {
-            control = 0;
-        } else {
-            throw new IllegalStateException("Invalid data store update type: " + type);
+
+        switch (type) {
+            case BOOLEAN -> control = 1;
+            case STRING -> control = 2;
+            case INT64 -> control = 0;
+            default -> throw new IllegalStateException("Invalid data store update type: " + type);
         }
 
         writeUnsignedVarInt(control);
