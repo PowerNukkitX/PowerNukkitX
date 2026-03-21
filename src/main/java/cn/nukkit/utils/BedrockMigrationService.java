@@ -247,6 +247,7 @@ public class BedrockMigrationService {
 
         return pnx;
     }
+
     private CompoundTag convertItem(CompoundTag item, int slot) {
 
         if (!item.contains("Name")) return null;
@@ -274,6 +275,7 @@ public class BedrockMigrationService {
 
         return NBTIO.putItemHelper(nukkitItem, slot);
     }
+
     public boolean hasBedrockData(UUID uuid) {
         try {
             Level level = server.getDefaultLevel();
