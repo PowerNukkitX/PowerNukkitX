@@ -41,7 +41,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -77,18 +80,12 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         private final int id;
 
-        private static final SpawnRiderType[] BY_ID;
+        private static final SpawnRiderType[] BY_ID = new SpawnRiderType[
+            Collections.max(List.of(values()), Comparator.comparingInt(t -> t.id)).id + 1
+        ];
 
         static {
-            int max = 0;
-            for (SpawnRiderType t : values()) {
-                if (t.id > max) max = t.id;
-            }
-
-            BY_ID = new SpawnRiderType[max + 1];
-            for (SpawnRiderType t : values()) {
-                BY_ID[t.id] = t;
-            }
+            for (SpawnRiderType t : values()) BY_ID[t.id] = t;
         }
 
         SpawnRiderType(int id) {
@@ -100,9 +97,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         }
 
         public static SpawnRiderType fromId(int id) {
-            return (id >= 0 && id < BY_ID.length && BY_ID[id] != null)
-                    ? BY_ID[id]
-                    : NORMAL;
+            return id >= 0 && id < BY_ID.length ? Objects.requireNonNullElse(BY_ID[id], NORMAL) : NORMAL;
         }
     }
 
