@@ -43,13 +43,13 @@ public class NukkitCollections {
         int size = list.size();
         if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
             for (int i = size; i > 1; i--)
-                Collections.swap(list, i - 1, rnd.nextBoundedInt(i));
+                Collections.swap(list, i - 1, rnd.nextInt(i));
         } else {
             Object[] arr = list.toArray();
 
             // Shuffle array
             for (int i = size; i > 1; i--)
-                swap(arr, i - 1, rnd.nextBoundedInt(i));
+                swap(arr, i - 1, rnd.nextInt(i));
 
             // Dump array back into list
             // instead of using a raw type here, it's possible to capture

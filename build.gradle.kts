@@ -64,6 +64,7 @@ dependencies {
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)

@@ -1,7 +1,10 @@
 package cn.nukkit.config.category;
 
+import cn.nukkit.config.category.network.BotnetSettings;
+import cn.nukkit.config.category.network.RateLimitSettings;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.CustomKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -36,4 +39,12 @@ public class NetworkSettings extends OkaeriConfig {
     int pacingFlushIntervalMillis = 3;
     @Comment("pnx.settings.network.pacing.maxbytespersecond")
     int pacingMaxBytesPerSecond = 8388608;
+
+    @Comment("pnx.settings.network.ratelimit")
+    @CustomKey("rate-limit")
+    private RateLimitSettings rateLimitSettings = new RateLimitSettings();
+
+    @Comment("pnx.settings.network.ratelimit")
+    @CustomKey("botnet")
+    private BotnetSettings botnetSettings = new BotnetSettings();
 }
