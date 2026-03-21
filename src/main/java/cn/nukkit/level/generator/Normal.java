@@ -14,6 +14,7 @@ import cn.nukkit.level.generator.stages.normal.NormalPopulatorStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
 import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
+import cn.nukkit.level.generator.stages.normal.NormalWaterFloodFillStage;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.NukkitRandom;
 
@@ -30,8 +31,9 @@ public class Normal extends BiomedGenerator {
 
     @Override
     public void stages(GenerateStage.Builder builder) {
-        builder.start(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
-        builder.next(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
+        builder.start(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(NormalWaterFloodFillStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceDataStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceOverwriteStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(ChunkPlacementQueueStage.NAME));
@@ -43,7 +45,7 @@ public class Normal extends BiomedGenerator {
 
     @Override
     public BiomePicker<OverworldBiomeResult> createBiomePicker(Level level) {
-        return new OverworldBiomePicker(new NukkitRandom(level.getSeed()));
+        return new OverworldBiomePicker(level);
     }
 
     @Override
