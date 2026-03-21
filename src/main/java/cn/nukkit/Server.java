@@ -2292,7 +2292,6 @@ public class Server {
                 return null;
             }
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
-            // Auto-generate full dimension config (Required for BDS->PNX compatibility)
             long seed = System.currentTimeMillis();
 
             map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
