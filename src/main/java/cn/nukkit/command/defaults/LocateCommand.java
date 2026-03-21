@@ -8,6 +8,8 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.generator.biome.result.BiomeResult;
+import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
@@ -105,9 +107,18 @@ public class LocateCommand extends VanillaCommand {
         for (int step = 0; step < maxSteps; step++) {
             Vector3 check = new Vector3(centerX + (x << 4), pos.y, centerZ + (z << 4));
 
-            if (pos.getLevel().pickBiome(check.getFloorX(), SEA_LEVEL, check.getFloorZ()) == biomeId) {
-                return check;
-            }
+            BiomeResult result = pos.getLevel().getBiomePicker().pick(check.getFloorX(), SEA_LEVEL, check.getFloorZ());
+            if(result instanceof OverworldBiomeResult biomeResult) {
+                int height = SEA_LEVEL;
+                while (height > pos.level.getMinHeight()) {
+                    biomeResult.correct(height - SEA_LEVEL); //We dont know the actual height before generating.
+                    if (pos.getLevel().pickBiome(check.getFloorX(), height, check.getFloorZ()) == biomeId) {
+                        return check;
+                    }
+                    height -= 8;
+                }
+            } else if(result.getBiomeId() == biomeId) return check;
+
 
             if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
                 int tmp = dx;

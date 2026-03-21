@@ -1080,8 +1080,9 @@ public class Level implements Metadatable {
         try {
             int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
             long levelTime = System.currentTimeMillis();
-            int tickMs = (int) (System.currentTimeMillis() - levelTime);
             doTick(gameLoop.getTick());
+            int tickMs = (int) (System.currentTimeMillis() - levelTime);
+
             if (getServer().getSettings().levelSettings().autoTickRate()) {
                 if (tickMs < 50 && this.getTickRate() > baseTickRate) {
                     int r;
