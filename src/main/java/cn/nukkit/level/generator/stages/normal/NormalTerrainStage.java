@@ -132,21 +132,27 @@ public class NormalTerrainStage extends GenerateStage {
     }
 
     private static boolean isOceanBiome(int biomeId) {
-        return biomeId == BiomeID.OCEAN
-                || biomeId == BiomeID.DEEP_OCEAN
-                || biomeId == BiomeID.WARM_OCEAN
-                || biomeId == BiomeID.DEEP_WARM_OCEAN
-                || biomeId == BiomeID.LUKEWARM_OCEAN
-                || biomeId == BiomeID.DEEP_LUKEWARM_OCEAN
-                || biomeId == BiomeID.COLD_OCEAN
-                || biomeId == BiomeID.DEEP_COLD_OCEAN
-                || biomeId == BiomeID.FROZEN_OCEAN
-                || biomeId == BiomeID.DEEP_FROZEN_OCEAN
-                || biomeId == BiomeID.LEGACY_FROZEN_OCEAN;
+        return switch (biomeId) {
+            case BiomeID.OCEAN,
+                 BiomeID.DEEP_OCEAN,
+                 BiomeID.WARM_OCEAN,
+                 BiomeID.DEEP_WARM_OCEAN,
+                 BiomeID.LUKEWARM_OCEAN,
+                 BiomeID.DEEP_LUKEWARM_OCEAN,
+                 BiomeID.COLD_OCEAN,
+                 BiomeID.DEEP_COLD_OCEAN,
+                 BiomeID.FROZEN_OCEAN,
+                 BiomeID.DEEP_FROZEN_OCEAN,
+                 BiomeID.LEGACY_FROZEN_OCEAN -> true;
+            default -> false;
+        };
     }
 
     private static boolean isRiver(int biomeId) {
-        return biomeId == BiomeID.RIVER
-                || biomeId == BiomeID.FROZEN_RIVER;
+        return switch (biomeId) {
+            case BiomeID.RIVER,
+                 BiomeID.FROZEN_RIVER -> true;
+            default -> false;
+        };
     }
 }
