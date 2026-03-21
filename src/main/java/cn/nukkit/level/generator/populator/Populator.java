@@ -62,7 +62,7 @@ public abstract class Populator {
             }
         }
         writeOutsideChunkStructureData(chunk);
-        if(chunk.getChunkState().canSend()) {
+        if(!chunk.getChunkState().canSend()) {
             manager.applySubChunkUpdate();
         } else manager.applyWithoutUpdate();
     }
