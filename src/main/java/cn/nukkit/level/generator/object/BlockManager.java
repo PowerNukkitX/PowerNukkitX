@@ -40,12 +40,10 @@ public class BlockManager {
     private final Long2ObjectOpenHashMap<Block> places;
 
     private long hashXYZ(int x, int y, int z, int layer) {
-        //generate unique hash for x,y,z,layer: +- 30M for x,z and +-400 for y, layer 0-1
-        return
-                (((long) (x + 30000000)) & 0x3FFFFFFL) << 38 |
-                        (((long) (z + 30000000)) & 0x3FFFFFFL) << 12 |
-                        (((long) (y + 400)) & 0xFFF) << 1 |
-                        ((long) layer & 0x1);
+        return (((long) (x + 30_000_000) & 0x3FFFFFFL) << 37)
+                | (((long) (z + 30_000_000) & 0x3FFFFFFL) << 11)
+                | (((long) (y + 400) & 0x3FFL) << 1)
+                | ((long) layer & 0x1L);
     }
 
     public BlockManager(Level level) {
@@ -53,7 +51,6 @@ public class BlockManager {
         this.caches = new Long2ObjectOpenHashMap<>();
         this.places = new Long2ObjectOpenHashMap<>();
     }
-
 
     public String getBlockIdIfCachedOrLoaded(int x, int y, int z) {
         return getBlockIfCachedOrLoaded(x, y, z).getId();
@@ -67,8 +64,6 @@ public class BlockManager {
         Block block = this.caches.computeIfAbsent(hashXYZ(x, y, z, layer), k -> level.getBlock(x, y, z, layer));
         return block.getId();
     }
-
-
 
     public Block getBlockIfCachedOrLoaded(Vector3 vector3) {
         return getBlockIfCachedOrLoaded(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
@@ -155,6 +150,15 @@ public class BlockManager {
         caches.put(hashXYZ, block);
     }
 
+    public boolean isCached(BlockVector3 blockVector3) {
+        return isCached(blockVector3, 0);
+    }
+
+    public boolean isCached(BlockVector3 blockVector3, int layer) {
+        long hash = hashXYZ(blockVector3.getX(), blockVector3.getY(), blockVector3.getZ(), layer);
+        return caches.containsKey(hash);
+    }
+
     public void merge(BlockManager manager) {
         manager.getBlocks().forEach(b -> this.setBlockStateAt(b, b.getBlockState()));
     }
@@ -196,10 +200,8 @@ public class BlockManager {
         chunks.entrySet().parallelStream().forEach(entry -> {
             final var key = entry.getKey();
             final var value = entry.getValue();
-            key.batchProcess(unsafeChunk -> {
-                value.forEach(b -> {
-                    unsafeChunk.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);
-                });
+            value.forEach(b -> {
+                key.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);
             });
         });
     }

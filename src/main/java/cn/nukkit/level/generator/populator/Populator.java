@@ -41,7 +41,9 @@ public abstract class Populator {
                 chunkHashes.add(chunkHash);
             }
             if(target != null && target.isGenerated()) {
-                manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
+                if(block.getFloorY() > chunk.getLevel().getMaxHeight()) continue;
+                if(chunk.getLevel().getMinHeight() >= block.getFloorY()) continue;
+                manager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.layer, block.getBlockState());
             }
         }
 

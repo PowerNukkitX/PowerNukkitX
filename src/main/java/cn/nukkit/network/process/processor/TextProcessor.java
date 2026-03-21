@@ -16,6 +16,10 @@ public class TextProcessor extends DataPacketProcessor<TextPacket> {
             return;
         }
 
+        if (!playerHandle.packetRateLimiter.tryChat()) {
+            return;
+        }
+
         boolean isXboxAuth = Server.getInstance().getSettings().baseSettings().xboxAuth();
         if(isXboxAuth && !pk.xboxUserId.equals(playerHandle.getLoginChainData().getXUID())) {
             log.warn("{} sent TextPacket with invalid xuid : {} != {}", playerHandle.getUsername(), pk.xboxUserId, playerHandle.getLoginChainData().getXUID());

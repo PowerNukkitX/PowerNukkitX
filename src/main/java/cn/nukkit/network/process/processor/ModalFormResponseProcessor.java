@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerSettingsRespondedEvent;
 import cn.nukkit.form.element.custom.ElementCustom;
 import cn.nukkit.form.element.custom.ElementDropdown;
@@ -29,8 +30,18 @@ public class ModalFormResponseProcessor extends DataPacketProcessor<ModalFormRes
         if (!player.spawned || !player.isAlive()) {
             return;
         }
-        
-        if(pk.data.length() > 1024) {
+
+        if (!playerHandle.packetRateLimiter.tryFormResponse()) {
+            PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(
+                    playerHandle.player, PlayerHackDetectedEvent.HackType.MODAL_SPAM);
+            playerHandle.player.getServer().getPluginManager().callEvent(event);
+            if (event.isKick()) {
+                playerHandle.player.getSession().close("Exceeding modal spam rate-limit");
+            }
+            return;
+        }
+
+        if (pk.data.length() > 1024) {
             player.close("§cPacket handling error");
             return;
         }
