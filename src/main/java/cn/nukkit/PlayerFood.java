@@ -281,7 +281,7 @@ public class PlayerFood {
         if (!player.isAlive() || !this.isEnabled()) {
             return;
         }
-        double health = player.getHealth();
+        double health = player.getHealthCurrent();
         this.foodTickTimer += tickDiff;
         if (this.foodTickTimer >= 80) {
             this.foodTickTimer = 0;
@@ -291,13 +291,13 @@ public class PlayerFood {
             if (this.isHungry()) {
                 this.addFood(1, 0);
             }
-            if (this.foodTickTimer % 20 == 0 && health < this.player.getMaxHealth()) {
+            if (this.foodTickTimer % 20 == 0 && health < this.player.getHealthMax()) {
                 this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
             }
         }
         if (this.foodTickTimer == 0) {
             if (this.food >= 18) {
-                if (health < player.getMaxHealth()) {
+                if (health < player.getHealthMax()) {
                     this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
                     this.exhaust(6);
                 }

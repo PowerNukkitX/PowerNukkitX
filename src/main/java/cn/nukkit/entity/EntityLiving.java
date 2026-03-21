@@ -5,6 +5,12 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.components.AgeableComponent;
+import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealableComponent;
+import cn.nukkit.entity.components.NameableComponent;
+import cn.nukkit.entity.components.TameableComponent;
 import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
 import cn.nukkit.entity.data.EntityDataMap;
@@ -12,6 +18,8 @@ import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
+import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityWanderingTrader;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
 import cn.nukkit.event.entity.EntityDamageBlockedEvent;
@@ -30,6 +38,7 @@ import cn.nukkit.item.ItemTurtleHelmet;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -37,19 +46,26 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.TickCachedBlockIterator;
-import org.jetbrains.annotations.NotNull;
+import cn.nukkit.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
 
+import org.jetbrains.annotations.NotNull;
+
+
+@Slf4j
 public abstract class EntityLiving extends Entity implements EntityDamageable {
-    public final static float DEFAULT_SPEED = 0.1f;
     protected int attackTime = 0;
     protected boolean invisible = false;
-    protected float movementSpeed = DEFAULT_SPEED;
     protected int turtleTicks = 0;
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
@@ -102,16 +118,145 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (!this.namedTag.contains("Health") || !(this.namedTag.get("Health") instanceof FloatTag)) {
-            this.namedTag.putFloat("Health", this.getMaxHealth());
+            this.namedTag.putFloat("Health", this.getHealthMax());
         }
 
-        setHealth(this.namedTag.getFloat("Health"));
+        this.setHealthMax(this.getHealthMax());
+        setHealthCurrent(this.namedTag.getFloat("Health"));
+
+        // Load Tame and Chest from NBT
+        if (this.namedTag.contains("Tamed")) {
+            boolean hasTagTamed = this.namedTag.getBoolean("Tamed");
+            if (hasTagTamed || this.isTamed()) this.setDataFlag(EntityFlag.TAMED, true, false);
+        }
+        if (this.namedTag.contains("Chested")) {
+            this.setDataFlag(EntityFlag.CHESTED, this.namedTag.getBoolean("Chested"), true);
+        }
+        updateInventoryFlags();
+
+        if (this.isAgeable()) {
+            restoreBabyStateFromNbt();
+            if (this.isBaby()) ensureGrowLoaded();
+        }
+
+        if (this.canBeSaddled()) {
+            if (this.namedTag.contains("saddled")) {
+                this.setDataFlag(EntityFlag.SADDLED, this.namedTag.getBoolean("saddled"));
+            } else {
+                this.setDataFlag(EntityFlag.SADDLED, false);
+            }
+        }
+
+        if (this.isBaby()) loadParentFromNBT();
+
+        if (!this.isPlayer && this.namedTag != null && this.namedTag.contains(NBT_RIDING_UUID)) {
+            this.restoreMountTries = 60;
+        }
+    }
+
+
+    protected void loadParentFromNBT() {
+        if (!(this instanceof EntityIntelligent ei)) return;
+        if (this.namedTag == null) return;
+        if (!this.isBaby()) return;
+        if (ei.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT)) return;
+
+        UUID wanted = null;
+        String parentStr = this.namedTag.getString("Parent");
+        if (parentStr != null && !parentStr.isEmpty()) {
+            try {
+                wanted = UUID.fromString(parentStr);
+            } catch (IllegalArgumentException ignored) {
+                wanted = null;
+            }
+        }
+
+        List<Entity> nearby = new ArrayList<>();
+        EntityQueryOptions opts = new EntityQueryOptions()
+                .location(this)
+                .maxDistance(8);
+
+        this.level.getEntities(opts, nearby);
+
+        Entity foundByUuid = null;
+        Entity fallbackSameTypeAdult = null;
+        double bestUuidD2 = Double.MAX_VALUE;
+        double bestFallbackD2 = Double.MAX_VALUE;
+
+        for (Entity e : nearby) {
+            if (e == null || e == this) continue;
+
+            double d2 = this.distanceSquared(e);
+
+            if (wanted != null) {
+                var uid = e.getUniqueId();
+                if (uid != null && wanted.equals(uid) && d2 < bestUuidD2) {
+                    bestUuidD2 = d2;
+                    foundByUuid = e;
+                    continue;
+                }
+            }
+
+            if (e instanceof EntityCreature c) {
+                if (!c.getIdentifier().equals(this.getIdentifier())) continue;
+                if (c.isBaby()) continue;
+                if (d2 < bestFallbackD2) {
+                    bestFallbackD2 = d2;
+                    fallbackSameTypeAdult = c;
+                }
+            }
+        }
+
+        Entity chosen = (foundByUuid != null) ? foundByUuid : fallbackSameTypeAdult;
+        if (chosen == null) return;
+
+        ei.getMemoryStorage().put(CoreMemoryTypes.PARENT, chosen);
+
+        var chosenUuid = chosen.getUniqueId();
+        if (chosenUuid != null) {
+            this.namedTag.putString("Parent", chosenUuid.toString());
+        }
     }
 
     @Override
-    public void setHealth(float health) {
+    public boolean onUpdate(int currentTick) {
+        if (restoreMountTries > 0) {
+            restoreMountTries--;
+            if ((restoreMountTries % 4) == 0) tryRestoreMountLink();
+            if (restoreMountTries == 0 && this.riding == null) this.namedTag.remove(NBT_RIDING_UUID);
+        }
+
+        return super.onUpdate(currentTick);
+    }
+
+    private void tryRestoreMountLink() {
+        String uuidStr = this.namedTag.getString(NBT_RIDING_UUID);
+        UUID wanted;
+        try {
+            wanted = UUID.fromString(uuidStr);
+        } catch (IllegalArgumentException ignored) {
+            this.namedTag.remove(NBT_RIDING_UUID);
+            restoreMountTries = 0;
+            return;
+        }
+
+        double radius = 8;
+        for (Entity e : this.level.getNearbyEntities(this.boundingBox.grow(radius, radius, radius), this)) {
+            if (e == null || e.closed) continue;
+            if (e instanceof Player) continue;
+
+            if (wanted.equals(e.getUniqueId())) {
+                e.mountEntity(this, false);
+                if (this.riding != null) restoreMountTries = 0;
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void setHealthCurrent(float health) {
         boolean wasAlive = this.isAlive();
-        super.setHealth(health);
+        super.setHealthCurrent(health);
         if (this.isAlive() && !wasAlive) {
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
@@ -123,7 +268,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putFloat("Health", this.getHealth());
+        this.namedTag.putFloat("Health", this.getHealthCurrent());
+
+        if (!isAgeable()) return;
+        if (!isBaby()) {
+            if (namedTag.contains(TAG_ENTITY_GROW_LEFT)) namedTag.remove(TAG_ENTITY_GROW_LEFT);
+            return;
+        }
+        ensureGrowLoaded();
+        if (growDirty) {
+            namedTag.putInt(TAG_ENTITY_GROW_LEFT, Math.max(0, ticksGrowLeft));
+            growDirty = false;
+        }
+
+        if (this.canBeSaddled()) {
+            this.namedTag.putBoolean("saddled", isSaddled());
+        }
     }
 
     public boolean hasLineOfSight(Entity target) {
@@ -248,7 +408,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
-            pk.event = this.getHealth() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
+            pk.event = this.getHealthCurrent() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
             this.attackTime = source.getAttackCooldown();
@@ -287,7 +447,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         float resist = this.getKnockbackResistance();
         base *= (1.0 - resist);
-        if (base <= 0) {
+        if (f < 1.0e-6) {
             return;
         }
 
@@ -301,10 +461,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         motion.x += x * f * base;
         motion.y += base;
         motion.z += z * f * base;
-
-        if (motion.y > base) {
-            motion.y = base;
-        }
 
         this.setMotion(motion);
     }
@@ -417,18 +573,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             hasUpdate = true;
         }
 
-        //吐槽：性能不要了是吧放EntityLiving这里
-        //逻辑迁移到EntityVehicle去了
-//        if (this.riding == null) {
-//            for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
-//                if (entity instanceof EntityRideable) {
-//                    this.collidingWith(entity);
-//                }
-//            }
-//        }
-
         // Used to check collisions with magma / cactus blocks
-        // Math.round处理在某些条件下 出现x.999999的坐标条件,这里选择四舍五入
+        // Math.round handles coordinates with x.999999 under certain conditions; here, rounding is chosen.
         var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y) - 1), getFloorZ());
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
@@ -522,27 +668,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         } catch (Exception ignored) {
         }
         return null;
-    }
-
-    /** Returns the default movement speed of the entity */
-    public float getDefaultSpeed() {
-        if (isCustomEntity()) {
-            return meta().getMovement(CustomEntityComponents.MOVEMENT).moveSpeed();
-        }
-        return EntityLiving.DEFAULT_SPEED;
-    }
-
-    /** Returns the current movement speed of the entity */
-    public float getMovementSpeed() {
-        return this.movementSpeed;
-    }
-
-    /** Returns the default movement multiplier of the entity */
-    public float getSpeedMultiplier() {
-        if (isCustomEntity()) {
-            return meta().getMovement(CustomEntityComponents.MOVEMENT).multiplier();
-        }
-        return 1.0f;
     }
 
     /** The radius of the area blocks the entity will attempt to stay within around a target. */
@@ -703,7 +828,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void recalcMovementSpeedFromEffects() {
-        float base = this.getDefaultSpeed() * this.getSpeedMultiplier();
+        float base = this.getMovementSpeedDefault() * this.getSpeedMultiplier();
         float mul = 1.0f;
 
         Effect speed = this.getEffect(EffectType.SPEED);
@@ -732,4 +857,406 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             this.setMovementSpeed(newSpeed);
         }
     }
+
+    public void initHome() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
+
+        if (ei.namedTag.contains("HomeX")) {
+            Vector3 home = new Vector3(
+                ei.namedTag.getDouble("HomeX"),
+                ei.namedTag.getDouble("HomeY"),
+                ei.namedTag.getDouble("HomeZ")
+            );
+            ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, ei.level.getBlock(home));
+        }
+    }
+
+    public void setHomePosition() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
+
+        int x = ei.getFloorX();
+        int y = ei.getFloorY();
+        int z = ei.getFloorZ();
+        Block home = ei.level.getBlock(x, y, z);
+
+        CompoundTag tag = ei.namedTag;
+        tag.putDouble("HomeX", home.x);
+        tag.putDouble("HomeY", home.y);
+        tag.putDouble("HomeZ", home.z);
+        ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+    }
+
+    public Block getHomePosition() {
+        if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return null;
+        if (!this.namedTag.contains("HomeX")) return null;
+
+        Vector3 homeLoc = new Vector3(
+            this.namedTag.getDouble("HomeX"),
+            this.namedTag.getDouble("HomeY"),
+            this.namedTag.getDouble("HomeZ")
+        );
+
+        return ei.level.getBlock(homeLoc);
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        boolean superResult = super.onInteract(player, item, clickedPos);
+        if (superResult) return true;
+
+        return handleEntityComponentsInteraction(player, item);
+    }
+
+
+    /**
+     * Entity Components Interactions Start
+     */
+
+    /**
+     * Generic handler for interact-with-item logic gating from entity components.
+     *
+     * @return true if the item interaction was effectively applied.
+     */
+    public boolean handleEntityComponentsInteraction(Player player, Item item) {
+        if (player == null || item.isNull()) return false;
+
+        boolean handled = false;
+        boolean healed  = false;
+        int currentTick = this.getLevel().getTick();
+
+        // PIPELINE ORDER:
+
+        // 0) Tameable
+        if (isTameable() && !isTamed() && !isAngry()) handled = tryTame(player, item);
+        // 1) Breedable
+        if (!handled && isBreedable() && !isBaby()) handled = tryBreed(player, item, currentTick);
+        // 2) Force Growth
+        if (!handled) handled = tryGrow(player, item);
+        // 3) Healable / Feedable (breeding items can also be used for healing)
+        if (isHealable()) healed = tryHeal(player, item);
+        // 4) Feed items play effects
+        if (handled || healed) finishFoodPipeline(player, item, currentTick);
+
+        // 4) Nameable
+        if (!(handled || healed) && item.getId().equals(Item.NAME_TAG) && isNameable() && !player.isAdventure()) {
+            handled = trySetNameTag(player, item);
+        }
+
+        return handled || healed;
+    }
+
+    // Try tame by using item / food
+    protected boolean tryTame(Player player, Item item) {
+        if (!this.isTameable()) return false;
+        TameableComponent tameable = getComponentTameable();
+        if (!isTameableItem(item, tameable)) return false;
+
+        float p = tameable.resolvedProbability();
+        boolean success = p >= 1.0f || Utils.rand(0.0f, 1.0f) <= p;
+
+        if (success) {
+            this.onTameSuccess(player);
+        } else this.onTameFail(player);
+
+        return true;
+    }
+
+    protected boolean isTameableItem(Item item, TameableComponent tameable) {
+        if (item.isNull()) return false;
+
+        String key = item.getId();
+        if (key == null || key.isEmpty()) return false;
+
+        return tameable.resolvedTameItems().contains(key.trim().toLowerCase(Locale.ROOT));
+    }
+
+
+    // Try breed by using item / food
+    protected boolean tryBreed(Player player, Item item, int currentTick) {
+        BreedableComponent breedable = getComponentBreedable();
+        if (breedable == null || breedable.isEmpty()) return false;
+
+        if (!(this instanceof EntityIntelligent ei)) return false;
+        if (!isBreedableItem(item, breedable)) return false;
+        if (this.isBaby()) return false;
+
+        // 1) Entity filters gate
+        EntityFilter filter = breedable.loveFilters();
+        if (filter != null) {
+            EntityFilter.Context ctx = EntityFilter.Context.of(player, item).withOther(player);
+            if (!filter.test(this, ctx)) return false;
+        }
+
+        // 2) Check if entity is required to be tamed for breeding state
+        if (breedable.resolvedRequireTame() && !isTamed()) {
+            return false;
+        }
+
+        // 3) Validate if the entity can be start breeding state while sitting
+        if (!breedable.resolvedAllowSitting() && (this instanceof EntityCanSit ecs) && ecs.isSitting()) {
+            return false;
+        }
+
+        // 4) Check if entity is required to be full health before breeding
+        if (breedable.resolvedRequireFullHealth() && this.getHealthCurrent() < this.getHealthMax()) {
+            return false;
+        }
+
+        if (Boolean.TRUE.equals(ei.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))) {
+            return false;
+        }
+
+        if (!hasEnvironmentRequirements(breedable)) {
+            return false;
+        }
+
+        int cooldownTicks = (int) (breedable.resolvedBreedCooldown() * 20.0f);
+        if (cooldownTicks > 0 && ei.getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_IN_LOVE_TIME)) {
+            int lastLove = ei.getMemoryStorage().get(CoreMemoryTypes.LAST_IN_LOVE_TIME);
+
+            if (lastLove > currentTick) {
+                ei.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, currentTick);
+                lastLove = currentTick;
+            }
+
+            if ((currentTick - lastLove) < cooldownTicks) return false;
+        }
+
+        ei.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, true);
+        ei.getMemoryStorage().put(CoreMemoryTypes.LAST_IN_LOVE_TIME, currentTick);
+        ei.setDataFlag(EntityFlag.IN_LOVE, true);
+
+        sendBreedingAnimation(item);
+        sendLoveParticles();
+
+        return true;
+    }
+
+    protected boolean isBreedableItem(Item item, BreedableComponent breedable) {
+        if (item.isNull()) return false;
+
+        String key = item.getId();
+        if (key == null || key.isEmpty()) return false;
+
+        return breedable.resolvedBreedItems().contains(key.trim().toLowerCase(Locale.ROOT));
+    }
+
+    protected boolean hasEnvironmentRequirements(BreedableComponent breedable) {
+        List<BreedableComponent.EnvironmentRequirement> reqs = breedable.environmentRequirements();
+        if (reqs == null || reqs.isEmpty()) return true;
+
+        for (BreedableComponent.EnvironmentRequirement req : reqs) {
+            if (req == null || req.isEmpty()) continue;
+
+            Set<String> blockTypes = req.blockTypes();
+            if (blockTypes == null || blockTypes.isEmpty()) continue;
+
+            int needed = (req.count() == null) ? 1 : Math.max(1, req.count());
+            float r = (req.radius() == null) ? 16.0f : req.radius();
+
+            int radius = (int) Math.floor(Math.max(0.0f, r));
+
+            int found = this.countBlocksInRadius(radius, needed, b -> blockTypes.contains(b.getId()));
+
+            if (found >= needed) return true;
+        }
+
+        return false;
+    }
+
+    protected int countBlocksInRadius(int radius, int needed, Predicate<Block> matcher) {
+        if (radius < 0 || needed <= 0 || matcher == null) return 0;
+        if (this.level == null) return 0;
+
+        int count = 0;
+
+        int cx = (int) Math.floor(this.x);
+        int cy = (int) Math.floor(this.y);
+        int cz = (int) Math.floor(this.z);
+
+        int minX = cx - radius;
+        int maxX = cx + radius;
+        int minY = cy - radius;
+        int maxY = cy + radius;
+        int minZ = cz - radius;
+        int maxZ = cz + radius;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Block b = this.level.getBlock(x, y, z);
+                    if (b != null && matcher.test(b) && ++count >= needed) return count;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public void sendBreedingAnimation(Item item) {
+        EntityEventPacket pk = new EntityEventPacket();
+        pk.event = EntityEventPacket.EATING_ITEM;
+        pk.eid = this.getId();
+        pk.data =  item.getFullId();
+        Server.broadcastPacket(this.getViewers().values(), pk);
+    }
+
+    public void sendLoveParticles() {
+        EntityEventPacket pk = new EntityEventPacket();
+        pk.event = EntityEventPacket.LOVE_PARTICLES;
+        pk.eid = this.getId();
+        pk.data = 0;
+        Server.broadcastPacket(this.getViewers().values(), pk);
+    }
+
+
+    // Try force growth by using item / food
+    protected boolean tryGrow(Player player, Item item) {
+        if (this.isBaby() && this.isAgeable()) {
+            AgeableComponent ageable = getComponentAgeable();
+
+            // 1) Entity filters gate
+            EntityFilter filter = ageable.interactFilters();
+            if (filter != null) {
+                EntityFilter.Context ctx = EntityFilter.Context.of(player, item).withOther(player);
+                if (!filter.test(this, ctx)) return false;
+            }
+
+            if (isPauseGrowthItem(item, ageable)) {
+                setGrowthPaused(true);
+                return true;
+            } else if (isFeedableGrowthItem(item, ageable)) {
+                this.babyFeedGrowBoost(item);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public final boolean isPauseGrowthItem(Item item, AgeableComponent ageable) {
+        if (item.isNull()) return false;
+        if (ageable == null || ageable.isEmpty()) return false;
+        String id = item.getId();
+        return ageable.resolvedPauseGrowthItems().contains(id);
+    }
+
+    public final boolean isFeedableGrowthItem(Item item, AgeableComponent ageable) {
+        if (item.isNull()) return false;
+        if (ageable == null || ageable.isEmpty()) return false;
+        String id = item.getId();
+        return ageable.resolvedFeedableItems().contains(id);
+    }
+
+
+    // Try heal entity by using item / food
+    protected boolean tryHeal(Player player, Item item) {
+        HealableComponent healable = getComponentHealable();
+        if (healable == null || healable.isEmpty()) return false;
+
+        String itemId = item.getId();
+        HealableComponent.Item entry = null;
+        for (HealableComponent.Item it : healable.resolvedItems()) {
+            if (it == null) continue;
+            String id = it.item();
+            if (id != null && id.equals(itemId)) {
+                entry = it;
+                break;
+            }
+        }
+        if (entry == null) return false;
+
+        // 1) Entity filters gate
+        EntityFilter filter = healable.filters();
+        if (filter != null) {
+            EntityFilter.Context ctx = EntityFilter.Context.of(player, item).withOther(player);
+            if (!filter.test(this, ctx)) return false;
+        }
+
+        // 2) If full health and not force_use deny
+        if (!healable.resolvedForceUse() && this.getHealthCurrent() >= this.getHealthMax()) return false;
+
+        // 3) Apply heal
+        int healAmount = entry.resolvedHealAmount();
+        if (healAmount > 0) {
+            float newHp = Math.min(this.getHealthMax(), this.getHealthCurrent() + healAmount);
+            this.setHealthCurrent(newHp);
+        }
+
+        // 4) Apply effects
+        for (HealableComponent.Effect ef : entry.resolvedEffects()) {
+            if (ef == null || ef.isEmpty()) continue;
+
+            String name = ef.name();
+            if (name == null || name.isEmpty()) continue;
+
+            float chance = (ef.chance() != null) ? ef.chance() : 1.0f;
+            if (chance <= 0.0f) continue;
+            if (chance < 1.0f && Math.random() > chance) continue;
+
+            int duration = (ef.duration() != null) ? Math.max(0, ef.duration().intValue()) : 0;
+            int amplifier = (ef.amplifier() != null) ? Math.max(0, ef.amplifier().intValue()) : 0;
+
+            Effect type = Effect.get(name);
+            if (type == null) continue;
+
+            this.addEffect(type.setAmplifier(amplifier).setDuration(duration).setVisible(true));
+        }
+
+        return true;
+    }
+
+    protected boolean isHealableItem(Item item, HealableComponent healable) {
+        if (item.isNull()) return false;
+
+        String key = item.getId();
+        if (key == null || key.isEmpty()) return false;
+
+        return healable.resolvedHealableItems().contains(key.trim().toLowerCase(Locale.ROOT));
+    }
+
+
+    // Finish food interaction, play effects, set memory
+    protected void finishFoodPipeline(Player player, Item item, int currentTick) {
+        this.setPersistent(true);
+        this.getLevel().addSound(this, Sound.RANDOM_EAT);
+        this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
+
+        if (!(this instanceof EntityIntelligent ei)) return;
+
+        ei.getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
+        ei.getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, currentTick);
+    }
+
+
+    // Try set name, gating by nameable component
+    protected boolean trySetNameTag(Player player, Item item) {
+        NameableComponent nameable = getComponentNameable();
+        if (nameable == null || nameable.isEmpty()) return false;
+
+        if (!item.hasCustomName()) return false;
+        if (!nameable.resolvedAllowNameTagRenaming()) return false;
+        if (requiresSneakToNameTag(player) && !player.isSneaking()) return false;
+
+        this.setNameTag(item.getCustomName());
+        this.setNameTagVisible(nameable.resolvedAlwaysShow());
+        this.setPersistent(true);
+
+        return true;
+    }
+
+    protected boolean requiresSneakToNameTag(@NotNull Player player) {
+        if (this instanceof EntityVillager || this instanceof EntityWanderingTrader) return true;
+        if (this.isRideable()) {
+            if (!this.requireSaddleToMount()) return true;
+            if (this.isSaddled()) return true;
+        }
+        if (this.canSit()) return this.isTamed();
+
+        return false;
+    }
+
+    /**
+     * Entity Components Interactions End
+     */
+
 }

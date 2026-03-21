@@ -22,12 +22,15 @@ import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerAngryPiglinSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -48,6 +51,16 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
 
     public EntityPiglinBrute(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(50);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.35f);
     }
 
     @Override
@@ -87,7 +100,6 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.setMaxHealth(50);
         this.diffHandDamage = new float[]{6f, 10f, 15f};
         setItemInHand(Item.get(Item.GOLDEN_AXE));
     }

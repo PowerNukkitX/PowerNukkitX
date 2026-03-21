@@ -6,6 +6,17 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
 
 
+/**
+ * Scans nearby players holding an item considered "food" by this entity and stores the nearest match in
+ * {@link CoreMemoryTypes#NEAREST_FEEDING_PLAYER}.
+ * <p><b>Start using Tempt Behaviors:</b>
+ * Tempt behaviors should be implemented using
+ * {@link cn.nukkit.entity.ai.executor.TemptExecutor} (ground) or
+ * {@link cn.nukkit.entity.ai.executor.FloatTemptExecutor} (floating), which handle item checks and target selection
+ * internally (BDS-like) based on the configured tempt item list and settings.
+ * </p>
+ */
+@Deprecated(forRemoval = true, since = "2.0.0")
 public class NearestFeedingPlayerSensor implements ISensor {
 
     protected double range;
@@ -30,7 +41,7 @@ public class NearestFeedingPlayerSensor implements ISensor {
             Player player = null;
             double rangeSquared = this.range * this.range;
             double minRangeSquared = this.minRange * this.minRange;
-            //寻找范围内最近满足乞食要求的玩家
+            // Find the player within range who most recently meets the begging requirements.
             for (Player p : entity.getLevel().getPlayers().values()) {
                 if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && entityAnimal.isBreedingItem(p.getInventory().getItemInHand())) {
                     if (player == null) {

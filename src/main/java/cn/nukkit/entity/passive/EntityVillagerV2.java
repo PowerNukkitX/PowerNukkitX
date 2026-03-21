@@ -36,6 +36,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.profession.Profession;
@@ -64,7 +66,6 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.network.protocol.UpdateTradePacket;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.Utils;
@@ -72,6 +73,7 @@ import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +83,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+// TODO: Rework villagers, it seems to be broken, movement stucked in walls, breeding logic not reliable, professions not changing when breaking blocks, etc...
 public class EntityVillagerV2 extends EntityIntelligent implements InventoryHolder, IEntityNPC {
     @Override
     @NotNull
@@ -217,7 +220,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.GOSSIP_TARGET),
                                 entity -> !isBaby()
                         ), 3, 1),
-                        new Behavior(new VillagerBreedingExecutor(EntityVillagerV2.class, 16, 100, 0.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE), 2, 1),
+                        new Behavior(
+                            new VillagerBreedingExecutor(16, 100, 0.5f),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE),
+                            2, 1
+                        ),
                         new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                 ),
                 Set.of(
@@ -376,6 +383,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    public boolean isAgeable() {
+        return true;
+    }
+
+    @Override
     public float getHeight() {
         if (isSleeping()) return getWidthR();
         return getHeightR();
@@ -404,6 +416,16 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             return 0.95f;
         }
         return 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
     }
 
     public boolean isSleeping() {
@@ -438,7 +460,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void initEntity() {
-        this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
         if (!this.namedTag.contains("tradeSeed")) {

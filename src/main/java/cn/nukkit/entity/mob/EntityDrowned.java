@@ -28,6 +28,7 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.passive.EntityAxolotl;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTrident;
@@ -50,6 +51,11 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
 
     public EntityDrowned(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
     }
 
     @Override
@@ -123,7 +129,6 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.ENABLE_DIVE_FORCE, true);

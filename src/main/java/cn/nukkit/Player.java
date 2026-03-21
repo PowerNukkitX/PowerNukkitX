@@ -24,6 +24,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.components.NameableComponent;
+import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -622,6 +624,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    public NameableComponent getComponentNameable() {
+        return new NameableComponent(false, true);
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
         Level level = null;
@@ -735,9 +742,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.teleport(pos, TeleportCause.PLAYER_SPAWN);
 
-        if (this.getHealth() < 1) {
-            this.setHealth(0);
-        } else setHealth(getHealth()); // Sends health to player
+        if (this.getHealthCurrent() < 1) {
+            this.setHealthCurrent(0);
+        } else setHealthCurrent(getHealthCurrent()); // Sends health to player
 
         ServerScheduler scheduler = this.getServer().getSettings().levelSettings().levelThread() ? this.getLevel().getScheduler() : this.getServer().getScheduler();
         scheduler.scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
@@ -1394,7 +1401,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.noDamageTicks = 60;
 
         this.removeAllEffects();
-        this.setHealth(this.getMaxHealth());
+        this.setHealthCurrent(this.getHealthMax());
         this.getFoodData().setFood(20, 20);
 
         this.sendData(this);
@@ -2586,7 +2593,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entityId = this.getId();
         pk.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0),
                 Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()),
                 Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()),
                 Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()),
@@ -2621,14 +2628,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public boolean isPersistent() {
         return true;
-    }
-
-    @Override
-    public float getHeight() {
-        if (this.riding instanceof EntityHorse) {
-            return 1.1f;
-        }
-        return super.getHeight();
     }
 
     @Override
@@ -2694,7 +2693,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.entityBaseTick(tickDiff);
 
             if (this.getServer().getDifficulty() == 0 || this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
-                if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
+                if (this.getHealthCurrent() < this.getHealthMax() && this.ticksLived % 20 == 0) {
                     this.heal(1);
                 }
             }
@@ -3791,13 +3790,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public void setHealth(float health) {
+    public void setHealthCurrent(float health) {
         if (health < 1) {
             health = 0;
         }
-        super.setHealth(health);
-        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        super.setHealthCurrent(health);
+        Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
+        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getHealthMax() + 1 : this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
@@ -3807,11 +3806,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public void setMaxHealth(int maxHealth) {
-        super.setMaxHealth(maxHealth);
+    public void setHealthMax(int maxHealth) {
+        super.setHealthMax(maxHealth);
 
-        Attribute attribute = this.attributes.computeIfAbsent(Attribute.MAX_HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
+        Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
+        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getHealthMax() + 1 : this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
@@ -4608,6 +4607,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
+    /**
+     * Check if player has any UI opened.
+     */
+    public boolean isAnyUiOpen() {
+        if (openSignFront != null) return true;
+        if (!formWindows.isEmpty()) return true;
+        if (dialogWindows.estimatedSize() > 0) return true;
+        if (getTopWindow().isPresent()) return true;
+        if (inventoryOpen || enderChestOpen || fakeInventoryOpen) return true;
+        return !clientInputLocks.isEmpty();
+    }
 
     /**
      * Gets cursor inventory of the player.

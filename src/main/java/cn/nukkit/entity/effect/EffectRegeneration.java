@@ -20,7 +20,7 @@ public class EffectRegeneration extends Effect {
 
     @Override
     public void apply(Entity entity, double tickCount) {
-        if (entity.getHealth() < entity.getMaxHealth()) {
+        if (entity.getHealthCurrent() < entity.getHealthMax()) {
             entity.heal(new EntityRegainHealthEvent(entity, 1, EntityRegainHealthEvent.CAUSE_MAGIC));
         }
     }

@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -37,6 +39,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -174,8 +177,17 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     }
 
     @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(500);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.3f);
+    }
+
+    @Override
     protected void initEntity() {
-        this.setMaxHealth(500);
         super.initEntity();
         this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
         this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT.getId());
@@ -310,7 +322,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
 
     public boolean isValidAngerEntity(Entity entity, boolean sniff) {
         if (entity.isClosed()) return false;
-        if (entity.getHealth() <= 0) return false;
+        if (entity.getHealthCurrent() <= 0) return false;
         if (!(sniff ? isInSniffRange(entity) : isInAngerRange(entity))) return false;
         if (!(entity instanceof EntityCreature)) return false;
         if (entity instanceof Player player && (!player.isSurvival() && !player.isAdventure())) return false;
