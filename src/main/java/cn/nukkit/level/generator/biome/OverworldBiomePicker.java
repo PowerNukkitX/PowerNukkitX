@@ -1,11 +1,13 @@
 package cn.nukkit.level.generator.biome;
 
+import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
 import lombok.Getter;
 
 import static cn.nukkit.level.biome.BiomeID.*;
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 @Getter
 public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
@@ -27,14 +29,17 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     private final SimplexNoise weirdnessNoise;
     private final SimplexNoise offsetNoise;
 
-    public OverworldBiomePicker(NukkitRandom random) {
-        super(random);
+    private final Level level;
+
+    public OverworldBiomePicker(Level level) {
+        super(new NukkitRandom(level.getSeed()));
         continentalNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
         temperatureNoise = new SimplexNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
         humidityNoise = new SimplexNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
         erosionNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 0, 1, 1 });
         weirdnessNoise = new SimplexNoise(random.fork(), -7, new float[]{ 1, 2, 1, 0, 0, 0});
         offsetNoise = new SimplexNoise(random.fork(), -3, new float[]{ 1, 1, 1, 0 });
+        this.level = level;
     }
 
     @Override
@@ -46,11 +51,12 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
         float _x = scaledX + (offsetNoise.getValue(scaledX/4f, 0, scaledZ/4f) * 4);
         float _z = scaledZ + (offsetNoise.getValue(scaledZ/4f, scaledX/4f, 0) * 4);
 
-        float continental = continentalNoise.getValue(_x, y, _z);
-        float temperature = temperatureNoise.getValue(scaledX, y, scaledZ);
-        float humidity = humidityNoise.getValue(scaledX, y, scaledZ);
-        float erosion = erosionNoise.getValue(_x * XZSCALE, y, _z * XZSCALE);
-        float weirdness = weirdnessNoise.getValue(scaledX, y, scaledZ);
+        //Those values are 2D
+        float continental = continentalNoise.getValue(_x, SEA_LEVEL, _z);
+        float temperature = temperatureNoise.getValue(scaledX, SEA_LEVEL, scaledZ);
+        float humidity = humidityNoise.getValue(scaledX, SEA_LEVEL, scaledZ);
+        float erosion = erosionNoise.getValue(_x * XZSCALE, SEA_LEVEL, _z * XZSCALE);
+        float weirdness = weirdnessNoise.getValue(scaledX, SEA_LEVEL, scaledZ);
         float pv = -3 * (-(1/3f) + Math.abs(-(2/3f) + Math.abs(weirdness)));
 
         int continentalLevel = continental < -1.05f ? 0 : (continental < -0.455f ? 1 : (continental < -0.19 ? 2 : (continental < -0.11 ? 3 : (continental < 0.03 ? 4 : (continental < 0.3 ? 5 : 6)))));
@@ -67,7 +73,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
             default -> getInlandBiome(pvLevel, erosionLevel, humidityLevel, temperatureLevel, weird, continentalLevel);
         };
 
-        return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv);
+        return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv).correct(y - level.getHeightMap(x, z));
     }
 
     protected int getNonInlandBiome(int temperatureLevel, int continentalLevel) {
