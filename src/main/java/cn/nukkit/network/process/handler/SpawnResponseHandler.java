@@ -35,6 +35,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         VoxelShapesPacket voxelShapesPacket = new VoxelShapesPacket();
         voxelShapesPacket.setShapes(new ArrayList<>());
         voxelShapesPacket.setNameMap(new HashMap<>());
+        voxelShapesPacket.setCustomShapeCount(0);
         player.dataPacketImmediately(voxelShapesPacket);
 
         this.startGame();
