@@ -13,6 +13,7 @@ import cn.nukkit.registry.Registries;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 
@@ -27,8 +28,8 @@ public class PNXStructure extends AbstractStructure {
     private final int sizeX;
     private final int sizeY;
     private final int sizeZ;
-    private final BlockState[] palette;
-    private final byte[] blocks; // indices into palette (+1), 0 = air
+    private BlockState[] palette;
+    private final byte[] blocks; // indices into palette (+1), 0 = structure void
 
     private PNXStructure(int sizeX, int sizeY, int sizeZ, BlockState[] palette, byte[] blocks) {
         this.sizeX = sizeX;
@@ -69,6 +70,27 @@ public class PNXStructure extends AbstractStructure {
 
     public static CompletableFuture<PNXStructure> fromNbtAsync(CompoundTag nbt) {
         return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
+    }
+
+    public void setBlock(int x, int y, int z, BlockState state) {
+        checkBounds(x, y, z);
+
+        if (state == null || state == STATE_STRUCTURE_VOID) {
+            blocks[flattenIndex(x, y, z)] = 0;
+            return;
+        }
+
+        int paletteIndex = findPaletteIndex(state);
+        if (paletteIndex < 0) {
+            if (palette.length >= 255) {
+                throw new IllegalStateException("PNXStructure palette limit exceeded at 255 entries");
+            }
+            paletteIndex = palette.length;
+            palette = Arrays.copyOf(palette, palette.length + 1);
+            palette[paletteIndex] = state;
+        }
+
+        blocks[flattenIndex(x, y, z)] = (byte) (paletteIndex + 1);
     }
 
     /**
@@ -138,11 +160,28 @@ public class PNXStructure extends AbstractStructure {
 
     @Override
     public PNXStructure rotate(Rotation rotation) {
-        // Rotation support could also be done lazily, but here we materialize.
-        if (rotation == Rotation.NONE) return this;
+        return rotate(rotation, rotation);
+    }
 
-        int newSizeX = rotatedSizeX(sizeX, sizeZ, rotation);
-        int newSizeZ = rotatedSizeZ(sizeX, sizeZ, rotation);
+    public PNXStructure rotate(Rotation geometryRotation, Rotation stateRotation) {
+        if (geometryRotation == Rotation.NONE && stateRotation == Rotation.NONE) return this;
+
+        int newSizeX = rotatedSizeX(sizeX, sizeZ, geometryRotation);
+        int newSizeZ = rotatedSizeZ(sizeX, sizeZ, geometryRotation);
+        BlockState[] rotatedPalette = new BlockState[palette.length];
+        for (int i = 0; i < palette.length; i++) {
+            BlockState state = palette[i];
+            if (state == STATE_STRUCTURE_VOID || state == STATE_UNKNOWN) {
+                rotatedPalette[i] = state;
+                continue;
+            }
+            rotatedPalette[i] = switch (stateRotation) {
+                case ROTATE_90 -> Rotation.clockwise90(state);
+                case ROTATE_180 -> Rotation.clockwise180(state);
+                case ROTATE_270 -> Rotation.counterclockwise90(state);
+                default -> state;
+            };
+        }
 
         byte[] rotatedBlocks = new byte[blocks.length];
 
@@ -151,14 +190,14 @@ public class PNXStructure extends AbstractStructure {
             int y = (idx / sizeX) % sizeY;
             int z = idx / (sizeX * sizeY);
 
-            int rx = rotateX(sizeX, sizeZ, x, z, rotation);
-            int rz = rotateZ(sizeX, sizeZ, x, z, rotation);
+            int rx = rotateX(sizeX, sizeZ, x, z, geometryRotation);
+            int rz = rotateZ(sizeX, sizeZ, x, z, geometryRotation);
 
             int newIdx = rx + (y * newSizeX) + (rz * newSizeX * sizeY);
             rotatedBlocks[newIdx] = blocks[idx];
         }
 
-        return new PNXStructure(newSizeX, sizeY, newSizeZ, palette, rotatedBlocks);
+        return new PNXStructure(newSizeX, sizeY, newSizeZ, rotatedPalette, rotatedBlocks);
     }
 
     @Override
@@ -202,5 +241,24 @@ public class PNXStructure extends AbstractStructure {
             this.z = z;
             this.state = state;
         }
+    }
+
+    private int flattenIndex(int x, int y, int z) {
+        return x + (y * sizeX) + (z * sizeX * sizeY);
+    }
+
+    private void checkBounds(int x, int y, int z) {
+        if (x < 0 || x >= sizeX || y < 0 || y >= sizeY || z < 0 || z >= sizeZ) {
+            throw new IndexOutOfBoundsException("Block position out of bounds: " + x + ", " + y + ", " + z);
+        }
+    }
+
+    private int findPaletteIndex(BlockState state) {
+        for (int i = 0; i < palette.length; i++) {
+            if (palette[i].equals(state)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
