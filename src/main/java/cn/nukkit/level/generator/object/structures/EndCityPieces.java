@@ -23,6 +23,7 @@ import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.item.Item;
@@ -237,17 +238,24 @@ public final class EndCityPieces {
         }
 
         for (var block : manager.getBlocks()) {
-            if (block instanceof BlockStructureBlock) {
-                shulkerMarkers.add(block.asBlockVector3());
-                manager.setBlockStateAt(block, BlockAir.STATE);
-            } else if (block instanceof BlockChest) {
-                chests.add(block.asBlockVector3());
-            } else if (block instanceof BlockStandingBanner) {
-                banners.add(block.asBlockVector3());
-            } else if (block instanceof BlockFrame) {
-                itemFrames.add(block.asBlockVector3());
-            } else if (block instanceof BlockBrewingStand) {
-                brewingStands.add(block.asBlockVector3());
+            switch (block) {
+                case BlockStructureBlock ignored -> {
+                    shulkerMarkers.add(block.asBlockVector3());
+                    manager.setBlockStateAt(block, BlockAir.STATE);
+                }
+                case BlockChest ignored -> {
+                    chests.add(block.asBlockVector3());
+                }
+                case BlockStandingBanner ignored -> {
+                    banners.add(block.asBlockVector3());
+                }
+                case BlockFrame ignored -> {
+                    itemFrames.add(block.asBlockVector3());
+                }
+                case BlockBrewingStand ignored -> {
+                    brewingStands.add(block.asBlockVector3());
+                }
+                default -> {}
             }
         }
 
@@ -567,7 +575,7 @@ public final class EndCityPieces {
                 }
 
                 this.pools.forEach((pool, roll) -> {
-                    int rolls = roll.getMin() == -1 ? roll.getMax() : cn.nukkit.math.NukkitMath.randomRange(random, roll.getMin(), roll.getMax());
+                    int rolls = roll.getMin() == -1 ? roll.getMax() : NukkitMath.randomRange(random, roll.getMin(), roll.getMax());
                     for (int i = 0; i < rolls && !freeSlots.isEmpty(); i++) {
                         int result = random.nextBoundedInt(roll.getTotalWeight());
                         for (ItemEntry entry : pool) {
@@ -575,7 +583,7 @@ public final class EndCityPieces {
                             if (result < 0) {
                                 int slotIndex = random.nextBoundedInt(freeSlots.size());
                                 int inventorySlot = freeSlots.remove(slotIndex);
-                                Item item = Item.get(entry.getId(), entry.getMeta(), cn.nukkit.math.NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
+                                Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
                                 applyRandomEnchantment(item, entry.getEnchantments(), random);
                                 inventory.setItem(inventorySlot, item);
                                 break;
