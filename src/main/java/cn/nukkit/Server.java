@@ -2309,8 +2309,11 @@ public class Server {
                 return null;
             }
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
-            //todo nether the_end overworld
-            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            long seed = System.currentTimeMillis();
+
+            map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
                 config.createNewFile();
