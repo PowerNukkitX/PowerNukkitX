@@ -16,4 +16,6 @@ public class MiscSettings extends OkaeriConfig {
     boolean installSpark = true;
     @Comment("pnx.settings.misc.enableterra")
     boolean enableTerra = false;
+    @Comment("Run Bedrock Entity Migration on next startup, then auto-disable")
+    boolean bedrockEntityMigration = false;
 }
