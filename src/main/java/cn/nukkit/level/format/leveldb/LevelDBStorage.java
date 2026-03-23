@@ -24,6 +24,10 @@ public final class LevelDBStorage {
     private final String path;
     private int dimSum;
 
+    public DB getDb() {
+        return this.db;
+    }
+
     public LevelDBStorage(int dimSum, String path) throws IOException {
         this(dimSum, path, new Options()
                 .createIfMissing(true)
