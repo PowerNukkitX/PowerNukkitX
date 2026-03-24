@@ -22,6 +22,7 @@ public class NormalPopulatorStage extends PopulatorStage {
             ShipwreckPopulator.NAME,
             StrongholdPopulator.NAME,
             SwampHutPopulator.NAME,
+            VillagePopulator.NAME,
             PopulatorRuinedPortal.NAME
     });
 
