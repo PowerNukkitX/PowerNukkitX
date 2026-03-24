@@ -414,6 +414,7 @@ public abstract class VillageStructure extends JigsawStructure {
         };
     }
 
+    @Override
     protected int getMaxDepth() {
         return 7;
     }
