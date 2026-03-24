@@ -81,6 +81,10 @@ public class LevelDBProvider implements LevelProvider {
     public int getNetherScale() {
         return this.levelDat.getNetherScale();
     }
+
+    public LevelDBStorage getStorage() {
+        return this.storage;
+    }
     
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {

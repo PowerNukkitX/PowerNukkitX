@@ -21,7 +21,6 @@ public class ChorusFlowerPopulator extends Populator {
 
     public static final String NAME = "the_end_chorus_flower";
 
-    protected final NukkitRandom random = new NukkitRandom();
     protected NoiseGeneratorSimplexD islandNoise;
     protected final static LegacyChorusTree objectChorusTree = new LegacyChorusTree();
 

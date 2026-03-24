@@ -83,14 +83,7 @@ public enum Rotation {
                 var rotated = GROUND_SIGN_DIRECTION.createValue((state.getPropertyValue(GROUND_SIGN_DIRECTION) + 4) % 16);
                 states.set(idx, rotated);
             } else if (type == FACING_DIRECTION) {
-                int meta = state.getPropertyValue(FACING_DIRECTION);
-                int thrown = meta & 0x8;
-                var rotated = FACING_DIRECTION.createValue(switch (meta & ~0x8) {
-                    case 2 -> 5 | thrown;
-                    case 3 -> 4 | thrown;
-                    case 4 -> 2 | thrown;
-                    default -> 3 | thrown;
-                });
+                var rotated = FACING_DIRECTION.createValue(rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION)));
                 states.set(idx, rotated);
             } else if (type == LEVER_DIRECTION) {
                 int meta = state.getPropertyValue(LEVER_DIRECTION).getMetadata();
@@ -135,6 +128,15 @@ public enum Rotation {
             idx++;
         }
         return state.setPropertyValues(block.getProperties(), states.toArray(BlockPropertyType.BlockPropertyValue[]::new));
+    }
+
+    private static int rotateFacingDirectionClockwise90(int meta) {
+        int extraBits = meta & ~0x7;
+        BlockFace face = BlockFace.fromIndex(meta & 0x7);
+        if (!face.getAxis().isHorizontal()) {
+            return face.getIndex() | extraBits;
+        }
+        return face.rotateY().getIndex() | extraBits;
     }
 
     public static BlockState counterclockwise90(BlockState state) {
