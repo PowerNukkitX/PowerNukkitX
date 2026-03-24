@@ -18,12 +18,12 @@ public class DesertVillageStructure extends VillageStructure {
     }
 
     @Override
-    protected boolean shouldShiftHousesToTerrain(String structureName) {
+    protected boolean shouldShiftHousesToTerrain() {
         return true;
     }
 
     @Override
-    protected BlockState getHouseSupportState(String structureName) {
+    protected BlockState getHouseSupportState() {
         return BlockSandstone.PROPERTIES.getDefaultState();
     }
 

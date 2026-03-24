@@ -110,13 +110,13 @@ public abstract class VillageStructure extends JigsawStructure {
             return;
         }
         if (structureName.contains("/houses/")) {
-            if (shouldShiftHousesToTerrain(structureName)) {
+            if (shouldShiftHousesToTerrain()) {
                 shiftWholePieceToTerrain(blockManager, jigsaws);
             }
             if (usesDirtSupports(structureName)) {
                 fillPieceSupports(blockManager, BlockDirt.PROPERTIES.getDefaultState());
             } else {
-                fillPieceSupports(blockManager, getHouseSupportState(structureName));
+                fillPieceSupports(blockManager, getHouseSupportState());
             }
             registerVillageChestLoot(structureName, blockManager);
             return;
@@ -194,11 +194,11 @@ public abstract class VillageStructure extends JigsawStructure {
         return new Xoroshiro128(seed);
     }
 
-    protected boolean shouldShiftHousesToTerrain(String structureName) {
+    protected boolean shouldShiftHousesToTerrain() {
         return false;
     }
 
-    protected BlockState getHouseSupportState(String structureName) {
+    protected BlockState getHouseSupportState() {
         return BlockCobblestone.PROPERTIES.getDefaultState();
     }
 
