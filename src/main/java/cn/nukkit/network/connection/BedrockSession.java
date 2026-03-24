@@ -396,13 +396,13 @@ public class BedrockSession {
     }
 
     protected void logOutbound(DataPacket packet) {
-        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+        if (log.isTraceEnabled() && Server.getInstance().canLogPacket(packet.getClass())) {
             log.trace("Outbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
 
     protected void logInbound(DataPacket packet) {
-        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+        if (log.isTraceEnabled() && Server.getInstance().canLogPacket(packet.getClass())) {
             log.trace("Inbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }

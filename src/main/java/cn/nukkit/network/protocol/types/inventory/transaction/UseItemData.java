@@ -23,6 +23,7 @@ public class UseItemData implements TransactionData {
     public int blockRuntimeId;
     public PredictedResult clientInteractPrediction;
     public TriggerType triggerType;
+    public int clientCooldownState;
 
     public enum PredictedResult {
         FAILURE,

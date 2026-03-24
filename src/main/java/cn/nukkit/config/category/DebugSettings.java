@@ -18,6 +18,8 @@ public class DebugSettings extends OkaeriConfig {
     String level = "INFO";
     @Comment("pnx.settings.debug.command")
     boolean command = false;
-    @Comment("pnx.settings.debug.ignoredpackets")
-    ArrayList<String> ignoredPackets = new ArrayList<>();
+    @Comment("pnx.settings.debug.packet.mode")
+    boolean mode = false; //false = ignore packets, true = allow packets
+    @Comment("pnx.settings.debug.packetList")
+    ArrayList<String> packetList = new ArrayList<>();
 }
