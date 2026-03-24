@@ -30,6 +30,8 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +43,25 @@ import java.util.Map;
 import static cn.nukkit.block.BlockID.*;
 
 public abstract class VillageStructure extends JigsawStructure {
+
+    private static final Object2ObjectMap<String, String> VILLAGE_LOOT_CATEGORY_LOOKUP;
     private final Map<BlockVector3, RandomizableContainer> pendingChestLoot = new HashMap<>();
+
+    static {
+        VILLAGE_LOOT_CATEGORY_LOOKUP = new Object2ObjectArrayMap<>();
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("armorer", "armorer");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("butcher", "butcher");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("cartographer", "cartographer");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("fletcher", "fletcher");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("mason", "mason");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("shepherd", "shepherd");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("tannery", "tannery");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("temple", "temple");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("tool_smith", "toolsmith");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("toolsmith", "toolsmith");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("weapon_smith", "weaponsmith");
+        VILLAGE_LOOT_CATEGORY_LOOKUP.put("weaponsmith", "weaponsmith");
+    }
 
     @Override
     protected void postProcessStructure(StructureHelper helper) {
@@ -137,35 +157,10 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     protected String getVillageLootCategory(String structureName) {
-        if (structureName.contains("armorer")) {
-            return "armorer";
-        }
-        if (structureName.contains("butcher")) {
-            return "butcher";
-        }
-        if (structureName.contains("cartographer")) {
-            return "cartographer";
-        }
-        if (structureName.contains("fletcher")) {
-            return "fletcher";
-        }
-        if (structureName.contains("mason")) {
-            return "mason";
-        }
-        if (structureName.contains("shepherd")) {
-            return "shepherd";
-        }
-        if (structureName.contains("tannery")) {
-            return "tannery";
-        }
-        if (structureName.contains("temple")) {
-            return "temple";
-        }
-        if (structureName.contains("tool_smith") || structureName.contains("toolsmith")) {
-            return "toolsmith";
-        }
-        if (structureName.contains("weapon_smith") || structureName.contains("weaponsmith")) {
-            return "weaponsmith";
+        for (Map.Entry<String, String> entry : VILLAGE_LOOT_CATEGORY_LOOKUP.object2ObjectEntrySet()) {
+            if (structureName.contains(entry.getKey())) {
+                return entry.getValue();
+            }
         }
         return null;
     }
