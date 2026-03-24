@@ -4,12 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.form.element.ElementDivider;
 import cn.nukkit.form.element.ElementHeader;
 import cn.nukkit.form.element.ElementLabel;
-import cn.nukkit.form.element.custom.ElementCustom;
-import cn.nukkit.form.element.custom.ElementDropdown;
-import cn.nukkit.form.element.custom.ElementInput;
-import cn.nukkit.form.element.custom.ElementSlider;
-import cn.nukkit.form.element.custom.ElementStepSlider;
-import cn.nukkit.form.element.custom.ElementToggle;
+import cn.nukkit.form.element.custom.*;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
 import cn.nukkit.network.protocol.types.ModalFormCancelReason;
@@ -55,6 +50,8 @@ public class CustomForm extends Form<CustomResponse> {
 
         return this;
     }
+
+    public CustomForm addLabel(String text) { return this.addElement(new ElementLabel(text)); }
 
     public CustomForm addInput(String text) {
         return this.addElement(new ElementInput(text));
