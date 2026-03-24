@@ -66,7 +66,10 @@ public enum ContainerSlotType {
     CREATED_OUTPUT(60),
     SMITHING_TABLE_TEMPLATE(61),
     CRAFTER_BLOCK_CONTAINER(62),
-    DYNAMIC_CONTAINER(63);
+    DYNAMIC_CONTAINER(63),
+    RECIPE_FOOD(64),
+    RECIPE_BLOCKS(65),
+    RECIPE_FURNACE_ITEMS(66);
 
     private final int id;
     private static final Int2ObjectArrayMap<ContainerSlotType> VALUES = new Int2ObjectArrayMap<>();

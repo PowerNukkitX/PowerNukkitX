@@ -89,7 +89,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -2269,11 +2268,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sends data packet to network session
+     * Sends a data packet to network session
      * @param packet packet to send
      */
     public void dataPacket(DataPacket packet) {
         this.getSession().sendPacket(packet);
+    }
+
+    /**
+     * Sends a bunch of data packets to network session
+     * @param packets packets to send
+     */
+    public void sendDataPackets(DataPacket... packets) {
+        for (DataPacket packet : packets) {
+            this.dataPacket(packet);
+        }
     }
 
     /**
@@ -5630,14 +5639,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected void sendClientInputLocks() {
         UpdateClientInputLocksPacket pk = new UpdateClientInputLocksPacket();
-        Vector3f pos = this.getPosition().asVector3f();
-        pos = new Vector3f(
-                pos.getX(),
-                pos.getY() + this.getEyeHeight(),
-                pos.getZ()
-        );
-
-        pk.setServerPosition(pos);
         pk.setFlags(this.clientInputLocks);
         this.dataPacket(pk);
     }

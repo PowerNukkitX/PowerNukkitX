@@ -8,6 +8,10 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.ddui.CustomForm;
+import cn.nukkit.ddui.Observable;
+import cn.nukkit.ddui.element.options.SliderElementOptions;
+import cn.nukkit.ddui.element.options.TextFieldOptions;
 import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
@@ -15,14 +19,14 @@ import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.generator.biome.BiomePicker;
+import cn.nukkit.level.generator.biome.OverworldBiomePicker;
+import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.level.generator.biome.BiomePicker;
-import cn.nukkit.level.generator.biome.OverworldBiomePicker;
-import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.nbt.tag.LongTag;
 import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
@@ -39,6 +43,7 @@ import cn.nukkit.utils.TextFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -82,6 +87,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 CommandParameter.newEnum("reloadType", true, new String[]{"function", "plugin"}),
                 CommandParameter.newType("plugin", true, CommandParamType.STRING)
         });
+        this.commandParameters.put("ddui", new CommandParameter[]{
+                CommandParameter.newEnum("ddui", new String[]{"ddui"})
+        });
         this.commandParameters.put("toggle", new CommandParameter[]{
                 CommandParameter.newEnum("toggle", new String[]{"toggle"}),
                 CommandParameter.newEnum("type", new String[]{"invulnerable"}),
@@ -100,6 +108,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "chunk" -> handleChunk(sender, result.getValue());
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
+            case "ddui" -> exampleDDUI(sender);
             case "toggle" -> handleToggle(sender, result.getValue(), log);
             default -> 0;
         };
@@ -283,7 +292,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     }
                 }
             }
-            case "extras" -> player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
+            case "extras" ->
+                    player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
             case "reload" -> {
                 player.sendMessage("§eReloading chunk...");
                 int cx = player.getChunkX();
@@ -358,6 +368,95 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 pm.reloadPlugin(plugin);
             }
         }
+        return 1;
+    }
+
+    private int exampleDDUI(CommandSender sender) {
+        if (!sender.isPlayer()) return 0;
+
+        var server = sender.getServer();
+
+        Observable<String> name = new Observable<>("");
+        Observable<String> bio = new Observable<>("");
+        Observable<Long> age = new Observable<>(18L);
+        Observable<String> ageGroup = new Observable<>("Adult");
+        Observable<Long> difficulty = new Observable<>(3L);
+
+        CustomForm form = new CustomForm("My Form")
+                .label("Personal informations")
+                .textField("Name", name, TextFieldOptions.builder()
+                        .description("Max 10 characters")
+                        .build())
+                .textField("Biography", bio, TextFieldOptions.builder()
+                        .description("This is your biography. You can write anything you want here.")
+                        .build())
+                .slider("Age", 1L, 100L, age)
+                .textField("Age Group", ageGroup, TextFieldOptions.builder()
+                        .description("Automatically set based on age")
+                        .disabled(true)
+                        .build())
+                .slider("Difficulty",
+                        1L, 5L,
+                        difficulty,
+                        SliderElementOptions.builder()
+                                .description("1 = Peaceful - 5 = Hardcore")
+                                .build()
+                )
+                .button("Reset", player -> CompletableFuture.runAsync(() -> {
+                    name.setValue("");
+                    bio.setValue("");
+                    age.setValue(18L);
+                    difficulty.setValue(3L);
+                }));
+                form.button("Confirm", player -> {
+                    player.sendMessage("Confirmed successfully!");
+                    String _name = name.getValue();
+                    String _bio = bio.getValue();
+                    long _age = age.getValue();
+                    long _difficulty = difficulty.getValue();
+                    player.sendMessage("Name: " + _name);
+                    player.sendMessage("Biography: " + _bio);
+                    player.sendMessage("Age: " + _age + " (" + ageGroup.getValue() + ")");
+                    player.sendMessage("Difficulty: " + _difficulty);
+
+                    form.close(player);
+                })
+                .closeButton();
+
+        name.subscribe(value -> {
+            String normalized = value.length() > 10 ? value.substring(0, 10) : value;
+            server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+                if (!normalized.equals(value)) {
+                    name.setValue(normalized);
+                }
+            });
+
+            return null;
+        });
+
+        age.subscribe(value -> {
+            CompletableFuture.runAsync(() -> {
+                //Kid: 1 - 12
+                //Teen: 13 - 17
+                //Adult: 18 - 64
+                //Senior: 65+
+
+                if (value <= 12) {
+                    ageGroup.setValue("Kid");
+                } else if (value <= 17) {
+                    ageGroup.setValue("Teen");
+                } else if (value <= 64) {
+                    ageGroup.setValue("Adult");
+                } else {
+                    ageGroup.setValue("Senior");
+                }
+            });
+
+            return null;
+        });
+
+
+        form.show(sender.asPlayer());
         return 1;
     }
 }

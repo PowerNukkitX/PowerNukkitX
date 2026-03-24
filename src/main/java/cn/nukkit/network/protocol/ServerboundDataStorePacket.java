@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
+import cn.nukkit.network.protocol.types.ddui.DataStoreUpdate;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,37 +14,16 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ServerboundDataStorePacket extends DataPacket {
 
-    private final Update update = new Update();
-
-    @Data
-    public static class Update {
-        private String dataStoreName;
-        private String property;
-        private String path;
-        private Object data;
-        private int updateCount;
-        private int pathUpdateCount;
-    }
+    private DataStoreUpdate update;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        this.update.dataStoreName = byteBuf.readString();
-        this.update.property = byteBuf.readString();
-        this.update.path = byteBuf.readString();
-        int type = byteBuf.readUnsignedVarInt();
-        this.update.data = switch (type) {
-            case 0 -> byteBuf.readDoubleLE();
-            case 1 -> byteBuf.readBoolean();
-            case 2 -> byteBuf.readString();
-            default -> throw new IllegalStateException("Invalid data store data type: " + type);
-        };
-        this.update.updateCount = (int) byteBuf.readUnsignedIntLE();
-        this.update.pathUpdateCount = (int) byteBuf.readUnsignedIntLE();
+        setUpdate(byteBuf.readDataStoreUpdate());
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-
+        byteBuf.writeDataStoreUpdate(getUpdate());
     }
 
     @Override

@@ -568,6 +568,9 @@ public enum LevelSoundEvent {
     GOLDEN_SPEAR_USE(594),
     DIAMOND_SPEAR_USE(595),
     NETHERITE_SPEAR_USE(596),
+    PAUSE_GROWTH(597),
+    RESET_GROWTH(598),
+    UNDEFINED(599)
     ;
 
     private final int id;

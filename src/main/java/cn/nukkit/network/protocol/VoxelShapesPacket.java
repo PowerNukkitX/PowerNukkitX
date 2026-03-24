@@ -25,6 +25,7 @@ import java.util.Map;
 public class VoxelShapesPacket extends DataPacket {
     private List<VoxelShape> shapes;
     private Map<String, Integer> nameMap;
+    private int customShapeCount;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
@@ -44,7 +45,7 @@ public class VoxelShapesPacket extends DataPacket {
                 List<Short> storage = new ArrayList<>(storageSize);
 
                 for (int s = 0; s < storageSize; s++) {
-                    storage.add((short) byteBuf.readUnsignedByte());
+                    storage.add(byteBuf.readUnsignedByte());
                 }
 
                 cells.add(new VoxelCells(xSize, ySize, zSize, storage));
@@ -73,6 +74,7 @@ public class VoxelShapesPacket extends DataPacket {
             int val = byteBuf.readUnsignedShortLE();
             nameMap.put(key, val);
         }
+        setCustomShapeCount(byteBuf.readUnsignedShortLE());
     }
 
     @Override
@@ -108,6 +110,7 @@ public class VoxelShapesPacket extends DataPacket {
             buf.writeString(k);
             buf.writeShortLE(v);
         });
+        buf.writeShortLE(customShapeCount);
     }
 
     @Override
