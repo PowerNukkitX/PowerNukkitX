@@ -1392,7 +1392,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public BlockVector3 readBlockVector3() {
-        return new BlockVector3(this.readVarInt(), this.readUnsignedVarInt(), this.readVarInt());
+        return new BlockVector3(this.readVarInt(), this.readVarInt(), this.readVarInt());
     }
 
     public void writeBlockVector3(BlockVector3 v) {
@@ -1401,7 +1401,7 @@ public class HandleByteBuf extends ByteBuf {
 
     public void writeBlockVector3(int x, int y, int z) {
         this.writeVarInt(x);
-        this.writeUnsignedVarInt(y);
+        this.writeVarInt(y);
         this.writeVarInt(z);
     }
 
