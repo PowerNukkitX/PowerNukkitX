@@ -85,7 +85,48 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBStorage getStorage() {
         return this.storage;
     }
-    
+
+    // Maps BDS level.dat keys to PNX Format.
+    private static final Map<String, String> BDS_GAMERULE_MAP = Map.ofEntries(
+            Map.entry("dodaylightcycle", "doDayLightCycle"),
+            Map.entry("keepinventory", "keepInventory"),
+            Map.entry("mobgriefing", "mobGriefing"),
+            Map.entry("randomtickspeed", "randomTickSpeed"),
+            Map.entry("dofiretick", "doFireTick"),
+            Map.entry("domobspawning", "doMobSpawning"),
+            Map.entry("domobloot", "doMobLoot"),
+            Map.entry("dotiledrops", "doTileDrops"),
+            Map.entry("doweathercycle", "doWeatherCycle"),
+            Map.entry("doentitydrops", "doEntityDrops"),
+            Map.entry("doimmediaterespawn", "doImmediateRespawn"),
+            Map.entry("dolimitedcrafting", "doLimitedCrafting"),
+            Map.entry("doinsomnia", "doInsomnia"),
+            Map.entry("commandblockoutput", "commandBlockOutput"),
+            Map.entry("commandblocksenabled", "commandBlocksEnabled"),
+            Map.entry("sendcommandfeedback", "sendCommandFeedback"),
+            Map.entry("showcoordinates", "showCoordinates"),
+            Map.entry("showdeathmessages", "showDeathMessages"),
+            Map.entry("showtags", "showTags"),
+            Map.entry("showdaysplayed", "showDaysPlayed"),
+            Map.entry("showbordereffect", "showBorderEffect"),
+            Map.entry("playerssleepingpercentage", "playersSleepingPercentage"),
+            Map.entry("spawnradius", "spawnRadius"),
+            Map.entry("tntexplodes", "tntExplodes"),
+            Map.entry("tntexplosiondropdecay", "tntExplosionDropDecay"),
+            Map.entry("naturalregeneration", "naturalRegeneration"),
+            Map.entry("falldamage", "fallDamage"),
+            Map.entry("firedamage", "fireDamage"),
+            Map.entry("freezedamage", "freezeDamage"),
+            Map.entry("drowningdamage", "drowningDamage"),
+            Map.entry("projectilescanbreakblocks", "projectilesCanBreakBlocks"),
+            Map.entry("recipesunlock", "recipesUnlock"),
+            Map.entry("respawnblocksexplode", "respawnBlocksExplode"),
+            Map.entry("functioncommandlimit", "functionCommandLimit"),
+            Map.entry("maxcommandchainlength", "maxCommandChainLength"),
+            Map.entry("locatorbar", "locatorBar"),
+            Map.entry("pvp", "pvp")
+    );
+
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
@@ -668,6 +709,7 @@ public class LevelDBProvider implements LevelProvider {
             input.skip(8);
             BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
             CompoundTag d = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+            normalizeBdsGameRuleKeys(d);
             stream.close();
             CompoundTag abilities = d.getCompound("abilities");
             CompoundTag experiments = d.getCompound("experiments");
@@ -942,5 +984,16 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putBoolean("thundering", worldData.isThundering());
         levelDat.putInt("nosleepnights", worldData.getNoSleepNight());
         return levelDat;
+    }
+
+    private static void normalizeBdsGameRuleKeys(CompoundTag d) {
+        for (var entry : BDS_GAMERULE_MAP.entrySet()) {
+            String bdsKey = entry.getKey();
+            String pnxKey = entry.getValue();
+
+            if (d.contains(bdsKey) && !d.contains(pnxKey)) {
+                d.put(pnxKey, d.get(bdsKey));
+            }
+        }
     }
 }
