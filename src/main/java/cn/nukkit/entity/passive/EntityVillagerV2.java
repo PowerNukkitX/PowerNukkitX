@@ -88,9 +88,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return VILLAGER_V2;
     }
 
-    private final List<Integer> tradeNetId = new ArrayList<>();
+    private List<Integer> tradeNetId;
 
     public List<Integer> getTradeNetIds() {
+        if (tradeNetId == null) {
+            tradeNetId = new ArrayList<>();
+        }
         return tradeNetId;
     }
 
@@ -799,9 +802,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void close() {
-        if(this.getTradeNetIds() != null) {
-            this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
-        }
+        this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
         super.close();
     }
 
