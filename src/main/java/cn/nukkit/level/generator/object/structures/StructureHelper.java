@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -18,6 +19,10 @@ public class StructureHelper extends BlockManager {
     public StructureHelper(Level level, BlockVector3 origen) {
         super(level);
         this.origen = origen;
+    }
+
+    public BlockVector3 getOrigin() {
+        return origen;
     }
 
     /**
@@ -110,6 +115,7 @@ public class StructureHelper extends BlockManager {
 
     @Override
     public void setBlockStateAt(int x, int y, int z, BlockState state) {
+        if(state.getIdentifier().equals(BlockID.STRUCTURE_VOID)) return;
         super.setBlockStateAt(x + origen.x, y + origen.y, z + origen.z, state);
     }
 }
