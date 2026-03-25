@@ -85,7 +85,6 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBStorage getStorage() {
         return this.storage;
     }
-
     // Maps BDS level.dat keys to PNX Format.
     private static final Map<String, String> BDS_GAMERULE_MAP = Map.ofEntries(
             Map.entry("dodaylightcycle", "doDayLightCycle"),
