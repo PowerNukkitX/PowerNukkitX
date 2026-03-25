@@ -155,6 +155,10 @@ public final class LegacyServerSettings extends OkaeriConfig {
         int melting = 16;
         int singleOperation = 1;
         int batchOperation = 32;
+        @Comment("pnx.settings.performance.registrycache.enable")
+        boolean registryCacheEnabled = false;
+        @Comment("pnx.settings.performance.registrycache.path")
+        String registryCachePath = "path/to/your/registry_cache.bin";
     }
 
     @EqualsAndHashCode(callSuper = true)

@@ -46,6 +46,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.BiomedGenerator;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.biome.BiomePicker;
@@ -997,7 +998,9 @@ public class Level implements Metadatable {
 
         if (!this.loaders.containsKey(hash)) {
             this.loaderCounter.put(hash, 1);
-            this.loaders.put(hash, loader);
+            synchronized (this.loaders) {
+                this.loaders.put(hash, loader);
+            }
         } else {
             this.loaderCounter.put(hash, this.loaderCounter.get(hash) + 1);
         }
@@ -1025,7 +1028,9 @@ public class Level implements Metadatable {
                 int count = this.loaderCounter.get(loaderId);
                 if (--count == 0) {
                     this.loaderCounter.remove(loaderId);
-                    this.loaders.remove(loaderId);
+                    synchronized (this.loaders) {
+                        this.loaders.remove(loaderId);
+                    }
                 } else {
                     this.loaderCounter.put(loaderId, count);
                 }
@@ -1072,29 +1077,34 @@ public class Level implements Metadatable {
     }
 
     private void doTick(GameLoop gameLoop) {
-        int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
-        long levelTime = System.currentTimeMillis();
-        int tickMs = (int) (System.currentTimeMillis() - levelTime);
-        doTick(gameLoop.getTick());
-        if (getServer().getSettings().levelSettings().autoTickRate()) {
-            if (tickMs < 50 && this.getTickRate() > baseTickRate) {
-                int r;
-                this.setTickRate(r = this.getTickRate() - 1);
-                if (r > baseTickRate) {
+        try {
+            int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
+            long levelTime = System.currentTimeMillis();
+            doTick(gameLoop.getTick());
+            int tickMs = (int) (System.currentTimeMillis() - levelTime);
+
+            if (getServer().getSettings().levelSettings().autoTickRate()) {
+                if (tickMs < 50 && this.getTickRate() > baseTickRate) {
+                    int r;
+                    this.setTickRate(r = this.getTickRate() - 1);
+                    if (r > baseTickRate) {
+                        this.tickRateCounter = this.getTickRate();
+                    }
+                    log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
+                } else if (tickMs >= 50) {
+                    int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
+                    if (this.getTickRate() == baseTickRate) {
+                        this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                        log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                    } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
+                        this.setTickRate(this.getTickRate() + 1);
+                        log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
+                    }
                     this.tickRateCounter = this.getTickRate();
                 }
-                log.debug("Raising level \"{}\" tick rate to {} ticks", this.getName(), this.getTickRate());
-            } else if (tickMs >= 50) {
-                int autoTickRateLimit = getServer().getSettings().levelSettings().autoTickRateLimit();
-                if (this.getTickRate() == baseTickRate) {
-                    this.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
-                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
-                } else if ((tickMs / this.getTickRate()) >= 50 && this.getTickRate() < autoTickRateLimit) {
-                    this.setTickRate(this.getTickRate() + 1);
-                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", this.getName(), NukkitMath.round(tickMs, 2), this.getTickRate());
-                }
-                this.tickRateCounter = this.getTickRate();
             }
+        } catch (Exception e) {
+            log.error("Failed to tick levelThread for " + getName(), e);
         }
     }
 
@@ -4585,7 +4595,7 @@ public class Level implements Metadatable {
                     long time = entry.getValue();
                     if (maxUnload <= 0) {
                         break;
-                    } else if (time < (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
+                    } else if (time > (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
                         continue;
                     }
                 }
@@ -5289,5 +5299,16 @@ public class Level implements Metadatable {
         @NotNull
         private Block block;
         private BlockFace neighbor;
+    }
+    /** Returns the Nether coordinate scale for this level.
+     * Delegates to the LevelProvider for custom portal ratios
+     * Falls back to the vanilla default of 8 if the provider does not expose it.
+     */
+    public int getNetherScale() {
+        LevelProvider provider = this.requireProvider();
+        if (provider instanceof LevelDBProvider dbProvider) {
+            return dbProvider.getNetherScale();
+        }
+        return 8;
     }
 }

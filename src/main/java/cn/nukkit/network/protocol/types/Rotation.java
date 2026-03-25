@@ -2,10 +2,16 @@ package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockTrapdoor;
+import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
+import cn.nukkit.block.property.enums.WallConnectionType;
 import cn.nukkit.block.property.type.BlockPropertyType;
+import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.math.BlockFace;
+
+import java.util.EnumMap;
 
 import static cn.nukkit.block.property.CommonBlockProperties.*;
 import static cn.nukkit.block.property.CommonBlockProperties.HUGE_MUSHROOM_BITS;
@@ -32,6 +38,7 @@ public enum Rotation {
     public static BlockState clockwise90(BlockState state) {
         Block block = state.toBlock();
         var states = new java.util.ArrayList<>(state.getBlockPropertyValues());
+        EnumMap<BlockFace, WallConnectionType> rotatedWallConnections = rotateWallConnectionsClockwise90(state);
         int idx = 0;
         for (var property : state.getBlockPropertyValues()) {
             var type = property.getPropertyType();
@@ -77,20 +84,16 @@ public enum Rotation {
                 });
                 states.set(idx, rotated);
             } else if (type == DIRECTION) {
-                var rotated = DIRECTION.createValue((state.getPropertyValue(DIRECTION) + 1) % 4);
+                int rotatedDirection = block instanceof BlockTrapdoor
+                        ? rotateTrapdoorDirectionClockwise90(state.getPropertyValue(DIRECTION))
+                        : (state.getPropertyValue(DIRECTION) + 1) % 4;
+                var rotated = DIRECTION.createValue(rotatedDirection);
                 states.set(idx, rotated);
             } else if (type == GROUND_SIGN_DIRECTION) {
                 var rotated = GROUND_SIGN_DIRECTION.createValue((state.getPropertyValue(GROUND_SIGN_DIRECTION) + 4) % 16);
                 states.set(idx, rotated);
             } else if (type == FACING_DIRECTION) {
-                int meta = state.getPropertyValue(FACING_DIRECTION);
-                int thrown = meta & 0x8;
-                var rotated = FACING_DIRECTION.createValue(switch (meta & ~0x8) {
-                    case 2 -> 5 | thrown;
-                    case 3 -> 4 | thrown;
-                    case 4 -> 2 | thrown;
-                    default -> 3 | thrown;
-                });
+                var rotated = FACING_DIRECTION.createValue(rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION)));
                 states.set(idx, rotated);
             } else if (type == LEVER_DIRECTION) {
                 int meta = state.getPropertyValue(LEVER_DIRECTION).getMetadata();
@@ -131,10 +134,63 @@ public enum Rotation {
                 meta = ((meta << 1) | (meta >> 3)) & 0xf;
                 var rotated = VINE_DIRECTION_BITS.createValue(meta);
                 states.set(idx, rotated);
+            } else {
+                WallConnectionType rotatedConnection = getRotatedWallConnection(type, rotatedWallConnections);
+                if (rotatedConnection != null) {
+                    states.set(idx, ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection));
+                }
             }
             idx++;
         }
         return state.setPropertyValues(block.getProperties(), states.toArray(BlockPropertyType.BlockPropertyValue[]::new));
+    }
+
+    private static EnumMap<BlockFace, WallConnectionType> rotateWallConnectionsClockwise90(BlockState state) {
+        EnumMap<BlockFace, WallConnectionType> rotatedConnections = new EnumMap<>(BlockFace.class);
+        putRotatedWallConnection(rotatedConnections, BlockFace.EAST, state.getPropertyValue(WALL_CONNECTION_TYPE_NORTH));
+        putRotatedWallConnection(rotatedConnections, BlockFace.NORTH, state.getPropertyValue(WALL_CONNECTION_TYPE_WEST));
+        putRotatedWallConnection(rotatedConnections, BlockFace.SOUTH, state.getPropertyValue(WALL_CONNECTION_TYPE_EAST));
+        putRotatedWallConnection(rotatedConnections, BlockFace.WEST, state.getPropertyValue(WALL_CONNECTION_TYPE_SOUTH));
+        return rotatedConnections;
+    }
+
+    private static void putRotatedWallConnection(EnumMap<BlockFace, WallConnectionType> rotatedConnections, BlockFace face, WallConnectionType connectionType) {
+        if (connectionType != null) {
+            rotatedConnections.put(face, connectionType);
+        }
+    }
+
+    private static WallConnectionType getRotatedWallConnection(BlockPropertyType<?> type, EnumMap<BlockFace, WallConnectionType> rotatedWallConnections) {
+        if (type == WALL_CONNECTION_TYPE_EAST) {
+            return rotatedWallConnections.get(BlockFace.EAST);
+        }
+        if (type == WALL_CONNECTION_TYPE_NORTH) {
+            return rotatedWallConnections.get(BlockFace.NORTH);
+        }
+        if (type == WALL_CONNECTION_TYPE_SOUTH) {
+            return rotatedWallConnections.get(BlockFace.SOUTH);
+        }
+        if (type == WALL_CONNECTION_TYPE_WEST) {
+            return rotatedWallConnections.get(BlockFace.WEST);
+        }
+        return null;
+    }
+
+    private static int rotateFacingDirectionClockwise90(int meta) {
+        int extraBits = meta & ~0x7;
+        BlockFace face = BlockFace.fromIndex(meta & 0x7);
+        if (!face.getAxis().isHorizontal()) {
+            return face.getIndex() | extraBits;
+        }
+        return face.rotateY().getIndex() | extraBits;
+    }
+
+    private static int rotateTrapdoorDirectionClockwise90(int value) {
+        BlockFace face = CommonPropertyMap.EWSN_DIRECTION.inverse().get(value);
+        if (face == null) {
+            return value;
+        }
+        return CommonPropertyMap.EWSN_DIRECTION.get(face.rotateY());
     }
 
     public static BlockState counterclockwise90(BlockState state) {

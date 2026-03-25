@@ -279,30 +279,36 @@ public interface AxisAlignedBB extends Cloneable {
         }
 
         Vector3 vector = null;
+        double bestDistSq = Double.MAX_VALUE;
 
-        //if (v1 != null && (vector == null || pos1.distanceSquared(v1) < pos1.distanceSquared(vector))) {
         if (v1 != null) {
             vector = v1;
+            bestDistSq = pos1.distanceSquared(v1);
         }
 
-        if (v2 != null && (vector == null || pos1.distanceSquared(v2) < pos1.distanceSquared(vector))) {
-            vector = v2;
+        if (v2 != null) {
+            double d = pos1.distanceSquared(v2);
+            if (d < bestDistSq) { vector = v2; bestDistSq = d; }
         }
 
-        if (v3 != null && (vector == null || pos1.distanceSquared(v3) < pos1.distanceSquared(vector))) {
-            vector = v3;
+        if (v3 != null) {
+            double d = pos1.distanceSquared(v3);
+            if (d < bestDistSq) { vector = v3; bestDistSq = d; }
         }
 
-        if (v4 != null && (vector == null || pos1.distanceSquared(v4) < pos1.distanceSquared(vector))) {
-            vector = v4;
+        if (v4 != null) {
+            double d = pos1.distanceSquared(v4);
+            if (d < bestDistSq) { vector = v4; bestDistSq = d; }
         }
 
-        if (v5 != null && (vector == null || pos1.distanceSquared(v5) < pos1.distanceSquared(vector))) {
-            vector = v5;
+        if (v5 != null) {
+            double d = pos1.distanceSquared(v5);
+            if (d < bestDistSq) { vector = v5; bestDistSq = d; }
         }
 
-        if (v6 != null && (vector == null || pos1.distanceSquared(v6) < pos1.distanceSquared(vector))) {
-            vector = v6;
+        if (v6 != null) {
+            double d = pos1.distanceSquared(v6);
+            if (d < bestDistSq) { vector = v6; bestDistSq = d; }
         }
 
         if (vector == null) {

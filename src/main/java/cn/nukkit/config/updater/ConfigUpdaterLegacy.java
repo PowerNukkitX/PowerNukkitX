@@ -91,7 +91,7 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
         debug.deprecatedVerbose(legacyNukkit.baseSettings().deprecatedVerbose())
                 .level(debugOld.level())
                 .command(debugOld.command())
-                .ignoredPackets(debugOld.ignoredPackets());
+                .packetList(debugOld.ignoredPackets());
 
         GameplaySettings game = settings.gameplaySettings();
         LegacyServerSettings.GameplaySettings gameOld = legacyNukkit.gameplaySettings();
@@ -134,7 +134,9 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .absoluteZero(perfOld.absoluteZero())
                 .melting(perfOld.melting())
                 .singleOperation(perfOld.singleOperation())
-                .batchOperation(perfOld.batchOperation());
+                .batchOperation(perfOld.batchOperation())
+                .registryCacheEnabled(perfOld.registryCacheEnabled())
+                .registryCachePath(perfOld.registryCachePath());
 
         PlayerSettings pl = settings.playerSettings();
         LegacyServerSettings.PlayerSettings plOld = legacyNukkit.playerSettings();

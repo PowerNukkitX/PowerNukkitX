@@ -1,13 +1,17 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.network.connection.util.HandleByteBuf;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class ClientboundDataDrivenUICloseAllScreensPacket extends DataPacket {
+public class ResourcePacksReadyForValidationPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
 
@@ -20,7 +24,7 @@ public class ClientboundDataDrivenUICloseAllScreensPacket extends DataPacket {
 
     @Override
     public int pid() {
-        return ProtocolInfo.CLIENTBOUND_DDUI_CLOSE_ALL_SCREENS;
+        return ProtocolInfo.RESOURCE_PACKS_READY_FOR_VALIDATION_PACKET;
     }
 
     public void handle(PacketHandler handler) {

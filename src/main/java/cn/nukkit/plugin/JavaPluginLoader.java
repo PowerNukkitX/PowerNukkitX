@@ -18,23 +18,40 @@ import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 /**
- * @author Nukkit Team.
+ * Loads, enables, disables, and manages Java-based plugins for the server.
+ * Handles plugin class loading, description parsing, and plugin lifecycle events.
+ *
+ * @author Nukkit Team
  */
 @Slf4j
 public class JavaPluginLoader implements PluginLoader {
 
+    /** Reference to the server instance. */
     private final Server server;
 
+    /** Global cache of loaded classes by name. */
     private final Map<String, Class<?>> classes = new HashMap<>();
 
-
+    /** Map of plugin name to their class loader. */
     @Getter
     protected final Map<String, PluginClassLoader> classLoaders = new HashMap<>();
 
+    /**
+     * Constructs a new JavaPluginLoader for the given server.
+     *
+     * @param server the server instance
+     */
     public JavaPluginLoader(Server server) {
         this.server = server;
     }
 
+    /**
+     * Loads a plugin from the specified file.
+     *
+     * @param file the plugin JAR file
+     * @return the loaded Plugin instance, or null if not found
+     * @throws Exception if loading fails
+     */
     @Override
     public Plugin loadPlugin(File file) throws Exception {
         PluginDescription description = this.getPluginDescription(file);
@@ -58,30 +75,39 @@ public class JavaPluginLoader implements PluginLoader {
 
                 try {
                     Class<? extends PluginBase> pluginClass = javaClass.asSubclass(PluginBase.class);
-
                     plugin = pluginClass.getDeclaredConstructor().newInstance();
                     this.initPlugin(plugin, classLoader, description, dataFolder, file);
-
                     return plugin;
                 } catch (ClassCastException e) {
                     throw new PluginException("Error whilst initializing main class `" + description.getMain() + "'", e);
                 } catch (InstantiationException | IllegalAccessException e) {
-                    log.error("An exception happened while initializing the plgin {}, {}, {}, {}", file, className, description.getName(), description.getVersion(), e);
+                    log.error("An exception happened while initializing the plugin {}, {}, {}, {}", file, className, description.getName(), description.getVersion(), e);
                 }
-
             } catch (ClassNotFoundException e) {
                 throw new PluginException("Couldn't load plugin " + description.getName() + ": main class not found");
             }
         }
-
         return null;
     }
 
+    /**
+     * Loads a plugin from the specified filename.
+     *
+     * @param filename the plugin JAR filename
+     * @return the loaded Plugin instance, or null if not found
+     * @throws Exception if loading fails
+     */
     @Override
     public Plugin loadPlugin(String filename) throws Exception {
         return this.loadPlugin(new File(filename));
     }
 
+    /**
+     * Reads the plugin description from a JAR file.
+     *
+     * @param file the plugin JAR file
+     * @return the PluginDescription, or null if not found
+     */
     @Override
     public PluginDescription getPluginDescription(File file) {
         try (JarFile jar = new JarFile(file)) {
@@ -103,21 +129,46 @@ public class JavaPluginLoader implements PluginLoader {
         }
     }
 
+    /**
+     * Reads the plugin description from a JAR filename.
+     *
+     * @param filename the plugin JAR filename
+     * @return the PluginDescription, or null if not found
+     */
     @Override
     public PluginDescription getPluginDescription(String filename) {
         return this.getPluginDescription(new File(filename));
     }
 
+    /**
+     * Returns the file patterns for plugin JARs.
+     *
+     * @return array of regex patterns
+     */
     @Override
     public Pattern[] getPluginFilters() {
         return new Pattern[]{Pattern.compile("^.+\\.jar$")};
     }
 
+    /**
+     * Initializes a plugin instance with its loader, description, and data folder.
+     *
+     * @param plugin      the plugin instance
+     * @param classLoader the class loader
+     * @param description the plugin description
+     * @param dataFolder  the data folder
+     * @param file        the plugin JAR file
+     */
     private void initPlugin(PluginBase plugin, ClassLoader classLoader, PluginDescription description, File dataFolder, File file) {
         plugin.init(this, classLoader, this.server, description, dataFolder, file);
         plugin.onLoad();
     }
 
+    /**
+     * Enables the specified plugin, firing the enable event.
+     *
+     * @param plugin the plugin to enable
+     */
     @Override
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && !plugin.isEnabled()) {
@@ -127,36 +178,40 @@ public class JavaPluginLoader implements PluginLoader {
         }
     }
 
-
+    /**
+     * Disables the specified plugin, firing the disable event.
+     *
+     * @param plugin the plugin to disable
+     */
     @Override
     public void disablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && plugin.isEnabled()) {
             if (plugin == InternalPlugin.INSTANCE) {
                 throw new UnsupportedOperationException("The PowerNukkitX Internal Plugin cannot be disabled");
             }
-
             log.info(this.server.getLanguage().tr("nukkit.plugin.disable", plugin.getDescription().getFullName()));
-
             this.server.getServiceManager().cancel(plugin);
-
             this.server.getPluginManager().callEvent(new PluginDisableEvent(plugin));
-
             ((PluginBase) plugin).setEnabled(false);
         }
     }
 
+    /**
+     * Returns a loaded class by name from the global cache or plugin class loaders.
+     *
+     * @param name the class name
+     * @return the Class object, or null if not found
+     */
     Class<?> getClassByName(final String name) {
         Class<?> cachedClass = classes.get(name);
-
         if (cachedClass != null) {
             return cachedClass;
         } else {
             for (PluginClassLoader loader : this.classLoaders.values()) {
-
                 try {
                     cachedClass = loader.findClass(name, false);
                 } catch (ClassNotFoundException e) {
-                    //ignore
+                    // ignore
                 }
                 if (cachedClass != null) {
                     return cachedClass;
@@ -166,13 +221,24 @@ public class JavaPluginLoader implements PluginLoader {
         return null;
     }
 
+    /**
+     * Caches a class globally by name.
+     *
+     * @param name  the class name
+     * @param clazz the Class object
+     */
     void setClass(final String name, final Class<?> clazz) {
         if (!classes.containsKey(name)) {
             classes.put(name, clazz);
         }
     }
 
+    /**
+     * Removes a class from the global cache.
+     *
+     * @param name the class name
+     */
     private void removeClass(String name) {
-        Class<?> clazz = classes.remove(name);
+        classes.remove(name);
     }
 }

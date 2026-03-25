@@ -1,11 +1,12 @@
 package cn.nukkit.item.utils;
 
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Identifier;
+
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
 
 public final class DiggerEntry {
     private Integer speed;
@@ -17,8 +18,8 @@ public final class DiggerEntry {
 
     public static DiggerEntry block(String blockId, int speed) {
         DiggerEntry e = new DiggerEntry();
-        e.blockId = blockId;
-        e.speed   = speed;
+        e.setBlockId(blockId);
+        e.speed = speed;
         return e;
     }
 
@@ -32,15 +33,22 @@ public final class DiggerEntry {
     }
 
     public DiggerEntry setBlockId(String blockId) {
-        this.blockId = blockId;
+        if (blockId == null || blockId.isBlank()) {
+            this.blockId = null;
+            return this;
+        }
+
+        Identifier id = Identifier.tryParse(blockId.trim());
+        this.blockId = id != null ? id.toString() : blockId.trim();
         return this;
     }
 
     public DiggerEntry addTags(String... quotedTags) {
         if (quotedTags != null) {
             for (String t : quotedTags) {
-                if (t != null && !t.isBlank()) {
-                    this.tags.add(t.trim());
+                String normalized = normalizeTag(t);
+                if (normalized != null && !normalized.isBlank()) {
+                    this.tags.add(normalized);
                 }
             }
         }
@@ -53,23 +61,32 @@ public final class DiggerEntry {
 
     public DiggerEntry addAllStone() {
         return addTags(
-                "'stone'", "'metal'", "'diamond_pick_diggable'", "'mob_spawner'", "'rail'",
-                "'slab_block'", "'stair_block'", "'smooth stone slab'", "'sandstone slab'",
-                "'cobblestone slab'", "'brick slab'", "'stone bricks slab'", "'quartz slab'",
-                "'nether brick slab'"
+            "stone",
+            "is_pickaxe_item_destructible"
         );
     }
 
     public DiggerEntry addAllWooden() {
-        return addTags("'wood'", "'pumpkin'", "'plant'");
+        return addTags(
+            "wood",
+            "is_axe_item_destructible"
+        );
     }
 
     public DiggerEntry addAllSand() {
-        return addTags("'sand'", "'dirt'", "'gravel'", "'grass'", "'snow'");
+        return addTags(
+            "sand",
+            "dirt",
+            "gravel",
+            "is_shovel_item_destructible"
+        );
     }
 
     public DiggerEntry addAllMetal() {
-        return addTags("'metal'");
+        return addTags(
+            "metal",
+            "diamond_tier_destructible"
+        );
     }
 
     public DiggerEntry state(String key, int value) {
@@ -133,5 +150,24 @@ public final class DiggerEntry {
         } else if (v instanceof String s) {
             states.putString(key, s);
         }
+    }
+
+    private static String normalizeTag(String raw) {
+        if (raw == null) return null;
+
+        String tag = raw.trim();
+        if (tag.isEmpty()) return null;
+
+        boolean quoted = tag.length() >= 2 && tag.startsWith("'") && tag.endsWith("'");
+        if (quoted) {
+            tag = tag.substring(1, tag.length() - 1).trim();
+        }
+
+        if (tag.isEmpty()) return null;
+
+        Identifier id = Identifier.tryParse(tag);
+        if (id == null) return null;
+
+        return "'" + id + "'";
     }
 }

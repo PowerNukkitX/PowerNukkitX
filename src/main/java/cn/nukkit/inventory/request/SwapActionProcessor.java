@@ -27,10 +27,12 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
 
     @Override
     public ActionResponse handle(SwapAction action, Player player, ItemStackRequestContext context) {
-        ContainerSlotType sourceSlotType = action.getSource().getContainer();
-        ContainerSlotType destinationSlotType = action.getDestination().getContainer();
-        Integer dynamicSrc = action.getSource().getContainerName().getDynamicId();
-        Integer dynamicDst = action.getDestination().getContainerName().getDynamicId();
+        FullContainerName sourceContainerName = action.getSource().getContainerName();
+        FullContainerName destinationContainerName = action.getDestination().getContainerName();
+        Integer dynamicSrc = sourceContainerName.getDynamicId();
+        Integer dynamicDst = destinationContainerName.getDynamicId();
+        ContainerSlotType sourceSlotType = sourceContainerName.getContainer();
+        ContainerSlotType destinationSlotType = destinationContainerName.getContainer();
 
         Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
         Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
@@ -62,7 +64,7 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
                                         destinationItem.getDamage()
                                 )
                         ),
-                        action.getSource().getContainerName()
+                        sourceContainerName
                 ),
                 new ItemStackResponseContainer(
                         destination.getSlotType(destinationSlot),
@@ -76,7 +78,7 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
                                         sourceItem.getDamage()
                                 )
                         ),
-                        action.getDestination().getContainerName()
+                        destinationContainerName
                 )
         ));
     }

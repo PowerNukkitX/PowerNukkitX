@@ -118,6 +118,44 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         return ID2NAME.get(runtimeId);
     }
 
+    void writeCache(java.io.DataOutputStream out) throws java.io.IOException {
+        // REGISTRY (ID2NAME is a mirror and reconstructed on read)
+        out.writeInt(REGISTRY.size());
+        for (var e : REGISTRY.object2IntEntrySet()) {
+            out.writeUTF(e.getKey());
+            out.writeInt(e.getIntValue());
+        }
+        // ITEMDATA
+        out.writeInt(ITEMDATA.size());
+        for (ItemData d : ITEMDATA) {
+            out.writeUTF(d.identifier());
+            out.writeInt(d.runtimeId());
+            out.writeInt(d.version());
+            out.writeBoolean(d.componentBased());
+        }
+        // itemPalette
+        out.writeInt(itemPalette.length);
+        out.write(itemPalette);
+    }
+
+    void restoreCache(java.io.DataInputStream in) throws java.io.IOException {
+        if (isLoad.getAndSet(true)) return;
+        int regSize = in.readInt();
+        for (int i = 0; i < regSize; i++) {
+            String key = in.readUTF();
+            int    val = in.readInt();
+            REGISTRY.put(key, val);
+            ID2NAME.put(val, key); // reconstruct mirror
+        }
+        int dataSize = in.readInt();
+        for (int i = 0; i < dataSize; i++) {
+            ITEMDATA.add(new ItemData(in.readUTF(), in.readInt(), in.readInt(), in.readBoolean()));
+        }
+        int palLen = in.readInt();
+        itemPalette = new byte[palLen];
+        in.readFully(itemPalette);
+    }
+
     @Override
     public void trim() {
         REGISTRY.trim();

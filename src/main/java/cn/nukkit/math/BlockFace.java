@@ -29,6 +29,13 @@ public enum BlockFace {
      */
     private static final BlockFace[] HORIZONTALS = new BlockFace[4];
 
+    /**
+     * O(1) lookup for fromAxis(AxisDirection, Axis).
+     * Indexed by [Axis.ordinal()][AxisDirection.ordinal()].
+     * Axis ordinals: Y=0, X=1, Z=2  |  AxisDirection ordinals: POSITIVE=0, NEGATIVE=1
+     */
+    private static final BlockFace[][] AXIS_DIRECTION_LOOKUP = new BlockFace[3][2];
+
     static {
         //Circular dependency
         DOWN.axis = Axis.Y;
@@ -44,6 +51,10 @@ public enum BlockFace {
             if (face.getAxis().isHorizontal()) {
                 HORIZONTALS[face.horizontalIndex] = face;
             }
+        }
+
+        for (BlockFace face : VALUES) {
+            AXIS_DIRECTION_LOOKUP[face.axis.ordinal()][face.axisDirection.ordinal()] = face;
         }
     }
 
@@ -120,13 +131,11 @@ public enum BlockFace {
     }
 
     public static BlockFace fromAxis(AxisDirection axisDirection, Axis axis) {
-        for (BlockFace face : VALUES) {
-            if (face.getAxisDirection() == axisDirection && face.getAxis() == axis) {
-                return face;
-            }
+        BlockFace face = AXIS_DIRECTION_LOOKUP[axis.ordinal()][axisDirection.ordinal()];
+        if (face == null) {
+            throw new IllegalArgumentException("Unable to get face from axis: " + axisDirection + " " + axis);
         }
-
-        throw new IllegalArgumentException("Unable to get face from axis: " + axisDirection + " " + axis);
+        return face;
     }
 
     /**
@@ -410,11 +419,11 @@ public enum BlockFace {
 
 
         public BlockFace random() {
-            return faces[ThreadLocalRandom.current().nextInt(faces.length - 1)];
+            return faces[ThreadLocalRandom.current().nextInt(faces.length)];
         }
 
         public BlockFace random(RandomSourceProvider rand) {
-            return faces[rand.nextInt(faces.length - 1)];
+            return faces[rand.nextInt(faces.length)];
         }
 
         @Override

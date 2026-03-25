@@ -7,19 +7,23 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.data.CommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandOverload;
+import cn.nukkit.config.category.network.RateLimitSettings;
 import cn.nukkit.event.player.PlayerCreationEvent;
+import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.server.DataPacketDecodeEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
+import cn.nukkit.network.NetworkInterface;
 import cn.nukkit.network.connection.netty.BedrockBatchWrapper;
 import cn.nukkit.network.connection.netty.BedrockPacketWrapper;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.process.DataPacketManager;
 import cn.nukkit.network.process.SessionState;
+import cn.nukkit.network.security.BotnetDetector;
 import cn.nukkit.network.process.handler.HandshakePacketHandler;
 import cn.nukkit.network.process.handler.InGamePacketHandler;
 import cn.nukkit.network.process.handler.LoginHandler;
@@ -34,6 +38,7 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ByteBufVarInt;
 import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
+import com.google.common.util.concurrent.RateLimiter;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -53,8 +58,10 @@ import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
@@ -81,9 +88,15 @@ public class BedrockSession {
     @Getter @Setter
     protected int protocolVersion;
 
-    /* ---------------- Pacing heavy packets, reduce bursting and esure client sync ------------- */
+    /* ---------------- Pacing heavy packets, reduce bursting and ensure client sync ----------- */
     private final boolean pacingEnabled;
     private final OutboundScheduler scheduler;
+
+    /* ---------------- Per-session inbound rate limiting -------------------------------------- */
+    /** Null when rate limiting is disabled in config. */
+    @Nullable
+    private final RateLimiter inboundRateLimiter;
+    private final int maxPacketsPerTick;
 
     public BedrockSession(BedrockPeer peer, int subClientId) {
         this.peer = peer;
@@ -113,6 +126,15 @@ public class BedrockSession {
                 256,
                 pacingFlushIntervalMillis
         );
+
+        RateLimitConfig rl = loadRateLimitConfigSafely();
+        this.inboundRateLimiter = rl.enabled ? RateLimiter.create(rl.maxInboundPerSecond) : null;
+        this.maxPacketsPerTick = rl.maxPacketsPerTick;
+
+        BotnetDetector detector = Server.getInstance().getNetwork().getBotnetDetector();
+        if (detector != null) {
+            detector.registerSession(this.address);
+        }
 
         var cfg = new StateMachineConfig<SessionState, SessionState>();
 
@@ -332,6 +354,11 @@ public class BedrockSession {
         DataPacketDecodeEvent ev = new DataPacketDecodeEvent(this.getPlayer(), wrapper);
         Server.getInstance().getPluginManager().callEvent(ev);
 
+        BotnetDetector detector = Server.getInstance().getNetwork().getBotnetDetector();
+        if (detector != null) {
+            detector.recordPacket(this.address, ev.getPacketId());
+        }
+
         int predictMaxBuffer = switch (ev.getPacketId()) {
             case ProtocolInfo.LOGIN_PACKET -> 10_000_000;
             case ProtocolInfo.PLAYER_SKIN_PACKET -> 5_000_000;
@@ -350,18 +377,32 @@ public class BedrockSession {
                 c.accept(packet);
             }
         } else {
+            if (inboundRateLimiter != null && !inboundRateLimiter.tryAcquire()) {
+                PlayerHandle playerHandle = this.handle;
+                if (playerHandle != null) {
+                    PlayerHackDetectedEvent hackEvent = new PlayerHackDetectedEvent(
+                            playerHandle.player, PlayerHackDetectedEvent.HackType.PACKET_FLOOD);
+                    Server.getInstance().getPluginManager().callEvent(hackEvent);
+                    if (hackEvent.isKick()) {
+                        this.close("Too many packets");
+                    }
+                } else {
+                    this.close("Invalid player handle @ BedrockSession#onPacket");
+                }
+                return;
+            }
             inbound.add(packet);
         }
     }
 
     protected void logOutbound(DataPacket packet) {
-        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+        if (log.isTraceEnabled() && Server.getInstance().canLogPacket(packet.getClass())) {
             log.trace("Outbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
 
     protected void logInbound(DataPacket packet) {
-        if (log.isTraceEnabled() && !Server.getInstance().isIgnoredPacket(packet.getClass())) {
+        if (log.isTraceEnabled() && Server.getInstance().canLogPacket(packet.getClass())) {
             log.trace("Inbound {}({}): {}", this.getSocketAddress(), this.subClientId, packet);
         }
     }
@@ -423,7 +464,12 @@ public class BedrockSession {
         if (player != null) {
             player.close(BedrockDisconnectReasons.DISCONNECTED);
         }
-        Server.getInstance().getNetwork().onSessionDisconnect(getAddress());
+        NetworkInterface network = Server.getInstance().getNetwork();
+        network.onSessionDisconnect(getAddress());
+        BotnetDetector detector = network.getBotnetDetector();
+        if (detector != null) {
+            detector.unregisterSession(this.address);
+        }
         this.peer.removeSession(this);
     }
 
@@ -507,8 +553,19 @@ public class BedrockSession {
         DataPacket packet;
         var c = this.consumer.get();
         if (c != null) {
-            while ((packet = this.inbound.poll()) != null) {
+            int processed = 0;
+            while (processed < maxPacketsPerTick && (packet = this.inbound.poll()) != null) {
                 c.accept(packet);
+                processed++;
+            }
+            // If the cap was hit the queue still has data; drain and warn (rate limiter should have already disconnected the offending session before this point)
+            if (processed >= maxPacketsPerTick) {
+                int dropped = 0;
+                while (this.inbound.poll() != null) dropped++;
+                if (dropped > 0) {
+                    log.warn("Session {} hit inbound cap ({}/tick); dropped {} excess packets",
+                            this.getSocketAddress(), maxPacketsPerTick, dropped);
+                }
             }
         } else {
             this.inbound.clear();
@@ -539,15 +596,19 @@ public class BedrockSession {
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
         final Map<String, Command> commands = Server.getInstance().getCommandMap().getCommands();
+        // Snapshot the command list under the lock, then release immediately.
+        // Permission checks and data generation happen outside the lock to minimise contention.
+        List<Command> snapshot;
         synchronized (commands) {
-            for (Command command : commands.values()) {
-                if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
-                    continue;
-                }
-                ++count;
-                CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
-                data.put(command.getName(), data0);
+            snapshot = new ArrayList<>(commands.values());
+        }
+        for (Command command : snapshot) {
+            if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
+                continue;
             }
+            ++count;
+            CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
+            data.put(command.getName(), data0);
         }
         if (count > 0) {
             Map<String, CommandDataVersions> filtered = getStringCommandDataVersionsMap(data);
@@ -616,8 +677,7 @@ public class BedrockSession {
             player.getEnderChestInventory().sendContents(player);
 
             //Send bundle content
-            PlayerHandle handle = new PlayerHandle(player);
-            handle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
+            this.handle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
                 for (int index : inventory.getContents().keySet()) {
                     Item item = inventory.getUnclonedItem(index);
                     if (item instanceof ItemBundle bundle) {
@@ -686,11 +746,11 @@ public class BedrockSession {
         if (pk instanceof ResourcePackChunkDataPacket rp) {
             return (rp.data != null ? rp.data.length : 64 * 1024);
         }
-        switch (pk.pid()) {
-            case ProtocolInfo.CREATIVE_CONTENT_PACKET:        return 192 * 1024;
-            case ProtocolInfo.ITEM_REGISTRY_PACKET:           return 8 * 1024;
-            default:                                          return 256;
-        }
+        return switch (pk.pid()) {
+            case ProtocolInfo.CREATIVE_CONTENT_PACKET -> 192 * 1024;
+            case ProtocolInfo.ITEM_REGISTRY_PACKET -> 8 * 1024;
+            default -> 256;
+        };
     }
 
     private static final class PacingConfig {
@@ -712,6 +772,17 @@ public class BedrockSession {
         int bps = clamp(net.pacingMaxBytesPerSecond(), 64 * 1024, 64 * 1024 * 1024); // allow up to 64 MiB/s
 
         return new PacingConfig(en, flush, bps);
+    }
+
+    private record RateLimitConfig(boolean enabled, int maxInboundPerSecond, int maxPacketsPerTick) {
+    }
+
+    private RateLimitConfig loadRateLimitConfigSafely() {
+        RateLimitSettings settings = Server.getInstance().getSettings().networkSettings().rateLimitSettings();
+        boolean en = settings.rateLimitEnabled();
+        int maxInbound = clamp(settings.maxInboundPacketsPerSecond(), 100, 10_000);
+        int maxPerTick = clamp(settings.maxPacketsPerTick(), 50, 5_000);
+        return new RateLimitConfig(en, maxInbound, maxPerTick);
     }
 
     private static int clamp(int v, int lo, int hi) {

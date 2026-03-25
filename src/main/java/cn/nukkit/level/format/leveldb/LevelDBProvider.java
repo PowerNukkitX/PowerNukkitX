@@ -75,7 +75,17 @@ public class LevelDBProvider implements LevelProvider {
     protected final String path;
     protected CompoundTag worldDynamicProperties = new CompoundTag();
     protected boolean worldDynamicPropertiesDirty = false;
+    /**
+     * @return int The nether coordinate scale for the world
+     */
+    public int getNetherScale() {
+        return this.levelDat.getNetherScale();
+    }
 
+    public LevelDBStorage getStorage() {
+        return this.storage;
+    }
+    
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
@@ -266,7 +276,9 @@ public class LevelDBProvider implements LevelProvider {
     public void putChunk(long index, IChunk chunk) {
         if(this.chunks.containsKey(index)) {
             level.getPlayers().values().forEach(player -> {
-                player.getPlayerChunkManager().getUsedChunks().remove(index);
+                synchronized (player.getPlayerChunkManager().getUsedChunks()) {
+                    player.getPlayerChunkManager().getUsedChunks().remove(index);
+                }
             });
         }
         chunks.put(index, chunk);

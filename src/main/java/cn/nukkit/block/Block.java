@@ -604,8 +604,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public boolean canHarvest(Item item) {
-        return (getToolTier() == 0 || getToolType() == 0) ||
-                (correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier());
+        return (getToolTier() == 0 || getToolType() == 0) || (correctTool0(getToolType(), item, this) && item.getTier() >= getToolTier());
     }
 
     /**
@@ -980,17 +979,35 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                     .map(Effect::getAmplifier).orElse(0);
         }
 
-        if (correctTool0(getToolType(), item, this)) {
+        CompoundTag digger = item.getCustomItemComponent("minecraft:digger");
+        boolean hasCustomDigger = digger != null;
+        boolean correctTool = correctTool0(getToolType(), item, this);
+
+        Integer customDiggerSpeed = item.getDiggerSpeed(this);
+        int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
+                .map(Enchantment::getLevel).orElse(0);
+
+        boolean allowEfficiency = false;
+
+        if (customDiggerSpeed != null) {
+            speedMultiplier = customDiggerSpeed;
+            allowEfficiency = digger.getBoolean("use_efficiency");
+        } else if (correctTool) {
             speedMultiplier = toolBreakTimeBonus0(item);
+            allowEfficiency = true;
+        } else if (hasCustomDigger) {
+            speedMultiplier = 1;
+            allowEfficiency = false;
+        }
 
-            int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
-                    .map(Enchantment::getLevel).orElse(0);
-
-            if (canHarvest && efficiencyLevel > 0) {
+        if ((customDiggerSpeed != null || correctTool || hasCustomDigger) && canHarvest) {
+            if (allowEfficiency && efficiencyLevel > 0) {
                 speedMultiplier += efficiencyLevel * efficiencyLevel + 1;
             }
 
-            if (hasConduitPower) hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
+            if (hasConduitPower) {
+                hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
+            }
 
             if (hasteEffectLevel > 0) {
                 speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
@@ -1736,6 +1753,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     @Override
     public int hashCode() {
-        return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23);
+        return ((int) x ^ ((int) z << 12)) ^ ((int) (y + 64) << 23) ^ (layer << 31);
     }
 }

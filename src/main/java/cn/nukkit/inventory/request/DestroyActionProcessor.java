@@ -1,6 +1,8 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.BeaconInventory;
+import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.network.protocol.types.itemstack.request.action.DestroyAction;
 import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
@@ -32,13 +34,15 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
         if (noResponseForDestroyAction != null && noResponseForDestroyAction) {
             return null;
         }
-        if (player.getGamemode() != 1) {
+
+        FullContainerName containerName = action.getSource().getContainerName();
+        Integer dynamicId = containerName.getDynamicId();
+        ContainerSlotType container = containerName.getContainer();
+        var sourceInventory = NetworkMapping.getInventory(player, container, dynamicId);
+        if (player.getGamemode() != Player.CREATIVE && !(sourceInventory instanceof BeaconInventory)) {
             log.warn("only creative mode can destroy item");
             return context.error();
         }
-        ContainerSlotType container = action.getSource().getContainer();
-        Integer dynamicId = action.getSource().getContainerName().getDynamicId();
-        var sourceInventory = NetworkMapping.getInventory(player, container, dynamicId);
         var count = action.getCount();
         var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
         var item = sourceInventory.getItem(slot);
@@ -74,7 +78,7 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
                                         item.getDamage()
                                 )
                         ),
-                        action.getSource().getContainerName()
+                        containerName
                 )
         ));
     }

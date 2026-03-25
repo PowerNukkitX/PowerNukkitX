@@ -6,6 +6,7 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
+import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -217,8 +218,8 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         Item itemInHand = player.getInventory().getItemInHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
 
-        // Check itself if can be opened
-        if (!this.hasFreeSpaceAbove()) {
+        // Check if the chest can be opened - bypass for SILENT
+        if (!player.getDataFlag(EntityFlag.SILENT) && !this.hasFreeSpaceAbove()) {
             return false;
         }
 

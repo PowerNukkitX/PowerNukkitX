@@ -13,6 +13,8 @@ import java.util.List;
 public class BedrockBatchDecoder extends MessageToMessageDecoder<BedrockBatchWrapper> {
 
     public static final String NAME = "bedrock-batch-decoder";
+    /** Refuse batches containing more packets than this to prevent memory exhaustion from malformed input. */
+    private static final int MAX_PACKETS_PER_BATCH = 512;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) {
@@ -21,7 +23,11 @@ public class BedrockBatchDecoder extends MessageToMessageDecoder<BedrockBatchWra
         }
 
         ByteBuf buffer = msg.getUncompressed().slice();
+        int packetCount = 0;
         while (buffer.isReadable()) {
+            if (++packetCount > MAX_PACKETS_PER_BATCH) {
+                throw new IllegalStateException("Batch packet count exceeds limit of " + MAX_PACKETS_PER_BATCH);
+            }
             int packetLength = ByteBufVarInt.readUnsignedInt(buffer);
             ByteBuf packetBuf = buffer.readRetainedSlice(packetLength);
             out.add(packetBuf);

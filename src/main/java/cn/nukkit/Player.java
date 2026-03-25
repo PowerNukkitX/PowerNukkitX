@@ -89,7 +89,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -403,31 +402,53 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.isBreakingBlock()) {
             var time = System.currentTimeMillis();
             Block block = this.level.getBlock(pos, false);
-
             double miningTimeRequired;
+
             if (this.breakingBlock instanceof CustomBlock customBlock) {
                 miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
             } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
 
             if (miningTimeRequired > 0) {
-                int breakTick = (int) Math.ceil(miningTimeRequired * 20);
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
-                pk.x = (float) this.breakingBlock.x;
-                pk.y = (float) this.breakingBlock.y;
-                pk.z = (float) this.breakingBlock.z;
-                pk.data = 65535 / breakTick;
-                this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
-                this.level.addParticle(new PunchBlockParticle(pos, block));
-                if (this.breakingBlock instanceof CustomBlock) {
-                    var timeDiff = time - breakingBlockTime;
-                    blockBreakProgress += timeDiff / (miningTimeRequired * 1000);
-                    if (blockBreakProgress > 0.99) {
-                        this.onBlockBreakAbort(pos);
-                        this.onBlockBreakComplete(pos.asBlockVector3(), face);
-                    }
-                    breakingBlockTime = time;
+                Item hand = this.inventory.getItemInHand();
+                boolean hasCustomDigger = hand != null && !hand.isNull() && hand.getCustomItemComponent("minecraft:digger") != null;
+                boolean useServerSideBreakVisuals = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
+
+                if (useServerSideBreakVisuals) {
+                    int breakTick = (int) Math.ceil(miningTimeRequired * 20);
+
+                    LevelEventPacket pk = new LevelEventPacket();
+                    pk.evid = LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK;
+                    pk.x = (float) this.breakingBlock.x;
+                    pk.y = (float) this.breakingBlock.y;
+                    pk.z = (float) this.breakingBlock.z;
+                    pk.data = 65535 / breakTick;
+                    this.getLevel().addChunkPacket(this.breakingBlock.getFloorX() >> 4, this.breakingBlock.getFloorZ() >> 4, pk);
+                    this.level.addParticle(new PunchBlockParticle(pos, block));
                 }
+
+                long timeDiff = time - breakingBlockTime;
+                blockBreakProgress += timeDiff / (miningTimeRequired * 1000.0);
+
+                if (blockBreakProgress >= 0.99) {
+                    if (useServerSideBreakVisuals) {
+                        LevelEventPacket stopPk = new LevelEventPacket();
+                        stopPk.evid = LevelEventPacket.EVENT_BLOCK_STOP_BREAK;
+                        stopPk.x = (float) pos.x;
+                        stopPk.y = (float) pos.y;
+                        stopPk.z = (float) pos.z;
+                        stopPk.data = 0;
+                        this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, stopPk);
+                    }
+
+                    this.blockBreakProgress = 0;
+                    this.breakingBlock = null;
+                    this.breakingBlockFace = null;
+
+                    this.onBlockBreakComplete(pos.asBlockVector3(), face);
+                    return;
+                }
+
+                breakingBlockTime = time;
             }
         }
     }
@@ -435,6 +456,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
+
+        if (this.breakingBlock != null
+                && this.breakingBlock.getFloorX() == blockPos.x
+                && this.breakingBlock.getFloorY() == blockPos.y
+                && this.breakingBlock.getFloorZ() == blockPos.z
+                && this.breakingBlockFace == face) {
+            return;
+        }
+
         // TODO: Hack client spams multiple left clicks so we need to skip them.
         if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 1000) {
             return;
@@ -483,11 +513,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         if (this.isSurvival() || this.isAdventure()) {
             this.breakingBlockTime = currentBreak;
-            double miningTimeRequired;
-            if (target instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = target.calculateBreakTime(this.inventory.getItemInHand(), this);
+            this.blockBreakProgress = 0;
+
+            Item hand = this.inventory.getItemInHand();
+            double miningTimeRequired = target instanceof CustomBlock customBlock ? customBlock.breakTime(hand, this) : target.calculateBreakTime(hand, this);
             int breakTime = (int) Math.ceil(miningTimeRequired * 20);
+
             if (breakTime > 0) {
                 LevelEventPacket pk = new LevelEventPacket();
                 pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;
@@ -2141,7 +2172,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         entity.despawnFrom(this);
                     }
                 }
-                playerChunkManager.getUsedChunks().remove(index);
+                synchronized (playerChunkManager.getUsedChunks()) {
+                    playerChunkManager.getUsedChunks().remove(index);
+                }
             }
         }
     }
@@ -2187,7 +2220,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         this.chunkLoadCount++;
-        this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
+        synchronized (playerChunkManager.getUsedChunks()) {
+            this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
+        }
         this.dataPacket(packet);
 
         if (this.spawned) {
@@ -2233,11 +2268,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Sends data packet to network session
+     * Sends a data packet to network session
      * @param packet packet to send
      */
     public void dataPacket(DataPacket packet) {
         this.getSession().sendPacket(packet);
+    }
+
+    /**
+     * Sends a bunch of data packets to network session
+     * @param packets packets to send
+     */
+    public void sendDataPackets(DataPacket... packets) {
+        for (DataPacket packet : packets) {
+            this.dataPacket(packet);
+        }
     }
 
     /**
@@ -2463,6 +2508,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public boolean isAdventure() {
         return this.gamemode == ADVENTURE;
+    }
+
+    public boolean isIgnoredByEntities() {
+        return this.isCreative() || this.isSpectator() || !this.isOnline() || adventureSettings.get(PlayerAbility.INVULNERABLE);
+    }
+
+    @Override
+    public void setInvulnerable(boolean value) {
+        invulnerable = value;
+        this.getAdventureSettings().set(PlayerAbility.INVULNERABLE, value).update();
     }
 
     @Override
@@ -3534,9 +3589,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void kill() {
-        if (!this.spawned) {
+        if (!this.spawned)
             return;
-        }
+
+        if(adventureSettings.get(PlayerAbility.INVULNERABLE))
+            return;
 
         boolean showMessages = this.level.getGameRules().getBoolean(GameRule.SHOW_DEATH_MESSAGES);
         String message = "";
@@ -4013,7 +4070,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return false;
         }
 
-        if (this.isSpectator() || this.isCreative()) {
+        if (this.isSpectator() || this.isCreative() || this.getAdventureSettings().get(PlayerAbility.INVULNERABLE)) {
             return false;
         } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
             return false;
@@ -5582,14 +5639,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected void sendClientInputLocks() {
         UpdateClientInputLocksPacket pk = new UpdateClientInputLocksPacket();
-        Vector3f pos = this.getPosition().asVector3f();
-        pos = new Vector3f(
-                pos.getX(),
-                pos.getY() + this.getEyeHeight(),
-                pos.getZ()
-        );
-
-        pk.setServerPosition(pos);
         pk.setFlags(this.clientInputLocks);
         this.dataPacket(pk);
     }

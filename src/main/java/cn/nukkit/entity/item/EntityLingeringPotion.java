@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -54,7 +55,7 @@ public class EntityLingeringPotion extends EntitySplashPotion {
                         .putShort("PotionId", potionId)
         );
 
-        List<Effect> effects = PotionType.get(potionId).getEffects(true);
+        List<Effect> effects = PotionType.get(potionId).getEffects(PotionApplicationMode.LINGERING);
         for (Effect effect : effects) {
             if (effect != null && entity != null) {
                 entity.cloudEffects.add(effect/*.setDuration(1)*/.setVisible(false).setAmbient(false));

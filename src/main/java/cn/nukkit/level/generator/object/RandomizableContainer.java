@@ -30,11 +30,7 @@ public abstract class RandomizableContainer {
                         if (result < 0) {
                             int index = random.nextBoundedInt(inventory.getSize());
                             Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
-                            if(entry.enchantments.length != 0) {
-                                Enchantment enchantment = Enchantment.getEnchantment(entry.enchantments[random.nextInt(entry.enchantments.length)].id);
-                                enchantment.setLevel(random.nextInt(enchantment.getMaxLevel()) + 1);
-                                item.addEnchantment(enchantment);
-                            }
+                            applyRandomEnchantment(item, entry.getEnchantments(), random);
                             inventory.setItem(index, item);
                             break;
                         }
@@ -42,6 +38,27 @@ public abstract class RandomizableContainer {
                 }
             });
         } catch (Exception ignored) {}
+    }
+
+    protected void applyRandomEnchantment(Item item, Enchantment[] enchantments, RandomSourceProvider random) {
+        if (enchantments.length == 0) {
+            return;
+        }
+
+        List<Enchantment> compatible = new ArrayList<>();
+        for (Enchantment enchantment : enchantments) {
+            if (enchantment != null && enchantment.canEnchant(item)) {
+                compatible.add(enchantment);
+            }
+        }
+
+        if (compatible.isEmpty()) {
+            return;
+        }
+
+        Enchantment enchantment = Enchantment.getEnchantment(compatible.get(random.nextInt(compatible.size())).id);
+        enchantment.setLevel(random.nextInt(enchantment.getMaxLevel()) + 1);
+        item.addEnchantment(enchantment);
     }
 
     protected static class RollEntry {
@@ -125,6 +142,10 @@ public abstract class RandomizableContainer {
 
         public int getWeight() {
             return this.weight;
+        }
+
+        public Enchantment[] getEnchantments() {
+            return this.enchantments;
         }
     }
 

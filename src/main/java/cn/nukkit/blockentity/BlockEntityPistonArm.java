@@ -161,11 +161,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
                     // Common Block Updates
                     var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
-                    if (movedBlockEntity != null) {
+                    if (moved instanceof BlockEntityHolder<?> holder && movedBlockEntity != null) {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
                         movedBlockEntity.putInt("y", movingBlock.getFloorY());
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
-                        BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder) moved, false, true, movedBlockEntity);
+                        BlockEntityHolder.setBlockAndCreateEntity(holder, false, true, movedBlockEntity);
                     } else this.level.setBlock(movingBlock, moved, true, true);
                     // Piston Update
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
@@ -231,6 +231,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 }
             }
         } else namedTag.putList("AttachedBlocks", new ListTag<>());
+
+        // If the chunk was unloaded mid-move, resume ticking so the movement can complete.
+        if (this.state == 1 || this.state == 3 || (this.progress > 0f && this.progress < 1f)) {
+            this.scheduleUpdate();
+        }
     }
 
     public void saveNBT() {

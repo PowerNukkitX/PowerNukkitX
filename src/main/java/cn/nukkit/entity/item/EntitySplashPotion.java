@@ -2,6 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.effect.Effect;
+import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -17,6 +18,7 @@ import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * @author xtypr
@@ -120,8 +122,9 @@ public class EntitySplashPotion extends EntityProjectile {
         int[] color = new int[3];
         int count = 0;
 
-        if(!potion.getEffects(true).isEmpty()) {
-            for (Effect effect : potion.getEffects(true)) {
+        List<Effect> splashEffects = potion.getEffects(PotionApplicationMode.SPLASH);
+        if (!splashEffects.isEmpty()) {
+            for (Effect effect : splashEffects) {
                 Color effectColor = effect.getColor();
                 color[0] += effectColor.getRed() * effect.getLevel();
                 color[1] += effectColor.getGreen() * effect.getLevel();
@@ -149,7 +152,7 @@ public class EntitySplashPotion extends EntityProjectile {
             double distance = anEntity.distanceSquared(this);
             if (distance < 16) {
                 double splashDistance = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
-                potion.applyEffects(anEntity, true, splashDistance);
+                potion.applyEffects(anEntity, PotionApplicationMode.SPLASH, splashDistance);
             }
         }
     }

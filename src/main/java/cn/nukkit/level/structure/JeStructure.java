@@ -4,6 +4,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.CompoundTagView;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -120,9 +121,10 @@ public class JeStructure extends AbstractStructure {
                 int y = pos.get(1).getData();
                 int z = pos.get(2).getData();
                 int stateIndex = blockNbt.getInt("state");
+                CompoundTagView nbtData = new CompoundTagView(blockNbt.getCompound("nbt"));
                 BlockState state = stateIndex < palette.size() ? palette.get(stateIndex) : STATE_AIR;
 
-                StructureBlocks cached = blockCache.computeIfAbsent(state.toString(), k -> new StructureBlocks(state));
+                StructureBlocks cached = blockCache.computeIfAbsent(state.toString() + nbtData, k -> new StructureBlocks(state, nbtData));
                 blockInstances.add(new StructureBlockInstance(x, y, z, cached));
             }
         }
@@ -136,7 +138,7 @@ public class JeStructure extends AbstractStructure {
 
     @Override
     public void preparePlace(Position position, BlockManager blockManager) {
-        placeBlocks(position, blockManager, blockInstances, new BlockAccessor<StructureBlockInstance>() {
+        placeBlocks(position, blockManager, blockInstances, new BlockAccessor<>() {
             @Override
             public int x(StructureBlockInstance block) {
                 return block.x;
@@ -205,9 +207,15 @@ public class JeStructure extends AbstractStructure {
      */
     public static class StructureBlocks {
         public final BlockState state;
+        public final CompoundTag compoundTag;
 
         public StructureBlocks(BlockState state) {
+            this(state, null);
+        }
+
+        public StructureBlocks(BlockState state, CompoundTag compoundTag) {
             this.state = state;
+            this.compoundTag = compoundTag;
         }
     }
 

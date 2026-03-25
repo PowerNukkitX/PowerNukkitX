@@ -38,17 +38,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
 
     public EntityIntelligent(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        var storage = getMemoryStorage();
+        IMemoryStorage storage = getMemoryStorage();
         if (storage != null) {
             storage.put(CoreMemoryTypes.ENTITY_SPAWN_TIME, getLevel().getTick());
-            MemoryType.getPersistentMemories().forEach(memory -> {
-                var mem = (MemoryType<Object>) memory;
-                var codec = mem.getCodec();
-                var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
-                if (data != null) {
-                    storage.put(mem, data);
-                }
-            });
+            MemoryType.getPersistentMemories().forEach(memory -> processMemoryStorage(storage, memory));
         }
     }
 
@@ -59,30 +52,39 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     }
 
     /**
-     * 返回此实体持有的行为组{@link IBehaviorGroup} <br/>
-     * 默认实现只会返回一个空行为{@link EmptyBehaviorGroup}常量，若你想让实体具有AI，你需要覆写此方法
+     * Return the behaviour group held by this entity {@link IBehaviorGroup} <br/>
+     * The default implementation merely returns an empty behaviour {@link EmptyBehaviorGroup} constant. Should you wish to endow the entity with AI, you must override this method.
      *
-     * @return 此实体持有的行为组
+     * @return The behaviour group held by this entity
      */
     public IBehaviorGroup getBehaviorGroup() {
         return behaviorGroup;
     }
 
     /**
-     * 请求一个行为组实例，此方法在实体初始化行为组时调用
+     * Request an instance of a behaviour group; this method is invoked when the entity initialises the behaviour group.
      *
-     * @return 新创建的行为组
+     * @return The newly created behaviour group
      */
     protected IBehaviorGroup requireBehaviorGroup() {
         return new EmptyBehaviorGroup(this);
     }
 
+    private <D> void processMemoryStorage(IMemoryStorage storage, MemoryType<D> mem) {
+        var codec = mem.getCodec();
+        var data = Objects.requireNonNull(codec).getDecoder().apply(this.namedTag);
+
+        if (data != null) {
+            storage.put(mem, data);
+        }
+    }
+
     @Override
     public void asyncPrepare(int currentTick) {
         if (!isAlive()) return;
-        // 计算是否活跃
+        // Calculate whether active
         isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
-        if (!this.isImmobile()) { // immobile会禁用实体AI
+        if (!this.isImmobile()) { // Immobile will disable entity AI
             var behaviorGroup = getBehaviorGroup();
             if (behaviorGroup == null) return;
             behaviorGroup.collectSensorData(this);

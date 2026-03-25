@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemPurpurBlock extends Item {
+import cn.nukkit.block.BlockPurpurBlock;
+
+public class ItemPurpurBlock extends ItemBlock {
     public ItemPurpurBlock() {
-        super(PURPUR_BLOCK);
+        super(new BlockPurpurBlock());
     }
 }

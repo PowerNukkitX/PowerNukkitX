@@ -12,6 +12,8 @@ import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemGroup;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
@@ -486,5 +488,98 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             case NATURE       -> LAST_NATURE_INDEX;
             default           -> LAST_ITEMS_INDEX;
         };
+    }
+
+    void writeCache(DataOutputStream out) throws IOException {
+        RegistryCache.writeCreativeGroups(out, GROUPS);
+        out.writeInt(LAST_CONSTRUCTION_INDEX);
+        out.writeInt(LAST_EQUIPMENTS_INDEX);
+        out.writeInt(LAST_ITEMS_INDEX);
+        out.writeInt(LAST_NATURE_INDEX);
+        RegistryCache.writeCategoryGroupIndexMap(out, CATEGORY_GROUP_INDEX_MAP);
+
+        List<CreativeItemData> dataList = new ArrayList<>(ITEM_DATA);
+        out.writeInt(MAP.size());
+        int di = 0;
+        for (var e : MAP.int2ObjectEntrySet()) {
+            int  index   = e.getIntKey();
+            Item item    = e.getValue();
+            int  groupId = di < dataList.size() ? dataList.get(di).getGroupId() : -1;
+            di++;
+
+            out.writeInt(index);
+            out.writeInt(groupId);
+
+            if (item.isNull()) {
+                out.writeUTF("");
+            } else {
+                out.writeUTF(item.getId());
+                out.writeInt(item.getDamage());
+                byte[] nbt = item.getCompoundTag();
+                out.writeInt(nbt.length);
+                if (nbt.length > 0) out.write(nbt);
+                // hasBlock = true when the item had block_state data (not in INTERNAL_DIFF_ITEM)
+                boolean hasBlock = !INTERNAL_DIFF_ITEM.containsKey(index) && !item.isNull();
+                out.writeBoolean(hasBlock);
+                if (hasBlock) {
+                    out.writeInt(item.getBlockUnsafe().getBlockState().blockStateHash());
+                }
+            }
+        }
+    }
+
+    void restoreCache(DataInputStream in) throws IOException {
+        if (isLoad.getAndSet(true)) return;
+
+        List<CreativeItemGroup> groups = RegistryCache.readCreativeGroups(in);
+        GROUPS.addAll(groups);
+
+        LAST_CONSTRUCTION_INDEX = in.readInt();
+        LAST_EQUIPMENTS_INDEX   = in.readInt();
+        LAST_ITEMS_INDEX        = in.readInt();
+        LAST_NATURE_INDEX       = in.readInt();
+
+        CATEGORY_GROUP_INDEX_MAP.putAll(RegistryCache.readCategoryGroupIndexMap(in));
+
+        int count = in.readInt();
+        for (int j = 0; j < count; j++) {
+            int    index   = in.readInt();
+            int    groupId = in.readInt();
+            String id      = in.readUTF();
+
+            if (id.isEmpty()) {
+                ITEM_DATA.add(new CreativeItemData(Item.AIR, groupId));
+                MAP.put(index, Item.AIR);
+                continue;
+            }
+
+            int    damage = in.readInt();
+            int    nbtLen = in.readInt();
+            byte[] nbt    = nbtLen > 0 ? new byte[nbtLen] : EmptyArrays.EMPTY_BYTES;
+            if (nbtLen > 0) in.readFully(nbt);
+            boolean hasBlock = in.readBoolean();
+
+            Item item = Item.get(id, damage, 1, nbt);
+
+            if (hasBlock) {
+                int        blockHash = in.readInt();
+                BlockState block     = Registries.BLOCKSTATE.get(blockHash);
+                if (block == null) {
+                    item = Item.AIR;
+                } else {
+                    item.setBlockUnsafe(block.toBlock());
+                    Item updateDamage = block.toBlock().toItem();
+                    if (updateDamage.getDamage() != 0) {
+                        item.setDamage(updateDamage.getDamage());
+                    }
+                }
+            } else {
+                INTERNAL_DIFF_ITEM.put(index, item.clone());
+                item.setBlockUnsafe(null);
+            }
+
+            ITEM_DATA.add(new CreativeItemData(item, groupId));
+            MAP.put(index, item);
+        }
     }
 }

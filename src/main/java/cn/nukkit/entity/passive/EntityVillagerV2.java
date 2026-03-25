@@ -88,9 +88,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return VILLAGER_V2;
     }
 
-    private final List<Integer> tradeNetId = new ArrayList<>();
+    private List<Integer> tradeNetId;
 
     public List<Integer> getTradeNetIds() {
+        if (tradeNetId == null) {
+            tradeNetId = new ArrayList<>();
+        }
         return tradeNetId;
     }
 
@@ -438,6 +441,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void initEntity() {
+        this.setPersistent(true);
         this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
@@ -495,9 +499,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             for (String key : gossipTag.getTags().keySet()) {
                 ListTag<IntTag> gossipValues = gossipTag.getList(key, IntTag.class);
                 IntArrayList valueMap = new IntArrayList();
-                for (int i = 0; i < gossipValues.size(); i++) {
-                    valueMap.add(i, gossipValues.get(i).getData());
-                }
+                gossipValues.getAll().forEach(intTag -> valueMap.addLast(intTag.getData()));
                 gossipMap.put(key, valueMap);
             }
         }

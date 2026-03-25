@@ -16,6 +16,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
@@ -125,5 +127,56 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
     public int registerToBiomeStringList(String value) {
         BIOME_STRING_LIST.add(value);
         return BIOME_STRING_LIST.size()-1;
+    }
+
+    void writeCache(DataOutputStream out) throws IOException {
+        // NAME2ID
+        out.writeInt(NAME2ID.size());
+        for (var e : NAME2ID.object2IntEntrySet()) {
+            out.writeUTF(e.getKey());
+            out.writeInt(e.getIntValue());
+        }
+        // BIOME_STRING_LIST
+        out.writeInt(BIOME_STRING_LIST.size());
+        for (String s : BIOME_STRING_LIST) out.writeUTF(s);
+        // Definitions: re-read and store as uncompressed NBT bytes.
+        // This skips Gzip decompression on restore while keeping parse() logic unchanged.
+        try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biome_definitions.nbt")) {
+            CompoundTag root = NBTIO.readCompressed(stream);
+            byte[] nbtBytes = NBTIO.write(root);
+            out.writeInt(nbtBytes.length);
+            out.write(nbtBytes);
+        }
+    }
+
+    void restoreCache(DataInputStream in) throws IOException {
+        if (isLoad.getAndSet(true)) return;
+        // NAME2ID
+        int nameSize = in.readInt();
+        for (int i = 0; i < nameSize; i++) {
+            NAME2ID.put(in.readUTF(), in.readInt());
+        }
+        // BIOME_STRING_LIST
+        int listSize = in.readInt();
+        for (int i = 0; i < listSize; i++) {
+            BIOME_STRING_LIST.add(in.readUTF());
+        }
+        // Definitions from uncompressed NBT bytes (no Gzip decompression needed)
+        int nbtLen = in.readInt();
+        byte[] nbtBytes = new byte[nbtLen];
+        in.readFully(nbtBytes);
+        CompoundTag root = NBTIO.read(nbtBytes);
+        ListTag<CompoundTag> biomeData = root.getList("biomeData", CompoundTag.class);
+        for (CompoundTag biomeTag : biomeData.getAll()) {
+            short index = biomeTag.getShort("index");
+            int biomeId = getBiomeId(getFromBiomeStringList(index));
+            BiomeDefinition definition = new BiomeDefinition();
+            definition.parse(biomeTag);
+            try {
+                register(biomeId, definition);
+            } catch (RegisterException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

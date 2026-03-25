@@ -68,7 +68,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                         }
                         if(topBlockState != BlockWater.PROPERTIES.getBlockState()) {
                             chunk.setBlockState(x, y, z, Registries.BLOCKSTATE.get(topBlock));
-                            for(int i = 1; i < NukkitMath.remap(simplexF.noise2D(x, z, true), -1, 1, 1, 4); i++){
+                            for(int i = 1; i < NukkitMath.remapFromNormalized(simplexF.noise2D(x, z, true), 1, 4); i++){
                                 chunk.setBlockState(x, y-i, z, Registries.BLOCKSTATE.get(midBlock));
                             }
                         } else {

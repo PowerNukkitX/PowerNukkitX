@@ -2,6 +2,7 @@ package cn.nukkit.config.category;
 
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
+import eu.okaeri.configs.annotation.CustomKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -12,6 +13,10 @@ import lombok.experimental.Accessors;
 public class PerformanceSettings extends OkaeriConfig {
     @Comment("pnx.settings.performance.asyncworkers")
     String asyncWorkers = "auto";
+    @Comment("pnx.settings.performance.registrycache.enable")
+    boolean registryCacheEnabled = false;
+    @Comment("pnx.settings.performance.registrycache.path")
+    String registryCachePath = "path/to/your/registry_cache.bin";
     @Comment("pnx.settings.performance.freezearray.enable")
     boolean enable = true;
     int slots = 32;
@@ -22,4 +27,7 @@ public class PerformanceSettings extends OkaeriConfig {
     int melting = 16;
     int singleOperation = 1;
     int batchOperation = 32;
+    @Comment("Maximum allowed recursion depth for NBT reading and writing. Increase if loading worlds with deeply nested containers.")
+    @CustomKey("nbt-max-depth")
+    private int nbtMaxDepth = 16;
 }
