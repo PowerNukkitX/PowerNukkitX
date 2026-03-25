@@ -32,7 +32,7 @@ import java.util.concurrent.CompletableFuture;
 @ToString
 public class Structure extends AbstractStructure {
     private static final int FORMAT_VERSION = 1;
-    private static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
+    public static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
     private final BlockState[][][][] blockStates;
     private final Map<Vector3, CompoundTag> blockEntities;

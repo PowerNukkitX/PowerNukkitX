@@ -124,7 +124,7 @@ public class JeStructure extends AbstractStructure {
                 CompoundTagView nbtData = new CompoundTagView(blockNbt.getCompound("nbt"));
                 BlockState state = stateIndex < palette.size() ? palette.get(stateIndex) : STATE_AIR;
 
-                StructureBlocks cached = blockCache.computeIfAbsent(state.toString(), k -> new StructureBlocks(state, nbtData));
+                StructureBlocks cached = blockCache.computeIfAbsent(state.toString() + nbtData, k -> new StructureBlocks(state, nbtData));
                 blockInstances.add(new StructureBlockInstance(x, y, z, cached));
             }
         }

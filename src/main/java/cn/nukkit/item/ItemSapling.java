@@ -1,7 +1,9 @@
 package cn.nukkit.item;
 
-public class ItemSapling extends Item {
+import cn.nukkit.block.BlockOakSapling;
+
+public class ItemSapling extends ItemBlock {
     public ItemSapling() {
-        super(SAPLING);
+        super(new BlockOakSapling());
     }
 }

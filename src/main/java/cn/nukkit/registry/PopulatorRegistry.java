@@ -15,6 +15,7 @@ import cn.nukkit.level.generator.populator.nether.warped.WarpedFungiTreePopulato
 import cn.nukkit.level.generator.populator.nether.warped.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.nether.warped.WarpedTwistingVinesPopulator;
 import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
+import cn.nukkit.level.generator.populator.the_end.EndCityPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
 import cn.nukkit.level.generator.populator.the_end.EnderDragonPopulator;
@@ -39,6 +40,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
         this.register0(EnderDragonPopulator.NAME, EnderDragonPopulator.class);
         this.register0(ExitPortalPopulator.NAME, ExitPortalPopulator.class);
         this.register0(ChorusFlowerPopulator.NAME, ChorusFlowerPopulator.class);
+        this.register0(EndCityPopulator.NAME, EndCityPopulator.class);
         this.register0(EndGatewayPopulator.NAME, EndGatewayPopulator.class);
         this.register0(EndIslandPopulator.NAME, EndIslandPopulator.class);
         this.register0(GlowstonePopulator.NAME, GlowstonePopulator.class);
@@ -75,6 +77,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
         this.register0(ShipwreckPopulator.NAME, ShipwreckPopulator.class);
         this.register0(StrongholdPopulator.NAME, StrongholdPopulator.class);
         this.register0(SwampHutPopulator.NAME, SwampHutPopulator.class);
+        this.register0(VillagePopulator.NAME, VillagePopulator.class);
         this.register0(PopulatorRuinedPortal.NAME, PopulatorRuinedPortal.class);
         this.register0(NetherFossilPopulator.NAME, NetherFossilPopulator.class);
     }

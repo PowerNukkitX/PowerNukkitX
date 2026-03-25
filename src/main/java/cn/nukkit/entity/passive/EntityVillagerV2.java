@@ -438,6 +438,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void initEntity() {
+        this.setPersistent(true);
         this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
@@ -798,7 +799,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void close() {
-        this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
+        if(this.getTradeNetIds() != null) {
+            this.getTradeNetIds().forEach(TradeRecipeBuildUtils.RECIPE_MAP::remove);
+        }
         super.close();
     }
 
