@@ -140,7 +140,7 @@ public class NormalWaterFloodFillStage extends GenerateStage {
             changedColumns.computeIfAbsent(targetChunk.getIndex(), ignore -> new BitSet(256)).set((localZ << 4) | localX);
         }
         if (y > minY && targetChunk.getBlockState(localX, y - 1, localZ) == AIR) {
-            level.scheduleUpdate(Block.get(WATER, level, x, y, z), 1);
+          //ToDo: Improve Performance -> level.scheduleUpdate(Block.get(WATER, level, x, y, z), 1);
         }
         enqueue(queue, visited, x, y, z);
         return true;
