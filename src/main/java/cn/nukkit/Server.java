@@ -743,8 +743,6 @@ public class Server {
             }
             this.setDefaultLevel(this.getLevelByName(levelFolder));
             Level defaultLevel = this.getDefaultLevel();
-            if (defaultLevel != null) {
-            }
         }
 
         migrator.loadMigrationFile();

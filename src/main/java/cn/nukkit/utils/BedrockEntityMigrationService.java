@@ -328,6 +328,7 @@ public class BedrockEntityMigrationService implements Listener {
                 id.contains("piglin") ||
                 id.contains("zombified") ||
                 id.contains("zombie_pigman") ||
+                id.contains("drowned") ||
                 id.contains("strider") ||
                 id.contains("painting") ||
                 id.contains("falling_block")) {
@@ -344,25 +345,9 @@ public class BedrockEntityMigrationService implements Listener {
         double y = ((NumberTag<?>) posList.get(1)).getData().doubleValue();
         double z = ((NumberTag<?>) posList.get(2)).getData().doubleValue();
 
-        CompoundTag clean = new CompoundTag();
+        CompoundTag clean = Entity.getDefaultNBT(new Vector3(x, y + 1, z));
+
         clean.putString("identifier", id);
-
-        ListTag<DoubleTag> pos = new ListTag<>();
-        pos.add(new DoubleTag(x));
-        pos.add(new DoubleTag(y + 1));
-        pos.add(new DoubleTag(z));
-        clean.putList("Pos", pos);
-
-        ListTag<DoubleTag> motion = new ListTag<>();
-        motion.add(new DoubleTag(0));
-        motion.add(new DoubleTag(0));
-        motion.add(new DoubleTag(0));
-        clean.putList("Motion", motion);
-
-        ListTag<FloatTag> rotation = new ListTag<>();
-        rotation.add(new FloatTag(0));
-        rotation.add(new FloatTag(0));
-        clean.putList("Rotation", rotation);
 
         float health = 20f;
 
@@ -413,8 +398,9 @@ public class BedrockEntityMigrationService implements Listener {
 
         Item item = Item.get(tag.getString("Name"));
 
-        if (tag.contains("Count")) item.setCount(tag.getByte("Count"));
-        if (tag.contains("Damage")) item.setDamage(tag.getInt("Damage"));
+        item.setCount(tag.getByte("Count", (byte) 1));
+        item.setDamage(tag.getInt("Damage", 0));
+
         if (tag.contains("tag")) item.setNamedTag(tag.getCompound("tag"));
 
         return item;
