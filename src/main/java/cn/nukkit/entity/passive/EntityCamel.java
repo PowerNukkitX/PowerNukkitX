@@ -210,8 +210,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     public boolean canBePushedByEntities() {
-        if (this.isSitting()) return false;
-        return true;
+        return !this.isSitting();
     }
 
     @Override

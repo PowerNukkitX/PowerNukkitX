@@ -199,14 +199,14 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 player.getAdventureSettings().set(AdventureSettings.Type.FLYING, playerToggleFlightEvent.isFlying());
             }
         }
-        if(pk.inputData.contains(AuthInputAction.JUMP_RELEASED_RAW)) {
-            if(player.getRiding() != null
-                && (playerHandle.player.riding instanceof EntityPhysical ride)
-                && ride.isAlive()
-                && (ride.rideCanJump() && !ride.isRideJumping() || ride.rideHasVerticalMove())
-            ) {
-                ride.getRideJumping().set(player.getLevel().getTick());
-            }
+        if (
+            pk.inputData.contains(AuthInputAction.JUMP_RELEASED_RAW)
+            && player.getRiding() != null
+            && (playerHandle.player.riding instanceof EntityPhysical ride)
+            && ride.isAlive()
+            && ((ride.rideCanJump() && !ride.isRideJumping()) || ride.rideHasVerticalMove())
+        ) {
+            ride.getRideJumping().set(player.getLevel().getTick());
         }
         
         Vector3 clientPosition = pk.position.asVector3().subtract(0, playerHandle.getBaseOffset(), 0);
