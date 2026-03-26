@@ -70955,6 +70955,61 @@
       }
     },
     {
+      "id": "minecraft:name_tag",
+      "type": 1,
+      "input": {
+        "A": {
+          "type": "item_tag",
+          "count": 1,
+          "itemTag": "minecraft:metal_nuggets"
+        },
+        "B": {
+          "type": "default",
+          "count": 1,
+          "itemId": "minecraft:paper",
+          "auxValue": 32767
+        }
+      },
+      "output": [
+        {
+          "id": "minecraft:name_tag",
+          "count": 1
+        }
+      ],
+      "shape": [
+        " A",
+        "B "
+      ],
+      "block": "crafting_table",
+      "uuid": "4f8b237b-4f5c-42cf-9e59-b0674e79750d",
+      "netId": 2,
+      "priority": 0,
+      "width": 2,
+      "height": 2,
+      "unlockingRequirements": {
+        "context": 0,
+        "items": [
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:name_tag",
+            "auxValue": 32767
+          },
+          {
+            "type": "item_tag",
+            "count": 1,
+            "itemTag": "minecraft:metal_nuggets"
+          },
+          {
+            "type": "default",
+            "count": 1,
+            "itemId": "minecraft:paper",
+            "auxValue": 32767
+          }
+        ]
+      }
+    },
+    {
       "id": "minecraft:green_carpet",
       "type": 1,
       "input": {

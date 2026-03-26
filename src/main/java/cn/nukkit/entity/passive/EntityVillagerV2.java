@@ -91,9 +91,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return VILLAGER_V2;
     }
 
-    private final List<Integer> tradeNetId = new ArrayList<>();
+    private List<Integer> tradeNetId;
 
     public List<Integer> getTradeNetIds() {
+        if (tradeNetId == null) {
+            tradeNetId = new ArrayList<>();
+        }
         return tradeNetId;
     }
 
@@ -460,6 +463,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public void initEntity() {
+        this.setPersistent(true);
+        this.setMaxHealth(20);
         super.initEntity();
         setTradingPlayer(0L);
         if (!this.namedTag.contains("tradeSeed")) {

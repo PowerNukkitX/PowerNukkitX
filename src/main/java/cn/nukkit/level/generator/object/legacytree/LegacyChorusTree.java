@@ -7,6 +7,7 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 import static cn.nukkit.block.BlockID.AIR;
 import static cn.nukkit.block.property.CommonBlockProperties.AGE_6;
@@ -19,19 +20,19 @@ public class LegacyChorusTree extends LegacyTreeGenerator {
     private static final BlockState STATE_CHORUS_FLOWER_FULLY_AGED = BlockChorusFlower.PROPERTIES.getBlockState(AGE_6.createMax());
     private static final BlockState STATE_CHORUS_PLANT = BlockChorusPlant.PROPERTIES.getDefaultState();
 
-    public boolean generate(BlockManager level, NukkitRandom rand, Vector3 position) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         return this.generate(level, rand, position, 8);
     }
 
-    public boolean generate(BlockManager level, NukkitRandom rand, Vector3 position, int maxSize) {
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position, int maxSize) {
         level.setBlockStateAt(position.getFloorX(), position.getFloorY(), position.getFloorZ(), STATE_CHORUS_PLANT);
         this.growImmediately(level, rand, position, maxSize, 0);
         return true;
     }
 
-    public void growImmediately(BlockManager level, NukkitRandom random, Vector3 position, int maxSize, int age) {
+    public void growImmediately(BlockManager level, RandomSourceProvider random, Vector3 position, int maxSize, int age) {
         // Random height
-        int height = 1 + random.nextBoundedInt(4);
+        int height = 1 + random.nextInt(4);
         if (age == 0) {
             height++;
         }
@@ -46,7 +47,7 @@ public class LegacyChorusTree extends LegacyTreeGenerator {
 
         if (age < 4) {
             // Grow horizontally
-            int attempt = random.nextBoundedInt(4);
+            int attempt = random.nextInt(4);
             if (age == 0) {
                 attempt++;
             }

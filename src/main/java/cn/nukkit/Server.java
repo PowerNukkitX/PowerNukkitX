@@ -275,6 +275,8 @@ public class Server {
     private boolean allowTheEnd;
     private List<ExperimentEntry> experiments;
 
+    private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
+
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
@@ -512,10 +514,7 @@ public class Server {
             }
 
             Profession.init();
-            String a = BlockTags.ACACIA;
-            String b = ItemTags.ARROW;
-            String c = BiomeTags.WARM;
-            Updater d = BlockStateUpdaterBase.INSTANCE;
+            Updater updater = BlockStateUpdaterBase.INSTANCE;
             Enchantment.init();
             Attribute.init();
             BlockComposter.init();
@@ -1807,10 +1806,25 @@ public class Server {
             if (bytes != null) {
                 return NBTIO.readCompressed(bytes);
             }
+
+            if (migrationService.hasBedrockData(uuid)) {
+                CompoundTag migrated = migrationService.migrate(uuid);
+
+                if (migrated != null) {
+                    migrated.putBoolean("BedrockMigrated", true);
+                    saveOfflinePlayerData(uuid, migrated, true);
+                    return migrated;
+                }
+            }
         } catch (IOException e) {
             log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
         }
+        CompoundTag migrated = migrationService.migrate(uuid);
 
+        if (migrated != null) {
+            saveOfflinePlayerData(uuid, migrated, true);
+            return migrated;
+        }
         if (create) {
             if (this.getSettings().playerSettings().savePlayerData()) {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
@@ -2292,8 +2306,11 @@ public class Server {
                 return null;
             }
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
-            //todo nether the_end overworld
-            map.put(0, new LevelConfig.GeneratorConfig("flat", System.currentTimeMillis(), false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            long seed = System.currentTimeMillis();
+
+            map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
                 config.createNewFile();
@@ -2776,8 +2793,11 @@ public class Server {
         return this.allowTheEnd;
     }
 
-    public boolean isIgnoredPacket(Class<? extends DataPacket> clazz) {
-        return this.getSettings().debugSettings().ignoredPackets().contains(clazz.getSimpleName());
+    public boolean canLogPacket(Class<? extends DataPacket> clazz) {
+        if(!this.getSettings().debugSettings().mode()) // ignored mode
+            return !this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
+        else //allow mode
+            return this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
     }
 
     public int getServerAuthoritativeMovement() {

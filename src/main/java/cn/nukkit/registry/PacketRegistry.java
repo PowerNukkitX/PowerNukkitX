@@ -323,12 +323,19 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.SERVER_SCRIPT_DEBUG_DRAWER_PACKET, ServerScriptDebugDrawerPacket.class);
         this.register0(ProtocolInfo.SHOW_STORE_OFFER_PACKET, ShowStoreOfferPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_DATA_STORE_PACKET, ClientboundDataStorePacket.class);
+        this.register0(ProtocolInfo.SERVERBOUND_DATA_STORE_PACKET, ServerboundDataStorePacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_DDUI_SHOW_SCREEN, ClientboundDataDrivenUIShowScreenPacket.class);
-        this.register0(ProtocolInfo.CLIENTBOUND_DDUI_CLOSE_ALL_SCREENS, ClientboundDataDrivenUICloseAllScreensPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_DDUI_RELOAD, ClientboundDataDrivenUIReloadPacket.class);
         this.register0(ProtocolInfo.CLIENTBOUND_TEXTURE_SHIFT, ClientboundTextureShiftPacket.class);
         this.register0(ProtocolInfo.VOXEL_SHAPES_PACKET, VoxelShapesPacket.class);
         this.register0(ProtocolInfo.CAMERA_AIM_ASSIST_ACTOR_PRIORITY_PACKET, CameraAimAssistActorPriorityPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_ATTRIBUTE_LAYER_SYNC_PACKET, ClientboundAttributeLayerSyncPacket.class);
+        this.register0(ProtocolInfo.PARTY_CHANGED_PACKET, PartyChangedPacket.class);
+        this.register0(ProtocolInfo.CLIENTBOUND_DDUI_CLOSE_SCREEN, ClientboundDataDrivenUICloseScreenPacket.class);
+        this.register0(ProtocolInfo.SERVERBOUND_DATA_DRIVEN_SCREEN_CLOSED, ServerboundDataDrivenClosedPacket.class);
+        this.register0(ProtocolInfo.RESOURCE_PACKS_READY_FOR_VALIDATION_PACKET, ResourcePacksReadyForValidationPacket.class);
+        this.register0(ProtocolInfo.LOCATOR_BAR_PACKET, LocatorBarPacket.class);
+        this.register0(ProtocolInfo.SYNC_WORLD_CLOCKS_PACKET, SyncWorldClocksPacket.class);
 
         this.PACKET_POOL.trim();
     }

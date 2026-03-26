@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.stages.end;
 
 import cn.nukkit.level.generator.populator.the_end.ChorusFlowerPopulator;
+import cn.nukkit.level.generator.populator.the_end.EndCityPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndGatewayPopulator;
 import cn.nukkit.level.generator.populator.the_end.EndIslandPopulator;
 import cn.nukkit.level.generator.populator.the_end.EnderDragonPopulator;
@@ -18,6 +19,7 @@ public class TheEndPopulatorStage extends PopulatorStage {
             EnderDragonPopulator.NAME,
             ExitPortalPopulator.NAME,
             ChorusFlowerPopulator.NAME,
+            EndCityPopulator.NAME,
             EndGatewayPopulator.NAME,
             EndIslandPopulator.NAME
     });
