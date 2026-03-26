@@ -233,14 +233,12 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
 
     @Override
     public boolean canBePushedByEntities() {
-        if (this.canMove()) return true;
-        return false;
+        return this.canMove();
     }
 
     @Override
     public boolean canBePushedByPiston() {
-        if (this.canMove()) return true;
-        return false;
+        return this.canMove();
     }
 
     @Override
@@ -594,5 +592,4 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 this
         );
     }
-
 }
