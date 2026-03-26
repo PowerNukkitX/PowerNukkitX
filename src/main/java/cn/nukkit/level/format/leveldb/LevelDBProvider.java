@@ -86,46 +86,81 @@ public class LevelDBProvider implements LevelProvider {
         return this.storage;
     }
 
-    // Maps BDS level.dat keys to PNX Format.
-    private static final Map<String, String> BDS_GAMERULE_MAP = Map.ofEntries(
-            Map.entry("dodaylightcycle", "doDayLightCycle"),
-            Map.entry("keepinventory", "keepInventory"),
-            Map.entry("mobgriefing", "mobGriefing"),
-            Map.entry("randomtickspeed", "randomTickSpeed"),
-            Map.entry("dofiretick", "doFireTick"),
-            Map.entry("domobspawning", "doMobSpawning"),
-            Map.entry("domobloot", "doMobLoot"),
-            Map.entry("dotiledrops", "doTileDrops"),
-            Map.entry("doweathercycle", "doWeatherCycle"),
-            Map.entry("doentitydrops", "doEntityDrops"),
-            Map.entry("doimmediaterespawn", "doImmediateRespawn"),
-            Map.entry("dolimitedcrafting", "doLimitedCrafting"),
-            Map.entry("doinsomnia", "doInsomnia"),
-            Map.entry("commandblockoutput", "commandBlockOutput"),
-            Map.entry("commandblocksenabled", "commandBlocksEnabled"),
-            Map.entry("sendcommandfeedback", "sendCommandFeedback"),
-            Map.entry("showcoordinates", "showCoordinates"),
-            Map.entry("showdeathmessages", "showDeathMessages"),
-            Map.entry("showtags", "showTags"),
-            Map.entry("showdaysplayed", "showDaysPlayed"),
-            Map.entry("showbordereffect", "showBorderEffect"),
-            Map.entry("playerssleepingpercentage", "playersSleepingPercentage"),
-            Map.entry("spawnradius", "spawnRadius"),
-            Map.entry("tntexplodes", "tntExplodes"),
-            Map.entry("tntexplosiondropdecay", "tntExplosionDropDecay"),
-            Map.entry("naturalregeneration", "naturalRegeneration"),
-            Map.entry("falldamage", "fallDamage"),
-            Map.entry("firedamage", "fireDamage"),
-            Map.entry("freezedamage", "freezeDamage"),
-            Map.entry("drowningdamage", "drowningDamage"),
-            Map.entry("projectilescanbreakblocks", "projectilesCanBreakBlocks"),
-            Map.entry("recipesunlock", "recipesUnlock"),
-            Map.entry("respawnblocksexplode", "respawnBlocksExplode"),
-            Map.entry("functioncommandlimit", "functionCommandLimit"),
-            Map.entry("maxcommandchainlength", "maxCommandChainLength"),
-            Map.entry("locatorbar", "locatorBar"),
+    private static final Map<String, String> PNX_TO_BDS_GAMERULE_MAP = Map.ofEntries(
+            Map.entry("doDayLightCycle", "dodaylightcycle"),
+            Map.entry("keepInventory", "keepinventory"),
+            Map.entry("mobGriefing", "mobgriefing"),
+            Map.entry("randomTickSpeed", "randomtickspeed"),
+            Map.entry("doFireTick", "dofiretick"),
+            Map.entry("doMobSpawning", "domobspawning"),
+            Map.entry("doMobLoot", "domobloot"),
+            Map.entry("doTileDrops", "dotiledrops"),
+            Map.entry("doWeatherCycle", "doweathercycle"),
+            Map.entry("doEntityDrops", "doentitydrops"),
+            Map.entry("doImmediateRespawn", "doimmediaterespawn"),
+            Map.entry("doLimitedCrafting", "dolimitedcrafting"),
+            Map.entry("doInsomnia", "doinsomnia"),
+            Map.entry("commandBlockOutput", "commandblockoutput"),
+            Map.entry("commandBlocksEnabled", "commandblocksenabled"),
+            Map.entry("sendCommandFeedback", "sendcommandfeedback"),
+            Map.entry("showCoordinates", "showcoordinates"),
+            Map.entry("showDeathMessages", "showdeathmessages"),
+            Map.entry("showTags", "showtags"),
+            Map.entry("showDaysPlayed", "showdaysplayed"),
+            Map.entry("showBorderEffect", "showbordereffect"),
+            Map.entry("playersSleepingPercentage", "playerssleepingpercentage"),
+            Map.entry("spawnRadius", "spawnradius"),
+            Map.entry("tntExplodes", "tntexplodes"),
+            Map.entry("tntExplosionDropDecay", "tntexplosiondropdecay"),
+            Map.entry("naturalRegeneration", "naturalregeneration"),
+            Map.entry("fallDamage", "falldamage"),
+            Map.entry("fireDamage", "firedamage"),
+            Map.entry("freezeDamage", "freezedamage"),
+            Map.entry("drowningDamage", "drowningdamage"),
+            Map.entry("projectilesCanBreakBlocks", "projectilescanbreakblocks"),
+            Map.entry("recipesUnlock", "recipesunlock"),
+            Map.entry("respawnBlocksExplode", "respawnblocksexplode"),
+            Map.entry("functionCommandLimit", "functioncommandlimit"),
+            Map.entry("maxCommandChainLength", "maxcommandchainlength"),
+            Map.entry("locatorBar", "locatorbar"),
             Map.entry("pvp", "pvp")
     );
+    /**
+     * One-time migration of legacy PNX keys to vanilla BDS format.
+     *
+     * @return true if any keys were converted
+     */
+    private static boolean convertLegacyPnxGameRulesToBds(CompoundTag d) {
+        boolean converted = false;
+
+        for (var entry : PNX_TO_BDS_GAMERULE_MAP.entrySet()) {
+            String pnxKey = entry.getKey();
+            String bdsKey = entry.getValue();
+
+            if (d.contains(pnxKey)) {
+                if (!d.contains(bdsKey)) {
+                    d.put(bdsKey, d.get(pnxKey));
+                }
+
+                d.remove(pnxKey);
+                converted = true;
+            }
+        }
+
+        return converted;
+    }
+
+    private static boolean getBooleanRule(CompoundTag d, String bdsKey, String pnxKey) {
+        return d.contains(bdsKey)
+                ? d.getBoolean(bdsKey)
+                : d.getBoolean(pnxKey);
+    }
+
+    private static int getIntRule(CompoundTag d, String bdsKey, String pnxKey) {
+        return d.contains(bdsKey)
+                ? d.getInt(bdsKey)
+                : d.getInt(pnxKey);
+    }
 
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
@@ -709,49 +744,49 @@ public class LevelDBProvider implements LevelProvider {
             input.skip(8);
             BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
             CompoundTag d = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
-            normalizeBdsGameRuleKeys(d);
+            boolean converted = convertLegacyPnxGameRulesToBds(d);
             stream.close();
             CompoundTag abilities = d.getCompound("abilities");
             CompoundTag experiments = d.getCompound("experiments");
             GameRules gameRules = GameRules.getDefault();
-            gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, d.getBoolean("commandBlockOutput"));
-            gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, d.getBoolean("commandBlocksEnabled"));
-            gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, d.getBoolean("doDayLightCycle"));
-            gameRules.setGameRule(GameRule.DO_ENTITY_DROPS, d.getBoolean("doEntityDrops"));
-            gameRules.setGameRule(GameRule.DO_FIRE_TICK, d.getBoolean("doFireTick"));
-            gameRules.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, d.getBoolean("doImmediateRespawn"));
-            gameRules.setGameRule(GameRule.DO_INSOMNIA, d.getBoolean("doInsomnia"));
-            gameRules.setGameRule(GameRule.DO_LIMITED_CRAFTING, d.getBoolean("doLimitedCrafting"));
-            gameRules.setGameRule(GameRule.DO_MOB_LOOT, d.getBoolean("doMobLoot"));
-            gameRules.setGameRule(GameRule.DO_MOB_SPAWNING, d.getBoolean("doMobSpawning"));
-            gameRules.setGameRule(GameRule.DO_TILE_DROPS, d.getBoolean("doTileDrops"));
-            gameRules.setGameRule(GameRule.DO_WEATHER_CYCLE, d.getBoolean("doWeatherCycle"));
-            gameRules.setGameRule(GameRule.DROWNING_DAMAGE, d.getBoolean("drowningDamage"));
-            gameRules.setGameRule(GameRule.EXPERIMENTAL_GAMEPLAY, d.getBoolean("experimentalGameplay"));
-            gameRules.setGameRule(GameRule.FALL_DAMAGE, d.getBoolean("fallDamage"));
-            gameRules.setGameRule(GameRule.FIRE_DAMAGE, d.getBoolean("fireDamage"));
-            gameRules.setGameRule(GameRule.FREEZE_DAMAGE, d.getBoolean("freezeDamage"));
-            gameRules.setGameRule(GameRule.FUNCTION_COMMAND_LIMIT, d.getInt("functionCommandLimit"));
-            gameRules.setGameRule(GameRule.KEEP_INVENTORY, d.getBoolean("keepInventory"));
-            gameRules.setGameRule(GameRule.LOCATOR_BAR, d.getBoolean("locatorBar"));
-            gameRules.setGameRule(GameRule.MAX_COMMAND_CHAIN_LENGTH, d.getInt("maxCommandChainLength"));
-            gameRules.setGameRule(GameRule.MOB_GRIEFING, d.getBoolean("mobGriefing"));
-            gameRules.setGameRule(GameRule.NATURAL_REGENERATION, d.getBoolean("naturalRegeneration"));
-            gameRules.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, d.getInt("playersSleepingPercentage"));
-            gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, d.getBoolean("projectilesCanBreakBlocks"));
-            gameRules.setGameRule(GameRule.PVP, d.getBoolean("pvp"));
-            gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, d.getInt("randomTickSpeed"));
-            gameRules.setGameRule(GameRule.RECIPES_UNLOCK, d.getBoolean("recipesUnlock"));
-            gameRules.setGameRule(GameRule.RESPAWN_BLOCKS_EXPLODE, d.getBoolean("respawnBlocksExplode"));
-            gameRules.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, d.getBoolean("sendCommandFeedback"));
-            gameRules.setGameRule(GameRule.SHOW_BORDER_EFFECT, d.getBoolean("showBorderEffect"));
-            gameRules.setGameRule(GameRule.SHOW_COORDINATES, d.getBoolean("showCoordinates"));
-            gameRules.setGameRule(GameRule.SHOW_DAYS_PLAYED, d.getBoolean("showDaysPlayed"));
-            gameRules.setGameRule(GameRule.SHOW_DEATH_MESSAGES, d.getBoolean("showDeathMessages"));
-            gameRules.setGameRule(GameRule.SHOW_TAGS, d.getBoolean("showTags"));
-            gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnRadius"));
-            gameRules.setGameRule(GameRule.TNT_EXPLODES, d.getBoolean("tntExplodes"));
-            gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, d.getBoolean("tntExplosionDropDecay"));
+            gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, getBooleanRule(d, "commandblockoutput", "commandBlockOutput"));
+            gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, getBooleanRule(d, "commandblocksenabled", "commandBlocksEnabled"));
+            gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, getBooleanRule(d, "dodaylightcycle", "doDayLightCycle"));
+            gameRules.setGameRule(GameRule.DO_ENTITY_DROPS, getBooleanRule(d, "doentitydrops", "doEntityDrops"));
+            gameRules.setGameRule(GameRule.DO_FIRE_TICK, getBooleanRule(d, "dofiretick", "doFireTick"));
+            gameRules.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, getBooleanRule(d, "doimmediaterespawn", "doImmediateRespawn"));
+            gameRules.setGameRule(GameRule.DO_INSOMNIA, getBooleanRule(d, "doinsomnia", "doInsomnia"));
+            gameRules.setGameRule(GameRule.DO_LIMITED_CRAFTING, getBooleanRule(d, "dolimitedcrafting", "doLimitedCrafting"));
+            gameRules.setGameRule(GameRule.DO_MOB_LOOT, getBooleanRule(d, "domobloot", "doMobLoot"));
+            gameRules.setGameRule(GameRule.DO_MOB_SPAWNING, getBooleanRule(d, "domobspawning", "doMobSpawning"));
+            gameRules.setGameRule(GameRule.DO_TILE_DROPS, getBooleanRule(d, "dotiledrops", "doTileDrops"));
+            gameRules.setGameRule(GameRule.DO_WEATHER_CYCLE, getBooleanRule(d, "doweathercycle", "doWeatherCycle"));
+            gameRules.setGameRule(GameRule.DROWNING_DAMAGE, getBooleanRule(d, "drowningdamage", "drowningDamage"));
+            gameRules.setGameRule(GameRule.EXPERIMENTAL_GAMEPLAY, getBooleanRule(d, "experimentalgameplay", "experimentalGameplay"));
+            gameRules.setGameRule(GameRule.FALL_DAMAGE, getBooleanRule(d, "falldamage", "fallDamage"));
+            gameRules.setGameRule(GameRule.FIRE_DAMAGE, getBooleanRule(d, "firedamage", "fireDamage"));
+            gameRules.setGameRule(GameRule.FREEZE_DAMAGE, getBooleanRule(d, "freezedamage", "freezeDamage"));
+            gameRules.setGameRule(GameRule.FUNCTION_COMMAND_LIMIT, getIntRule(d, "functioncommandlimit", "functionCommandLimit"));
+            gameRules.setGameRule(GameRule.KEEP_INVENTORY, getBooleanRule(d, "keepinventory", "keepInventory"));
+            gameRules.setGameRule(GameRule.LOCATOR_BAR, getBooleanRule(d, "locatorbar", "locatorBar"));
+            gameRules.setGameRule(GameRule.MAX_COMMAND_CHAIN_LENGTH, getIntRule(d, "maxcommandchainlength", "maxCommandChainLength"));
+            gameRules.setGameRule(GameRule.MOB_GRIEFING, getBooleanRule(d, "mobgriefing", "mobGriefing"));
+            gameRules.setGameRule(GameRule.NATURAL_REGENERATION, getBooleanRule(d, "naturalregeneration", "naturalRegeneration"));
+            gameRules.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, getIntRule(d, "playerssleepingpercentage", "playersSleepingPercentage"));
+            gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, getBooleanRule(d, "projectilescanbreakblocks", "projectilesCanBreakBlocks"));
+            gameRules.setGameRule(GameRule.PVP, getBooleanRule(d, "pvp", "pvp"));
+            gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, getIntRule(d, "randomtickspeed", "randomTickSpeed"));
+            gameRules.setGameRule(GameRule.RECIPES_UNLOCK, getBooleanRule(d, "recipesunlock", "recipesUnlock"));
+            gameRules.setGameRule(GameRule.RESPAWN_BLOCKS_EXPLODE, getBooleanRule(d, "respawnblocksexplode", "respawnBlocksExplode"));
+            gameRules.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, getBooleanRule(d, "sendcommandfeedback", "sendCommandFeedback"));
+            gameRules.setGameRule(GameRule.SHOW_BORDER_EFFECT, getBooleanRule(d, "showbordereffect", "showBorderEffect"));
+            gameRules.setGameRule(GameRule.SHOW_COORDINATES, getBooleanRule(d, "showcoordinates", "showCoordinates"));
+            gameRules.setGameRule(GameRule.SHOW_DAYS_PLAYED, getBooleanRule(d, "showdaysplayed", "showDaysPlayed"));
+            gameRules.setGameRule(GameRule.SHOW_DEATH_MESSAGES, getBooleanRule(d, "showdeathmessages", "showDeathMessages"));
+            gameRules.setGameRule(GameRule.SHOW_TAGS, getBooleanRule(d, "showtags", "showTags"));
+            gameRules.setGameRule(GameRule.SPAWN_RADIUS, getIntRule(d, "spawnradius", "spawnRadius"));
+            gameRules.setGameRule(GameRule.TNT_EXPLODES, getBooleanRule(d, "tntexplodes", "tntExplodes"));
+            gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, getBooleanRule(d, "tntexplosiondropdecay", "tntExplosionDropDecay"));
 
             Map<String, Boolean> experimentMap = new HashMap<>();
             for (Map.Entry<String, Tag> entry : experiments.getTags().entrySet()) {
@@ -858,7 +893,15 @@ public class LevelDBProvider implements LevelProvider {
             if (d.contains("thundering")) {
                 levelDatBuilder.thundering(d.getBoolean("thundering"));//PNX Custom field
             }
-            return levelDatBuilder.build();
+
+            LevelDat result = levelDatBuilder.build();
+
+            if (converted) {
+                this.worldDynamicPropertiesDirty = true;
+            }
+
+            return result;
+
         } catch (FileNotFoundException e) {
             log.error("The level.dat file does not exist!");
         }
@@ -984,16 +1027,5 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putBoolean("thundering", worldData.isThundering());
         levelDat.putInt("nosleepnights", worldData.getNoSleepNight());
         return levelDat;
-    }
-
-    private static void normalizeBdsGameRuleKeys(CompoundTag d) {
-        for (var entry : BDS_GAMERULE_MAP.entrySet()) {
-            String bdsKey = entry.getKey();
-            String pnxKey = entry.getValue();
-
-            if (d.contains(bdsKey) && !d.contains(pnxKey)) {
-                d.put(pnxKey, d.get(bdsKey));
-            }
-        }
     }
 }
