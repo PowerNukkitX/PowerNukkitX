@@ -194,14 +194,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 
-        String soundVariant;
-        if (this.namedTag.contains(NBT_SOUND_VARIANT)) {
-            soundVariant = this.namedTag.getString(NBT_SOUND_VARIANT);
-        } else {
-            soundVariant = this.getRandomSoundVariant();
-            this.namedTag.putString(NBT_SOUND_VARIANT, soundVariant);
-        }
-        this.setEnumEntityProperty("minecraft:sound_variant", soundVariant);
+        this.initSoundVariantProperty();
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(

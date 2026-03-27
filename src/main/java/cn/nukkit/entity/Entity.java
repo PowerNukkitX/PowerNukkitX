@@ -4341,6 +4341,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return variants[Utils.rand(0, variants.length - 1)];
     }
 
+    protected void initSoundVariantProperty() {
+        String soundVariant;
+        if (this.namedTag.contains(NBT_SOUND_VARIANT)) {
+            soundVariant = this.namedTag.getString(NBT_SOUND_VARIANT);
+        } else {
+            soundVariant = this.getRandomSoundVariant();
+            this.namedTag.putString(NBT_SOUND_VARIANT, soundVariant);
+        }
+        if (soundVariant == null) return;
+        this.setEnumEntityProperty("minecraft:sound_variant", soundVariant);
+    }
+
     /**
      * @deprecated Use {@link #canBePushedByEntities()} and/or {@link #canBePushedByPiston()} instead. <p>
      * If custom entitye use simpleBuilder.pusable() to define.

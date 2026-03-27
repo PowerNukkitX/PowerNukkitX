@@ -157,14 +157,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("Color")));
         }
 
-        String soundVariant;
-        if (this.namedTag.contains(NBT_SOUND_VARIANT)) {
-            soundVariant = this.namedTag.getString(NBT_SOUND_VARIANT);
-        } else {
-            soundVariant = this.getRandomSoundVariant();
-            this.namedTag.putString(NBT_SOUND_VARIANT, soundVariant);
-        }
-        this.setEnumEntityProperty("minecraft:sound_variant", soundVariant);
+        this.initSoundVariantProperty();
     }
 
     // Cats have 11 colour variants
