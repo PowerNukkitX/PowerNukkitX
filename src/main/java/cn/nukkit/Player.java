@@ -5653,4 +5653,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
+    /**
+     * Returns the party of player which is stored in login data.
+     * @return partyId
+     */
+    public String getPartyId() {
+        return this.loginChainData.getPartyId();
+    }
+
 }
