@@ -58,7 +58,7 @@ public class SleepExecutor implements EntityControl, IBehaviorExecutor {
         entity.setDataProperty(EntityDataTypes.BED_POSITION, new BlockVector3(0, 0 ,0));
         if(!entity.getLevel().isNight()) {
             if(entity instanceof EntityVillagerV2 villager) {
-                villager.heal(villager.getMaxHealth());
+                villager.heal(villager.getHealthMax());
             }
         }
     }

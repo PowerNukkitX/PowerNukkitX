@@ -1,5 +1,7 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -8,6 +10,7 @@ import cn.nukkit.utils.Utils;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author PetteriM1
@@ -54,9 +57,13 @@ public class EntitySalmon extends EntityFish {
     }
 
     @Override
-    public void initEntity() {
-        this.setMaxHealth(3);
-        super.initEntity();
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(3);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.12f);
     }
 
     @Override

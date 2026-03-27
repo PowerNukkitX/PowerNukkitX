@@ -134,6 +134,11 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    public String getPartyId() {
+        return this.partyId;
+    }
+
+    @Override
     public JsonObject getRawData() {
         return rawData;
     }
@@ -176,6 +181,8 @@ public final class ClientChainData implements LoginChainData {
 
     private String capeData;
 
+    private String partyId;
+
     private JsonObject rawData;
 
     private ClientChainData(LoginData data) {
@@ -206,6 +213,7 @@ public final class ClientChainData implements LoginChainData {
         if (skinToken.has("Waterdog_XUID")) this.waterdogXUID = skinToken.get("Waterdog_XUID").getAsString();
         if (skinToken.has("MaxViewDistance")) this.maxViewDistance = skinToken.get("MaxViewDistance").getAsInt();
         if (skinToken.has("MemoryTier")) this.memoryTier = skinToken.get("MemoryTier").getAsInt();
+        if (skinToken.has("PartyId")) this.partyId = skinToken.get("PartyId").getAsString();
 
         if (this.isWaterdog()) {
             xboxAuthed = true;
@@ -218,7 +226,6 @@ public final class ClientChainData implements LoginChainData {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
         String json = new String(Base64.getDecoder().decode(base[1]), StandardCharsets.UTF_8);
-        //Server.getInstance().getLogger().debug(json);
         return JSONUtils.from(json, JsonObject.class);
     }
 

@@ -1,5 +1,6 @@
 package cn.nukkit.entity.mob;
 
+import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -22,15 +23,17 @@ public class EntityParched extends EntitySkeleton {
         return PARCHED;
     }
 
-
     public EntityParched(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(16);
+    }
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(16);
         super.initEntity();
         if (getItemInHand().isNull()) {
             setItemInHand(Item.get(ItemID.BOW));

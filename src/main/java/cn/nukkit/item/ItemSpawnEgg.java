@@ -14,6 +14,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import javax.annotation.Nullable;
 
 /**
@@ -81,6 +83,10 @@ public class ItemSpawnEgg extends Item {
 
         Entity entity = Entity.createEntity(networkId, chunk, nbt);
         if (entity == null) return false;
+
+        if (entity.isAgeable() && ThreadLocalRandom.current().nextInt(6) == 0) {
+            entity.setBaby(true);
+        }
 
         if (player.isSurvival()) {
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());

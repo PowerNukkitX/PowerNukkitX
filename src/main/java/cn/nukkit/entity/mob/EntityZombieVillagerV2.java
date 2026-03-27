@@ -3,12 +3,15 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
@@ -21,14 +24,6 @@ public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable,
         super(chunk, nbt);
     }
 
-    
-
-    @Override
-    protected void initEntity() {
-        this.setMaxHealth(20);
-        super.initEntity();
-    }
-
     @Override
     public float getWidth() {
         return 0.6f;
@@ -37,6 +32,17 @@ public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable,
     @Override
     public float getHeight() {
         return 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        float ageMovement = this.isBaby() ? 0.35f : 0.23f;
+        return MovementComponent.value(ageMovement);
     }
 
     @Override

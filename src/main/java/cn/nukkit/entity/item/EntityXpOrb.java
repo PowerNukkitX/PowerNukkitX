@@ -2,6 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
@@ -97,14 +98,19 @@ public class EntityXpOrb extends Entity {
     }
 
     @Override
+    public NameableComponent getComponentNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
 
-        setMaxHealth(5);
-        setHealth(5);
+        setHealthMax(5);
+        setHealthCurrent(5);
 
         if (namedTag.contains("Health")) {
-            this.setHealth(namedTag.getShort("Health"));
+            this.setHealthCurrent(namedTag.getShort("Health"));
         }
         if (namedTag.contains("Age")) {
             this.age = namedTag.getShort("Age");
@@ -234,7 +240,7 @@ public class EntityXpOrb extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putShort("Health", (int) getHealth());
+        this.namedTag.putShort("Health", (int) getHealthCurrent());
         this.namedTag.putShort("Age", age);
         this.namedTag.putShort("PickupDelay", pickupDelay);
         this.namedTag.putShort("Value", exp);

@@ -103,11 +103,6 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
-    public boolean isRideable() {
-        return false;
-    }
-
-    @Override
     public void dropItem() {
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);
