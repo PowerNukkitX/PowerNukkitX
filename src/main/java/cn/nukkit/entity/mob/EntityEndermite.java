@@ -19,11 +19,14 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -66,7 +69,6 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(8);
         this.diffHandDamage = new float[]{2f, 2f, 3f};
         super.initEntity();
     }
@@ -89,6 +91,16 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
     @Override
     public float getHeight() {
         return 0.3f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(8);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override

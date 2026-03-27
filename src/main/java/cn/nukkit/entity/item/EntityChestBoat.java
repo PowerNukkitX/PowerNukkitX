@@ -65,7 +65,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             return false;
         }
 
-        super.mountEntity(player);
+        super.mountEntity(player, true);
         return false;
     }
 

@@ -847,4 +847,51 @@ public abstract class Enchantment implements Cloneable {
             return COMMON;
         }
     }
+
+    public static Item addRandomEnchantments(@NotNull Item item, int enchantCount) {
+        return addRandomEnchantments(item, enchantCount, false);
+    }
+
+    public static Item addRandomEnchantments(@NotNull Item item, int enchantCount, boolean allowCustom) {
+        if (enchantCount <= 0) return item;
+
+        var rnd = ThreadLocalRandom.current();
+
+        ArrayList<Enchantment> pool = new ArrayList<>(getRegisteredEnchantments(allowCustom));
+        pool.removeIf(e -> e == null || !e.canEnchant(item) || !e.isObtainableFromEnchantingTable());
+
+        if (pool.isEmpty()) return item;
+
+        int target = Math.min(enchantCount, pool.size());
+        ArrayList<Enchantment> chosen = new ArrayList<>(target);
+
+        while (chosen.size() < target && !pool.isEmpty()) {
+            int idx = rnd.nextInt(pool.size());
+            Enchantment candidate = pool.remove(idx);
+            if (candidate == null) continue;
+
+            boolean compatible = true;
+            for (Enchantment already : chosen) {
+                if (!candidate.isCompatibleWith(already)) {
+                    compatible = false;
+                    break;
+                }
+            }
+            if (!compatible) continue;
+
+            int min = Math.max(1, candidate.getMinLevel());
+            int max = Math.max(min, candidate.getMaxLevel());
+            int level = (min == max) ? min : rnd.nextInt(min, max + 1);
+
+            Enchantment applied = candidate.clone();
+            if (applied != null) {
+                applied.setLevel(level, true);
+                chosen.add(applied);
+            }
+        }
+
+        if (!chosen.isEmpty()) item.addEnchantment(chosen.toArray(EMPTY_ARRAY));
+
+        return item;
+    }
 }

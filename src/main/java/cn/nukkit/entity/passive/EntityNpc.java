@@ -8,6 +8,7 @@ import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -18,6 +19,7 @@ import cn.nukkit.network.protocol.NPCRequestPacket;
 
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author good777LUCKY
@@ -75,6 +77,11 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     }
 
     @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
+    }
+
+    @Override
     public boolean isPersistent() {
         return true;
     }
@@ -82,8 +89,8 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     @Override
     public void initEntity() {
         super.initEntity();
-        this.setMaxHealth(Integer.MAX_VALUE); // Should be Float max value
-        this.setHealth(20);
+        this.setHealthMax(Integer.MAX_VALUE); // Should be Float max value
+        this.setHealthCurrent(20);
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));

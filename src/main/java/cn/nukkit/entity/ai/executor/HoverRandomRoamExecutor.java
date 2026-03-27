@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Requires SpaceMoveController + LiftController + SimpleSpaceAStarRouteFinder(HoveringPosEvaluator).
  */
 public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl {
+    private static final float SPEED_KNOB = 8.0f;
 
     private final float speed;
     private final int xzDist;
@@ -84,6 +85,13 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
         return true;
     }
 
+    private void applyHoverSpeed(EntityIntelligent entity) {
+        float tuned = speed * SPEED_KNOB;
+        if (entity.getMovementSpeed() != tuned) {
+            entity.setMovementSpeed(tuned);
+        }
+    }
+
     private void pickNewTarget(EntityIntelligent entity) {
         Level level = entity.level;
         if (level == null) {
@@ -148,7 +156,7 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
             }
 
             // Apply target destination
-            entity.setMovementSpeed(speed);
+            applyHoverSpeed(entity);
             setRouteTarget(entity, target);
             setLookTarget(entity, target);
             entity.getBehaviorGroup().setForceUpdateRoute(true);
@@ -157,7 +165,7 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
 
         // Fallback nudge up so it can eventually get unstuck
         Vector3 fallback = entity.add(0, Math.max(1.0, hoverMin), 0);
-        entity.setMovementSpeed(speed);
+        applyHoverSpeed(entity);
         setRouteTarget(entity, fallback);
         setLookTarget(entity, fallback);
         entity.getBehaviorGroup().setForceUpdateRoute(true);

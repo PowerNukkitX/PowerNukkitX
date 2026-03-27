@@ -3,9 +3,10 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCanAttack;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.EntityWalkable;
@@ -22,14 +23,16 @@ import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
+import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
+import cn.nukkit.entity.ai.executor.BreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.FleeFromTargetExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
+import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.executor.panda.EatingExecutor;
 import cn.nukkit.entity.ai.executor.panda.LayingExecutor;
 import cn.nukkit.entity.ai.executor.panda.RollExecutor;
@@ -39,10 +42,13 @@ import cn.nukkit.entity.ai.executor.panda.SneezingExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestItemSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.AgeableComponent;
+import cn.nukkit.entity.components.BreedableComponent;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityEnderDragon;
@@ -65,6 +71,7 @@ import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -94,81 +101,6 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
         super(chunk, nbt);
     }
 
-    @Override
-    public IBehaviorGroup requireBehaviorGroup() {
-        return new BehaviorGroup(
-                this.tickSpread,
-                Set.of(
-                        //用于刷新InLove状态的核心行为
-                        new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, ((EntityDamageByEntityEvent) entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT)).getDamager());
-                            entity.setDataFlag(EntityFlag.ANGRY, true);
-                            return true;
-                        }, all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.BE_ATTACKED_EVENT),
-                                entity -> entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT) instanceof EntityDamageByEntityEvent,
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 1),
-                                entity -> getServer().getDifficulty() != 0
-                        ), 3, 1),
-                        new Behavior(
-                                new InLoveExecutor(400),
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FEED_TIME, 0, 400),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                ),
-                                2, 1, 1, false
-                        ),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PANDA_IDLE_AGGRESSIVE), all(new RandomSoundEvaluator(), entity -> getVariant() == AGRESSIVE), 1, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PANDA_IDLE_WORRIED), all(new RandomSoundEvaluator(), entity -> getVariant() == WORRIED, entity -> getLevel().isThundering()), 1, 1),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PANDA_IDLE), new RandomSoundEvaluator(), 1, 1)
-                ),
-                Set.of(
-                        new Behavior(new PandaAttackEecutor(), all(
-                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 16)
-                        ), 14, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 13, 1),
-                        new Behavior(new EntityBreedingExecutor<>(EntityPanda.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 12, 1),
-                        new Behavior(new EatingExecutor(), entity -> !getInventory().isEmpty(), 11, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM), 10, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.4f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 9, 1),
-                        new Behavior(new RollExecutor(), all(
-                                any(
-                                        entity -> getVariant() == PLAYFUL,
-                                        EntityAgeable::isBaby
-                                ),
-                                new ProbabilityEvaluator(1, getVariant() == PLAYFUL ? 1300 : 16000)
-                        ), 8, 1),
-                        new Behavior(new ShakeExecutor(), all(
-                                entity -> getVariant() == WORRIED,
-                                entity -> getLevel().isThundering()
-                        ), 7, 1),
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, true, 2), all(
-                                entity -> getVariant() == WORRIED,
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
-                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 2.1)
-                        ), 6,1,  1),
-                        new Behavior(new SneezingExecutor(), all(
-                                EntityAgeable::isBaby,
-                                new ProbabilityEvaluator(1, getVariant() == WEAK ? 500 : 6000)
-                        ), 5, 1, 1),
-                        new Behavior(new LayingExecutor(10), all(
-                                entity -> getVariant() == LAZY,
-                                new PandaSittingEvaluator(30)
-                        ), 4,2,  1),
-                        new Behavior(new SittingExecutor(10), new PandaSittingEvaluator(30), 3,2,  1),
-                        new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(2, 10), 7, 1, 100),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                ),
-                Set.of(new NearestFeedingPlayerSensor(16, 0), new NearestPlayerSensor(16, 0, 20), new NearestTargetEntitySensor<>(0, 16, 20,
-                        List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY), entity -> (entity instanceof EntityMob mob && !(mob instanceof EntitySlime) && !(mob instanceof EntityMagmaCube) && !(mob instanceof EntityGhast) && !(mob instanceof EntityShulker) && !(mob instanceof EntityPhantom) && !(mob instanceof EntityEnderDragon)) || entity instanceof Player),
-                        new PandaNearestItemSensor(16, 0)),
-                Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
-                this
-        );
-    }
-
     public int getVariant() {
         return isInitialized() ? getMemoryStorage().get(CoreMemoryTypes.VARIANT) : 0;
     }
@@ -184,54 +116,15 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
-    public boolean onUpdate(int currentTick) {
-        if(currentTick % 20 == 0) {
-            for (Entity entity : this.level.getNearbyEntities(this.boundingBox, this)) {
-                if(entity == null) continue;
-                if (!entity.isAlive() || !this.isAlive()) {
-                    continue;
-                }
-                if(entity instanceof EntityItem entityItem) {
-                    Item item = entityItem.getItem();
-                    if(item.getId().equals(Block.BAMBOO)) {
-                        getInventory().addItem(item);
-                        TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                        pk.entityId = getId();
-                        pk.target = entityItem.getId();
-                        Server.broadcastPacket(getViewers().values(), pk);
-                        entityItem.close();
-                    }
-                }
-            }
-        }
-        return super.onUpdate(currentTick);
+    public HealthComponent getComponentHealth() {
+        int variantHealth = getVariant() == WEAK ? 10 : 20;
+        return HealthComponent.value(variantHealth);
     }
 
     @Override
-    public void initEntity() {
-        this.diffHandDamage = new float[]{4f, 6f, 9f};
-        super.initEntity();
-        if (!hasVariant()) {
-            this.setVariant(randomVariant());
-        }
-        getMemoryStorage().put(CoreMemoryTypes.LAST_SITTING_CHECK, getLevel().getTick());
-        this.setMaxHealth(getVariant() == WEAK ? 10 : 20);
-    }
-
-    @Override
-    public boolean attack(EntityDamageEvent source) {
-        if(super.attack(source)) {
-            if(source instanceof EntityDamageByEntityEvent event) {
-                if(event.getDamager() instanceof Player player) {
-                    Arrays.stream(getLevel().getCollidingEntities(getBoundingBox().grow(10, 5, 10))).filter(entity -> entity instanceof EntityPanda panda && panda.getVariant() == AGRESSIVE).map(entity -> (EntityPanda) entity).forEach(entity -> {
-                                entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, player);
-                                entity.setDataFlag(EntityFlag.ANGRY, true);
-                            }
-                    );
-                }
-            }
-            return true;
-        } else return false;
+    protected @Nullable MovementComponent getComponentMovement() {
+        float varMovement = getVariant() == LAZY ? 0.07f : 0.15f;
+        return MovementComponent.value(varMovement);
     }
 
     @Override
@@ -245,8 +138,45 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     @Override
-    public boolean isBreedingItem(Item item) {
-        return item.getId().equals(Block.BAMBOO);
+    public @Nullable BreedableComponent getComponentBreedable() {
+        return new BreedableComponent(
+                null,
+                null,
+                null,
+                null,
+                Set.of(BlockID.BAMBOO),
+                List.of(new BreedableComponent.BreedsWith(EntityID.PANDA, EntityID.PANDA)),
+                null,
+                null,
+                List.of(
+                    new BreedableComponent.EnvironmentRequirement(
+                        Set.of(BlockID.BAMBOO),
+                        8,
+                        5.0f
+                    )
+                ),
+                null,
+                null,
+                new BreedableComponent.MutationFactor(1.0f, null, null),
+                null,
+                null,
+                false,
+                null
+        );
+    }
+
+    @Override
+    public AgeableComponent getComponentAgeable() {
+        return new AgeableComponent(
+                null,
+                1200f,
+                List.of(
+                    new AgeableComponent.FeedItem(BlockID.BAMBOO)
+                ),
+                null,
+                null,
+                null
+        );
     }
 
     @Override
@@ -284,8 +214,57 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
         };
     }
 
-    private class PandaAttackEecutor extends MeleeAttackExecutor {
+    @Override
+    public boolean onUpdate(int currentTick) {
+        if(currentTick % 20 == 0) {
+            for (Entity entity : this.level.getNearbyEntities(this.boundingBox, this)) {
+                if(entity == null) continue;
+                if (!entity.isAlive() || !this.isAlive()) {
+                    continue;
+                }
+                if(entity instanceof EntityItem entityItem) {
+                    Item item = entityItem.getItem();
+                    if(item.getId().equals(Block.BAMBOO)) {
+                        getInventory().addItem(item);
+                        TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                        pk.entityId = getId();
+                        pk.target = entityItem.getId();
+                        Server.broadcastPacket(getViewers().values(), pk);
+                        entityItem.close();
+                    }
+                }
+            }
+        }
+        return super.onUpdate(currentTick);
+    }
 
+    @Override
+    public void initEntity() {
+        this.diffHandDamage = new float[]{4f, 6f, 9f};
+        super.initEntity();
+        if (!hasVariant()) {
+            this.setVariant(randomVariant());
+        }
+        getMemoryStorage().put(CoreMemoryTypes.LAST_SITTING_CHECK, getLevel().getTick());
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if(super.attack(source)) {
+            if(source instanceof EntityDamageByEntityEvent event) {
+                if(event.getDamager() instanceof Player player) {
+                    Arrays.stream(getLevel().getCollidingEntities(getBoundingBox().grow(10, 5, 10))).filter(entity -> entity instanceof EntityPanda panda && panda.getVariant() == AGRESSIVE).map(entity -> (EntityPanda) entity).forEach(entity -> {
+                                entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, player);
+                                entity.setDataFlag(EntityFlag.ANGRY, true);
+                            }
+                    );
+                }
+            }
+            return true;
+        } else return false;
+    }
+
+    private class PandaAttackEecutor extends MeleeAttackExecutor {
         public PandaAttackEecutor() {
             super(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 16, true, 20);
         }
@@ -346,7 +325,6 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
     }
 
     private static class PandaNearestItemSensor extends NearestItemSensor {
-
         public PandaNearestItemSensor(double range, double minRange) {
             super(range, minRange);
         }
@@ -357,7 +335,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
             EntityItem item = null;
             double rangeSquared = this.range * this.range;
             double minRangeSquared = this.minRange * this.minRange;
-            //寻找范围内最近的玩家
+            // Find the nearest player within range
             for (Entity e : entity.getLevel().getEntities()) {
                 if(e instanceof EntityItem entityItem) {
                     if(entityItem.getItem().getId().equals(Block.BAMBOO)) {
@@ -375,6 +353,191 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
             }
             entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_ITEM, item);
         }
+    }
+
+    private static final Set<String> TEMPT_ITEMS = Set.of(
+        BlockID.BAMBOO
+    );
+
+    @Override
+    public IBehaviorGroup requireBehaviorGroup() {
+        return new BehaviorGroup(
+                this.tickSpread,
+                Set.of(
+                    new Behavior(entity -> {
+                        entity.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, ((EntityDamageByEntityEvent) entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT)).getDamager());
+                        entity.setDataFlag(EntityFlag.ANGRY, true);
+                        return true;
+                            }, all(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.BE_ATTACKED_EVENT),
+                                    entity -> entity.getMemoryStorage().get(CoreMemoryTypes.BE_ATTACKED_EVENT) instanceof EntityDamageByEntityEvent,
+                                    new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 1),
+                                    entity -> getServer().getDifficulty() != 0
+                            ),
+                        4, 1
+                    ),
+                    new Behavior(
+                        new LoveTimeoutExecutor(20 * 30),
+                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                        3, 1
+                    ),
+                    new Behavior(
+                        new AnimalGrowExecutor(),
+                            all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                            ),
+                        2, 1, 1200
+                    ),
+                    new Behavior(
+                        new PlaySoundExecutor(Sound.MOB_PANDA_IDLE_AGGRESSIVE),
+                            all(
+                                new RandomSoundEvaluator(),
+                                entity -> getVariant() == AGRESSIVE
+                            ),
+                        1, 1
+                    ),
+                    new Behavior(
+                        new PlaySoundExecutor(Sound.MOB_PANDA_IDLE_WORRIED),
+                            all(
+                                new RandomSoundEvaluator(),
+                                entity -> getVariant() == WORRIED,
+                                entity -> getLevel().isThundering()
+                            ),
+                        1, 1
+                    ),
+                    new Behavior(
+                        new PlaySoundExecutor(Sound.MOB_PANDA_IDLE),
+                            new RandomSoundEvaluator(),
+                        1, 1
+                    )
+                ),
+                Set.of(
+                    new Behavior(
+                        new PandaAttackEecutor(),
+                            all(
+                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 16)
+                            ),
+                        14, 1
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
+                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                        13, 1
+                    ),
+                    new Behavior(
+                        new BreedingExecutor(16, 200, 0.25f),
+                            all(
+                                e -> !e.isBaby(),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                            ),
+                        12, 1
+                    ),
+                    new Behavior(
+                        new EatingExecutor(),
+                            entity -> !getInventory().isEmpty(),
+                        11, 1
+                    ),
+                    new Behavior(
+                        new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_ITEM, 0.4f, true),
+                            new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ITEM),
+                        10, 1
+                    ),
+                    new Behavior(
+                        new TemptExecutor(1.25f, TEMPT_ITEMS),
+                            all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                            ),
+                        9, 1
+                    ),
+                    new Behavior(
+                        new RollExecutor(),
+                            all(
+                                any(
+                                        entity -> getVariant() == PLAYFUL,
+                                        entity -> entity.isBaby()
+                                ),
+                                new ProbabilityEvaluator(1, getVariant() == PLAYFUL ? 1300 : 16000)
+                            ),
+                        8, 1
+                    ),
+                    new Behavior(
+                        new ShakeExecutor(),
+                            all(
+                                entity -> getVariant() == WORRIED,
+                                entity -> getLevel().isThundering()
+                            ),
+                        7, 1
+                    ),
+                    new Behavior(
+                        new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.4f, true, 2),
+                            all(
+                                entity -> getVariant() == WORRIED,
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                                new DistanceEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 2.1)
+                            ),
+                        6,1, 1
+                    ),
+                    new Behavior(
+                        new SneezingExecutor(),
+                            all(
+                                entity -> entity.isBaby(),
+                                new ProbabilityEvaluator(1, getVariant() == WEAK ? 500 : 6000)
+                            ),
+                        5, 1, 1
+                    ),
+                    new Behavior(
+                        new LayingExecutor(10),
+                            all(
+                                entity -> getVariant() == LAZY,
+                                new PandaSittingEvaluator(30)
+                            ),
+                        4,2, 1
+                    ),
+                    new Behavior(
+                        new SittingExecutor(10),
+                            new PandaSittingEvaluator(30),
+                        3,2, 1
+                    ),
+                    new Behavior(
+                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                            new ProbabilityEvaluator(2, 10),
+                        7, 1, 100
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                            (entity -> true),
+                        1, 1
+                    )
+                ),
+                Set.of(
+                    new NearestPlayerSensor(16, 0, 20),
+                    new NearestTargetEntitySensor<>(0, 16, 20,
+                        List.of(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
+                            entity -> (
+                                entity instanceof EntityMob mob
+                                && !(mob instanceof EntitySlime)
+                                && !(mob instanceof EntityMagmaCube)
+                                && !(mob instanceof EntityGhast)
+                                && !(mob instanceof EntityShulker)
+                                && !(mob instanceof EntityPhantom)
+                                && !(mob instanceof EntityEnderDragon)
+                            )
+                            || entity instanceof Player),
+                    new PandaNearestItemSensor(16, 0)
+                ),
+                Set.of(
+                    new WalkController(),
+                    new LookController(true, true),
+                    new FluctuateController()
+                ),
+                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                this
+        );
     }
 
 }

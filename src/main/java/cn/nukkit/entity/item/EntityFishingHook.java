@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.projectile.SlenderProjectile;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -88,6 +89,11 @@ public class EntityFishingHook extends SlenderProjectile {
     }
 
     @Override
+    public NameableComponent getComponentNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
     public boolean onUpdate(int currentTick) {
         boolean hasUpdate;
         long target = getDataProperty(TARGET_EID);
@@ -96,7 +102,7 @@ public class EntityFishingHook extends SlenderProjectile {
             if (entity == null || !entity.isAlive()) {
                 setDataProperty(TARGET_EID, 0L);
             } else {
-                Vector3f offset = entity.getMountedOffset(this);
+                Vector3f offset = entity.getAttachmentOffset(this);
                 setPosition(new Vector3(entity.x + offset.x, entity.y + offset.y, entity.z + offset.z));
             }
             return false;

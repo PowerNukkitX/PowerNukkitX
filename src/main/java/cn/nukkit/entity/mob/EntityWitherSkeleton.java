@@ -21,6 +21,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
@@ -30,6 +32,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +88,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     }
 
 
-    //凋零骷髅会攻击距离他16格范围内的玩家、雪傀儡、小海龟、铁傀儡、猪灵或猪灵蛮兵
+    // The Wither Skeleton will attack players, snow golems, baby turtles, iron golems, piglins, or piglin brutes within 16 tiles of it.
     @Override
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier()) {
@@ -98,14 +101,13 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         this.diffHandDamage = new float[]{5f, 8f, 12f};
         super.initEntity();
-        // 判断凋零骷髅是否手持石剑如果没有就给它石剑
+        // Determine if the Wither Skeleton is wielding a stone sword; if not, give it the stone sword.
         if (this.getItemInHand() != Item.get(Item.STONE_SWORD)) {
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
-        // 设置凋零骷髅空闲状态播放空闲声音
+        // Set the Withered Skeleton to play an idle sound when it's idle.
         this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
     }
 
@@ -117,6 +119,16 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     @Override
     public float getHeight() {
         return 2.4f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.25f);
     }
 
     @Override
@@ -139,7 +151,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         return true;
     }
 
-    //掉落剑的概率为8.5% 掉落头的概率为2.5%
+    // The probability of dropping a sword is 8.5%, and the probability of dropping a head is 2.5%.
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         List<Item> drops = new ArrayList<>();
@@ -147,11 +159,11 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         if (Utils.rand(0, 2) == 0) {
             drops.add(Item.get(Item.COAL, 0, 1));
         }
-        //掉落石剑的概率为8.5%
+        // The probability of obtaining a stone sword is 8.5%.
         if (Utils.rand(0, 200) <= 17) {
             drops.add(Item.get(Item.STONE_SWORD, Utils.rand(0, 131), 1));
         }
-        //掉落头的概率为2.5%
+        // The probability of losing your head is 2.5%.
         if (Utils.rand(0, 40) == 1) {
             drops.add(Item.get(BlockID.SKULL, 1, 1));
         }

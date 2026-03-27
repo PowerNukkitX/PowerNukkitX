@@ -25,6 +25,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -33,6 +35,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -90,7 +93,6 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         super.initEntity();
         this.diffHandDamage = new float[]{4f, 6f, 9f};
 
@@ -104,6 +106,16 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
     @Override
     public float getHeight() {
         return 0.5f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.1f);
     }
 
     @Override

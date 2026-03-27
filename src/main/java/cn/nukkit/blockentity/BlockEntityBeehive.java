@@ -227,9 +227,9 @@ public class BlockEntityBeehive extends BlockEntity {
                 if(spawnOccupant(occupant) instanceof EntityBee bee && interactingEntity != null) {
                     if(getInteractingEntity() instanceof Player player) {
                         if(player.isSurvival() || player.isAdventure()) {
-                            bee.setAngry(player);
+                            bee.setAngryOnTarget(player);
                         }
-                    } else bee.setAngry(interactingEntity);
+                    } else bee.setAngryOnTarget(interactingEntity);
                 }
             }
         }
@@ -340,7 +340,7 @@ public class BlockEntityBeehive extends BlockEntity {
                 if (entity instanceof EntityBee) {
                     EntityBee bee = (EntityBee) entity;
                     if (player != null) {
-                        bee.setAngry(player);
+                        bee.setAngryOnTarget(player);
                     } else {
                         bee.setAngry(true);
                     }
