@@ -37,6 +37,8 @@ import cn.nukkit.entity.components.HealableComponent;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.TameableComponent;
+import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
@@ -55,6 +57,15 @@ import java.util.Set;
 
 
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCanSit, EntityCanAttack, EntityVariant, EntityColor {
+    private static final String[] SOUND_VARIANTS = {
+        "default",
+        "royal"
+    };
+
+    public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
+        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
+    };
+
     @Override
     @NotNull
     public String getIdentifier() {
@@ -145,6 +156,15 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         if (namedTag.contains("Color")) {
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("Color")));
         }
+
+        String soundVariant;
+        if (this.namedTag.contains(NBT_SOUND_VARIANT)) {
+            soundVariant = this.namedTag.getString(NBT_SOUND_VARIANT);
+        } else {
+            soundVariant = this.getRandomSoundVariant();
+            this.namedTag.putString(NBT_SOUND_VARIANT, soundVariant);
+        }
+        this.setEnumEntityProperty("minecraft:sound_variant", soundVariant);
     }
 
     // Cats have 11 colour variants
@@ -192,6 +212,11 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     @Override
     public Set<String> typeFamily() {
         return Set.of("cat", "mob");
+    }
+
+    @Override
+    public String[] getSoundVariants() {
+        return SOUND_VARIANTS;
     }
 
     @Override
