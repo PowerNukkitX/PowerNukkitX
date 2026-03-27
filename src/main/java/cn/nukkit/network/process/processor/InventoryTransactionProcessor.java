@@ -46,6 +46,7 @@ import java.util.Objects;
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
     Item lastUsedItem = null;
+    private final java.util.Map<Long, Integer> lastEntityInteractTick = new java.util.HashMap<>();
 
 
     @Override
@@ -150,17 +151,23 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if (playerInteractEntityEvent.isCancelled()) {
                     return;
                 }
+                lastEntityInteractTick.put(player.getId(), player.getLevel().getTick());
                 if (!(target instanceof EntityArmorStand)) {
                     player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target, target.getLocation(), VibrationType.ENTITY_INTERACT));
                 } else {
                     player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target, target.getLocation(), VibrationType.EQUIP));
                 }
                 if (target.onInteract(player, item, useItemOnEntityData.clickPos) && (player.isSurvival() || player.isAdventure())) {
+                    boolean forceSetSlot = false;
+
                     if (item.isTool()) {
                         if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
                             player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                             item = new ItemBlock(Block.get(BlockID.AIR));
                         }
+                    } else if (item.isFilledBucketItem()) {
+                        item = Item.get(Item.BUCKET);
+                        forceSetSlot = true;
                     } else {
                         if (item.count > 1) {
                             item.count--;
@@ -169,7 +176,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         }
                     }
 
-                    if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
+                    if (forceSetSlot || item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
                         player.getInventory().setItem(useItemOnEntityData.hotbarSlot, item);
                     } else {
                         logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
@@ -341,6 +348,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_AIR -> {
+                Integer lastTick = lastEntityInteractTick.get(player.getId());
+                int now = player.getLevel().getTick();
+                if (lastTick != null && (now - lastTick) <= 1) return;
+
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
                 Item serverItemInHand = player.getInventory().getUnclonedItemInHand();

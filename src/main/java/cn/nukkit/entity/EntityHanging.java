@@ -18,8 +18,8 @@ public abstract class EntityHanging extends Entity {
     protected void initEntity() {
         super.initEntity();
 
-        this.setMaxHealth(1);
-        this.setHealth(1);
+        this.setHealthMax(1);
+        this.setHealthCurrent(1);
 
         if (this.namedTag.contains("Direction")) {
             this.direction = this.namedTag.getByte("Direction");

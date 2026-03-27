@@ -53,13 +53,6 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     }
 
     @Override
-    public boolean isRideable() {
-        return false;
-    }
-
-    
-
-    @Override
     public void dropItem() {
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);

@@ -1,11 +1,11 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.passive.EntityPig;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.components.BoostableComponent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.Utils;
 
 /**
  * @author lion
@@ -27,20 +27,24 @@ public class ItemCarrotOnAStick extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        if(player.getRiding() != null) {
-            if(player.getRiding() instanceof EntityPig pig) {
-                if(pig.getMemoryStorage().get(CoreMemoryTypes.PIG_BOOST) == 0) {
-                    pig.getMemoryStorage().put(CoreMemoryTypes.PIG_BOOST, Utils.rand(140, 980));
-                    if (!this.isUnbreakable() && !player.isCreative()) {
-                        this.setDamage(getDamage() + 7);
-                        if (this.getDamage() >= getMaxDurability()) {
-                            player.getLevel().addSound(player, Sound.RANDOM_BREAK);
-                            player.getInventory().setItem(player.getInventory().getHeldItemIndex(), Item.get(Item.FISHING_ROD));
-                        } else player.getInventory().setItemInHand(this);
-                    }
-                }
-            }
+        Entity e = player.getRiding();
+        if (!(e instanceof EntityLiving ride) || !ride.isBoostable()) return false;
+        if (ride.getBoostableTicks() > -1) return false;
+
+        BoostableComponent boostable = ride.getComponentBoostable();
+        if (boostable == null) return false;
+
+        BoostableComponent.BoostItem entry = boostable.resolveBoostItem(this);
+        if (entry == null) return false;
+
+        ride.setBoostableDuration(boostable.resolvedDuration());
+
+        if (!this.isUnbreakable() && !player.isCreative()) {
+            Item newItem = entry.applyUse(this);
+            if (newItem.isNull()) player.getLevel().addSound(player, Sound.RANDOM_BREAK);
+            player.getInventory().setItem(player.getInventory().getHeldItemIndex(), newItem);
         }
+
         return false;
     }
 

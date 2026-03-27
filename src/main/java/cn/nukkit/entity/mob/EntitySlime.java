@@ -15,6 +15,8 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.passive.EntityFrog;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
@@ -23,6 +25,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -37,12 +40,45 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
         return SLIME;
     }
 
+    private static final String TAG_SLIME_SIZE = "SlimeSize";
     public static final int SIZE_SMALL = 1;
     public static final int SIZE_MEDIUM = 2;
     public static final int SIZE_BIG = 4;
 
     public EntitySlime(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public int getVariant() {
+        if (getBehaviorGroup() != null) {
+            Integer variant = getMemoryStorage().get(CoreMemoryTypes.VARIANT);
+            if (variant != null) return variant;
+        }
+
+        if (this.namedTag.contains(TAG_SLIME_SIZE)) {
+            return this.namedTag.getInt(TAG_SLIME_SIZE);
+        }
+
+        return SIZE_BIG;
+    }
+
+    @Override
+    public void setVariant(int variant) {
+        this.namedTag.putInt(TAG_SLIME_SIZE, variant);
+
+        if (getBehaviorGroup() != null) {
+            getMemoryStorage().put(CoreMemoryTypes.VARIANT, variant);
+        }
+    }
+
+    @Override
+    public boolean hasVariant() {
+        if (getBehaviorGroup() != null && getMemoryStorage().notEmpty(CoreMemoryTypes.VARIANT)) {
+            return true;
+        }
+
+        return this.namedTag.contains(TAG_SLIME_SIZE);
     }
 
     @Override
@@ -65,9 +101,14 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
 
     @Override
     protected void initEntity() {
+        if (!this.namedTag.contains(TAG_SLIME_SIZE)) {
+            this.namedTag.putInt(TAG_SLIME_SIZE, randomVariant());
+        }
+
         super.initEntity();
-        if (!hasVariant()) {
-            this.setVariant(randomVariant());
+
+        if (getBehaviorGroup() != null) {
+            getMemoryStorage().put(CoreMemoryTypes.VARIANT, this.namedTag.getInt(TAG_SLIME_SIZE));
         }
 
         if (getVariant() == SIZE_BIG) {
@@ -78,13 +119,6 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
             this.diffHandDamage = new float[] {0, 0, 0};
         }
 
-        if (getVariant() == SIZE_BIG) {
-            this.setMaxHealth(16);
-        } else if (getVariant() == SIZE_MEDIUM) {
-            this.setMaxHealth(4);
-        } else if (getVariant() == SIZE_SMALL) {
-            this.setMaxHealth(1);
-        }
         recalculateBoundingBox();
     }
 
@@ -103,6 +137,31 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
     public float getHeight() {
         if(getBehaviorGroup() == null) return 0;
         return 0.51f + getVariant() * 0.51f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        if (!hasVariant()) this.setVariant(randomVariant());
+        int variantHealth = switch (getVariant()) {
+            case SIZE_BIG -> 16;
+            case SIZE_MEDIUM -> 4;
+            case SIZE_SMALL -> 1;
+            default -> 16;
+        };
+
+        return HealthComponent.value(variantHealth);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        if (!hasVariant()) this.setVariant(randomVariant());
+        float variantMovement = switch (getVariant()) {
+            case SIZE_BIG -> 0.6f;
+            case SIZE_MEDIUM -> 0.4f;
+            case SIZE_SMALL -> 0.3f;
+            default -> 0.6f;
+        };
+        return MovementComponent.value(variantMovement);
     }
 
     @Override

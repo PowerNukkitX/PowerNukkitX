@@ -24,6 +24,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -36,6 +38,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +107,6 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(40);
         this.diffHandDamage = new float[]{4f, 7f, 10f};
         super.initEntity();
     }
@@ -117,6 +119,17 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
     @Override
     public float getHeight() {
         return 2.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(40);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        float behaviorMovement = this.isAngry() ? 0.45f : 0.3f;
+        return MovementComponent.value(behaviorMovement);
     }
 
     @Override

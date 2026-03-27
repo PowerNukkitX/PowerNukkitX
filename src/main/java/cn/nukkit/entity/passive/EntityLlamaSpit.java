@@ -44,7 +44,7 @@ public class EntityLlamaSpit extends EntityAnimal implements EntityWalkable {
 
     @Override
     public void initEntity() {
-        this.setMaxHealth(15);
+        this.setHealthMax(15);
         super.initEntity();
     }
 

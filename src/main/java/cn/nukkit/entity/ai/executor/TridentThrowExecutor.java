@@ -30,26 +30,24 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
     protected final int coolDownTick;
     protected final int pullTridentTick;
     /**
-     * 用来指定特定的攻击目标.
-     * <p>
      * Used to specify a specific attack target.
      **/
     protected Entity target;
     /**
-     * 用来射击的物品
+     * Items used for shooting
      */
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
 
     /**
-     * 射击执行器
+     * Shooting actuator
      *
-     * @param memory            用于读取攻击目标的记忆<br>Used to read the memory of the attack target
-     * @param speed             移动向攻击目标的速度<br>The speed of movement towards the attacking target
-     * @param maxShootDistance  允许射击的最大距离，只有在这个距离内才能射击<br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
-     * @param clearDataWhenLose 失去目标时清空记忆<br>Clear your memory when you lose your target
-     * @param coolDownTick      攻击冷却时间(单位tick)<br>Attack cooldown (tick)
-     * @param pullTridentTick       每次攻击动画用时(单位tick)<br>Attack Animation time(tick)
+     * @param memory            Used to read the memory of the attack target
+     * @param speed             The speed of movement towards the attacking target
+     * @param maxShootDistance  The maximum distance at which it is permissible to shoot, and only at this distance can be fired
+     * @param clearDataWhenLose Clear your memory when you lose your target
+     * @param coolDownTick      Attack cooldown (tick)
+     * @param pullTridentTick   Attack Animation time(tick)
      */
     public TridentThrowExecutor(MemoryType<? extends Entity> memory, float speed, int maxShootDistance, boolean clearDataWhenLose, int coolDownTick, int pullTridentTick) {
         this.memory = memory;
@@ -69,7 +67,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if (this.target == null) target = newTarget;
-        //some check
+
         if (!target.isAlive()) return false;
         else if (target instanceof Player player) {
             if (player.isIgnoredByEntities() || !entity.level.getName().equals(player.level.getName())) {
@@ -78,7 +76,6 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         if (!this.target.getPosition().equals(newTarget.getPosition())) {
-            //更新目标
             target = newTarget;
         }
 
@@ -86,12 +83,11 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         Location clone = this.target.getLocation();
 
         if (entity.distanceSquared(target) > maxShootDistanceSquared) {
-            //更新寻路target
             setRouteTarget(entity, clone);
         } else {
             setRouteTarget(entity, null);
         }
-        //更新视线target
+
         setLookTarget(entity, clone);
 
         if (tick2 == 0 && tick1 > coolDownTick) {
@@ -106,7 +102,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
                 throwTrident(entity);
                 stopTridentAnimation(entity);
                 tick2 = 0;
-                return target.getHealth() != 0;
+                return target.getHealthCurrent() != 0;
             }
         }
         return true;
@@ -116,8 +112,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }
@@ -130,8 +125,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memory);
         }

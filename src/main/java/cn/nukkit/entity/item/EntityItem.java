@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -82,11 +83,16 @@ public class EntityItem extends Entity {
     }
 
     @Override
+    public NameableComponent getComponentNameable() {
+        return DEFAULT_NOT_NAMEABLE;
+    }
+
+    @Override
     protected void initEntity() {
         super.initEntity();
 
-        this.setMaxHealth(5);
-        this.setHealth(this.namedTag.getShort("Health"));
+        this.setHealthMax(5);
+        this.setHealthCurrent(this.namedTag.getShort("Health"));
 
         if (this.namedTag.contains("Age")) {
             this.age = this.namedTag.getShort("Age");
@@ -125,7 +131,7 @@ public class EntityItem extends Entity {
         this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
 
         if (this.item.isLavaResistant()) {
-            this.fireProof = true; // Netherite items are fireproof
+            this.setFireImmune(true);
         }
 
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
@@ -299,7 +305,7 @@ public class EntityItem extends Entity {
         super.saveNBT();
         if (this.item != null) { // Yes, a item can be null... I don't know what causes this, but it can happen.
             this.namedTag.putCompound("Item", NBTIO.putItemHelper(this.item, -1));
-            this.namedTag.putShort("Health", (int) this.getHealth());
+            this.namedTag.putShort("Health", (int) this.getHealthCurrent());
             this.namedTag.putShort("Age", this.age);
             this.namedTag.putShort("PickupDelay", this.pickupDelay);
             this.namedTag.putBoolean("ShouldDespawn", this.shouldDespawn);
@@ -364,7 +370,8 @@ public class EntityItem extends Entity {
         return isDisplayOnly;
     }
 
-    public String getOwner() {
+    @Override
+    public String getOwnerName() {
         return owner;
     }
 

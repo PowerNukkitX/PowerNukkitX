@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -43,9 +44,6 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
         if (this.namedTag.contains("ShowBottom")) {
             this.setShowBase(this.namedTag.getBoolean("ShowBottom"));
         }
-
-        this.fireProof = true;
-        this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
     }
 
     @Override
@@ -63,6 +61,16 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     @Override
     public float getWidth() {
         return 0.98f;
+    }
+
+    @Override
+    public boolean isFireImmune() {
+        return true;
+    }
+
+    @Override
+    public NameableComponent getComponentNameable() {
+        return DEFAULT_NOT_NAMEABLE;
     }
 
     @Override

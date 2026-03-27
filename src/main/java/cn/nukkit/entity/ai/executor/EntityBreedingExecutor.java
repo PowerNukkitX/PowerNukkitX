@@ -6,6 +6,26 @@ import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Legacy breeding executor that pairs nearby in-love entities of the same {@code entityClass} and spawns a single baby.
+ * <p>
+ * This implementation is deprecated in favor of the new {@code BreedingExecutor} which is Bedrock-like and fully
+ * driven by {@link cn.nukkit.entity.components.BreedableComponent}. The new executor handles:
+ * <ul>
+ *   <li>Mate eligibility via {@code breeds_with} (including cross-species rules and baby type resolution)</li>
+ *   <li>Pregnancy-only flows (mark one parent pregnant instead of spawning a baby immediately)</li>
+ *   <li>Extra babies chance, deny-parents-variant, mutation factors, color/variant blending</li>
+ *   <li>Best-effort property inheritance and optional inherit-tamed behavior</li>
+ *   <li>Genetics inheritance</li>
+ *   <li>Safer state cleanup (restores default speed instead of hardcoded {@code 0.1f})</li>
+ * </ul>
+ * <p>
+ * API note: this class takes {@code findingRangeSquared} (already squared). The new {@code BreedingExecutor} uses a
+ * different interpretation depending on the constructor used, so migrating callers should double-check the range units.
+ *
+ * @deprecated Use {@link cn.nukkit.entity.ai.executor.BreedingExecutor} instead.
+ */
+@Deprecated(forRemoval = true, since = "2.0.0")
 public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBehaviorExecutor {
 
     protected Class<T> entityClass;

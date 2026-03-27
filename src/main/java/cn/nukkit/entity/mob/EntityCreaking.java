@@ -25,6 +25,7 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.PlayerStaringSensor;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.data.property.IntEntityProperty;
@@ -39,6 +40,7 @@ import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -75,6 +77,13 @@ public class EntityCreaking extends EntityMob {
     }
 
     @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        // TODO: creaking inmobile state
+        float behaviorMovement = false ? 0f : 0.4f;
+        return MovementComponent.value(behaviorMovement);
+    }
+
+    @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
                 this.tickSpread,
@@ -99,7 +108,7 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(1);
+        this.setHealthMax(1);
         this.diffHandDamage = new float[]{2.5f, 3, 4.5f};
         if(namedTag.containsCompound("creakingHeart")) {
             CompoundTag tag = namedTag.getCompound("creakingHeart");

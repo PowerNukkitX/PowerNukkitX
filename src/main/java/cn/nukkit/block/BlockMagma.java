@@ -69,7 +69,7 @@ public class BlockMagma extends BlockSolid {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity.hasEffect(EffectType.FIRE_RESISTANCE)) {
+        if (entity.hasEffect(EffectType.FIRE_RESISTANCE) || entity.isFireImmune()) {
             return;
         }
 

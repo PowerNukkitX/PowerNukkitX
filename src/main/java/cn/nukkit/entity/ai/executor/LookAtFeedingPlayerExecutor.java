@@ -5,14 +5,22 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 
 /**
- * 实体看向最近携带食物的玩家<br/>
- * 此执行器与 {@link LookAtTargetExecutor} 最大的一点不同是，它会设置实体的DATA_FLAG_INTERESTED为true
- * <p>
- * Entity looks at the nearest player carrying the food<br/>
- * The biggest difference between this executor and {@link LookAtTargetExecutor} is that it will set the entity's DATA_FLAG_INTERESTED to true
+ * Legacy "beg / interested" look behavior.
+ *
+ * <p>This executor only makes the entity look at the nearest feeding player and sets
+ * {@link EntityFlag#INTERESTED} (Bedrock's "beg" / "curious stare" visual state).
+ * It does <b>not</b> handle movement, tempting logic, item selection, or scared/flee behavior.</p>
+ *
+ * <p>In Bedrock there is a distinction between:</p>
+ * <ul>
+ *   <li><b>Beg</b>: look-only behavior that typically sets {@link EntityFlag#INTERESTED}.</li>
+ *   <li><b>Tempt</b>: luring behavior that typically sets {@link EntityFlag#TEMPTED} and may include movement, stop distance, scared logic, sounds, etc.</li>
+ * </ul>
+ *
+ * <p>Use {@link BegExecutor} for the beg / interested visual behavior, or use
+ * {@link TemptExecutor} (ground) / {@link FloatTemptExecutor} (floating) for proper tempting behavior.</p>
  */
-
-
+@Deprecated(forRemoval = true, since = "2.0.0")
 public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {

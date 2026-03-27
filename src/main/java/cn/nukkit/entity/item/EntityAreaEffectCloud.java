@@ -286,8 +286,8 @@ public class EntityAreaEffectCloud extends Entity {
             setHeight(0.3F + (getRadius() / 2F));
         }
 
-        setMaxHealth(1);
-        setHealth(1);
+        setHealthMax(1);
+        setHealthCurrent(1);
     }
 
     @Override
