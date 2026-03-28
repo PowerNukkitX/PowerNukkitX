@@ -429,8 +429,8 @@ public class BreedingExecutor implements IBehaviorExecutor {
             out.setMaxValue(newDefaultMax);
         }
 
-        out.setDefaultMinimum(newDefaultMin);
         out.setDefaultMaximum(newDefaultMax);
+        out.setDefaultMinimum(newDefaultMin);
         out.setDefaultValue(newDefaultMax);
         out.setValue(newDefaultMax);
 
