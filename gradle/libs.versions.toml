@@ -82,7 +82,7 @@ rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",    
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
-test            = ["junit",             "mockito",          "jmh-core",             "jmh-generator"     ]
+test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator" ]
 netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"                              ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
