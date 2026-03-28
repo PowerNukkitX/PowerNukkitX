@@ -2793,8 +2793,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         attr.setMinValue(0f);
         attr.setMaxValue(resolvedMaxHealth);
 
-        attr.setDefaultMinimum(newDefaultMin);
         attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
 
         attr.setDefaultValue(resolvedMaxHealth);
         attr.setValue(resolvedMaxHealth);
