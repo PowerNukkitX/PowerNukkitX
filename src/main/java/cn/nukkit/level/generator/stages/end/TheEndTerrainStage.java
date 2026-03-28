@@ -121,7 +121,6 @@ public class TheEndTerrainStage extends GenerateStage {
             }
         }
         chunk.recalculateHeightMap();
-        chunk.setChunkState(ChunkState.GENERATED);
     }
 
     public static float getIslandHeight(int chunkX, int chunkZ, int x, int z, NoiseGeneratorSimplexD islandNoise) {

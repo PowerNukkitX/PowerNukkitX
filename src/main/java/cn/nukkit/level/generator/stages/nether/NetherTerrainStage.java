@@ -142,7 +142,6 @@ public class NetherTerrainStage extends GenerateStage {
             e.printStackTrace();
         }
         chunk.recalculateHeightMap();
-        chunk.setChunkState(ChunkState.GENERATED);
     }
 
     private boolean isTop(IChunk chunk, int x, int y, int z) {

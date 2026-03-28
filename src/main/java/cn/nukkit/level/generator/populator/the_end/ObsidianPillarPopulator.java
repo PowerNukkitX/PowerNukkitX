@@ -39,6 +39,12 @@ public class ObsidianPillarPopulator extends Populator {
                 pillar.generate(object, null, new Vector3(p.x, level.getHeightMap(p.getFloorX(), p.getFloorY()), p.y));
             }
         }
+        for(Block block : object.getBlocks()) {
+            if(!block.getChunk().isGenerated()) {
+                if(block.getChunkZ() != chunkZ && block.getChunkX() != chunkX)
+                level.syncGenerateChunk(block.getChunkX(), block.getChunkZ());
+            }
+        }
         queueObject(chunk, object);
     }
 

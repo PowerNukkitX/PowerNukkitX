@@ -32,6 +32,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 public class BlockManager {
@@ -251,6 +252,11 @@ public class BlockManager {
         chunks.entrySet().parallelStream().forEach(entry -> {
             final var key = entry.getKey();
             final var value = entry.getValue();
+            //Make sure chunks are really generated
+            if(level.isChunkGenerating(key.getX(), key.getZ()) && key.getChunkState() == ChunkState.NEW) level.removeFromGenerateList(key.getX(), key.getZ());
+            if (!key.isGenerated()) level.syncGenerateChunk(key.getX(), key.getZ());
+            while (level.isChunkGenerating(key.getX(), key.getZ()) && !key.isGenerated());
+            //
             key.batchProcess(unsafeChunk -> {
                 value.forEach(b -> {
                     unsafeChunk.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);

@@ -104,7 +104,6 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                 }
             }
         }
-        chunk.setChunkState(ChunkState.GENERATED);
     }
 
     private static final BlockState[] CLAYBAND = new BlockState[] {

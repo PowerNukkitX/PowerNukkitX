@@ -106,6 +106,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -4497,7 +4498,7 @@ public class Level implements Metadatable {
 
 
     public boolean isChunkGenerating(int x, int z) {
-        return this.chunkGenerationQueue.containsKey(Level.chunkHash(x, z));
+        return this.chunkGenerationQueue.getOrDefault(Level.chunkHash(x, z), false);
     }
 
     public void generateChunk(int x, int z) {
@@ -4522,6 +4523,12 @@ public class Level implements Metadatable {
             this.generator.syncGenerate(chunk);
             chunkGenerationQueue.remove(index);
         }
+    }
+
+    @ApiStatus.Internal
+    public void removeFromGenerateList(int x, int z) {
+        long index = Level.chunkHash(x, z);
+        chunkGenerationQueue.remove(index);
     }
 
     /**
