@@ -18,6 +18,7 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.BegExecutor;
 import cn.nukkit.entity.ai.executor.BreedingExecutor;
@@ -25,6 +26,7 @@ import cn.nukkit.entity.ai.executor.EntityMoveToOwnerExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -72,19 +74,22 @@ import java.util.Set;
  * TODO: Wild wolves will not be refreshed.
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCanAttack, EntityCanSit, EntityColor, EntityVariant, InventoryHolder {
+    private static final String[] SOUND_VARIANTS = {
+        "default",
+        "big",
+        "cute",
+        "grumpy",
+        "mad",
+        "puglin",
+        "sad"
+    };
+
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
         new BooleanEntityProperty("minecraft:is_armorable", false),
         new BooleanEntityProperty("minecraft:has_increased_max_health", false),
-        new EnumEntityProperty("minecraft:sound_variant", new String[]{
-            "default",
-            "big",
-            "cute",
-            "grumpy",
-            "mad",
-            "puglin",
-            "sad"
-        }, "default", true)
+        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
+
     private final static String PROPERTY_IS_ARMORABLE = "minecraft:is_armorable";
     private final static String PROPERTY_HAS_INCREASED_MAX_HEALTH = "minecraft:has_increased_max_health";
     private final static String PROPERTY_SOUND_VARIANT = "minecraft:sound_variant";
@@ -142,6 +147,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     @Override
     public Set<String> typeFamily() {
         return Set.of("wolf", "mob");
+    }
+
+    @Override
+    public String[] getSoundVariants() {
+        return SOUND_VARIANTS;
     }
 
     @Override
@@ -511,6 +521,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                     )
                 ),
                 Set.of(
+                    new Behavior(
+                        new PlaySoundExecutor(Sound.MOB_WOLF_BARK),
+                            new RandomSoundEvaluator(),
+                        6,1
+                    ),
                     new Behavior(
                         new BegExecutor(true, 8, BEG_ITEMS),
                             all(

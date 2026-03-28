@@ -13,11 +13,13 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.BreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -31,6 +33,7 @@ import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -46,12 +49,20 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVariant {
+    private static final String[] CLIMATE_VARIANTS = {
+        "temperate",
+        "warm",
+        "cold"
+    };
+
+    private static final String[] SOUND_VARIANTS = {
+        "default",
+        "moody"
+    };
+
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new EnumEntityProperty("minecraft:climate_variant", new String[]{
-            "temperate",
-            "warm",
-            "cold"
-        }, "temperate", true)
+        new EnumEntityProperty("minecraft:climate_variant", CLIMATE_VARIANTS, "temperate", true),
+        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
     @Override
@@ -143,6 +154,11 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
+    public String[] getSoundVariants() {
+        return SOUND_VARIANTS;
+    }
+
+    @Override
     public Item[] getDrops(@NotNull Item weapon) {
         if (this.isBaby()) {
             return Item.EMPTY_ARRAY;
@@ -174,6 +190,8 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
         if(namedTag.contains("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+
+        this.initSoundVariantProperty();
     }
 
     @Override
@@ -216,6 +234,11 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
                     )
                 ),
                 Set.of(
+                    new Behavior(
+                        new PlaySoundExecutor(Sound.MOB_COW_SAY),
+                            new RandomSoundEvaluator(),
+                        5,1
+                    ),
                     new Behavior(
                         new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),

@@ -11,11 +11,13 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.BreedingExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
 import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -45,12 +47,20 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable, ClimateVariant {
+    private static final String[] CLIMATE_VARIANTS = {
+        "temperate",
+        "warm",
+        "cold"
+    };
+
+    private static final String[] SOUND_VARIANTS = {
+        "default",
+        "picky"
+    };
+
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new EnumEntityProperty("minecraft:climate_variant", new String[]{
-            "temperate",
-            "warm",
-            "cold"
-        }, "temperate", true)
+        new EnumEntityProperty("minecraft:climate_variant", CLIMATE_VARIANTS, "temperate", true),
+        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
     @Override
@@ -152,6 +162,11 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     @Override
+    public String[] getSoundVariants() {
+        return SOUND_VARIANTS;
+    }
+
+    @Override
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
@@ -178,6 +193,8 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
         if(namedTag.contains("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+
+        this.initSoundVariantProperty();
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
@@ -211,6 +228,11 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
                     )
                 ),
                 Set.of(
+                    new Behavior(
+                        new PlaySoundExecutor(Sound.MOB_CHICKEN_SAY),
+                            new RandomSoundEvaluator(),
+                        7,1
+                    ),
                     new Behavior(
                         new BreedingExecutor(16, 200, 0.35f),
                             all(
