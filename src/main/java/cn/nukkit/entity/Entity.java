@@ -3146,8 +3146,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         attr.setMinValue(0f);
         attr.setMaxValue(resolvedJumpStrength);
 
-        attr.setDefaultMinimum(newDefaultMin);
         attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
 
         attr.setDefaultValue(resolvedJumpStrength);
         attr.setValue(resolvedJumpStrength);
@@ -3904,8 +3904,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         attr.setMinValue(0f);
         attr.setMaxValue(resolvedSpeed);
 
-        attr.setDefaultMinimum(newDefaultMin);
         attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
 
         attr.setDefaultValue(resolvedSpeed);
         attr.setValue(resolvedSpeed);
