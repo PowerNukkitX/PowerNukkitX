@@ -125,6 +125,7 @@ public class LevelDBProvider implements LevelProvider {
             Map.entry("locatorBar", "locatorbar"),
             Map.entry("pvp", "pvp")
     );
+    
     /**
      * One-time migration of legacy PNX keys to vanilla BDS format.
      *
