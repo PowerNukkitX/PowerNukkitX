@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -17,11 +16,9 @@ import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.registry.Registries;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
@@ -32,12 +29,18 @@ public class FillCommand extends VanillaCommand {
         super(name, "commands.fill.description");
         this.setPermission("nukkit.command.fill");
         this.getCommandParameters().clear();
-        this.addCommandParameters("default", new CommandParameter[]{
+        this.addCommandParameters("fill-with-states", new CommandParameter[]{
                 CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("blockStates", true, CommandParamType.BLOCK_STATES),
-                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "hollow", "keep", "outline", "replace"}),
+                CommandParameter.newType("blockStates", false, CommandParamType.BLOCK_STATES),
+                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "hollow", "keep", "outline"}),
+        });
+        this.addCommandParameters("fill-no-states", new CommandParameter[]{
+                CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "hollow", "keep", "outline"}),
         });
         this.addCommandParameters("replace", new CommandParameter[]{
                 CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
@@ -45,8 +48,16 @@ public class FillCommand extends VanillaCommand {
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("blockStates", false, CommandParamType.BLOCK_STATES),
                 CommandParameter.newEnum("oldBlockHandling", false, new String[]{"replace"}),
-                CommandParameter.newEnum("replaceTileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("blockStates", true, CommandParamType.BLOCK_STATES)
+                CommandParameter.newEnum("replaceTileName", true, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("replaceBlockStates", true, CommandParamType.BLOCK_STATES)
+        });
+        this.addCommandParameters("replace-no-states", new CommandParameter[]{
+                CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newEnum("oldBlockHandling", false, new String[]{"replace"}),
+                CommandParameter.newEnum("replaceTileName", true, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("replaceBlockStates", true, CommandParamType.BLOCK_STATES)
         });
         this.enableParamTree();
     }
@@ -59,7 +70,6 @@ public class FillCommand extends VanillaCommand {
         Block b = list.getResult(2);
         BlockState tileState = b.getProperties().getDefaultState();
         FillMode oldBlockHandling = FillMode.REPLACE;
-        BlockState replaceState = null;
 
         AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
         if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
@@ -69,8 +79,8 @@ public class FillCommand extends VanillaCommand {
 
         int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
         if (size > 16 * 16 * 16 * 8) {
-            log.addError("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 16 * 8));
-            log.addError("Operation will continue, but too many blocks may cause stuttering");
+            log.addError("commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 16 * 8)).output();
+            return 0;
         }
 
         Level level = from.getLevel();
@@ -88,10 +98,12 @@ public class FillCommand extends VanillaCommand {
 
         final BlockManager blockManager = new BlockManager(level);
         switch (result.getKey()) {
-            case "default" -> {
-                if (list.hasResult(3)) tileState = list.getResult(3);
-                if (list.hasResult(4)) {
-                    String str = list.getResult(4);
+            case "fill-with-states", "fill-no-states" -> {
+                boolean withStates = result.getKey().equals("fill-with-states");
+                if (withStates) tileState = list.getResult(3);
+                int modeIdx = withStates ? 4 : 3;
+                if (list.hasResult(modeIdx)) {
+                    String str = list.getResult(modeIdx);
                     oldBlockHandling = FillMode.valueOf(str.toUpperCase(Locale.ENGLISH));
                 }
                 switch (oldBlockHandling) {
@@ -160,25 +172,36 @@ public class FillCommand extends VanillaCommand {
                     }
                 }
             }
-            case "replace" -> {
-                if (list.hasResult(3)) tileState = list.getResult(3);
-                int tileHash;
-                if (tileState != null) {
-                    tileHash = tileState.blockStateHash();
-                } else tileHash = Objects.requireNonNull(Registries.BLOCK.get(BlockID.AIR))
-                        .getBlockState()
-                        .blockStateHash();
-
-                Block replaceBlock = list.getResult(5);
-                if (list.hasResult(6)) {
-                    replaceState = list.getResult(6);
+            case "replace", "replace-no-states" -> {
+                boolean withStates = result.getKey().equals("replace");
+                if (withStates && list.hasResult(3)) tileState = list.getResult(3);
+                int filterIdx = withStates ? 5 : 4;
+                int filterStatesIdx = withStates ? 6 : 5;
+                if (list.hasResult(filterIdx)) {
+                    Block filterBlock = list.getResult(filterIdx);
+                    blocks = getLevelBlocks(level, aabb);
+                    if (list.hasResult(filterStatesIdx)) {
+                        BlockState filterState = list.getResult(filterStatesIdx);
+                        int filterHash = filterState.blockStateHash();
+                        for (Block block : blocks) {
+                            if (block.getBlockState().blockStateHash() == filterHash) {
+                                blockManager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), tileState);
+                                ++count;
+                            }
+                        }
+                    } else {
+                        String filterId = filterBlock.getId();
+                        for (Block block : blocks) {
+                            if (block.getId().equals(filterId)) {
+                                blockManager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), tileState);
+                                ++count;
+                            }
+                        }
+                    }
                 } else {
-                    replaceState = replaceBlock.getProperties().getDefaultState();
-                }
-                blocks = getLevelBlocks(level, aabb);
-                for (Block block : blocks) {
-                    if (block.getBlockState().blockStateHash() == tileHash) {
-                        blockManager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), replaceState);
+                    blocks = getLevelBlocks(level, aabb);
+                    for (Block block : blocks) {
+                        blockManager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), tileState);
                         ++count;
                     }
                 }
