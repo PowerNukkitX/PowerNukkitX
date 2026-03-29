@@ -57,21 +57,30 @@ import java.util.Set;
  * @author BeYkeRYkt (Nukkit Project)
  */
 public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVariant {
-    @Override
-    @NotNull public String getIdentifier() {
-        return PIG;
-    }
+    private static final String[] CLIMATE_VARIANTS = {
+        "temperate",
+        "warm",
+        "cold"
+    };
+
+    private static final String[] SOUND_VARIANTS = {
+        "default",
+        "big",
+        "mini"
+    };
 
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new EnumEntityProperty("minecraft:climate_variant", new String[]{
-            "temperate",
-            "warm",
-            "cold"
-        }, "temperate", true)
+        new EnumEntityProperty("minecraft:climate_variant", CLIMATE_VARIANTS, "temperate", true),
+        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
     public EntityPig(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    @NotNull public String getIdentifier() {
+        return PIG;
     }
 
     @Override
@@ -160,6 +169,11 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     }
 
     @Override
+    public String[] getSoundVariants() {
+        return SOUND_VARIANTS;
+    }
+
+    @Override
     public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
@@ -212,6 +226,8 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
         if(namedTag.contains("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
+
+        this.initSoundVariantProperty();
     }
 
     @Override

@@ -142,6 +142,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     protected float flyingSpeed = (this instanceof EntityLiving) ? DEFAULT_FLYING_SPEED : 0;
     protected float lavaMovementSpeed = (this instanceof EntityLiving) ? DEFAULT_LAVA_MOVEMENT_SPEED : 0;
 
+    protected static final String NBT_SOUND_VARIANT = "sound_variant";
+
     public final static int DEFAULT_HEALTH = 20;
 
     public IChunk chunk;
@@ -2793,8 +2795,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         attr.setMinValue(0f);
         attr.setMaxValue(resolvedMaxHealth);
 
-        attr.setDefaultMinimum(newDefaultMin);
         attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
 
         attr.setDefaultValue(resolvedMaxHealth);
         attr.setValue(resolvedMaxHealth);
@@ -3146,8 +3148,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         attr.setMinValue(0f);
         attr.setMaxValue(resolvedJumpStrength);
 
-        attr.setDefaultMinimum(newDefaultMin);
         attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
 
         attr.setDefaultValue(resolvedJumpStrength);
         attr.setValue(resolvedJumpStrength);
@@ -3904,8 +3906,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         attr.setMinValue(0f);
         attr.setMaxValue(resolvedSpeed);
 
-        attr.setDefaultMinimum(newDefaultMin);
         attr.setDefaultMaximum(newDefaultMax);
+        attr.setDefaultMinimum(newDefaultMin);
 
         attr.setDefaultValue(resolvedSpeed);
         attr.setValue(resolvedSpeed);
@@ -4325,6 +4327,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
         pk.entityId = this.getId();
         Server.broadcastPacket(this.getViewers().values(), pk);
+    }
+
+    public String[] getSoundVariants() {
+        return new String[0];
+    }
+
+    public String getRandomSoundVariant() {
+        String[] variants = this.getSoundVariants();
+        if (variants.length == 0) {
+            return null;
+        }
+        return variants[Utils.rand(0, variants.length - 1)];
+    }
+
+    protected void initSoundVariantProperty() {
+        String soundVariant;
+        if (this.namedTag.contains(NBT_SOUND_VARIANT)) {
+            soundVariant = this.namedTag.getString(NBT_SOUND_VARIANT);
+        } else {
+            soundVariant = this.getRandomSoundVariant();
+            this.namedTag.putString(NBT_SOUND_VARIANT, soundVariant);
+        }
+        if (soundVariant == null) return;
+        this.setEnumEntityProperty("minecraft:sound_variant", soundVariant);
     }
 
     /**
