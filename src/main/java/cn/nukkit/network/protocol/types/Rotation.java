@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockJigsaw;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTrapdoor;
 import cn.nukkit.block.property.CommonPropertyMap;
@@ -93,7 +94,13 @@ public enum Rotation {
                 var rotated = GROUND_SIGN_DIRECTION.createValue((state.getPropertyValue(GROUND_SIGN_DIRECTION) + 4) % 16);
                 states.set(idx, rotated);
             } else if (type == FACING_DIRECTION) {
-                var rotated = FACING_DIRECTION.createValue(rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION)));
+                int rotatedFacing = block instanceof BlockJigsaw
+                        ? rotateFacingDirectionCounterclockwise90(state.getPropertyValue(FACING_DIRECTION))
+                        : rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION));
+                var rotated = FACING_DIRECTION.createValue(rotatedFacing);
+                states.set(idx, rotated);
+            } else if (type == ROTATION && block instanceof BlockJigsaw) {
+                var rotated = ROTATION.createValue(rotateJigsawRotationCounterclockwise90(state.getPropertyValue(ROTATION)));
                 states.set(idx, rotated);
             } else if (type == LEVER_DIRECTION) {
                 int meta = state.getPropertyValue(LEVER_DIRECTION).getMetadata();
@@ -191,6 +198,24 @@ public enum Rotation {
             return value;
         }
         return CommonPropertyMap.EWSN_DIRECTION.get(face.rotateY());
+    }
+
+    private static int rotateFacingDirectionCounterclockwise90(int meta) {
+        int extraBits = meta & ~0x7;
+        BlockFace face = BlockFace.fromIndex(meta & 0x7);
+        if (!face.getAxis().isHorizontal()) {
+            return face.getIndex() | extraBits;
+        }
+        return face.rotateYCCW().getIndex() | extraBits;
+    }
+
+    private static int rotateJigsawRotationCounterclockwise90(int value) {
+        return switch (value & 0x3) {
+            case 0 -> 3;
+            case 1 -> 0;
+            case 2 -> 1;
+            default -> 2;
+        };
     }
 
     public static BlockState counterclockwise90(BlockState state) {
