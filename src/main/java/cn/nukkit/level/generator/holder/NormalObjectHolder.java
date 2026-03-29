@@ -25,11 +25,12 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class TerrainHolder extends RandomizedObjectHolder {
+    public static class TerrainHolder extends RandomizedObjectHolder {
 
         private SimplexNoise surfaceNoise;
         private SimplexNoise jagged;
         private volatile CarvingSampler carver;
+
         public TerrainHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new SimplexNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
@@ -39,7 +40,7 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class SurfaceHolder extends RandomizedObjectHolder {
+    public static class SurfaceHolder extends RandomizedObjectHolder {
 
         private SimplexF simplexF;
 
@@ -50,10 +51,11 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class SurfaceOverwriteHolder extends RandomizedObjectHolder {
+    public static class SurfaceOverwriteHolder extends RandomizedObjectHolder {
 
         private NormalNoise surfaceNoise;
         private NormalNoise swampNoise;
+
         public SurfaceOverwriteHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
@@ -62,7 +64,7 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class FeatureHolder extends RandomizedObjectHolder {
+    public static class FeatureHolder extends RandomizedObjectHolder {
 
         private SimplexF randomClayWithDripleavesSnapToFloor;
         private SimplexF dripstoneCluster;
@@ -70,6 +72,7 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private SimplexF mossSnapToCeiling;
         private SimplexF sculkPatch;
         private SimplexNoise kelp;
+
         public FeatureHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.randomClayWithDripleavesSnapToFloor = new SimplexF(randomSourceProvider.identical(), 1f, 2 / 4f, 1 / 15f);

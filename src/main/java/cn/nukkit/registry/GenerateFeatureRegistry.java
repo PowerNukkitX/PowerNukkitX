@@ -70,7 +70,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(MangroveTreeFeature.NAME, MangroveTreeFeature.class);
             this.register(ClayGenerateFeature.NAME, ClayGenerateFeature.class);
             this.register(GravelGenerateFeature.NAME, GravelGenerateFeature.class);
-            //this.register(SandGenerateFeature.NAME, SandGenerateFeature.class);
+            this.register(SandGenerateFeature.NAME, SandGenerateFeature.class);
             this.register(CaveGenerateFeature.NAME, CaveGenerateFeature.class);
             this.register(FlowerForestFoliageFeature.NAME, FlowerForestFoliageFeature.class);
             this.register(ForestFlowerFoliageFeature.NAME, ForestFlowerFoliageFeature.class);

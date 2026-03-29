@@ -17,13 +17,14 @@ public class NetherObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class TerrainHolder extends RandomizedObjectHolder {
+    public static class TerrainHolder extends RandomizedObjectHolder {
 
         private SimplexNoise surfaceNoise;
         private SimplexNoise patchNoise;
         private SimplexNoise soulsandNoise;
         private SimplexNoise netherStateNoise;
         private SimplexNoise netherwartNoise;
+
         public TerrainHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new SimplexNoise(getRandomSourceProvider().identical(), -6, new float[]{1f, 1f, 1f});
@@ -35,10 +36,11 @@ public class NetherObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class BasaltDeltaHolder extends RandomizedObjectHolder {
+    public static class BasaltDeltaHolder extends RandomizedObjectHolder {
 
         private SimplexNoise surfaceNoise;
         private SimplexNoise surfaceSecNoise;
+
         public BasaltDeltaHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new SimplexNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});

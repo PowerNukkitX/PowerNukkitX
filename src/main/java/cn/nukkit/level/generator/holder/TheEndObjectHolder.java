@@ -15,7 +15,7 @@ public class TheEndObjectHolder extends RandomizedObjectHolder {
     }
 
     @Getter
-    public class TerrainHolder extends RandomizedObjectHolder {
+    public static class TerrainHolder extends RandomizedObjectHolder {
 
         private NoiseGeneratorOctavesD roughnessNoiseOctaves;
         private NoiseGeneratorOctavesD roughnessNoiseOctaves2;

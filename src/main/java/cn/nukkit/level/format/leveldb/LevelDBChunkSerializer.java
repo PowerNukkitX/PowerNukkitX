@@ -59,15 +59,6 @@ public class LevelDBChunkSerializer {
     private LevelDBChunkSerializer() {
     }
 
-    private static byte[] intToLittleEndian(int value) {
-        return new byte[]{
-                (byte) value,
-                (byte) (value >>> 8),
-                (byte) (value >>> 16),
-                (byte) (value >>> 24)
-        };
-    }
-
     public void serialize(WriteBatch writeBatch, IChunk chunk) {
 
         //Spawning block entities requires call the getSpawnPacket method,
@@ -78,7 +69,7 @@ public class LevelDBChunkSerializer {
         chunk.batchProcess(unsafeChunk -> {
             try {
                 writeBatch.put(LevelDBKeyUtil.VERSION.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getProvider().getDimensionData()), new byte[]{IChunk.VERSION});
-                writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), intToLittleEndian(unsafeChunk.getChunkState().ordinal() - 1));
+                writeBatch.put(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(unsafeChunk.getX(), unsafeChunk.getZ(), unsafeChunk.getDimensionData()), Utils.intToLittleEndian(unsafeChunk.getChunkState().ordinal() - 1));
                 serializeBlock(writeBatch, unsafeChunk);
                 serializeHeightAndBiome(writeBatch, unsafeChunk);
 
