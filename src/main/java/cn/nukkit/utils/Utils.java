@@ -382,6 +382,15 @@ public class Utils {
         return -1;
     }
 
+    public static byte[] intToLittleEndian(int value) {
+        return new byte[]{
+                (byte) value,
+                (byte) (value >>> 8),
+                (byte) (value >>> 16),
+                (byte) (value >>> 24)
+        };
+    }
+
     /**
      * Return a random number between the minimum (inclusive) and maximum (inclusive).
      *

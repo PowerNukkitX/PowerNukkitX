@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.noise.minecraft.noise;
 
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class NormalNoise {
 
@@ -9,7 +10,7 @@ public class NormalNoise {
     private final SimplexNoise second;
     private final double maxValue;
 
-    public NormalNoise(NukkitRandom random, int firstOctave, float[] amplitudes) {
+    public NormalNoise(RandomSourceProvider random, int firstOctave, float[] amplitudes) {
         this.first = new SimplexNoise(random, firstOctave, amplitudes);
         this.second = new SimplexNoise(random, firstOctave, amplitudes);
         int min = Integer.MAX_VALUE;

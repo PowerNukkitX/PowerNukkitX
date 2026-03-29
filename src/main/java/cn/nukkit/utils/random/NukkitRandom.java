@@ -91,6 +91,7 @@ public class NukkitRandom implements RandomSourceProvider {
         return seeds;
     }
 
+    @Override
     public NukkitRandom identical() {
         return new NukkitRandom(seeds);
     }

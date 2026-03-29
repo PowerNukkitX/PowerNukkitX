@@ -163,16 +163,16 @@ public class OceanRuinPopulator extends Populator {
                 if(block instanceof BlockAir) manager.unsetBlockStateAt(block);
                 if(block instanceof BlockStructureBlock) {
                     manager.setBlockStateAt(block, BlockChest.PROPERTIES.getDefaultState());
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         BlockChest chest = (BlockChest) manager.getBlockAt(block);
                         RandomizableContainer container = isLarge ? LARGE_CHEST_POPULATOR : SMALL_CHEST_POPULATOR;
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                    }, 10);
+                    });
                 }
                 if(block instanceof BlockMagma) {
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                    }, 10);
+                    });
                 }
                 //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                 manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());

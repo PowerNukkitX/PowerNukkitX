@@ -50,6 +50,7 @@ import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.BiomedGenerator;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.biome.BiomePicker;
+import cn.nukkit.level.generator.holder.ObjectHolder;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
@@ -342,6 +343,7 @@ public class Level implements Metadatable {
     private final Generator generator;
     private final Class<? extends Generator> generatorClass;
     private BiomePicker biomePicker;
+    private ObjectHolder generatorObjectHolder;
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
@@ -400,6 +402,7 @@ public class Level implements Metadatable {
         if (this.generator instanceof BiomedGenerator biomedGenerator) {
             this.biomePicker = biomedGenerator.createBiomePicker(this);
         }
+        this.generatorObjectHolder = this.generator.createObjectHolder(this);
         if (generatorConfig.enableAntiXray()) {
             this.setAntiXrayEnabled(true);
             antiXraySystem.reinitAntiXray(false);
@@ -3727,6 +3730,10 @@ public class Level implements Metadatable {
         return getBiomePicker().pick(x, y, z).getBiomeId();
     }
 
+    public ObjectHolder getGeneratorObjectHolder() {
+        return this.generatorObjectHolder;
+    }
+
     public Map<Long, IChunk> getChunks() {
         return requireProvider().getLoadedChunks();
     }
@@ -4497,7 +4504,7 @@ public class Level implements Metadatable {
 
 
     public boolean isChunkGenerating(int x, int z) {
-        return this.chunkGenerationQueue.containsKey(Level.chunkHash(x, z));
+        return this.chunkGenerationQueue.getOrDefault(Level.chunkHash(x, z), false);
     }
 
     public void generateChunk(int x, int z) {
@@ -4517,11 +4524,18 @@ public class Level implements Metadatable {
 
     public void syncGenerateChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
+        if(isChunkGenerating(x, z) && getChunk(x, z, false).getChunkState() == ChunkState.NEW) removeFromGenerateList(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             IChunk chunk = this.getChunk(x, z, true);
             this.generator.syncGenerate(chunk);
             chunkGenerationQueue.remove(index);
         }
+        while (isChunkGenerating(x, z));
+    }
+
+    private void removeFromGenerateList(int x, int z) {
+        long index = Level.chunkHash(x, z);
+        chunkGenerationQueue.remove(index);
     }
 
     /**

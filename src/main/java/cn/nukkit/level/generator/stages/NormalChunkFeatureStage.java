@@ -35,11 +35,9 @@ public class NormalChunkFeatureStage extends GenerateStage {
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 biomes.clear();
-                OverworldBiomeResult result = (OverworldBiomeResult) chunk.getLevel().getBiomePicker().pick(x + (chunk.getX() << 4), SEA_LEVEL, z + (chunk.getZ() << 4));
                 int y = chunk.getHeightMap(x, z);
                 for(int i = y; i > chunk.getLevel().getMinHeight(); i--) {
-                    result.correct(i - chunk.getHeightMap(x, z));
-                    biomes.add(result.getBiomeId());
+                    biomes.add(chunk.getSection(i >> 4).getBiomeId(x, i & 0x0f, z));
                 }
                 for(int biomeId : biomes) {
                     BiomeDefinition definition = Registries.BIOME.get(biomeId);

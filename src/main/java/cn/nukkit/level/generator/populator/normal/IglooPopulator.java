@@ -89,7 +89,7 @@ public class IglooPopulator extends Populator {
                 vec.y -= BOTTOM.getSizeY();
 
                 BOTTOM.preparePlace(new Position(vec.x, vec.y, vec.z, level), object);
-                level.getScheduler().scheduleTask(() -> {
+                object.addHook(() -> {
                     CompoundTag nbt = new CompoundTag()
                             .putList("Pos", new ListTag<DoubleTag>()
                                     .add(new DoubleTag( vec.x + 2.5))
@@ -124,19 +124,26 @@ public class IglooPopulator extends Populator {
                 if(block instanceof BlockStructureBlock) object.setBlockStateAt(block, BlockAir.STATE);
                 if(block instanceof BlockIce) object.setBlockStateAt(block, BlockPackedIce.PROPERTIES.getDefaultState());
                 if(block instanceof BlockBrewingStand stand) {
-                    stand.getOrCreateBlockEntity().getInventory().setResult(2, ItemSplashPotion.get(ItemPotion.SPLASH_POTION, PotionType.WEAKNESS.id()));
+                    object.addHook(() -> {
+                        stand.getOrCreateBlockEntity().getInventory().setResult(2, ItemSplashPotion.get(ItemPotion.SPLASH_POTION, PotionType.WEAKNESS.id()));
+                    });
                 }
                 if(block instanceof BlockChest chest) {
-                    CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                    object.addHook(() -> {
+                        CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                    });
                 }
                 if(block instanceof BlockBed bed) {
-                    bed.createBlockEntity(new CompoundTag().putByte("color", 14));
+                    object.addHook(() -> {
+                        bed.createBlockEntity(new CompoundTag().putByte("color", 14));
+                    });
                 }
                 if(block instanceof BlockFlowerPot pot) {
-                    pot.setFlower(Item.get(Block.CACTUS));
+                    object.addHook(() -> {
+                        pot.setFlower(Item.get(Block.CACTUS));
+                    });
                 }
             }
-            object.generateChunks();
             queueObject(chunk, object);
         }
     }

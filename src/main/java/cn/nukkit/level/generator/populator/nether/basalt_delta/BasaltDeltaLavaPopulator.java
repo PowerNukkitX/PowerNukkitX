@@ -12,7 +12,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
+import cn.nukkit.level.generator.holder.NetherObjectHolder;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.math.BlockFace;
@@ -31,8 +31,7 @@ public class BasaltDeltaLavaPopulator extends Populator {
     private static final BlockState MAGMA = BlockMagma.PROPERTIES.getDefaultState();
     private static final BlockState LAVA = BlockLava.PROPERTIES.getDefaultState();
 
-    private SimplexNoise surfaceNoise;
-    private SimplexNoise surfaceSecNoise;
+
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -42,8 +41,8 @@ public class BasaltDeltaLavaPopulator extends Populator {
         Level level = chunk.getLevel();
         int amount = random.nextInt(64) + 64;
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random, -6, new float[]{1f, 1f, 1f});
-        if(surfaceSecNoise == null) surfaceSecNoise = new SimplexNoise(random, -6, new float[]{1f, 0, 1f, 1f});
+        NetherObjectHolder.BasaltDeltaHolder noises = ((NetherObjectHolder) level.getGeneratorObjectHolder()).getBasaltDeltasHolder();
+
         BlockManager object = new BlockManager(level);
         for (int i = 0; i < amount; ++i) {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
@@ -63,9 +62,9 @@ public class BasaltDeltaLavaPopulator extends Populator {
                 for (int y = 1; y < 127; ++y) {
                     Block block = object.getBlockIfCachedOrLoaded(x + baseX, y, z + baseZ, GRAVEL);
                     if(block.getId().equals(BlockID.GRAVEL)) {
-                        float sec = surfaceSecNoise.getValue(x + baseX, y, z + baseZ);
+                        float sec = noises.getSurfaceSecNoise().getValue(x + baseX, y, z + baseZ);
                         BlockState STATE = sec < -0.9f ? BLACKSTONE : (sec < 0.8f ? BASALT : MAGMA);
-                        if(surfaceNoise.getValue(x + baseX ,y ,z + baseZ) > 0f) {
+                        if(noises.getSurfaceNoise().getValue(x + baseX ,y ,z + baseZ) > 0f) {
                             object.setBlockStateAt(x + baseX, y, z + baseZ, STATE);
                         } else {
                             boolean air = false;

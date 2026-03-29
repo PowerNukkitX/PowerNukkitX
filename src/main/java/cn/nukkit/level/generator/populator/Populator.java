@@ -29,44 +29,7 @@ public abstract class Populator {
     public abstract void apply(ChunkGenerateContext context);
 
     protected void queueObject(IChunk chunk, BlockManager object) {
-        LongOpenHashSet chunkHashes = new LongOpenHashSet();
-        BlockManager manager = new BlockManager(chunk.getLevel());
-        LevelProvider provider = chunk.getLevel().getProvider();
-        for(Block block : object.getBlocks()) {
-            IChunk target = provider.getLoadedChunk(block.getChunkX(), block.getChunkZ());
-            if(block.getChunk() != chunk) {
-                IChunk nextChunk = block.getChunk();
-                long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
-                getChunkPlacementQueue(chunkHash, chunk.getLevel()).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                chunkHashes.add(chunkHash);
-            }
-            if(target != null && target.isGenerated()) {
-                if(block.getFloorY() > chunk.getLevel().getMaxHeight()) continue;
-                if(chunk.getLevel().getMinHeight() >= block.getFloorY()) continue;
-                manager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.layer, block.getBlockState());
-            }
-        }
-
-        long origenHash = Level.chunkHash(chunk.getX(), chunk.getZ());
-        for(Long hash : chunkHashes) {
-            IChunk target = provider.getLoadedChunk(hash);
-            if(target == null) {
-                target = provider.getEmptyChunk(Level.getHashX(hash), Level.getHashZ(hash));
-                ((LevelDBProvider) provider).putChunk(hash, target);
-            }
-            CompoundTag chunkExtra = target.getExtraData();
-            if(!chunkExtra.containsList("structureAnchor")) {
-                chunkExtra.putList("structureAnchor", new ListTag<>(Tag.TAG_Long));
-            }
-            var chunks = chunkExtra.getList("structureAnchor", LongTag.class);
-            if(chunks.getAll().stream().noneMatch(longTag -> Objects.equals(longTag.getData(), origenHash))) {
-                chunks.add(new LongTag(origenHash));
-            }
-        }
-        writeOutsideChunkStructureData(chunk);
-        if(!chunk.getChunkState().canSend()) {
-            manager.applySubChunkUpdate();
-        } else manager.applyWithoutUpdate();
+        object.applySubChunkUpdate();
     }
 
     public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
