@@ -107,7 +107,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -4534,8 +4533,7 @@ public class Level implements Metadatable {
         while (isChunkGenerating(x, z));
     }
 
-    @ApiStatus.Internal
-    public void removeFromGenerateList(int x, int z) {
+    private void removeFromGenerateList(int x, int z) {
         long index = Level.chunkHash(x, z);
         chunkGenerationQueue.remove(index);
     }
