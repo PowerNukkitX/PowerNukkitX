@@ -91,14 +91,14 @@ public class PopulatorRuinedPortal extends Populator {
                     }
                 }
                 if(block instanceof BlockMagma) {
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                    }, 10);
+                    });
                 }
                 if(block instanceof BlockChest chest) {
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                    }, 10);
+                    });
                 }
                 if(level.getDimension() == Level.DIMENSION_NETHER) {
                     if (block instanceof BlockChiseledStoneBricks) {
@@ -118,7 +118,6 @@ public class PopulatorRuinedPortal extends Populator {
                     }
                 }
             }
-            manager.generateChunks();
             queueObject(chunk, manager);
         }
     }

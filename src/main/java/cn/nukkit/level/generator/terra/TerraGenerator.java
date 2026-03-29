@@ -120,6 +120,7 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
         @Override
         public void apply(ChunkGenerateContext context) {
             final IChunk chunk = context.getChunk();
+            chunk.setChunkState(ChunkState.POPULATED);
             final int chunkX = chunk.getX();
             final int chunkZ = chunk.getZ();
             var tmp1 = new PNXServerWorld(TerraGenerator.this, context.getLevel());

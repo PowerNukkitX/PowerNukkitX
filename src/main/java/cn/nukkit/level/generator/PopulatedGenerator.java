@@ -3,9 +3,7 @@ package cn.nukkit.level.generator;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.generator.stages.BiomeMapStage;
 import cn.nukkit.level.generator.stages.GeneratedStage;
-import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
 
 import java.util.Map;
 

@@ -3,15 +3,13 @@ package cn.nukkit.level.generator.stages.end;
 import cn.nukkit.block.BlockEndStone;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
-import cn.nukkit.level.generator.noise.d.NoiseGeneratorOctavesD;
+import cn.nukkit.level.generator.holder.TheEndObjectHolder;
 import cn.nukkit.level.generator.noise.d.NoiseGeneratorSimplexD;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.NukkitRandom;
 
 
 public class TheEndTerrainStage extends GenerateStage {
@@ -22,13 +20,7 @@ public class TheEndTerrainStage extends GenerateStage {
     private static final double coordinateScale = 684.412;
     private static final double detailNoiseScaleX = 80;
     private static final double detailNoiseScaleZ = 80;
-    double[] detailNoise;
-    private NoiseGeneratorOctavesD roughnessNoiseOctaves;
-    private NoiseGeneratorOctavesD roughnessNoiseOctaves2;
-    private NoiseGeneratorOctavesD detailNoiseOctaves;
-    private NoiseGeneratorSimplexD islandNoise;
 
-    private NukkitRandom random;
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -37,28 +29,24 @@ public class TheEndTerrainStage extends GenerateStage {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
 
-        if(random == null) random = new NukkitRandom(level.getSeed());
-        if(roughnessNoiseOctaves == null) roughnessNoiseOctaves = new NoiseGeneratorOctavesD(random.identical(), 16);
-        if(roughnessNoiseOctaves2 == null) roughnessNoiseOctaves2 = new NoiseGeneratorOctavesD(random.identical(), 16);
-        if(detailNoise == null) detailNoiseOctaves = new NoiseGeneratorOctavesD(random.identical(), 8);
-        if(islandNoise == null) islandNoise = new NoiseGeneratorSimplexD(random.identical());
+        TheEndObjectHolder.TerrainHolder noises = ((TheEndObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
 
         int densityX = chunkX << 1;
         int densityZ = chunkZ << 1;
         double[][][] density = new double[3][3][33];
-        double[] detailNoise = detailNoiseOctaves.generateNoiseOctaves(densityX, 0, densityZ, 3, 33,
+        double[] detailNoise = noises.getDetailNoiseOctaves().generateNoiseOctaves(densityX, 0, densityZ, 3, 33,
                 3, (coordinateScale * 2) / detailNoiseScaleX, 4.277575000000001,
                 (coordinateScale * 2) / detailNoiseScaleZ);
-        double[] roughnessNoise = roughnessNoiseOctaves.generateNoiseOctaves(densityX, 0,
+        double[] roughnessNoise = noises.getRoughnessNoiseOctaves().generateNoiseOctaves(densityX, 0,
                 densityZ, 3, 33, 3, coordinateScale * 2, coordinateScale, coordinateScale * 2);
-        double[] roughnessNoise2 = roughnessNoiseOctaves2.generateNoiseOctaves(densityX, 0,
+        double[] roughnessNoise2 = noises.getRoughnessNoiseOctaves2().generateNoiseOctaves(densityX, 0,
                 densityZ, 3, 33, 3, coordinateScale * 2, coordinateScale, coordinateScale * 2);
 
         int index = 0;
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                float noiseHeight = getIslandHeight(chunkX, chunkZ, i, j, islandNoise);
+                float noiseHeight = getIslandHeight(chunkX, chunkZ, i, j, noises.getIslandNoise());
                 for (int k = 0; k < 33; k++) {
                     double noiseR = roughnessNoise[index] / 512d;
                     double noiseR2 = roughnessNoise2[index] / 512d;

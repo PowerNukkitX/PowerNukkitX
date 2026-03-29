@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.populator.the_end;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -30,22 +29,16 @@ public class ObsidianPillarPopulator extends Populator {
                 pillarPos[i] = new Vector2(x, z);
             }
         }
-        BlockManager object = new BlockManager(level);
         for(int i = 0; i < pillarPos.length; i++) {
             Vector2 p = pillarPos[i];
             if(p.getFloorX() >> 4 == chunkX && p.getFloorY() >> 4 == chunkZ) {
+                BlockManager object = new BlockManager(level);
                 ObjectObsidianPillar pillar = new ObjectObsidianPillar();
                 pillar.i = i;
                 pillar.generate(object, null, new Vector3(p.x, level.getHeightMap(p.getFloorX(), p.getFloorY()), p.y));
+                queueObject(chunk, object);
             }
         }
-        for(Block block : object.getBlocks()) {
-            if(!block.getChunk().isGenerated()) {
-                if(block.getChunkZ() != chunkZ && block.getChunkX() != chunkX)
-                level.syncGenerateChunk(block.getChunkX(), block.getChunkZ());
-            }
-        }
-        queueObject(chunk, object);
     }
 
     @Override

@@ -5,6 +5,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.level.generator.holder.ObjectHolder;
+import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.stages.GeneratedStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
@@ -16,6 +18,7 @@ import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
 import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
 import cn.nukkit.level.generator.stages.normal.NormalWaterFloodFillStage;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.Map;
 
@@ -46,6 +49,11 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
     @Override
     public BiomePicker<OverworldBiomeResult> createBiomePicker(Level level) {
         return new OverworldBiomePicker(level);
+    }
+
+    @Override
+    public ObjectHolder createObjectHolder(Level level) {
+        return new NormalObjectHolder(new Xoroshiro128(level.getSeed()));
     }
 
     @Override

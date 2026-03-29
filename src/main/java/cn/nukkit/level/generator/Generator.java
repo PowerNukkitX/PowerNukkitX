@@ -5,6 +5,8 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.generator.holder.EmptyObjectHolder;
+import cn.nukkit.level.generator.holder.ObjectHolder;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -125,5 +127,9 @@ public abstract class Generator implements BlockID {
             asyncGenerate0(context, start.getNextStage(), to, callback);
         });
 
+    }
+
+    public ObjectHolder createObjectHolder(Level level) {
+        return new EmptyObjectHolder();
     }
 }
