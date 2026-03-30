@@ -82,7 +82,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         //Verify if the GameVersion has valid format
         if(loginData.getGameVersion().split("\\.").length != 3 && !Server.getInstance().getSettings().gameplaySettings().allowBeta()) {
-            session.close("§cPacket handling error: no beta allowed");
+            session.close("§cPacket handling error: beta isn't allowed");
             return;
         }
 
