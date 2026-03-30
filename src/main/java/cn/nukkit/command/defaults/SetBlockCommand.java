@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -9,8 +10,10 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.particle.DestroyBlockParticle;
 
 import java.util.Map;
 
@@ -20,11 +23,16 @@ public class SetBlockCommand extends VanillaCommand {
         super(name, "commands.setblock.description");
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("position", CommandParamType.POSITION),
+        this.addCommandParameters("setblock-with-states", new CommandParameter[]{
+                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData", true, CommandParamType.INT),
-                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
+                CommandParameter.newType("blockStates", false, CommandParamType.BLOCK_STATES),
+                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"}),
+        });
+        this.addCommandParameters("setblock-no-states", new CommandParameter[]{
+                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"}),
         });
         this.enableParamTree();
     }
@@ -34,19 +42,19 @@ public class SetBlockCommand extends VanillaCommand {
         var list = result.getValue();
         Position position = list.getResult(0);
         Block block = list.getResult(1);
-        try {
-            if (list.hasResult(2)) {
-                int data = list.getResult(2);
-                block = block.getProperties().getBlockState((short) data).toBlock();
-            }
-        } catch (IndexOutOfBoundsException e) {
-            log.addError("commands.setblock.notFound", block.getId()).output();
-            return 0;
+
+        boolean withStates = result.getKey().equals("setblock-with-states");
+        if (withStates) {
+            BlockState state = list.getResult(2);
+            block = state.toBlock();
         }
+
+        int modeIdx = withStates ? 3 : 2;
         String oldBlockHandling = "replace";
-        if (list.hasResult(3)) {
-            oldBlockHandling = list.getResult(3);
+        if (list.hasResult(modeIdx)) {
+            oldBlockHandling = list.getResult(modeIdx);
         }
+
         if (!sender.getPosition().level.isYInRange((int) position.y)) {
             log.addError("commands.setblock.outOfWorld").output();
             return 0;
@@ -61,10 +69,17 @@ public class SetBlockCommand extends VanillaCommand {
         if (!(current instanceof BlockAir)) {
             switch (oldBlockHandling) {
                 case "destroy" -> {
-                    if (sender.isPlayer()) {
-                        level.useBreakOn(position, null, Item.AIR, sender.asPlayer(), true, true);
-                    } else {
-                        level.useBreakOn(position);
+                    level.addParticle(new DestroyBlockParticle(current.add(0.5), current));
+                    if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
+                        for (Item drop : current.getDrops(Item.AIR)) {
+                            if (drop.getCount() > 0) {
+                                level.dropItem(current.add(0.5, 0.5, 0.5), drop);
+                            }
+                        }
+                        int exp = current.getDropExp();
+                        if (exp > 0) {
+                            level.dropExpOrb(current.add(0.5, 0.5, 0.5), exp);
+                        }
                     }
                 }
                 case "keep" -> {
