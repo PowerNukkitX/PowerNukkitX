@@ -50,7 +50,7 @@ jobs:
     name: Publish Next Major Nightly Build
     runs-on: ubuntu-latest
     needs: build-publish-maven
-    if: github.ref == 'refs/heads/next-major'
+    if: github.ref == 'refs/heads/next-major' && github.event_name == 'push'
     steps:
       - name: Checkout Source Code (Full)
         uses: actions/checkout@v6
