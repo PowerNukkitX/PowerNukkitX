@@ -71,7 +71,7 @@ public class EntityXpBottle extends EntityProjectile {
             hasUpdate = true;
         }
 
-        if (this.isCollided && !this.closed) {
+        if (this.isCollided) {
             this.explode();
             hasUpdate = true;
         }
