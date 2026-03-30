@@ -15,6 +15,8 @@ public interface RandomSourceProvider {
      */
     RandomSourceProvider fork();
 
+    RandomSourceProvider identical();
+
     /**
      * Generate random integer between {@link Integer#MIN_VALUE} and {@link Integer#MIN_VALUE}
      */

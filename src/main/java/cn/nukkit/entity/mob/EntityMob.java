@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 
 public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, EntityCanAttack {
-
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
@@ -53,10 +52,10 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     protected void initEntity() {
-        super.initEntity();
-
         this.equipmentInventory = new EntityEquipmentInventory(this);
         this.armorInventory = new EntityArmorInventory(this);
+
+        super.initEntity();
 
         if (this.namedTag.contains(TAG_MAINHAND)) {
             this.equipmentInventory.setItemInHand(NBTIO.getItemHelper(this.namedTag.getCompound(TAG_MAINHAND)), true);

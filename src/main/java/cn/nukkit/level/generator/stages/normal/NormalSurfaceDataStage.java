@@ -7,6 +7,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
@@ -24,14 +25,10 @@ public class NormalSurfaceDataStage extends GenerateStage {
 
     public static final String NAME = "normal_surface";
 
-    private SimplexF simplexF;
-
-
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-
-        if(simplexF == null) simplexF = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 1f, 2 / 4f, 1 / 10f);
+        SimplexF simplexF = ((NormalObjectHolder) chunk.getLevel().getGeneratorObjectHolder()).getSurfaceHolder().getSimplexF();
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 int y = chunk.getHeightMap(x, z);

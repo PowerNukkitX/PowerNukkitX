@@ -15,6 +15,7 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
@@ -39,7 +40,7 @@ public class SculkPatchFeature extends GenerateFeature {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(noise == null) noise = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 20f, 1 / 99f, 1 / 100f);
+        SimplexF noise = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getFeatureHolder().getSculkPatch();
         BlockManager manager = new BlockManager(level);
         for(int x = 0; x < 16; x++) {
             int baseX = ((chunk.getX() << 4) + x);

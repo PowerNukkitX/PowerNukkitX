@@ -11,11 +11,18 @@ import cn.nukkit.level.Level;
  */
 public interface EntitySmite {
     default void burn(Entity entity) {
+        boolean noHelmet = true;
+
+        if (entity instanceof EntityInventoryHolder holder) {
+            var armor = holder.getArmorInventory();
+            noHelmet = armor == null || armor.getHelmet().isNull();
+        }
+
         if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD
                 && entity.getLevel().isDaytime()
                 && !entity.getLevel().isRaining()
                 && !entity.hasEffect(EffectType.FIRE_RESISTANCE)
-                && (!(entity instanceof EntityInventoryHolder entityInventoryHolder) || entityInventoryHolder.getHelmet().isNull())
+                && noHelmet
                 && !entity.isInsideOfWater()
                 && !entity.isUnderBlock()
                 && !entity.isOnFire()) {
