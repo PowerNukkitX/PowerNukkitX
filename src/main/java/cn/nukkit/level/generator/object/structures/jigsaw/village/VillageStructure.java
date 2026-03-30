@@ -66,12 +66,12 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
+        Level level = helper.getLevel();
+        helper.addHook(() -> {
+            populatePendingChestLoot(level);
+        });
         helper.applySubChunkUpdate();
 
-        Level level = helper.getLevel();
-        level.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            populatePendingChestLoot(level);
-        }, 20);
         placedBlocks.stream()
                 .filter(BlockUnknown.class::isInstance)
                 .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));

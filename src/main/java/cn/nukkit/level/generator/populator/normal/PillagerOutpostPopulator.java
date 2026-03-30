@@ -110,19 +110,19 @@ public class PillagerOutpostPopulator extends Populator {
                 for(Block block1 : manager.getBlocks()) {
                     if(block1.isAir()) manager.unsetBlockStateAt(block1);
                     if(block1 instanceof BlockChest chest) {
-                        level.getScheduler().scheduleDelayedTask(() -> {
+                        manager.addHook(() -> {
                             CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                        }, 10);
+                        });
                     }
                     if(block1 instanceof BlockJigsaw) {
                         manager.unsetBlockStateAt(block1);
                     }
                     if(block1 instanceof BlockWallBanner banner) {
-                        level.getScheduler().scheduleDelayedTask(() -> {
+                        manager.addHook(() -> {
                             BlockEntityBanner be = banner.getOrCreateBlockEntity();
                             be.setType(1);
                             be.spawnToAll();
-                        }, 1);
+                        });
                     }
                 }
                 queueObject(chunk, manager);
@@ -175,12 +175,16 @@ public class PillagerOutpostPopulator extends Populator {
             switch (template.getName()) {
                 case "pillager_outpost/feature_cage1",
                      "pillager_outpost/feature_cage2" -> {
-                    Entity entity = Entity.createEntity(Entity.IRON_GOLEM, base.add(3.5,1,3.5));
-                    entity.spawnToAll();
+                    manager.addHook(() -> {
+                        Entity entity = Entity.createEntity(Entity.IRON_GOLEM, base.add(3.5,1,3.5));
+                        entity.spawnToAll();
+                    });
                 }
                 case "pillager_outpost/feature_cage_with_allays" ->{
-                    Entity entity = Entity.createEntity(Entity.ALLAY, base.add(4.5,2,4.5));
-                    entity.spawnToAll();
+                    manager.addHook(() -> {
+                        Entity entity = Entity.createEntity(Entity.ALLAY, base.add(4.5,2,4.5));
+                        entity.spawnToAll();
+                    });
                 }
             }
         }, 10);

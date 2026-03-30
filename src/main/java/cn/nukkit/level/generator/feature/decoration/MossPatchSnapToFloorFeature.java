@@ -14,6 +14,7 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -34,8 +35,6 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
     private static final BlockState AZALEE_FLOWER = BlockFloweringAzalea.PROPERTIES.getDefaultState();
     public static final String NAME = "minecraft:moss_patch_snap_to_floor_feature";
 
-    private SimplexF noise;
-
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
@@ -43,7 +42,7 @@ public class MossPatchSnapToFloorFeature extends GenerateFeature {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(noise == null) noise = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 2f, 2 / 4f, 1 / 10f);
+        SimplexF noise = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getFeatureHolder().getMossPatchSnapToFloor();
         BlockManager manager = new BlockManager(level);
         for(int x = 0; x < 16; x++) {
             int baseX = ((chunk.getX() << 4) + x);

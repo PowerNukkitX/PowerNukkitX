@@ -14,9 +14,12 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -50,7 +53,6 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(100);
         this.diffHandDamage = new float[]{7f, 12f, 18f};
         super.initEntity();
     }
@@ -63,6 +65,17 @@ public class EntityRavager extends EntityMob implements EntityWalkable {
     @Override
     public float getWidth() {
         return 1.2f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(100);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        // TODO: hostile movement logic
+        return MovementComponent.value(0.4f);
     }
 
     @Override

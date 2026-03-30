@@ -403,25 +403,26 @@ public class MineshaftPieces {
             if (boundingBox.isInside(vec) && level.getBlockIdAt(vec.x, vec.y, vec.z) == Block.AIR && level.getBlockIdAt(vec.x, vec.y - 1, vec.z) != Block.AIR) {
                 this.placeBlock(level, random.nextBoolean() ? RAIL__NS : RAIL__EW, x, y, z, boundingBox);
 
-                //\\ MineshaftCorridor::postProcessMobsAt(BlockSource *,Random &,BoundingBox const &)
-                IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
-                if (chunk != null) {
-                    EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
-                            chunk, new CompoundTag()
-                                    .putList("Pos", new ListTag<>()
-                                            .add(new DoubleTag(vec.getX() + 0.5))
-                                            .add(new DoubleTag(vec.getY() + 0.0625D))
-                                            .add(new DoubleTag(vec.getZ() + 0.5)))
-                                    .putList("Motion", new ListTag<>()
-                                            .add(new DoubleTag(0))
-                                            .add(new DoubleTag(0))
-                                            .add(new DoubleTag(0)))
-                                    .putList("Rotation", new ListTag<>()
-                                            .add(new FloatTag(0))
-                                            .add(new FloatTag(0)))
-                    );
-                    new ChestPopulator().create(minecart.getInventory(), random);
-                }
+                level.addHook(() -> {
+                    IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
+                    if (chunk != null) {
+                        EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
+                                chunk, new CompoundTag()
+                                        .putList("Pos", new ListTag<>()
+                                                .add(new DoubleTag(vec.getX() + 0.5))
+                                                .add(new DoubleTag(vec.getY() + 0.0625D))
+                                                .add(new DoubleTag(vec.getZ() + 0.5)))
+                                        .putList("Motion", new ListTag<>()
+                                                .add(new DoubleTag(0))
+                                                .add(new DoubleTag(0))
+                                                .add(new DoubleTag(0)))
+                                        .putList("Rotation", new ListTag<>()
+                                                .add(new FloatTag(0))
+                                                .add(new FloatTag(0)))
+                        );
+                        new ChestPopulator().create(minecart.getInventory(), random);
+                    }
+                });
 
                 return true;
             }
@@ -471,12 +472,12 @@ public class MineshaftPieces {
                     if (boundingBox.isInside(vec) && this.isInterior(level, 1, 0, pz, boundingBox)) {
                         this.hasPlacedSpider = true;
                         level.setBlockStateAt(vec.x, vec.y, vec.z, SPAWNER);
-                        level.getLevel().getScheduler().scheduleDelayedTask(() -> {
-                            Block block = level.getLevel().getBlock(vec.x, vec.y, vec.z);
+                        Block block = level.getBlockAt(vec.x, vec.y, vec.z);
+                        level.addHook(() -> {
                             if (block instanceof BlockMobSpawner spawner) {
                                 spawner.getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.CAVE_SPIDER));
                             }
-                        },20);
+                        });
                     }
                 }
             }

@@ -35,7 +35,7 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(1);
+        this.setHealthMax(1);
         super.initEntity();
         getLevel().addLevelSoundEvent(this, LevelSoundEvent.FANG, -1, EntityID.EVOCATION_FANG, false, false);
         for(Entity entity : getLevel().getCollidingEntities(getBoundingBox())) {

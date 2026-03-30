@@ -515,7 +515,9 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (getWaterloggingLevel() == 0) return false;
 
         Block fluid = this.getLevelBlockAtLayer(1);
-        return fluid instanceof BlockWater && !fluid.isAir();
+        if (fluid == null || fluid.isAir()) return false;
+
+        return fluid instanceof BlockFlowingWater;
     }
 
     public final boolean canWaterloggingFlowInto() {

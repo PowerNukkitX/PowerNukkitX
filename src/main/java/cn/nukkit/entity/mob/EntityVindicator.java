@@ -20,6 +20,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
@@ -30,6 +32,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -86,7 +89,6 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(24);
         this.diffHandDamage = new float[]{3.5f, 5f, 7.5f};
         super.initEntity();
         setItemInHand(Item.get(Item.IRON_AXE));
@@ -100,6 +102,16 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     @Override
     public float getHeight() {
         return 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(24);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.35f);
     }
 
     @Override

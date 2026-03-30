@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.noise.d;
 
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 ;
 
@@ -19,7 +20,7 @@ public class NoiseGeneratorImprovedD {
         this(new NukkitRandom(System.currentTimeMillis()));
     }
 
-    public NoiseGeneratorImprovedD(NukkitRandom random) {
+    public NoiseGeneratorImprovedD(RandomSourceProvider random) {
         this.permutations = new int[512];
         this.xCoord = random.nextDouble() * 256.0D;
         this.yCoord = random.nextDouble() * 256.0D;

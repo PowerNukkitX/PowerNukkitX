@@ -5,7 +5,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.CraftingTableInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.SpecialWindowId;
+import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.item.ItemBundle;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
@@ -21,12 +21,19 @@ public class NetworkMapping {
     public Inventory getInventory(Player player, ContainerSlotType containerSlotType, Integer dynamicId) {
         return switch (containerSlotType) {
             case HORSE_EQUIP -> {
+                if (player.getTopWindow().isPresent()) {
+                    Inventory top = player.getTopWindow().get();
+                    if (top.getType() == InventoryType.HORSE) {
+                        yield top;
+                    }
+                }
+
                 Entity riding = player.getRiding();
                 if (riding instanceof InventoryHolder inventoryHolder) {
                     yield inventoryHolder.getInventory();
-                } else {
-                    throw new IllegalArgumentException("Can't handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
                 }
+
+                throw new IllegalArgumentException("Can't handle horse inventory: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
             }
             case CREATED_OUTPUT -> player.getCreativeOutputInventory();
             case CURSOR -> player.getCursorInventory();

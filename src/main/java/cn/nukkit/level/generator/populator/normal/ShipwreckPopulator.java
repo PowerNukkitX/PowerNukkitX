@@ -162,9 +162,9 @@ public class ShipwreckPopulator extends Populator {
                         case 1, 2 -> TREASURE;
                         default -> SUPPLY;
                     };
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                    }, 10);
+                    });
                 }
                 if(block.getFloorY() <= SEA_LEVEL) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.

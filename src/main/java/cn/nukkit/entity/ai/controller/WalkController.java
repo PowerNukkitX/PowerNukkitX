@@ -13,10 +13,8 @@ import java.util.Arrays;
 
 /**
  * Handling land walking entity movement
- * todo: To be decoupled
+ * TODO: To be decoupled
  */
-
-
 public class WalkController implements IController {
 
     protected static final int JUMP_COOL_DOWN = 10;
@@ -34,7 +32,7 @@ public class WalkController implements IController {
 
         currentJumpCoolDown++;
 
-        if(currentJumpCoolDown > JUMP_COOL_DOWN && !entity.isOnGround() && !entity.isTouchingWater())  {
+        if (currentJumpCoolDown > JUMP_COOL_DOWN && !entity.isOnGround() && !entity.isTouchingWater() && entity.motionY > 0) {
             return false;
         }
 
@@ -42,40 +40,70 @@ public class WalkController implements IController {
             // Clone prevents NPE caused by asynchronous
             Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeed();
+
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 entity.setDataFlag(EntityFlag.MOVING, false);
                 return false;
             }
-            var relativeVector = direction.clone().setComponents(direction.x - entity.x,
-                    direction.y - entity.y, direction.z - entity.z);
+
+            var relativeVector = direction.clone().setComponents(
+                    direction.x - entity.x,
+                    direction.y - entity.y,
+                    direction.z - entity.z
+            );
+
             var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
                 entity.setDataFlag(EntityFlag.MOVING, false);
                 return false;
             }
+
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
             var k = speed / xzLength * 0.33;
+
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            Block target = entity.getLevel().getBlock(entity.getMoveDirectionStart());
-            if (target.down().isSolid() && relativeVector.y > 0 && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN || (entity.isTouchingWater() && !(target instanceof BlockLiquid || target.getLevel().getBlock(target, 1) instanceof BlockLiquid)  && target.down().isSolid())) {
+
+            Block under = entity.getLevel().getBlock(entity.getFloorX(), entity.getFloorY() - 1, entity.getFloorZ());
+            Block targetStart = entity.getLevel().getBlock(entity.getMoveDirectionStart());
+            boolean blockedAhead = collidesBlocks(entity, dx, 0, dz);
+            boolean waterStepOut = entity.isTouchingWater()
+                    && !(targetStart instanceof BlockLiquid || targetStart.getLevel().getBlock(targetStart, 1) instanceof BlockLiquid)
+                    && targetStart.down().isSolid();
+
+            if ((under.isSolid() && blockedAhead && currentJumpCoolDown > JUMP_COOL_DOWN) || waterStepOut) {
                 // note: From the BDS packet capture information, the collision box of the stairs is the same as that of the half brick on the server side, and the height is 0.5
-                Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, this::canJump);
+                Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(
+                        entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz),
+                        false,
+                        false,
+                        this::canJump
+                );
+
                 // Calculate the height you need to move upward
-                double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
+                double maxY = Arrays.stream(collisionBlocks)
+                        .map(b -> b.getCollisionBoundingBox().getMaxY())
+                        .max(Double::compareTo)
+                        .orElse(0.0d);
+
                 double diffY = maxY - entity.getY();
-                if (diffY > 0.01 && diffY <= 1.1) { // 1.1 gives some leeway for stairs etc.
+
+                // 1.1 gives some leeway for stairs etc.
+                if (diffY > 0.01 && diffY <= 1.1) {
                     dy += entity.getJumpingMotion(diffY);
                     currentJumpCoolDown = 0;
                 }
             }
+
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             entity.setDataFlag(EntityFlag.MOVING, true);
+
             if (xzLength < speed) {
                 needNewDirection(entity);
                 return false;
             }
+
             return true;
         } else {
             entity.setDataFlag(EntityFlag.MOVING, false);
@@ -89,7 +117,11 @@ public class WalkController implements IController {
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
-        return entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
-                false, this::canJump).length > 0;
+        return entity.level.getTickCachedCollisionBlocks(
+                entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz),
+                true,
+                false,
+                this::canJump
+        ).length > 0;
     }
 }

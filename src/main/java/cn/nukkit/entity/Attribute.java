@@ -3,17 +3,13 @@ package cn.nukkit.entity;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
-import lombok.Getter;
 
-import javax.annotation.processing.Generated;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * 属性是作用于{@link Entity}上一个的增益/减益系统。
- * <p>
  * Attributes are buffs/debuffs systems that act on {@link Entity}.
  *
  * @author Box, MagicDroidX(code), PeratX @ Nukkit Project
@@ -28,20 +24,19 @@ public class Attribute implements Cloneable {
     public static final Attribute[] EMPTY_ARRAY = new Attribute[0];
 
     /**
-     * 伤害吸收
-     * <p>
      * ABSORPTION
      */
     public static final int ABSORPTION = 0;
     /**
-     * 饱食度
-     * <p>
      * SATURATION
      */
     public static final int SATURATION = 1;
     public static final int EXHAUSTION = 2;
     public static final int KNOCKBACK_RESISTANCE = 3;
-    public static final int MAX_HEALTH = 4;
+    public static final int HEALTH = 4;
+    /** @deprecated Use {@link #HEALTH}. Planned removal: after 6 months (>= 2026-08-19). */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public static final int MAX_HEALTH = HEALTH;
     public static final int MOVEMENT_SPEED = 5;
     public static final int FOLLOW_RANGE = 6;
     public static final int MAX_HUNGER = 7;
@@ -82,7 +77,7 @@ public class Attribute implements Cloneable {
         addAttribute(SATURATION, "minecraft:player.saturation", 0.00f, 20.00f, 5.00f);
         addAttribute(EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 5.00f, 0.41f);
         addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00f, 1.00f, 0.00f);
-        addAttribute(MAX_HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
+        addAttribute(HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
         addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
         addAttribute(UNDER_WATER_MOVEMENT_SPEED, "minecraft:underwater_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);
         addAttribute(LAVA_MOVEMENT_SPEED, "minecraft:lava_movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.02f);
@@ -95,7 +90,7 @@ public class Attribute implements Cloneable {
         addAttribute(HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0, 0.7101778f, 0.7101778f);
     }
 
-    //SINCE 1.21.30
+    // Since 1.21.30
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue) {
         return addAttribute(id, name, minValue, maxValue, defaultValue, true);
     }
@@ -117,8 +112,6 @@ public class Attribute implements Cloneable {
     }
 
     /**
-     * 将这个Attribute转换成NBT
-     * <p>
      * Convert this attribute to NBT
      * <p>
      * like
@@ -148,8 +141,6 @@ public class Attribute implements Cloneable {
     }
 
     /**
-     * 从NBT获取Attribute
-     * <p>
      * Get the Attribute from NBT
      * <p>
      * like
@@ -172,22 +163,53 @@ public class Attribute implements Cloneable {
         if (NBT.containsString("Name")
                 && NBT.containsFloat("Base")
                 && NBT.containsFloat("Current")
-                && NBT.containsFloat("DefaultMax")
-                && NBT.containsFloat("DefaultMin")
                 && NBT.containsFloat("Max")
                 && NBT.containsFloat("Min")) {
-            return Attribute.getAttributeByName(NBT.getString("Name"))
-                    .setMinValue(NBT.getFloat("Min"))
-                    .setMaxValue(NBT.getFloat("Max"))
-                    .setValue(NBT.getFloat("Current"))
-                    .setDefaultValue(NBT.getFloat("Base"));
+            Attribute attr = Attribute.getAttributeByName(NBT.getString("Name"));
+            if (attr == null) {
+                throw new IllegalArgumentException("Unknown attribute: " + NBT.getString("Name"));
+            }
+
+            float min = NBT.getFloat("Min");
+            float max = NBT.getFloat("Max");
+            if (min > max) {
+                float t = min;
+                min = max;
+                max = t;
+            }
+
+            float defMin = NBT.containsFloat("DefaultMin") ? NBT.getFloat("DefaultMin") : min;
+            float defMax = NBT.containsFloat("DefaultMax") ? NBT.getFloat("DefaultMax") : max;
+            if (defMin > defMax) {
+                float t = defMin;
+                defMin = defMax;
+                defMax = t;
+            }
+
+            defMin = Math.max(min, Math.min(defMin, max));
+            defMax = Math.max(min, Math.min(defMax, max));
+
+            if (defMin > defMax) {
+                defMin = min;
+                defMax = max;
+            }
+
+            attr.setMinValue(min);
+            attr.setMaxValue(max);
+
+            attr.defaultMinimum = defMin;
+            attr.defaultMaximum = defMax;
+
+            attr.setDefaultValue(Math.min(Math.max(NBT.getFloat("Base"), min), max));
+            attr.setValue(NBT.getFloat("Current"), true);
+
+            return attr;
         }
         throw new IllegalArgumentException("NBT format error");
     }
 
+
     /**
-     * 获取对应id的{@link Attribute}。
-     * <p>
      * Get the {@link Attribute} of the corresponding id.
      *
      * @param id the id
@@ -201,8 +223,6 @@ public class Attribute implements Cloneable {
     }
 
     /**
-     * 获取对应名字的{@link Attribute}。
-     * <p>
      * Get the {@link Attribute} of the corresponding name.
      *
      * @param name name
@@ -269,6 +289,22 @@ public class Attribute implements Cloneable {
             value = Math.min(Math.max(value, this.getMinValue()), this.getMaxValue());
         }
         this.currentValue = value;
+        return this;
+    }
+
+    public Attribute setDefaultMinimum(float defaultMinimum) {
+        if (defaultMinimum > this.defaultMaximum) {
+            throw new IllegalArgumentException("DefaultMinimum " + defaultMinimum + " is bigger than DefaultMaximum " + this.defaultMaximum);
+        }
+        this.defaultMinimum = defaultMinimum;
+        return this;
+    }
+
+    public Attribute setDefaultMaximum(float defaultMaximum) {
+        if (defaultMaximum < this.defaultMinimum) {
+            throw new IllegalArgumentException("DefaultMaximum " + defaultMaximum + " is smaller than DefaultMinimum " + this.defaultMinimum);
+        }
+        this.defaultMaximum = defaultMaximum;
         return this;
     }
 

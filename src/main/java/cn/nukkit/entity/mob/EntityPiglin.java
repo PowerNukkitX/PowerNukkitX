@@ -33,6 +33,8 @@ import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerAngryPiglinSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
@@ -54,6 +56,7 @@ import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,7 +186,6 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(16);
         this.diffHandDamage = new float[]{3f, 5f, 7f};
         super.initEntity();
         if (!isBaby()) setItemInHand(Item.get(Utils.rand() ? Item.GOLDEN_SWORD : Item.CROSSBOW));
@@ -209,6 +211,17 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     @Override
     public float getHeight() {
         return 1.9f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(16);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        float ageMovement = this.isBaby() ? 0.42f : 0.35f;
+        return MovementComponent.value(ageMovement);
     }
 
     @Override
@@ -248,7 +261,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
             case Entity.HOGLIN -> {
                 if (entity instanceof EntityHoglin hoglin
                         && !hoglin.isBaby()) {
-                    if (hoglin.getHealth() - getDiffHandDamage(getServer().getDifficulty()) <= 0) {
+                    if (hoglin.getHealthCurrent() - getDiffHandDamage(getServer().getDifficulty()) <= 0) {
                         List<Entity> entities = Arrays.stream(getLevel().getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin piglin && piglin.distance(this) < 16).toList();
                         AnimateEntityPacket.Animation.AnimationBuilder builder = AnimateEntityPacket.Animation.builder();
                         builder.animation("animation.piglin.celebrate_hunt_special");

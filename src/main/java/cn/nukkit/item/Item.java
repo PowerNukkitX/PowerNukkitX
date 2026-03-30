@@ -287,6 +287,13 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
+    public boolean isFilledBucketItem() {
+        if (this.isNull()) return false;
+        String id = this.getId();
+        if (id.equals(Item.BUCKET)) return false;
+        return id.endsWith("_bucket");
+    }
+
     /**
      * Whether the item can be enchanted
      */
