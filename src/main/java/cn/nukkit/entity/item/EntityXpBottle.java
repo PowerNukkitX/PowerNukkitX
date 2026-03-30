@@ -67,12 +67,12 @@ public class EntityXpBottle extends EntityProjectile {
 
         if (this.age > 1200) {
             this.kill();
+            this.close();
             hasUpdate = true;
         }
 
-        if (this.isCollided) {
-            this.kill();
-            this.dropXp();
+        if (this.isCollided && !this.closed) {
+            this.explode();
             hasUpdate = true;
         }
 
@@ -81,8 +81,14 @@ public class EntityXpBottle extends EntityProjectile {
 
     @Override
     public void onCollideWithEntity(Entity entity) {
+        this.explode();
+    }
+
+    private void explode() {
+        if (this.closed) return;
         this.kill();
         this.dropXp();
+        this.close();
     }
 
     public void dropXp() {
