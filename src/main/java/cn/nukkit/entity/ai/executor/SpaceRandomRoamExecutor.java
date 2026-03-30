@@ -30,9 +30,21 @@ public class SpaceRandomRoamExecutor extends FlatRandomRoamExecutor {
     @Override
     protected Vector3 next(EntityIntelligent entity) {
         var random = ThreadLocalRandom.current();
+
         int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
         int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
         int y = random.nextInt(maxYRoamRange * 2) - maxYRoamRange + entity.getFloorY();
-        return new Vector3(x, y, z);
+        Vector3 target = new Vector3(x, y, z);
+
+        Vector3 direction = target.subtract(entity);
+        if (direction.lengthSquared() > 0) {
+            float pitch = (float) -Math.toDegrees(Math.atan2(direction.y, Math.sqrt(direction.x * direction.x + direction.z * direction.z)));
+
+            if (entity.isEnablePitch()) {
+                entity.setPitch(pitch);
+            }
+        }
+
+        return target;
     }
 }

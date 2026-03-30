@@ -92,4 +92,9 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
     public Set<String> typeFamily() {
         return Set.of("squid", "mob");
     }
+
+    @Override
+    public boolean isEnablePitch() {
+        return true;
+    }
 }
