@@ -64,6 +64,7 @@ public class BlockNode extends ParamNode<Block> {
 
     public String mappingLegacyBlock(String name) {
         return switch (name) {
+            case "minecraft:grass" -> "minecraft:grass_block";
             case "minecraft:stone_slab" -> "minecraft:stone_block_slab";
             case "minecraft:stone_slab2" -> "minecraft:stone_block_slab2";
             case "minecraft:stone_slab3" -> "minecraft:stone_block_slab3";

@@ -9,6 +9,8 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
+import cn.nukkit.item.Item;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -154,9 +156,21 @@ public class FillCommand extends VanillaCommand {
                     }
                     case DESTROY -> {
                         blocks = getLevelBlocks(level, aabb);
+                        boolean doDrops = level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS);
                         for (Block block : blocks) {
                             Map<Integer, Player> players = level.getChunkPlayers((int) block.x >> 4, (int) block.z >> 4);
                             level.addParticle(new DestroyBlockParticle(block.add(0.5), block), players.values());
+                            if (doDrops) {
+                                for (Item drop : block.getDrops(Item.AIR)) {
+                                    if (drop.getCount() > 0) {
+                                        level.dropItem(block.add(0.5, 0.5, 0.5), drop);
+                                    }
+                                }
+                                int exp = block.getDropExp();
+                                if (exp > 0) {
+                                    level.dropExpOrb(block.add(0.5, 0.5, 0.5), exp);
+                                }
+                            }
                             blockManager.setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), tileState);
                             ++count;
                         }

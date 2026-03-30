@@ -64,13 +64,15 @@ public class BlockStateNode extends ParamNode<BlockState> {
         String[] split = substring.split(",");
         Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
         for (var s : split) {
-            String[] property = s.split("=");
-            String nameWithQuote = property[0];
-            String valueWithQuote = property[1];
-            String key = nameWithQuote.substring(1, nameWithQuote.length() - 1);
-            String value = valueWithQuote.substring(1, valueWithQuote.length() - 1);
+            String[] property = s.split("=", 2);
+            String nameRaw = property[0];
+            String valueRaw = property[1];
+            String key = (nameRaw.startsWith("\"") && nameRaw.endsWith("\"") && nameRaw.length() >= 2)
+                    ? nameRaw.substring(1, nameRaw.length() - 1) : nameRaw;
+            String value = (valueRaw.startsWith("\"") && valueRaw.endsWith("\"") && valueRaw.length() >= 2)
+                    ? valueRaw.substring(1, valueRaw.length() - 1) : valueRaw;
             for (var propertyType : propertyTypeSet) {
-                if (properties.getIdentifier().equals(key)) {
+                if (propertyType.getName().equals(key)) {
                     if (propertyType.getType() == BlockPropertyType.Type.ENUM) {
                         if (propertyType.getValidValues().contains(value)) {
                             result = result.setPropertyValue(properties, propertyType.tryCreateValue(value));
