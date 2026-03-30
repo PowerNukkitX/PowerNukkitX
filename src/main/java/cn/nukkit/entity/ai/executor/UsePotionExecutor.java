@@ -66,14 +66,14 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         endShootSequence(entity);
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
         endShootSequence(entity);
     }
@@ -100,7 +100,7 @@ public class UsePotionExecutor implements EntityControl, IBehaviorExecutor {
             return ItemPotion.fromPotion(PotionType.WATER_BREATHING);
         } else if(!entity.hasEffect(EffectType.FIRE_RESISTANCE) && (entity.isOnFire() || Arrays.stream(entity.level.getCollisionBlocks(entity.getBoundingBox().getOffsetBoundingBox(0, -1, 0))).anyMatch(block -> block instanceof BlockMagma))) {
             return ItemPotion.fromPotion(PotionType.FIRE_RESISTANCE);
-        } else if(entity.getHealth() < entity.getMaxHealth()) {
+        } else if(entity.getHealthCurrent() < entity.getHealthMax()) {
             return ItemPotion.fromPotion(PotionType.HEALING);
         } else if(entity instanceof EntityIntelligent intelligent) {
             if(intelligent.getMemoryStorage().notEmpty(CoreMemoryTypes.BE_ATTACKED_EVENT)) {

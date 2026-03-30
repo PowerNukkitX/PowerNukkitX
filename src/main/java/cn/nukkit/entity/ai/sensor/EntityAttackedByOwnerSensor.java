@@ -1,7 +1,6 @@
 package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 public class EntityAttackedByOwnerSensor implements ISensor {
@@ -15,8 +14,8 @@ public class EntityAttackedByOwnerSensor implements ISensor {
 
     @Override
     public void sense(EntityIntelligent entity) {
-        if (entity instanceof EntityOwnable entityTamable) {
-            var player = entityTamable.getOwner();
+        if (entity.isTameable() && entity.hasOwner()) {
+            var player = entity.getOwner();
             if (player != null) {
                 var current = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                 if (!changeTarget) {

@@ -62,7 +62,13 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
             }
             case InteractPacket.ACTION_OPEN_INVENTORY -> {
                 if (targetEntity.isRideable()) {
-                    if(targetEntity.openInventory(player)) return;
+                    if (targetEntity.openInventory(player)) return;
+
+                    // If it was denied because of owner restriction: do nothing
+                    if (targetEntity.hasInventory() && targetEntity.isTamed()) {
+                        boolean restricted = targetEntity.getComponentInventory().isRestrictedToOwner();
+                        if (restricted && !player.getName().equals(targetEntity.getOwnerName())) return;
+                    }
                 } else if (targetEntity.getId() != player.getId()) {
                     return;
                 }

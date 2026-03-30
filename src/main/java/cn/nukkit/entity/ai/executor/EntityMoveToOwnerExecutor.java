@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityOwnable;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Location;
@@ -14,12 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 实体移动到主人身边.(只对实现了接口 {@link cn.nukkit.entity.EntityOwnable EntityOwnable} 的实体有效)
- * <p>
- * The entity moves to the master's side.(Only valid for entities that implement the interface {@link cn.nukkit.entity.EntityOwnable EntityOwnable})
+ * The entity moves to the master's side)
  */
-
-
 public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;
@@ -45,15 +40,15 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
-        if (entity instanceof EntityOwnable entityOwnable) {
-            Player player = entityOwnable.getOwner();
+        if (entity.isTameable() && entity.hasOwner()) {
+            Player player = entity.getOwner();
             if (player == null) return false;
 
-            //获取目的地位置（这个clone很重要）
+            // Get the destination location (this clone is very important)
             Location target = player.getLocation();
             if (target.distanceSquared(entity) <= minFollowRangeSquared) return false;
 
-            //不允许跨世界
+            // Cross-world
             if (!target.level.getName().equals(entity.level.getName()))
                 return false;
 
@@ -61,9 +56,9 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
             var distanceSquared = entity.distanceSquared(player);
             if (distanceSquared <= maxFollowRangeSquared) {
-                //更新寻路target
+                // Update pathfinding target
                 setRouteTarget(entity, target);
-                //更新视线target
+                // Update the target
                 setLookTarget(entity, target);
 
                 if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
@@ -86,7 +81,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
             } else {
                 var targetVector = randomVector3(player, 4);
                 if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
-                    return true;//继续寻找
+                    return true;// Continue searching
                 else return !entity.teleport(targetVector);
             }
         }
@@ -95,10 +90,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        //目标丢失
+        // Target lost
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // Reset speed
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
@@ -109,10 +104,10 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        //目标丢失
+        // Target lost
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        //重置速度
+        // Reset speed
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {

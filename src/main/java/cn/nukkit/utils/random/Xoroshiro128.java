@@ -21,6 +21,11 @@ public class Xoroshiro128 implements RandomSourceProvider {
     }
 
     @Override
+    public Xoroshiro128 identical() {
+        return new Xoroshiro128(seed);
+    }
+
+    @Override
     public int nextInt() {
         return (int) nextLong() & Integer.MAX_VALUE;
     }

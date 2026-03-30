@@ -8,6 +8,7 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
+import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockFace;
@@ -32,7 +33,6 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
     private static final BlockState CLAY = BlockClay.PROPERTIES.getDefaultState();
     private static final BlockState STILL_WATER = BlockWater.PROPERTIES.getDefaultState();
 
-    private SimplexF noise;
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -41,7 +41,7 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(noise == null) noise = new SimplexF(new NukkitRandom(chunk.getLevel().getSeed()), 1f, 2 / 4f, 1 / 15f);
+        SimplexF noise = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getFeatureHolder().getRandomClayWithDripleavesSnapToFloor();
         BlockManager manager = new BlockManager(level);
         for(int x = 0; x < 16; x++) {
             int baseX = ((chunk.getX() << 4) + x);

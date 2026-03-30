@@ -238,17 +238,23 @@ public class ObjectJungleTemple extends RuledObjectGenerator {
         builder.setBlockStateAt(new BlockVector3(4, 8, 5), STAIRS_W); // W
         for(Block block : builder.getBlocks()) {
             if(block instanceof BlockChest chest) {
-                CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                builder.addHook(() -> {
+                    CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                });
             }
             if(block instanceof BlockDispenser dispenser) {
-                dispenser.getOrCreateBlockEntity().getInventory().addItem(Item.get(Item.ARROW, 0, rand.nextInt(2, 8)));
+                builder.addHook(() -> {
+                    dispenser.getOrCreateBlockEntity().getInventory().addItem(Item.get(Item.ARROW, 0, rand.nextInt(2, 8)));
+                });
             }
             if(block instanceof BlockStickyPiston piston) {
-                var nbt = BlockEntity.getDefaultCompound(piston, BlockEntity.PISTON_ARM)
-                        .putInt("facing", piston.getBlockFace().getIndex())
-                        .putBoolean("Sticky", piston.sticky)
-                        .putBoolean("powered", piston.isGettingPower());
-                piston.createBlockEntity(nbt);
+                builder.addHook(() -> {
+                    var nbt = BlockEntity.getDefaultCompound(piston, BlockEntity.PISTON_ARM)
+                            .putInt("facing", piston.getBlockFace().getIndex())
+                            .putBoolean("Sticky", piston.sticky)
+                            .putBoolean("powered", piston.isGettingPower());
+                    piston.createBlockEntity(nbt);
+                });
             }
         }
 

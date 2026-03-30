@@ -1,14 +1,14 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.level.generator.stages.GeneratedStage;
 import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
 import cn.nukkit.level.generator.stages.end.TheEndPopulatorStage;
 import cn.nukkit.level.generator.stages.end.TheEndTerrainStage;
-import cn.nukkit.level.generator.stages.flat.FinishedStage;
+import cn.nukkit.level.generator.stages.FinishedStage;
 import cn.nukkit.level.generator.stages.flat.FlatGenerateStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.stages.BiomeMapStage;
-import cn.nukkit.level.generator.stages.ChunkPlacementQueueStage;
 import cn.nukkit.level.generator.stages.nether.NetherPopulatorStage;
 import cn.nukkit.level.generator.stages.nether.NetherTerrainStage;
 import cn.nukkit.level.generator.stages.normal.NormalPopulatorStage;
@@ -31,6 +31,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
         if (isLoad.getAndSet(true)) return;
         try {
             this.register(FinishedStage.NAME, FinishedStage.class);
+            this.register(GeneratedStage.NAME, GeneratedStage.class);
             this.register(FlatGenerateStage.NAME, FlatGenerateStage.class);
             this.register(LightPopulationStage.NAME, LightPopulationStage.class);
             this.register(BiomeMapStage.NAME, BiomeMapStage.class);
@@ -40,7 +41,6 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(NormalWaterFloodFillStage.NAME, NormalWaterFloodFillStage.class);
             this.register(NormalPopulatorStage.NAME, NormalPopulatorStage.class);
             this.register(NormalChunkFeatureStage.NAME, NormalChunkFeatureStage.class);
-            this.register(ChunkPlacementQueueStage.NAME, ChunkPlacementQueueStage.class);
             this.register(NetherTerrainStage.NAME, NetherTerrainStage.class);
             this.register(NetherPopulatorStage.NAME, NetherPopulatorStage.class);
             this.register(TheEndTerrainStage.NAME, TheEndTerrainStage.class);

@@ -1,7 +1,7 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.level.Location;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecutor {
 
-    //指示执行器应该从哪个Memory获取目标位置
+    // Instructs the actuator to retrieve the target location from which memory?
     protected MemoryType<? extends Vector3> memory;
     protected float speed;
     protected Vector3 oldTarget;
@@ -82,7 +82,7 @@ public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setMovementSpeed(EntityIntelligent.DEFAULT_SPEED);
+        entity.setMovementSpeed(Entity.DEFAULT_SPEED);
         entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, true);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
@@ -93,7 +93,7 @@ public class CircleAboveTargetExecutor implements EntityControl, IBehaviorExecut
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setMovementSpeed(entity.getDefaultSpeed());
+        entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, true);
         entity.setEnablePitch(false);
         if (clearDataWhenLose)

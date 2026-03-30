@@ -1,20 +1,24 @@
 package cn.nukkit.entity.ai.controller;
 
 import cn.nukkit.entity.EntityIntelligent;
+import java.util.function.BooleanSupplier;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
 
 /**
- * 处理实体Pitch/Yaw/HeadYaw
+ * Handle entity Pitch/Yaw/HeadYaw rotation to look at targets or move direction.
  */
-
-
 public class LookController implements IController {
 
-    protected boolean lookAtTarget;
-    protected boolean lookAtRoute;
+    protected final BooleanSupplier lookAtTarget;
+    protected final BooleanSupplier lookAtRoute;
 
     public LookController(boolean lookAtTarget, boolean lookAtRoute) {
+        this.lookAtTarget = () -> lookAtTarget;
+        this.lookAtRoute = () -> lookAtRoute;
+    }
+
+    public LookController(BooleanSupplier lookAtTarget, BooleanSupplier lookAtRoute) {
         this.lookAtTarget = lookAtTarget;
         this.lookAtRoute = lookAtRoute;
     }
@@ -23,20 +27,20 @@ public class LookController implements IController {
     public boolean control(EntityIntelligent entity) {
         Vector3 lookTarget = entity.getLookTarget();
 
-        if (lookAtRoute && entity.hasMoveDirection()) {
-            //clone防止异步导致的NPE
+        if (lookAtRoute.getAsBoolean() && entity.hasMoveDirection()) {
+            // Clone prevents NPE caused by asynchronous
             Vector3 moveDirectionEnd = entity.getMoveDirectionEnd().clone();
-            //构建路径方向向量
+            // Construct path direction vector
             var routeDirectionVector = new Vector3(moveDirectionEnd.x - entity.x, moveDirectionEnd.y - entity.y, moveDirectionEnd.z - entity.z);
             var yaw = BVector3.getYawFromVector(routeDirectionVector);
             entity.setYaw(yaw);
-            if (!lookAtTarget) {
+            if (!lookAtTarget.getAsBoolean()) {
                 entity.setHeadYaw(yaw);
                 if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(routeDirectionVector));
             }
         }
-        if (lookAtTarget && lookTarget != null) {
-            //构建指向玩家的向量
+        if (lookAtTarget.getAsBoolean() && lookTarget != null) {
+            // Construct a vector pointing to the player
             var toPlayerVector = new Vector3(lookTarget.x - entity.x, lookTarget.y - entity.y, lookTarget.z - entity.z);
             if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(toPlayerVector));
             entity.setHeadYaw(BVector3.getYawFromVector(toPlayerVector));

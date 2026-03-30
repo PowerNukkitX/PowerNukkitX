@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.noise.f;
 
-import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
 
 ;
 
@@ -42,12 +42,12 @@ public class SimplexF extends PerlinF {
         G44 = G4 * 4.0f - 1.0f;
     }
 
-    public SimplexF(NukkitRandom random, float octaves, float persistence) {
+    public SimplexF(RandomSourceProvider random, float octaves, float persistence) {
         super(random, octaves, persistence);
         this.offsetW = random.nextFloat() * 256;
     }
 
-    public SimplexF(NukkitRandom random, float octaves, float persistence, float expansion) {
+    public SimplexF(RandomSourceProvider random, float octaves, float persistence, float expansion) {
         super(random, octaves, persistence, expansion);
         this.offsetW = random.nextFloat() * 256;
     }

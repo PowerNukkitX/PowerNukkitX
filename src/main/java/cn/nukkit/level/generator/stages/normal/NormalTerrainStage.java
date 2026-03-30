@@ -12,6 +12,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.level.generator.noise.spline.JaggednessSpline;
 import cn.nukkit.level.generator.noise.spline.OffsetSpline;
@@ -34,9 +35,7 @@ public class NormalTerrainStage extends GenerateStage {
     public static final int SEA_LEVEL = 63;
 
     private OverworldBiomePicker picker;
-    private SimplexNoise surfaceNoise;
-    private SimplexNoise jagged;
-    private volatile CarvingSampler carver;
+
 
     private final ThreadLocal<Map<String, Double>> depthSplineMap = ThreadLocal.withInitial(HashMap::new);
     private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
@@ -53,9 +52,7 @@ public class NormalTerrainStage extends GenerateStage {
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
         if(picker == null) picker = (OverworldBiomePicker) level.getBiomePicker();
-        if(surfaceNoise == null) surfaceNoise = new SimplexNoise(random.identical(), -6, new float[]{1f, 1f, 1f});
-        if(jagged == null) jagged = new SimplexNoise(random.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
-        if (carver == null) carver = new CarvingSampler(level.getSeed());
+        NormalObjectHolder.TerrainHolder holder = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 OverworldBiomeResult result = picker.pick(baseX + x, SEA_LEVEL, baseZ + z);
@@ -77,7 +74,7 @@ public class NormalTerrainStage extends GenerateStage {
                         depthSplineMap.put("minecraft:overworld/erosion", (double) result1.getErosion());
                         depthSplineMap.put("minecraft:overworld/ridges_folded", (double) result1.getPv());
                         depthSplineMap.put("minecraft:overworld/ridges", (double) result1.getWeirdness());
-                        float jaggedValue = jagged.getValue(cx * 1500, SEA_LEVEL, cz * 1500);
+                        float jaggedValue = holder.getJagged().getValue(cx * 1500, SEA_LEVEL, cz * 1500);
 
                         if (jaggedValue < 0) jaggedValue /= 2;
                         float jaggedness = (float) (JaggednessSpline.CACHED_SPLINE.evaluate(depthSplineMap) * jaggedValue * 4);
@@ -93,9 +90,9 @@ public class NormalTerrainStage extends GenerateStage {
                 baseHeightSum = baseHeightSum / Math.max(biomeWeightSum, 1);
                 boolean solidBlockAbove = false;
                 for(int y = level.getMaxHeight() - 1; y >= level.getMinHeight(); y--) {
-                    float density = surfaceNoise.getValue((x + baseX), y,z + baseZ);
+                    float density = holder.getSurfaceNoise().getValue((x + baseX), y,z + baseZ);
                     float densityMod = ((baseHeightSum + 0.18f) - NukkitMath.remapNormalized(y, level.getMinHeight(), level.getMaxHeight())) * 24;
-                    boolean shouldCarve = carver.shouldCarve(baseX + x, y, baseZ + z, oceanBiome);
+                    boolean shouldCarve = holder.getCarver().shouldCarve(baseX + x, y, baseZ + z, oceanBiome);
                     if(density + densityMod > 0 && !shouldCarve) {
                         chunk.setBlockState(x, y, z, y < 0 ? DEEPSLATE : STONE, 0);
                         solidBlockAbove = true;

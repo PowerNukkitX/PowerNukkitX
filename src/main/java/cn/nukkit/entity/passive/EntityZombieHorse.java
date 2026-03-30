@@ -2,6 +2,8 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.EntityWalkable;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author PikyCZ
@@ -39,9 +42,13 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
     }
 
     @Override
-    public void initEntity() {
-        this.setMaxHealth(15);
-        super.initEntity();
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(15);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.range(0.205f, 0.275f);
     }
 
     @Override

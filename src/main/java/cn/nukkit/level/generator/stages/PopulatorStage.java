@@ -13,6 +13,7 @@ public abstract class PopulatorStage extends GenerateStage {
 
     @Override
     public final void apply(ChunkGenerateContext context) {
+        context.getChunk().setChunkState(ChunkState.POPULATED);
         for(String name : populators()) {
             try {
                 Populator populator = Registries.POPULATOR.get(name);
@@ -21,7 +22,6 @@ public abstract class PopulatorStage extends GenerateStage {
                 log.error("Error while applying populator {}", name, e);
             }
         }
-        context.getChunk().setChunkState(ChunkState.POPULATED);
     }
 
     public abstract ObjectArraySet<String> populators();

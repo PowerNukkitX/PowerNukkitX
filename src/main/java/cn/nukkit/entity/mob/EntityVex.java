@@ -22,6 +22,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -33,6 +35,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -103,7 +106,6 @@ public class EntityVex extends EntityMob implements EntityFlyable {
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(14);
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_TIME, getLevel().getTick());
         this.setItemInHand(Item.get(Item.IRON_SWORD));
@@ -126,6 +128,16 @@ public class EntityVex extends EntityMob implements EntityFlyable {
     @Override
     public float getHeight() {
         return 0.8f;
+    }
+
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(14);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(1.0f);
     }
 
     @Override

@@ -51,5 +51,7 @@ public interface LoginChainData {
 
     int getMemoryTier();
 
+    String getPartyId();
+
     JsonObject getRawData();
 }

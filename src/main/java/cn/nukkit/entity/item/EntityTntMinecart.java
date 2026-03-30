@@ -40,11 +40,6 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
-    public boolean isRideable() {
-        return false;
-    }
-
-    @Override
     public void initEntity() {
         super.initEntity();
 
