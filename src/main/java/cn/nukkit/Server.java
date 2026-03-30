@@ -1503,10 +1503,16 @@ public class Server {
     }
 
     public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
-        PlayerLoginEvent ev;
-        this.getPluginManager().callEvent(ev = new PlayerLoginEvent(player, "Plugin reason"));
+        PlayerLoginEvent ev = new PlayerLoginEvent(player, "Plugin reason");
+        this.getPluginManager().callEvent(ev);
+
         if (ev.isCancelled()) {
             player.close(player.getLeaveMessage(), ev.getKickMessage());
+
+            this.removeOnlinePlayer(player);
+            this.players.remove(socketAddress);
+            this.uniquePlayers.remove(player.getUniqueId());
+
             return;
         }
 
