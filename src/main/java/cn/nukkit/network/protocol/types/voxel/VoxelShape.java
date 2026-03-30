@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class VoxelShape {
-    private final List<VoxelCells> cells;
+    private final VoxelCells cells;
     private final List<Float> xCoordinates;
     private final List<Float> yCoordinates;
     private final List<Float> zCoordinates;
