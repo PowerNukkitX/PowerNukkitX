@@ -58,19 +58,13 @@ public abstract class BlockCopperGrateBase extends BlockFlowable implements Oxid
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         for (Player p : this.getLevel().getPlayers().values()) {
-            // Check if a player's position matches the target block's position
             if (p.floor().equals(block.getLocation().floor())) {
-                // Prevent block placement if a player is found at the target position
                 return false;
             }
         }
 
-        Block down = this.down();
-        if (!down.isAir()) {
-            this.getLevel().setBlock(block, this, true, true);
-            return true;
-        }
-        return false;
+        this.getLevel().setBlock(block, this, true, true);
+        return true;
     }
 
     @Override
