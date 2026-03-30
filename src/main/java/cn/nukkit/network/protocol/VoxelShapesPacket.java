@@ -29,87 +29,64 @@ public class VoxelShapesPacket extends DataPacket {
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        int shapeCount = byteBuf.readUnsignedVarInt();
-        this.shapes = new ArrayList<>(shapeCount);
+        List<VoxelShape> shapes = new ArrayList<>();
 
-        for (int i = 0; i < shapeCount; i++) {
-            int cellCount = byteBuf.readUnsignedVarInt();
-            List<VoxelCells> cells = new ArrayList<>(cellCount);
+        byteBuf.readArray(shapes, (buf) -> {
+            short xSize = buf.readUnsignedByte();
+            short ySize = buf.readUnsignedByte();
+            short zSize = buf.readUnsignedByte();
 
-            for (int c = 0; c < cellCount; c++) {
-                short xSize = byteBuf.readUnsignedByte();
-                short ySize = byteBuf.readUnsignedByte();
-                short zSize = byteBuf.readUnsignedByte();
+            List<Short> storage = new ArrayList<>();
+            buf.readArray(storage, HandleByteBuf::readUnsignedByte);
 
-                int storageSize = byteBuf.readUnsignedVarInt();
-                List<Short> storage = new ArrayList<>(storageSize);
+            VoxelCells cells = new VoxelCells(xSize, ySize, zSize, storage);
 
-                for (int s = 0; s < storageSize; s++) {
-                    storage.add(byteBuf.readUnsignedByte());
-                }
+            List<Float> xCoordinates = new ArrayList<>();
+            buf.readArray(xCoordinates, HandleByteBuf::readFloatLE);
 
-                cells.add(new VoxelCells(xSize, ySize, zSize, storage));
-            }
+            List<Float> yCoordinates = new ArrayList<>();
+            buf.readArray(yCoordinates, HandleByteBuf::readFloatLE);
 
-            int xSize = byteBuf.readUnsignedVarInt();
-            List<Float> xCoords = new ArrayList<>(xSize);
-            for (int j = 0; j < xSize; j++) xCoords.add(byteBuf.readFloatLE());
+            List<Float> zCoordinates = new ArrayList<>();
+            buf.readArray(zCoordinates, HandleByteBuf::readFloatLE);
 
-            int ySize = byteBuf.readUnsignedVarInt();
-            List<Float> yCoords = new ArrayList<>(ySize);
-            for (int j = 0; j < ySize; j++) yCoords.add(byteBuf.readFloatLE());
+            return new VoxelShape(cells, xCoordinates, yCoordinates, zCoordinates);
+        });
 
-            int zSize = byteBuf.readUnsignedVarInt();
-            List<Float> zCoords = new ArrayList<>(zSize);
-            for (int j = 0; j < zSize; j++) zCoords.add(byteBuf.readFloatLE());
+        setShapes(shapes);
 
-            shapes.add(new VoxelShape(cells, xCoords, yCoords, zCoords));
+        Map<String, Integer> nameMap = new HashMap<>();
+
+        int size = byteBuf.readUnsignedVarInt();
+        for (int i = 0; i < size; i++) {
+            nameMap.put(byteBuf.readString(), byteBuf.readUnsignedShortLE());
         }
 
-        int mapSize = byteBuf.readUnsignedVarInt();
-        this.nameMap = new HashMap<>(mapSize);
+        setNameMap(nameMap);
 
-        for (int i = 0; i < mapSize; i++) {
-            String key = byteBuf.readString();
-            int val = byteBuf.readUnsignedShortLE();
-            nameMap.put(key, val);
-        }
         setCustomShapeCount(byteBuf.readUnsignedShortLE());
     }
 
     @Override
     public void encode(HandleByteBuf buf) {
-        buf.writeUnsignedVarInt(shapes.size());
+        buf.writeArray(shapes, (shape) -> {
+            buf.writeByte(shape.getCells().getXSize());
+            buf.writeByte(shape.getCells().getYSize());
+            buf.writeByte(shape.getCells().getZSize());
 
-        for (VoxelShape shape : shapes) {
+            buf.writeArray(shape.getCells().getStorage(), (buf2, value) -> buf2.writeByte(value));
 
-            buf.writeUnsignedVarInt(shape.getCells().size());
-            for (VoxelCells cell : shape.getCells()) {
-                buf.writeByte(cell.getXSize());
-                buf.writeByte(cell.getYSize());
-                buf.writeByte(cell.getZSize());
-
-                buf.writeUnsignedVarInt(cell.getStorage().size());
-                for (short v : cell.getStorage()) {
-                    buf.writeByte(v);
-                }
-            }
-
-            buf.writeUnsignedVarInt(shape.getXCoordinates().size());
-            for (float f : shape.getXCoordinates()) buf.writeFloatLE(f);
-
-            buf.writeUnsignedVarInt(shape.getYCoordinates().size());
-            for (float f : shape.getYCoordinates()) buf.writeFloatLE(f);
-
-            buf.writeUnsignedVarInt(shape.getZCoordinates().size());
-            for (float f : shape.getZCoordinates()) buf.writeFloatLE(f);
-        }
+            buf.writeArray(shape.getXCoordinates(), HandleByteBuf::writeFloatLE);
+            buf.writeArray(shape.getYCoordinates(), HandleByteBuf::writeFloatLE);
+            buf.writeArray(shape.getZCoordinates(), HandleByteBuf::writeFloatLE);
+        });
 
         buf.writeUnsignedVarInt(nameMap.size());
         nameMap.forEach((k, v) -> {
             buf.writeString(k);
             buf.writeShortLE(v);
         });
+
         buf.writeShortLE(customShapeCount);
     }
 
