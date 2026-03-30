@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockJigsaw;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTrapdoor;

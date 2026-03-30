@@ -25,6 +25,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Jigsaw Structure for PowerNukkitX
+ * @author Buddelbubi
+ */
 public abstract class JigsawStructure {
 
     public abstract StructurePoolCollection getStructurePoolCollection();
@@ -540,6 +544,7 @@ public abstract class JigsawStructure {
                 block.getFloorZ() - origin.getZ(),
                 block.getBlockState()
         ));
+        targetHelper.getHooks().addAll(absoluteBlocks.getHooks());
     }
 
     private record Connection(Rotation childRotation, BlockVector3 childStructurePos, BlockVector3 childJigsawWorldPos,

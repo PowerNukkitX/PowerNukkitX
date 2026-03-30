@@ -1,16 +1,85 @@
 package cn.nukkit.level.generator.object.structures.jigsaw.trialchambers;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBarrel;
+import cn.nukkit.block.BlockChest;
+import cn.nukkit.block.BlockDecoratedPot;
+import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.BlockTrialSpawner;
+import cn.nukkit.block.copper.bulb.BlockCopperBulb;
+import cn.nukkit.blockentity.BlockEntityDecoratedPot;
+import cn.nukkit.blockentity.BlockEntityID;
+import cn.nukkit.blockentity.BlockEntityTrialSpawner;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.effect.PotionType;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.structures.jigsaw.JigsawStructure;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
+import cn.nukkit.level.structure.PNXStructure;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
+import java.util.Map;
+
+/**
+ * Trial Chamber Structure for PowerNukkitX
+ * @author Buddelbubi
+ */
 public class TrialChambersStructure extends JigsawStructure {
 
     private static final String START = "trial_chambers/chamber/end";
     private static final String HALLWAY_FALLBACK = "trial_chambers/hallway/fallback";
     private static final StructurePoolCollection COLLECTION;
+
+    private static final Object2ObjectMap<String, RandomizableContainer> CHEST_LOOT_CATEGORY_LOOKUP;
+    private static final Object2ObjectMap<String, RandomizableContainer> DISPENSER_LOOT_CATEGORY_LOOKUP;
+    private static final Object2ObjectMap<String, String> TRIAL_SPAWNER_ENTITY_LOOKUP;
+
+    static {
+        CHEST_LOOT_CATEGORY_LOOKUP = new Object2ObjectArrayMap<>();
+        CHEST_LOOT_CATEGORY_LOOKUP.put("corridor", new CorridorChestPopulator());
+        CHEST_LOOT_CATEGORY_LOOKUP.put("hallway", new CorridorChestPopulator());
+        CHEST_LOOT_CATEGORY_LOOKUP.put("entrance", new EntranceChestPopulator());
+        CHEST_LOOT_CATEGORY_LOOKUP.put("intersection", new IntersectionChestPopulator());
+        CHEST_LOOT_CATEGORY_LOOKUP.put("supply", new SupplyChestPopulator());
+
+        DISPENSER_LOOT_CATEGORY_LOOKUP = new Object2ObjectArrayMap<>();
+        DISPENSER_LOOT_CATEGORY_LOOKUP.put("corridor", new CorridorDispenserPopulator());
+        DISPENSER_LOOT_CATEGORY_LOOKUP.put("water", new WaterDispenserPopulator());
+        DISPENSER_LOOT_CATEGORY_LOOKUP.put("chamber", new ChamberDispenserPopulator());
+
+        TRIAL_SPAWNER_ENTITY_LOOKUP = new Object2ObjectArrayMap<>();
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("slime", EntityID.SLIME);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("cave_spider", EntityID.CAVE_SPIDER);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("silverfish", EntityID.SILVERFISH);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("spider", EntityID.SPIDER);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("breeze", EntityID.BREEZE);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("stray", EntityID.STRAY);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("poison_skeleton", EntityID.BOGGED);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("skeleton", EntityID.SKELETON);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("husk", EntityID.HUSK);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("zombie", EntityID.ZOMBIE);
+        TRIAL_SPAWNER_ENTITY_LOOKUP.put("baby_zombie", EntityID.ZOMBIE);
+
+    }
+    private static final IntersectionBarrelPopulator INTERSECTION_BARREL = new IntersectionBarrelPopulator();
+
+    private static final DecoratedPotPopulator DECORATED_POT = new DecoratedPotPopulator();
 
     @Override
     public StructurePoolCollection getStructurePoolCollection() {
@@ -46,9 +115,92 @@ public class TrialChambersStructure extends JigsawStructure {
         return 20;
     }
 
+    protected RandomizableContainer getChestLootContainer(String structureName) {
+        for (Map.Entry<String, RandomizableContainer> entry : CHEST_LOOT_CATEGORY_LOOKUP.object2ObjectEntrySet()) {
+            if (structureName.contains(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    protected RandomizableContainer getDispenserLootContainer(String structureName) {
+        for (Map.Entry<String, RandomizableContainer> entry : DISPENSER_LOOT_CATEGORY_LOOKUP.object2ObjectEntrySet()) {
+            if (structureName.contains(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    protected String getTrialSpawnerEntityId(String structureName) {
+        int lastSlash = structureName.lastIndexOf('/');
+        if (lastSlash < 0 || lastSlash + 1 >= structureName.length()) {
+            return null;
+        }
+        return TRIAL_SPAWNER_ENTITY_LOOKUP.get(structureName.substring(lastSlash + 1));
+    }
+
+    @Override
+    protected void postProcessStructurePiece(String structureName, BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
+        RandomizableContainer container = getChestLootContainer(structureName);
+        RandomizableContainer dispenserLootContainer = getDispenserLootContainer(structureName);
+        for (Block block : blockManager.getBlocks()) {
+            Level level = blockManager.getLevel();
+            switch (block) {
+                case BlockChest chest -> {
+                    if(container != null) {
+                        blockManager.addHook(() -> {
+                            container.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
+                        });
+                    }
+                }
+                case BlockBarrel barrel -> {
+                    blockManager.addHook(() -> {
+                        INTERSECTION_BARREL.create(barrel.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
+                    });
+                }
+                case BlockDispenser dispenser -> {
+                    blockManager.addHook(() -> {
+                        dispenserLootContainer.create(dispenser.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
+                    });
+                }
+                case BlockDecoratedPot decoratedPot -> {
+                    blockManager.addHook(() -> {
+                        DECORATED_POT.create(decoratedPot.getOrCreateBlockEntity(), createRandom(level, block.asBlockVector3()));
+                    });
+                }
+                case BlockCopperBulb copperBulb -> {
+                    blockManager.addHook(() -> {
+                        level.updateBlockSkyLight(copperBulb.getFloorX(), copperBulb.getFloorY(), copperBulb.getFloorZ());
+                    });
+                }
+                case BlockTrialSpawner trialSpawner -> {
+                    String entityId = getTrialSpawnerEntityId(structureName);
+                    if (entityId != null) {
+                        blockManager.addHook(() -> {
+                            BlockEntityTrialSpawner blockEntity = trialSpawner.getOrCreateBlockEntity();
+                            blockEntity.setSpawnEntityType(entityId);
+                            blockEntity.applyTrialChamberDefaults(structureName);
+                        });
+                    }
+                }
+                default -> {}
+            };
+        }
+    }
+
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         helper.applySubChunkUpdate();
+    }
+
+    protected RandomSourceProvider createRandom(Level level, BlockVector3 pos) {
+        long seed = level.getSeed();
+        seed ^= 0x9E3779B97F4A7C15L * pos.getX();
+        seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
+        seed ^= 0x165667B19E3779F9L * pos.getZ();
+        return new Xoroshiro128(seed);
     }
 
     static {
@@ -445,5 +597,186 @@ public class TrialChambersStructure extends JigsawStructure {
 
     private static StructurePool.Entry entry(String structureName, int weight) {
         return new StructurePool.Entry(structureName, weight);
+    }
+
+    protected static class CorridorChestPopulator extends RandomizableContainer {
+        public CorridorChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.IRON_AXE, 0, 1, 1, 1, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.HONEYCOMB, 0, 2, 8, 1))
+                    .register(new ItemEntry(Item.STONE_AXE, 2))
+                    .register(new ItemEntry(Item.STONE_PICKAXE, 2))
+                    .register(new ItemEntry(Item.ENDER_PEARL, 0, 1, 2, 2))
+                    .register(new ItemEntry(Block.BAMBOO_HANGING_SIGN, 0, 1, 4, 2))
+                    .register(new ItemEntry(Block.BAMBOO_PLANKS, 0, 3, 6, 2))
+                    .register(new ItemEntry(Block.SCAFFOLDING, 0, 2, 10, 2))
+                    .register(new ItemEntry(Block.TORCH, 0, 3, 6, 2))
+                    .register(new ItemEntry(Block.TUFF, 0, 8, 20, 3));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 3, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class EntranceChestPopulator extends RandomizableContainer {
+        public EntranceChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.TRIAL_KEY, 1))
+                    .register(new ItemEntry(Item.STICK, 0, 2, 5, 5))
+                    .register(new ItemEntry(Item.WOODEN_AXE, 10))
+                    .register(new ItemEntry(Item.HONEYCOMB, 0, 2, 8, 10))
+                    .register(new ItemEntry(Item.ARROW, 0, 5, 10, 10));
+
+            this.pools.put(pool1.build(), new RollEntry(2, 3, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class IntersectionChestPopulator extends RandomizableContainer {
+        public IntersectionChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Block.DIAMOND_BLOCK, 1))
+                    .register(new ItemEntry(Block.EMERALD_BLOCK, 0, 1, 3, 5))
+                    .register(new ItemEntry(Item.DIAMOND_AXE, 5))
+                    .register(new ItemEntry(Item.DIAMOND_PICKAXE, 5))
+                    .register(new ItemEntry(Item.DIAMOND, 0, 1, 2, 10))
+                    .register(new ItemEntry(Block.CAKE, 0, 1, 4, 20))
+                    .register(new ItemEntry(Item.AMETHYST_SHARD, 0, 8, 20, 20))
+                    .register(new ItemEntry(Block.IRON_BLOCK, 0, 1, 2, 20));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 3, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class IntersectionBarrelPopulator extends RandomizableContainer {
+        public IntersectionBarrelPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.DIAMOND_AXE, 0, 1, 1, 1, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.DIAMOND_PICKAXE, 1))
+                    .register(new ItemEntry(Item.DIAMOND, 0, 1, 3, 1))
+                    .register(new ItemEntry(Item.COMPASS, 1))
+                    .register(new ItemEntry(Item.BUCKET, 0, 1, 2, 1))
+                    .register(new ItemEntry(Item.GOLDEN_AXE, 4))
+                    .register(new ItemEntry(Item.GOLDEN_PICKAXE, 4))
+                    .register(new ItemEntry(Block.BAMBOO_PLANKS, 0, 5, 15, 10))
+                    .register(new ItemEntry(Item.BAKED_POTATO, 0, 6, 10, 10));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 3, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class SupplyChestPopulator extends RandomizableContainer {
+        public SupplyChestPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.ARROW, 0, 4, 14, 2))
+                    .register(new ItemEntry(Item.ARROW, 0, 4, 8, 1))
+                    .register(new ItemEntry(Item.ARROW, 0, 4, 8, 1))
+                    .register(new ItemEntry(Item.BAKED_POTATO, 0, 2, 4, 2))
+                    .register(new ItemEntry(Item.GLOW_BERRIES, 0, 2, 10, 2))
+                    .register(new ItemEntry(Block.ACACIA_PLANKS, 0, 3, 6, 1))
+                    .register(new ItemEntry(Block.MOSS_BLOCK, 0, 2, 5, 1))
+                    .register(new ItemEntry(Item.BONE_MEAL, 0, 2, 5, 1))
+                    .register(new ItemEntry(Block.TUFF, 0, 5, 10, 1))
+                    .register(new ItemEntry(Block.TORCH, 0, 3, 6, 1))
+                    .register(new ItemEntry(Item.POTION, 0, 2, 2, 1))
+                    .register(new ItemEntry(Item.POTION, 0, 2, 2, 1))
+                    .register(new ItemEntry(Item.STONE_PICKAXE, 2))
+                    .register(new ItemEntry(Item.MILK_BUCKET, 1));
+
+            this.pools.put(pool1.build(), new RollEntry(3, 5, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class CorridorDispenserPopulator extends RandomizableContainer {
+        public CorridorDispenserPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.ARROW, 0, 4, 8, 1));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 1, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class WaterDispenserPopulator extends RandomizableContainer {
+        public WaterDispenserPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.WATER_BUCKET, 1));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 1, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class ChamberDispenserPopulator extends RandomizableContainer {
+        public ChamberDispenserPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.WATER_BUCKET, 4))
+                    .register(new ItemEntry(Item.ARROW, 0, 4, 8, 4))
+                    .register(new ItemEntry(Item.SNOWBALL, 0, 4, 8, 6))
+                    .register(new ItemEntry(Item.EGG, 0, 4, 8, 2))
+                    .register(new ItemEntry(Item.FIRE_CHARGE, 0, 4, 8, 6))
+                    .register(new ItemEntry(Item.SPLASH_POTION, PotionType.SLOWNESS.id(), 2, 5, 1))
+                    .register(new ItemEntry(Item.SPLASH_POTION, PotionType.POISON.id(), 2, 5, 1))
+                    .register(new ItemEntry(Item.SPLASH_POTION, PotionType.WEAKNESS.id(), 2, 5, 1))
+                    .register(new ItemEntry(Item.LINGERING_POTION, PotionType.SLOWNESS.id(), 2, 5, 1))
+                    .register(new ItemEntry(Item.LINGERING_POTION, PotionType.POISON.id(), 2, 5, 1))
+                    .register(new ItemEntry(Item.LINGERING_POTION, PotionType.WEAKNESS.id(), 2, 5, 1))
+                    .register(new ItemEntry(Item.LINGERING_POTION, PotionType.HEALING.id(), 2, 5, 1));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 1, pool1.getTotalWeight()));
+        }
+    }
+
+    protected static class DecoratedPotPopulator extends RandomizableContainer {
+        public DecoratedPotPopulator() {
+            PoolBuilder pool1 = new PoolBuilder()
+                    .register(new ItemEntry(Item.EMERALD, 0, 1, 3, 125))
+                    .register(new ItemEntry(Item.ARROW, 0, 2, 8, 100))
+                    .register(new ItemEntry(Item.IRON_INGOT, 0, 1, 2, 100))
+                    .register(new ItemEntry(Item.TRIAL_KEY, 10))
+                    .register(new ItemEntry(Item.MUSIC_DISC_CREATOR_MUSIC_BOX, 5))
+                    .register(new ItemEntry(Item.DIAMOND, 0, 1, 2, 5))
+                    .register(new ItemEntry(Block.EMERALD_BLOCK, 5))
+                    .register(new ItemEntry(Block.DIAMOND_BLOCK, 1));
+
+            this.pools.put(pool1.build(), new RollEntry(1, 1, pool1.getTotalWeight()));
+        }
+
+        public void create(BlockEntityDecoratedPot blockEntity, RandomSourceProvider random) {
+            try {
+                this.pools.forEach((pool, roll) -> {
+                    for (int i = roll.getMin() == -1 ? roll.getMax() : NukkitMath.randomRange(random, roll.getMin(), roll.getMax()); i > 0; --i) {
+                        int result = random.nextBoundedInt(roll.getTotalWeight());
+                        for (ItemEntry entry : pool) {
+                            result -= entry.getWeight();
+                            if (result < 0) {
+                                Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
+                                applyRandomEnchantment(item, entry.getEnchantments(), random);
+                                blockEntity.setItem(item);
+                                blockEntity.namedTag.putList("sherds", createSherds(random));
+                                blockEntity.spawnToAll();
+                                return;
+                            }
+                        }
+                    }
+                });
+            } catch (Exception ignored) {}
+        }
+
+        private ListTag<StringTag> createSherds(RandomSourceProvider random) {
+            ListTag<StringTag> sherds = new ListTag<>();
+            for (int i = 0; i < 4; i++) {
+                sherds.add(new StringTag(ItemID.BRICK));
+            }
+
+            int roll = random.nextBoundedInt(13);
+            if (roll < 10) {
+                return sherds;
+            }
+
+            String sherdId = switch (roll) {
+                case 10 -> ItemID.FLOW_POTTERY_SHERD;
+                case 11 -> ItemID.GUSTER_POTTERY_SHERD;
+                default -> ItemID.SCRAPE_POTTERY_SHERD;
+            };
+            sherds.add(random.nextBoundedInt(4), new StringTag(sherdId));
+            return sherds;
+        }
     }
 }
