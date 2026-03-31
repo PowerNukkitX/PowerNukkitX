@@ -16,6 +16,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockFace;
@@ -23,15 +24,17 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.Arrays;
 import java.util.Optional;
 
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 
-public class ObjectMonsterRoom extends RuledObjectGenerator {
+public class ObjectMonsterRoom extends ObjectGenerator implements RuledObjectGenerator {
 
     private static final String[] MOBS = {EntityID.SKELETON, EntityID.ZOMBIE, EntityID.ZOMBIE, EntityID.SPIDER};
+    protected final Xoroshiro128 random = new Xoroshiro128();
 
     protected static final BlockState MOSSY_COBBLESTONE = BlockMossyCobblestone.PROPERTIES.getDefaultState();
     protected static final BlockState COBBLESTONE = BlockCobblestone.PROPERTIES.getDefaultState();

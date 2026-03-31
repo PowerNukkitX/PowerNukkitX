@@ -45,7 +45,8 @@ public class EffectRegistry implements IRegistry<EffectType, Effect, Class<? ext
         register0(EffectType.SLOW_FALLING, EffectSlowFalling.class);
         register0(EffectType.CONDUIT_POWER, EffectConduitPower.class);
         // Effects that cannot be realized at the moment
-        //register0(EffectType.BAD_OMEN, BadOmenEffect.class);
+        register0(EffectType.BAD_OMEN, EffectBadOmen.class);
+        register0(EffectType.TRIAL_OMEN, EffectTrialOmen.class);
         //register0(EffectType.VILLAGE_HERO, VillageHeroEffect.class);
         register0(EffectType.DARKNESS, EffectDarkness.class);
     }

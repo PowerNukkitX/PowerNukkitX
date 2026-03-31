@@ -9,11 +9,13 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 
 import java.util.Map;
@@ -27,10 +29,11 @@ import static cn.nukkit.block.property.CommonBlockProperties.REPEATER_DELAY;
 import static cn.nukkit.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
-public class ObjectJungleTemple extends RuledObjectGenerator {
+public class ObjectJungleTemple extends ObjectGenerator implements RuledObjectGenerator {
 
     protected static final int MIN_DISTANCE = 8;
     protected static final int MAX_DISTANCE = 32;
+    protected final Xoroshiro128 random = new Xoroshiro128();
 
     protected static final BlockState COBBLESTONE = BlockCobblestone.PROPERTIES.getDefaultState();
     protected static final BlockState MOSSY_STONE = BlockMossyCobblestone.PROPERTIES.getDefaultState();

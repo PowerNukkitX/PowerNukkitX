@@ -42,6 +42,10 @@ import java.util.Map;
 
 import static cn.nukkit.block.BlockID.*;
 
+/**
+ * Villages for PowerNukkitX
+ * @author Buddelbubi
+ */
 public abstract class VillageStructure extends JigsawStructure {
 
     private static final Object2ObjectMap<String, String> VILLAGE_LOOT_CATEGORY_LOOKUP;
