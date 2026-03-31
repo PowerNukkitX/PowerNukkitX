@@ -612,9 +612,6 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
 
     @Override
     public boolean canGenerateAt(Location location) {
-        int x = location.getFloorX();
-        int y = location.getFloorY();
-        int z = location.getFloorZ();
         int chunkX = location.getChunkX();
         int chunkZ = location.getChunkZ();
         Level level = location.getLevel();
