@@ -67,6 +67,7 @@ public class BlockEntityRegistry implements BlockEntityID, IRegistry<String, Cla
         register0(SHELF, BlockEntityShelf.class);
         register0(TRIAL_SPAWNER, BlockEntityTrialSpawner.class);
         register0(VAULT, BlockEntityVault.class);
+        register0(BRUSHABLE_BLOCK, BlockEntityBrushable.class);
     }
 
     @Override
