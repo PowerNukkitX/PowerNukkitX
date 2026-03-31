@@ -323,12 +323,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     private List<Player> getDetectedPlayers() {
         List<Player> players = new ArrayList<>();
-        double maxDistanceSquared = this.requiredPlayerRange * this.requiredPlayerRange;
-        for (Entity entity : this.level.getEntities()) {
+        for (Entity entity : this.level.getNearbyEntities(this.getBlock().getBoundingBox().grow(this.requiredPlayerRange, this.requiredPlayerRange, this.requiredPlayerRange))) {
             if (!(entity instanceof Player player) || player.isSpectator()) {
-                continue;
-            }
-            if (player.distanceSquared(this) > maxDistanceSquared) {
                 continue;
             }
             if (hasLineOfSight(player)) {
@@ -611,7 +607,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void launchLingeringPotion(Vector3 spawnPos) {
-        CompoundTag nbt = createProjectileNbt(spawnPos, new Vector3(0, -0.35d, 0), 0f, 90f)
+
+        CompoundTag nbt = Entity.getDefaultNBT(spawnPos, new Vector3(0, -0.35d, 0), 0f, 90f)
                 .putInt("PotionId", this.ominousLingeringPotion.id());
         Entity projectile = Entity.createEntity(EntityID.LINGERING_POTION, this.level.getChunk((int) spawnPos.x >> 4, (int) spawnPos.z >> 4), nbt);
         if (projectile != null) {
@@ -631,7 +628,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void launchArrow(Vector3 spawnPos, PotionType potionType) {
-        CompoundTag nbt = createProjectileNbt(spawnPos, new Vector3(0, -1.2d, 0), 0f, 90f)
+        CompoundTag nbt = Entity.getDefaultNBT(spawnPos, new Vector3(0, -1.2d, 0), 0f, 90f)
                 .putDouble("damage", 2.0d)
                 .putByte("pickup", (byte) 2);
         EntityArrow arrow = (EntityArrow) Entity.createEntity(EntityID.ARROW, this.level.getChunk((int) spawnPos.x >> 4, (int) spawnPos.z >> 4), nbt);
@@ -645,7 +642,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void launchProjectileEntity(String projectileEntityId, Vector3 spawnPos, Vector3 motion, Double damage) {
-        CompoundTag nbt = createProjectileNbt(spawnPos, motion, 0f, 90f);
+        CompoundTag nbt = Entity.getDefaultNBT(spawnPos, motion, 0f, 90f);
         if (damage != null) {
             nbt.putDouble("damage", damage);
         }
@@ -653,21 +650,6 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         if (projectile != null) {
             projectile.spawnToAll();
         }
-    }
-
-    private CompoundTag createProjectileNbt(Vector3 spawnPos, Vector3 motion, float yaw, float pitch) {
-        return new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(spawnPos.x))
-                        .add(new DoubleTag(spawnPos.y))
-                        .add(new DoubleTag(spawnPos.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(motion.x))
-                        .add(new DoubleTag(motion.y))
-                        .add(new DoubleTag(motion.z)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(yaw))
-                        .add(new FloatTag(pitch)));
     }
 
     private boolean isOminous() {

@@ -347,10 +347,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
     public String resolveLootTable(boolean ominous) {
         String normalizedLootTable = normalizeResourceKey(lootTable);
-        if (ominous && DEFAULT_LOOT_TABLE.equals(lootTable)) {
-            return "chests/trial_chambers/reward_ominous";
-        }
-        if (ominous && "chests/trial_chambers/reward".equals(normalizedLootTable)) {
+        if (ominous && ("chests/trial_chambers/reward".equals(normalizedLootTable) || DEFAULT_LOOT_TABLE.equals(lootTable))) {
             return "chests/trial_chambers/reward_ominous";
         }
         return normalizedLootTable;
