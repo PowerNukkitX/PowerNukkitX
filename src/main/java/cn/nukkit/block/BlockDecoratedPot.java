@@ -5,14 +5,22 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDecoratedPot;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -97,5 +105,33 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     @Override
     public int getWaterloggingLevel() {
         return 1;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        if (item != null && item.hasEnchantment(Enchantment.ID_SILK_TOUCH) && isShatteringTool(item)) {
+            return new Item[]{super.toItem()};
+        }
+
+        BlockEntityDecoratedPot blockEntity = getBlockEntity();
+        ListTag<StringTag> sherds = blockEntity == null ? null : blockEntity.namedTag.getList("sherds", StringTag.class);
+        var drops = new ArrayList<Item>(4);
+        for (int i = 0; i < 4; i++) {
+            String id = sherds != null && i < sherds.size() ? sherds.get(i).data : ItemID.BRICK;
+            drops.add(Item.get(id));
+        }
+        return drops.toArray(Item[]::new);
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        if(super.onBreak(item)) {
+            level.addLevelSoundEvent(this.add(Vector3.HALF), LevelSoundEvent.BREAK_DECORATED_POT);
+            return true;
+        } else return false;
+    }
+
+    private static boolean isShatteringTool(Item item) {
+        return item.isPickaxe() || item.isAxe() || item.isShovel() || item.isHoe() || item.isSword();
     }
 }

@@ -1,22 +1,14 @@
 package cn.nukkit.level.generator.populator;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.LongTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.random.Xoroshiro128;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public abstract class Populator {
 

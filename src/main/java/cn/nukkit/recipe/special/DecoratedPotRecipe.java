@@ -30,6 +30,7 @@ public class DecoratedPotRecipe extends MultiRecipe {
         return List.of(descriptor);
     }
 
+
     @Override
     public List<Item> getResults() {
         return List.of(Item.get(Block.DECORATED_POT));
