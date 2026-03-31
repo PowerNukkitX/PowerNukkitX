@@ -486,6 +486,7 @@ public class Server {
             CompletableFuture<Void> populatorF   = CompletableFuture.runAsync(Registries.POPULATOR::init,       computeThreadPool);
             CompletableFuture<Void> genFeatF     = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init,computeThreadPool);
             CompletableFuture<Void> effectF      = CompletableFuture.runAsync(Registries.EFFECT::init,          computeThreadPool);
+            CompletableFuture<Void> voxelF      = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init,      computeThreadPool);
 
             CompletableFuture<Void> blockStateF  = blockF.thenRunAsync(
                     registryCache != null
@@ -504,9 +505,6 @@ public class Server {
                             ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
                             : Registries.RECIPE::init,
                     computeThreadPool);
-
-            CompletableFuture<Void> voxelF      = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init,          computeThreadPool);
-
 
             CompletableFuture.allOf(potionF, packetF, entityF, blockEntityF, itemRtIdF, biomeF,
                     fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
