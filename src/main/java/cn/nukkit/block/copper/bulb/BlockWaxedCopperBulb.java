@@ -32,8 +32,4 @@ public class BlockWaxedCopperBulb extends BlockCopperBulbBase {
         return true;
     }
 
-    @Override
-    public int getLightLevel() {
-        return getLit() ? 15 : 0;
-    }
 }

@@ -50,7 +50,7 @@ public class BlockManager {
         this.hooks.add(runnable);
     }
 
-    protected ObjectOpenHashSet<Runnable> getHooks() {
+    public ObjectOpenHashSet<Runnable> getHooks() {
         return this.hooks;
     }
 
