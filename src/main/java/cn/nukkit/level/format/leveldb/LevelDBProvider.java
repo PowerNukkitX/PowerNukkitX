@@ -898,7 +898,8 @@ public class LevelDBProvider implements LevelProvider {
             LevelDat result = levelDatBuilder.build();
 
             if (converted) {
-                this.worldDynamicPropertiesDirty = true;
+                // Persist one-time key migration to disk (PNX -> BDS format)
+                writeLevelDat(this.path, this.getDimensionData(), result);
             }
 
             return result;
@@ -984,44 +985,45 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("eduOffer", worldData.getEduOffer());
         levelDat.putBoolean("educationFeaturesEnabled", worldData.isEducationFeaturesEnabled());
 
-        levelDat.put("commandBlockOutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
-        levelDat.put("commandBlocksEnabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());
-        levelDat.put("doDayLightCycle", worldData.getGameRules().getGameRules().get(GameRule.DO_DAYLIGHT_CYCLE).getTag());
-        levelDat.put("doEntityDrops", worldData.getGameRules().getGameRules().get(GameRule.DO_ENTITY_DROPS).getTag());
-        levelDat.put("doFireTick", worldData.getGameRules().getGameRules().get(GameRule.DO_FIRE_TICK).getTag());
-        levelDat.put("doImmediateRespawn", worldData.getGameRules().getGameRules().get(GameRule.DO_IMMEDIATE_RESPAWN).getTag());
-        levelDat.put("doInsomnia", worldData.getGameRules().getGameRules().get(GameRule.DO_INSOMNIA).getTag());
-        levelDat.put("doLimitedCrafting", worldData.getGameRules().getGameRules().get(GameRule.DO_LIMITED_CRAFTING).getTag());
-        levelDat.put("doMobLoot", worldData.getGameRules().getGameRules().get(GameRule.DO_MOB_LOOT).getTag());
-        levelDat.put("doMobSpawning", worldData.getGameRules().getGameRules().get(GameRule.DO_MOB_SPAWNING).getTag());
-        levelDat.put("doTileDrops", worldData.getGameRules().getGameRules().get(GameRule.DO_TILE_DROPS).getTag());
-        levelDat.put("doWeatherCycle", worldData.getGameRules().getGameRules().get(GameRule.DO_WEATHER_CYCLE).getTag());
-        levelDat.put("drowningDamage", worldData.getGameRules().getGameRules().get(GameRule.DROWNING_DAMAGE).getTag());
-        levelDat.put("experimentalGameplay", worldData.getGameRules().getGameRules().get(GameRule.EXPERIMENTAL_GAMEPLAY).getTag());
-        levelDat.put("fallDamage", worldData.getGameRules().getGameRules().get(GameRule.FALL_DAMAGE).getTag());
-        levelDat.put("fireDamage", worldData.getGameRules().getGameRules().get(GameRule.FIRE_DAMAGE).getTag());
-        levelDat.put("freezeDamage", worldData.getGameRules().getGameRules().get(GameRule.FREEZE_DAMAGE).getTag());
-        levelDat.put("functionCommandLimit", worldData.getGameRules().getGameRules().get(GameRule.FUNCTION_COMMAND_LIMIT).getTag());
-        levelDat.put("keepInventory", worldData.getGameRules().getGameRules().get(GameRule.KEEP_INVENTORY).getTag());
-        levelDat.put("locatorBar", worldData.getGameRules().getGameRules().get(GameRule.LOCATOR_BAR).getTag());
-        levelDat.put("maxCommandChainLength", worldData.getGameRules().getGameRules().get(GameRule.MAX_COMMAND_CHAIN_LENGTH).getTag());
-        levelDat.put("mobGriefing", worldData.getGameRules().getGameRules().get(GameRule.MOB_GRIEFING).getTag());
-        levelDat.put("naturalRegeneration", worldData.getGameRules().getGameRules().get(GameRule.NATURAL_REGENERATION).getTag());
-        levelDat.put("playersSleepingPercentage", worldData.getGameRules().getGameRules().get(GameRule.PLAYERS_SLEEPING_PERCENTAGE).getTag());
-        levelDat.put("projectilesCanBreakBlocks", worldData.getGameRules().getGameRules().get(GameRule.PROJECTILES_CAN_BREAK_BLOCKS).getTag());
+        // Write gamerules using vanilla BDS (lowercase) keys
+        levelDat.put("commandblockoutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
+        levelDat.put("commandblocksenabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());
+        levelDat.put("dodaylightcycle", worldData.getGameRules().getGameRules().get(GameRule.DO_DAYLIGHT_CYCLE).getTag());
+        levelDat.put("doentitydrops", worldData.getGameRules().getGameRules().get(GameRule.DO_ENTITY_DROPS).getTag());
+        levelDat.put("dofiretick", worldData.getGameRules().getGameRules().get(GameRule.DO_FIRE_TICK).getTag());
+        levelDat.put("doimmediaterespawn", worldData.getGameRules().getGameRules().get(GameRule.DO_IMMEDIATE_RESPAWN).getTag());
+        levelDat.put("doinsomnia", worldData.getGameRules().getGameRules().get(GameRule.DO_INSOMNIA).getTag());
+        levelDat.put("dolimitedcrafting", worldData.getGameRules().getGameRules().get(GameRule.DO_LIMITED_CRAFTING).getTag());
+        levelDat.put("domobloot", worldData.getGameRules().getGameRules().get(GameRule.DO_MOB_LOOT).getTag());
+        levelDat.put("domobspawning", worldData.getGameRules().getGameRules().get(GameRule.DO_MOB_SPAWNING).getTag());
+        levelDat.put("dotiledrops", worldData.getGameRules().getGameRules().get(GameRule.DO_TILE_DROPS).getTag());
+        levelDat.put("doweathercycle", worldData.getGameRules().getGameRules().get(GameRule.DO_WEATHER_CYCLE).getTag());
+        levelDat.put("drowningdamage", worldData.getGameRules().getGameRules().get(GameRule.DROWNING_DAMAGE).getTag());
+        levelDat.put("experimentalgameplay", worldData.getGameRules().getGameRules().get(GameRule.EXPERIMENTAL_GAMEPLAY).getTag());
+        levelDat.put("falldamage", worldData.getGameRules().getGameRules().get(GameRule.FALL_DAMAGE).getTag());
+        levelDat.put("firedamage", worldData.getGameRules().getGameRules().get(GameRule.FIRE_DAMAGE).getTag());
+        levelDat.put("freezedamage", worldData.getGameRules().getGameRules().get(GameRule.FREEZE_DAMAGE).getTag());
+        levelDat.put("functioncommandlimit", worldData.getGameRules().getGameRules().get(GameRule.FUNCTION_COMMAND_LIMIT).getTag());
+        levelDat.put("keepinventory", worldData.getGameRules().getGameRules().get(GameRule.KEEP_INVENTORY).getTag());
+        levelDat.put("locatorbar", worldData.getGameRules().getGameRules().get(GameRule.LOCATOR_BAR).getTag());
+        levelDat.put("maxcommandchainlength", worldData.getGameRules().getGameRules().get(GameRule.MAX_COMMAND_CHAIN_LENGTH).getTag());
+        levelDat.put("mobgriefing", worldData.getGameRules().getGameRules().get(GameRule.MOB_GRIEFING).getTag());
+        levelDat.put("naturalregeneration", worldData.getGameRules().getGameRules().get(GameRule.NATURAL_REGENERATION).getTag());
+        levelDat.put("playerssleepingpercentage", worldData.getGameRules().getGameRules().get(GameRule.PLAYERS_SLEEPING_PERCENTAGE).getTag());
+        levelDat.put("projectilescanbreakblocks", worldData.getGameRules().getGameRules().get(GameRule.PROJECTILES_CAN_BREAK_BLOCKS).getTag());
         levelDat.put("pvp", worldData.getGameRules().getGameRules().get(GameRule.PVP).getTag());
-        levelDat.put("randomTickSpeed", worldData.getGameRules().getGameRules().get(GameRule.RANDOM_TICK_SPEED).getTag());
-        levelDat.put("recipesUnlock", worldData.getGameRules().getGameRules().get(GameRule.RECIPES_UNLOCK).getTag());
-        levelDat.put("respawnBlocksExplode", worldData.getGameRules().getGameRules().get(GameRule.RESPAWN_BLOCKS_EXPLODE).getTag());
-        levelDat.put("sendCommandFeedback", worldData.getGameRules().getGameRules().get(GameRule.SEND_COMMAND_FEEDBACK).getTag());
-        levelDat.put("showBorderEffect", worldData.getGameRules().getGameRules().get(GameRule.SHOW_BORDER_EFFECT).getTag());
-        levelDat.put("showCoordinates", worldData.getGameRules().getGameRules().get(GameRule.SHOW_COORDINATES).getTag());
-        levelDat.put("showDaysPlayed", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DAYS_PLAYED).getTag());
-        levelDat.put("showDeathMessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DEATH_MESSAGES).getTag());
-        levelDat.put("showTags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
-        levelDat.put("spawnRadius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
-        levelDat.put("tntExplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());
-        levelDat.put("tntExplosionDropDecay", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLOSION_DROP_DECAY).getTag());
+        levelDat.put("randomtickspeed", worldData.getGameRules().getGameRules().get(GameRule.RANDOM_TICK_SPEED).getTag());
+        levelDat.put("recipesunlock", worldData.getGameRules().getGameRules().get(GameRule.RECIPES_UNLOCK).getTag());
+        levelDat.put("respawnblocksexplode", worldData.getGameRules().getGameRules().get(GameRule.RESPAWN_BLOCKS_EXPLODE).getTag());
+        levelDat.put("sendcommandfeedback", worldData.getGameRules().getGameRules().get(GameRule.SEND_COMMAND_FEEDBACK).getTag());
+        levelDat.put("showbordereffect", worldData.getGameRules().getGameRules().get(GameRule.SHOW_BORDER_EFFECT).getTag());
+        levelDat.put("showcoordinates", worldData.getGameRules().getGameRules().get(GameRule.SHOW_COORDINATES).getTag());
+        levelDat.put("showdaysplayed", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DAYS_PLAYED).getTag());
+        levelDat.put("showdeathmessages", worldData.getGameRules().getGameRules().get(GameRule.SHOW_DEATH_MESSAGES).getTag());
+        levelDat.put("showtags", worldData.getGameRules().getGameRules().get(GameRule.SHOW_TAGS).getTag());
+        levelDat.put("spawnradius", worldData.getGameRules().getGameRules().get(GameRule.SPAWN_RADIUS).getTag());
+        levelDat.put("tntexplodes", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLODES).getTag());
+        levelDat.put("tntexplosiondropdecay", worldData.getGameRules().getGameRules().get(GameRule.TNT_EXPLOSION_DROP_DECAY).getTag());
 
         //PNX Custom field
         levelDat.putBoolean("raining", worldData.isRaining());
