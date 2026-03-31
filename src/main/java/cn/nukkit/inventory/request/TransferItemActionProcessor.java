@@ -39,7 +39,6 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         int destinationStackNetworkId = action.getDestination().getStackNetworkId();
         int count = action.getCount();
         var sourItem = source.getUnclonedItem(sourceSlot);
-
         if (sourItem.isNull()) {
             log.debug("transfer an air item is not allowed");
             return context.error();

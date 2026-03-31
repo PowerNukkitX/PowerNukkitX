@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockJigsaw;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTrapdoor;
 import cn.nukkit.block.property.CommonPropertyMap;
@@ -33,6 +34,14 @@ public enum Rotation {
 
     public static Rotation from(int id) {
         return VALUES[id];
+    }
+
+    public Rotation rotateBy(Rotation other) {
+        return VALUES[(this.ordinal() + other.ordinal()) & 0x3];
+    }
+
+    public static Rotation combine(Rotation first, Rotation second) {
+        return first.rotateBy(second);
     }
 
     public static BlockState clockwise90(BlockState state) {
@@ -93,7 +102,13 @@ public enum Rotation {
                 var rotated = GROUND_SIGN_DIRECTION.createValue((state.getPropertyValue(GROUND_SIGN_DIRECTION) + 4) % 16);
                 states.set(idx, rotated);
             } else if (type == FACING_DIRECTION) {
-                var rotated = FACING_DIRECTION.createValue(rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION)));
+                int rotatedFacing = block instanceof BlockJigsaw
+                        ? rotateFacingDirectionCounterclockwise90(state.getPropertyValue(FACING_DIRECTION))
+                        : rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION));
+                var rotated = FACING_DIRECTION.createValue(rotatedFacing);
+                states.set(idx, rotated);
+            } else if (type == ROTATION && block instanceof BlockJigsaw) {
+                var rotated = ROTATION.createValue(rotateJigsawRotationClockwise90(state.getPropertyValue(ROTATION)));
                 states.set(idx, rotated);
             } else if (type == LEVER_DIRECTION) {
                 int meta = state.getPropertyValue(LEVER_DIRECTION).getMetadata();
@@ -191,6 +206,24 @@ public enum Rotation {
             return value;
         }
         return CommonPropertyMap.EWSN_DIRECTION.get(face.rotateY());
+    }
+
+    private static int rotateFacingDirectionCounterclockwise90(int meta) {
+        int extraBits = meta & ~0x7;
+        BlockFace face = BlockFace.fromIndex(meta & 0x7);
+        if (!face.getAxis().isHorizontal()) {
+            return face.getIndex() | extraBits;
+        }
+        return face.rotateYCCW().getIndex() | extraBits;
+    }
+
+    private static int rotateJigsawRotationClockwise90(int value) {
+        return switch (value & 0x3) {
+            case 0 -> 1;
+            case 1 -> 2;
+            case 2 -> 3;
+            default -> 0;
+        };
     }
 
     public static BlockState counterclockwise90(BlockState state) {
