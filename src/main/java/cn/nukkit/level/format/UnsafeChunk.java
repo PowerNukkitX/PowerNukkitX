@@ -20,6 +20,11 @@ public class UnsafeChunk {
     }
 
     @ApiStatus.Internal
+    public Chunk getChunk() {
+        return chunk;
+    }
+
+    @ApiStatus.Internal
     public ChunkSection[] getSections() {
         return this.chunk.sections;
     }

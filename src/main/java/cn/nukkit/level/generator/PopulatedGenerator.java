@@ -3,6 +3,7 @@ package cn.nukkit.level.generator;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.generator.stages.GeneratedStage;
 
 import java.util.Map;
 
@@ -14,7 +15,9 @@ public abstract class PopulatedGenerator extends Generator {
         super(dimensionData, options);
     }
 
-    public abstract String getLastTerrainStage();
+    public String getLastTerrainStage() {
+        return GeneratedStage.NAME;
+    }
 
     @Override
     protected String getEndName(IChunk chunk) {

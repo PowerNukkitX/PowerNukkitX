@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.terra;
 
-import cn.nukkit.Server;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkState;
@@ -8,8 +7,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.PopulatedGenerator;
+import cn.nukkit.level.generator.stages.GeneratedStage;
 import cn.nukkit.level.generator.stages.LightPopulationStage;
-import cn.nukkit.level.generator.stages.flat.FinishedStage;
+import cn.nukkit.level.generator.stages.FinishedStage;
 import cn.nukkit.level.generator.terra.delegate.PNXProtoChunk;
 import cn.nukkit.level.generator.terra.delegate.PNXProtoWorld;
 import cn.nukkit.level.generator.terra.delegate.PNXServerWorld;
@@ -66,13 +66,9 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
     }
 
     @Override
-    public String getLastTerrainStage() {
-        return "terra_terrain";
-    }
-
-    @Override
     public void stages(GenerateStage.Builder builder) {
         builder.start(new TerrainStage());
+        builder.next(Registries.GENERATE_STAGE.get(GeneratedStage.NAME));
         builder.next(new PopulateStage());
         builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
@@ -111,7 +107,6 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
                     }
                 }
             }
-            chunk.setChunkState(ChunkState.GENERATED);
         }
 
         @Override
@@ -125,6 +120,7 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
         @Override
         public void apply(ChunkGenerateContext context) {
             final IChunk chunk = context.getChunk();
+            chunk.setChunkState(ChunkState.POPULATED);
             final int chunkX = chunk.getX();
             final int chunkZ = chunk.getZ();
             var tmp1 = new PNXServerWorld(TerraGenerator.this, context.getLevel());

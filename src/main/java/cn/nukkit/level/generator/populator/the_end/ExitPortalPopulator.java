@@ -23,9 +23,7 @@ public class ExitPortalPopulator extends Populator {
             BlockManager object = new BlockManager(level);
             ObjectExitPortal exitPortal = new ObjectExitPortal();
             exitPortal.generate(object, null, new Vector3(0, chunk.getHeightMap(0, 0), 0));
-            object.generateChunks();
             object.applySubChunkUpdate();
-            queueObject(chunk, object);
         }
     }
 

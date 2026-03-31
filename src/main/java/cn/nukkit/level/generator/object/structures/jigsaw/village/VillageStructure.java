@@ -42,6 +42,10 @@ import java.util.Map;
 
 import static cn.nukkit.block.BlockID.*;
 
+/**
+ * Villages for PowerNukkitX
+ * @author Buddelbubi
+ */
 public abstract class VillageStructure extends JigsawStructure {
 
     private static final Object2ObjectMap<String, String> VILLAGE_LOOT_CATEGORY_LOOKUP;
@@ -66,12 +70,12 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
+        Level level = helper.getLevel();
+        helper.addHook(() -> {
+            populatePendingChestLoot(level);
+        });
         helper.applySubChunkUpdate();
 
-        Level level = helper.getLevel();
-        level.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            populatePendingChestLoot(level);
-        }, 20);
         placedBlocks.stream()
                 .filter(BlockUnknown.class::isInstance)
                 .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));

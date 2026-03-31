@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.AxisAlignedBB;
@@ -25,7 +26,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_VERTICAL_HALF;
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
-public class ObjectDesertPyramid extends RuledObjectGenerator {
+public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectGenerator {
 
     protected static final BlockState SANDSTONE = BlockSandstone.PROPERTIES.getDefaultState();
     protected static final BlockState CUT_SANDSTONE = BlockCutSandstone.PROPERTIES.getDefaultState();
@@ -48,6 +49,7 @@ public class ObjectDesertPyramid extends RuledObjectGenerator {
     protected static final BlockState CHEST_W = BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.WEST));
 
     protected static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
+    protected final Xoroshiro128 random = new Xoroshiro128();
 
     @Override
     public boolean generate(BlockManager manager, RandomSourceProvider rand1, Vector3 position) {

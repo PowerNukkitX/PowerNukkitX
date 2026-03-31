@@ -1314,6 +1314,15 @@ public enum Sound {
     USE_STONE("use.stone"),
     USE_VINES("use.vines"),
     USE_WOOD("use.wood"),
+    VAULT_AMBIENT("vault.ambient"),
+    VAULT_ACTIVATE("vault.activate"),
+    VAULT_DEACTIVATE("vault.deactivate"),
+    VAULT_OPEN_SHUTTER("vault.open_shutter"),
+    VAULT_CLOSE_SHUTTER("vault.close_shutter"),
+    VAULT_EJECT_ITEM("vault.eject_item"),
+    VAULT_INSERT_ITEM("vault.insert_item"),
+    VAULT_INSERT_ITEM_FAIL("vault.insert_item_fail"),
+    VAULT_REJECT_REWARDED_PLAYER("vault.reject_rewarded_player"),
     VR_STUTTERTURN("vr.stutterturn");
 
     private final String sound;

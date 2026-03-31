@@ -37,11 +37,15 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
             String name1 = entry.getKey();
             String identifier = name + (name.isEmpty() ? "" : "/") + name1;
             if(entry.getValue() instanceof CompoundTag tag1) {
-                if(tag1.getTags().containsKey("palette")) {
-                    PNXStructure structure = PNXStructure.fromNbt(tag1);
+                if(tag1.getTags().containsKey("object")) {
+                    PNXStructure structure = PNXStructure.fromNbt(tag1.getCompound("object"));
                     structure.setName(identifier);
                     this.register(structure);
-                } else registerFromTag(identifier, tag1);
+                    tag1.remove("object");
+                }
+                if(!tag1.isEmpty()) {
+                    registerFromTag(identifier, tag1);
+                }
             }
         }
     }

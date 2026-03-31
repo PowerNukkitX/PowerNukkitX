@@ -35,6 +35,7 @@ public final class BiomeTags {
     public static final String FROZEN = "frozen";
     public static final String FROZEN_PEAKS = "frozen_peaks";
     public static final String GROVE = "grove";
+    public static final String HAS_STRUCTURE_TRAIL_RUINS = "has_structure_trail_ruins";
     public static final String HILLS = "hills";
     public static final String ICE = "ice";
     public static final String ICE_PLAINS = "ice_plains";
