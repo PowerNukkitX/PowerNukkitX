@@ -247,6 +247,9 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.COPPER_BARS);
         randomTickBlocks.add(BlockID.EXPOSED_COPPER_BARS);
         randomTickBlocks.add(BlockID.WEATHERED_COPPER_BARS);
+        randomTickBlocks.add(BlockID.COPPER_GRATE);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_GRATE);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_GRATE);
         randomTickBlocks.add(BlockID.COPPER_CHAIN);
         randomTickBlocks.add(BlockID.EXPOSED_COPPER_CHAIN);
         randomTickBlocks.add(BlockID.WEATHERED_COPPER_CHAIN);

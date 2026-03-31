@@ -171,6 +171,9 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public abstract boolean isBlockEntityValid();
 
     public boolean onUpdate() {
+        if(!isBlockEntityValid()) {
+            close();
+        }
         return false;
     }
 

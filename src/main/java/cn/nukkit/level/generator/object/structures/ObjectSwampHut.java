@@ -5,16 +5,18 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
 
-public class ObjectSwampHut extends RuledObjectGenerator {
+public class ObjectSwampHut extends ObjectGenerator implements RuledObjectGenerator {
 
     protected static final BlockState SPRUCE_PLANKS = BlockSprucePlanks.PROPERTIES.getDefaultState();
     protected static final BlockState FLOWER_POT = BlockFlowerPot.PROPERTIES.getDefaultState();
@@ -26,6 +28,7 @@ public class ObjectSwampHut extends RuledObjectGenerator {
     protected static final BlockState STAIRS_E = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(1));
     protected static final BlockState STAIRS_S = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(3));
     protected static final BlockState STAIRS_W = BlockSpruceStairs.PROPERTIES.getBlockState(WEIRDO_DIRECTION.createValue(0));
+    protected final Xoroshiro128 random = new Xoroshiro128();
 
     @Override
     public boolean generate(BlockManager object, RandomSourceProvider rand, Vector3 position) {
