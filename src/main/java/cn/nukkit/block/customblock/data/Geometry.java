@@ -11,6 +11,7 @@ import java.util.Map;
 public class Geometry implements NBTData {
     private final String geometryName;
     private String culling = "";
+    private String culling_shape = "";
     private final Map<String, String> boneVisibilities = new LinkedHashMap<>();
 
     public Geometry(@NotNull String name) {
@@ -49,6 +50,12 @@ public class Geometry implements NBTData {
         return this;
     }
 
+    public Geometry cullingShape(@NotNull String cullingName) {
+        Preconditions.checkNotNull(cullingName);
+        this.culling_shape = cullingName;
+        return this;
+    }
+
     @Override
     public CompoundTag toCompoundTag() {
         var boneVisibility = new CompoundTag();
@@ -62,6 +69,13 @@ public class Geometry implements NBTData {
         if (!boneVisibilities.isEmpty()) {
             compoundTag.putCompound("bone_visibility", boneVisibility);
         }
+        if (!culling.isBlank()) {
+            compoundTag.putString("culling", culling);
+        }
+        if (!culling_shape.isBlank()) {
+            compoundTag.putString("culling_shape", culling_shape);
+        }
+
         return compoundTag;
     }
 }
