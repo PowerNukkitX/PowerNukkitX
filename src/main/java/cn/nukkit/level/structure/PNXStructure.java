@@ -210,7 +210,7 @@ public class PNXStructure extends AbstractStructure {
                 case ROTATE_270 -> Rotation.counterclockwise90(jigsaw.finalState);
                 default -> jigsaw.finalState;
             };
-            rotatedJigsaws[idx] = new Jigsaw(rx, jigsaw.y, rz, rotatedFinalState, jigsaw.name, jigsaw.pool, jigsaw.target);
+            rotatedJigsaws[idx] = new Jigsaw(rx, jigsaw.y, rz, rotatedFinalState, jigsaw.name, jigsaw.joint, jigsaw.pool, jigsaw.target, jigsaw.placementPriority, jigsaw.selectionPriority);
         }
 
         return new PNXStructure(newSizeX, sizeY, newSizeZ, rotatedPalette, rotatedBlocks, rotatedJigsaws);
@@ -259,7 +259,7 @@ public class PNXStructure extends AbstractStructure {
                     mz = sizeZ - 1 - jigsaw.z;
                 }
             }
-            mirroredJigsaws[idx] = new Jigsaw(mx, jigsaw.y, mz, jigsaw.finalState, jigsaw.name, jigsaw.pool, jigsaw.target);
+            mirroredJigsaws[idx] = new Jigsaw(mx, jigsaw.y, mz, jigsaw.finalState, jigsaw.name, jigsaw.joint, jigsaw.pool, jigsaw.target, jigsaw.placementPriority, jigsaw.selectionPriority);
         }
 
         return new PNXStructure(sizeX, sizeY, sizeZ, palette, mirroredBlocks, mirroredJigsaws);
@@ -308,8 +308,11 @@ public class PNXStructure extends AbstractStructure {
         public int x, y, z;
         public BlockState finalState;
         private String name;
+        private String joint;
         private String pool;
         private String target;
+        private int placementPriority;
+        private int selectionPriority;
 
         public Jigsaw(CompoundTag tag) {
             int[] pos = tag.getIntArray("pos");
@@ -318,12 +321,15 @@ public class PNXStructure extends AbstractStructure {
             this.z = pos[2];
             this.finalState = Registries.BLOCKSTATE.get(tag.getInt("final_state"));
             this.name = tag.getString("name");
+            this.joint = tag.getString("joint");
             this.pool = tag.getString("pool");
             this.target = tag.getString("target");
+            this.placementPriority = tag.contains("placement_priority") ? tag.getInt("placement_priority") : 0;
+            this.selectionPriority = tag.contains("selection_priority") ? tag.getInt("selection_priority") : 0;
         }
 
         public Jigsaw withPosition(int x, int y, int z) {
-            return new Jigsaw(x, y, z, finalState, name, pool, target);
+            return new Jigsaw(x, y, z, finalState, name, joint, pool, target, placementPriority, selectionPriority);
         }
     }
 }

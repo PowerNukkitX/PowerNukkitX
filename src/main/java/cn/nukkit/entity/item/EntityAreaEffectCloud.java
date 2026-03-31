@@ -82,6 +82,7 @@ public class EntityAreaEffectCloud extends Entity {
             color[1] = (effectColor & 0x00FF0000) >> 16;
             color[2] = (effectColor & 0x0000FF00) >> 8;
             color[3] = effectColor & 0x000000FF;
+            count = 1;
         } else {
             color[0] = 255;
 
@@ -93,6 +94,11 @@ public class EntityAreaEffectCloud extends Entity {
                 color[3] += effectColor.getBlue() * effect.getLevel();
                 count += effect.getLevel();
             }
+        }
+
+        if (count <= 0) {
+            setPotionColor(0xFF385DC6, send);
+            return;
         }
 
         int a = (color[0] / count) & 0xff;

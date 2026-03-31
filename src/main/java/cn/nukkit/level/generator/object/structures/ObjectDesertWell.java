@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
@@ -14,12 +15,14 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 
-public class ObjectDesertWell extends RuledObjectGenerator {
+public class ObjectDesertWell extends ObjectGenerator implements RuledObjectGenerator {
 
     protected static final BlockState SANDSTONE = BlockSandstone.PROPERTIES.getDefaultState();
     protected static final BlockState WATER = BlockWater.PROPERTIES.getDefaultState();
     protected static final BlockState SANDSTONE_SLAB = BlockSandstoneSlab.PROPERTIES.getDefaultState();
+    protected final Xoroshiro128 random = new Xoroshiro128();
 
 
     @Override

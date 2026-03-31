@@ -217,31 +217,33 @@ public class SimpleCommandMap implements CommandMap {
      */
     @Override
     public boolean register(String fallbackPrefix, Command command, String label) {
-        if (label == null) {
-            label = command.getName();
-        }
-        label = label.trim().toLowerCase(Locale.ENGLISH);
-        fallbackPrefix = fallbackPrefix.trim().toLowerCase(Locale.ENGLISH);
-
-        boolean registered = this.registerAlias(command, false, fallbackPrefix, label);
-
-        List<String> aliases = new ArrayList<>(Arrays.asList(command.getAliases()));
-
-        for (Iterator<String> iterator = aliases.iterator(); iterator.hasNext(); ) {
-            String alias = iterator.next();
-            if (!this.registerAlias(command, true, fallbackPrefix, alias)) {
-                iterator.remove();
+        synchronized (this.knownCommands) {
+            if (label == null) {
+                label = command.getName();
             }
+            label = label.trim().toLowerCase(Locale.ENGLISH);
+            fallbackPrefix = fallbackPrefix.trim().toLowerCase(Locale.ENGLISH);
+
+            boolean registered = this.registerAlias(command, false, fallbackPrefix, label);
+
+            List<String> aliases = new ArrayList<>(Arrays.asList(command.getAliases()));
+
+            for (Iterator<String> iterator = aliases.iterator(); iterator.hasNext(); ) {
+                String alias = iterator.next();
+                if (!this.registerAlias(command, true, fallbackPrefix, alias)) {
+                    iterator.remove();
+                }
+            }
+            command.setAliases(aliases.toArray(EmptyArrays.EMPTY_STRINGS));
+
+            if (!registered) {
+                command.setLabel(fallbackPrefix + ":" + label);
+            }
+
+            command.register(this);
+
+            return registered;
         }
-        command.setAliases(aliases.toArray(EmptyArrays.EMPTY_STRINGS));
-
-        if (!registered) {
-            command.setLabel(fallbackPrefix + ":" + label);
-        }
-
-        command.register(this);
-
-        return registered;
     }
 
     /**
@@ -454,11 +456,13 @@ public class SimpleCommandMap implements CommandMap {
      */
     @Override
     public void clearCommands() {
-        for (Command command : this.knownCommands.values()) {
-            command.unregister(this);
+        synchronized (this.knownCommands) {
+            for (Command command : this.knownCommands.values()) {
+                command.unregister(this);
+            }
+            this.knownCommands.clear();
+            this.setDefaultCommands();
         }
-        this.knownCommands.clear();
-        this.setDefaultCommands();
     }
 
     /**
@@ -469,11 +473,13 @@ public class SimpleCommandMap implements CommandMap {
      */
     @Override
     public Command getCommand(String name) {
-        name = name.toLowerCase(Locale.ENGLISH);
-        if (this.knownCommands.containsKey(name)) {
-            return this.knownCommands.get(name);
+        synchronized (this.knownCommands) {
+            name = name.toLowerCase(Locale.ENGLISH);
+            if (this.knownCommands.containsKey(name)) {
+                return this.knownCommands.get(name);
+            }
+            return null;
         }
-        return null;
     }
 
     /**
@@ -484,10 +490,13 @@ public class SimpleCommandMap implements CommandMap {
      */
     @Override
     public void unregister(String... commands){
-        for (String name : commands) {
-            Command command = getCommand(name);
-            if (command != null) {
-                command.unregister(this);
+        synchronized (this.knownCommands) {
+            for (String name : commands) {
+                Command command = getCommand(name);
+                if (command != null) {
+                    this.knownCommands.values().removeIf(cmd -> cmd.equals(command));
+                    command.unregister(this);
+                }
             }
         }
     }
