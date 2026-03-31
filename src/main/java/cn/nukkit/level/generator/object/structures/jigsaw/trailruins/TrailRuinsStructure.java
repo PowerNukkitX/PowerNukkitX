@@ -99,7 +99,7 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
             return;
         }
 
-        RandomSourceProvider random = createPieceRandom(structureName, gravelBlocks);
+        RandomSourceProvider random = createRandom(blockManager.getLevel(), gravelBlocks.getFirst().asBlockVector3());
         boolean towerTopPiece = structureName.contains("/tower/tower_top_");
         boolean roadPiece = structureName.contains("/roads/");
 
@@ -126,16 +126,6 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
         }
     }
 
-    private RandomSourceProvider createPieceRandom(String structureName, List<Block> gravelBlocks) {
-        Block anchor = gravelBlocks.getFirst();
-        long seed = anchor.getLevel().getSeed();
-        seed ^= (((long) anchor.getFloorX()) * 0x9E3779B97F4A7C15L);
-        seed ^= (((long) anchor.getFloorY()) * 0xC2B2AE3D27D4EB4FL);
-        seed ^= (((long) anchor.getFloorZ()) * 0x165667B19E3779F9L);
-        seed ^= structureName.hashCode();
-        return RandomSourceProvider.create(seed);
-    }
-
     private void populatePendingBrushLoot(Level level) {
         for (Map.Entry<BlockVector3, TrailRuinsLoot> entry : pendingBrushLoot.entrySet()) {
             Block block = level.getBlock(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
@@ -143,12 +133,12 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
                 continue;
             }
             BlockEntityBrushable blockEntity = brushable.getOrCreateBlockEntity();
-            blockEntity.setItem(entry.getValue().roll(createLootRandom(level, entry.getKey())));
+            blockEntity.setItem(entry.getValue().roll(createRandom(level, entry.getKey())));
         }
         pendingBrushLoot.clear();
     }
 
-    private RandomSourceProvider createLootRandom(Level level, BlockVector3 pos) {
+    private RandomSourceProvider createRandom(Level level, BlockVector3 pos) {
         long seed = level.getSeed();
         seed ^= 0x9E3779B97F4A7C15L * pos.getX();
         seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
@@ -300,12 +290,8 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
 
         int biome = level.getBiomeId(x, y, z);
         BiomeDefinition definition = Registries.BIOME.get(biome);
-        if (!definition.getTags().contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS) ||
-                !((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
-            return false;
-        }
-
-        return true;
+        return definition.getTags().contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS) &&
+                ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }
 
     private enum TrailRuinsLoot {
