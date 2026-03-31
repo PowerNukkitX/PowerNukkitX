@@ -2347,7 +2347,11 @@ public class Server {
             path = new File(this.getDataPath(), "worlds/" + levelFolderName).getAbsolutePath();
         }
         String pathS = Path.of(path).toString();
+
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(pathS);
+        if (provider == null) {
+            provider = LevelProviderManager.getProviderByName(levelConfig.format());
+        }
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
