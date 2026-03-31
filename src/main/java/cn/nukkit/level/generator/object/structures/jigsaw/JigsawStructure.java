@@ -62,7 +62,6 @@ public abstract class JigsawStructure {
             for (JigsawReference sourceReference : getOrderedJigsaws(
                     pending.piece().sourceStructure(),
                     pending.piece().placedStructure(),
-                    pending.piece().position(),
                     randomSourceProvider
             )) {
                 BlockVector3 parentWorldPos = absolutePos(pending.piece().position(), sourceReference.placedJigsaw());
@@ -229,7 +228,7 @@ public abstract class JigsawStructure {
         BlockVector3 parentWorldPos = absolutePos(parentPiece.position(), sourceReference.placedJigsaw());
         PNXStructure rotatedChild = childRotation == Rotation.NONE ? childStructure : childStructure.rotate(childRotation);
 
-        for (JigsawReference childReference : getOrderedJigsaws(childStructure, rotatedChild, Vector3.ZERO, randomSourceProvider)) {
+        for (JigsawReference childReference : getOrderedJigsaws(childStructure, rotatedChild, randomSourceProvider)) {
             if (!normalizeResourceKey(childReference.sourceJigsaw().getName()).equals(normalizeResourceKey(sourceReference.sourceJigsaw().getTarget()))) {
                 continue;
             }
@@ -386,7 +385,7 @@ public abstract class JigsawStructure {
         return rotations;
     }
 
-    private List<JigsawReference> getOrderedJigsaws(PNXStructure sourceStructure, PNXStructure placedStructure, Vector3 position,
+    private List<JigsawReference> getOrderedJigsaws(PNXStructure sourceStructure, PNXStructure placedStructure,
                                                     RandomSourceProvider randomSourceProvider) {
         List<Integer> indices = new ArrayList<>(sourceStructure.getJigsaws().length);
         for (int i = 0; i < sourceStructure.getJigsaws().length; i++) {

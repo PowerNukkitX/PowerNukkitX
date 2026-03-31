@@ -195,7 +195,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             this.scheduleUpdate();
             return true;
         }
-        if (this.cooldownEndsAt != 0 && this.cooldownEndsAt <= currentTick) {
+        if (this.cooldownEndsAt != 0) {
             resetEncounter();
         }
 
@@ -556,14 +556,12 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             Vector3 spawnPos = findOminousProjectileSpawnPosition(target);
             int delay = this.random.nextInt(OMINOUS_PROJECTILE_DELAY_MIN_TICKS, OMINOUS_PROJECTILE_DELAY_MAX_TICKS + 1);
             this.level.addLevelSoundEvent(spawnPos, LevelSoundEvent.OMINOUS_ITEM_SPAWNER_SPAWN_ITEM_BEGIN);
-            if (delay > 20) {
-                this.level.getScheduler().scheduleDelayedTask(() -> {
-                    if (this.closed || this.level == null || !this.isOminous()) {
-                        return;
-                    }
-                    this.level.addLevelSoundEvent(spawnPos, LevelSoundEvent.OMINOUS_ITEM_SPAWNER_ABOUT_TO_SPAWN_ITEM);
-                }, delay - 20);
-            }
+            this.level.getScheduler().scheduleDelayedTask(() -> {
+                if (this.closed || this.level == null || !this.isOminous()) {
+                    return;
+                }
+                this.level.addLevelSoundEvent(spawnPos, LevelSoundEvent.OMINOUS_ITEM_SPAWNER_ABOUT_TO_SPAWN_ITEM);
+            }, delay - 20);
             this.level.getScheduler().scheduleDelayedTask(() -> launchOminousProjectile(spawnPos), delay);
         }
     }
