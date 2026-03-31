@@ -19,4 +19,5 @@ public final class Registries {
     public static final StructureRegistry STRUCTURE = new StructureRegistry();
     public static final EffectRegistry EFFECT = new EffectRegistry();
     public static final RecipeRegistry RECIPE = new RecipeRegistry();
+    public static final VoxelShapeRegistry VOXEL_SHAPE = new VoxelShapeRegistry();
 }

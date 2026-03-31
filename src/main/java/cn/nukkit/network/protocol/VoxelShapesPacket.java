@@ -23,9 +23,9 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VoxelShapesPacket extends DataPacket {
-    private List<VoxelShape> shapes;
-    private Map<String, Integer> nameMap;
-    private int customShapeCount;
+    private List<VoxelShape> shapes = List.of();
+    private Map<String, Integer> nameMap = Map.of();
+    private int customShapeCount = 0;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {

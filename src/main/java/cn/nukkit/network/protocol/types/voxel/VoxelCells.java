@@ -15,4 +15,8 @@ public class VoxelCells {
     private final short ySize;
     private final short zSize;
     private final List<Short> storage;
+
+    public VoxelCells(int xSize, int ySize, int zSize, List<Integer> storage) {
+        this((short) xSize, (short) ySize, (short) zSize, storage.stream().map(Integer::shortValue).toList());
+    }
 }
