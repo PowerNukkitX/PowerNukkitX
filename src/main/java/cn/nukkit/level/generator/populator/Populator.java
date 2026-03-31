@@ -21,7 +21,7 @@ public abstract class Populator {
     public abstract void apply(ChunkGenerateContext context);
 
     protected void queueObject(IChunk chunk, BlockManager object) {
-        object.applySubChunkUpdate();
+        object.hunkUpdate();
     }
 
     public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {

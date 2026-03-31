@@ -74,7 +74,7 @@ public abstract class VillageStructure extends JigsawStructure {
         helper.addHook(() -> {
             populatePendingChestLoot(level);
         });
-        helper.applySubChunkUpdate();
+        helper.ubChunkUpdate();
 
         placedBlocks.stream()
                 .filter(BlockUnknown.class::isInstance)
