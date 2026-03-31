@@ -1,14 +1,17 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.customblock.data.voxel.VoxelBox;
+import cn.nukkit.network.protocol.VoxelShapesPacket;
 import cn.nukkit.network.protocol.types.voxel.VoxelCells;
 import cn.nukkit.network.protocol.types.voxel.VoxelShape;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 
 import java.util.*;
 
 public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, VoxelShape> {
     private static final Object2ObjectOpenHashMap<String, VoxelShape> REGISTRY = new Object2ObjectOpenHashMap<>();
+    @Getter private static VoxelShapesPacket PACKET = new VoxelShapesPacket();
 
     @Override
     public void init() {
@@ -25,6 +28,21 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
      */
     public void register(String key, List<VoxelBox> boxes) throws RegisterException {
         register(key, convertBoxesToShape(boxes));
+    }
+
+    public void rebuildPacket() {
+        VoxelShapesPacket pk = new VoxelShapesPacket();
+
+        Map<String, Integer> nameMap = new HashMap<>();
+        for (String name : REGISTRY.keySet()) {
+            nameMap.put(name, nameMap.size());
+        }
+
+        pk.setShapes(REGISTRY.values().stream().toList());
+        pk.setNameMap(nameMap);
+        pk.setCustomShapeCount(REGISTRY.size() - 2);
+
+        PACKET = pk;
     }
 
     private VoxelShape convertBoxesToShape(List<VoxelBox> boxes) {

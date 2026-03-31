@@ -12,6 +12,7 @@ import cn.nukkit.network.protocol.types.voxel.VoxelShape;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.VoxelShapeRegistry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
@@ -27,20 +28,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         var server = player.getServer();
 
         log.debug("Sending voxel shapes");
-        Object2ObjectOpenHashMap<String, VoxelShape> shapeMap = Registries.VOXEL_SHAPE.getAll();
-
-        Map<String, Integer> nameMap = new HashMap<>();
-        nameMap.put("minecraft:empty", 0);
-        nameMap.put("minecraft:unit_cube", 1);
-        for (String name : shapeMap.keySet()) {
-            nameMap.put(name, nameMap.size());
-        }
-
-        VoxelShapesPacket voxelShapesPacket = new VoxelShapesPacket();
-        voxelShapesPacket.setShapes(shapeMap.values().stream().toList());
-        voxelShapesPacket.setNameMap(nameMap);
-        voxelShapesPacket.setCustomShapeCount(shapeMap.size());
-        player.dataPacketImmediately(voxelShapesPacket);
+        player.dataPacketImmediately(VoxelShapeRegistry.getPACKET());
 
         this.startGame();
 
