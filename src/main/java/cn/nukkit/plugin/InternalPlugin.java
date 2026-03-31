@@ -1,6 +1,5 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.event.Listener;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
