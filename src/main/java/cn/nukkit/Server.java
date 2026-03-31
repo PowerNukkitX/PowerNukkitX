@@ -505,9 +505,12 @@ public class Server {
                             : Registries.RECIPE::init,
                     computeThreadPool);
 
+            CompletableFuture<Void> voxelF      = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init,          computeThreadPool);
+
+
             CompletableFuture.allOf(potionF, packetF, entityF, blockEntityF, itemRtIdF, biomeF,
                     fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
-                    creativeF, recipeF).join();
+                    creativeF, recipeF, voxelF).join();
 
             if (settings.performanceSettings().registryCacheEnabled() && registryCache == null) {
                 RegistryCache.save(registryCachePath);
@@ -592,6 +595,7 @@ public class Server {
             Registries.STRUCTURE.trim();
             Registries.EFFECT.trim();
             Registries.RECIPE.trim();
+            Registries.VOXEL_SHAPE.trim();
         }
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
