@@ -308,11 +308,18 @@ public abstract class JigsawStructure {
         }
 
         int blockRotation = blockJigsaw.getPropertyValue(CommonBlockProperties.ROTATION);
-        BlockFace top = switch (blockRotation) {
-            case 1 -> BlockFace.NORTH;
+        BlockFace top = front == BlockFace.DOWN
+                ? switch (blockRotation) {
+            case 1 -> BlockFace.WEST;
+            case 2 -> BlockFace.SOUTH;
+            case 3 -> BlockFace.EAST;
+            default -> BlockFace.NORTH;
+        }
+                : switch (blockRotation) {
+            case 1 -> BlockFace.EAST;
             case 2 -> BlockFace.SOUTH;
             case 3 -> BlockFace.WEST;
-            default -> BlockFace.EAST;
+            default -> BlockFace.NORTH;
         };
         return new JigsawOrientation(front, rotateFace(top, appliedRotation));
     }

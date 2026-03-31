@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockJigsaw;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockTrapdoor;
@@ -35,6 +34,14 @@ public enum Rotation {
 
     public static Rotation from(int id) {
         return VALUES[id];
+    }
+
+    public Rotation rotateBy(Rotation other) {
+        return VALUES[(this.ordinal() + other.ordinal()) & 0x3];
+    }
+
+    public static Rotation combine(Rotation first, Rotation second) {
+        return first.rotateBy(second);
     }
 
     public static BlockState clockwise90(BlockState state) {
@@ -101,7 +108,7 @@ public enum Rotation {
                 var rotated = FACING_DIRECTION.createValue(rotatedFacing);
                 states.set(idx, rotated);
             } else if (type == ROTATION && block instanceof BlockJigsaw) {
-                var rotated = ROTATION.createValue(rotateJigsawRotationCounterclockwise90(state.getPropertyValue(ROTATION)));
+                var rotated = ROTATION.createValue(rotateJigsawRotationClockwise90(state.getPropertyValue(ROTATION)));
                 states.set(idx, rotated);
             } else if (type == LEVER_DIRECTION) {
                 int meta = state.getPropertyValue(LEVER_DIRECTION).getMetadata();
@@ -210,12 +217,12 @@ public enum Rotation {
         return face.rotateYCCW().getIndex() | extraBits;
     }
 
-    private static int rotateJigsawRotationCounterclockwise90(int value) {
+    private static int rotateJigsawRotationClockwise90(int value) {
         return switch (value & 0x3) {
-            case 0 -> 3;
-            case 1 -> 0;
-            case 2 -> 1;
-            default -> 2;
+            case 0 -> 1;
+            case 1 -> 2;
+            case 2 -> 3;
+            default -> 0;
         };
     }
 
