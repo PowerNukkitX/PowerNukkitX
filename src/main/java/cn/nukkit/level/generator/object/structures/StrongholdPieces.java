@@ -1222,9 +1222,11 @@ public class StrongholdPieces {
 
             BlockVector3 vec = new BlockVector3(this.getWorldX(3, 5), this.getWorldY(3), this.getWorldZ(3, 5));
             if (boundingBox.isInside(vec)) {
-                level.addHook(() -> {
-                    LIBRARY.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                });
+                if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
+                    level.addHook(() -> {
+                        LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
+                    });
+                }
             }
 
             if (this.isTall) {
@@ -1233,9 +1235,11 @@ public class StrongholdPieces {
 
                 vec.setComponents(this.getWorldX(12, 1), this.getWorldY(8), this.getWorldZ(12, 1));
                 if (boundingBox.isInside(vec)) {
-                    level.addHook(() -> {
-                        LIBRARY.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                    });
+                    if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
+                        level.addHook(() -> {
+                            LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
+                        });
+                    }
                 }
             }
 
