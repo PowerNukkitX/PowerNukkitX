@@ -121,7 +121,6 @@ public class PopulatorRuinedPortal extends Populator {
                     }
                 }
             }
-            System.out.println("Spawned @ " + x + ", " + z);
             queueObject(chunk, manager);
         }
     }
