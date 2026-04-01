@@ -2,6 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+pnx-gamedata                                    = "r-26u1-SNAPSHOT"
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 pnx-terra-binary                                = "6.6.1-BETA"
 fastreflection                                  = "8733a599fa"
@@ -40,6 +41,7 @@ eu-okaeri-core                                  = "5.0.1"
 disruptor                                       = "4.0.0"
 
 [libraries]
+pnxgamedata          = { module = "org.powernukkitx:gamedata",                      version.ref = "pnx-gamedata"                                    }
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
 terra                = { module = "org.powernukkitx:Terra",                         version.ref = "pnx-terra-binary"                                }
 libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
