@@ -85,47 +85,6 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBStorage getStorage() {
         return this.storage;
     }
-
-    private static final Map<String, String> PNX_TO_BDS_GAMERULE_MAP = Map.ofEntries(
-            Map.entry("doDayLightCycle", "dodaylightcycle"),
-            Map.entry("keepInventory", "keepinventory"),
-            Map.entry("mobGriefing", "mobgriefing"),
-            Map.entry("randomTickSpeed", "randomtickspeed"),
-            Map.entry("doFireTick", "dofiretick"),
-            Map.entry("doMobSpawning", "domobspawning"),
-            Map.entry("doMobLoot", "domobloot"),
-            Map.entry("doTileDrops", "dotiledrops"),
-            Map.entry("doWeatherCycle", "doweathercycle"),
-            Map.entry("doEntityDrops", "doentitydrops"),
-            Map.entry("doImmediateRespawn", "doimmediaterespawn"),
-            Map.entry("doLimitedCrafting", "dolimitedcrafting"),
-            Map.entry("doInsomnia", "doinsomnia"),
-            Map.entry("commandBlockOutput", "commandblockoutput"),
-            Map.entry("commandBlocksEnabled", "commandblocksenabled"),
-            Map.entry("sendCommandFeedback", "sendcommandfeedback"),
-            Map.entry("showCoordinates", "showcoordinates"),
-            Map.entry("showDeathMessages", "showdeathmessages"),
-            Map.entry("showTags", "showtags"),
-            Map.entry("showDaysPlayed", "showdaysplayed"),
-            Map.entry("showBorderEffect", "showbordereffect"),
-            Map.entry("playersSleepingPercentage", "playerssleepingpercentage"),
-            Map.entry("spawnRadius", "spawnradius"),
-            Map.entry("tntExplodes", "tntexplodes"),
-            Map.entry("tntExplosionDropDecay", "tntexplosiondropdecay"),
-            Map.entry("naturalRegeneration", "naturalregeneration"),
-            Map.entry("fallDamage", "falldamage"),
-            Map.entry("fireDamage", "firedamage"),
-            Map.entry("freezeDamage", "freezedamage"),
-            Map.entry("drowningDamage", "drowningdamage"),
-            Map.entry("projectilesCanBreakBlocks", "projectilescanbreakblocks"),
-            Map.entry("recipesUnlock", "recipesunlock"),
-            Map.entry("respawnBlocksExplode", "respawnblocksexplode"),
-            Map.entry("functionCommandLimit", "functioncommandlimit"),
-            Map.entry("maxCommandChainLength", "maxcommandchainlength"),
-            Map.entry("locatorBar", "locatorbar"),
-            Map.entry("pvp", "pvp")
-    );
-    
     /**
      * One-time migration of legacy PNX keys to vanilla BDS format.
      *
