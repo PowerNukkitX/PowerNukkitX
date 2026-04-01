@@ -111,18 +111,6 @@ public class LevelDBProvider implements LevelProvider {
         return converted;
     }
 
-    private static boolean getBooleanRule(CompoundTag d, String bdsKey, String pnxKey) {
-        return d.contains(bdsKey)
-                ? d.getBoolean(bdsKey)
-                : d.getBoolean(pnxKey);
-    }
-
-    private static int getIntRule(CompoundTag d, String bdsKey, String pnxKey) {
-        return d.contains(bdsKey)
-                ? d.getInt(bdsKey)
-                : d.getInt(pnxKey);
-    }
-
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
@@ -710,44 +698,44 @@ public class LevelDBProvider implements LevelProvider {
             CompoundTag abilities = d.getCompound("abilities");
             CompoundTag experiments = d.getCompound("experiments");
             GameRules gameRules = GameRules.getDefault();
-            gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, getBooleanRule(d, "commandblockoutput", "commandBlockOutput"));
-            gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, getBooleanRule(d, "commandblocksenabled", "commandBlocksEnabled"));
-            gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, getBooleanRule(d, "dodaylightcycle", "doDayLightCycle"));
-            gameRules.setGameRule(GameRule.DO_ENTITY_DROPS, getBooleanRule(d, "doentitydrops", "doEntityDrops"));
-            gameRules.setGameRule(GameRule.DO_FIRE_TICK, getBooleanRule(d, "dofiretick", "doFireTick"));
-            gameRules.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, getBooleanRule(d, "doimmediaterespawn", "doImmediateRespawn"));
-            gameRules.setGameRule(GameRule.DO_INSOMNIA, getBooleanRule(d, "doinsomnia", "doInsomnia"));
-            gameRules.setGameRule(GameRule.DO_LIMITED_CRAFTING, getBooleanRule(d, "dolimitedcrafting", "doLimitedCrafting"));
-            gameRules.setGameRule(GameRule.DO_MOB_LOOT, getBooleanRule(d, "domobloot", "doMobLoot"));
-            gameRules.setGameRule(GameRule.DO_MOB_SPAWNING, getBooleanRule(d, "domobspawning", "doMobSpawning"));
-            gameRules.setGameRule(GameRule.DO_TILE_DROPS, getBooleanRule(d, "dotiledrops", "doTileDrops"));
-            gameRules.setGameRule(GameRule.DO_WEATHER_CYCLE, getBooleanRule(d, "doweathercycle", "doWeatherCycle"));
-            gameRules.setGameRule(GameRule.DROWNING_DAMAGE, getBooleanRule(d, "drowningdamage", "drowningDamage"));
-            gameRules.setGameRule(GameRule.EXPERIMENTAL_GAMEPLAY, getBooleanRule(d, "experimentalgameplay", "experimentalGameplay"));
-            gameRules.setGameRule(GameRule.FALL_DAMAGE, getBooleanRule(d, "falldamage", "fallDamage"));
-            gameRules.setGameRule(GameRule.FIRE_DAMAGE, getBooleanRule(d, "firedamage", "fireDamage"));
-            gameRules.setGameRule(GameRule.FREEZE_DAMAGE, getBooleanRule(d, "freezedamage", "freezeDamage"));
-            gameRules.setGameRule(GameRule.FUNCTION_COMMAND_LIMIT, getIntRule(d, "functioncommandlimit", "functionCommandLimit"));
-            gameRules.setGameRule(GameRule.KEEP_INVENTORY, getBooleanRule(d, "keepinventory", "keepInventory"));
-            gameRules.setGameRule(GameRule.LOCATOR_BAR, getBooleanRule(d, "locatorbar", "locatorBar"));
-            gameRules.setGameRule(GameRule.MAX_COMMAND_CHAIN_LENGTH, getIntRule(d, "maxcommandchainlength", "maxCommandChainLength"));
-            gameRules.setGameRule(GameRule.MOB_GRIEFING, getBooleanRule(d, "mobgriefing", "mobGriefing"));
-            gameRules.setGameRule(GameRule.NATURAL_REGENERATION, getBooleanRule(d, "naturalregeneration", "naturalRegeneration"));
-            gameRules.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, getIntRule(d, "playerssleepingpercentage", "playersSleepingPercentage"));
-            gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, getBooleanRule(d, "projectilescanbreakblocks", "projectilesCanBreakBlocks"));
-            gameRules.setGameRule(GameRule.PVP, getBooleanRule(d, "pvp", "pvp"));
-            gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, getIntRule(d, "randomtickspeed", "randomTickSpeed"));
-            gameRules.setGameRule(GameRule.RECIPES_UNLOCK, getBooleanRule(d, "recipesunlock", "recipesUnlock"));
-            gameRules.setGameRule(GameRule.RESPAWN_BLOCKS_EXPLODE, getBooleanRule(d, "respawnblocksexplode", "respawnBlocksExplode"));
-            gameRules.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, getBooleanRule(d, "sendcommandfeedback", "sendCommandFeedback"));
-            gameRules.setGameRule(GameRule.SHOW_BORDER_EFFECT, getBooleanRule(d, "showbordereffect", "showBorderEffect"));
-            gameRules.setGameRule(GameRule.SHOW_COORDINATES, getBooleanRule(d, "showcoordinates", "showCoordinates"));
-            gameRules.setGameRule(GameRule.SHOW_DAYS_PLAYED, getBooleanRule(d, "showdaysplayed", "showDaysPlayed"));
-            gameRules.setGameRule(GameRule.SHOW_DEATH_MESSAGES, getBooleanRule(d, "showdeathmessages", "showDeathMessages"));
-            gameRules.setGameRule(GameRule.SHOW_TAGS, getBooleanRule(d, "showtags", "showTags"));
-            gameRules.setGameRule(GameRule.SPAWN_RADIUS, getIntRule(d, "spawnradius", "spawnRadius"));
-            gameRules.setGameRule(GameRule.TNT_EXPLODES, getBooleanRule(d, "tntexplodes", "tntExplodes"));
-            gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, getBooleanRule(d, "tntexplosiondropdecay", "tntExplosionDropDecay"));
+            gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, d.getBoolean("commandblockoutput"));
+            gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, d.getBoolean("commandblocksenabled"));
+            gameRules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, d.getBoolean("dodaylightcycle"));
+            gameRules.setGameRule(GameRule.DO_ENTITY_DROPS, d.getBoolean("doentitydrops"));
+            gameRules.setGameRule(GameRule.DO_FIRE_TICK, d.getBoolean("dofiretick"));
+            gameRules.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, d.getBoolean("doimmediaterespawn"));
+            gameRules.setGameRule(GameRule.DO_INSOMNIA, d.getBoolean("doinsomnia"));
+            gameRules.setGameRule(GameRule.DO_LIMITED_CRAFTING, d.getBoolean("dolimitedcrafting"));
+            gameRules.setGameRule(GameRule.DO_MOB_LOOT, d.getBoolean("domobloot"));
+            gameRules.setGameRule(GameRule.DO_MOB_SPAWNING, d.getBoolean("domobspawning"));
+            gameRules.setGameRule(GameRule.DO_TILE_DROPS, d.getBoolean("dotiledrops"));
+            gameRules.setGameRule(GameRule.DO_WEATHER_CYCLE, d.getBoolean("doweathercycle"));
+            gameRules.setGameRule(GameRule.DROWNING_DAMAGE, d.getBoolean("drowningdamage"));
+            gameRules.setGameRule(GameRule.EXPERIMENTAL_GAMEPLAY, d.getBoolean("experimentalgameplay"));
+            gameRules.setGameRule(GameRule.FALL_DAMAGE, d.getBoolean("falldamage"));
+            gameRules.setGameRule(GameRule.FIRE_DAMAGE, d.getBoolean("firedamage"));
+            gameRules.setGameRule(GameRule.FREEZE_DAMAGE, d.getBoolean("freezedamage"));
+            gameRules.setGameRule(GameRule.FUNCTION_COMMAND_LIMIT, d.getInt("functioncommandlimit"));
+            gameRules.setGameRule(GameRule.KEEP_INVENTORY, d.getBoolean("keepinventory"));
+            gameRules.setGameRule(GameRule.LOCATOR_BAR, d.getBoolean("locatorbar"));
+            gameRules.setGameRule(GameRule.MAX_COMMAND_CHAIN_LENGTH, d.getInt("maxcommandchainlength"));
+            gameRules.setGameRule(GameRule.MOB_GRIEFING, d.getBoolean("mobgriefing"));
+            gameRules.setGameRule(GameRule.NATURAL_REGENERATION, d.getBoolean("naturalregeneration"));
+            gameRules.setGameRule(GameRule.PLAYERS_SLEEPING_PERCENTAGE, d.getInt("playerssleepingpercentage"));
+            gameRules.setGameRule(GameRule.PROJECTILES_CAN_BREAK_BLOCKS, d.getBoolean("projectilescanbreakblocks"));
+            gameRules.setGameRule(GameRule.PVP, d.getBoolean("pvp"));
+            gameRules.setGameRule(GameRule.RANDOM_TICK_SPEED, d.getInt("randomtickspeed"));
+            gameRules.setGameRule(GameRule.RECIPES_UNLOCK, d.getBoolean("recipesunlock"));
+            gameRules.setGameRule(GameRule.RESPAWN_BLOCKS_EXPLODE, d.getBoolean("respawnblocksexplode"));
+            gameRules.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, d.getBoolean("sendcommandfeedback"));
+            gameRules.setGameRule(GameRule.SHOW_BORDER_EFFECT, d.getBoolean("showbordereffect"));
+            gameRules.setGameRule(GameRule.SHOW_COORDINATES, d.getBoolean("showcoordinates"));
+            gameRules.setGameRule(GameRule.SHOW_DAYS_PLAYED, d.getBoolean("showdaysplayed"));
+            gameRules.setGameRule(GameRule.SHOW_DEATH_MESSAGES, d.getBoolean("showdeathmessages"));
+            gameRules.setGameRule(GameRule.SHOW_TAGS, d.getBoolean("showtags"));
+            gameRules.setGameRule(GameRule.SPAWN_RADIUS, d.getInt("spawnradius"));
+            gameRules.setGameRule(GameRule.TNT_EXPLODES, d.getBoolean("tntexplodes"));
+            gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, d.getBoolean("tntexplosiondropdecay"));
 
             Map<String, Boolean> experimentMap = new HashMap<>();
             for (Map.Entry<String, Tag> entry : experiments.getTags().entrySet()) {
@@ -811,6 +799,7 @@ public class LevelDBProvider implements LevelProvider {
                     .cheatsEnabled(d.getBoolean("cheatsEnabled"))
                     .commandsEnabled(d.getBoolean("commandsEnabled"))
                     .currentTick(d.getLong("currentTick"))
+                    // Note: This is a LevelDat field, not gamerule — casing follows vanilla format
                     .daylightCycle(d.getInt("daylightCycle"))
                     .editorWorldType(d.getInt("editorWorldType"))
                     .eduOffer(d.getInt("eduOffer"))
@@ -838,6 +827,7 @@ public class LevelDBProvider implements LevelProvider {
                     .prid(d.getString("prid"))
                     .rainLevel(d.getFloat("rainLevel"))
                     .rainTime(d.getInt("rainTime"))
+                    // Note: This is a LevelDat field, not gamerule — casing follows vanilla format
                     .randomTickSpeed(d.getInt("randomTickSpeed"))
                     .recipesUnlock(d.getBoolean("recipesUnlock"))
                     .requiresCopiedPackRemovalCheck(d.getBoolean("requiresCopiedPackRemovalCheck"))
