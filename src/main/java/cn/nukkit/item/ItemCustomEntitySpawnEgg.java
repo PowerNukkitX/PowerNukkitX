@@ -13,13 +13,15 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.registry.Registries;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ItemCustomEntitySpawnEgg extends Item {
+public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     private static final String SUFFIX = "_spawn_egg";
     private static final String PLACEHOLDER_ID = "pnx:auto_spawn_egg";
 
@@ -27,6 +29,8 @@ public class ItemCustomEntitySpawnEgg extends Item {
     private static final String COMP_CUSTOM_EGG = "custom_entity_spawn_egg";
     private static final String KEY_EGG_ID      = "egg_identifier";
     private static final String KEY_ENTITY_ID   = "entity_identifier";
+
+    private CompoundTag entityNBT;
 
     public ItemCustomEntitySpawnEgg() {
         super(PLACEHOLDER_ID, 0, 1);
@@ -93,6 +97,12 @@ public class ItemCustomEntitySpawnEgg extends Item {
 
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
+        }
+        if (this.entityNBT != null) {
+            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
+            nbt = this.entityNBT;
         }
 
         int networkId = Registries.ENTITY.getEntityNetworkId(entityId);
@@ -212,5 +222,9 @@ public class ItemCustomEntitySpawnEgg extends Item {
         if (ent != null) {
             ce.putString(KEY_ENTITY_ID, ent);
         }
+    }
+
+    public void setEntityNBT(CompoundTag entityNBT) {
+        this.entityNBT = entityNBT;
     }
 }

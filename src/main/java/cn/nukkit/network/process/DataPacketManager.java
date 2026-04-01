@@ -34,6 +34,7 @@ public final class DataPacketManager {
                 new NPCRequestProcessor(),
                 new InteractProcessor(),
                 new BlockPickRequestProcessor(),
+                new EntityPickRequestProcessor(),
                 new AnimateProcessor(),
                 new EntityEventProcessor(),
                 new CommandRequestProcessor(),
