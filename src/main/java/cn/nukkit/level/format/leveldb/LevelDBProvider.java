@@ -985,8 +985,6 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("editorWorldType", worldData.getEditorWorldType());
         levelDat.putInt("eduOffer", worldData.getEduOffer());
         levelDat.putBoolean("educationFeaturesEnabled", worldData.isEducationFeaturesEnabled());
-
-        // Write gamerules using vanilla BDS (lowercase) keys
         levelDat.put("commandblockoutput", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCK_OUTPUT).getTag());
         levelDat.put("commandblocksenabled", worldData.getGameRules().getGameRules().get(GameRule.COMMAND_BLOCKS_ENABLED).getTag());
         levelDat.put("dodaylightcycle", worldData.getGameRules().getGameRules().get(GameRule.DO_DAYLIGHT_CYCLE).getTag());
