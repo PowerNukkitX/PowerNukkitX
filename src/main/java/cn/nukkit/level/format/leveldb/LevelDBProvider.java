@@ -134,11 +134,12 @@ public class LevelDBProvider implements LevelProvider {
     private static boolean convertLegacyPnxGameRulesToBds(CompoundTag d) {
         boolean converted = false;
 
-        for (var entry : PNX_TO_BDS_GAMERULE_MAP.entrySet()) {
-            String pnxKey = entry.getKey();
-            String bdsKey = entry.getValue();
+        for (GameRule rule : GameRule.values()) {
+            String pnxKey = rule.getName(); // e.g. doDayLightCycle
+            String bdsKey = pnxKey.toLowerCase(); // dodaylightcycle
 
             if (d.contains(pnxKey)) {
+                // Only add lowercase if it doesn't already exist
                 if (!d.contains(bdsKey)) {
                     d.put(bdsKey, d.get(pnxKey));
                 }
