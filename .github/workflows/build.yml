@@ -29,25 +29,32 @@ jobs:
               - '.github/workflows/build.yml'
 
   build:
-    name: Build & Test (fast)
+    name: Build PNX Server
     runs-on: ubuntu-latest
     needs: filter
-    if: needs.filter.outputs.src == 'true'
     timeout-minutes: 15
     steps:
+      - name: Check if relevant changes
+        id: check
+        run: |
+          echo "src=${{ needs.filter.outputs.src }}" >> $GITHUB_OUTPUT
+      - name: No relevant changes detected
+        if: needs.filter.outputs.src != 'true'
+        run: echo 'No relevant changes for build or check. Skipping build.'
       - name: Checkout repository (shallow)
+        if: needs.filter.outputs.src == 'true'
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
           submodules: false
-
       - name: Set up JDK 21 (Temurin)
+        if: needs.filter.outputs.src == 'true'
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
-
       - name: Restore Gradle cache
+        if: needs.filter.outputs.src == 'true'
         uses: actions/cache@v5
         with:
           path: |
@@ -56,25 +63,23 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             gradle-${{ runner.os }}-
-
       - name: Make gradlew executable
+        if: needs.filter.outputs.src == 'true'
         run: chmod +x gradlew
-
       - name: Build project (parallel, optimized)
+        if: needs.filter.outputs.src == 'true'
         run: ./gradlew assemble --no-daemon --parallel --max-workers=2 --no-configuration-cache --stacktrace
-
       - name: Upload JAR artifact (on success)
-        if: success()
+        if: needs.filter.outputs.src == 'true' && success()
         uses: actions/upload-artifact@v6
         with:
           name: powernukkitx-jar
           path: build/libs/*.jar
-
       - name: Ensure test-results directory exists
+        if: needs.filter.outputs.src == 'true'
         run: mkdir -p build/test-results
-
       - name: Upload test results (always)
-        if: always()
+        if: needs.filter.outputs.src == 'true' && always()
         uses: actions/upload-artifact@v6
         with:
           name: test-results
@@ -123,13 +128,4 @@ jobs:
       - name: Show build summary
         run: |
           echo 'Build & static checks completed. See artifacts and logs above.'
-
-  noop:
-    name: No-op (no relevant changes)
-    runs-on: ubuntu-latest
-    needs: filter
-    if: needs.filter.outputs.src != 'true'
-    steps:
-      - name: No relevant changes detected
-        run: echo 'No relevant changes for build or check. Skipping build.'
 
