@@ -125,6 +125,7 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         return result.toString().trim();
     }
 
+    @Override
     public void setEntityNBT(CompoundTag entityNBT) {
         this.entityNBT = entityNBT;
     }

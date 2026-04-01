@@ -224,6 +224,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
         }
     }
 
+    @Override
     public void setEntityNBT(CompoundTag entityNBT) {
         this.entityNBT = entityNBT;
     }
