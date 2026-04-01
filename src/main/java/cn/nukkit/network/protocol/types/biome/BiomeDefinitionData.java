@@ -20,7 +20,7 @@ public class BiomeDefinitionData implements IBiomeDefinitionListObject {
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeShort(id);
+        byteBuf.writeShortLE(id);
         byteBuf.writeFloatLE(temperature);
         byteBuf.writeFloatLE(downfall);
         byteBuf.writeFloatLE(foliageSnow);

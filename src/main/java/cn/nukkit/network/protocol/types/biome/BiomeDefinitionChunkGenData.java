@@ -26,6 +26,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
     public OptionalValue<BiomeOverworldGenRulesData> overworldGenRules = OptionalValue.empty();
     public OptionalValue<BiomeMultinoiseGenRulesData> multinoiseGenRules = OptionalValue.empty();
     public OptionalValue<BiomeLegacyWorldGenRulesData> legacyWorldGenRules = OptionalValue.empty();
+    public OptionalValue<BiomeReplacementData> replacementBiomes = OptionalValue.empty();
     public OptionalValue<VillageType> villageType = OptionalValue.empty();
 
     @Override
@@ -44,8 +45,8 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         byteBuf.writeOptional(overworldGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(multinoiseGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(legacyWorldGenRules, v -> v.encode(byteBuf));
-        byteBuf.writeBoolean(false);
-        byteBuf.writeOptional(villageType, v -> byteBuf.writeString(v.name()));
+        byteBuf.writeOptional(replacementBiomes, v -> v.encode(byteBuf));
+        byteBuf.writeOptional(villageType, v -> byteBuf.writeByte(v.ordinal()));
     }
 
     @Override
@@ -63,6 +64,8 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         if(tag.containsCompound("overworldGenRules")) overworldGenRules = OptionalValue.of(parseFrom(tag.getCompound("overworldGenRules"), new BiomeOverworldGenRulesData()));
         if(tag.containsCompound("multinoiseGenRules")) multinoiseGenRules = OptionalValue.of(parseFrom(tag.getCompound("multinoiseGenRules"), new BiomeMultinoiseGenRulesData()));
         if(tag.containsCompound("legacyWorldGenRules")) legacyWorldGenRules = OptionalValue.of(parseFrom(tag.getCompound("legacyWorldGenRules"), new BiomeLegacyWorldGenRulesData()));
+        if(tag.containsCompound("replacementBiomes")) replacementBiomes = OptionalValue.of(parseFrom(tag.getCompound("replacementBiomes"), new BiomeReplacementData()));
+        if(tag.containsCompound("villageType")) villageType = OptionalValue.of(VillageType.from(tag.getInt("villageType")));
     }
 
 
