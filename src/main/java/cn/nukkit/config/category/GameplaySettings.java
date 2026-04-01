@@ -58,7 +58,8 @@ public class GameplaySettings extends OkaeriConfig {
             "gametest",
             "jigsaw_structures",
             "upcoming_creator_features",
-            "villager_trades_rebalance"
+            "villager_trades_rebalance",
+            "voxel_shapes"
     ));
     @Comment("pnx.settings.gameplay.cacheStructures")
     boolean cacheStructures = false;

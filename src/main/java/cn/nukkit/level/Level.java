@@ -247,6 +247,9 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.COPPER_BARS);
         randomTickBlocks.add(BlockID.EXPOSED_COPPER_BARS);
         randomTickBlocks.add(BlockID.WEATHERED_COPPER_BARS);
+        randomTickBlocks.add(BlockID.COPPER_GRATE);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_GRATE);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_GRATE);
         randomTickBlocks.add(BlockID.COPPER_CHAIN);
         randomTickBlocks.add(BlockID.EXPOSED_COPPER_CHAIN);
         randomTickBlocks.add(BlockID.WEATHERED_COPPER_CHAIN);
@@ -2977,15 +2980,18 @@ public class Level implements Metadatable {
                 }
                 return item;
             }
-        } else if (isPlayerInput) {
+        } else {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
-            //                                handle spawn protect
-            if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
-                ev.setCancelled();
+            if (isPlayerInput) {
+                //                                handle spawn protect
+                if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
+                    ev.setCancelled();
+                }
+
+                this.server.getPluginManager().callEvent(ev);
+                new PlayerHandle(player).setInteract();
             }
 
-            this.server.getPluginManager().callEvent(ev);
-            new PlayerHandle(player).setInteract();
             if (!ev.isCancelled()) {
                 target.onTouch(vector, item, face, fx, fy, fz, player, ev.getAction());
                 if (ev.getAction() == Action.RIGHT_CLICK_BLOCK && target.canBeActivated() && target.onActivate(item, player, face, fx, fy, fz)) {

@@ -486,6 +486,7 @@ public class Server {
             CompletableFuture<Void> populatorF   = CompletableFuture.runAsync(Registries.POPULATOR::init,       computeThreadPool);
             CompletableFuture<Void> genFeatF     = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init,computeThreadPool);
             CompletableFuture<Void> effectF      = CompletableFuture.runAsync(Registries.EFFECT::init,          computeThreadPool);
+            CompletableFuture<Void> voxelF      = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init,      computeThreadPool);
 
             CompletableFuture<Void> blockStateF  = blockF.thenRunAsync(
                     registryCache != null
@@ -507,7 +508,7 @@ public class Server {
 
             CompletableFuture.allOf(potionF, packetF, entityF, blockEntityF, itemRtIdF, biomeF,
                     fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
-                    creativeF, recipeF).join();
+                    creativeF, recipeF, voxelF).join();
 
             if (settings.performanceSettings().registryCacheEnabled() && registryCache == null) {
                 RegistryCache.save(registryCachePath);
@@ -592,6 +593,7 @@ public class Server {
             Registries.STRUCTURE.trim();
             Registries.EFFECT.trim();
             Registries.RECIPE.trim();
+            Registries.VOXEL_SHAPE.trim();
         }
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
@@ -1503,10 +1505,16 @@ public class Server {
     }
 
     public void onPlayerLogin(InetSocketAddress socketAddress, Player player) {
-        PlayerLoginEvent ev;
-        this.getPluginManager().callEvent(ev = new PlayerLoginEvent(player, "Plugin reason"));
+        PlayerLoginEvent ev = new PlayerLoginEvent(player, "Plugin reason");
+        this.getPluginManager().callEvent(ev);
+
         if (ev.isCancelled()) {
             player.close(player.getLeaveMessage(), ev.getKickMessage());
+
+            this.removeOnlinePlayer(player);
+            this.players.remove(socketAddress);
+            this.uniquePlayers.remove(player.getUniqueId());
+
             return;
         }
 
@@ -2339,7 +2347,11 @@ public class Server {
             path = new File(this.getDataPath(), "worlds/" + levelFolderName).getAbsolutePath();
         }
         String pathS = Path.of(path).toString();
+
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(pathS);
+        if (provider == null) {
+            provider = LevelProviderManager.getProviderByName(levelConfig.format());
+        }
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
