@@ -799,7 +799,7 @@ public class LevelDBProvider implements LevelProvider {
                     .cheatsEnabled(d.getBoolean("cheatsEnabled"))
                     .commandsEnabled(d.getBoolean("commandsEnabled"))
                     .currentTick(d.getLong("currentTick"))
-                    // Note: This is a LevelDat field, not gamerule — casing follows vanilla format
+                    // This is a LevelDat field, not gamerule — casing follows vanilla format
                     .daylightCycle(d.getInt("daylightCycle"))
                     .editorWorldType(d.getInt("editorWorldType"))
                     .eduOffer(d.getInt("eduOffer"))
@@ -827,7 +827,7 @@ public class LevelDBProvider implements LevelProvider {
                     .prid(d.getString("prid"))
                     .rainLevel(d.getFloat("rainLevel"))
                     .rainTime(d.getInt("rainTime"))
-                    // Note: This is a LevelDat field, not gamerule — casing follows vanilla format
+                    // This is a LevelDat field, not gamerule — casing follows vanilla format
                     .randomTickSpeed(d.getInt("randomTickSpeed"))
                     .recipesUnlock(d.getBoolean("recipesUnlock"))
                     .requiresCopiedPackRemovalCheck(d.getBoolean("requiresCopiedPackRemovalCheck"))
