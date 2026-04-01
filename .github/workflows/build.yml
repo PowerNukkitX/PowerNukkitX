@@ -123,3 +123,13 @@ jobs:
       - name: Show build summary
         run: |
           echo 'Build & static checks completed. See artifacts and logs above.'
+
+  noop:
+    name: No-op (no relevant changes)
+    runs-on: ubuntu-latest
+    needs: filter
+    if: needs.filter.outputs.src != 'true'
+    steps:
+      - name: No relevant changes detected
+        run: echo 'No relevant changes for build or check. Skipping build.'
+
