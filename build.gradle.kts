@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
+    implementation(libs.pnxgamedata)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
