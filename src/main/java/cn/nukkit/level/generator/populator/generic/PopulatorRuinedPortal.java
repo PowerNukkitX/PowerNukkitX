@@ -85,6 +85,9 @@ public class PopulatorRuinedPortal extends Populator {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }
+                if (block instanceof BlockFlowingLava && level.getBlock(block.up()) instanceof BlockFlowingWater) {
+                    manager.setBlockStateAt(block, BlockObsidian.PROPERTIES.getBlockState());
+                }
                 if(block instanceof BlockObsidian) {
                     if(random.nextInt(5) == 0) {
                         manager.setBlockStateAt(block, CRYING_OBSIDIAN);
