@@ -12,16 +12,19 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.registry.Registries;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import javax.annotation.Nullable;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class ItemSpawnEgg extends Item {
+public class ItemSpawnEgg extends Item implements SpawnEggPickable {
+
+    private CompoundTag entityNBT;
 
     public ItemSpawnEgg() {
         this(0, 1);
@@ -75,6 +78,12 @@ public class ItemSpawnEgg extends Item {
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
         }
+        if (this.entityNBT != null) {
+            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
+            nbt = this.entityNBT;
+        }
 
         int networkId = getEntityNetworkId();
         CreatureSpawnEvent ev = new CreatureSpawnEvent(networkId, block, nbt, SpawnReason.SPAWN_EGG);
@@ -114,5 +123,10 @@ public class ItemSpawnEgg extends Item {
             }
         }
         return result.toString().trim();
+    }
+
+    @Override
+    public void setEntityNBT(CompoundTag entityNBT) {
+        this.entityNBT = entityNBT;
     }
 }
