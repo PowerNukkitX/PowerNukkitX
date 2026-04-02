@@ -94,11 +94,10 @@ public class LevelDBProvider implements LevelProvider {
         boolean converted = false;
 
         for (GameRule rule : GameRule.values()) {
-            String pnxKey = rule.getName(); // e.g. doDayLightCycle
-            String bdsKey = pnxKey.toLowerCase(); // dodaylightcycle
+            String pnxKey = rule.getName();
+            String bdsKey = pnxKey.toLowerCase();
 
             if (d.contains(pnxKey)) {
-                // Only add lowercase if it doesn't already exist
                 if (!d.contains(bdsKey)) {
                     d.put(bdsKey, d.get(pnxKey));
                 }
@@ -799,7 +798,6 @@ public class LevelDBProvider implements LevelProvider {
                     .cheatsEnabled(d.getBoolean("cheatsEnabled"))
                     .commandsEnabled(d.getBoolean("commandsEnabled"))
                     .currentTick(d.getLong("currentTick"))
-                    // This is a LevelDat field, not gamerule — casing follows vanilla format
                     .daylightCycle(d.getInt("daylightCycle"))
                     .editorWorldType(d.getInt("editorWorldType"))
                     .eduOffer(d.getInt("eduOffer"))
@@ -827,7 +825,6 @@ public class LevelDBProvider implements LevelProvider {
                     .prid(d.getString("prid"))
                     .rainLevel(d.getFloat("rainLevel"))
                     .rainTime(d.getInt("rainTime"))
-                    // This is a LevelDat field, not gamerule — casing follows vanilla format
                     .randomTickSpeed(d.getInt("randomTickSpeed"))
                     .recipesUnlock(d.getBoolean("recipesUnlock"))
                     .requiresCopiedPackRemovalCheck(d.getBoolean("requiresCopiedPackRemovalCheck"))
@@ -848,7 +845,6 @@ public class LevelDBProvider implements LevelProvider {
             LevelDat result = levelDatBuilder.build();
 
             if (converted) {
-                // Persist one-time key migration to disk (PNX -> BDS format)
                 writeLevelDat(this.path, this.getDimensionData(), result);
             }
 
