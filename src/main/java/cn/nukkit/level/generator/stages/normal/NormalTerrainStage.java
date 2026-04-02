@@ -17,7 +17,7 @@ public class NormalTerrainStage extends GenerateStage {
 
     public static final String NAME = "normal_terrain";
 
-    public static final int SEA_LEVEL = 63;
+    public static final int SEA_LEVEL = 62;
 
     @Override
     public void apply(ChunkGenerateContext context) {

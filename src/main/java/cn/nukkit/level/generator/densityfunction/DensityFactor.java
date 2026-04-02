@@ -1,8 +1,13 @@
 package cn.nukkit.level.generator.densityfunction;
 
-import static cn.nukkit.level.generator.densityfunction.DensityFunctions.p;
-import static cn.nukkit.level.generator.densityfunction.DensityFunctions.spline;
+import static cn.nukkit.level.generator.densityfunction.DensityCommon.p;
+import static cn.nukkit.level.generator.densityfunction.DensityCommon.spline;
 
+/**
+ * @author Buddelbubi
+ * @since 2026/04/02
+ * @implNote <a href="https://github.com/misode/mcmeta/blob/data/data/minecraft/worldgen/density_function/overworld/factor.json">Source</a>
+ */
 public final class DensityFactor {
 
     private DensityFactor() {
@@ -14,14 +19,14 @@ public final class DensityFactor {
             DensityFunction ridges,
             DensityFunction ridgesFolded
     ) {
-        return DensityFunctions.flatCache(
-                DensityFunctions.cache2d(
-                        DensityFunctions.add(
-                                DensityFunctions.constant(10.0),
-                                DensityFunctions.mul(
-                                        DensityFunctions.blendAlpha(),
-                                        DensityFunctions.add(
-                                                DensityFunctions.constant(-10.0),
+        return DensityCommon.flatCache(
+                DensityCommon.cache2d(
+                        DensityCommon.add(
+                                DensityCommon.constant(10.0),
+                                DensityCommon.mul(
+                                        DensityCommon.blendAlpha(),
+                                        DensityCommon.add(
+                                                DensityCommon.constant(-10.0),
                                                 factorSpline(continents, erosion, ridges, ridgesFolded)
                                         )
                                 )

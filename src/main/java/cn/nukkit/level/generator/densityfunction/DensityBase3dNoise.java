@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * @author Buddelbubi
+ * @since 2026/04/02
+ * @implNote <a href="https://github.com/misode/mcmeta/blob/data/data/minecraft/worldgen/density_function/overworld/base_3d_noise.json">Source</a>
+ */
 public final class DensityBase3dNoise {
 
     private static final double MAIN_NOISE_DIVISOR = 10.0;

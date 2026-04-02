@@ -1,8 +1,12 @@
 package cn.nukkit.level.generator.densityfunction;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 
+/**
+ * DensityFunction implementation for PowerNukkitX
+ * @author Buddelbubi
+ * @since 2026/04/02
+ */
 public interface DensityFunction {
 
     double compute(FunctionContext context);
@@ -16,35 +20,35 @@ public interface DensityFunction {
     double maxValue();
 
     default DensityFunction clamp(double min, double max) {
-        return new DensityFunctions.Clamp(this, min, max);
+        return new DensityCommon.Clamp(this, min, max);
     }
 
     default DensityFunction abs() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.ABS);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.ABS);
     }
 
     default DensityFunction square() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.SQUARE);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.SQUARE);
     }
 
     default DensityFunction cube() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.CUBE);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.CUBE);
     }
 
     default DensityFunction halfNegative() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.HALF_NEGATIVE);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.HALF_NEGATIVE);
     }
 
     default DensityFunction quarterNegative() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.QUARTER_NEGATIVE);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.QUARTER_NEGATIVE);
     }
 
     default DensityFunction invert() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.INVERT);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.INVERT);
     }
 
     default DensityFunction squeeze() {
-        return DensityFunctions.map(this, DensityFunctions.Mapped.Type.SQUEEZE);
+        return DensityCommon.map(this, DensityCommon.Mapped.Type.SQUEEZE);
     }
 
     interface ContextProvider {
@@ -78,10 +82,6 @@ public interface DensityFunction {
             this(noise == null ? null : new NormalNoiseAdapter(noise));
         }
 
-        public NoiseHolder(SimplexNoise noise) {
-            this(noise == null ? null : new SimplexNoiseAdapter(noise));
-        }
-
         public NoiseHolder(NoiseSampler noise) {
             this.noise = noise;
         }
@@ -108,17 +108,6 @@ public interface DensityFunction {
             }
         }
 
-        private record SimplexNoiseAdapter(SimplexNoise noise) implements NoiseSampler {
-            @Override
-            public double getValue(double x, double y, double z) {
-                return noise.getValue(x, y, z);
-            }
-
-            @Override
-            public double maxValue() {
-                return noise.getMax();
-            }
-        }
     }
 
     interface SimpleFunction extends DensityFunction {

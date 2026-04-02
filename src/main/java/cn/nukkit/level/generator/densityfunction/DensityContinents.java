@@ -1,8 +1,12 @@
 package cn.nukkit.level.generator.densityfunction;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 
+/**
+ * @author Buddelbubi
+ * @since 2026/04/02
+ * @implNote <a href="https://github.com/misode/mcmeta/blob/data/data/minecraft/worldgen/density_function/overworld/continents.json">Source</a>
+ */
 public final class DensityContinents {
 
     private static final double XZ_SCALE = 0.25;
@@ -16,10 +20,10 @@ public final class DensityContinents {
             DensityFunction shiftX,
             DensityFunction shiftZ
     ) {
-        return DensityFunctions.flatCache(
-                new DensityFunctions.ShiftedNoise(
+        return DensityCommon.flatCache(
+                new DensityCommon.ShiftedNoise(
                         shiftX,
-                        DensityFunctions.zero(),
+                        DensityCommon.zero(),
                         shiftZ,
                         XZ_SCALE,
                         Y_SCALE,
@@ -34,36 +38,9 @@ public final class DensityContinents {
     ) {
         return overworldContinents(
                 continentalness,
-                DensityFunctions.shiftA(shiftNoise),
-                DensityFunctions.shiftB(shiftNoise)
+                DensityCommon.shiftA(shiftNoise),
+                DensityCommon.shiftB(shiftNoise)
         );
     }
 
-    public static DensityFunction overworldContinents(
-            SimplexNoise continentalness,
-            DensityFunction shiftX,
-            DensityFunction shiftZ
-    ) {
-        return DensityFunctions.flatCache(
-                new DensityFunctions.ShiftedNoise(
-                        shiftX,
-                        DensityFunctions.zero(),
-                        shiftZ,
-                        XZ_SCALE,
-                        Y_SCALE,
-                        new DensityFunction.NoiseHolder(continentalness)
-                )
-        );
-    }
-
-    public static DensityFunction overworldContinents(
-            SimplexNoise continentalness,
-            SimplexNoise shiftNoise
-    ) {
-        return overworldContinents(
-                continentalness,
-                DensityFunctions.shiftA(shiftNoise),
-                DensityFunctions.shiftB(shiftNoise)
-        );
-    }
 }

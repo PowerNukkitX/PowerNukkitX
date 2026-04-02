@@ -1,8 +1,13 @@
 package cn.nukkit.level.generator.densityfunction;
 
-import static cn.nukkit.level.generator.densityfunction.DensityFunctions.p;
-import static cn.nukkit.level.generator.densityfunction.DensityFunctions.spline;
+import static cn.nukkit.level.generator.densityfunction.DensityCommon.p;
+import static cn.nukkit.level.generator.densityfunction.DensityCommon.spline;
 
+/**
+ * @author Buddelbubi
+ * @since 2026/04/02
+ * @implNote <a href="https://github.com/misode/mcmeta/blob/data/data/minecraft/worldgen/density_function/overworld/offset.json">Source</a>
+ */
 public final class DensityOffset {
 
     private static final double BASE_OFFSET = -0.5037500262260437;
@@ -15,71 +20,71 @@ public final class DensityOffset {
             DensityFunction erosion,
             DensityFunction ridgesFolded
     ) {
-        DensityFunction blendAlpha = DensityFunctions.cacheOnce(DensityFunctions.blendAlpha());
-        DensityFunction blendTerm = DensityFunctions.mul(
-                DensityFunctions.blendOffset(),
-                DensityFunctions.add(
-                        DensityFunctions.constant(1.0),
-                        DensityFunctions.mul(DensityFunctions.constant(-1.0), blendAlpha)
+        DensityFunction blendAlpha = DensityCommon.cacheOnce(DensityCommon.blendAlpha());
+        DensityFunction blendTerm = DensityCommon.mul(
+                DensityCommon.blendOffset(),
+                DensityCommon.add(
+                        DensityCommon.constant(1.0),
+                        DensityCommon.mul(DensityCommon.constant(-1.0), blendAlpha)
                 )
         );
 
-        DensityFunction offsetTerm = DensityFunctions.mul(
-                DensityFunctions.add(DensityFunctions.constant(BASE_OFFSET), offsetSpline(continents, erosion, ridgesFolded)),
+        DensityFunction offsetTerm = DensityCommon.mul(
+                DensityCommon.add(DensityCommon.constant(BASE_OFFSET), offsetSpline(continents, erosion, ridgesFolded)),
                 blendAlpha
         );
 
-        return DensityFunctions.flatCache(
-                DensityFunctions.cache2d(
-                        DensityFunctions.add(blendTerm, offsetTerm)
+        return DensityCommon.flatCache(
+                DensityCommon.cache2d(
+                        DensityCommon.add(blendTerm, offsetTerm)
                 )
         );
     }
 
     private static DensityFunction offsetSpline(DensityFunction continents, DensityFunction erosion, DensityFunction ridgesFolded) {
-        DensityFunction ridgesFolded1 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.08880186, 0.38940096),
-                DensityFunctions.p(1.0, 0.69000006, 0.38940096)
+        DensityFunction ridgesFolded1 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.08880186, 0.38940096),
+                DensityCommon.p(1.0, 0.69000006, 0.38940096)
         );
-        DensityFunction ridgesFolded2 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.115760356, 0.37788022),
-                DensityFunctions.p(1.0, 0.6400001, 0.37788022)
+        DensityFunction ridgesFolded2 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.115760356, 0.37788022),
+                DensityCommon.p(1.0, 0.6400001, 0.37788022)
         );
-        DensityFunction ridgesFolded3 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.2222, 0.0),
-                DensityFunctions.p(-0.75, -0.2222, 0.0),
-                DensityFunctions.p(-0.65, 0.0, 0.0),
-                DensityFunctions.p(0.5954547, 2.9802322E-8, 0.0),
-                DensityFunctions.p(0.6054547, 2.9802322E-8, 0.2534563),
-                DensityFunctions.p(1.0, 0.100000024, 0.2534563)
+        DensityFunction ridgesFolded3 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.2222, 0.0),
+                DensityCommon.p(-0.75, -0.2222, 0.0),
+                DensityCommon.p(-0.65, 0.0, 0.0),
+                DensityCommon.p(0.5954547, 2.9802322E-8, 0.0),
+                DensityCommon.p(0.6054547, 2.9802322E-8, 0.2534563),
+                DensityCommon.p(1.0, 0.100000024, 0.2534563)
         );
-        DensityFunction ridgesFolded4 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.3, 0.5),
-                DensityFunctions.p(-0.4, 0.05, 0.0),
-                DensityFunctions.p(0.0, 0.05, 0.0),
-                DensityFunctions.p(0.4, 0.05, 0.0),
-                DensityFunctions.p(1.0, 0.060000002, 0.007000001)
+        DensityFunction ridgesFolded4 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.3, 0.5),
+                DensityCommon.p(-0.4, 0.05, 0.0),
+                DensityCommon.p(0.0, 0.05, 0.0),
+                DensityCommon.p(0.4, 0.05, 0.0),
+                DensityCommon.p(1.0, 0.060000002, 0.007000001)
         );
-        DensityFunction ridgesFolded5 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.15, 0.5),
-                DensityFunctions.p(-0.4, 0.0, 0.0),
-                DensityFunctions.p(0.0, 0.0, 0.0),
-                DensityFunctions.p(0.4, 0.05, 0.1),
-                DensityFunctions.p(1.0, 0.060000002, 0.007000001)
+        DensityFunction ridgesFolded5 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.15, 0.5),
+                DensityCommon.p(-0.4, 0.0, 0.0),
+                DensityCommon.p(0.0, 0.0, 0.0),
+                DensityCommon.p(0.4, 0.05, 0.1),
+                DensityCommon.p(1.0, 0.060000002, 0.007000001)
         );
-        DensityFunction ridgesFolded6 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.15, 0.5),
-                DensityFunctions.p(-0.4, 0.0, 0.0),
-                DensityFunctions.p(0.0, 0.0, 0.0),
-                DensityFunctions.p(0.4, 0.0, 0.0),
-                DensityFunctions.p(1.0, 0.0, 0.0)
+        DensityFunction ridgesFolded6 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.15, 0.5),
+                DensityCommon.p(-0.4, 0.0, 0.0),
+                DensityCommon.p(0.0, 0.0, 0.0),
+                DensityCommon.p(0.4, 0.0, 0.0),
+                DensityCommon.p(1.0, 0.0, 0.0)
         );
-        DensityFunction ridgesFolded7 = DensityFunctions.spline(ridgesFolded,
-                DensityFunctions.p(-1.0, -0.02, 0.0),
-                DensityFunctions.p(-0.4, -0.03, 0.0),
-                DensityFunctions.p(0.0, -0.03, 0.0),
-                DensityFunctions.p(0.4, 0.0, 0.06),
-                DensityFunctions.p(1.0, 0.0, 0.0)
+        DensityFunction ridgesFolded7 = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.02, 0.0),
+                DensityCommon.p(-0.4, -0.03, 0.0),
+                DensityCommon.p(0.0, -0.03, 0.0),
+                DensityCommon.p(0.4, 0.0, 0.06),
+                DensityCommon.p(1.0, 0.0, 0.0)
         );
         DensityFunction ridgesFolded8 = spline(ridgesFolded,
                 p(-1.0, -0.25, 0.5),
@@ -201,7 +206,7 @@ public final class DensityOffset {
                 p(0.0, 0.17, 0.0)
         );
 
-        DensityFunction erosion1 = DensityFunctions.spline(erosion,
+        DensityFunction erosion1 = DensityCommon.spline(erosion,
                 p(-0.85, ridgesFolded1, 0.0),
                 p(-0.7, ridgesFolded2, 0.0),
                 p(-0.4, ridgesFolded3, 0.0),
@@ -210,7 +215,7 @@ public final class DensityOffset {
                 p(0.2, ridgesFolded6, 0.0),
                 p(0.7, ridgesFolded7, 0.0)
         );
-        DensityFunction erosion2 = DensityFunctions.spline(erosion,
+        DensityFunction erosion2 = DensityCommon.spline(erosion,
                 p(-0.85, ridgesFolded1, 0.0),
                 p(-0.7, ridgesFolded2, 0.0),
                 p(-0.4, ridgesFolded3, 0.0),
@@ -219,7 +224,7 @@ public final class DensityOffset {
                 p(0.2, ridgesFolded10, 0.0),
                 p(0.7, ridgesFolded11, 0.0)
         );
-        DensityFunction erosion3 = DensityFunctions.spline(erosion,
+        DensityFunction erosion3 = DensityCommon.spline(erosion,
                 p(-0.85, ridgesFolded12, 0.0),
                 p(-0.7, ridgesFolded13, 0.0),
                 p(-0.4, ridgesFolded14, 0.0),
@@ -232,7 +237,7 @@ public final class DensityOffset {
                 p(0.58, ridgesFolded18, 0.0),
                 p(0.7, ridgesFolded11, 0.0)
         );
-        DensityFunction erosion4 = DensityFunctions.spline(erosion,
+        DensityFunction erosion4 = DensityCommon.spline(erosion,
                 p(-0.85, ridgesFolded24, 0.0),
                 p(-0.7, ridgesFolded19, 0.0),
                 p(-0.4, ridgesFolded19, 0.0),
@@ -246,7 +251,7 @@ public final class DensityOffset {
                 p(0.7, ridgesFolded23, 0.0)
         );
 
-        return DensityFunctions.spline(continents,
+        return DensityCommon.spline(continents,
                 p(-1.1, 0.044, 0.0),
                 p(-1.02, -0.2222, 0.0),
                 p(-0.51, -0.2222, 0.0),

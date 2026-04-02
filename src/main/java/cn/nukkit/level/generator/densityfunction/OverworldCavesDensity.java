@@ -2,6 +2,11 @@ package cn.nukkit.level.generator.densityfunction;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 
+/**
+ * @author Buddelbubi
+ * @since 2026/04/02
+ * @implNote <a href="https://github.com/misode/mcmeta/tree/data/data/minecraft/worldgen/density_function/overworld/caves">Sources</a>
+ */
 public final class OverworldCavesDensity {
 
     private static final DensityFunction Y = new DensityFunction.SimpleFunction() {
@@ -28,19 +33,19 @@ public final class OverworldCavesDensity {
             NormalNoise spaghettiRoughness,
             NormalNoise spaghettiRoughnessModulator
     ) {
-        DensityFunction roughness = DensityFunctions.noise(spaghettiRoughness, 1.0, 1.0);
-        DensityFunction modulator = DensityFunctions.mappedNoise(spaghettiRoughnessModulator, 0.0, -0.1);
-        return DensityFunctions.cacheOnce(
-                DensityFunctions.mul(
+        DensityFunction roughness = DensityCommon.noise(spaghettiRoughness, 1.0, 1.0);
+        DensityFunction modulator = DensityCommon.mappedNoise(spaghettiRoughnessModulator, 0.0, -0.1);
+        return DensityCommon.cacheOnce(
+                DensityCommon.mul(
                         modulator,
-                        DensityFunctions.add(roughness.abs(), DensityFunctions.constant(-0.4))
+                        DensityCommon.add(roughness.abs(), DensityCommon.constant(-0.4))
                 )
         );
     }
 
     public static DensityFunction spaghetti2dThicknessModulator(NormalNoise spaghetti2dThickness) {
-        return DensityFunctions.cacheOnce(
-                DensityFunctions.mappedNoise(spaghetti2dThickness, 2.0, 1.0, -0.6, -1.3)
+        return DensityCommon.cacheOnce(
+                DensityCommon.mappedNoise(spaghetti2dThickness, 2.0, 1.0, -0.6, -1.3)
         );
     }
 
@@ -52,28 +57,28 @@ public final class OverworldCavesDensity {
             NormalNoise spaghetti3dSecond,
             NormalNoise caveEntrance
     ) {
-        DensityFunction rarity = DensityFunctions.cacheOnce(DensityFunctions.noise(spaghetti3dRarity, 2.0, 1.0));
-        DensityFunction thickness = DensityFunctions.mappedNoise(spaghetti3dThickness, -0.065, -0.088);
-        DensityFunction first = DensityFunctions.weirdScaledSampler(
+        DensityFunction rarity = DensityCommon.cacheOnce(DensityCommon.noise(spaghetti3dRarity, 2.0, 1.0));
+        DensityFunction thickness = DensityCommon.mappedNoise(spaghetti3dThickness, -0.065, -0.088);
+        DensityFunction first = DensityCommon.weirdScaledSampler(
                 rarity,
                 spaghetti3dFirst,
-                DensityFunctions.WeirdScaledSampler.RarityValueMapper.TYPE1
+                DensityCommon.WeirdScaledSampler.RarityValueMapper.TYPE1
         );
-        DensityFunction second = DensityFunctions.weirdScaledSampler(
+        DensityFunction second = DensityCommon.weirdScaledSampler(
                 rarity,
                 spaghetti3dSecond,
-                DensityFunctions.WeirdScaledSampler.RarityValueMapper.TYPE1
+                DensityCommon.WeirdScaledSampler.RarityValueMapper.TYPE1
         );
-        DensityFunction spaghetti = DensityFunctions.add(DensityFunctions.max(first, second), thickness).clamp(-1.0, 1.0);
-        DensityFunction entrance = DensityFunctions.noise(caveEntrance, 0.75, 0.5);
-        DensityFunction entranceGradient = DensityFunctions.add(
-                DensityFunctions.add(entrance, DensityFunctions.constant(0.37)),
-                DensityFunctions.yClampedGradient(-10, 30, 0.3, 0.0)
+        DensityFunction spaghetti = DensityCommon.add(DensityCommon.max(first, second), thickness).clamp(-1.0, 1.0);
+        DensityFunction entrance = DensityCommon.noise(caveEntrance, 0.75, 0.5);
+        DensityFunction entranceGradient = DensityCommon.add(
+                DensityCommon.add(entrance, DensityCommon.constant(0.37)),
+                DensityCommon.yClampedGradient(-10, 30, 0.3, 0.0)
         );
-        return DensityFunctions.cacheOnce(
-                DensityFunctions.min(
+        return DensityCommon.cacheOnce(
+                DensityCommon.min(
                         entranceGradient,
-                        DensityFunctions.add(spaghettiRoughnessFunction, spaghetti)
+                        DensityCommon.add(spaghettiRoughnessFunction, spaghetti)
                 )
         );
     }
@@ -83,14 +88,14 @@ public final class OverworldCavesDensity {
             NormalNoise pillarRareness,
             NormalNoise pillarThickness
     ) {
-        DensityFunction pillarNoise = DensityFunctions.noise(pillar, 25.0, 0.3);
-        DensityFunction rarity = DensityFunctions.mappedNoise(pillarRareness, 0.0, -2.0);
-        DensityFunction thickness = DensityFunctions.mappedNoise(pillarThickness, 0.0, 1.1);
-        DensityFunction combined = DensityFunctions.add(
-                DensityFunctions.mul(pillarNoise, DensityFunctions.constant(2.0)),
+        DensityFunction pillarNoise = DensityCommon.noise(pillar, 25.0, 0.3);
+        DensityFunction rarity = DensityCommon.mappedNoise(pillarRareness, 0.0, -2.0);
+        DensityFunction thickness = DensityCommon.mappedNoise(pillarThickness, 0.0, 1.1);
+        DensityFunction combined = DensityCommon.add(
+                DensityCommon.mul(pillarNoise, DensityCommon.constant(2.0)),
                 rarity
         );
-        return DensityFunctions.cacheOnce(DensityFunctions.mul(combined, thickness.cube()));
+        return DensityCommon.cacheOnce(DensityCommon.mul(combined, thickness.cube()));
     }
 
     public static DensityFunction spaghetti2d(
@@ -99,22 +104,22 @@ public final class OverworldCavesDensity {
             NormalNoise spaghetti2d,
             NormalNoise spaghetti2dElevation
     ) {
-        DensityFunction modulator = DensityFunctions.noise(spaghetti2dModulator, 2.0, 1.0);
-        DensityFunction sampled = DensityFunctions.weirdScaledSampler(
+        DensityFunction modulator = DensityCommon.noise(spaghetti2dModulator, 2.0, 1.0);
+        DensityFunction sampled = DensityCommon.weirdScaledSampler(
                 modulator,
                 spaghetti2d,
-                DensityFunctions.WeirdScaledSampler.RarityValueMapper.TYPE2
+                DensityCommon.WeirdScaledSampler.RarityValueMapper.TYPE2
         );
-        DensityFunction elevation = DensityFunctions.mappedNoise(spaghetti2dElevation, 1.0, 0.0, -8.0, 8.0);
-        DensityFunction elevationGradient = DensityFunctions.add(
-                DensityFunctions.add(elevation, DensityFunctions.yClampedGradient(-64, 320, 8.0, -40.0)).abs(),
+        DensityFunction elevation = DensityCommon.mappedNoise(spaghetti2dElevation, 1.0, 0.0, -8.0, 8.0);
+        DensityFunction elevationGradient = DensityCommon.add(
+                DensityCommon.add(elevation, DensityCommon.yClampedGradient(-64, 320, 8.0, -40.0)).abs(),
                 spaghetti2dThicknessModulator
         ).cube();
-        DensityFunction adjusted = DensityFunctions.add(
+        DensityFunction adjusted = DensityCommon.add(
                 sampled,
-                DensityFunctions.mul(DensityFunctions.constant(0.083), spaghetti2dThicknessModulator)
+                DensityCommon.mul(DensityCommon.constant(0.083), spaghetti2dThicknessModulator)
         );
-        return DensityFunctions.max(adjusted, elevationGradient).clamp(-1.0, 1.0);
+        return DensityCommon.max(adjusted, elevationGradient).clamp(-1.0, 1.0);
     }
 
     public static DensityFunction noodle(
@@ -124,39 +129,39 @@ public final class OverworldCavesDensity {
             NormalNoise noodleRidgeB
     ) {
         DensityFunction toggle = yLimitedInterpolatable(
-                DensityFunctions.noise(noodle, 1.0, 1.0),
+                DensityCommon.noise(noodle, 1.0, 1.0),
                 -60,
                 320,
                 -1.0
         );
         DensityFunction thickness = yLimitedInterpolatable(
-                DensityFunctions.mappedNoise(noodleThickness, 1.0, 1.0, -0.05, -0.1),
+                DensityCommon.mappedNoise(noodleThickness, 1.0, 1.0, -0.05, -0.1),
                 -60,
                 320,
                 0.0
         );
         DensityFunction ridgeA = yLimitedInterpolatable(
-                DensityFunctions.noise(noodleRidgeA, 2.6666666666666665, 2.6666666666666665),
+                DensityCommon.noise(noodleRidgeA, 2.6666666666666665, 2.6666666666666665),
                 -60,
                 320,
                 0.0
         );
         DensityFunction ridgeB = yLimitedInterpolatable(
-                DensityFunctions.noise(noodleRidgeB, 2.6666666666666665, 2.6666666666666665),
+                DensityCommon.noise(noodleRidgeB, 2.6666666666666665, 2.6666666666666665),
                 -60,
                 320,
                 0.0
         );
-        DensityFunction ridges = DensityFunctions.mul(
-                DensityFunctions.constant(1.5),
-                DensityFunctions.max(ridgeA.abs(), ridgeB.abs())
+        DensityFunction ridges = DensityCommon.mul(
+                DensityCommon.constant(1.5),
+                DensityCommon.max(ridgeA.abs(), ridgeB.abs())
         );
-        return DensityFunctions.rangeChoice(
+        return DensityCommon.rangeChoice(
                 toggle,
                 -1000000.0,
                 0.0,
-                DensityFunctions.constant(64.0),
-                DensityFunctions.add(thickness, ridges)
+                DensityCommon.constant(64.0),
+                DensityCommon.add(thickness, ridges)
         );
     }
 
@@ -209,32 +214,32 @@ public final class OverworldCavesDensity {
                 caveLayer,
                 caveCheese
         );
-        DensityFunction caves = DensityFunctions.rangeChoice(
+        DensityFunction caves = DensityCommon.rangeChoice(
                 slopedCheese,
                 -1000000.0,
                 1.5625,
-                DensityFunctions.min(
+                DensityCommon.min(
                         slopedCheese,
-                        DensityFunctions.mul(DensityFunctions.constant(5.0), entrances)
+                        DensityCommon.mul(DensityCommon.constant(5.0), entrances)
                 ),
                 underground
         );
-        DensityFunction postProcessed = DensityFunctions.mul(
-                DensityFunctions.constant(0.64),
-                DensityFunctions.interpolated(
-                        DensityFunctions.blendDensity(
-                                DensityFunctions.add(
-                                        DensityFunctions.constant(0.1171875),
-                                        DensityFunctions.mul(
-                                                DensityFunctions.yClampedGradient(-64, -40, 0.0, 1.0),
-                                                DensityFunctions.add(
-                                                        DensityFunctions.constant(-0.1171875),
-                                                        DensityFunctions.add(
-                                                                DensityFunctions.constant(-0.078125),
-                                                                DensityFunctions.mul(
-                                                                        DensityFunctions.yClampedGradient(240, 256, 1.0, 0.0),
-                                                                        DensityFunctions.add(
-                                                                                DensityFunctions.constant(0.078125),
+        DensityFunction postProcessed = DensityCommon.mul(
+                DensityCommon.constant(0.64),
+                DensityCommon.interpolated(
+                        DensityCommon.blendDensity(
+                                DensityCommon.add(
+                                        DensityCommon.constant(0.1171875),
+                                        DensityCommon.mul(
+                                                DensityCommon.yClampedGradient(-64, -40, 0.0, 1.0),
+                                                DensityCommon.add(
+                                                        DensityCommon.constant(-0.1171875),
+                                                        DensityCommon.add(
+                                                                DensityCommon.constant(-0.078125),
+                                                                DensityCommon.mul(
+                                                                        DensityCommon.yClampedGradient(240, 256, 1.0, 0.0),
+                                                                        DensityCommon.add(
+                                                                                DensityCommon.constant(0.078125),
                                                                                 caves
                                                                         )
                                                                 )
@@ -245,7 +250,7 @@ public final class OverworldCavesDensity {
                         )
                 )
         ).squeeze();
-        return DensityFunctions.min(postProcessed, noodle(noodle, noodleThickness, noodleRidgeA, noodleRidgeB));
+        return DensityCommon.min(postProcessed, noodle(noodle, noodleThickness, noodleRidgeA, noodleRidgeB));
     }
 
     private static DensityFunction underground(
@@ -257,43 +262,43 @@ public final class OverworldCavesDensity {
             NormalNoise caveLayer,
             NormalNoise caveCheese
     ) {
-        DensityFunction layerizedCaverns = DensityFunctions.mul(
-                DensityFunctions.constant(4.0),
-                DensityFunctions.noise(caveLayer, 1.0, 8.0).square()
+        DensityFunction layerizedCaverns = DensityCommon.mul(
+                DensityCommon.constant(4.0),
+                DensityCommon.noise(caveLayer, 1.0, 8.0).square()
         );
-        DensityFunction caveCheeseFunction = DensityFunctions.add(
-                DensityFunctions.add(
-                        DensityFunctions.constant(0.27),
-                        DensityFunctions.noise(caveCheese, 1.0, 0.6666666666666666)
+        DensityFunction caveCheeseFunction = DensityCommon.add(
+                DensityCommon.add(
+                        DensityCommon.constant(0.27),
+                        DensityCommon.noise(caveCheese, 1.0, 0.6666666666666666)
                 ).clamp(-1.0, 1.0),
-                DensityFunctions.add(
-                        DensityFunctions.constant(1.5),
-                        DensityFunctions.mul(DensityFunctions.constant(-0.64), slopedCheese)
+                DensityCommon.add(
+                        DensityCommon.constant(1.5),
+                        DensityCommon.mul(DensityCommon.constant(-0.64), slopedCheese)
                 ).clamp(0.0, 0.5)
         );
-        DensityFunction caveDensity = DensityFunctions.add(layerizedCaverns, caveCheeseFunction);
-        DensityFunction passages = DensityFunctions.min(
-                DensityFunctions.min(caveDensity, entrances),
-                DensityFunctions.add(spaghetti2d, spaghettiRoughnessFunction)
+        DensityFunction caveDensity = DensityCommon.add(layerizedCaverns, caveCheeseFunction);
+        DensityFunction passages = DensityCommon.min(
+                DensityCommon.min(caveDensity, entrances),
+                DensityCommon.add(spaghetti2d, spaghettiRoughnessFunction)
         );
-        DensityFunction pillarFilter = DensityFunctions.rangeChoice(
+        DensityFunction pillarFilter = DensityCommon.rangeChoice(
                 pillars,
                 -1000000.0,
                 0.03,
-                DensityFunctions.constant(-1000000.0),
+                DensityCommon.constant(-1000000.0),
                 pillars
         );
-        return DensityFunctions.max(passages, pillarFilter);
+        return DensityCommon.max(passages, pillarFilter);
     }
 
     private static DensityFunction yLimitedInterpolatable(DensityFunction density, int minY, int maxY, double whenOutOfRange) {
-        return DensityFunctions.interpolated(
-                DensityFunctions.rangeChoice(
+        return DensityCommon.interpolated(
+                DensityCommon.rangeChoice(
                         Y,
                         minY,
                         maxY + 1.0,
                         density,
-                        DensityFunctions.constant(whenOutOfRange)
+                        DensityCommon.constant(whenOutOfRange)
                 )
         );
     }

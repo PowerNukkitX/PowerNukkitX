@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.densityfunction;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
@@ -9,9 +8,14 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class DensityFunctions {
+/**
+ * Common Density functions for PowerNukkitX
+ * @author Buddelbubi
+ * @since 2026/04/02
+ */
+public final class DensityCommon {
 
-    private DensityFunctions() {
+    private DensityCommon() {
     }
 
     public static DensityFunction interpolated(DensityFunction function) {
@@ -30,23 +34,11 @@ public final class DensityFunctions {
         return Marker.create(Marker.Type.CACHE_ONCE, function);
     }
 
-    public static DensityFunction cacheAllInCell(DensityFunction function) {
-        return Marker.create(Marker.Type.CACHE_ALL_IN_CELL, function);
-    }
-
     public static DensityFunction noise(NormalNoise noise) {
         return new Noise(new DensityFunction.NoiseHolder(noise), 1.0, 1.0);
     }
 
-    public static DensityFunction noise(SimplexNoise noise) {
-        return new Noise(new DensityFunction.NoiseHolder(noise), 1.0, 1.0);
-    }
-
     public static DensityFunction noise(NormalNoise noise, double xzScale, double yScale) {
-        return new Noise(new DensityFunction.NoiseHolder(noise), xzScale, yScale);
-    }
-
-    public static DensityFunction noise(SimplexNoise noise, double xzScale, double yScale) {
         return new Noise(new DensityFunction.NoiseHolder(noise), xzScale, yScale);
     }
 
@@ -70,19 +62,7 @@ public final class DensityFunctions {
         return new WeirdScaledSampler(input, new DensityFunction.NoiseHolder(noise), rarityValueMapper);
     }
 
-    public static DensityFunction shiftedNoise2d(DensityFunction shiftX, DensityFunction shiftZ, double xzScale, NormalNoise noise) {
-        return new ShiftedNoise(shiftX, zero(), shiftZ, xzScale, 0.0, new DensityFunction.NoiseHolder(noise));
-    }
-
-    public static DensityFunction shiftedNoise2d(DensityFunction shiftX, DensityFunction shiftZ, double xzScale, SimplexNoise noise) {
-        return new ShiftedNoise(shiftX, zero(), shiftZ, xzScale, 0.0, new DensityFunction.NoiseHolder(noise));
-    }
-
     public static DensityFunction shiftA(NormalNoise noise) {
-        return new ShiftA(new DensityFunction.NoiseHolder(noise));
-    }
-
-    public static DensityFunction shiftA(SimplexNoise noise) {
         return new ShiftA(new DensityFunction.NoiseHolder(noise));
     }
 
@@ -90,15 +70,7 @@ public final class DensityFunctions {
         return new ShiftB(new DensityFunction.NoiseHolder(noise));
     }
 
-    public static DensityFunction shiftB(SimplexNoise noise) {
-        return new ShiftB(new DensityFunction.NoiseHolder(noise));
-    }
-
     public static DensityFunction shift(NormalNoise noise) {
-        return new Shift(new DensityFunction.NoiseHolder(noise));
-    }
-
-    public static DensityFunction shift(SimplexNoise noise) {
         return new Shift(new DensityFunction.NoiseHolder(noise));
     }
 
@@ -108,17 +80,6 @@ public final class DensityFunctions {
 
     public static DensityFunction blendOffset() {
         return BlendOffset.INSTANCE;
-    }
-
-    public static DensityFunction oldBlendedNoise(
-            RandomSourceProvider random,
-            double xzScale,
-            double yScale,
-            double xzFactor,
-            double yFactor,
-            double smearScaleMultiplier
-    ) {
-        return DensityBase3dNoise.oldBlendedNoise(random, xzScale, yScale, xzFactor, yFactor, smearScaleMultiplier);
     }
 
     public static DensityFunction blendDensity(DensityFunction input) {
@@ -173,22 +134,8 @@ public final class DensityFunctions {
         return Mapped.create(type, function);
     }
 
-    public static DensityFunction lerp(DensityFunction alpha, DensityFunction first, DensityFunction second) {
-        if (first instanceof Constant constant) {
-            return lerp(alpha, constant.value, second);
-        }
-
-        DensityFunction alphaCached = cacheOnce(alpha);
-        DensityFunction oneMinusAlpha = add(mul(alphaCached, constant(-1.0)), constant(1.0));
-        return add(mul(first, oneMinusAlpha), mul(second, alphaCached));
-    }
-
     public static DensityFunction lerp(DensityFunction factor, double first, DensityFunction second) {
         return add(mul(factor, add(second, constant(-first))), constant(first));
-    }
-
-    public static DensityFunction findTopSurface(DensityFunction density, DensityFunction upperBound, int lowerBound, int stepSize) {
-        return new FindTopSurface(density, upperBound, lowerBound, stepSize);
     }
 
     public static DensityFunction spline(CubicSpline<Spline.Point> spline) {

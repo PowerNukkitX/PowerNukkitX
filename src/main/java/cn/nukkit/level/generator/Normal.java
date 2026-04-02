@@ -34,7 +34,6 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
     @Override
     public void stages(GenerateStage.Builder builder) {
         builder.start(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
-        builder.next(Registries.GENERATE_STAGE.get(NormalWaterFloodFillStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceDataStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceOverwriteStage.NAME));
