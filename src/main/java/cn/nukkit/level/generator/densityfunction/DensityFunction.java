@@ -13,8 +13,6 @@ public interface DensityFunction {
 
     void fillArray(double[] output, ContextProvider contextProvider);
 
-    DensityFunction mapAll(Visitor visitor);
-
     double minValue();
 
     double maxValue();
@@ -115,11 +113,6 @@ public interface DensityFunction {
         default void fillArray(double[] output, ContextProvider contextProvider) {
             contextProvider.fillAllDirectly(output, this);
         }
-
-        @Override
-        default DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(this);
-        }
     }
 
     record SinglePointContext(int blockX, int blockY, int blockZ) implements FunctionContext {
@@ -153,11 +146,4 @@ public interface DensityFunction {
         }
     }
 
-    interface Visitor {
-        DensityFunction apply(DensityFunction input);
-
-        default NoiseHolder visitNoise(NoiseHolder noise) {
-            return noise;
-        }
-    }
 }

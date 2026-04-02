@@ -137,11 +137,6 @@ public final class DensityBase3dNoise {
         }
 
         @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(this);
-        }
-
-        @Override
         public double minValue() {
             return -1.5;
         }

@@ -194,11 +194,6 @@ public final class DensityCommon {
         }
 
         @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new Clamp(input.mapAll(visitor), min, max));
-        }
-
-        @Override
         public double minValue() {
             return min;
         }
@@ -218,11 +213,6 @@ public final class DensityCommon {
         @Override
         public void fillArray(double[] output, ContextProvider contextProvider) {
             contextProvider.fillAllDirectly(output, this);
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new Noise(visitor.visitNoise(noise), xzScale, yScale));
         }
 
         @Override
@@ -263,17 +253,6 @@ public final class DensityCommon {
         }
 
         @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new RangeChoice(
-                    input.mapAll(visitor),
-                    minInclusive,
-                    maxExclusive,
-                    whenInRange.mapAll(visitor),
-                    whenOutOfRange.mapAll(visitor)
-            ));
-        }
-
-        @Override
         public double minValue() {
             return Math.min(whenInRange.minValue(), whenOutOfRange.minValue());
         }
@@ -296,15 +275,6 @@ public final class DensityCommon {
                     context.blockX() / rarity,
                     context.blockY() / rarity,
                     context.blockZ() / rarity
-            ));
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new WeirdScaledSampler(
-                    input.mapAll(visitor),
-                    visitor.visitNoise(noise),
-                    rarityValueMapper
             ));
         }
 
@@ -360,54 +330,6 @@ public final class DensityCommon {
             } else {
                 return 2.0;
             }
-        }
-    }
-
-    public record FindTopSurface(DensityFunction density, DensityFunction upperBound, int lowerBound, int cellHeight) implements DensityFunction {
-        private static final ThreadLocal<MutableFunctionContext> SURFACE_CONTEXT =
-                ThreadLocal.withInitial(MutableFunctionContext::new);
-
-        @Override
-        public double compute(FunctionContext context) {
-            int topY = NukkitMath.floorDouble(upperBound.compute(context) / cellHeight) * cellHeight;
-            if (topY <= lowerBound) {
-                return lowerBound;
-            }
-
-            MutableFunctionContext surfaceContext = SURFACE_CONTEXT.get()
-                    .set(context.blockX(), topY, context.blockZ());
-            for (int blockY = topY; blockY >= lowerBound; blockY -= cellHeight) {
-                surfaceContext.set(context.blockX(), blockY, context.blockZ());
-                if (density.compute(surfaceContext) > 0.0) {
-                    return blockY;
-                }
-            }
-            return lowerBound;
-        }
-
-        @Override
-        public void fillArray(double[] output, ContextProvider contextProvider) {
-            contextProvider.fillAllDirectly(output, this);
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new FindTopSurface(
-                    density.mapAll(visitor),
-                    upperBound.mapAll(visitor),
-                    lowerBound,
-                    cellHeight
-            ));
-        }
-
-        @Override
-        public double minValue() {
-            return lowerBound;
-        }
-
-        @Override
-        public double maxValue() {
-            return Math.max(lowerBound, upperBound.maxValue());
         }
     }
 
@@ -492,16 +414,6 @@ public final class DensityCommon {
         }
 
         @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new Spline(spline.mapAll(value -> {
-                if (value instanceof Coordinate coordinate) {
-                    return coordinate.mapAll(visitor);
-                }
-                return value;
-            })));
-        }
-
-        @Override
         public double minValue() {
             return spline.minValue();
         }
@@ -527,9 +439,6 @@ public final class DensityCommon {
                 return function.maxValue();
             }
 
-            public Coordinate mapAll(Visitor visitor) {
-                return new Coordinate(function.mapAll(visitor));
-            }
         }
 
         public static final class Point {
@@ -576,11 +485,6 @@ public final class DensityCommon {
         @Override
         public double transform(double inputValue) {
             return transform(type, inputValue);
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(create(type, input.mapAll(visitor)));
         }
 
         public enum Type {
@@ -667,11 +571,6 @@ public final class DensityCommon {
             for (int i = 0; i < output.length; i++) {
                 output[i] = compute(contextProvider.forIndex(i));
             }
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(create(type, wrapped.mapAll(visitor)));
         }
 
         @Override
@@ -849,10 +748,6 @@ public final class DensityCommon {
             return computeShift(context.blockX(), context.blockY(), context.blockZ());
         }
 
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new Shift(visitor.visitNoise(offsetNoise)));
-        }
     }
 
     public record ShiftA(NoiseHolder offsetNoise) implements ShiftNoise {
@@ -861,10 +756,6 @@ public final class DensityCommon {
             return computeShift(context.blockX(), 0.0, context.blockZ());
         }
 
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new ShiftA(visitor.visitNoise(offsetNoise)));
-        }
     }
 
     public record ShiftB(NoiseHolder offsetNoise) implements ShiftNoise {
@@ -873,10 +764,6 @@ public final class DensityCommon {
             return computeShift(context.blockZ(), context.blockX(), 0.0);
         }
 
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new ShiftB(visitor.visitNoise(offsetNoise)));
-        }
     }
 
     public record ShiftedNoise(
@@ -898,18 +785,6 @@ public final class DensityCommon {
         @Override
         public void fillArray(double[] output, ContextProvider contextProvider) {
             contextProvider.fillAllDirectly(output, this);
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(new ShiftedNoise(
-                    shiftX.mapAll(visitor),
-                    shiftY.mapAll(visitor),
-                    shiftZ.mapAll(visitor),
-                    xzScale,
-                    yScale,
-                    visitor.visitNoise(noise)
-            ));
         }
 
         @Override
@@ -1014,10 +889,6 @@ public final class DensityCommon {
             }
         }
 
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            return visitor.apply(TwoArgumentSimpleFunction.create(type, argument1.mapAll(visitor), argument2.mapAll(visitor)));
-        }
     }
 
     record MulOrAdd(Type specificType, DensityFunction input, double minValue, double maxValue, double argument)
@@ -1028,28 +899,6 @@ public final class DensityCommon {
                 case MUL -> inputValue * argument;
                 case ADD -> inputValue + argument;
             };
-        }
-
-        @Override
-        public DensityFunction mapAll(Visitor visitor) {
-            DensityFunction mapped = input.mapAll(visitor);
-            double min = mapped.minValue();
-            double max = mapped.maxValue();
-            double newMin;
-            double newMax;
-
-            if (specificType == Type.ADD) {
-                newMin = min + argument;
-                newMax = max + argument;
-            } else if (argument >= 0.0) {
-                newMin = min * argument;
-                newMax = max * argument;
-            } else {
-                newMin = max * argument;
-                newMax = min * argument;
-            }
-
-            return new MulOrAdd(specificType, mapped, newMin, newMax, argument);
         }
 
         enum Type {

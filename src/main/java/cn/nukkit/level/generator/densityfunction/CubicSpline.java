@@ -72,14 +72,6 @@ public final class CubicSpline<C> {
         return maxValue;
     }
 
-    public CubicSpline<C> mapAll(CoordinateTransformer<C> transformer) {
-        Builder<C> builder = builder(coordinate);
-        for (Point<C> point : points) {
-            builder.addPoint(point.location(), transformer.apply(point.value()), point.derivative());
-        }
-        return builder.build();
-    }
-
     private static double hermite(double x, double x0, double y0, double m0, double x1, double y1, double m1) {
         double t = (x - x0) / (x1 - x0);
         double t2 = t * t;
@@ -99,11 +91,6 @@ public final class CubicSpline<C> {
         double minValue();
 
         double maxValue();
-    }
-
-    @FunctionalInterface
-    public interface CoordinateTransformer<C> {
-        Value<C> apply(Value<C> value);
     }
 
     public record Point<C>(double location, Value<C> value, double derivative) {
