@@ -1,4 +1,4 @@
-package cn.nukkit.compression;
+package cn.nukkit.network.compression;
 
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import org.xerial.snappy.Snappy;

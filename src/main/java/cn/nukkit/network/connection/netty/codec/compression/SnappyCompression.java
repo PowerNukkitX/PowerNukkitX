@@ -1,6 +1,6 @@
 package cn.nukkit.network.connection.netty.codec.compression;
 
-import cn.nukkit.compression.CompressionProvider;
+import cn.nukkit.network.compression.CompressionProvider;
 import cn.nukkit.network.protocol.types.CompressionAlgorithm;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.buffer.ByteBuf;
