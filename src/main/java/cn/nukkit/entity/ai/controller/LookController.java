@@ -36,15 +36,34 @@ public class LookController implements IController {
             entity.setYaw(yaw);
             if (!lookAtTarget.getAsBoolean()) {
                 entity.setHeadYaw(yaw);
-                if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(routeDirectionVector));
+
+                if (entity.isEnablePitch()) {
+                    if (routeDirectionVector.lengthSquared() > 0) {
+                        float pitch = (float) -Math.toDegrees(Math.atan2(routeDirectionVector.y, Math.sqrt(routeDirectionVector.x * routeDirectionVector.x + routeDirectionVector.z * routeDirectionVector.z)));
+                        entity.setPitch(pitch);
+                    }
+                }
             }
         }
+
         if (lookAtTarget.getAsBoolean() && lookTarget != null) {
             // Construct a vector pointing to the player
-            var toPlayerVector = new Vector3(lookTarget.x - entity.x, lookTarget.y - entity.y, lookTarget.z - entity.z);
-            if (entity.isEnablePitch()) entity.setPitch(BVector3.getPitchFromVector(toPlayerVector));
+            var toPlayerVector = new Vector3(
+                    lookTarget.x - entity.x,
+                    lookTarget.y - entity.y,
+                    lookTarget.z - entity.z
+            );
+
+            if (entity.isEnablePitch()) {
+                if (toPlayerVector.lengthSquared() > 0) {
+                    float pitch = (float) -Math.toDegrees(Math.atan2(toPlayerVector.y, Math.sqrt(toPlayerVector.x * toPlayerVector.x + toPlayerVector.z * toPlayerVector.z)));
+                    entity.setPitch(pitch);
+                }
+            }
+
             entity.setHeadYaw(BVector3.getYawFromVector(toPlayerVector));
         }
+
         if (!entity.isEnablePitch()) entity.setPitch(0);
         return true;
     }
