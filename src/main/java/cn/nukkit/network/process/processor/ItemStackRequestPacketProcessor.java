@@ -211,7 +211,6 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
     }
 
     private static class TransferItemEventCaller {
-
         public static void call(ItemStackRequestActionEvent event) {
             ItemStackRequestAction action = event.getAction();
 
