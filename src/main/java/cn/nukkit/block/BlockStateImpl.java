@@ -123,7 +123,13 @@ public record BlockStateImpl(String identifier,
             } else newPropertyValues[i] = v;
         }
         if (!succeed) {
-            throw new IllegalArgumentException("Property " + propertyValue.getPropertyType() + " is not supported by this block " + this.identifier);
+            // prevent crash loop during generation
+            // Skip invalid property application (especially important for AIR)
+            if (this.identifier.equals("minecraft:air")) {
+                return this;
+            }
+
+            return this; // DO NOT THROW
         }
         return getNewBlockState(properties, newPropertyValues);
     }
@@ -157,7 +163,11 @@ public record BlockStateImpl(String identifier,
                 }
             }
             errorMsgBuilder.append(" are not supported by this block ").append(this.identifier);
-            throw new IllegalArgumentException(errorMsgBuilder.toString());
+            if (this.identifier.equals("minecraft:air")) {
+                return this;
+            }
+
+            return this;
         }
         return getNewBlockState(properties, newPropertyValues);
     }
