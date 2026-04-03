@@ -69,11 +69,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
         for (var request : pk.requests) {
             ItemStackRequestAction[] actions = request.getActions();
             ItemStackRequestContext context = new ItemStackRequestContext(request);
-            ItemStackResponse itemStackResponse = new ItemStackResponse(
-                    ItemStackResponseStatus.OK,
-                    request.getRequestId(),
-                    new ArrayList<>()
-            );
+            ItemStackResponse itemStackResponse = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());
             Map<ContainerSlotType, ItemStackResponseContainer> responseContainerMap = new LinkedHashMap<>();
             Set<Inventory> affectedInventories = new LinkedHashSet<>();
 
@@ -229,11 +225,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             int sourceSlot = sourceInventory.fromNetworkSlot(transferResult.source.getSlot());
 
             Optional<Inventory> destinationInventory = transferResult.destination
-                    .map(destination -> NetworkMapping.getInventory(
-                            player,
-                            destination.getContainerName().getContainer(),
-                            destination.getContainerName().getDynamicId()
-                    ));
+                    .map(destination -> NetworkMapping.getInventory(player, destination.getContainerName().getContainer(), destination.getContainerName().getDynamicId()));
 
             Optional<Integer> destinationSlot = destinationInventory
                     .flatMap(inventory -> transferResult.destination
