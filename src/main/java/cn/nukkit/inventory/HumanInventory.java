@@ -203,7 +203,11 @@ public class HumanInventory extends BaseInventory {
             }
         } else {
             super.onSlotChange(index, before, send);
-            if (index == getHeldItemIndex() && !before.equals(this.slots.get(index))) {
+            Item current;
+            synchronized (this.slots) {
+                current = this.slots.get(index);
+            }
+            if (index == getHeldItemIndex() && !before.equals(current)) {
                 equipItem(index);
             }
         }
@@ -395,46 +399,51 @@ public class HumanInventory extends BaseInventory {
             }
             item = ev.getNewItem();
         }
-        Item old = this.getItem(index);
-        this.slots.put(index, item.clone());
+        Item old;
+        synchronized (this.slots) {
+            old = this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
+            this.slots.put(index, item.clone());
+        }
         this.onSlotChange(index, old, send);
         return true;
     }
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (this.slots.containsKey(index)) {
-            Item item = Item.AIR;
-            Item old = this.slots.get(index);
-            if (index >= ARMORS_INDEX && index < this.size) {
-                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    int rel = index - ARMORS_INDEX; // 0..3
-                    this.sendArmorSlot(rel, this.getViewers());
-                    this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
+        synchronized (this.slots) {
+            if (this.slots.containsKey(index)) {
+                Item item = Item.AIR;
+                Item old = this.slots.get(index);
+                if (index >= ARMORS_INDEX && index < this.size) {
+                    EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
+                    Server.getInstance().getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        int rel = index - ARMORS_INDEX; // 0..3
+                        this.sendArmorSlot(rel, this.getViewers());
+                        this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
+                        return false;
+                    }
+                    item = ev.getNewItem();
+                } else if (index < ARMORS_INDEX) {
+                    EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getSlotType(index), this.getHeldItemIndex());
+                    Server.getInstance().getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        this.sendSlot(index, this.getViewers());
+                        return false;
+                    }
+                    item = ev.getNewItem();
+                } else {
                     return false;
                 }
-                item = ev.getNewItem();
-            } else if (index < ARMORS_INDEX) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getSlotType(index), this.getHeldItemIndex());
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    this.sendSlot(index, this.getViewers());
-                    return false;
+
+                if (!item.isNull()) {
+                    this.slots.put(index, item.clone());
+                } else {
+                    this.slots.remove(index);
                 }
-                item = ev.getNewItem();
-            } else {
-                return false;
-            }
 
-            if (!item.isNull()) {
-                this.slots.put(index, item.clone());
-            } else {
-                this.slots.remove(index);
+                this.onSlotChange(index, old, send);
             }
-
-            this.onSlotChange(index, old, send);
         }
 
         return true;
