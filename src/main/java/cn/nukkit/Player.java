@@ -25,7 +25,6 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.NameableComponent;
-import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
@@ -33,7 +32,6 @@ import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.mob.EntityBoss;
-import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -3401,8 +3399,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         resetInventory();
         for (var inv : this.windows.keySet()) {
             if (this.permanentWindows.contains(windows.get(inv))) {
-                int windowId = this.getWindowId(inv);
-                playerHandle.setClosingWindowId(windowId);
+                playerHandle.setClosingWindowId(Integer.MIN_VALUE);
                 inv.close(this);
                 updateTrackingPositions(true);
             }
@@ -3438,7 +3435,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.stopFishing(false);
             }
         }
-        // Close the temporary windows first, so they have chance to change all inventories before being disposed
+
+        // Close temporary windows through the normal window-removal path before saving/teardown.
+        // Otherwise shared inventories keep stale viewers after reconnects or UI transitions.
+        this.removeAllWindows(false);
+
         if (ev != null && ev.getAutoSave() && namedTag != null) {
             this.save();
         }
@@ -4618,8 +4619,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void removeWindow(Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
-            int windowId = this.getWindowId(inventory);
-            playerHandle.setClosingWindowId(windowId);
+            playerHandle.setClosingWindowId(Integer.MIN_VALUE);
             inventory.close(this);
             this.windows.remove(inventory);
             updateTrackingPositions(true);
