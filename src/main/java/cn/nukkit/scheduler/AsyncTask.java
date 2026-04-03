@@ -78,8 +78,8 @@ public abstract class AsyncTask implements Runnable {
     }
 
     public static void collectTask() {
-        while (!FINISHED_LIST.isEmpty()) {
-            AsyncTask task = FINISHED_LIST.poll();
+        AsyncTask task;
+        while ((task = FINISHED_LIST.poll()) != null) {
             try {
                 task.onCompletion(Server.getInstance());
             } catch (Exception e) {
