@@ -4310,9 +4310,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setAbsorption(float absorption) {
-        if (absorption != this.absorption) {
-            this.absorption = absorption;
-        }
+        this.absorption = absorption;
+        Attribute attribute = this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute);
+        attribute.setValue(absorption);
+        this.syncAttribute(attribute);
     }
 
     public void syncAttribute(Attribute attribute) {

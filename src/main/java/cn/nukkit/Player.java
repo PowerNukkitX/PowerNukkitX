@@ -2601,6 +2601,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.entityId = this.getId();
         pk.entries = new Attribute[]{
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0),
+                Attribute.getAttribute(Attribute.ABSORPTION).setValue(this.getAbsorption()),
                 Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()),
                 Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()),
                 Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()),
@@ -3806,7 +3807,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         super.setHealthCurrent(health);
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getHealthMax() + 1 : this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
@@ -3820,7 +3821,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         super.setHealthMax(maxHealth);
 
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getHealthMax() + 1 : this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.entries = new Attribute[]{attribute};
@@ -4013,10 +4014,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void setAbsorption(float absorption) {
-        if (absorption != this.absorption) {
-            this.absorption = absorption;
-            Attribute attribute = this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute);
-            attribute.setValue(absorption);
+        super.setAbsorption(absorption);
+
+        Attribute attribute = this.attributes.get(Attribute.ABSORPTION);
+        if (attribute != null) {
             this.syncAttribute(attribute);
         }
     }
