@@ -1,4 +1,4 @@
-package cn.nukkit.compression;
+package cn.nukkit.network.compression;
 
 import java.io.IOException;
 

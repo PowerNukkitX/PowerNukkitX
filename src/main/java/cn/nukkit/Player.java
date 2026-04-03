@@ -3534,7 +3534,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         saveNBT();
 
-        if (this.level != null) {
+        if (this.level != null && this.level.getProvider() != null) {
             this.namedTag.putString("Level", this.level.getName());
 
             CompoundTag achievements = new CompoundTag();
