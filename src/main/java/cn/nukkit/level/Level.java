@@ -652,7 +652,7 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if (getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
+        if (baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
             try {
                 this.baseTickThread.join(5000);
