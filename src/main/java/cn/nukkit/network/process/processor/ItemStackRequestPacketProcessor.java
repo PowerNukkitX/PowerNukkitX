@@ -30,10 +30,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemStackRequestPacket> {
@@ -63,23 +65,35 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemStackRequestPacket pk) {
         Player player = playerHandle.player;
         List<ItemStackResponse> responses = new ArrayList<>();
+
         for (var request : pk.requests) {
             ItemStackRequestAction[] actions = request.getActions();
             ItemStackRequestContext context = new ItemStackRequestContext(request);
-            ItemStackResponse itemStackResponse = new ItemStackResponse(ItemStackResponseStatus.OK, request.getRequestId(), new ArrayList<>());
+            ItemStackResponse itemStackResponse = new ItemStackResponse(
+                    ItemStackResponseStatus.OK,
+                    request.getRequestId(),
+                    new ArrayList<>()
+            );
             Map<ContainerSlotType, ItemStackResponseContainer> responseContainerMap = new LinkedHashMap<>();
+            Set<Inventory> affectedInventories = new LinkedHashSet<>();
+
             for (int index = 0; index < actions.length; index++) {
                 ItemStackRequestAction action = actions[index];
                 context.setCurrentActionIndex(index);
+
                 ItemStackRequestActionProcessor<ItemStackRequestAction> processor = (ItemStackRequestActionProcessor<ItemStackRequestAction>) PROCESSORS.get(action.getType());
+
                 if (processor == null) {
                     log.warn("Unhandled inventory action type {}", action.getType());
                     continue;
                 }
 
+                affectedInventories.addAll(resolveAffectedInventories(player, action));
+
                 ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
                 TransferItemEventCaller.call(event);
                 Server.getInstance().getPluginManager().callEvent(event);
+
                 Optional<Inventory> topWindow = player.getTopWindow();
                 if (topWindow.isPresent() && topWindow.get() instanceof FakeInventory fakeInventory) {
                     fakeInventory.handle(event);
@@ -93,6 +107,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 } else {
                     response = processor.handle(action, player, context);
                 }
+
                 if (response != null) {
                     if (!response.ok()) {
                         itemStackResponse.setResult(ItemStackResponseStatus.ERROR);
@@ -113,6 +128,8 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                     }
                 }
             }
+
+            resyncInventories(player, affectedInventories);
             itemStackResponse.getContainers().addAll(responseContainerMap.values());
             responses.add(itemStackResponse);
         }
@@ -138,6 +155,64 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
         return ProtocolInfo.ITEM_STACK_REQUEST_PACKET;
     }
 
+    private static Set<Inventory> resolveAffectedInventories(Player player, ItemStackRequestAction action) {
+        LinkedHashSet<Inventory> affected = new LinkedHashSet<>();
+
+        try {
+            ItemStackRequestSlotData source = null;
+            ItemStackRequestSlotData destination = null;
+
+            if (action instanceof TransferItemStackRequestAction transfer) {
+                source = transfer.getSource();
+                destination = transfer.getDestination();
+            } else if (action instanceof SwapAction swap) {
+                source = swap.getSource();
+                destination = swap.getDestination();
+            } else if (action instanceof DropAction drop) {
+                source = drop.getSource();
+            }
+
+            if (source != null) {
+                Inventory sourceInventory = NetworkMapping.getInventory(
+                        player,
+                        source.getContainerName().getContainer(),
+                        source.getContainerName().getDynamicId()
+                );
+                if (sourceInventory != null) {
+                    affected.add(sourceInventory);
+                }
+            }
+
+            if (destination != null) {
+                Inventory destinationInventory = NetworkMapping.getInventory(
+                        player,
+                        destination.getContainerName().getContainer(),
+                        destination.getContainerName().getDynamicId()
+                );
+                if (destinationInventory != null) {
+                    affected.add(destinationInventory);
+                }
+            }
+        } catch (Throwable t) {
+            log.debug("Failed to resolve affected inventories for action {}", action.getType(), t);
+        }
+
+        return affected;
+    }
+
+    private static void resyncInventories(Player actor, Set<Inventory> inventories) {
+        if (inventories == null || inventories.isEmpty()) return;
+
+        for (Inventory inventory : inventories) {
+            if (inventory == null) continue;
+
+            try {
+                InventoryObserverSync.syncOtherViewers(actor, inventory);
+            } catch (Throwable t) {
+                log.debug("Failed to resync inventory {}", inventory.getClass().getName(), t);
+            }
+        }
+    }
 
     private static class TransferItemEventCaller {
 
@@ -145,8 +220,7 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             ItemStackRequestAction action = event.getAction();
 
             TransferResult transferResult = handleAction(action);
-            if (transferResult == null)
-                return;
+            if (transferResult == null) return;
 
             Player player = event.getPlayer();
             Integer dynamicId = transferResult.source.getContainerName().getDynamicId();
@@ -155,10 +229,16 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             int sourceSlot = sourceInventory.fromNetworkSlot(transferResult.source.getSlot());
 
             Optional<Inventory> destinationInventory = transferResult.destination
-                    .map(destination -> NetworkMapping.getInventory(player, destination.getContainerName().getContainer(), destination.getContainerName().getDynamicId()));
+                    .map(destination -> NetworkMapping.getInventory(
+                            player,
+                            destination.getContainerName().getContainer(),
+                            destination.getContainerName().getDynamicId()
+                    ));
+
             Optional<Integer> destinationSlot = destinationInventory
                     .flatMap(inventory -> transferResult.destination
                             .map(destination -> inventory.fromNetworkSlot(destination.getSlot())));
+
             Optional<Item> destinationItem = destinationSlot
                     .flatMap(slot -> destinationInventory.flatMap(inventory -> Optional.of(inventory.getItem(slot))));
 
@@ -178,7 +258,6 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
                 event.setCancelled(true);
             }
         }
-
 
         private static TransferResult handleAction(ItemStackRequestAction action) {
             return switch (action) {
@@ -201,13 +280,11 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             };
         }
 
-
         private record TransferResult(
                 ItemStackRequestSlotData source,
                 Optional<ItemStackRequestSlotData> destination,
                 PlayerTransferItemEvent.Type type
         ) {
         }
-
     }
 }
