@@ -652,10 +652,29 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if (getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
+        if (baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
+            try {
+                this.baseTickThread.join(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (baseTickThread.isAlive()) {
+                log.warn("Level {} tick thread did not stop in time, interrupting", getFolderName());
+                baseTickThread.interrupt();
+                try {
+                    baseTickThread.join(2000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (this.provider.get() != null) {
+                    remove();
+                    log.warn("Level {} tick thread did not stop gracefully, forcing level unload.", getFolderName());
+                }
+            }
+        } else {
+            remove();
         }
-        remove();
     }
 
     private void remove() {
@@ -948,14 +967,6 @@ public class Level implements Metadatable {
         }
 
         this.close();
-        if (force && getServer().getSettings().levelSettings().levelThread()) {
-            getServer().getScheduler().scheduleDelayedTask(() -> {
-                if (baseTickThread.isAlive()) {
-                    getServer().getLogger().critical(getName() + " failed to unload. Trying to stop the thread.");
-                    baseTickThread.interrupt();
-                }
-            }, 100);
-        }
         return true;
     }
 
@@ -1083,6 +1094,7 @@ public class Level implements Metadatable {
     }
 
     private void doTick(GameLoop gameLoop) {
+        if (getProvider() == null) return; // level is closing
         try {
             int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
             long levelTime = System.currentTimeMillis();
@@ -1115,8 +1127,8 @@ public class Level implements Metadatable {
     }
 
     public void doTick(int currentTick) {
+        if (getProvider() == null) return; // level is closing
         players.values().forEach(player -> player.getSession().tick());
-        requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
             updateBlockLight();
