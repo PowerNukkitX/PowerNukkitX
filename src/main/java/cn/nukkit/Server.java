@@ -680,15 +680,18 @@ public class Server {
     private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
         Preconditions.checkState(file.isDirectory(), "worlds isn't directory");
-        //load all world from `worlds` folder
-        for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
-            LevelConfig levelConfig = getLevelConfig(f.getName());
-            if (levelConfig != null && !levelConfig.enable()) {
-                continue;
-            }
 
-            if (!this.loadLevel(f.getName())) {
-                this.generateLevel(f.getName(), null);
+        if (this.settings.levelSettings().loadAllLevels()) {
+            //load all levels from `levels` folder
+            for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
+                LevelConfig levelConfig = getLevelConfig(f.getName());
+                if (levelConfig != null && !levelConfig.enable()) {
+                    continue;
+                }
+
+                if (!this.loadLevel(f.getName())) {
+                    this.generateLevel(f.getName(), null);
+                }
             }
         }
 
