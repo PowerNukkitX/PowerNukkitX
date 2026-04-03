@@ -682,7 +682,7 @@ public class Server {
         Preconditions.checkState(file.isDirectory(), "worlds isn't directory");
 
         if (this.settings.levelSettings().loadAllLevels()) {
-            //load all levels from `levels` folder
+            //load all levels from `worlds` folder
             for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
                 LevelConfig levelConfig = getLevelConfig(f.getName());
                 if (levelConfig != null && !levelConfig.enable()) {
