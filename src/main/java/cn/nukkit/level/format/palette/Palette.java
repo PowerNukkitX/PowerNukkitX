@@ -11,9 +11,11 @@ import cn.nukkit.level.updater.block.BlockStateUpdaters;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
+import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.utils.LittleEndianByteBufOutputStream;
 import cn.nukkit.utils.ByteBufVarInt;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
@@ -106,16 +108,17 @@ public class Palette<V> {
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
-        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf)) {
+        try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(byteBuf);
+             final NBTOutputStream nbtOutputStream = new NBTOutputStream(bufOutputStream, ByteOrder.LITTLE_ENDIAN, false)) {
             for (V value : this.palette) {
-
-                if (value == null)
+                if (value == null) {
                     continue;
+                }
 
                 if (value instanceof BlockState blockState && blockState.getIdentifier().equals(BlockID.UNKNOWN)) {
-                    NBTIO.write(blockState.getBlockStateTag().getCompound("Block"), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
+                    nbtOutputStream.writeTag(blockState.getBlockStateTag().getCompound("Block"));
                 } else {
-                    NBTIO.write(serializer.serialize(value), bufOutputStream, ByteOrder.LITTLE_ENDIAN);
+                    nbtOutputStream.writeTag(serializer.serialize(value));
                 }
             }
         } catch (IOException e) {

@@ -11,33 +11,26 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.ByteArrayTag;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.NumberTag;
-import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import cn.nukkit.registry.Registries;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.apache.logging.log4j.util.InternalApi;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public class BlockManager {
     private final Level level;
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
+
+    private final ObjectOpenHashSet<Runnable> hooks;
 
     private long hashXYZ(int x, int y, int z, int layer) {
         return (((long) (x + 30_000_000) & 0x3FFFFFFL) << 37)
@@ -50,6 +43,20 @@ public class BlockManager {
         this.level = level;
         this.caches = new Long2ObjectOpenHashMap<>();
         this.places = new Long2ObjectOpenHashMap<>();
+        this.hooks = new ObjectOpenHashSet<>();
+    }
+
+    public void addHook(Runnable runnable) {
+        this.hooks.add(runnable);
+    }
+
+    public ObjectOpenHashSet<Runnable> getHooks() {
+        return this.hooks;
+    }
+
+    protected void applyHooks() {
+        hooks.parallelStream().forEach(Runnable::run);
+        hooks.clear();
     }
 
     public String getBlockIdIfCachedOrLoaded(int x, int y, int z) {
@@ -161,6 +168,7 @@ public class BlockManager {
 
     public void merge(BlockManager manager) {
         manager.getBlocks().forEach(b -> this.setBlockStateAt(b, b.getBlockState()));
+        this.hooks.addAll(manager.getHooks());
     }
 
     public Level getLevel() {
@@ -204,14 +212,17 @@ public class BlockManager {
                 key.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);
             });
         });
+        applyHooks();
     }
 
     public void applyBlockUpdate() {
         for (var b : this.places.values()) {
             this.level.setBlock(b, b, true, true);
         }
+        applyHooks();
     }
 
+    @Deprecated(forRemoval = true)
     public void generateChunks() {
         for(Block block : this.getBlocks()) {
             if(!block.getChunk().isGenerated()) {
@@ -251,6 +262,8 @@ public class BlockManager {
         chunks.entrySet().parallelStream().forEach(entry -> {
             final var key = entry.getKey();
             final var value = entry.getValue();
+
+            if (!key.isGenerated()) level.syncGenerateChunk(key.getX(), key.getZ());
             key.batchProcess(unsafeChunk -> {
                 value.forEach(b -> {
                     unsafeChunk.setBlockState(b.getFloorX() & 15, b.getFloorY(), b.getFloorZ() & 15, b.getBlockState(), b.layer);
@@ -262,11 +275,14 @@ public class BlockManager {
             }
             key.reObfuscateChunk();
         });
+
+        applyHooks();
         for (var b : blockList) {
             if(b instanceof BlockEntityHolder<?> holder) {
                 holder.getOrCreateBlockEntity();
             }
         }
+
         for (var p : batchs.values()) {
             Server.broadcastPacket(level.getPlayers().values(), p);
         }

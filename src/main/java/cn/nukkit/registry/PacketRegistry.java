@@ -154,6 +154,7 @@ public class PacketRegistry implements IRegistry<Integer, DataPacket, Class<? ex
         this.register0(ProtocolInfo.BLOCK_ENTITY_DATA_PACKET, BlockEntityDataPacket.class);
         this.register0(ProtocolInfo.BLOCK_EVENT_PACKET, BlockEventPacket.class);
         this.register0(ProtocolInfo.BLOCK_PICK_REQUEST_PACKET, BlockPickRequestPacket.class);
+        this.register0(ProtocolInfo.ENTITY_PICK_REQUEST_PACKET, EntityPickRequestPacket.class);
         this.register0(ProtocolInfo.BOOK_EDIT_PACKET, BookEditPacket.class);
         this.register0(ProtocolInfo.BOSS_EVENT_PACKET, BossEventPacket.class);
         this.register0(ProtocolInfo.CHANGE_DIMENSION_PACKET, ChangeDimensionPacket.class);

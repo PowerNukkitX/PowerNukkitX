@@ -287,6 +287,13 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
+    public boolean isFilledBucketItem() {
+        if (this.isNull()) return false;
+        String id = this.getId();
+        if (id.equals(Item.BUCKET)) return false;
+        return id.endsWith("_bucket");
+    }
+
     /**
      * Whether the item can be enchanted
      */
@@ -1676,6 +1683,7 @@ public abstract class Item implements Cloneable, ItemID {
             }
             Item item = (Item) super.clone();
             item.setCompoundTag(tags);
+
             return item;
         } catch (CloneNotSupportedException e) {
             return null;

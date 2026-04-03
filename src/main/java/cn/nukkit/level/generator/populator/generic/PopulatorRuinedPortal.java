@@ -85,20 +85,23 @@ public class PopulatorRuinedPortal extends Populator {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }
+                if (block instanceof BlockFlowingLava && level.getBlock(block.up()) instanceof BlockFlowingWater) {
+                    manager.setBlockStateAt(block, BlockObsidian.PROPERTIES.getBlockState());
+                }
                 if(block instanceof BlockObsidian) {
                     if(random.nextInt(5) == 0) {
                         manager.setBlockStateAt(block, CRYING_OBSIDIAN);
                     }
                 }
                 if(block instanceof BlockMagma) {
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                    }, 10);
+                    });
                 }
                 if(block instanceof BlockChest chest) {
-                    level.getScheduler().scheduleDelayedTask(() -> {
+                    manager.addHook(() -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
-                    }, 10);
+                    });
                 }
                 if(level.getDimension() == Level.DIMENSION_NETHER) {
                     if (block instanceof BlockChiseledStoneBricks) {
@@ -118,7 +121,6 @@ public class PopulatorRuinedPortal extends Populator {
                     }
                 }
             }
-            manager.generateChunks();
             queueObject(chunk, manager);
         }
     }

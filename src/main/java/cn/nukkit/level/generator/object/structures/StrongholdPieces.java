@@ -697,7 +697,7 @@ public class StrongholdPieces {
                 this.placeBlock(chest, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
                 level.merge(chest);
                 for(Block block : chest.getBlocks()) {
-                    level.getLevel().getScheduler().scheduleTask(() -> {
+                    level.addHook(() -> {
                         CORRIDOR.create(((BlockEntityHolder<BlockEntityChest>) block).getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
@@ -1017,7 +1017,7 @@ public class StrongholdPieces {
 
                     BlockVector3 vec = new BlockVector3(this.getWorldX(3, 8), this.getWorldY(4), this.getWorldZ(3, 8));
                     if (boundingBox.isInside(vec)) {
-                        level.getLevel().getScheduler().scheduleTask(() -> {
+                        level.addHook(() -> {
                             CROSSING.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
                         });
                     }
@@ -1222,9 +1222,11 @@ public class StrongholdPieces {
 
             BlockVector3 vec = new BlockVector3(this.getWorldX(3, 5), this.getWorldY(3), this.getWorldZ(3, 5));
             if (boundingBox.isInside(vec)) {
-                level.getLevel().getScheduler().scheduleDelayedTask(() -> {
-                    LIBRARY.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                }, 20);
+                if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
+                    level.addHook(() -> {
+                        LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
+                    });
+                }
             }
 
             if (this.isTall) {
@@ -1233,9 +1235,11 @@ public class StrongholdPieces {
 
                 vec.setComponents(this.getWorldX(12, 1), this.getWorldY(8), this.getWorldZ(12, 1));
                 if (boundingBox.isInside(vec)) {
-                    level.getLevel().getScheduler().scheduleDelayedTask(() -> {
-                        LIBRARY.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                    }, 20);
+                    if (level.getBlockAt(vec.x, vec.y, vec.z) instanceof BlockChest blockChest) {
+                        level.addHook(() -> {
+                            LIBRARY.create(blockChest.getOrCreateBlockEntity().getInventory(), random);
+                        });
+                    }
                 }
             }
 
@@ -1466,9 +1470,9 @@ public class StrongholdPieces {
                 if (boundingBox.isInside(vec)) {
                     this.hasPlacedSpawner = true;
                     level.setBlockStateAt(vec.x, vec.y, vec.z, SPAWNER);
-                    level.getLevel().getScheduler().scheduleDelayedTask(() -> {
+                    level.addHook(() -> {
                         ((BlockEntityHolder<BlockEntityMobSpawner>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.SILVERFISH));
-                    },20);
+                    });
                 }
             }
 

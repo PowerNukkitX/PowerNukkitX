@@ -45,19 +45,20 @@ public class EndCityPopulator extends Populator {
         pieceRandom.setSeed((long) chunkX * pieceRandom.nextInt() ^ (long) chunkZ * pieceRandom.nextInt() ^ level.getSeed());
 
         EndCityPieces.PostPlacement postPlacement = EndCityPieces.place(manager, origin, rotation, pieceRandom);
-        queueObject(chunk, manager);
 
         if (!postPlacement.chests().isEmpty() || !postPlacement.banners().isEmpty() || !postPlacement.itemFrames().isEmpty() || !postPlacement.brewingStands().isEmpty() || !postPlacement.shulkerMarkers().isEmpty()) {
-            level.getScheduler().scheduleDelayedTask(() ->
-                    EndCityPieces.populatePlacedData(
-                            level,
-                            postPlacement.chests(),
-                            postPlacement.banners(),
-                            postPlacement.itemFrames(),
-                            postPlacement.brewingStands(),
-                            postPlacement.shulkerMarkers(),
-                            new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ))
-                    ), 10);
+            manager.addHook(() -> {
+                EndCityPieces.populatePlacedData(
+                        level,
+                        postPlacement.chests(),
+                        postPlacement.banners(),
+                        postPlacement.itemFrames(),
+                        postPlacement.brewingStands(),
+                        postPlacement.shulkerMarkers(),
+                        new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)));
+            });
+            queueObject(chunk, manager);
+
         }
     }
 

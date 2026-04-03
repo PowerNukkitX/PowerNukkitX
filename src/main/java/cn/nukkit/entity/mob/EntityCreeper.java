@@ -21,6 +21,8 @@ import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.components.HealthComponent;
+import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.passive.EntityCat;
 import cn.nukkit.entity.passive.EntityOcelot;
 import cn.nukkit.entity.weather.EntityLightningStrike;
@@ -34,9 +36,10 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
+
 
 /**
  * @author Box.
@@ -121,6 +124,16 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return 0.6f;
     }
 
+    @Override
+    public HealthComponent getComponentHealth() {
+        return HealthComponent.value(20);
+    }
+
+    @Override
+    protected @Nullable MovementComponent getComponentMovement() {
+        return MovementComponent.value(0.2f);
+    }
+
     public boolean isPowered() {
         return getDataProperty(HORSE_TYPE) > 0;
     }
@@ -152,7 +165,6 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
     @Override
     protected void initEntity() {
-        this.setMaxHealth(20);
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
