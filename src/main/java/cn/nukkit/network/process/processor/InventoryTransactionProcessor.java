@@ -45,9 +45,7 @@ import java.util.Objects;
 
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
-    Item lastUsedItem = null;
     private final java.util.Map<Long, Integer> lastEntityInteractTick = new java.util.HashMap<>();
-
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
@@ -71,7 +69,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                                 player.getInventory().sendContents(player);
                             }
 
-                            player.removeLastUseTick(releaseItemData.itemInHand.getId());
+                            player.clearLastUsedItem();
                         } else {
                             player.getInventory().sendContents(player);
                         }
@@ -79,7 +77,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_CONSUME -> log.debug("Unexpected release item action consume from {}", player.getName());
                 }
             } finally {
-                player.removeLastUseTick(releaseItemData.itemInHand.getId());
+                player.clearLastUsedItem();
             }
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
             if (pk.actions.length == 2 && pk.actions[0].getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION) &&
@@ -354,7 +352,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
-                Item serverItemInHand = player.getInventory().getUnclonedItemInHand();
+                Item serverItemInHand = player.getInventory().getItemInHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
                 if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
@@ -365,7 +363,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
                 if (player.isCreative()) {
                     item = serverItemInHand;
-                } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
+                } else if (!serverItemInHand.equals(useItemDataItem)) {
                     player.getServer().getLogger().debug("Item received did not match item in hand."); //Client seems to send multiple packets with the same durability.
                     player.getInventory().sendHeldItem(player);
                     return;
@@ -391,31 +389,29 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         }
                     }
                     if (!player.isUsingItem(item.getId())) {
-                        lastUsedItem = item;
-                        player.setLastUseTick(item.getId(), player.getLevel().getTick());//set lastUsed tick
-                        if (lastUsedItem.getUsingTicks() <= 0) {
-                            if (lastUsedItem.onUse(player, 0)) {
-                                lastUsedItem.afterUse(player);
+                        player.setLastUsedItem(item);
+                        if (item.getUsingTicks() <= 0) {
+                            if (item.onUse(player, 0)) {
+                                item.afterUse(player);
                             }
-                            player.removeLastUseTick(item.getId());
-                            lastUsedItem = null;
+                            player.clearLastUsedItem();
                             return;
                         }
                         return;
                     }
 
+                    Item lastUsedItem = player.getLastUsedItem();
                     int ticksUsed = player.getLevel().getTick() - player.getLastUseTick(lastUsedItem.getId());
                     if (lastUsedItem.onUse(player, ticksUsed)) {
                         lastUsedItem.afterUse(player);
-                        player.removeLastUseTick(item.getId());
-                        lastUsedItem = null;
+                        player.clearLastUsedItem();
                     }
                 }
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_SPEAR_STAB -> {
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
-                Item serverItemInHand = player.getInventory().getUnclonedItemInHand();
+                Item serverItemInHand = player.getInventory().getItemInHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
                 if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
@@ -426,7 +422,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
                 if (player.isCreative()) {
                     item = serverItemInHand;
-                } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
+                } else if (!serverItemInHand.equals(useItemDataItem)) {
                     player.getServer().getLogger().debug("Item received did not match item in hand.");
                     player.getInventory().sendHeldItem(player);
                     return;
