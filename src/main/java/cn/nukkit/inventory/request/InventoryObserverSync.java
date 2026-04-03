@@ -7,9 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public final class InventoryObserverSync {
-    public InventoryObserverSync() {
-    }
-
     public static void syncOtherViewers(Player actor, Inventory inventory, int... slots) {
         if (inventory == null) {
             return;
