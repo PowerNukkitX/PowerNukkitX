@@ -277,6 +277,8 @@ public class Server {
 
     private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
 
+    private final BedrockEntityMigrationService bems = new BedrockEntityMigrationService(this);
+
     Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
@@ -683,6 +685,9 @@ public class Server {
     private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
         Preconditions.checkState(file.isDirectory(), "worlds isn't directory");
+
+        BedrockEntityMigrationService migrator = new BedrockEntityMigrationService(this);
+
         //load all world from `worlds` folder
         for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
             LevelConfig levelConfig = getLevelConfig(f.getName());
@@ -692,6 +697,30 @@ public class Server {
 
             if (!this.loadLevel(f.getName())) {
                 this.generateLevel(f.getName(), null);
+            }
+
+            Level loaded = this.getLevelByName(f.getName());
+
+            if (this.settings.miscSettings().bedrockEntityMigration()) {
+                this.getLogger().warning("BDS Entity Migration Mode Active");
+
+                this.setAutoSave(false);
+
+                if (loaded == null) {
+                    this.getLogger().error("No level available for migration!");
+                    return;
+                }
+
+                migrator.migrateAll(loaded);
+
+                this.settings.miscSettings().bedrockEntityMigration(false);
+                this.settings.save();
+
+                this.setAutoSave(true);
+
+                this.getLogger().warning("Scan complete. Restart required.");
+                this.shutdown();
+                return;
             }
         }
 
@@ -715,7 +744,19 @@ public class Server {
                 this.generateLevel(levelFolder, levelConfig);
             }
             this.setDefaultLevel(this.getLevelByName(levelFolder));
+            Level defaultLevel = this.getDefaultLevel();
         }
+
+        migrator.loadMigrationFile();
+
+        if (BedrockEntityMigrationService.MIGRATION_MAP.isEmpty()) {
+            migrator.cleanupMigrationFileIfDone();
+            return;
+        }
+
+        this.getLogger().warning("BDS Entity Migration Active");
+
+        this.getPluginManager().registerEvents(migrator, InternalPlugin.INSTANCE);
     }
 
     // region lifecycle and ticking
