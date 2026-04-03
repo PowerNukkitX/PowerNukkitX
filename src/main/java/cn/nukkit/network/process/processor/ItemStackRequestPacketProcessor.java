@@ -158,14 +158,20 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
             ItemStackRequestSlotData source = null;
             ItemStackRequestSlotData destination = null;
 
-            if (action instanceof TransferItemStackRequestAction transfer) {
-                source = transfer.getSource();
-                destination = transfer.getDestination();
-            } else if (action instanceof SwapAction swap) {
-                source = swap.getSource();
-                destination = swap.getDestination();
-            } else if (action instanceof DropAction drop) {
-                source = drop.getSource();
+            switch (action) {
+                case TransferItemStackRequestAction transfer -> {
+                    source = transfer.getSource();
+                    destination = transfer.getDestination();
+                }
+                case SwapAction swap -> {
+                    source = swap.getSource();
+                    destination = swap.getDestination();
+                }
+                case DropAction drop -> {
+                    source = drop.getSource();
+                }
+                default -> {
+                }
             }
 
             if (source != null) {
