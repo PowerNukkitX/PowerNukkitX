@@ -3377,8 +3377,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         resetInventory();
         for (var inv : this.windows.keySet()) {
             if (this.permanentWindows.contains(windows.get(inv))) {
-                int windowId = this.getWindowId(inv);
-                playerHandle.setClosingWindowId(windowId);
+                playerHandle.setClosingWindowId(Integer.MIN_VALUE);
                 inv.close(this);
                 updateTrackingPositions(true);
             }
@@ -4598,8 +4597,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void removeWindow(Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
-            int windowId = this.getWindowId(inventory);
-            playerHandle.setClosingWindowId(windowId);
+            playerHandle.setClosingWindowId(Integer.MIN_VALUE);
             inventory.close(this);
             this.windows.remove(inventory);
             updateTrackingPositions(true);

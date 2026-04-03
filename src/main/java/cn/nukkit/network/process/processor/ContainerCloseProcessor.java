@@ -18,6 +18,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
         Player player = playerHandle.player;
         if (!player.spawned || pk.windowId == SpecialWindowId.PLAYER.getId() && !playerHandle.getInventoryOpen()) {
             sendClose(playerHandle, pk);
+            playerHandle.setClosingWindowId(Integer.MIN_VALUE);
             return;
         }
 
@@ -36,6 +37,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
             player.addWindow(player.getCraftingGrid(), SpecialWindowId.NONE.getId());
         }
         sendClose(playerHandle, pk);
+        playerHandle.setClosingWindowId(Integer.MIN_VALUE);
     }
 
     //Client always wants a response. If not sent, inventores won't open anymore.
