@@ -411,7 +411,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
 
     /**
-     * Check if above space is greatner than 0.5 for chests
+     * Check if the above space is greater than 0.5 for chests
      *
      * @return Can chest be opened with the above space?
      */
