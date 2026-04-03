@@ -307,6 +307,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     // lastUseItem System and item cooldown
     protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
     protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
+    protected Item lastUsedItem = null;
 
     // inventory system
     protected int windowsCnt = 1;
@@ -2148,6 +2149,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public int getLastUseTick(String itemId) {
         return lastUseItemMap.getOrDefault(itemId, -1);
+    }
+
+    public Item getLastUsedItem() {
+        return lastUsedItem;
+    }
+
+    public void setLastUsedItem(Item item) {
+        if (item == null) {
+            log.warn("Tried to set last used item to null for player {}", this.getName());
+            return;
+        }
+        this.lastUsedItem = item;
+        this.setLastUseTick(item.getId(), this.getLevel().getTick());
+    }
+
+    public void clearLastUsedItem() {
+        if (this.lastUsedItem == null) {
+            return;
+        }
+        this.removeLastUseTick(this.lastUsedItem.getId());
+        this.lastUsedItem = null;
     }
 
     /**
