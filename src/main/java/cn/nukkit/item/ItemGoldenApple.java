@@ -29,6 +29,6 @@ public class ItemGoldenApple extends ItemFood {
     public boolean onEaten(Player player) {
         player.addEffect(Effect.get(EffectType.REGENERATION).setAmplifier(1).setDuration(5 * 20));
         player.addEffect(Effect.get(EffectType.ABSORPTION).setAmplifier(0).setDuration(120 * 20));
-        return true;
+        return super.onEaten(player);
     }
 }

@@ -7,6 +7,7 @@ import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFood;
+import cn.nukkit.level.GameRule;
 
 /**
  * Manages the food and hunger system for a player.
@@ -287,16 +288,17 @@ public class PlayerFood {
             this.foodTickTimer = 0;
         }
         int difficulty = Server.getInstance().getDifficulty();
+        boolean naturalRegen = this.player.getLevel().getGameRules().getBoolean(GameRule.NATURAL_REGENERATION);
         if (difficulty == 0 && this.foodTickTimer % 10 == 0) {
             if (this.isHungry()) {
                 this.addFood(1, 0);
             }
-            if (this.foodTickTimer % 20 == 0 && health < this.player.getHealthMax()) {
+            if (this.foodTickTimer % 20 == 0 && naturalRegen && health < this.player.getHealthMax()) {
                 this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
             }
         }
         if (this.foodTickTimer == 0) {
-            if (this.food >= 18) {
+            if (this.food >= 18 && naturalRegen) {
                 if (health < player.getHealthMax()) {
                     this.player.heal(new EntityRegainHealthEvent(this.player, 1, EntityRegainHealthEvent.CAUSE_EATING));
                     this.exhaust(6);

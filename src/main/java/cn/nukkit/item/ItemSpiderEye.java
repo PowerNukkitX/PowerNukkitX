@@ -36,6 +36,6 @@ public class ItemSpiderEye extends ItemFood {
     public boolean onEaten(Player player) {
         player.addEffect(Effect.get(EffectType.POISON).setDuration(5 * 20));
 
-        return true;
+        return super.onEaten(player);
     }
 }
