@@ -27,7 +27,7 @@ public class RiderItemControllableEvaluator implements IBehaviorEvaluator {
         String wanted = normalizeId(e.getItemControllable());
         if (wanted == null) return false;
 
-        Item hand = player.getInventory().getItemInHand();
+        Item hand = player.getInventory().getItemInMainHand();
         if (hand.isNull()) return false;
 
         String inHand = normalizeId(hand.getId());

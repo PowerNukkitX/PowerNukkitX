@@ -185,7 +185,7 @@ public class ItemFilledMap extends Item {
         if (getDamage() == 6) return false;
         Server server = player.getServer();
         renderMap(server.getLevel(getMapWorld()), getMapStartX(), getMapStartZ(), getMapScale());
-        player.getInventory().setItemInHand(this);
+        player.getInventory().setItemInMainHand(this);
         sendImage(player, getMapScale());
         return true;
     }

@@ -51,7 +51,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
 
     @Override
     public Item getItemInHand() {
-        return this.getInventory().getItemInHand();
+        return this.getInventory().getItemInMainHand();
     }
 
     @Override

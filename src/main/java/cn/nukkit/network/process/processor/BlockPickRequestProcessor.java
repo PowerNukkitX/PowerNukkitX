@@ -65,11 +65,11 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                 if (player.getInventory().getItem(slot).isNull()) {
                     if (!itemExists && player.isCreative()) {
                         player.getInventory().setHeldItemSlot(slot);
-                        player.getInventory().setItemInHand(pickEvent.getItem());
+                        player.getInventory().setItemInMainHand(pickEvent.getItem());
                         return;
                     } else if (itemSlot > -1) {
                         player.getInventory().setHeldItemSlot(slot);
-                        player.getInventory().setItemInHand(player.getInventory().getItem(itemSlot));
+                        player.getInventory().setItemInMainHand(player.getInventory().getItem(itemSlot));
                         player.getInventory().clear(itemSlot, true);
                         return;
                     }
@@ -77,8 +77,8 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
             }
 
             if (!itemExists && player.isCreative()) {
-                Item itemInHand = player.getInventory().getItemInHand();
-                player.getInventory().setItemInHand(pickEvent.getItem());
+                Item itemInHand = player.getInventory().getItemInMainHand();
+                player.getInventory().setItemInMainHand(pickEvent.getItem());
                 if (!player.getInventory().isFull()) {
                     for (int slot = 0; slot < HumanInventory.ARMORS_INDEX; slot++) {
                         if (player.getInventory().getItem(slot).isNull()) {
@@ -88,8 +88,8 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                     }
                 }
             } else if (itemSlot > -1) {
-                Item itemInHand = player.getInventory().getItemInHand();
-                player.getInventory().setItemInHand(player.getInventory().getItem(itemSlot));
+                Item itemInHand = player.getInventory().getItemInMainHand();
+                player.getInventory().setItemInMainHand(player.getInventory().getItem(itemSlot));
                 player.getInventory().setItem(itemSlot, itemInHand);
             }
         }

@@ -168,7 +168,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
                 if (player != null && !player.isCreative()) {
                     itemOnFrame.setCount(itemOnFrame.getCount() - 1);
-                    player.getInventory().setItemInHand(itemOnFrame);
+                    player.getInventory().setItemInMainHand(itemOnFrame);
                 }
 
                 itemOnFrame.setCount(1);

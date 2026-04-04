@@ -77,9 +77,9 @@ public class ItemFlintAndSteel extends ItemTool {
         if (!player.isCreative() && useOn(block)) {
             if (this.getDamage() >= this.getMaxDurability()) {
                 this.count = 0;
-                player.getInventory().setItemInHand(Item.AIR);
+                player.getInventory().setItemInMainHand(Item.AIR);
             } else {
-                player.getInventory().setItemInHand(this);
+                player.getInventory().setItemInMainHand(this);
             }
         }
         block.getLevel().addSound(block, Sound.FIRE_IGNITE);

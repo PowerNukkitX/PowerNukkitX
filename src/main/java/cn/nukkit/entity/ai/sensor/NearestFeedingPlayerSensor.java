@@ -43,7 +43,7 @@ public class NearestFeedingPlayerSensor implements ISensor {
             double minRangeSquared = this.minRange * this.minRange;
             // Find the player within range who most recently meets the begging requirements.
             for (Player p : entity.getLevel().getPlayers().values()) {
-                if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && entityAnimal.isBreedingItem(p.getInventory().getItemInHand())) {
+                if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && entityAnimal.isBreedingItem(p.getInventory().getItemInMainHand())) {
                     if (player == null) {
                         player = p;
                     } else {

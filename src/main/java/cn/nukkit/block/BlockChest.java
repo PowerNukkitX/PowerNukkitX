@@ -215,7 +215,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item itemInHand = player.getInventory().getItemInMainHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
 
         // Check if the chest can be opened - bypass for SILENT
