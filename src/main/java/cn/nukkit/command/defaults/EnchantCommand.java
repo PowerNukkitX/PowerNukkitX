@@ -81,7 +81,7 @@ public class EnchantCommand extends VanillaCommand {
         for (Entity entity : entities) {
             Player player = (Player) entity;
             enchantment.setLevel(enchantLevel, false);
-            Item item = player.getInventory().getItemInHand();
+            Item item = player.getInventory().getItemInMainHand();
             if (item.isNull()) {
                 log.addError("commands.enchant.noItem").output();
                 continue;

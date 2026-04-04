@@ -77,7 +77,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
             }
 
             if (!itemExists && player.isCreative()) {
-                Item itemInHand = player.getInventory().getItemInHand();
+                Item itemInHand = player.getInventory().getItemInMainHand();
                 player.getInventory().setItemInHand(pickEvent.getItem());
                 if (!player.getInventory().isFull()) {
                     for (int slot = 0; slot < HumanInventory.ARMORS_INDEX; slot++) {
@@ -88,7 +88,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
                     }
                 }
             } else if (itemSlot > -1) {
-                Item itemInHand = player.getInventory().getItemInHand();
+                Item itemInHand = player.getInventory().getItemInMainHand();
                 player.getInventory().setItemInHand(player.getInventory().getItem(itemSlot));
                 player.getInventory().setItem(itemSlot, itemInHand);
             }

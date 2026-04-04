@@ -58,7 +58,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (player == null) {
             return true;
         }
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item itemInHand = player.getInventory().getItemInMainHand();
         return (player.isSneaking() || player.isFlySneaking()) && !(itemInHand.isTool() || itemInHand.isNull());
     }
 
@@ -1645,7 +1645,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             if(player == null) return true;
 
             if(player.isAdventure()) {
-                Item itemInHand = player.getInventory().getItemInHand();
+                Item itemInHand = player.getInventory().getItemInMainHand();
                 if(itemInHand.isNull()) return false;
 
                 Tag tag = itemInHand.getNamedTagEntry("CanDestroy");

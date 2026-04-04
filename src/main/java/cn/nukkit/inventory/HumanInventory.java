@@ -136,12 +136,48 @@ public class HumanInventory extends BaseInventory {
         }
     }
 
+    /**
+     * @deprecated Use {@link #getItemInMainHand()} instead.
+     * This method is kept for backward compatibility and now directly delegates to the main hand item.
+     */
+    @Deprecated
     public Item getItemInHand() {
+        return getItemInMainHand();
+    }
+
+    /**
+     * Returns the item currently held in the player's main hand.
+     *
+     * @return the item in the main hand
+     */
+    public Item getItemInMainHand() {
         return this.getItem(this.getHeldItemIndex());
     }
 
+    /**
+     * @deprecated Use {@link #getUnclonedItemInMainHand()} instead.
+     * This method is kept for backward compatibility and now directly delegates to the main hand item.
+     */
+    @Deprecated
     public Item getUnclonedItemInHand() {
+        return getUnclonedItemInMainHand();
+    }
+
+    public Item getUnclonedItemInMainHand() {
         return this.getUnclonedItem(this.getHeldItemIndex());
+    }
+
+    /**
+     * Returns the item currently held in the player's off hand.
+     *
+     * @return the item in the off hand
+     */
+    public Item getItemInOffhand() {
+        return this.getHolder().getOffhandInventory().getItem(0);
+    }
+
+    public Item getUnclonedItemInOffhand() {
+        return this.getHolder().getOffhandInventory().getUnclonedItem(0);
     }
 
     public boolean setItemInHand(Item item) {
@@ -167,7 +203,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     public void sendHeldItem(Player... players) {
-        Item item = this.getItemInHand();
+        Item item = this.getItemInMainHand();
 
         MobEquipmentPacket pk = new MobEquipmentPacket();
         pk.item = item;

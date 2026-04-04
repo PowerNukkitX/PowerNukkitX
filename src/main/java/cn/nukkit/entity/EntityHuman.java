@@ -187,7 +187,7 @@ public class EntityHuman extends EntityHumanType {
             pk.speedZ = (float) this.motionZ;
             pk.yaw = (float) this.yaw;
             pk.pitch = (float) this.pitch;
-            pk.item = this.getInventory().getItemInHand();
+            pk.item = this.getInventory().getItemInMainHand();
             pk.entityData = this.entityDataMap;
             player.dataPacket(pk);
 
@@ -237,7 +237,7 @@ public class EntityHuman extends EntityHumanType {
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
-        Item shield = getInventory().getItemInHand();
+        Item shield = getInventory().getItemInMainHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);

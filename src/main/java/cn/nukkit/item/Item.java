@@ -2162,7 +2162,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (container.isNull()) return;
         container.setCount(1);
 
-        Item currentHand = player.getInventory().getItemInHand();
+        Item currentHand = player.getInventory().getItemInMainHand();
         if (currentHand.isNull() || currentHand.getCount() <= 0) {
             player.getInventory().setItemInHand(container);
             return;

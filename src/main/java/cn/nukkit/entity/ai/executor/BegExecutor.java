@@ -46,7 +46,7 @@ public class BegExecutor implements EntityControl, IBehaviorExecutor {
         for (Player p : entity.getLevel().getPlayers().values()) {
             if (p == null || !p.isOnline() || !p.isAlive()) continue;
 
-            var item = p.getInventory().getItemInHand();
+            var item = p.getInventory().getItemInMainHand();
             if (item == null || item.isNull()) continue;
 
             if (!begItems.contains(item.getId())) continue;
@@ -92,7 +92,7 @@ public class BegExecutor implements EntityControl, IBehaviorExecutor {
         for (Player p : entity.getLevel().getPlayers().values()) {
             if (p == null || !p.isOnline() || !p.isAlive()) continue;
 
-            var item = p.getInventory().getItemInHand();
+            var item = p.getInventory().getItemInMainHand();
             if (item == null || item.isNull()) continue;
             if (!begItems.contains(item.getId())) continue;
 

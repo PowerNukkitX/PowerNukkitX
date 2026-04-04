@@ -1366,7 +1366,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 if (player.getOffhandInventory().getItem(0) instanceof ItemTotemOfUndying) {
                     totem = true;
                     isOffhand = true;
-                } else if (player.getInventory().getItemInHand() instanceof ItemTotemOfUndying) {
+                } else if (player.getInventory().getItemInMainHand() instanceof ItemTotemOfUndying) {
                     totem = true;
                 }
                 // Resurrection Totem Implementation

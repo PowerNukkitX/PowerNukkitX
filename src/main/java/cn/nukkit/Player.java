@@ -406,11 +406,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             double miningTimeRequired;
 
             if (this.breakingBlock instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
+                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInMainHand(), this);
+            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
             if (miningTimeRequired > 0) {
-                Item hand = this.inventory.getItemInHand();
+                Item hand = this.inventory.getItemInMainHand();
                 boolean hasCustomDigger = hand != null && !hand.isNull() && hand.getCustomItemComponent("minecraft:digger") != null;
                 boolean useServerSideBreakVisuals = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
 
@@ -472,7 +472,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         Block target = this.level.getBlock(pos);
-        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
+        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
                 target.isAir() ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
         playerHandle.setInteract();
@@ -485,7 +485,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        target.onTouch(pos, this.getInventory().getItemInHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
+        target.onTouch(pos, this.getInventory().getItemInMainHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
         Block block = target.getSide(face);
         if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
@@ -516,7 +516,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.breakingBlockTime = currentBreak;
             this.blockBreakProgress = 0;
 
-            Item hand = this.inventory.getItemInHand();
+            Item hand = this.inventory.getItemInMainHand();
             double miningTimeRequired = target instanceof CustomBlock customBlock ? customBlock.breakTime(hand, this) : target.calculateBreakTime(hand, this);
             int breakTime = (int) Math.ceil(miningTimeRequired * 20);
 
@@ -562,7 +562,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        Item handItem = this.getInventory().getItemInHand();
+        Item handItem = this.getInventory().getItemInMainHand();
         Item clone = handItem.clone();
 
         boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
@@ -2715,7 +2715,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.checkNearEntities();
             }
 
-            Item itemInHand = this.getInventory().getItemInHand();
+            Item itemInHand = this.getInventory().getItemInMainHand();
             if (!itemInHand.isNull() && this.isUsingItem(itemInHand.getId())) {
                 itemInHand.whileUsing(this);
             }
@@ -5060,7 +5060,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         itemsWithMending.add(inventory.getSize() + i);
                     }
                 }
-                if (inventory.getItemInHand().hasEnchantment(Enchantment.ID_MENDING)) {
+                if (inventory.getItemInMainHand().hasEnchantment(Enchantment.ID_MENDING)) {
                     itemsWithMending.add(inventory.getHeldItemIndex());
                 }
                 if (!itemsWithMending.isEmpty()) {

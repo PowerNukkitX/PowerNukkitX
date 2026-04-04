@@ -180,7 +180,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         }
 
         Player player = sender.asPlayer();
-        if (player.getInventory().getItemInHand() instanceof ItemFilledMap map) {
+        if (player.getInventory().getItemInMainHand() instanceof ItemFilledMap map) {
             player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                 @Override
                 public void onRun() {
@@ -318,19 +318,19 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         Player player = sender.asPlayer();
 
         switch (list.getResult(1).toString()) {
-            case "nbt" -> player.sendMessage(player.getInventory().getItemInHand().getNamedTag().toSNBT());
+            case "nbt" -> player.sendMessage(player.getInventory().getItemInMainHand().getNamedTag().toSNBT());
             case "bundle" -> {
-                Item item = player.getInventory().getItemInHand();
+                Item item = player.getInventory().getItemInMainHand();
                 if (item instanceof ItemBundle bundle)
                     for (Item it : bundle.getInventory().getContents().values())
                         player.sendMessage(it.toString());
             }
             case "meta" -> {
-                Item item = player.getInventory().getItemInHand();
+                Item item = player.getInventory().getItemInMainHand();
                 player.sendMessage(item.getId() + "#" + item.getDamage());
             }
             case "data" -> {
-                Item item = player.getInventory().getItemInHand();
+                Item item = player.getInventory().getItemInMainHand();
                 CompoundTag nbt = NBTIO.putItemHelper(item);
                 player.sendMessage(nbt.toSNBT(2));
             }
