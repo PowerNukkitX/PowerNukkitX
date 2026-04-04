@@ -180,12 +180,71 @@ public class HumanInventory extends BaseInventory {
         return this.getHolder().getOffhandInventory().getUnclonedItem(0);
     }
 
+    /**
+     * @deprecated Use {@link #setItemInMainHand(Item)} instead.
+     * This method is kept for backward compatibility and delegates to the main hand setter.
+     */
+    @Deprecated
     public boolean setItemInHand(Item item) {
+        return this.setItemInMainHand(item);
+    }
+
+    /**
+     * @deprecated Use {@link #setItemInMainHand(Item, boolean)} instead.
+     * This method is kept for backward compatibility and delegates to the main hand setter.
+     *
+     * @param item the item to set in hand
+     * @param send whether to sync the change to the client
+     */
+    @Deprecated
+    public boolean setItemInHand(Item item, boolean send) {
+        return this.setItemInMainHand(item, send);
+    }
+
+    /**
+     * Sets the item in the player's main hand.
+     *
+     * @param item the item to set
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInMainHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
     }
 
-    public boolean setItemInHand(Item item, boolean send) {
+    /**
+     * Sets the item in the player's main hand.
+     *
+     * @param item the item to set
+     * @param send whether to sync the change to the client
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInMainHand(Item item, boolean send) {
         return this.setItem(this.getHeldItemIndex(), item, send);
+    }
+
+    /**
+     * Sets the item in the player's off hand.
+     * <p>
+     * Convenience wrapper for {@code getOffhandInventory().setItem(0, item)}.
+     * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
+     * @param item the item to set
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInOffhand(Item item) {
+        return this.getHolder().getOffhandInventory().setItem(0, item);
+    }
+
+    /**
+     * Sets the item in the player's off hand.
+     * <p>
+     * Convenience wrapper for {@code getOffhandInventory().setItem(0, item, bool)}.
+     * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
+     * @param item the item to set
+     * @param send whether to sync the change to the client
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInOffhand(Item item, boolean send) {
+        return this.getHolder().getOffhandInventory().setItem(0, item, send);
     }
 
     public void setHeldItemSlot(int slot) {

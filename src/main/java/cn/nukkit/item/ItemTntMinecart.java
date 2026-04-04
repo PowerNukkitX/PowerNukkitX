@@ -62,7 +62,7 @@ public class ItemTntMinecart extends Item {
             if (player.isAdventure() || player.isSurvival()) {
                 Item item = player.getInventory().getItemInMainHand();
                 item.setCount(item.getCount() - 1);
-                player.getInventory().setItemInHand(item);
+                player.getInventory().setItemInMainHand(item);
             }
 
             minecart.spawnToAll();

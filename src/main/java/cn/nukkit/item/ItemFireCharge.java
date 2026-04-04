@@ -64,7 +64,7 @@ public class ItemFireCharge extends Item {
                 if (player.isSurvival()) {
                     Item item = player.getInventory().getItemInMainHand();
                     item.setCount(item.getCount() - 1);
-                    player.getInventory().setItemInHand(item);
+                    player.getInventory().setItemInMainHand(item);
                 }
                 return true;
             }

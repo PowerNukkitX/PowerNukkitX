@@ -500,7 +500,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (this.isSurvival() || this.isAdventure()) {
                 this.getFoodData().exhaust(0.005);
                 if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
-                    inventory.setItemInHand(i);
+                    inventory.setItemInMainHand(i);
                     inventory.sendHeldItem(this.getViewers().values());
                 }
             }
@@ -575,7 +575,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
 
                 if (Objects.equals(clone.getId(), handItem.getId()) || handItem.isNull()) {
-                    inventory.setItemInHand(handItem, false);
+                    inventory.setItemInMainHand(handItem, false);
                 } else {
                     log.debug("Tried to set item {} but {} had item {} in their hand slot", handItem.getId(), this.getName(), clone.getId());
                 }

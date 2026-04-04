@@ -177,7 +177,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
                         }
-                        if (player.getInventory().setItemInHand(item)) {
+                        if (player.getInventory().setItemInMainHand(item)) {
                             log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {

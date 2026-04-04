@@ -67,10 +67,10 @@ public class ItemGlassBottle extends Item {
         }
 
         if (this.count == 1) {
-            player.getInventory().setItemInHand(filled);
+            player.getInventory().setItemInMainHand(filled);
         } else {
             this.count--;
-            player.getInventory().setItemInHand(this);
+            player.getInventory().setItemInMainHand(this);
 
             if (player.getInventory().canAddItem(filled)) {
                 player.getInventory().addItem(filled);

@@ -241,7 +241,7 @@ public class EntityHuman extends EntityHumanType {
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
-            getInventory().setItemInHand(shield);
+            getInventory().setItemInMainHand(shield);
         } else if (shieldOffhand instanceof ItemShield) {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);

@@ -185,7 +185,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 @Override
                 public void onRun() {
                     map.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
-                    player.getInventory().setItemInHand(map);
+                    player.getInventory().setItemInMainHand(map);
                     map.sendImage(player);
                     player.sendMessage("Successfully rendered the map in your hand");
                 }

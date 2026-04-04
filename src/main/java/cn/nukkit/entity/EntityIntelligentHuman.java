@@ -411,7 +411,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
-            getInventory().setItemInHand(shield);
+            getInventory().setItemInMainHand(shield);
         } else if (shieldOffhand instanceof ItemShield) {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
@@ -469,7 +469,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     public boolean setItemInHand(Item item) {
-        return getInventory().setItemInHand(item);
+        return getInventory().setItemInMainHand(item);
     }
 
     public boolean setItemInHand(Item item, boolean send) {

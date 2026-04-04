@@ -74,11 +74,11 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
         boolean added = true;
         if (item.getCount() == 1) {
-            player.getInventory().setItemInHand(compass);
+            player.getInventory().setItemInMainHand(compass);
         } else {
             Item clone = item.clone();
             clone.count--;
-            player.getInventory().setItemInHand(clone);
+            player.getInventory().setItemInMainHand(clone);
             for (Item failed : player.getInventory().addItem(compass)) {
                 added = false;
                 player.getLevel().dropItem(player.getPosition(), failed);
