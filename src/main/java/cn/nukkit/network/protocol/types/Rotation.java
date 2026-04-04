@@ -47,10 +47,15 @@ public enum Rotation {
     public static BlockState clockwise90(BlockState state) {
         Block block = state.toBlock();
         var states = new java.util.ArrayList<>(state.getBlockPropertyValues());
-        EnumMap<BlockFace, WallConnectionType> rotatedWallConnections = rotateWallConnectionsClockwise90(state);
+        EnumMap<BlockFace, WallConnectionType> rotatedWallConnections = null;
+        if(state.getPropertyValue(WALL_POST_BIT) != null) {
+            rotatedWallConnections = rotateWallConnectionsClockwise90(state);
+        }
+
         int idx = 0;
         for (var property : state.getBlockPropertyValues()) {
             var type = property.getPropertyType();
+
             if (type == TORCH_FACING_DIRECTION) {
                 var rotated = TORCH_FACING_DIRECTION.createValue(switch (state.getPropertyValue(TORCH_FACING_DIRECTION)) {
                     case NORTH -> EAST;
@@ -150,9 +155,11 @@ public enum Rotation {
                 var rotated = VINE_DIRECTION_BITS.createValue(meta);
                 states.set(idx, rotated);
             } else {
-                WallConnectionType rotatedConnection = getRotatedWallConnection(type, rotatedWallConnections);
-                if (rotatedConnection != null) {
-                    states.set(idx, ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection));
+                if (rotatedWallConnections != null) {
+                    WallConnectionType rotatedConnection = getRotatedWallConnection(type, rotatedWallConnections);
+                    if (rotatedConnection != null) {
+                        states.set(idx, ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection));
+                    }
                 }
             }
             idx++;
