@@ -23,6 +23,8 @@ public class BaseSettings extends OkaeriConfig {
     boolean allowList = false;
     @Comment("pnx.settings.base.motd")
     String motd = "PowerNukkitX Server";
+    @Comment("pnx.settings.base.whitelistmessage")
+    String whitelistmessage = "Server is white-listed";
     @CustomKey("sub-motd")
     @Comment("pnx.settings.base.submotd")
     String subMotd = "powernukkitx.org";

@@ -41,6 +41,7 @@ public class EntityItem extends Entity {
     private boolean mergeItems;
     private boolean shouldDespawn;
     private boolean isDisplayOnly;
+    private int waterTicks;
 
     public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -217,35 +218,30 @@ public class EntityItem extends Entity {
                 if (this.pickupDelay < 0) {
                     this.pickupDelay = 0;
                 }
-            }/* else { // Done in Player#checkNearEntities
-                for (Entity entity : this.level.getNearbyEntities(this.boundingBox.grow(1, 0.5, 1), this)) {
-                    if (entity instanceof Player) {
-                        if (((Player) entity).pickupEntity(this, true)) {
-                            return true;
-                        }
-                    }
-                }
-            }*/
+            }
 
             String bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
-            if (Objects.equals(bid, BlockID.FLOWING_WATER) || Objects.equals(bid, BlockID.WATER)
-                    || Objects.equals(bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER)
-                    || Objects.equals(bid, BlockID.WATER)
-            ) {
-                //item is fully in water or in still water
-                this.motionY -= this.getGravity() * -0.015;
-            } else if (lavaResistant && (
-                    Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.FLOWING_LAVA)
-                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.LAVA)
-                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_LAVA)
+
+            boolean inWaterBlock =
+                    Objects.equals(bid, BlockID.WATER) || Objects.equals(bid, BlockID.FLOWING_WATER)
+                            || (Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.WATER)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_WATER));
+
+            boolean inLavaBlock =
+                    Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.LAVA)
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0), BlockID.FLOWING_LAVA)
                             || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.LAVA)
-            )) {
-                //item is fully in lava or in still lava
-                this.motionY -= this.getGravity() * -0.015;
-            } else if (this.isInsideOfWater() || lavaResistant && this.isInsideOfLava()) {
-                this.motionY = this.getGravity() - 0.06; //item is going up in water, don't let it go back down too fast
+                            || Objects.equals(this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1), BlockID.FLOWING_LAVA);
+
+            boolean inLiquid = inWaterBlock || (lavaResistant && inLavaBlock);
+
+            if (inLiquid) {
+                this.motionY = this.getGravity() - 0.06;
+                applyLiquidFlow();
+            } else if (this.isInsideOfWater() || (lavaResistant && this.isInsideOfLava())) {
+                this.motionY = this.getGravity() - 0.06;
             } else {
-                this.motionY -= this.getGravity(); //item is not in water
+                this.motionY -= this.getGravity();
             }
 
             if (this.checkObstruction(this.x, this.y, this.z)) {
@@ -254,18 +250,26 @@ public class EntityItem extends Entity {
 
             this.move(this.motionX, this.motionY, this.motionZ);
 
-            double friction = 1 - this.getDrag();
+            if (!inLiquid) {
+                double friction = 1 - this.getDrag();
+                if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
+                    friction *= this.getLevel().getBlock(this.temporalVector.setComponents(
+                            (int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z)
+                    )).getFrictionFactor();
+                }
+                this.motionX *= friction;
+                this.motionY *= 1 - this.getDrag();
+                this.motionZ *= friction;
 
-            if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z))).getFrictionFactor();
+                if (this.onGround) {
+                    this.motionY *= -0.5;
+                }
             }
 
-            this.motionX *= friction;
-            this.motionY *= 1 - this.getDrag();
-            this.motionZ *= friction;
-
-            if (this.onGround) {
-                this.motionY *= -0.5;
+            if (inWaterBlock) {
+                if (this.waterTicks < 1000) this.waterTicks++;
+            } else {
+                this.waterTicks = 0;
             }
 
             this.updateMovement();
@@ -289,6 +293,89 @@ public class EntityItem extends Entity {
         }
 
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+    }
+
+    private void applyLiquidFlow() {
+        cn.nukkit.block.Block liquidBlock = this.level.getBlock((int) this.x, (int) Math.floor(this.y), (int) this.z);
+        if (!(liquidBlock instanceof cn.nukkit.block.BlockLiquid)) {
+            return;
+        }
+
+        cn.nukkit.math.Vector3 flow = ((cn.nukkit.block.BlockLiquid) liquidBlock).getFlowVector();
+        double len = Math.sqrt(flow.x * flow.x + flow.z * flow.z);
+        if (len > 0) {
+            flow = new cn.nukkit.math.Vector3(flow.x / len, 0, flow.z / len);
+        }
+
+        double accelWater = 0.0015;
+        double accelIce = 0.041;
+        double capWaterXZ = 0.035;
+        double capIceXZ = 0.22;
+        double dragXZ = 0.92;
+        double dragY = 0.90;
+
+        cn.nukkit.block.Block under = this.level.getBlock((int) this.x, (int) Math.floor(this.y) - 1, (int) this.z);
+        boolean overIce = Objects.equals(under.getId(), BlockID.ICE)
+                || Objects.equals(under.getId(), BlockID.FROSTED_ICE)
+                || Objects.equals(under.getId(), BlockID.PACKED_ICE)
+                || Objects.equals(under.getId(), BlockID.BLUE_ICE);
+
+        double accel = overIce ? accelIce : accelWater;
+        this.motionX += flow.x * accel;
+        this.motionZ += flow.z * accel;
+
+        this.motionY -= this.getGravity() * 0.20;
+        int surfaceY = (int) Math.floor(this.boundingBox.getMaxY());
+        int scanY = surfaceY;
+        for (int i = 0; i < 3; i++) {
+            String idUp = this.level.getBlockIdAt((int) this.x, scanY + 1, (int) this.z, 0);
+            String idUpWL = this.level.getBlockIdAt((int) this.x, scanY + 1, (int) this.z, 1);
+            boolean isWaterUp = Objects.equals(idUp, BlockID.WATER) || Objects.equals(idUp, BlockID.FLOWING_WATER)
+                    || Objects.equals(idUpWL, BlockID.WATER) || Objects.equals(idUpWL, BlockID.FLOWING_WATER);
+            if (!isWaterUp) {
+                surfaceY = scanY + 1;
+                break;
+            }
+            scanY++;
+        }
+
+        double topY = this.boundingBox.getMaxY();
+        double depth = surfaceY - topY;
+        double targetDepth = 0.35;
+        double hysteresis = 0.10;
+        double k = 0.20;
+        double buoyBase = 0.010;
+        double buoyMaxExtra = 0.030;
+
+        if (this.waterTicks < 15) {
+            this.motionY -= 0.005;
+        }
+
+        double force = k * (depth - targetDepth);
+        if (depth > targetDepth + hysteresis) {
+            double buoyancy = buoyBase + Math.min((depth - targetDepth) * 0.06, buoyMaxExtra);
+            this.motionY += force + buoyancy;
+            this.motionY *= 0.92;
+        } else if (depth < targetDepth - hysteresis) {
+            this.motionY += force - 0.006;
+            this.motionY *= 0.92;
+        } else {
+            this.motionY += force * 0.5 + buoyBase * 0.5;
+            this.motionY *= 0.94;
+        }
+
+        this.motionX *= dragXZ;
+        this.motionZ *= dragXZ;
+        this.motionY *= dragY;
+
+        double capXZ = overIce ? capIceXZ : capWaterXZ;
+        if (this.motionX > capXZ) this.motionX = capXZ;
+        if (this.motionX < -capXZ) this.motionX = -capXZ;
+        if (this.motionZ > capXZ) this.motionZ = capXZ;
+        if (this.motionZ < -capXZ) this.motionZ = -capXZ;
+
+        if (this.motionY > 0.06) this.motionY = 0.06;
+        if (this.motionY < -0.08) this.motionY = -0.08;
     }
 
     @Override
