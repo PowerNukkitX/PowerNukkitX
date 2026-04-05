@@ -38,6 +38,6 @@ public class ItemEnchantedGoldenApple extends ItemFood {
         player.addEffect(Effect.get(EffectType.RESISTANCE)
                 .setDuration(5 * 60 * 20));
 
-        return true;
+        return super.onEaten(player);
     }
 }
