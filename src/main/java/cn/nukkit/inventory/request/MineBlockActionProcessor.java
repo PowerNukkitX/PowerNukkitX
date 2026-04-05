@@ -37,7 +37,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
 
         Item itemInHand = inventory.getItemInMainHand();
         if (validateStackNetworkId(itemInHand.getNetId(), action.getStackNetworkId())) {
-            log.warn("mismatch source stack network id!");
+            log.debug("Source stack network id mismatch!");
             return context.error();
         }
 
@@ -49,28 +49,24 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
             inventorySlotPacket.slot = action.getHotbarSlot();
             inventorySlotPacket.fullContainerName = new FullContainerName(
                     ContainerSlotType.HOTBAR,
-                    id
-            );
+                    id);
             player.dataPacket(inventorySlotPacket);
         }
-        var itemStackResponseSlot =
-                new ItemStackResponseContainer(
+        var itemStackResponseSlot = new ItemStackResponseContainer(
+                inventory.getSlotType(heldItemIndex),
+                Lists.newArrayList(
+                        new ItemStackResponseSlot(
+                                inventory.toNetworkSlot(heldItemIndex),
+                                inventory.toNetworkSlot(heldItemIndex),
+                                itemInHand.getCount(),
+                                itemInHand.getNetId(),
+                                itemInHand.getCustomName(),
+                                itemInHand.getDamage())),
+                new FullContainerName(
                         inventory.getSlotType(heldItemIndex),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlot(
-                                        inventory.toNetworkSlot(heldItemIndex),
-                                        inventory.toNetworkSlot(heldItemIndex),
-                                        itemInHand.getCount(),
-                                        itemInHand.getNetId(),
-                                        itemInHand.getCustomName(),
-                                        itemInHand.getDamage()
-                                )
-                        ),
-                        new FullContainerName(
-                                inventory.getSlotType(heldItemIndex),
-                                0   // I don't know the purpose of the dynamicId yet, this is why I leave it at 0 for the MineBlockAction
-                        )
-                );
+                        0 // I don't know the purpose of the dynamicId yet, this is why I leave it at 0
+                          // for the MineBlockAction
+                ));
         return context.success(List.of(itemStackResponseSlot));
     }
 }

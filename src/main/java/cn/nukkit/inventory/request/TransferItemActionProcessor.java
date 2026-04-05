@@ -19,18 +19,19 @@ import java.util.List;
 import static cn.nukkit.inventory.request.CraftCreativeActionProcessor.CRAFT_CREATIVE_KEY;
 
 @Slf4j
-public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction> implements ItemStackRequestActionProcessor<T> {
+public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction>
+        implements ItemStackRequestActionProcessor<T> {
     @Override
     public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
         var srcFCN = action.getSource().getContainerName();
         var dstFCN = action.getDestination().getContainerName();
 
-        ContainerSlotType sourceSlotType      = srcFCN.getContainer();
+        ContainerSlotType sourceSlotType = srcFCN.getContainer();
         ContainerSlotType destinationSlotType = dstFCN.getContainer();
         Integer dynamicSrc = srcFCN.getDynamicId();
         Integer dynamicDst = dstFCN.getDynamicId();
 
-        Inventory source      = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
+        Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
         Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
 
         int sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
@@ -43,23 +44,29 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.debug("transfer an air item is not allowed");
             return context.error();
         }
-        if(sourItem.isUsingNetId()) {
+        if (sourItem.isUsingNetId()) {
             if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
-                log.warn("mismatch source stack network id!");
+                log.debug("Source stack network id mismatch!");
                 return context.error();
             }
         }
         if (sourItem.getCount() < count) {
-            log.warn("transfer an item that has not enough count is not allowed. Expected: {}, Actual: {}", sourItem.getCount(), count);
+            log.warn("transfer an item that has not enough count is not allowed. Expected: {}, Actual: {}",
+                    sourItem.getCount(), count);
             return context.error();
         }
 
-        if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {//If the player takes an item from creative mode, the destination is overridden directly
+        if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {// If the player takes an
+                                                                                           // item from creative mode,
+                                                                                           // the destination is
+                                                                                           // overridden directly
             if (source instanceof CreativeOutputInventory) {
                 sourItem = sourItem.clone().autoAssignStackNetworkId();
-                if(sourItem instanceof INBT inbt) {
+                if (sourItem instanceof INBT inbt) {
                     inbt.onChange(destination);
-                    Server.getInstance().getScheduler().scheduleTask(() -> destination.sendSlot(destinationSlot, player)); //sending the player the slot
+                    Server.getInstance().getScheduler()
+                            .scheduleTask(() -> destination.sendSlot(destinationSlot, player)); // sending the player
+                                                                                                // the slot
                 }
                 destination.setItem(destinationSlot, sourItem, false);
                 return context.success(List.of(new ItemStackResponseContainer(
@@ -71,11 +78,8 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                                         sourItem.getCount(),
                                         sourItem.getNetId(),
                                         sourItem.getCustomName(),
-                                        sourItem.getDamage()
-                                )
-                        ),
-                        action.getDestination().getContainerName()
-                )));
+                                        sourItem.getDamage())),
+                        action.getDestination().getContainerName())));
             }
         }
 
@@ -95,8 +99,10 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
         Item resultSourItem;
         Item resultDestItem;
-        // Not sending the source helps avoid drag distribution glitches for normal inventories.
-        // HOWEVER: equipment containers (OFFHAND/ARMOR) must be sent, otherwise viewers won't get MobEquipment/MobArmor updates.
+        // Not sending the source helps avoid drag distribution glitches for normal
+        // inventories.
+        // HOWEVER: equipment containers (OFFHAND/ARMOR) must be sent, otherwise viewers
+        // won't get MobEquipment/MobArmor updates.
         boolean sendSource = sourceSlotType == ContainerSlotType.OFFHAND || sourceSlotType == ContainerSlotType.ARMOR;
         boolean sendDest = !(destination instanceof SoleInventory);
 
@@ -148,21 +154,17 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
 
             resultDestItem = destination.getItem(destinationSlot);
         }
-        var destItemStackResponseSlot =
-                new ItemStackResponseContainer(
-                        destination.getSlotType(destinationSlot),
-                        Lists.newArrayList(
-                                new ItemStackResponseSlot(
-                                        destination.toNetworkSlot(destinationSlot),
-                                        destination.toNetworkSlot(destinationSlot),
-                                        resultDestItem.getCount(),
-                                        resultDestItem.getNetId(),
-                                        resultDestItem.getCustomName(),
-                                        resultDestItem.getDamage()
-                                )
-                        ),
-                        action.getDestination().getContainerName()
-                );
+        var destItemStackResponseSlot = new ItemStackResponseContainer(
+                destination.getSlotType(destinationSlot),
+                Lists.newArrayList(
+                        new ItemStackResponseSlot(
+                                destination.toNetworkSlot(destinationSlot),
+                                destination.toNetworkSlot(destinationSlot),
+                                resultDestItem.getCount(),
+                                resultDestItem.getNetId(),
+                                resultDestItem.getCustomName(),
+                                resultDestItem.getDamage())),
+                action.getDestination().getContainerName());
         // CREATED_OUTPUT does not require a source response
         if (source instanceof CreativeOutputInventory) {
             return context.success(List.of(destItemStackResponseSlot));
@@ -177,11 +179,9 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
                                             resultSourItem.getCount(),
                                             resultSourItem.getNetId(),
                                             resultSourItem.getCustomName(),
-                                            resultSourItem.getDamage()
-                                    )
-                            ),
-                            action.getSource().getContainerName()
-                    ), destItemStackResponseSlot));
+                                            resultSourItem.getDamage())),
+                            action.getSource().getContainerName()),
+                    destItemStackResponseSlot));
         }
     }
 }
