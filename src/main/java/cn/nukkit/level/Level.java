@@ -2983,7 +2983,7 @@ public class Level implements Metadatable {
             return null;
         }
 
-        boolean isPlayerInput = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT;
+        boolean isInteractionTrigger = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT || data.triggerType == UseItemData.TriggerType.SIMULATION_TICK;
 
         if (player == null) {
             if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
@@ -2994,7 +2994,7 @@ public class Level implements Metadatable {
             }
         } else {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
-            if (isPlayerInput) {
+            if (isInteractionTrigger) {
                 //                                handle spawn protect
                 if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
                     ev.setCancelled();

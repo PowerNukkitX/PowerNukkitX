@@ -57,6 +57,6 @@ public class ItemSuspiciousStew extends ItemFood {
             player.addEffect(effect);
         }
 
-        return true;
+        return super.onEaten(player);
     }
 }

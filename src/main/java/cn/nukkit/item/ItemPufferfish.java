@@ -43,6 +43,6 @@ public class ItemPufferfish extends ItemFish {
                 .setDuration(15*20)
                 .setAmplifier(1));
 
-        return true;
+        return super.onEaten(player);
     }
 }
