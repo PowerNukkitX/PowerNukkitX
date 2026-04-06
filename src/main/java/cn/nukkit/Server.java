@@ -255,7 +255,7 @@ public class Server {
             return result;
         }
     };
-    private Level[] levelArray;
+    private volatile Level[] levelArray;
     private final ServiceManager serviceManager = new NKServiceManager();
     private final Thread currentThread;
     private final long launchTime;
@@ -951,7 +951,7 @@ public class Server {
         int baseTickRate = getSettings().levelSettings().baseTickRate();
         //Do level ticks if level threading is disabled
         if(!this.getSettings().levelSettings().levelThread()) {
-            for (Level level : this.getLevels().values()) {
+            for (Level level : this.levelArray) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
                     continue;
                 }
@@ -959,7 +959,7 @@ public class Server {
                 try {
                     long levelTime = System.currentTimeMillis();
                     //Ensures that the server won't try to tick a level without providers.
-                    if (level.getProvider().getLevel() == null) {
+                    if (level.getProvider() == null || level.getProvider().getLevel() == null) {
                         log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
                     }
@@ -1366,7 +1366,7 @@ public class Server {
     public void silentExecuteCommand(@Nullable Player sender, String... commands) {
         final var revert = new ArrayList<Level>();
         final var server = Server.getInstance();
-        for (var level : server.getLevels().values()) {
+        for (var level : this.levelArray) {
             if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
                 level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
                 revert.add(level);
@@ -2011,7 +2011,7 @@ public class Server {
 
         for (InetSocketAddress socketAddress : new ArrayList<>(this.players.keySet())) {
             Player p = this.players.get(socketAddress);
-            if (player == p) {
+            if (p != null && player == p) {
                 this.players.remove(socketAddress);
                 break;
             }
