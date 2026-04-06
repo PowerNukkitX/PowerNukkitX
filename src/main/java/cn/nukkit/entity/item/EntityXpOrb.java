@@ -108,6 +108,7 @@ public class EntityXpOrb extends Entity {
 
         setHealthMax(5);
         setHealthCurrent(5);
+        setPersistent(true); // xp orbs use own despawn system, so they should be persistent to prevent them from being unloaded when far away from players
 
         if (namedTag.contains("Health")) {
             this.setHealthCurrent(namedTag.getShort("Health"));
