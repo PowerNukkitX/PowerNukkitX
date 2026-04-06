@@ -93,8 +93,12 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
-    protected void initEntity() {
+    public boolean isPersistent() {
+        return true;
+    }
 
+    @Override
+    protected void initEntity() {
         this.setHealthCurrent(6);
         this.setHealthMax(6);
         this.setImmobile(true);
@@ -134,7 +138,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
 
         this.setNameTag(item.getCustomName());
         this.setNameTagVisible(nameable.resolvedAlwaysShow());
-        this.setPersistent(true);
 
         return true;
     }

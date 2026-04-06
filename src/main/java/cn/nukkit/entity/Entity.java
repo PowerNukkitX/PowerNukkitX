@@ -4629,7 +4629,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean onInteract(Player player, Item item) {
-        this.despawnable = false;
         this.setPersistent(true);
         return false;
     }
