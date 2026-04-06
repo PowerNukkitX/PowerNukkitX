@@ -204,8 +204,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
             Block side = this.getSide(facing);
 
-            if (this.level.getBlockEntityIfLoaded(side) instanceof InventoryHolder) {
-                InventoryHolder invHolder = (InventoryHolder) this.level.getBlockEntityIfLoaded(side);
+            if (this.level.getBlockEntityIfLoaded(side) instanceof InventoryHolder invHolder) {
                 Inventory targetInv = invHolder.getInventory();
 
                 if (targetInv.canAddItem(target)) {
