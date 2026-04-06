@@ -49,7 +49,8 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
             inventorySlotPacket.slot = action.getHotbarSlot();
             inventorySlotPacket.fullContainerName = new FullContainerName(
                     ContainerSlotType.HOTBAR,
-                    id);
+                    id
+            );
             player.dataPacket(inventorySlotPacket);
         }
         var itemStackResponseSlot = new ItemStackResponseContainer(
