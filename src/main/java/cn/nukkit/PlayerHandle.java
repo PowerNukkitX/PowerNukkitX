@@ -98,10 +98,6 @@ public final class PlayerHandle {
         player.socketAddress = socketAddress;
     }
 
-    public boolean isRemoveFormat() {
-        return player.removeFormat;
-    }
-
     public String getUsername() {
         return player.getName();
     }

@@ -222,7 +222,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Whether to remove the color character in the chat of the changed player as §c §1
      */
-    protected boolean removeFormat = true;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
     protected Vector3 sleeping = null;
@@ -1744,25 +1743,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Retrieves {@link #removeFormat}
+     * Checks if the player has permission to use text colors in chat and signs.
      *
-     * @return boolean
+     * @return True if the player has the "nukkit.textcolor" permission, false otherwise.
      */
-    public boolean getRemoveFormat() {
-        return removeFormat;
-    }
-
-    /**
-     * Set {@link #removeFormat} to the specified value
-     *
-     * @param remove Whether remove the formatting character
-     */
-    public void setRemoveFormat(boolean remove) {
-        this.removeFormat = remove;
-    }
-
-    public void setRemoveFormat() {
-        this.setRemoveFormat(true);
+    public boolean canUseTextColor() {
+        return this.hasPermission("nukkit.textcolor");
     }
 
     /**
@@ -2931,7 +2917,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.resetInventory();
 
-        if (this.removeFormat) {
+        if (!this.canUseTextColor()) {
             message = TextFormat.clean(message, true);
         }
 
