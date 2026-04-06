@@ -46,6 +46,6 @@ public class ItemHoneyBottle extends ItemFood {
         player.getInventory().addItem(new ItemGlassBottle());
         player.removeEffect(EffectType.POISON);
 
-        return true;
+        return super.onEaten(player);
     }
 }

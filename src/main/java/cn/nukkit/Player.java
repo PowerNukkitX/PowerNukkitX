@@ -2722,12 +2722,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.entityBaseTick(tickDiff);
 
-            if (this.getServer().getDifficulty() == 0 || this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
-                if (this.getHealthCurrent() < this.getHealthMax() && this.ticksLived % 20 == 0) {
-                    this.heal(1);
-                }
-            }
-
             if (this.isOnFire() && this.lastUpdate % 10 == 0) {
                 if (this.isCreative() && !this.isInsideOfFire()) {
                     this.extinguish();

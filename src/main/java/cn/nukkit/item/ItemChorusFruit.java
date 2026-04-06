@@ -50,6 +50,8 @@ public class ItemChorusFruit extends ItemFood {
         if (level == null) return false;
         if (player.isInsideOfWater()) return false;
 
+        super.onEaten(player);
+
         NukkitRandom random = new NukkitRandom();
         for (int attempts = 0; attempts < 128; attempts++) {
             int x = random.nextInt(minX, maxX);
