@@ -82,7 +82,7 @@ public class EntityItem extends Entity {
         return false;
     }
 
-    // items use own despawn system, so they should be persistent to prevent them from being unloaded when far away from players
+    // items use their own despawn system, so they should be persistent to prevent them from being unloaded when far away from players
     @Override
     public boolean isPersistent() {
         return true;
