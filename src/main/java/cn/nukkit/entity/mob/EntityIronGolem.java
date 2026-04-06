@@ -146,7 +146,6 @@ public class EntityIronGolem extends EntityGolem {
     protected void initEntity() {
         super.initEntity();
         this.syncAttribute(getHealthAttribute());
-        this.setPersistent(true);
     }
 
     @Override

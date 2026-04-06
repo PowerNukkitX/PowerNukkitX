@@ -391,6 +391,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public float getHeight() {
         if (isSleeping()) return getWidthR();
         return getHeightR();
@@ -465,7 +470,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void initEntity() {
         super.initEntity();
         setTradingPlayer(0L);
-        this.setPersistent(true);
         if (!this.namedTag.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
         } else {

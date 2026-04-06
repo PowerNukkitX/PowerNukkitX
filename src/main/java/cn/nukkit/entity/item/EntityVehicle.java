@@ -27,8 +27,6 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
     @Override
     protected void initEntity() {
         super.initEntity();
-
-        this.setPersistent(true);
     }
 
     public int getRollingAmplitude() {
@@ -73,6 +71,11 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
     @Override
     public boolean canDoInteraction() {
         return passengers.isEmpty();
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override

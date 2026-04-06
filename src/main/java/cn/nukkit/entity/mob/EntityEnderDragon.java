@@ -248,7 +248,6 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         this.diffHandDamage = new float[]{6f, 10f, 15f};
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.STAY_NEARBY, new Vector3(0, 84, 0));
-        this.setPersistent(true);
         isActive = false;
         noClip = true;
     }
