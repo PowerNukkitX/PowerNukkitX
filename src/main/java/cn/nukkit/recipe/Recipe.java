@@ -20,9 +20,17 @@ public interface Recipe {
 
     default boolean fastCheck(Item... items) {
         if (getIngredients().size() != items.length) return false;
-        for (var item : items) {
-            boolean b = getIngredients().stream().anyMatch(i -> i.match(item));
-            if (!b) return false;
+        boolean[] used = new boolean[items.length];
+        for (var ingredient : getIngredients()) {
+            boolean found = false;
+            for (int i = 0; i < items.length; i++) {
+                if (!used[i] && ingredient.match(items[i])) {
+                    used[i] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
         }
         return true;
     }
