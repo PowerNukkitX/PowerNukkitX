@@ -93,6 +93,7 @@ public class EntityItem extends Entity {
 
         this.setHealthMax(5);
         this.setHealthCurrent(this.namedTag.getShort("Health"));
+        this.setPersistent(true); // items use own despawn system, so they should be persistent to prevent them from being unloaded when far away from players
 
         if (this.namedTag.contains("Age")) {
             this.age = this.namedTag.getShort("Age");

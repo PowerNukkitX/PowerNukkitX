@@ -441,11 +441,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
-    public boolean isPersistent() {
-        return true;
-    }
-
-    @Override
     public Set<String> typeFamily() {
         return switch (profession) {
             case 1 -> Set.of("villager", "peasant", "farmer", "mob");
@@ -470,6 +465,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void initEntity() {
         super.initEntity();
         setTradingPlayer(0L);
+        this.setPersistent(true);
         if (!this.namedTag.contains("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
         } else {

@@ -24,6 +24,13 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
         super(chunk, nbt);
     }
 
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+
+        this.setPersistent(true);
+    }
+
     public int getRollingAmplitude() {
         return this.getDataProperty(HURT_TICKS);
     }

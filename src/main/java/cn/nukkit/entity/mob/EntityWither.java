@@ -257,6 +257,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         this.blockBreakSound = Sound.MOB_WITHER_BREAK_BLOCK;
         this.setInvulnerable(200);
         this.setHealthCurrent(1);
+        this.setPersistent(true);
     }
 
     @Override
