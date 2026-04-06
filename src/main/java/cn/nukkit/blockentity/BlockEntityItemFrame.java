@@ -13,6 +13,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,6 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Pub4Game
  * @since 03.07.2016
  */
+@Slf4j
 public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     public BlockEntityItemFrame(IChunk chunk, CompoundTag nbt) {
@@ -31,7 +33,17 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         if (!namedTag.contains("Item")) {
+            // [ITEM_DEBUG] Log when a frame loads without an Item tag (new or corrupted)
+            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: no 'Item' tag present, initializing to AIR. namedTag keys: {}",
+                    (int) x, (int) y, (int) z, namedTag.getTags().keySet());
             namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
+        } else {
+            // [ITEM_DEBUG] Log what item is loaded from NBT
+            Item loaded = NBTIO.getItemHelper(namedTag.getCompound("Item"));
+            if (loaded != null && !loaded.isNull()) {
+                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: loaded item {} x{}",
+                        (int) x, (int) y, (int) z, loaded.getId(), loaded.getCount());
+            }
         }
         if (!namedTag.contains("ItemRotation")) {
             namedTag.putByte("ItemRotation", 0);
@@ -72,10 +84,38 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
+        // [ITEM_DEBUG] Log every item change with caller info
+        Item oldItem = getItem();
+        boolean wasNonEmpty = oldItem != null && !oldItem.isNull();
+        boolean isNowEmpty = item == null || item.isNull();
+        if (wasNonEmpty || !isNowEmpty) {
+            String caller = getCallerInfo();
+            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} setItem: {} x{} -> {} x{}, setChanged={}, caller: {}",
+                    (int) x, (int) y, (int) z,
+                    wasNonEmpty ? oldItem.getId() : "AIR", wasNonEmpty ? oldItem.getCount() : 0,
+                    isNowEmpty ? "AIR" : item.getId(), isNowEmpty ? 0 : item.getCount(),
+                    setChanged, caller);
+        }
+
         this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
+    }
+
+    /**
+     * [ITEM_DEBUG] Helper to get a meaningful caller from the stack trace
+     */
+    private static String getCallerInfo() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        // skip getStackTrace, getCallerInfo, setItem (possibly 2 overloads)
+        for (int i = 3; i < Math.min(stack.length, 8); i++) {
+            String cls = stack[i].getClassName();
+            if (!cls.contains("BlockEntityItemFrame")) {
+                return stack[i].toString();
+            }
+        }
+        return stack.length > 3 ? stack[3].toString() : "unknown";
     }
 
     public float getItemDropChance() {
@@ -93,8 +133,29 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
+    public void close() {
+        // [ITEM_DEBUG] Log when a frame is closed while still holding an item — this is the key diagnostic
+        if (!this.closed) {
+            Item item = null;
+            try {
+                item = getItem();
+            } catch (Exception ignored) {
+            }
+            if (item != null && !item.isNull()) {
+                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} CLOSE with item still present: {} x{}. Stack trace:",
+                        (int) x, (int) y, (int) z, item.getId(), item.getCount(),
+                        new Throwable("ItemFrame close trace"));
+            }
+        }
+        super.close();
+    }
+
+    @Override
     public CompoundTag getSpawnCompound() {
         if (!this.namedTag.contains("Item")) {
+            // [ITEM_DEBUG] This should not normally happen — log it
+            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getSpawnCompound: 'Item' tag missing from namedTag, resetting to AIR",
+                    (int) x, (int) y, (int) z);
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
@@ -119,7 +180,8 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public int getAnalogOutput() {
-        return this.getItem() == null || this.getItem().isNull() ? 0 : this.getItemRotation() % 8 + 1;
+        Item item = this.getItem();
+        return item == null || item.isNull() ? 0 : this.getItemRotation() % 8 + 1;
     }
 
     public boolean dropItem(Player player) {
@@ -150,16 +212,22 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             return null;
         }
 
-
         EntityItem itemEntity = null;
         if (this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
             itemEntity = level.dropAndGetItem(add(0.5, 0.25, 0.5), drop);
             if (itemEntity == null) {
+                // [ITEM_DEBUG] dropAndGetItem returned null — item was NOT spawned
+                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} dropItemAndGetEntity: dropAndGetItem returned null for {} x{}, item NOT removed from frame",
+                        (int) x, (int) y, (int) z, drop.getId(), drop.getCount());
                 if (player != null) {
                     spawnTo(player);
                 }
                 return null;
             }
+        } else {
+            // [ITEM_DEBUG] Drop chance failed
+            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} dropItemAndGetEntity: drop chance failed (chance={}), item {} x{} destroyed",
+                    (int) x, (int) y, (int) z, this.getItemDropChance(), drop.getId(), drop.getCount());
         }
 
         setItem(Item.get(BlockID.AIR, 0, 1), true);
