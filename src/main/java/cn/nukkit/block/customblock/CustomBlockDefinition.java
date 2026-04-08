@@ -106,7 +106,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             // Set the category of the block in the creation column
             this.nbt.putCompound("menu_category", createDefaultMenuCategory());
             // Molang version
-            this.nbt.putInt("molangVersion", 13);
+            this.nbt.putInt("molangVersion", 9);
 
             // Set the properties of the block
             var propertiesNBT = getPropertiesNBT();
