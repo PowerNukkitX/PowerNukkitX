@@ -16,32 +16,23 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static cn.nukkit.block.property.CommonBlockProperties.FACING_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.ITEM_FRAME_MAP_BIT;
 import static cn.nukkit.block.property.CommonBlockProperties.ITEM_FRAME_PHOTO_BIT;
 import static cn.nukkit.math.BlockFace.AxisDirection.POSITIVE;
 
-@Slf4j
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
 
-    /**
-     * Per-position lock to prevent concurrent interactions (left-click + right-click, or multiple players)
-     * from racing on the same item frame. Entries are removed after each interaction completes.
-     */
-    private static final ConcurrentHashMap<Long, Object> frameInteractionLocks = new ConcurrentHashMap<>();
-
-    private static long positionKey(int x, int y, int z) {
-        return ((long) x & 0x3FFFFFF) | (((long) z & 0x3FFFFFF) << 26) | (((long) y & 0xFFF) << 52);
-    }
+    private static final ConcurrentHashMap<Player, AtomicBoolean> playerInteractionLocks = new ConcurrentHashMap<>();
 
     @Override
     @NotNull
@@ -106,15 +97,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block support = this.getSideAtLayer(0, getFacing().getOpposite());
             if (!support.isSolid() && !support.getId().equals(COBBLESTONE_WALL)) {
-                // [ITEM_DEBUG] Log when item frame breaks due to missing support
-                BlockEntityItemFrame be = getBlockEntity();
-                if (be != null) {
-                    Item stored = be.getItem();
-                    if (stored != null && !stored.isNull()) {
-                        log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} breaking due to missing support block ({}), contained item: {} x{}",
-                                getFloorX(), getFloorY(), getFloorZ(), support.getId(), stored.getId(), stored.getCount());
-                    }
-                }
                 this.level.useBreakOn(this);
                 return type;
             }
@@ -137,49 +119,29 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-            long key = positionKey(getFloorX(), getFloorY(), getFloorZ());
-            Object lock = frameInteractionLocks.computeIfAbsent(key, k -> new Object());
-            synchronized (lock) {
-                try {
-                    BlockEntityItemFrame blockEntity = getOrCreateBlockEntity();
-                    if (player.isCreative()) {
-                        Item before = blockEntity.getItem();
-                        if (before.isNull()) return;
+            BlockEntityItemFrame blockEntity = getOrCreateBlockEntity();
+            if (player.isCreative()) {
+                Item before = blockEntity.getItem();
+                if (before.isNull()) return;
 
-                        // [ITEM_DEBUG] Log creative remove
-                        log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} creative remove by {}, item: {} x{}",
-                                getFloorX(), getFloorY(), getFloorZ(), player.getName(), before.getId(), before.getCount());
-
-                        ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, blockEntity, before, ItemFrameUseEvent.Action.REMOVE);
-                        this.getLevel().getServer().getPluginManager().callEvent(event);
-                        if (event.isCancelled()) {
-                            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} creative remove CANCELLED by event",
-                                    getFloorX(), getFloorY(), getFloorZ());
-                            blockEntity.spawnTo(player);
-                            return;
-                        }
-
-                        blockEntity.setItem(Item.AIR);
-                        blockEntity.setItemRotation(0);
-
-                        if (isStoringMap()) {
-                            setStoringMap(false);
-                            this.getLevel().setBlock(this, this, true);
-                        }
-
-                        this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_REMOVE);
-                    } else {
-                        // [ITEM_DEBUG] Log survival left-click drop
-                        Item before = blockEntity.getItem();
-                        if (before != null && !before.isNull()) {
-                            log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} survival drop by {}, item: {} x{}",
-                                    getFloorX(), getFloorY(), getFloorZ(), player.getName(), before.getId(), before.getCount());
-                        }
-                        blockEntity.dropItem(player);
-                    }
-                } finally {
-                    frameInteractionLocks.remove(key);
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, blockEntity, before, ItemFrameUseEvent.Action.REMOVE);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    blockEntity.spawnTo(player);
+                    return;
                 }
+
+                blockEntity.setItem(Item.AIR);
+                blockEntity.setItemRotation(0);
+
+                if (isStoringMap()) {
+                    setStoringMap(false);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_REMOVE);
+            } else {
+                blockEntity.dropItem(player);
             }
         }
     }
@@ -189,55 +151,56 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         if (player == null || player.isSneaking()) {
             return false;
         }
+        AtomicBoolean interactionLock = playerInteractionLocks.computeIfAbsent(player, p -> new AtomicBoolean(false));
 
-        long key = positionKey(getFloorX(), getFloorY(), getFloorZ());
-        Object lock = frameInteractionLocks.computeIfAbsent(key, k -> new Object());
-        synchronized (lock) {
-            try {
-                BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
+        if (!interactionLock.compareAndSet(false, true)) {
+            return false;
+        }
 
-                if (itemFrame.getItem().isNull()) {
-                    Item itemOnFrame = item.clone();
-                    ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
-                    this.getLevel().getServer().getPluginManager().callEvent(event);
-                    if (event.isCancelled()) return false;
+        try {
+            BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
 
-                    if (!player.isCreative()) {
-                        itemOnFrame.setCount(itemOnFrame.getCount() - 1);
-                        player.getInventory().setItemInMainHand(itemOnFrame);
-                    }
+            if (itemFrame.getItem().isNull()) {
+                Item itemOnFrame = item.clone();
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, itemOnFrame, ItemFrameUseEvent.Action.PUT);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) return false;
 
-                    itemOnFrame.setCount(1);
-                    itemFrame.setItem(itemOnFrame);
-
-                    // [ITEM_DEBUG] Log item placed into frame
-                    log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} item placed by {}, item: {} x{}",
-                            getFloorX(), getFloorY(), getFloorZ(), player.getName(), itemOnFrame.getId(), itemOnFrame.getCount());
-
-                    if (Objects.equals(itemOnFrame.getId(), ItemID.FILLED_MAP)) {
-                        setStoringMap(true);
-                        this.getLevel().setBlock(this, this, true);
-                    }
-
-                    this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
-                } else {
-                    ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
-                    this.getLevel().getServer().getPluginManager().callEvent(event);
-                    if (event.isCancelled()) return false;
-
-                    itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
-
-                    if (isStoringMap()) {
-                        setStoringMap(false);
-                        this.getLevel().setBlock(this, this, true);
-                    }
-
-                    this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ROTATE);
+                if (player != null && !player.isCreative()) {
+                    itemOnFrame.setCount(itemOnFrame.getCount() - 1);
+                    player.getInventory().setItemInMainHand(itemOnFrame);
                 }
 
-                return true;
-            } finally {
-                frameInteractionLocks.remove(key);
+                itemOnFrame.setCount(1);
+                itemFrame.setItem(itemOnFrame);
+
+                if (Objects.equals(itemOnFrame.getId(), ItemID.FILLED_MAP)) {
+                    setStoringMap(true);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
+            } else {
+                ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
+                this.getLevel().getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) return false;
+
+                itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
+
+                if (isStoringMap()) {
+                    setStoringMap(false);
+                    this.getLevel().setBlock(this, this, true);
+                }
+
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ROTATE);
+            }
+
+            return true;
+        } finally {
+            interactionLock.set(false);
+
+            if (player != null && !player.isOnline()) {
+                playerInteractionLocks.remove(player);
             }
         }
     }
@@ -279,16 +242,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public boolean onBreak(Item item) {
-        // [ITEM_DEBUG] Log when the frame block itself is broken
-        BlockEntityItemFrame be = getBlockEntity();
-        if (be != null) {
-            Item stored = be.getItem();
-            if (stored != null && !stored.isNull()) {
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} onBreak called, contained item: {} x{}, caller: {}",
-                        getFloorX(), getFloorY(), getFloorZ(), stored.getId(), stored.getCount(),
-                        Thread.currentThread().getStackTrace()[2]);
-            }
-        }
         this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
         return true;
@@ -302,15 +255,6 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     toItem(), itemFrame.getItem().clone()
             };
         } else {
-            // [ITEM_DEBUG] Log when getDrops cannot find block entity or drop chance fails
-            if (itemFrame == null) {
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getDrops: blockEntity is NULL, item will be lost!",
-                        getFloorX(), getFloorY(), getFloorZ());
-            } else {
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getDrops: drop chance failed (chance={}), item {} destroyed",
-                        getFloorX(), getFloorY(), getFloorZ(), itemFrame.getItemDropChance(),
-                        itemFrame.getItem().getId());
-            }
             return new Item[]{
                     toItem()
             };
