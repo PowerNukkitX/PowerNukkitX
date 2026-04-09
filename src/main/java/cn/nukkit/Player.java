@@ -2185,7 +2185,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         entity.despawnFrom(this);
                     }
                 }
-                synchronized (playerChunkManager.getUsedChunks()) {
+                synchronized (playerChunkManager) {
                     playerChunkManager.getUsedChunks().remove(index);
                 }
             }
@@ -2233,7 +2233,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         this.chunkLoadCount++;
-        synchronized (playerChunkManager.getUsedChunks()) {
+        synchronized (playerChunkManager) {
             this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
         }
         this.dataPacket(packet);
@@ -3474,28 +3474,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.session.close(null);
     }
 
-    public synchronized void unloadAllUsedChunk() {
-        //save player data
-        //unload chunk for the player
-        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
-        try {
-            while (iterator.hasNext()) {
-                long l = iterator.nextLong();
-                int chunkX = Level.getHashX(l);
-                int chunkZ = Level.getHashZ(l);
-                if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
-                    for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                        if (entity != this) {
-                            entity.despawnFrom(this);
+    public void unloadAllUsedChunk() {
+        synchronized (playerChunkManager) {
+            //save player data
+            //unload chunk for the player
+            LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+            try {
+                while (iterator.hasNext()) {
+                    long l = iterator.nextLong();
+                    int chunkX = Level.getHashX(l);
+                    int chunkZ = Level.getHashZ(l);
+                    if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
+                        for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                            if (entity != this) {
+                                entity.despawnFrom(this);
+                            }
                         }
+                        iterator.remove();
                     }
-                    iterator.remove();
                 }
+            } catch (Exception e) {
+                getServer().getLogger().error("Failed to unload all used chunks.", e);
+            } finally {
+                this.playerChunkManager.getUsedChunks().clear();
             }
-        } catch (Exception e) {
-            getServer().getLogger().error("Failed to unload all used chunks.", e);
-        } finally {
-            this.playerChunkManager.getUsedChunks().clear();
         }
     }
 
