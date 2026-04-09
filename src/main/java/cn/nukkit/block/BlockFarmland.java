@@ -5,7 +5,7 @@ import cn.nukkit.event.block.FarmLandDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -55,7 +55,7 @@ public class BlockFarmland extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (this.up().isSolid()) {
                 var farmEvent = new FarmLandDecayEvent(null, this);
                 this.level.getServer().getPluginManager().callEvent(farmEvent);
@@ -65,7 +65,7 @@ public class BlockFarmland extends BlockTransparent {
 
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             Vector3 v = new Vector3();
             if (this.level.getBlock(v.setComponents(x, this.y + 1, z)) instanceof BlockCrops) {
                 return 0;
@@ -108,7 +108,7 @@ public class BlockFarmland extends BlockTransparent {
                     setMoistureAmount(7);
                     this.level.setBlock(this, this, false, getMoistureAmount() == 0);
                 }
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
 
             if (getMoistureAmount() > 0) {
@@ -121,7 +121,7 @@ public class BlockFarmland extends BlockTransparent {
                 this.level.setBlock(this, Block.get(Block.DIRT), false, true);
             }
 
-            return Level.BLOCK_UPDATE_RANDOM;
+            return Dimension.BLOCK_UPDATE_RANDOM;
         }
 
         return 0;

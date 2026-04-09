@@ -10,7 +10,7 @@ import cn.nukkit.block.BlockSculkVein;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -38,8 +38,8 @@ public class SculkPatchFeature extends GenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         SimplexF noise = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getFeatureHolder().getSculkPatch();
         BlockManager manager = new BlockManager(level);
         for(int x = 0; x < 16; x++) {

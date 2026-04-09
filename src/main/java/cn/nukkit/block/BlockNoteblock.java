@@ -8,7 +8,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -97,7 +97,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
-        onUpdate(Level.BLOCK_UPDATE_TOUCH);
+        onUpdate(Dimension.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
             this.emitSound(player);
         }
@@ -202,7 +202,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE) {
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.

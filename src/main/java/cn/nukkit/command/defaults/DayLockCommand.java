@@ -7,7 +7,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 import java.util.Map;
 
@@ -31,8 +31,8 @@ public class DayLockCommand extends VanillaCommand {
 
         if (list.hasResult(0)) lock = list.getResult(0);
 
-        Level level = sender.getPosition().getLevel();
-        level = level == null ? sender.getServer().getDefaultLevel() : level;
+        Dimension level = sender.getPosition().getLevel();
+        level = level == null ? sender.getServer().getDefaultLevel().getOverworld() : level;
         GameRules rules = level.getGameRules();
 
         if (lock) {

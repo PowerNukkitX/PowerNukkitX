@@ -1,7 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.ThreadCache;
@@ -30,14 +30,16 @@ public class GarbageCollectorCommand extends TestCommand implements CoreCommand 
         var runtime = Runtime.getRuntime();
         long usedMemory = runtime.totalMemory() - runtime.freeMemory();
 
-        for (Level level : sender.getServer().getLevels().values()) {
-            int chunksCount = level.getChunks().size();
-            int entitiesCount = level.getEntities().length;
-            int tilesCount = level.getBlockEntities().size();
-            level.doLevelGarbageCollection();
-            chunksCollected += chunksCount - level.getChunks().size();
-            entitiesCollected += entitiesCount - level.getEntities().length;
-            tilesCollected += tilesCount - level.getBlockEntities().size();
+        for (var lvl : sender.getServer().getLevels().values()) {
+            for (Dimension level : lvl.getDimensions()) {
+                int chunksCount = level.getChunks().size();
+                int entitiesCount = level.getEntities().length;
+                int tilesCount = level.getBlockEntities().size();
+                level.doLevelGarbageCollection();
+                chunksCollected += chunksCount - level.getChunks().size();
+                entitiesCollected += entitiesCount - level.getEntities().length;
+                tilesCollected += tilesCount - level.getBlockEntities().size();
+            }
         }
 
         ThreadCache.clean();

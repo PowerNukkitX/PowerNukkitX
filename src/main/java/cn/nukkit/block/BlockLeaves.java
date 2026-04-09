@@ -8,7 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
@@ -128,7 +128,7 @@ public abstract class BlockLeaves extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (isCheckDecay()) {
                 if (isPersistent() || findLog(this, 7, null)) {
                     setCheckDecay(false);
@@ -142,7 +142,7 @@ public abstract class BlockLeaves extends BlockTransparent {
                 }
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!isCheckDecay()) {
                 setCheckDecay(true);
                 getLevel().setBlock(this, this, false, false);

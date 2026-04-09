@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.inventory.BundleInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -87,7 +87,7 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
     }
 
     @Override
-    public Level getLevel() {
+    public Dimension getLevel() {
         return holder.getHolder().getLevel();
     }
 

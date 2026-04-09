@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Slf4j
 public class Position extends NamedPosition {
-    public Level level;
+    public Dimension level;
 
     public Position() {
         this(0, 0, 0, null);
@@ -38,7 +38,7 @@ public class Position extends NamedPosition {
         this(x, y, z, null);
     }
 
-    public Position(double x, double y, double z, Level level) {
+    public Position(double x, double y, double z, Dimension level) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -54,15 +54,15 @@ public class Position extends NamedPosition {
         return fromObject(pos, null);
     }
 
-    public static Position fromObject(Vector3 pos, Level level) {
+    public static Position fromObject(Vector3 pos, Dimension level) {
         return new Position(pos.x, pos.y, pos.z, level);
     }
 
-    public Level getLevel() {
+    public Dimension getLevel() {
         return this.level;
     }
 
-    public Position setLevel(Level level) {
+    public Position setLevel(Dimension level) {
         this.level = level;
         return this;
     }
@@ -173,10 +173,10 @@ public class Position extends NamedPosition {
         return getValidLevel().getName();
     }
 
-    @NotNull public final Level getValidLevel() {
-        Level level = this.level;
+    @NotNull public final Dimension getValidLevel() {
+        Dimension level = this.level;
         if (level == null) {
-            throw new LevelException("Undefined Level reference");
+            throw new LevelException("Undefined Dimension reference");
         }
         return level;
     }

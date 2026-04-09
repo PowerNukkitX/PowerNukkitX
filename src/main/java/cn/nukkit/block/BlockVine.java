@@ -8,7 +8,7 @@ import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -184,7 +184,7 @@ public class BlockVine extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block up = this.up();
             Set<BlockFace> upFaces = up instanceof BlockVine ? ((BlockVine) up).getFaces() : null;
             Set<BlockFace> faces = this.getFaces();
@@ -195,14 +195,14 @@ public class BlockVine extends BlockTransparent {
             }
             if (faces.isEmpty() && !up.isSolid()) {
                 this.getLevel().useBreakOn(this, null, null, true);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
             int meta = getMetaFromFaces(faces);
             if (meta != this.blockstate.specialValue()) {
                 this.level.setBlock(this, Block.get(VINE).setPropertyValue(CommonBlockProperties.VINE_DIRECTION_BITS, meta), true);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             Random random = ThreadLocalRandom.current();
             if (random.nextInt(4) == 0) {
                 BlockFace face = BlockFace.random(random);
@@ -259,7 +259,7 @@ public class BlockVine extends BlockTransparent {
                         putVineOnHorizontalFace(below, below.blockstate.specialValue() | meta, id.equals(AIR) ? this : null);
                     }
                 }
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
         return 0;

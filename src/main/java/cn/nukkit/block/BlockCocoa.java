@@ -7,7 +7,7 @@ import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -126,19 +126,19 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block side = this.getSide(BlockFace.fromIndex(faces2[getPropertyValue(DIRECTION)]));
             if (!((side instanceof BlockWood wood && wood.getWoodType() == WoodType.JUNGLE) || side instanceof BlockJungleLog)) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1) {
                 if (this.getAge() < 2 && !this.grow()) {
-                    return Level.BLOCK_UPDATE_RANDOM;
+                    return Dimension.BLOCK_UPDATE_RANDOM;
                 }
             } else {
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
 

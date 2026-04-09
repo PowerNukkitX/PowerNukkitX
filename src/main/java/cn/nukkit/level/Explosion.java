@@ -46,7 +46,7 @@ public class Explosion {
     private final int RAYS = 16; //Rays
     private final double STEP_LEN = 0.3d;
 
-    private final Level level;
+    private final Dimension level;
     private final Position source;
     private final double size;
     private double fireChance;
@@ -320,14 +320,14 @@ public class Explosion {
                     BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
-                        ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        ev.getBlock().onUpdate(Dimension.BLOCK_UPDATE_NORMAL);
                     }
                     Block layer1 = this.level.getBlock(sideBlock, 1);
                     if (!layer1.isAir()) {
                         ev = new BlockUpdateEvent(layer1);
                         this.level.getServer().getPluginManager().callEvent(ev);
                         if (!ev.isCancelled()) {
-                            ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                            ev.getBlock().onUpdate(Dimension.BLOCK_UPDATE_NORMAL);
                         }
                     }
                     updateBlocks.add(index);

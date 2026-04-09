@@ -7,7 +7,7 @@ import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -62,7 +62,7 @@ public class BlockDriedGhast extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        Level level = getLevel();
+        Dimension level = getLevel();
         if (level == null) return type;
 
         if (!level.isChunkLoaded(getFloorX() >> 4, getFloorZ() >> 4)) return type;
@@ -73,7 +73,7 @@ public class BlockDriedGhast extends BlockTransparent {
         Integer lvlObj = block.getPropertyValue(CommonBlockProperties.REHYDRATION_LEVEL);
         int lvl = lvlObj == null ? 0 : Math.max(0, Math.min(HYDRATION_MAX, lvlObj));
 
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (block.isWaterLogged() || lvl > 0) {
                 ensureHydrationTicking(block);
             } else {
@@ -82,7 +82,7 @@ public class BlockDriedGhast extends BlockTransparent {
             return type;
         }
 
-        if (type != Level.BLOCK_UPDATE_SCHEDULED) return type;
+        if (type != Dimension.BLOCK_UPDATE_SCHEDULED) return type;
 
         boolean waterlogged = block.isWaterLogged();
 
@@ -115,7 +115,7 @@ public class BlockDriedGhast extends BlockTransparent {
         return type;
     }
 
-    private void spawnGhastling(@NotNull BlockDriedGhast block, Level level) {
+    private void spawnGhastling(@NotNull BlockDriedGhast block, Dimension level) {
         double sx = block.getFloorX() + 0.5;
         double sy = block.getFloorY() + 0.1;
         double sz = block.getFloorZ() + 0.5;
@@ -152,7 +152,7 @@ public class BlockDriedGhast extends BlockTransparent {
     }
 
     private void ensureHydrationTicking(@NotNull BlockDriedGhast block) {
-        Level level = block.getLevel();
+        Dimension level = block.getLevel();
         if (level == null) return;
 
         Position pos = block.floor();

@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Nukkit;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
@@ -237,16 +238,18 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
 
             for (Level level : server.getLevels().values()) {
-                sender.sendMessage(
-                        TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
-                                TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                                TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
-                                TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
-                                " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
-                                (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "") +
-                                (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
-                );
+                for (Dimension dimension : level.getDimensions()) {
+                    sender.sendMessage(
+                            TextFormat.GOLD + "World \"" + level.getFolderName() + "\" (" + dimension.getName() + "): " +
+                                    TextFormat.RED + dimension.getChunks().size() + TextFormat.GREEN + " chunks, " +
+                                    TextFormat.RED + dimension.getEntities().length + TextFormat.GREEN + " entities, " +
+                                    TextFormat.RED + dimension.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
+                                    " Time " + ((dimension.getTickRate() > 1 || dimension.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(dimension.getTickRateTime(), 2) + "ms" +
+                                    (" [delayOpt " + (dimension.tickRateOptDelay - 1) + "]") +
+                                    (dimension.getTickRate() > 1 ? " (tick rate " + (19 - dimension.getTickRate()) + ")" : "") +
+                                    (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
+                    );
+                }
             }
         } else {
             // Full mode
@@ -279,15 +282,17 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                         TextFormat.RED + server.getMaxPlayers() + TextFormat.GREEN + " max. ");
                 // The status of worlds
                 for (Level level : server.getLevels().values()) {
-                    sender.sendMessage(
-                            TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
-                                    TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                                    TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
-                                    TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
-                                    " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
-                                    (" [delayOpt " + (level.tickRateOptDelay - 1) + "]") +
-                                    (level.getTickRate() > 1 ? " (tick rate " + (19 - level.getTickRate()) + ")" : "")
-                    );
+                    for (Dimension dimension : level.getDimensions()) {
+                        sender.sendMessage(
+                                TextFormat.GOLD + "World \"" + level.getFolderName() + "\" (" + dimension.getName() + "): " +
+                                        TextFormat.RED + dimension.getChunks().size() + TextFormat.GREEN + " chunks, " +
+                                        TextFormat.RED + dimension.getEntities().length + TextFormat.GREEN + " entities, " +
+                                        TextFormat.RED + dimension.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
+                                        " Time " + ((dimension.getTickRate() > 1 || dimension.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(dimension.getTickRateTime(), 2) + "ms" +
+                                        (" [delayOpt " + (dimension.tickRateOptDelay - 1) + "]") +
+                                        (dimension.getTickRate() > 1 ? " (tick rate " + (19 - dimension.getTickRate()) + ")" : "")
+                        );
+                    }
                 }
                 sender.sendMessage("");
             }

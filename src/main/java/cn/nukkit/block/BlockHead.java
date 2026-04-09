@@ -7,7 +7,7 @@ import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -89,7 +89,7 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
 
     @Override
     public int onUpdate(int type) {
-        if ((type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+        if ((type != Dimension.BLOCK_UPDATE_REDSTONE && type != Dimension.BLOCK_UPDATE_NORMAL) || !level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;
         }
 
@@ -105,7 +105,7 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
         }
 
         entity.setMouthMoving(this.isGettingPower());
-        return Level.BLOCK_UPDATE_REDSTONE;
+        return Dimension.BLOCK_UPDATE_REDSTONE;
     }
 
     @Override

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -70,7 +70,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 return 0;
             }
@@ -84,22 +84,22 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
                     this.isPowered = false;
 
                     Block side = this.getSide(getFacing().getOpposite());
-                    side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+                    side.onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(side);
                 } else if (!this.isPowered) {
                     this.level.setBlock(pos, this.getPowered(), true, true);
                     this.isPowered = true;
 
                     Block side = this.getSide(getFacing().getOpposite());
-                    side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+                    side.onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(side);
                 }
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (type == Level.BLOCK_UPDATE_NORMAL && !isSupportValid(down())) {
+        } else if (type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_REDSTONE) {
+            if (type == Dimension.BLOCK_UPDATE_NORMAL && !isSupportValid(down())) {
                 this.level.useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             } else if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 // Redstone event
                 RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);

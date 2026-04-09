@@ -1,6 +1,6 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import com.google.common.collect.Sets;
@@ -53,7 +53,7 @@ public interface RedstoneComponent {
     static void updateAroundRedstone(@NotNull Position pos, @NotNull Set<BlockFace> ignoredFaces) {
         for (BlockFace face : BlockFace.values()) {
             if (ignoredFaces.contains(face)) continue;
-            pos.getLevelBlock().getSide(face).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+            pos.getLevelBlock().getSide(face).onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
         }
     }
 

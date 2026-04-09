@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockObsidian;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -37,7 +37,7 @@ public class ItemEndCrystal extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Dimension level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (!(target instanceof BlockBedrock) && !(target instanceof BlockObsidian)) return false;
         IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
         Entity[] entities = level.getNearbyEntities(new SimpleAxisAlignedBB(target.x, target.y, target.z, target.x + 1, target.y + 2, target.z + 1));

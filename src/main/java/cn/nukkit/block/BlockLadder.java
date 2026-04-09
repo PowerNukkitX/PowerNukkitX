@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -173,11 +173,11 @@ public class BlockLadder extends BlockTransparent implements Faceable {
                 }
             }
         }*/
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             if (!isSupportValid(this.getSide(face), face.getOpposite())) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
         }
         return 0;

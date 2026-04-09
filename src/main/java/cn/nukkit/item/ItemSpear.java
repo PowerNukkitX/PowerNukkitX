@@ -7,7 +7,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerSpearStabEvent;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
@@ -55,7 +55,7 @@ public abstract class ItemSpear extends ItemTool {
             return;
         }
 
-        Level level = player.getLevel();
+        Dimension level = player.getLevel();
         Location loc = player.getLocation();
 
         Vector3 eyePos = loc.add(0, player.getEyeHeight(), 0);
@@ -174,7 +174,7 @@ public abstract class ItemSpear extends ItemTool {
             return;
         }
 
-        Level level = player.getLevel();
+        Dimension level = player.getLevel();
         Vector3 dir = player.getDirectionVector().normalize().multiply(1.5);
 
         AxisAlignedBB hitBox = player.getBoundingBox()

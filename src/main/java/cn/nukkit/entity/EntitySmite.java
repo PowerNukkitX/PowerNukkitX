@@ -2,7 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.inventory.EntityInventoryHolder;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 /**
  * This interface represents the monster entity of the undead class
@@ -18,7 +18,7 @@ public interface EntitySmite {
             noHelmet = armor == null || armor.getHelmet().isNull();
         }
 
-        if (entity.getLevel().getDimension() == Level.DIMENSION_OVERWORLD
+        if (entity.getLevel().getDimension() == Dimension.DIMENSION_OVERWORLD
                 && entity.getLevel().isDaytime()
                 && !entity.getLevel().isRaining()
                 && !entity.hasEffect(EffectType.FIRE_RESISTANCE)

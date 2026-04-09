@@ -13,7 +13,7 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.ExplodeParticle;
@@ -149,7 +149,7 @@ public class ItemBucket extends Item {
 
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Dimension level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -330,13 +330,13 @@ public class ItemBucket extends Item {
      * whether the bucket can be used in the dimension
      */
     protected boolean canBeUsedOnDimension(int dimension) {
-        return dimension != Level.DIMENSION_NETHER || (isEmpty() || isLava() || isMilk());
+        return dimension != Dimension.DIMENSION_NETHER || (isEmpty() || isLava() || isMilk());
     }
 
     /**
      * handle logic after use bucket.
      */
-    protected void afterUse(Level level, Block block) {
+    protected void afterUse(Dimension level, Block block) {
         Sound sound = this.isLava() ? Sound.BUCKET_EMPTY_LAVA : Sound.BUCKET_EMPTY_WATER;
         level.addSound(block, sound);
 

@@ -14,7 +14,7 @@ import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
@@ -262,7 +262,7 @@ public final class EndCityPieces {
         return new PostPlacement(chests, banners, itemFrames, brewingStands, shulkerMarkers);
     }
 
-    public static void populatePlacedData(Level level, List<BlockVector3> chests, List<BlockVector3> banners, List<BlockVector3> itemFrames, List<BlockVector3> brewingStands, List<BlockVector3> shulkerMarkers, RandomSourceProvider random) {
+    public static void populatePlacedData(Dimension level, List<BlockVector3> chests, List<BlockVector3> banners, List<BlockVector3> itemFrames, List<BlockVector3> brewingStands, List<BlockVector3> shulkerMarkers, RandomSourceProvider random) {
         for (BlockVector3 chestPos : chests) {
             if (level.getBlock(chestPos.getX(), chestPos.getY(), chestPos.getZ()) instanceof BlockChest chest) {
                 for(int i = 0; i < 3; i++) END_CITY_LOOT.create(chest.getOrCreateBlockEntity().getInventory(), random);

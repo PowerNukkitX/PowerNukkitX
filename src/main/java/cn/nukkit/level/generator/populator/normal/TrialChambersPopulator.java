@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -24,7 +24,7 @@ public class TrialChambersPopulator extends Populator {
 
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
 
         int originX = chunkX << 4;
         int originZ = chunkZ << 4;
@@ -37,7 +37,7 @@ public class TrialChambersPopulator extends Populator {
     }
 
 
-    protected int findGenerationY(Level level, int x, int z) {
+    protected int findGenerationY(Dimension level, int x, int z) {
         int minY = level.getMinHeight() + 8;
         int terrainY = level.getHeightMap(x, z) - 20;
         return Math.max(minY, Math.min(-20, terrainY));

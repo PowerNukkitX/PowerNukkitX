@@ -1,6 +1,7 @@
 package cn.nukkit.level.tickingarea;
 
 import cn.nukkit.Server;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 
 import java.util.HashSet;
@@ -37,7 +38,11 @@ public class TickingArea {
     public boolean loadAllChunk() {
         if (!Server.getInstance().loadLevel(levelName))
             return false;
-        Level level = Server.getInstance().getLevelByName(levelName);
+        Level world = Server.getInstance().getLevelByName(levelName);
+        if (world == null || world.getOverworld() == null) {
+            return false;
+        }
+        Dimension level = world.getOverworld();
         for (ChunkPos pos : chunks) {
             level.loadChunk(pos.x, pos.z);
         }

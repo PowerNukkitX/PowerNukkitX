@@ -15,7 +15,7 @@ public abstract class LevelProviderManager {
 
     public static void addProvider(String name, Class<? extends LevelProvider> clazz) {
         if (providers.putIfAbsent(name.trim().toLowerCase(Locale.ENGLISH), clazz) != null) {
-            log.error("Duplicate registration Level Provider {}", clazz);
+            log.error("Duplicate registration Dimension Provider {}", clazz);
         }
     }
 

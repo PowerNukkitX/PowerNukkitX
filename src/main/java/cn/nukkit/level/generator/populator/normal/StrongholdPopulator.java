@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -30,8 +30,8 @@ public class StrongholdPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         if (!chunk.isOverWorld()) return;
 
         if (chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
@@ -54,14 +54,14 @@ public class StrongholdPopulator extends Populator {
             boolean generated = false;
             List<Long> chunks = new ArrayList<>();
             for(Block block : object.getBlocks()) {
-                long hash = Level.chunkHash(block.getChunkX(), block.getChunkZ());
+                long hash = Dimension.chunkHash(block.getChunkX(), block.getChunkZ());
                 if(!chunks.contains(hash)) {
                     chunks.add(hash);
                 }
             }
             for(Long hash : chunks) {
-                int cx = Level.getHashX(hash);
-                int cz = Level.getHashZ(hash);
+                int cx = Dimension.getHashX(hash);
+                int cz = Dimension.getHashZ(hash);
                 IChunk chunk1 = level.getChunk(cx, cz);
                 if(chunk1 == chunk) continue;
                 if(!chunk1.isGenerated()) {

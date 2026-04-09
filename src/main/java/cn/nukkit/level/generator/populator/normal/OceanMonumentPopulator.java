@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -57,7 +57,7 @@ public class OceanMonumentPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level l = chunk.getLevel();
+        Dimension l = chunk.getLevel();
         if(Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7,7), 7)).getTags().contains(BiomeTags.OCEAN)) {
             BlockManager level = new BlockManager(l);
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
@@ -80,13 +80,13 @@ public class OceanMonumentPopulator extends Populator {
                         }
                         if (!ck.isGenerated()) {
                             chunks.add(ck);
-                            indexes.add(Level.chunkHash(ck.getX(), ck.getZ()));
+                            indexes.add(Dimension.chunkHash(ck.getX(), ck.getZ()));
                         }
                     }
                 }
 
                 if (!chunks.isEmpty()) {
-                    this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
+                    this.waitingChunks.put(Dimension.chunkHash(chunkX, chunkZ), indexes);
                     for (IChunk ck : chunks) {
                         if(ck.isGenerated())
                         level.getLevel().syncGenerateChunk(ck.getX(), ck.getZ());
@@ -130,8 +130,8 @@ public class OceanMonumentPopulator extends Populator {
     }
 
     public synchronized void generateChunkCallback(BlockManager level, int startX, int startZ, IChunk chunk, int chunkX, int chunkZ) {
-        Set<Long> indexes = this.waitingChunks.get(Level.chunkHash(startX >> 4, startZ >> 4));
-        indexes.remove(Level.chunkHash(chunkX, chunkZ));
+        Set<Long> indexes = this.waitingChunks.get(Dimension.chunkHash(startX >> 4, startZ >> 4));
+        indexes.remove(Dimension.chunkHash(chunkX, chunkZ));
         if (indexes.isEmpty()) {
             this.place(level, startX, startZ, chunk);
         }

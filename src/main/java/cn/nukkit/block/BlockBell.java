@@ -13,7 +13,7 @@ import cn.nukkit.event.block.BellRingEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -298,12 +298,12 @@ public class BlockBell extends BlockTransparent implements RedstoneComponent, Fa
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!checkSupport()) {
                 this.level.useBreakOn(this);
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+        } else if (type == Dimension.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             if (this.isGettingPower()) {
                 if (!isToggled()) {
                     setToggled(true);

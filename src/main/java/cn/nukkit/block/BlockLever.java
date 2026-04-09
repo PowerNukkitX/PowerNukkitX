@@ -6,7 +6,7 @@ import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -107,7 +107,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             BlockFace blockFace = getLeverOrientation().getFacing().getOpposite();
             Block side = this.getSide(blockFace);
             if (!isSupportValid(side, blockFace.getOpposite())) {

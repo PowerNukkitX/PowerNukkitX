@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import org.jetbrains.annotations.NotNull;
@@ -44,11 +44,11 @@ public class BlockWallSign extends BlockStandingSign {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (this.getSide(getBlockFace().getOpposite()).isAir()) {
                 this.getLevel().useBreakOn(this);
             }
-            return Level.BLOCK_UPDATE_NORMAL;
+            return Dimension.BLOCK_UPDATE_NORMAL;
         }
         return 0;
     }

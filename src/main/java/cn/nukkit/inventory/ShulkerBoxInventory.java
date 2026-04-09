@@ -3,7 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
@@ -44,7 +44,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
             pk.type = 1;
             pk.value = 2;
 
-            Level level = this.getHolder().getLevel();
+            Dimension level = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_SHULKERBOXOPEN);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
@@ -62,7 +62,7 @@ public class ShulkerBoxInventory extends ContainerInventory {
             pk.type = 1;
             pk.value = 0;
 
-            Level level = this.getHolder().getLevel();
+            Dimension level = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_SHULKERBOXCLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);

@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -35,7 +35,7 @@ public class ItemMace extends ItemTool {
 
     public void onPostAttack(Entity victim, float damage) {
         if (damage >= 7) {
-            Level level = victim.getLevel();
+            Dimension level = victim.getLevel();
             Vector3 pos = victim.getPosition();
 
             level.addLevelEvent(LevelEventPacket.EVENT_PARTICLE_SMASH_ATTACK_GROUND_DUST, 0, pos);

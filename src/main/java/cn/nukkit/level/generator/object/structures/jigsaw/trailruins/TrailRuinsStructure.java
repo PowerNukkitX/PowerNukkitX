@@ -10,7 +10,7 @@ import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntityBrushable;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
@@ -77,7 +77,7 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
-        Level level = helper.getLevel();
+        Dimension level = helper.getLevel();
         helper.addHook(() -> populatePendingBrushLoot(level));
 
         helper.applySubChunkUpdate();
@@ -126,7 +126,7 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
         }
     }
 
-    private void populatePendingBrushLoot(Level level) {
+    private void populatePendingBrushLoot(Dimension level) {
         for (Map.Entry<BlockVector3, TrailRuinsLoot> entry : pendingBrushLoot.entrySet()) {
             Block block = level.getBlock(entry.getKey().getX(), entry.getKey().getY(), entry.getKey().getZ());
             if (!(block instanceof BlockBrushable brushable)) {
@@ -138,7 +138,7 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
         pendingBrushLoot.clear();
     }
 
-    private RandomSourceProvider createRandom(Level level, BlockVector3 pos) {
+    private RandomSourceProvider createRandom(Dimension level, BlockVector3 pos) {
         long seed = level.getSeed();
         seed ^= 0x9E3779B97F4A7C15L * pos.getX();
         seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
@@ -285,8 +285,8 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
         int z = location.getFloorZ();
         int chunkX = location.getChunkX();
         int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        Xoroshiro128 random = new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = location.getLevel();
+        Xoroshiro128 random = new Xoroshiro128(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
         BiomeDefinition definition = Registries.BIOME.get(biome);

@@ -1,12 +1,12 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 
 public interface InventoryHolder {
     Inventory getInventory();
 
-    Level getLevel();
+    Dimension getLevel();
 
     double getX();
 

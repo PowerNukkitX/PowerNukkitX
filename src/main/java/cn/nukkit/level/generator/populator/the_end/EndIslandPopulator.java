@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.the_end;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.noise.d.NoiseGeneratorSimplexD;
@@ -25,13 +25,13 @@ public class EndIslandPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         if ((long) chunkX * (long) chunkX + (long) chunkZ * (long) chunkZ <= 4096L) {
             return;
         }
 
         if(islandNoise == null) islandNoise = new NoiseGeneratorSimplexD(new NukkitRandom(level.getSeed()));
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
 
         if (random.nextBoundedInt(14) == 0) {
             float height = getIslandHeight(chunkX, chunkZ, 1, 1, islandNoise);

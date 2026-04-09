@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block side = getSide(getRootsFace());
             if (!side.isSolid() || side.getId().equals(MAGMA) || side.getId().equals(SOUL_SAND)) {
                 this.getLevel().useBreakOn(this);
@@ -49,7 +49,7 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
                 this.getLevel().scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             Block side = getSide(getRootsFace());
             if (side.getId().equals(ICE)) {
                 this.getLevel().useBreakOn(this);
@@ -63,7 +63,7 @@ public abstract class BlockCoralFan extends BlockFlowable implements Faceable {
                 }
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (getPropertyValue(CORAL_FAN_DIRECTION) == 0) {
                 setPropertyValue(CORAL_FAN_DIRECTION, 1);
             } else {

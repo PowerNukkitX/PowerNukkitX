@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockLeafLitter;
 import cn.nukkit.block.BlockPinkPetals;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
@@ -31,8 +31,8 @@ public class PinkPetalsFeature extends GenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        this.random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 if(random.nextBoolean()) {

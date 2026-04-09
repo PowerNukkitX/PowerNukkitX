@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.BlockEntityStructBlock;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -123,7 +123,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_REDSTONE) {
             BlockEntityCommandBlock tile = this.getBlockEntity();
             if (tile == null)
                 return super.onUpdate(type);

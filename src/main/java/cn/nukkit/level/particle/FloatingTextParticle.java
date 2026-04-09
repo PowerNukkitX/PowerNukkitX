@@ -4,7 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityDataMap;
 import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.*;
@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class FloatingTextParticle extends Particle {
 
-    protected final Level level;
+    protected final Dimension level;
     protected long entityId = -1;
     protected boolean invisible = false;
     protected String title;
@@ -43,7 +43,7 @@ public class FloatingTextParticle extends Particle {
         this(null, pos, title, text);
     }
 
-    private FloatingTextParticle(Level level, Vector3 pos, String title, String text) {
+    private FloatingTextParticle(Dimension level, Vector3 pos, String title, String text) {
         super(pos.x, pos.y, pos.z);
         this.level = level;
         this.title = title;

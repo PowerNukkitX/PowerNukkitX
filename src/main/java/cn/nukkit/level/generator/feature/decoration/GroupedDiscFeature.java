@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
@@ -39,7 +39,7 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         int randomX = random.nextInt(15);
         int randomZ = random.nextInt(15);
         int height = getY(chunk, randomX, randomZ);

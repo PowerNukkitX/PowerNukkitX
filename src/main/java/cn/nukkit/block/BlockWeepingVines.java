@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
@@ -56,7 +56,7 @@ public class BlockWeepingVines extends BlockVinesNether {
 
     @Override
     public int onUpdate(int type) {
-        if (type != Level.BLOCK_UPDATE_RANDOM) return 0;
+        if (type != Dimension.BLOCK_UPDATE_RANDOM) return 0;
 
         if (!isTip()) return 0;
 

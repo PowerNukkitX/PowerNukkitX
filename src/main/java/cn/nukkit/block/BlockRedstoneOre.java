@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -57,9 +57,9 @@ public class BlockRedstoneOre extends BlockOre {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
+        if (type == Dimension.BLOCK_UPDATE_TOUCH) { //type == Dimension.BLOCK_UPDATE_NORMAL ||
             this.getLevel().setBlock(this, getLitBlock(), true, true);
-            return Level.BLOCK_UPDATE_WEAK;
+            return Dimension.BLOCK_UPDATE_WEAK;
         }
 
         return 0;

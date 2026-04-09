@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -65,12 +65,12 @@ public class BlockCaveVines extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!isValidSupport(this)) {
                 this.getLevel().useBreakOn(this);
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             Random random = ThreadLocalRandom.current();
             //random mature,The feature that I added.
             if (random.nextInt(4) == 0) {

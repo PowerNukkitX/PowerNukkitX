@@ -4,7 +4,7 @@ import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.WeatherEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 /**
  * @author funcraft (Nukkit Project)
@@ -18,7 +18,7 @@ public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
 
     private final EntityLightningStrike bolt;
 
-    public LightningStrikeEvent(Level level, final EntityLightningStrike bolt) {
+    public LightningStrikeEvent(Dimension level, final EntityLightningStrike bolt) {
         super(level);
         this.bolt = bolt;
     }

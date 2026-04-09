@@ -6,7 +6,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -91,12 +91,12 @@ public class BlockTorchflowerCrop extends BlockCrops {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!this.down().getId().equals(FARMLAND)) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1 && getLevel().getFullLight(this) >= getMinimumLightLevel()) {
                 int growth = getGrowth();
                 if (growth == 1) {
@@ -108,7 +108,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
                         return 0;
                     } else {
                         this.getLevel().setBlock(this, ev.getNewState(), false, true);
-                        return Level.BLOCK_UPDATE_RANDOM;
+                        return Dimension.BLOCK_UPDATE_RANDOM;
                     }
                 }
                 if (growth < getMaxGrowth()) {
@@ -120,11 +120,11 @@ public class BlockTorchflowerCrop extends BlockCrops {
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(this, ev.getNewState(), false, true);
                     } else {
-                        return Level.BLOCK_UPDATE_RANDOM;
+                        return Dimension.BLOCK_UPDATE_RANDOM;
                     }
                 }
             } else {
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
 

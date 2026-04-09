@@ -13,7 +13,7 @@ import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
@@ -90,7 +90,7 @@ public class ObjectMonsterRoom extends ObjectGenerator implements RuledObjectGen
         int x = location.getFloorX();
         int y = location.getFloorY();
         int z = location.getFloorZ();
-        Level level = location.getLevel();
+        Dimension level = location.getLevel();
         random.setSeed(level.getSeed() ^ (x+y+z));
 
         chance:

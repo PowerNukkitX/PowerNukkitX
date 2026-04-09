@@ -8,7 +8,7 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkConversion;
 import cn.nukkit.level.format.ChunkSection;
@@ -71,7 +71,7 @@ public class LevelDBProvider implements LevelProvider {
     private static final Map<Long, List<NormalTickInfo>> normalTicksMap = new HashMap<>();
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
-    protected final Level level;
+    protected final Dimension level;
     protected final String path;
     protected CompoundTag worldDynamicProperties = new CompoundTag();
     protected boolean worldDynamicPropertiesDirty = false;
@@ -86,7 +86,7 @@ public class LevelDBProvider implements LevelProvider {
         return this.storage;
     }
     
-    public LevelDBProvider(Level level, String path) throws IOException {
+    public LevelDBProvider(Dimension level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
                 return new LevelDBStorage(level.getDimensionCount(), p, new Options()
@@ -182,7 +182,7 @@ public class LevelDBProvider implements LevelProvider {
             }
             putChunk(index, chunk);
 
-            Level level = this.getLevel();
+            Dimension level = this.getLevel();
             restoreBlockTicks(level, chunk);
         }
         return chunk;
@@ -195,7 +195,7 @@ public class LevelDBProvider implements LevelProvider {
         return normalTicksMap;
     }
 
-    public static void restoreBlockTicks(Level level, IChunk chunk) {
+    public static void restoreBlockTicks(Dimension level, IChunk chunk) {
         long chunkKey = ((long) chunk.getX() & 0xffffffffL) << 32 | ((long) chunk.getZ() & 0xffffffffL);
 
         List<ScheduledTickInfo> scheduledList = LevelDBProvider.getScheduledTicksMap().remove(chunkKey);
@@ -205,7 +205,7 @@ public class LevelDBProvider implements LevelProvider {
         restoreNormalTicks(level, chunk, normalList);
     }
 
-    private static void restoreScheduledTicks(Level level, List<ScheduledTickInfo> scheduledList) {
+    private static void restoreScheduledTicks(Dimension level, List<ScheduledTickInfo> scheduledList) {
         if (scheduledList == null || scheduledList.isEmpty()) return;
 
         for (ScheduledTickInfo info : scheduledList) {
@@ -219,7 +219,7 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    private static void restoreNormalTicks(Level level, IChunk chunk, List<NormalTickInfo> normalList) {
+    private static void restoreNormalTicks(Dimension level, IChunk chunk, List<NormalTickInfo> normalList) {
         if (normalList == null || normalList.isEmpty()) return;
 
         int batchSize = 32;
@@ -233,7 +233,7 @@ public class LevelDBProvider implements LevelProvider {
                 for (NormalTickInfo info : sub) {
                     Block block = level.getBlock(info.x, info.y, info.z);
                     if (block.getId().equals(info.id)) {
-                        block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        block.onUpdate(Dimension.BLOCK_UPDATE_NORMAL);
                     }
                 }
             }, 1 + (from / batchSize));
@@ -259,13 +259,13 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public Level getLevel() {
+    public Dimension getLevel() {
         return level;
     }
 
     @Override
     public boolean isChunkLoaded(int X, int Z) {
-        return isChunkLoaded(Level.chunkHash(X, Z));
+        return isChunkLoaded(Dimension.chunkHash(X, Z));
     }
 
     public IChunk getOrPutChunk(long index, IChunk chunk) {
@@ -292,7 +292,7 @@ public class LevelDBProvider implements LevelProvider {
     @Override
     public void setChunk(int chunkX, int chunkZ, IChunk chunk) {
         chunk.setPosition(chunkX, chunkZ);
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long index = Dimension.chunkHash(chunkX, chunkZ);
         if (this.chunks.containsKey(index) && !Objects.equals(this.chunks.get(index), chunk)) {
             this.unloadChunk(chunkX, chunkZ, false);
         }
@@ -541,7 +541,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public boolean loadChunk(int chunkX, int chunkZ, boolean create) {
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long index = Dimension.chunkHash(chunkX, chunkZ);
         if (this.chunks.containsKey(index)) {
             return true;
         }
@@ -555,7 +555,7 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public boolean unloadChunk(int X, int Z, boolean safe) {
-        long index = Level.chunkHash(X, Z);
+        long index = Dimension.chunkHash(X, Z);
         IChunk chunk = this.chunks.get(index);
         if (chunk != null && chunk.unload(false, safe)) {
             lastChunk.remove();
@@ -585,7 +585,7 @@ public class LevelDBProvider implements LevelProvider {
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long index = Dimension.chunkHash(chunkX, chunkZ);
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         return tmp;
     }
@@ -606,7 +606,7 @@ public class LevelDBProvider implements LevelProvider {
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long index = Dimension.chunkHash(chunkX, chunkZ);
         lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         if (tmp == null) {
             tmp = this.loadChunk(index, chunkX, chunkZ, create);

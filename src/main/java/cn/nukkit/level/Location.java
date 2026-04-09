@@ -28,7 +28,7 @@ public class Location extends Position {
         this(x, y, z, 0);
     }
 
-    public Location(double x, double y, double z, Level level) {
+    public Location(double x, double y, double z, Dimension level) {
         this(x, y, z, 0, 0, level);
     }
 
@@ -40,7 +40,7 @@ public class Location extends Position {
         this(x, y, z, yaw, pitch, null);
     }
 
-    public Location(double x, double y, double z, double yaw, double pitch, Level level) {
+    public Location(double x, double y, double z, double yaw, double pitch, Dimension level) {
         this(x, y, z, yaw, pitch, 0, level);
     }
 
@@ -48,7 +48,7 @@ public class Location extends Position {
         this(x, y, z, yaw, pitch, headYaw, null);
     }
 
-    public Location(double x, double y, double z, double yaw, double pitch, double headYaw, Level level) {
+    public Location(double x, double y, double z, double yaw, double pitch, double headYaw, Dimension level) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -62,19 +62,19 @@ public class Location extends Position {
         return fromObject(pos, null, 0.0f, 0.0f);
     }
 
-    public static Location fromObject(Vector3 pos, Level level) {
+    public static Location fromObject(Vector3 pos, Dimension level) {
         return fromObject(pos, level, 0.0f, 0.0f);
     }
 
-    public static Location fromObject(Vector3 pos, Level level, double yaw) {
+    public static Location fromObject(Vector3 pos, Dimension level, double yaw) {
         return fromObject(pos, level, yaw, 0.0f);
     }
 
-    public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch) {
+    public static Location fromObject(Vector3 pos, Dimension level, double yaw, double pitch) {
         return new Location(pos.x, pos.y, pos.z, yaw, pitch, (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
     }
 
-    public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch, double headYaw) {
+    public static Location fromObject(Vector3 pos, Dimension level, double yaw, double pitch, double headYaw) {
         if (level == null && pos instanceof Position) {
             level = ((Position) pos).level;
         }
@@ -134,7 +134,7 @@ public class Location extends Position {
     @Override
     @NotNull public Location getLocation() {
         if (this.isValid()) return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
-        else throw new LevelException("Undefined Level reference");
+        else throw new LevelException("Undefined Dimension reference");
     }
 
     @Override

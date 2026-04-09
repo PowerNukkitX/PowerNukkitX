@@ -34,6 +34,7 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.LevelConfig;
@@ -992,52 +993,54 @@ public class Server {
         // Do level ticks if level threading is disabled
         if (!this.getSettings().levelSettings().levelThread()) {
             for (Level level : this.getLevels().values()) {
-                if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
-                    continue;
-                }
-
-                try {
-                    long levelTime = System.currentTimeMillis();
-                    // Ensures that the server won't try to tick a level without providers.
-                    if (level.getProvider().getLevel() == null) {
-                        log.warn("Tried to tick Level {} without a provider!", level.getName());
+                for (Dimension dimension : level.getDimensions()) {
+                    if (dimension.getTickRate() > baseTickRate && --dimension.tickRateCounter > 0) {
                         continue;
                     }
-                    level.doTick(currentTick);
-                    int tickMs = (int) (System.currentTimeMillis() - levelTime);
-                    level.tickRateTime = tickMs;
-                    if ((currentTick & 511) == 0) { // % 511
-                        level.tickRateOptDelay = level.recalcTickOptDelay();
-                    }
 
-                    if (getSettings().levelSettings().autoTickRate()) {
-                        if (tickMs < 50 && level.getTickRate() > baseTickRate) {
-                            int r;
-                            level.setTickRate(r = level.getTickRate() - 1);
-                            if (r > baseTickRate) {
-                                level.tickRateCounter = level.getTickRate();
-                            }
-                            log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
-                                    level.getTickRate());
-                        } else if (tickMs >= 50) {
-                            int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
-                            if (level.getTickRate() == baseTickRate) {
-                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
-                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
-                                        NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickMs / level.getTickRate()) >= 50
-                                    && level.getTickRate() < autoTickRateLimit) {
-                                level.setTickRate(level.getTickRate() + 1);
-                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
-                                        NukkitMath.round(tickMs, 2), level.getTickRate());
-                            }
-                            level.tickRateCounter = level.getTickRate();
+                    try {
+                        long levelTime = System.currentTimeMillis();
+                        // Ensures that the server won't try to tick a level without providers.
+                        if (dimension.getProvider().getLevel() == null) {
+                            log.warn("Tried to tick Level {} without a provider!", dimension.getName());
+                            continue;
                         }
+                        dimension.doTick(currentTick);
+                        int tickMs = (int) (System.currentTimeMillis() - levelTime);
+                        dimension.tickRateTime = tickMs;
+                        if ((currentTick & 511) == 0) { // % 511
+                            dimension.tickRateOptDelay = dimension.recalcTickOptDelay();
+                        }
+
+                        if (getSettings().levelSettings().autoTickRate()) {
+                            if (tickMs < 50 && dimension.getTickRate() > baseTickRate) {
+                                int r;
+                                dimension.setTickRate(r = dimension.getTickRate() - 1);
+                                if (r > baseTickRate) {
+                                    dimension.tickRateCounter = dimension.getTickRate();
+                                }
+                                log.debug("Raising level \"{}\" tick rate to {} ticks", dimension.getName(),
+                                        dimension.getTickRate());
+                            } else if (tickMs >= 50) {
+                                int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
+                                if (dimension.getTickRate() == baseTickRate) {
+                                    dimension.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", dimension.getName(),
+                                            NukkitMath.round(tickMs, 2), dimension.getTickRate());
+                                } else if ((tickMs / dimension.getTickRate()) >= 50
+                                        && dimension.getTickRate() < autoTickRateLimit) {
+                                    dimension.setTickRate(dimension.getTickRate() + 1);
+                                    log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", dimension.getName(),
+                                            NukkitMath.round(tickMs, 2), dimension.getTickRate());
+                                }
+                                dimension.tickRateCounter = dimension.getTickRate();
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error(this.getLanguage().tr("nukkit.level.tickError",
+                                dimension.getFolderPath(), Utils.getExceptionMessage(e)), e);
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    log.error(this.getLanguage().tr("nukkit.level.tickError",
-                            level.getFolderPath(), Utils.getExceptionMessage(e)), e);
-                    e.printStackTrace();
                 }
             }
         }
@@ -1415,12 +1418,14 @@ public class Server {
      * @throws ServerException Server exception
      */
     public void silentExecuteCommand(@Nullable Player sender, String... commands) {
-        final var revert = new ArrayList<Level>();
+        final var revert = new ArrayList<Dimension>();
         final var server = Server.getInstance();
         for (var level : server.getLevels().values()) {
-            if (level.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
-                level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
-                revert.add(level);
+            for (var dimension : level.getDimensions()) {
+                if (dimension.getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK)) {
+                    dimension.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+                    revert.add(dimension);
+                }
             }
         }
         if (sender == null) {
@@ -1434,8 +1439,8 @@ public class Server {
             }
         }
 
-        for (var level : revert) {
-            level.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
+        for (var dimension : revert) {
+            dimension.getGameRules().setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
         }
     }
 
@@ -1897,7 +1902,7 @@ public class Server {
             if (this.getSettings().playerSettings().savePlayerData()) {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
-            Position spawn = this.getDefaultLevel().getSafeSpawn();
+            Position spawn = this.getDefaultLevel().getOverworld().getSafeSpawn();
             CompoundTag nbt = new CompoundTag()
                     .putLong("firstPlayed", System.currentTimeMillis() / 1000)
                     .putLong("lastPlayed", System.currentTimeMillis() / 1000)
@@ -2327,6 +2332,17 @@ public class Server {
         return null;
     }
 
+    public Dimension getDimensionByName(String name) {
+        for (Level level : this.levelArray) {
+            for (Dimension dimension : level.getDimensions()) {
+                if (dimension.getName().equals(name)) {
+                    return dimension;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean unloadLevel(Level level) {
         return this.unloadLevel(level, false);
     }
@@ -2425,28 +2441,46 @@ public class Server {
         }
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
+        if (!generators.keySet().stream().allMatch(id -> id == 0 || id == 1 || id == 2)) {
+            log.error("Only dimensions 0, 1, 2 are supported at the moment. Found: {}", generators.keySet());
+            return false;
+        }
+        if (this.isLevelLoaded(levelFolderName)) {
+            return true;
+        }
+        if (provider == null) {
+            log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName,
+                    "the level does not exist"));
+            return false;
+        }
+        Level level;
+        try {
+            level = new Level(this, levelFolderName, pathS);
+        } catch (Exception e) {
+            log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, e.getMessage()), e);
+            return false;
+        }
+        this.levels.put(level.getId(), level);
         for (var entry : generators.entrySet()) {
-            String levelName = levelFolderName
+            String dimensionName = levelFolderName
                     + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
-            if (this.isLevelLoaded(levelName)) {
-                return true;
-            }
-            Level level;
+            Dimension dimension;
             try {
-                if (provider == null) {
-                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName,
-                            "the level does not exist"));
-                    return false;
-                }
-                level = new Level(this, levelName, pathS, generators.size(), provider, entry.getValue());
+                dimension = new Dimension(level, dimensionName, pathS, generators.size(), provider, entry.getValue());
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, e.getMessage()), e);
                 return false;
             }
-            this.levels.put(level.getId(), level);
-            level.initLevel();
-            this.getPluginManager().callEvent(new LevelLoadEvent(level));
-            level.setTickRate(getSettings().levelSettings().baseTickRate());
+            level.addDimension(dimension);
+        }
+        if (level.getOverworld() == null) {
+            log.error("Missing overworld (dimension 0) for level {}", levelFolderName);
+            return false;
+        }
+        level.initLevel();
+        for (Dimension dimension : level.getDimensions()) {
+            this.getPluginManager().callEvent(new LevelLoadEvent(dimension));
+            dimension.setTickRate(getSettings().levelSettings().baseTickRate());
         }
         if (tickCounter != 0) { // Update world enum when loading
             WorldCommand.WORLD_NAME_ENUM.updateSoftEnum();
@@ -2499,30 +2533,40 @@ public class Server {
             log.error("Could not load level " + name, new LevelException("Level config is not a valid"));
             return false;
         }
+        var provider = LevelProviderManager.getProviderByName(levelConfig.format());
+        if (!levelConfig.generators().keySet().stream().allMatch(id -> id == 0 || id == 1 || id == 2)) {
+            log.error("Only dimensions 0, 1, 2 are supported at the moment. Found: {}", levelConfig.generators().keySet());
+            return false;
+        }
+        if (this.isLevelLoaded(name)) {
+            log.warn("level {} has already been loaded!", name);
+            return true;
+        }
+        Level level = new Level(this, name, path);
+        this.getLevels().put(level.getId(), level);
         for (var entry : levelConfig.generators().entrySet()) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
-            var provider = LevelProviderManager.getProviderByName(levelConfig.format());
-            Level level;
             try {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class)
                         .invoke(null, path, name, generatorConfig);
-                String levelName = name
+                String dimensionName = name
                         + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
-                if (this.isLevelLoaded(levelName)) {
-                    log.warn("level {} has already been loaded!", levelName);
-                    continue;
-                }
-                level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
-
-                this.getLevels().put(level.getId(), level);
-                level.initLevel();
-                level.setTickRate(getSettings().levelSettings().baseTickRate());
-                this.getPluginManager().callEvent(new LevelInitEvent(level));
-                this.getPluginManager().callEvent(new LevelLoadEvent(level));
+                Dimension dimension = new Dimension(level, dimensionName, path, levelConfig.generators().size(), provider, generatorConfig);
+                level.addDimension(dimension);
             } catch (Exception e) {
                 log.error(this.getLanguage().tr("nukkit.level.generationError", name, Utils.getExceptionMessage(e)), e);
                 return false;
             }
+        }
+        if (level.getOverworld() == null) {
+            log.error("Missing overworld (dimension 0) for level {}", name);
+            return false;
+        }
+        level.initLevel();
+        for (Dimension dimension : level.getDimensions()) {
+            dimension.setTickRate(getSettings().levelSettings().baseTickRate());
+            this.getPluginManager().callEvent(new LevelInitEvent(dimension));
+            this.getPluginManager().callEvent(new LevelLoadEvent(dimension));
         }
         return true;
     }
@@ -2645,7 +2689,9 @@ public class Server {
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
         for (Level level : this.levelArray) {
-            level.setAutoSave(this.autoSave);
+            for (Dimension dimension : level.getDimensions()) {
+                dimension.setAutoSave(this.autoSave);
+            }
         }
     }
 
@@ -3356,7 +3402,11 @@ public class Server {
         if (level == null)
             return null;
 
-        LevelProvider provider = level.getProvider();
+        Dimension overworld = level.getOverworld();
+        if (overworld == null) {
+            return null;
+        }
+        LevelProvider provider = overworld.getProvider();
         if (!(provider instanceof LevelDBProvider ldb))
             return null;
 

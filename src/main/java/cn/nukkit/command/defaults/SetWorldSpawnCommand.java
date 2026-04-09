@@ -5,7 +5,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 
 import java.text.DecimalFormat;
@@ -29,13 +29,13 @@ public class SetWorldSpawnCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        Level level;
+        Dimension level;
         Vector3 pos;
         if (!result.getValue().hasResult(0)) {
             level = sender.getPosition().level;
             pos = sender.getPosition().round();
         } else {
-            level = sender.getServer().getDefaultLevel();
+            level = sender.getServer().getDefaultLevel().getOverworld();
             pos = result.getValue().getResult(0);
         }
         level.setSpawnLocation(pos);

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,8 +36,8 @@ public abstract class BlockConcretePowder extends BlockFallable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            super.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
+            super.onUpdate(Dimension.BLOCK_UPDATE_NORMAL);
 
             for (int side = 1; side <= 5; side++) {
                 Block block = this.getSide(BlockFace.fromIndex(side));
@@ -46,7 +46,7 @@ public abstract class BlockConcretePowder extends BlockFallable {
                 }
             }
 
-            return Level.BLOCK_UPDATE_NORMAL;
+            return Dimension.BLOCK_UPDATE_NORMAL;
         }
         return 0;
     }

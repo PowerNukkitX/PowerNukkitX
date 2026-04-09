@@ -14,7 +14,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -101,10 +101,10 @@ public class BlockFire extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_RANDOM) {
             Block down = down();
 
-            if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (type == Dimension.BLOCK_UPDATE_NORMAL) {
                 String downId = down.getId();
                 if (downId.equals(Block.SOUL_SAND) || downId.equals(Block.SOUL_SOIL)) {
                     this.getLevel().setBlock(this, Block.get(SOUL_FIRE).setPropertyValue(AGE_16, this.getAge()));
@@ -125,8 +125,8 @@ public class BlockFire extends BlockFlowable {
             //在第一次放置时就检查下雨
             checkRain();
 
-            return Level.BLOCK_UPDATE_NORMAL;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+            return Dimension.BLOCK_UPDATE_NORMAL;
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
             Block down = down();
             String downId = down.getId();
 

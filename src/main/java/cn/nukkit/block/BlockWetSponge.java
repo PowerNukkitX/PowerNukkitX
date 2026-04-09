@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.CloudParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -52,7 +52,7 @@ public class BlockWetSponge extends BlockSolid {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (level.getDimension() != Level.DIMENSION_NETHER) {
+        if (level.getDimension() != Dimension.DIMENSION_NETHER) {
             return super.place(item, block, target, face, fx, fy, fz, player);
         }
 

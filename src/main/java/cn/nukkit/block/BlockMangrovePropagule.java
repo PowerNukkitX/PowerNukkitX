@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -80,15 +80,15 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!BlockFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) { //Growth
             this.grow();
         }
-        return Level.BLOCK_UPDATE_NORMAL;
+        return Dimension.BLOCK_UPDATE_NORMAL;
     }
 
     protected void grow() {

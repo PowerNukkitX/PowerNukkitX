@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +39,7 @@ public abstract class BlockCoral extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block down = down();
             if (!down.isSolid()) {
                 this.getLevel().useBreakOn(this);
@@ -47,7 +47,7 @@ public abstract class BlockCoral extends BlockFlowable {
                 this.getLevel().scheduleUpdate(this, 60 + ThreadLocalRandom.current().nextInt(40));
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!isDead() && !(getLevelBlockAtLayer(1) instanceof BlockFlowingWater) && !(getLevelBlockAtLayer(1) instanceof BlockFrostedIce)) {
                 BlockFadeEvent event = new BlockFadeEvent(this, getDeadCoral());
                 if (!event.isCancelled()) {

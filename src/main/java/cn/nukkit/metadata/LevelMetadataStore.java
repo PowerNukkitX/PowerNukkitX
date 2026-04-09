@@ -1,6 +1,6 @@
 package cn.nukkit.metadata;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 import java.util.Locale;
 
@@ -11,9 +11,9 @@ public class LevelMetadataStore extends MetadataStore {
 
     @Override
     protected String disambiguate(Metadatable level, String metadataKey) {
-        if (!(level instanceof Level)) {
-            throw new IllegalArgumentException("Argument must be a Level instance");
+        if (!(level instanceof Dimension)) {
+            throw new IllegalArgumentException("Argument must be a Dimension instance");
         }
-        return (((Level) level).getName() + ":" + metadataKey).toLowerCase(Locale.ENGLISH);
+        return (((Dimension) level).getName() + ":" + metadataKey).toLowerCase(Locale.ENGLISH);
     }
 }

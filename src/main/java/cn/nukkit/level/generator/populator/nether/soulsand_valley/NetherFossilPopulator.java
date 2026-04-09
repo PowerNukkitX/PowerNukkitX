@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.populator.nether.soulsand_valley;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDriedGhast;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
@@ -31,8 +31,8 @@ public class NetherFossilPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         if(canGenerate(random, chunk)) {
             int x = (chunkX << 4) + 3;
             int z = (chunkZ << 4) + 3;

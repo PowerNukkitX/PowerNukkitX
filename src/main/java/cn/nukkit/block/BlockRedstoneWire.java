@@ -5,7 +5,7 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstone;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
@@ -199,7 +199,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
 
     @Override
     public int onUpdate(int type) {
-        if (type != Level.BLOCK_UPDATE_NORMAL && type != Level.BLOCK_UPDATE_REDSTONE) {
+        if (type != Dimension.BLOCK_UPDATE_NORMAL && type != Dimension.BLOCK_UPDATE_REDSTONE) {
             return 0;
         }
 
@@ -214,14 +214,14 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return 0;
         }
 
-        if (type == Level.BLOCK_UPDATE_NORMAL && !this.canBePlacedOn(this.down())) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL && !this.canBePlacedOn(this.down())) {
             this.getLevel().useBreakOn(this);
-            return Level.BLOCK_UPDATE_NORMAL;
+            return Dimension.BLOCK_UPDATE_NORMAL;
         }
 
         this.updateSurroundingRedstone(false);
 
-        return Level.BLOCK_UPDATE_NORMAL;
+        return Dimension.BLOCK_UPDATE_NORMAL;
     }
 
     public boolean canBePlacedOn(Block support) {
@@ -273,7 +273,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return !flag1 && flag && canConnectUpwardsTo(this.level, v.up()) || (canConnectTo(block, side) || !flag && canConnectUpwardsTo(this.level, block.down()));
     }
 
-    protected static boolean canConnectUpwardsTo(Level level, Vector3 pos) {
+    protected static boolean canConnectUpwardsTo(Dimension level, Vector3 pos) {
         return canConnectTo(level.getBlock(pos), null);
     }
 

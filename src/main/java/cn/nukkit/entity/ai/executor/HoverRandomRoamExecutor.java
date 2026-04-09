@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
@@ -93,7 +93,7 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
     }
 
     private void pickNewTarget(EntityIntelligent entity) {
-        Level level = entity.level;
+        Dimension level = entity.level;
         if (level == null) {
             return;
         }

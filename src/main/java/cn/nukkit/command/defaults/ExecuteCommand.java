@@ -13,6 +13,7 @@ import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
@@ -216,12 +217,12 @@ public class ExecuteCommand extends VanillaCommand {
             case "in" -> {
                 String levelName = list.getResult(1);
                 Level level = Server.getInstance().getLevelByName(levelName);
-                if (level == null) {
+                if (level == null || level.getOverworld() == null) {
                     return 0;
                 }
                 String chainCommand = list.getResult(2);
                 Location location = sender.getLocation();
-                location.setLevel(level);
+                location.setLevel(level.getOverworld());
                 ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
                 return executorCommandSender.getServer().executeCommand(executorCommandSender, chainCommand);
             }
@@ -411,7 +412,7 @@ public class ExecuteCommand extends VanillaCommand {
                     return 0;
                 }
 
-                Level level = begin.getLevel();
+                Dimension level = begin.getLevel();
 
                 for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
                     for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {

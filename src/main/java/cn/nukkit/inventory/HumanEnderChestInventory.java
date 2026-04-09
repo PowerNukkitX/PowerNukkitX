@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.entity.IHuman;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.ContainerClosePacket;
@@ -73,7 +73,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         blockEventPacket.type = 1;
         blockEventPacket.value = 2;
 
-        Level level = this.getHolder().getLevel();
+        Dimension level = this.getHolder().getLevel();
         if (level != null) {
             level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTOPEN);
             level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
@@ -109,7 +109,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         blockEventPacket.type = 1;
         blockEventPacket.value = 0;
 
-        Level level = this.getHolder().getLevel();
+        Dimension level = this.getHolder().getLevel();
         if (level != null) {
             level.addSound(this.getHolder().getVector3().add(0.5, 0.5, 0.5), Sound.RANDOM_ENDERCHESTCLOSED);
             level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);

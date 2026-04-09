@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,12 +46,12 @@ public class BlockNetherWart extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!this.down().getId().equals(SOUL_SAND)) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (new Random().nextInt(10) == 1) {
                 if (this.getAge() < 0x03) {
                     BlockNetherWart block = (BlockNetherWart) this.clone();
@@ -62,11 +62,11 @@ public class BlockNetherWart extends BlockFlowable {
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(this, ev.getNewState(), true, true);
                     } else {
-                        return Level.BLOCK_UPDATE_RANDOM;
+                        return Dimension.BLOCK_UPDATE_RANDOM;
                     }
                 }
             } else {
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
 

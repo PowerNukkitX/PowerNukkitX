@@ -11,7 +11,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
@@ -300,7 +300,7 @@ public interface IHuman extends InventoryHolder {
 
     HumanEnderChestInventory getEnderChestInventory();
 
-    Level getLevel();
+    Dimension getLevel();
 
     default Entity getEntity() {
         return (Entity) this;

@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockSandstone;
 import cn.nukkit.block.BlockSandstoneSlab;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
@@ -81,7 +81,7 @@ public class ObjectDesertWell extends ObjectGenerator implements RuledObjectGene
         int x = location.getFloorX();
         int y = location.getFloorY();
         int z = location.getFloorZ();
-        Level level = location.getLevel();
+        Dimension level = location.getLevel();
         random.setSeed(level.getSeed() ^ (x+y+z));
 
         int biome = level.getBiomeId(x, y, z);

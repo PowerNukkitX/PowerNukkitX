@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.BlockReeds;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockSweetBerryBush;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -24,8 +24,8 @@ public class ReedsFeature extends GenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        this.random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         if(random.nextInt(20) != 0) return;
         int maxReed = random.nextInt(3);
         for(int x = 0; x < 16; x++) {

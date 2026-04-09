@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 
 import org.jetbrains.annotations.NotNull;
@@ -44,9 +44,9 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
     public void updatePower() {
         int i;
 
-        Level level = this.getLevel();
+        Dimension level = this.getLevel();
 
-        if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
+        if (level.getDimension() == Dimension.DIMENSION_OVERWORLD) {
             boolean isDark = getIsFullyDarkAround(level, getFloorX(), getFloorY(), getFloorZ());
             i = isDark ? 15 : 0;
         } else {
@@ -64,7 +64,7 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         }
     }
 
-    public static boolean getIsFullyDarkAround(Level level, int x, int y, int z) {
+    public static boolean getIsFullyDarkAround(Dimension level, int x, int y, int z) {
         int skyReduction = level.skyLightSubtracted;
 
         int directSky = level.getBlockSkyLightAt(x, y + 1, z);

@@ -2,7 +2,7 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.holder.EmptyObjectHolder;
@@ -24,7 +24,7 @@ public abstract class Generator implements BlockID {
     protected final GenerateStage start;
     protected final GenerateStage end;
     protected final DimensionData dimensionData;
-    protected Level level;
+    protected Dimension level;
 
     public Generator(DimensionData dimensionData, Map<String, Object> options) {
         this.dimensionData = dimensionData;
@@ -39,7 +39,7 @@ public abstract class Generator implements BlockID {
         return this.options;
     }
 
-    public void setLevel(Level level) {
+    public void setLevel(Dimension level) {
         this.level = level;
     }
 
@@ -129,7 +129,7 @@ public abstract class Generator implements BlockID {
 
     }
 
-    public ObjectHolder createObjectHolder(Level level) {
+    public ObjectHolder createObjectHolder(Dimension level) {
         return new EmptyObjectHolder();
     }
 }

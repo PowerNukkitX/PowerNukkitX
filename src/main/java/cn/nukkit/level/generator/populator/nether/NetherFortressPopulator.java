@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.nether;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -22,8 +22,8 @@ public class NetherFortressPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         int gx = chunkX >> 4;
         int gz = chunkZ >> 4;
         long seed = level.getSeed();

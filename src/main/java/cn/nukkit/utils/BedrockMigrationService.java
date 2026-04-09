@@ -2,7 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
@@ -25,10 +25,10 @@ public class BedrockMigrationService {
 
         server.getLogger().debug("Started Migration for " + uuid);
 
-        Level level = server.getDefaultLevel();
+        Dimension level = server.getDefaultLevel().getOverworld();
 
         if (!(level.getProvider() instanceof LevelDBProvider provider)) {
-            server.getLogger().warning("Level is not LevelDB");
+            server.getLogger().warning("Dimension is not LevelDB");
             return null;
         }
 
@@ -78,7 +78,7 @@ public class BedrockMigrationService {
         return null;
     }
 
-    private CompoundTag convertBedrockNBT(CompoundTag tag, Level level) {
+    private CompoundTag convertBedrockNBT(CompoundTag tag, Dimension level) {
 
         // Position
         ListTag<?> posRaw = tag.getList("Pos");
@@ -200,7 +200,7 @@ public class BedrockMigrationService {
         pnx.putList("Pos", pos);
         pnx.putList("Motion", motion);
         pnx.putList("Rotation", rotation);
-        pnx.putString("Level", level.getName());
+        pnx.putString("Dimension", level.getName());
         pnx.putInt("DimensionId", tag.getInt("DimensionId"));
         pnx.putString("SpawnLevel", level.getName());
         if (tag.contains("SpawnX") && tag.contains("SpawnY") && tag.contains("SpawnZ")) {
@@ -278,7 +278,7 @@ public class BedrockMigrationService {
 
     public boolean hasBedrockData(UUID uuid) {
         try {
-            Level level = server.getDefaultLevel();
+            Dimension level = server.getDefaultLevel().getOverworld();
 
             if (!(level.getProvider() instanceof LevelDBProvider provider)) {
                 return false;

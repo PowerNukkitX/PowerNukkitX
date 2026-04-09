@@ -5,7 +5,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.level.VibrationArriveEvent;
 import cn.nukkit.event.level.VibrationOccurEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.math.VectorMath;
@@ -22,9 +22,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class SimpleVibrationManager implements VibrationManager {
 
     protected Set<VibrationListener> listeners = new CopyOnWriteArraySet<>();
-    protected Level level;
+    protected Dimension level;
 
-    public SimpleVibrationManager(Level level) {
+    public SimpleVibrationManager(Dimension level) {
         this.level = level;
     }
 
@@ -94,7 +94,7 @@ public class SimpleVibrationManager implements VibrationManager {
                 .putInt("attachPos", 3);//todo: check the use of this value :)
     }
 
-    protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
+    protected boolean canVibrationArrive(Dimension level, Vector3 from, Vector3 to) {
         return VectorMath.getPassByVector3(from, to)
                 .stream()
                 .noneMatch(vec -> level.getTickCachedBlock(vec).hasTag(BlockTags.PNX_WOOL));

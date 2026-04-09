@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -24,7 +24,7 @@ public abstract class Populator {
         object.applySubChunkUpdate();
     }
 
-    public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
+    public BlockManager getChunkPlacementQueue(Long chunkHash, Dimension level) {
         if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
         return PLACEMENT_QUEUE.get(chunkHash);
     }

@@ -15,7 +15,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -172,11 +172,11 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             return 0;
         }
 
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             this.dispense();
 
             return type;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_NORMAL) {
+        } else if (type == Dimension.BLOCK_UPDATE_REDSTONE || type == Dimension.BLOCK_UPDATE_NORMAL) {
             boolean triggered = this.isTriggered();
 
             if (this.isGettingPower() && !triggered) {

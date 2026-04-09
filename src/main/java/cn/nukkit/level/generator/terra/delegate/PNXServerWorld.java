@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.terra.delegate;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -27,7 +27,7 @@ public class PNXServerWorld implements ServerWorld {
     private final TerraGenerator generatorWrapper;
     private final BlockManager level;
 
-    public PNXServerWorld(TerraGenerator generatorWrapper, Level level) {
+    public PNXServerWorld(TerraGenerator generatorWrapper, Dimension level) {
         this.generatorWrapper = generatorWrapper;
         this.level = new BlockManager(level);
     }
@@ -36,7 +36,7 @@ public class PNXServerWorld implements ServerWorld {
         return generatorWrapper;
     }
 
-    public Level level() {
+    public Dimension level() {
         return level.getLevel();
     }
 
@@ -125,7 +125,7 @@ public class PNXServerWorld implements ServerWorld {
     }
 
     @Override
-    public Level getHandle() {
+    public Dimension getHandle() {
         return level.getLevel();
     }
 

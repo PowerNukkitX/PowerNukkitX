@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityComparator;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemComparator;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -145,7 +145,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             this.onChange();
             return type;
         }
@@ -182,7 +182,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             }
 
             Block side = this.getSide(getFacing().getOpposite());
-            side.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+            side.onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
             RedstoneComponent.updateAroundRedstone(side);
         }
     }
@@ -204,7 +204,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             return false;
         }
 
-        onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+        onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
         return true;
     }
 

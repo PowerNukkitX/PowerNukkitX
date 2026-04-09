@@ -5,7 +5,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.object.*;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -85,14 +85,14 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!BlockFlower.isSupportValid(down())) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) { //Growth
             if (!BlockFlower.isSupportValid(down())) {
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
 
             if (ThreadLocalRandom.current().nextInt(1, 8) == 1 && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
@@ -101,13 +101,13 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                 } else {
                     setAged(true);
                     this.getLevel().setBlock(this, this, true);
-                    return Level.BLOCK_UPDATE_RANDOM;
+                    return Dimension.BLOCK_UPDATE_RANDOM;
                 }
             } else {
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
-        return Level.BLOCK_UPDATE_NORMAL;
+        return Dimension.BLOCK_UPDATE_NORMAL;
     }
 
     private void grow() {

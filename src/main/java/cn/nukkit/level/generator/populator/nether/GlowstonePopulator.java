@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.nether;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -26,8 +26,8 @@ public class GlowstonePopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         BlockManager object = new BlockManager(level);
         if (random.nextInt(11) == 0) {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);

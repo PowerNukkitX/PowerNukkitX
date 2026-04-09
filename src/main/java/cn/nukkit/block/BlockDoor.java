@@ -9,7 +9,7 @@ import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -110,12 +110,12 @@ public abstract class BlockDoor extends BlockTransparent implements RedstoneComp
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             this.onNormalUpdate();
             return type;
         }
 
-        if (type == Level.BLOCK_UPDATE_REDSTONE && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.onRedstoneUpdate();
             return type;
         }

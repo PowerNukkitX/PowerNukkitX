@@ -20,18 +20,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static cn.nukkit.level.Level.getBlockXYZ;
-import static cn.nukkit.level.Level.localBlockHash;
+import static cn.nukkit.level.Dimension.getBlockXYZ;
+import static cn.nukkit.level.Dimension.localBlockHash;
 
 public final class AntiXraySystem {
-    private final Level level;
+    private final Dimension level;
     private int fakeOreDenominator = 16;
     private boolean preDeObfuscate = true;
     private static final IntOpenHashSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
     private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
 
-    public AntiXraySystem(Level level) {
+    public AntiXraySystem(Dimension level) {
         this.level = level;
     }
 

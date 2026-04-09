@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ public abstract class BlockHanging extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL && !isSupportValid()) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL && !isSupportValid()) {
             level.useBreakOn(this);
             return type;
         }

@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockGrassBlock;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
@@ -45,7 +45,7 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         if (random.nextDouble() >= getProbability()) {
             return;
         }

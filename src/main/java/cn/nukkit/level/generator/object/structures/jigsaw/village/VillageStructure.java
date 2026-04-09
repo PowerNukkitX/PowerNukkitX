@@ -16,7 +16,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -70,7 +70,7 @@ public abstract class VillageStructure extends JigsawStructure {
     @Override
     protected void postProcessStructure(StructureHelper helper) {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
-        Level level = helper.getLevel();
+        Dimension level = helper.getLevel();
         helper.addHook(() -> {
             populatePendingChestLoot(level);
         });
@@ -175,7 +175,7 @@ public abstract class VillageStructure extends JigsawStructure {
                 || structureName.contains("/houses/" + biome + "_big_house_");
     }
 
-    protected void populatePendingChestLoot(Level level) {
+    protected void populatePendingChestLoot(Dimension level) {
         for (Map.Entry<BlockVector3, RandomizableContainer> entry : pendingChestLoot.entrySet()) {
             BlockVector3 pos = entry.getKey();
             Block block = level.getBlock(pos.getX(), pos.getY(), pos.getZ());
@@ -190,7 +190,7 @@ public abstract class VillageStructure extends JigsawStructure {
         pendingChestLoot.clear();
     }
 
-    protected RandomSourceProvider createVillageLootRandom(Level level, BlockVector3 pos) {
+    protected RandomSourceProvider createVillageLootRandom(Dimension level, BlockVector3 pos) {
         long seed = level.getSeed();
         seed ^= 0x9E3779B97F4A7C15L * pos.getX();
         seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
@@ -211,7 +211,7 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     protected void liftPieceAboveWater(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
-        Level level = blockManager.getLevel();
+        Dimension level = blockManager.getLevel();
         Block globalLowestBlock = null;
         Map<Long, Integer> lowestColumns = new HashMap<>();
 
@@ -298,7 +298,7 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     protected void adaptStreetColumnsToTerrain(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
-        Level level = blockManager.getLevel();
+        Dimension level = blockManager.getLevel();
         for (Block block : blockManager.getBlocks()) {
             if (block instanceof BlockJigsaw) {
                 blockManager.unsetBlockStateAt(block);
@@ -333,7 +333,7 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     protected void fillPieceSupports(BlockManager blockManager, cn.nukkit.block.BlockState supportState) {
-        Level level = blockManager.getLevel();
+        Dimension level = blockManager.getLevel();
         Block globalLowestBlock = null;
         Map<Long, Integer> supportedColumns = new HashMap<>();
 
@@ -387,7 +387,7 @@ public abstract class VillageStructure extends JigsawStructure {
         return (((long) x) << 32) | (z & 0xffffffffL);
     }
 
-    protected int getTerrainY(Level level, int x, int z) {
+    protected int getTerrainY(Dimension level, int x, int z) {
         int height = level.getHeightMap(x, z);
         while (isReplaceableTerrainCover(level.getBlock(x, height, z))
                 || level.getBlock(x, height, z).canBeReplaced()
@@ -397,7 +397,7 @@ public abstract class VillageStructure extends JigsawStructure {
         return height;
     }
 
-    protected int getPlacementY(Level level, int x, int z) {
+    protected int getPlacementY(Dimension level, int x, int z) {
         int height = level.getHeightMap(x, z);
         Block topBlock = level.getBlock(x, height, z);
         if (topBlock instanceof BlockFlowingWater || topBlock.isWaterLogged()) {

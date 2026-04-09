@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.*;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
@@ -24,7 +24,7 @@ public class AmethystGeodeFeature extends GenerateFeature {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         this.random.setSeed(level.getSeed() ^ (((long) chunk.getX() << 8) ^ chunk.getZ()));
         BlockManager object = new BlockManager(level);
         if (random.nextBoundedInt(100) > 4) {

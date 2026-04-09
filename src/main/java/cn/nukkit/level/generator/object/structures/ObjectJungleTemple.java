@@ -5,7 +5,7 @@ import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -277,8 +277,8 @@ public class ObjectJungleTemple extends ObjectGenerator implements RuledObjectGe
         int z = location.getFloorZ();
         int chunkX = location.getChunkX();
         int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = location.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
         return biome == BiomeID.JUNGLE && ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX

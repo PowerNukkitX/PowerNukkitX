@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
@@ -100,10 +100,10 @@ public class BlockCake extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL && down().isAir()) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL && down().isAir()) {
             getLevel().setBlock(this, Block.get(BlockID.AIR), true);
 
-            return Level.BLOCK_UPDATE_NORMAL;
+            return Dimension.BLOCK_UPDATE_NORMAL;
         }
 
         return 0;

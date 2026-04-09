@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -52,14 +52,14 @@ public class BlockTripwireHook extends BlockTransparent implements RedstoneCompo
     @Override
     public int onUpdate(int type) {
         switch(type) {
-            case Level.BLOCK_UPDATE_NORMAL -> {
+            case Dimension.BLOCK_UPDATE_NORMAL -> {
                 var supportBlock = this.getSide(this.getFacing().getOpposite());
                 if (!supportBlock.isNormalBlock() && !(supportBlock instanceof BlockGlass)) {
                     this.level.useBreakOn(this);
                 }
                 return type;
             }
-            case Level.BLOCK_UPDATE_SCHEDULED -> {
+            case Dimension.BLOCK_UPDATE_SCHEDULED -> {
                 this.updateLine(false, true);
                 return type;
             }

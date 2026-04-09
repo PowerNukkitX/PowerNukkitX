@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemShears;
 import cn.nukkit.item.ItemString;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
@@ -180,7 +180,7 @@ public class BlockTripWire extends BlockTransparent {
             return 0;
         }
 
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!isPowered()) {
                 return type;
             }

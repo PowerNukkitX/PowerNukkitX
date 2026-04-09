@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class BlockManager {
-    private final Level level;
+    private final Dimension level;
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
 
@@ -39,7 +39,7 @@ public class BlockManager {
                 | ((long) layer & 0x1L);
     }
 
-    public BlockManager(Level level) {
+    public BlockManager(Dimension level) {
         this.level = level;
         this.caches = new Long2ObjectOpenHashMap<>();
         this.places = new Long2ObjectOpenHashMap<>();
@@ -171,7 +171,7 @@ public class BlockManager {
         this.hooks.addAll(manager.getHooks());
     }
 
-    public Level getLevel() {
+    public Dimension getLevel() {
         return level;
     }
 

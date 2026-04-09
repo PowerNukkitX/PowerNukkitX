@@ -50,7 +50,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
@@ -1193,7 +1193,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      */
     public void spawnTo(Player player) {
         if(this.closed) return;
-        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Dimension.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(createAddEntityPacket());
         }
@@ -1675,7 +1675,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.NETHER);
             getServer().getPluginManager().callEvent(ev);
 
-            if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_NETHER)) {
+            if (!ev.isCancelled() && (level.getDimension() == Dimension.DIMENSION_OVERWORLD || level.getDimension() == Dimension.DIMENSION_NETHER)) {
                 Position newPos = PortalHelper.convertPosBetweenNetherAndOverworld(this);
                 if (newPos != null) {
                     IChunk destChunk = newPos.getChunk();
@@ -4633,7 +4633,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return false;
     }
 
-    protected boolean switchLevel(Level targetLevel) {
+    protected boolean switchLevel(Dimension targetLevel) {
         if (this.closed) {
             return false;
         }
@@ -5126,10 +5126,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
                     getServer().getPluginManager().callEvent(ev);
 
-                    if (!ev.isCancelled() && (level.getDimension() == Level.DIMENSION_OVERWORLD || level.getDimension() == Level.DIMENSION_THE_END)) {
+                    if (!ev.isCancelled() && (level.getDimension() == Dimension.DIMENSION_OVERWORLD || level.getDimension() == Dimension.DIMENSION_THE_END)) {
                         final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
-                            if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+                            if (newPos.getLevel().getDimension() == Dimension.DIMENSION_THE_END) {
                                 if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
                                     newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override

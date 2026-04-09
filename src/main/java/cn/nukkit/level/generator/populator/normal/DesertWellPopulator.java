@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -20,8 +20,8 @@ public class DesertWellPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         int x = (chunkX << 4) + random.nextBoundedInt(15);
         int z = (chunkZ << 4) + random.nextBoundedInt(15);
         int y = level.getHeightMap(x, z);

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.*;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -36,7 +36,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         NormalObjectHolder.SurfaceOverwriteHolder holder = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getSurfaceOverwriteHolder();
         for(int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {

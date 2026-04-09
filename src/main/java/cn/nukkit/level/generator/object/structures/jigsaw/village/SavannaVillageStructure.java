@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockStandingBanner;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntityBanner;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
@@ -40,7 +40,7 @@ public class SavannaVillageStructure extends VillageStructure {
         List<Block> placedBlocks = new ArrayList<>(helper.getBlocks());
         helper.applySubChunkUpdate();
 
-        Level level = helper.getLevel();
+        Dimension level = helper.getLevel();
         placedBlocks.stream()
                 .filter(BlockUnknown.class::isInstance)
                 .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));
@@ -62,7 +62,7 @@ public class SavannaVillageStructure extends VillageStructure {
         }
     }
 
-    private void recolorSavannaBanners(Level level, List<Block> placedBlocks) {
+    private void recolorSavannaBanners(Dimension level, List<Block> placedBlocks) {
         for (Block block : placedBlocks) {
             Block levelBlock = level.getBlock(block);
             if (!(levelBlock instanceof BlockStandingBanner bannerBlock)) {

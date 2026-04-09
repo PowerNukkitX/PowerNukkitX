@@ -2,9 +2,9 @@ package cn.nukkit.level;
 
 public enum DimensionEnum {
 
-    OVERWORLD(new DimensionData(Level.DIMENSION_OVERWORLD, -64, 319, 24)),
-    NETHER(new DimensionData(Level.DIMENSION_NETHER, 0, 127, 8)),
-    THE_END(new DimensionData(Level.DIMENSION_THE_END, 0, 255, 16));
+    OVERWORLD(new DimensionData(Dimension.DIMENSION_OVERWORLD, -64, 319, 24)),
+    NETHER(new DimensionData(Dimension.DIMENSION_NETHER, 0, 127, 8)),
+    THE_END(new DimensionData(Dimension.DIMENSION_THE_END, 0, 255, 16));
 
     private final DimensionData dimensionData;
 

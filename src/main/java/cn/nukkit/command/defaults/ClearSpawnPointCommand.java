@@ -39,7 +39,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
             return 0;
         }
         for (Player player : players) {
-            player.setSpawn(Server.getInstance().getDefaultLevel().getSpawnLocation(), SpawnPointType.WORLD);
+            player.setSpawn(Server.getInstance().getDefaultLevel().getOverworld().getSpawnLocation(), SpawnPointType.WORLD);
         }
         String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
         if (players.size() > 1) {

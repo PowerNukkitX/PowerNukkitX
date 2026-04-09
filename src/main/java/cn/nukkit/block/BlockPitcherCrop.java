@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
@@ -49,7 +49,7 @@ public class BlockPitcherCrop extends BlockCrops {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (!isUpper()) {
                 int stage = getLogicalAge();
 

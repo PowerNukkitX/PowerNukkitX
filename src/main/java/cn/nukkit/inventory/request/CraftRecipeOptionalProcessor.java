@@ -10,6 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -307,7 +308,11 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
 
         if (input.getId().equals(Item.FILLED_MAP) && additional.getId().equals(Item.PAPER)) {
             ItemFilledMap item = (ItemFilledMap) input.clone();
-            Level level = server.getLevel(item.getMapWorld());
+            Level world = server.getLevel(item.getMapWorld());
+            Dimension level = world != null ? world.getOverworld() : null;
+            if (level == null) {
+                return item;
+            }
             int startX = item.getMapStartX();
             int startZ = item.getMapStartZ();
             int scale = item.getMapScale() + 1;

@@ -4,7 +4,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCrafter;
 import cn.nukkit.blockentity.BlockEntityCrafter;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -16,7 +16,7 @@ public class ToggleCrafterSlotRequestPacketProcessor extends DataPacketProcessor
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ToggleCrafterSlotRequestPacket pk) {
 
-        Level level = playerHandle.player.getLevel();
+        Dimension level = playerHandle.player.getLevel();
         BlockVector3 position = pk.getBlockPosition();
         Block block = level.getBlock(position.asVector3());
         if (!(block instanceof BlockCrafter crafter)) {

@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.OptionalBoolean;
@@ -20,8 +20,8 @@ public class BlockRailPowerable extends BlockRail {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (super.onUpdate(type) == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_REDSTONE || type == Dimension.BLOCK_UPDATE_SCHEDULED) {
+            if (super.onUpdate(type) == Dimension.BLOCK_UPDATE_NORMAL) {
                 return 0; // Already broken
             }
 

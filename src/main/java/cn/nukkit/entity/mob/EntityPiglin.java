@@ -46,7 +46,7 @@ import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.ItemPorkchop;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -82,7 +82,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                 Set.of(),
                 Set.of(
                         new Behavior(new PiglinTransformExecutor(), all(
-                                entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
+                                entity -> entity.getLevel().getDimension() != Dimension.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
                                 entity -> !entity.namedTag.getBoolean("IsImmuneToZombification")
                         ), 13, 1),

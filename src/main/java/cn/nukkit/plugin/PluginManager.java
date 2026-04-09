@@ -549,7 +549,7 @@ public class PluginManager {
             }
 
             this.server.getScheduler().cancelTask(plugin);
-            this.server.getLevels().values().forEach(level -> level.getScheduler().cancelTask(plugin));
+            this.server.getLevels().values().forEach(level -> level.getDimensions().forEach(dimension -> dimension.getScheduler().cancelTask(plugin)));
             HandlerList.unregisterAll(plugin);
             for (Permission permission : plugin.getDescription().getPermissions()) {
                 this.removePermission(permission);

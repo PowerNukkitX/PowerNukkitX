@@ -7,7 +7,7 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -252,7 +252,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             boolean touchingWall = getSide(face.rotateY()) instanceof BlockWallBase || getSide(face.rotateYCCW()) instanceof BlockWallBase;
             if (touchingWall != isInWall()) {
@@ -260,7 +260,7 @@ public class BlockFenceGate extends BlockTransparent implements RedstoneComponen
                 level.setBlock(this, this, true);
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+        } else if (type == Dimension.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.onRedstoneUpdate();
             return type;
         }

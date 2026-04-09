@@ -45,10 +45,10 @@ public final class PlayerChunkManager {
             int loaderChunkX = floor.x >> 4;
             int loaderChunkZ = floor.z >> 4;
 
-            int chunkX1 = Level.getHashX(chunkHash1);
-            int chunkZ1 = Level.getHashZ(chunkHash1);
-            int chunkX2 = Level.getHashX(chunkHash2);
-            int chunkZ2 = Level.getHashZ(chunkHash2);
+            int chunkX1 = Dimension.getHashX(chunkHash1);
+            int chunkZ1 = Dimension.getHashZ(chunkHash1);
+            int chunkX2 = Dimension.getHashX(chunkHash2);
+            int chunkZ2 = Dimension.getHashZ(chunkHash2);
 
             int dx1 = chunkX1 - loaderChunkX;
             int dz1 = chunkZ1 - loaderChunkZ;
@@ -124,7 +124,7 @@ public final class PlayerChunkManager {
         if (!player.isConnected()) return;
         long currentLoaderChunkPosHashed;
         BlockVector3 floor = player.asBlockVector3();
-        if ((currentLoaderChunkPosHashed = Level.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
+        if ((currentLoaderChunkPosHashed = Dimension.chunkHash(floor.x >> 4, floor.z >> 4)) != lastLoaderChunkPosHashed) {
             lastLoaderChunkPosHashed = currentLoaderChunkPosHashed;
             updateInRadiusChunks(player.getViewDistance(), floor);
             removeOutOfRadiusChunks();
@@ -146,7 +146,7 @@ public final class PlayerChunkManager {
 
     @ApiStatus.Internal
     public void addSendChunk(int x, int z) {
-        chunkSendQueue.enqueue(Level.chunkHash(x, z));
+        chunkSendQueue.enqueue(Dimension.chunkHash(x, z));
     }
 
     private void updateChunkSendingQueue() {
@@ -167,7 +167,7 @@ public final class PlayerChunkManager {
                 if (ifChunkNotInRadius(rx, rz, viewDistance)) continue;
                 var chunkX = loaderChunkX + rx;
                 var chunkZ = loaderChunkZ + rz;
-                var hashXZ = Level.chunkHash(chunkX, chunkZ);
+                var hashXZ = Dimension.chunkHash(chunkX, chunkZ);
                 inRadiusChunks.add(hashXZ);
             }
         }
@@ -177,8 +177,8 @@ public final class PlayerChunkManager {
         Set<Long> difference = new HashSet<>(Sets.difference(sentChunks, inRadiusChunks));
         // Unload blocks that are out of range
         for (Long hash : difference) {
-            int x = Level.getHashX(hash);
-            int z = Level.getHashZ(hash);
+            int x = Dimension.getHashX(hash);
+            int z = Dimension.getHashZ(hash);
             if (player.level.unregisterChunkLoader(player, x, z)) {
                 for (Entity entity : player.level.getChunkEntities(x, z).values()) {
                     if (entity != player) {
@@ -198,8 +198,8 @@ public final class PlayerChunkManager {
         do {
             triedSendChunkCount++;
             long chunkHash = chunkSendQueue.dequeueLong();
-            int chunkX = Level.getHashX(chunkHash);
-            int chunkZ = Level.getHashZ(chunkHash);
+            int chunkX = Dimension.getHashX(chunkHash);
+            int chunkZ = Dimension.getHashZ(chunkHash);
             PlayerPreChunkRequestEvent event = new PlayerPreChunkRequestEvent(player, chunkX, chunkZ, force);
             Server.getInstance().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -240,8 +240,8 @@ public final class PlayerChunkManager {
             player.dataPacket(ncp);
             while (!chunkReadyToSend.isEmpty()) {
                 long chunkHash = chunkReadyToSend.dequeueLong();
-                int chunkX = Level.getHashX(chunkHash);
-                int chunkZ = Level.getHashZ(chunkHash);
+                int chunkX = Dimension.getHashX(chunkHash);
+                int chunkZ = Dimension.getHashZ(chunkHash);
                 PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
                 player.getServer().getPluginManager().callEvent(ev);
                 player.level.requestChunk(chunkX, chunkZ, player);

@@ -1,7 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -549,7 +549,7 @@ public class Utils {
     }
 
 
-    public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
+    public static Block[] getLevelBlocks(Dimension level, AxisAlignedBB bb) {
         List<Block> blocks = new ArrayList<>();
         Vector3 vec = new Vector3();
 
@@ -581,14 +581,14 @@ public class Utils {
         }
     }
 
-    public static boolean hasCollisionBlocks(Level level, AxisAlignedBB bb) {
+    public static boolean hasCollisionBlocks(Dimension level, AxisAlignedBB bb) {
         return anyBlockPos(bb, true, (x, y, z) -> {
             Block block = level.getBlock(x, y, z, false);
             return block != null && !block.canPassThrough() && block.collidesWithBB(bb);
         });
     }
 
-    public static boolean hasCollisionTickCachedBlocks(Level level, AxisAlignedBB bb) {
+    public static boolean hasCollisionTickCachedBlocks(Dimension level, AxisAlignedBB bb) {
         return anyBlockPos(bb, true, (x, y, z) -> {
             Block block = level.getTickCachedBlock(x, y, z, false);
             return block != null && block.collidesWithBB(bb) && !block.canPassThrough();
@@ -607,7 +607,7 @@ public class Utils {
      * if zz is 11, then the block at the maxZ side of the bb has collision <br>
      * if zz is 00, then zz is not used <br>
      */
-    public static byte hasCollisionTickCachedBlocksWithInfo(Level level, @NotNull AxisAlignedBB bb) {
+    public static byte hasCollisionTickCachedBlocksWithInfo(Dimension level, @NotNull AxisAlignedBB bb) {
         int[] bounds = getBlockBounds(bb, true);
         int minX = bounds[0];
         int minY = bounds[1];

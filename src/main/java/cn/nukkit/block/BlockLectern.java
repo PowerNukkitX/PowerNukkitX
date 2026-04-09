@@ -11,7 +11,7 @@ import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
@@ -184,7 +184,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (isActivated()) {
                 this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
 
@@ -194,7 +194,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
                 RedstoneComponent.updateAroundRedstone(getSide(BlockFace.DOWN), BlockFace.UP);
             }
 
-            return Level.BLOCK_UPDATE_SCHEDULED;
+            return Dimension.BLOCK_UPDATE_SCHEDULED;
         }
 
         return 0;

@@ -2,7 +2,7 @@ package cn.nukkit.level.util;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityQueryOptions;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 
@@ -246,7 +246,7 @@ public final class EntityQueryUtils {
     }
 
     public static void collectEntitiesInChunks(
-            Level level,
+            Dimension level,
             ChunkQuery chunk,
             SpatialFilter filter,
             List<Entity> out
@@ -275,7 +275,7 @@ public final class EntityQueryUtils {
         }
     }
 
-    private static void forEachChunk(Level level,
+    private static void forEachChunk(Dimension level,
                                      ChunkQuery chunk,
                                      Consumer<Map<Long, Entity>> consumer) {
         for (int cX = chunk.minCX; cX <= chunk.maxCX; ++cX) {

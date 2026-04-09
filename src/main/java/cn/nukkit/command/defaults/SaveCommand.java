@@ -5,7 +5,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 import java.util.Map;
 
@@ -29,8 +29,10 @@ public class SaveCommand extends VanillaCommand {
         for (Player player : sender.getServer().getOnlinePlayers().values()) {
             player.save();
         }
-        for (Level level : sender.getServer().getLevels().values()) {
-            level.save(true);
+        for (var lvl : sender.getServer().getLevels().values()) {
+            for (Dimension level : lvl.getDimensions()) {
+                level.save(true);
+            }
         }
         log.addSuccess("commands.save.success").output(true);
         return 1;

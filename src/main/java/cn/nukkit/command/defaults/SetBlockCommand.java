@@ -11,7 +11,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 
@@ -60,7 +60,7 @@ public class SetBlockCommand extends VanillaCommand {
             return 0;
         }
 
-        Level level = sender.getPosition().getLevel();
+        Dimension level = sender.getPosition().getLevel();
         Block current = level.getBlock(position);
         if (current.getId().equals(block.getId()) && current.getBlockState() == block.getBlockState()) {
             log.addError("commands.setblock.noChange").output();

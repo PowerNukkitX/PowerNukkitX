@@ -9,7 +9,7 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BigDripleafTiltChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -168,15 +168,15 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 1);
-            return Level.BLOCK_UPDATE_NORMAL;
+            return Dimension.BLOCK_UPDATE_NORMAL;
         }
 
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!canSurvive()) {
                 level.useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
 
             if (!isHead()) {
@@ -185,7 +185,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 }
 
                 level.useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
 
             var tilt = getTilt();
@@ -196,7 +196,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             if (level.isBlockPowered(this)) {
                 setTilt(BigDripleafTilt.NONE);
                 level.setBlock(this, this, true, false);
-                return Level.BLOCK_UPDATE_SCHEDULED;
+                return Dimension.BLOCK_UPDATE_SCHEDULED;
             }
 
             switch (tilt) {
@@ -208,10 +208,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                     level.setBlock(this, this, true, false);
                 }
             }
-            return Level.BLOCK_UPDATE_SCHEDULED;
+            return Dimension.BLOCK_UPDATE_SCHEDULED;
         }
 
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE) {
             if (!isHead())
                 return 0;
             var tilt = getTilt();
@@ -225,7 +225,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             level.setBlock(this, this, true, false);
 
             level.cancelScheduledUpdate(this, this);
-            return Level.BLOCK_UPDATE_SCHEDULED;
+            return Dimension.BLOCK_UPDATE_SCHEDULED;
         }
 
         return 0;

@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.object.structures;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -16,7 +16,7 @@ public class StructureHelper extends BlockManager {
 
     final BlockVector3 origen;
 
-    public StructureHelper(Level level, BlockVector3 origen) {
+    public StructureHelper(Dimension level, BlockVector3 origen) {
         super(level);
         this.origen = origen;
     }

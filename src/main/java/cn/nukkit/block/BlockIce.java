@@ -4,7 +4,7 @@ import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -53,7 +53,7 @@ public class BlockIce extends BlockTransparent {
 
     @Override
     public boolean onBreak(Item item) {
-        if (level.getDimension() == Level.DIMENSION_NETHER 
+        if (level.getDimension() == Dimension.DIMENSION_NETHER 
                 || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0 
                 || down().isAir()) {
             return super.onBreak(item);
@@ -64,14 +64,14 @@ public class BlockIce extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (level.getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 12) {
-                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
+                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Dimension.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);
                 }
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
         return 0;

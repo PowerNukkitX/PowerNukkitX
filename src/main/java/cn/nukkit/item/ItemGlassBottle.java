@@ -6,7 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.item.EntityAreaEffectCloud;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -32,7 +32,7 @@ public class ItemGlassBottle extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face,
+    public boolean onActivate(Dimension level, Player player, Block block, Block target, BlockFace face,
                               double fx, double fy, double fz) {
         if (player == null) {
             return false;

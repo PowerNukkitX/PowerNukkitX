@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.ScrapeParticle;
@@ -24,7 +24,7 @@ public interface Oxidizable {
     Location getLocation();
 
     default int onUpdate(int type) {
-        if (type != Level.BLOCK_UPDATE_RANDOM) {
+        if (type != Dimension.BLOCK_UPDATE_RANDOM) {
             return 0;
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();

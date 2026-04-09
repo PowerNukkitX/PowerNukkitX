@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.populator.normal;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -26,7 +26,7 @@ public class MineshaftPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         long seed = level.getSeed();
         random.setSeed(seed);
         int r1 = random.nextInt();

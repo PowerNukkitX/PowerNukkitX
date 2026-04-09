@@ -9,7 +9,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -88,7 +88,7 @@ public class SingleFakeBlock implements FakeBlock {
 
     @Override
     public void remove(Player player) {
-        Level level = player.getLevel();
+        Dimension level = player.getLevel();
         level.sendBlocks(new Player[]{player}, getLastPositions(player).stream().map(level::getBlock).toArray(Block[]::new), UpdateBlockPacket.FLAG_NETWORK, 0);
         lastPositions.remove(player);
     }

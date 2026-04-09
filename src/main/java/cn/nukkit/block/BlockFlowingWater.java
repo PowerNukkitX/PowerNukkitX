@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +51,7 @@ public class BlockFlowingWater extends BlockLiquid {
         for (BlockFace diagonalFace : BlockFace.Plane.HORIZONTAL) {
             Block diagonal = up.getSide(diagonalFace);
             if (diagonal.getId().equals(BlockID.REEDS)) {
-                diagonal.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                diagonal.onUpdate(Dimension.BLOCK_UPDATE_SCHEDULED);
             }
         }
     }

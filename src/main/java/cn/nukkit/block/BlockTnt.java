@@ -6,7 +6,7 @@ import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -114,7 +114,7 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
             return 0;
         }
 
-        if ((type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) && this.isGettingPower()) {
+        if ((type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_REDSTONE) && this.isGettingPower()) {
             this.prime();
         }
 

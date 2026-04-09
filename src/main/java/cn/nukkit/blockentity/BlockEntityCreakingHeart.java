@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockCreakingHeart;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityCreaking;
 import cn.nukkit.event.entity.CreatureSpawnEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
@@ -30,7 +30,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
     @Override
     protected void initBlockEntity() {
         super.initBlockEntity();
-        if(getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+        if(getLevel().getDimension() == Dimension.DIMENSION_OVERWORLD) {
             scheduleUpdate();
         }
     }

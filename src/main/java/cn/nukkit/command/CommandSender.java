@@ -132,7 +132,8 @@ public interface CommandSender extends Permissible {
      */
     @NotNull
     default Position getPosition() {
-        return new Position(0, 0, 0, Server.getInstance().getDefaultLevel());
+        var defaultLevel = Server.getInstance().getDefaultLevel();
+        return new Position(0, 0, 0, defaultLevel != null ? defaultLevel.getOverworld() : null);
     }
 
     /**
@@ -144,6 +145,7 @@ public interface CommandSender extends Permissible {
      */
     @NotNull
     default Location getLocation() {
-        return new Location(0, 0, 0, Server.getInstance().getDefaultLevel());
+        var defaultLevel = Server.getInstance().getDefaultLevel();
+        return new Location(0, 0, 0, defaultLevel != null ? defaultLevel.getOverworld() : null);
     }
 }

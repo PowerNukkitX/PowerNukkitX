@@ -14,7 +14,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
@@ -94,7 +94,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @NotNull
-    public static Block get(String id, Level level, int x, int y, int z) {
+    public static Block get(String id, Dimension level, int x, int y, int z) {
         id = id.contains(":") ? id : "minecraft:" + id;
         Block block = Registries.BLOCK.get(id, x, y, z, level);
         if (block == null) {
@@ -109,7 +109,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @NotNull
-    public static Block get(String id, Level level, int x, int y, int z, int layer) {
+    public static Block get(String id, Dimension level, int x, int y, int z, int layer) {
         id = id.contains(":") ? id : "minecraft:" + id;
         Block block = get(id, level, x, y, z);
         block.layer = layer;
@@ -147,7 +147,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @NotNull
-    public static Block get(BlockState blockState, Level level, int x, int y, int z) {
+    public static Block get(BlockState blockState, Dimension level, int x, int y, int z) {
         Block block = Registries.BLOCK.get(blockState, x, y, z, level);
         if (block == null) {
             BlockAir blockAir = new BlockAir();
@@ -161,7 +161,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     @NotNull
-    public static Block get(BlockState blockState, Level level, int x, int y, int z, int layer) {
+    public static Block get(BlockState blockState, Dimension level, int x, int y, int z, int layer) {
         Block block = get(blockState, level, x, y, z);
         block.layer = layer;
         return block;
@@ -249,7 +249,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return The update type to continue ticking, or 0 to stop future ticks.
      */
     public int onUpdate(int type) {
-        if (type != Level.BLOCK_UPDATE_SCHEDULED) return 0;
+        if (type != Dimension.BLOCK_UPDATE_SCHEDULED) return 0;
 
         CustomBlockDefinition def = getCustomDefinition();
         if (def == null || def.tickSettings() == null) return 0;
@@ -261,7 +261,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (tick.looping() && this.getLevel().isChunkLoaded(this.getFloorX() >> 4, this.getFloorZ() >> 4)) {
             int delay = (min == max) ? max : ThreadLocalRandom.current().nextInt(min, max + 1);
             this.getLevel().scheduleUpdate(this, delay);
-            return Level.BLOCK_UPDATE_SCHEDULED;
+            return Dimension.BLOCK_UPDATE_SCHEDULED;
         } else {
             this.getLevel().cancelScheduledUpdate(this, this);
             return 0;
@@ -269,7 +269,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
-        onUpdate(Level.BLOCK_UPDATE_TOUCH);
+        onUpdate(Dimension.BLOCK_UPDATE_TOUCH);
     }
 
     public void onNeighborChange(@NotNull BlockFace side) {
@@ -387,7 +387,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     /**
      * Controls the light level of the block
      *
-     * @return Luminance Level (0 - 15)
+     * @return Luminance Dimension (0 - 15)
      */
     public int getLightLevel() {
         CustomBlockDefinition def = getCustomDefinition();
@@ -1688,7 +1688,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public final boolean canRandomTick() {
-        return Level.canRandomTick(getId());
+        return Dimension.canRandomTick(getId());
     }
 
     public boolean onProjectileHit(@NotNull Entity projectile, @NotNull Position position, @NotNull Vector3 motion) {

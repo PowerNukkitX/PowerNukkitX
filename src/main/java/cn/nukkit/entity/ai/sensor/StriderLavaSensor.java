@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityStrider;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 /**
  * Sensor that searches for nearby lava when the Strider is cold.
@@ -51,7 +51,7 @@ public class StriderLavaSensor implements ISensor {
         }
     }
 
-    private Block findBestStandBlockNearLava(Level level, EntityIntelligent entity, int radius) {
+    private Block findBestStandBlockNearLava(Dimension level, EntityIntelligent entity, int radius) {
         int cx = entity.getFloorX();
         int cy = entity.getFloorY();
         int cz = entity.getFloorZ();
@@ -96,7 +96,7 @@ public class StriderLavaSensor implements ISensor {
         return best;
     }
 
-    private Block bestAdjacentStandBlock(Level level, EntityIntelligent entity, int lx, int ly, int lz) {
+    private Block bestAdjacentStandBlock(Dimension level, EntityIntelligent entity, int lx, int ly, int lz) {
         int[][] dirs = { {1,0}, {-1,0}, {0,1}, {0,-1} };
 
         Block best = null;

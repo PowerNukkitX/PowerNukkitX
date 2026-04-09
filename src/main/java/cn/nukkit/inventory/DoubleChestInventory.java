@@ -3,7 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
@@ -130,7 +130,7 @@ public class DoubleChestInventory extends ContainerInventory {
             pk1.z = (int) this.left.getHolder().getZ();
             pk1.type = 1;
             pk1.value = 2;
-            Level level = this.left.getHolder().getLevel();
+            Dimension level = this.left.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
                 level.addChunkPacket((int) this.left.getHolder().getX() >> 4, (int) this.left.getHolder().getZ() >> 4, pk1);
@@ -161,7 +161,7 @@ public class DoubleChestInventory extends ContainerInventory {
             pk1.type = 1;
             pk1.value = 0;
 
-            Level level = this.right.getHolder().getLevel();
+            Dimension level = this.right.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket((int) this.right.getHolder().getX() >> 4, (int) this.right.getHolder().getZ() >> 4, pk1);

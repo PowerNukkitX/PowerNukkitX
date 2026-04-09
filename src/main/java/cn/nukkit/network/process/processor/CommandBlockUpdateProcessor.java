@@ -7,7 +7,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.ICommandBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CommandBlockUpdatePacket;
@@ -60,7 +60,7 @@ public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBloc
                     if (!isRedstoneMode && pk.commandBlockMode == ICommandBlock.MODE_NORMAL) {
                         commandBlock.trigger();
                     }
-                    commandBlock.getLevelBlockAround().forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
+                    commandBlock.getLevelBlockAround().forEach(b -> b.onUpdate(Dimension.BLOCK_UPDATE_REDSTONE));//update redstone
                     playerHandle.player.level.setBlock(commandBlock, cmdBlock, true);
                 }
             }

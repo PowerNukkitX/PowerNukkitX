@@ -7,7 +7,7 @@ import cn.nukkit.blockentity.BlockEntityDaylightDetector;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.utils.RedstoneComponent;
@@ -81,7 +81,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
             return 0;
         }
 
-        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_REDSTONE) {
             var be = getBlockEntity();
             if (be != null) {
                 be.scheduleUpdate();
@@ -96,7 +96,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         if (detector == null) {
             return false;
         }
-        if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+        if (getLevel().getDimension() == Dimension.DIMENSION_OVERWORLD) {
             if (this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 updatePower();
             }
@@ -121,7 +121,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
     @Override
     public boolean onBreak(Item item) {
         if (super.onBreak(item)) {
-            if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+            if (getLevel().getDimension() == Dimension.DIMENSION_OVERWORLD) {
                 updateAroundRedstone();
             }
             return true;
@@ -145,9 +145,9 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     public void updatePower() {
         int i;
-        Level level = this.getLevel();
+        Dimension level = this.getLevel();
 
-        if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
+        if (level.getDimension() == Dimension.DIMENSION_OVERWORLD) {
             int skylight = getEffectiveSkyLightSignalAround(level, getFloorX(), getFloorY(), getFloorZ());
             i = skylight - level.calculateSkylightSubtracted(1.0F);
 
@@ -175,7 +175,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
         }
     }
 
-    public int getEffectiveSkyLightSignalAround(Level level, int x, int y, int z) {
+    public int getEffectiveSkyLightSignalAround(Dimension level, int x, int y, int z) {
         int skyReduction = level.skyLightSubtracted;
 
         int bestSignal = level.getBlockSkyLightAt(x, y + 1, z) - skyReduction;

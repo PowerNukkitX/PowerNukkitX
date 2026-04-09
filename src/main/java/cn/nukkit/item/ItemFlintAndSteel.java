@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.block.BlockIgniteEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -33,14 +33,14 @@ public class ItemFlintAndSteel extends ItemTool {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Dimension level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
 
         if (block.isAir() && target.getBurnChance() != -1 && (target.isSolid() || target.getBurnChance() > 0)) {
             if (target.getId().equals(BlockID.OBSIDIAN)) {
-                if (level.getDimension() != Level.DIMENSION_THE_END) {
+                if (level.getDimension() != Dimension.DIMENSION_THE_END) {
                     if (level.createPortal(target)) {
                         damageItem(player, block);
                         return true;

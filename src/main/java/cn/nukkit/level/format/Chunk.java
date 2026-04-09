@@ -9,7 +9,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.entity.spawners.SpawnRule;
 import cn.nukkit.math.BlockVector3;
@@ -171,7 +171,7 @@ public class Chunk implements IChunk {
     @Override
     public void setX(int x) {
         this.x = x;
-        this.hash = Level.chunkHash(x, getZ());
+        this.hash = Dimension.chunkHash(x, getZ());
     }
 
     @Override
@@ -182,7 +182,7 @@ public class Chunk implements IChunk {
     @Override
     public void setZ(int z) {
         this.z = z;
-        this.hash = Level.chunkHash(getX(), z);
+        this.hash = Dimension.chunkHash(getX(), z);
     }
 
     @Override
@@ -196,7 +196,7 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public Level getLevel() {
+    public Dimension getLevel() {
         return getProvider().getLevel();
     }
 
@@ -502,7 +502,7 @@ public class Chunk implements IChunk {
 
     @Override
     public void doMobSpawning() {
-        Level level = getProvider().getLevel();
+        Dimension level = getProvider().getLevel();
         if (!isLoaded() || !isGenerated() || !isLightPopulated()) return;
         if (Utils.rand(0, 50) != 0) return;
 

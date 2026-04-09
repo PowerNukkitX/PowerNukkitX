@@ -26,7 +26,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.types.SpawnPointType;
@@ -88,7 +88,7 @@ public class BlockRespawnAnchor extends Block {
     }
 
     protected boolean attemptToSetSpawn(@NotNull Player player) {
-        if (this.level.getDimension() != Level.DIMENSION_NETHER) {
+        if (this.level.getDimension() != Dimension.DIMENSION_NETHER) {
             if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
                 explode(player);
             }
@@ -160,7 +160,7 @@ public class BlockRespawnAnchor extends Block {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE);
             return type;
         }

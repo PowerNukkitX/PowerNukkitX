@@ -11,7 +11,7 @@ import cn.nukkit.item.ItemBed;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -97,7 +97,7 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
         if(isNotActivate(player)) return false;
         BlockFace dir = getBlockFace();
 
-        boolean shouldExplode = this.level.getDimension() != Level.DIMENSION_OVERWORLD;
+        boolean shouldExplode = this.level.getDimension() != Dimension.DIMENSION_OVERWORLD;
         boolean willExplode = shouldExplode && this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES);
 
         Block head;

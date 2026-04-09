@@ -5,7 +5,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -88,7 +88,7 @@ public class BlockScaffolding extends BlockFallable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block down = down();
             if (down.isSolid()) {
                 if (!isDefaultState()) {
@@ -131,7 +131,7 @@ public class BlockScaffolding extends BlockFallable {
             setStability(stability);
             this.getLevel().setBlock(this, this, true, true);
             return type;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             this.getLevel().useBreakOn(this);
             return type;
         }
