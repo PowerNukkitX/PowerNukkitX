@@ -21,11 +21,6 @@ public class BlockStrippedDarkOakLog extends BlockWoodStripped {
     }
 
     @Override
-    public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
-    }
-
-    @Override
     public WoodType getWoodType() {
         return WoodType.DARK_OAK;
     }

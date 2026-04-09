@@ -21,6 +21,6 @@ public class BlockCrimsonStem extends BlockStem {
 
     @Override
     public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
+        return BlockStrippedCrimsonStem.PROPERTIES.getDefaultState();
     }
 }

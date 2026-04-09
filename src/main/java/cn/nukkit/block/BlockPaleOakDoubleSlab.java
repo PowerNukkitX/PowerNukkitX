@@ -18,11 +18,11 @@ public class BlockPaleOakDoubleSlab extends BlockDoubleWoodenSlab {
 
     @Override
     public String getSlabName() {
-        return "Acacia";
+        return "Pale Oak";
     }
 
     @Override
     public BlockState getSingleSlab() {
-        return BlockAcaciaSlab.PROPERTIES.getDefaultState();
+        return BlockPaleOakSlab.PROPERTIES.getDefaultState();
     }
 }

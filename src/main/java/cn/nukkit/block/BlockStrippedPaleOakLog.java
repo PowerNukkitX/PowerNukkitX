@@ -25,8 +25,4 @@ public class BlockStrippedPaleOakLog extends BlockWoodStripped {
         return WoodType.PALE_OAK;
     }
 
-    @Override
-    public BlockState getStrippedState() {
-        return BlockStrippedPaleOakLog.PROPERTIES.getDefaultState();
-    }
 }
