@@ -1,17 +1,22 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.block.Block;
+import cn.nukkit.network.NetworkConstants;
+import com.google.errorprone.annotations.Var;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
+import org.cloudburstmc.protocol.common.util.VarInts;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,36 +43,37 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     @Getter
     private static final ObjectOpenHashSet<ItemData> ITEMDATA = new ObjectOpenHashSet<>();
 
-    private static byte[] itemPalette;
+    private static ByteBuf itemPalette;
 
 
-    public byte[] getItemPalette() {
+    public ByteBuf getItemPalette() {
         return itemPalette;
     }
 
     private void generatePalette() {
-        BinaryStream paletteBuffer = new BinaryStream();
+        final ByteBuf paletteBuffer = Unpooled.buffer();
+        final BedrockCodecHelper helper = NetworkConstants.CODEC.createHelper();
         HashMap<Integer, Boolean> verify = new HashMap<>();
-        paletteBuffer.putUnsignedVarInt(REGISTRY.size() + CUSTOM_REGISTRY.size());
+        VarInts.writeUnsignedInt(paletteBuffer, REGISTRY.size() + CUSTOM_REGISTRY.size());
         for (var entry : REGISTRY.object2IntEntrySet()) {
-            paletteBuffer.putString(entry.getKey());
+            helper.writeString(paletteBuffer, entry.getKey());
             int rid = entry.getIntValue();
-            paletteBuffer.putLShort(rid);
+            paletteBuffer.writeShortLE(rid);
             if (verify.putIfAbsent(rid, true) != null) {
                 throw new IllegalArgumentException("Runtime ID is already registered: " + rid);
             }
-            paletteBuffer.putBoolean(false); //Vanilla Item doesnt component item
+            paletteBuffer.writeBoolean(false); //Vanilla Item doesnt component item
         }
         for (var entry : CUSTOM_REGISTRY.object2ObjectEntrySet()) {
-            paletteBuffer.putString(entry.getKey());
+            helper.writeString(paletteBuffer, entry.getKey());
             int rid = entry.getValue().runtimeId();
-            paletteBuffer.putLShort(rid);
+            paletteBuffer.writeShortLE(rid);
             if (verify.putIfAbsent(rid, true) != null) {
                 throw new IllegalArgumentException("Runtime ID is already registered: " + rid);
             }
-            paletteBuffer.putBoolean(entry.getValue().isComponent());
+            paletteBuffer.writeBoolean(entry.getValue().isComponent());
         }
-        itemPalette = paletteBuffer.getBuffer();
+        itemPalette = paletteBuffer;
     }
 
     @Override
@@ -76,7 +82,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             return;
 
         // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
-        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/proxypass/runtime_item_states.json")){
+        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/proxypass/runtime_item_states.json")) {
             if (stream == null) {
                 throw new IllegalStateException("Failed to load runtime_item_states.json");
             }
@@ -134,8 +140,10 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             out.writeBoolean(d.componentBased());
         }
         // itemPalette
-        out.writeInt(itemPalette.length);
-        out.write(itemPalette);
+        out.writeInt(itemPalette.readableBytes());
+        final byte[] data = new byte[itemPalette.readableBytes()];
+        itemPalette.readBytes(data);
+        out.write(data);
     }
 
     void restoreCache(java.io.DataInputStream in) throws java.io.IOException {
@@ -143,7 +151,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         int regSize = in.readInt();
         for (int i = 0; i < regSize; i++) {
             String key = in.readUTF();
-            int    val = in.readInt();
+            int val = in.readInt();
             REGISTRY.put(key, val);
             ID2NAME.put(val, key); // reconstruct mirror
         }
@@ -152,8 +160,8 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             ITEMDATA.add(new ItemData(in.readUTF(), in.readInt(), in.readInt(), in.readBoolean()));
         }
         int palLen = in.readInt();
-        itemPalette = new byte[palLen];
-        in.readFully(itemPalette);
+        itemPalette = Unpooled.buffer();
+        itemPalette.readBytes(palLen);
     }
 
     @Override
@@ -212,7 +220,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     }
 
     public void register1(ItemData entry) {
-        if(!ITEMDATA.contains(entry)) {
+        if (!ITEMDATA.contains(entry)) {
             ITEMDATA.add(entry);
             register0(entry.identifier, entry.runtimeId);
         }

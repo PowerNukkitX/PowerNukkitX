@@ -2,11 +2,10 @@ package cn.nukkit.scoreboard.scorer;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.network.protocol.SetScorePacket;
-import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.IScoreboardLine;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 import java.util.UUID;
 
@@ -38,8 +37,8 @@ public class PlayerScorer implements IScorer {
     }
 
     @Override
-    public ScorerType getScorerType() {
-        return ScorerType.PLAYER;
+    public ScoreInfo.IdentityDefinitionType getScorerType() {
+        return ScoreInfo.IdentityDefinitionType.PLAYER;
     }
 
     @Override
@@ -61,8 +60,16 @@ public class PlayerScorer implements IScorer {
     }
 
     @Override
-    public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
         if (uuid == null) return null;
-        return Server.getInstance().getPlayer(uuid).isPresent() ? new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.PLAYER, Server.getInstance().getPlayer(uuid).get().getId()) : null;
+        return Server.getInstance().getPlayer(uuid).isPresent() ?
+                new ScoreInfo(
+                        line.getLineId(),
+                        scoreboard.getObjectiveName(),
+                        line.getScore(),
+                        this.getScorerType(),
+                        Server.getInstance().getPlayer(uuid).get().getId()
+                )
+                : null;
     }
 }

@@ -3,10 +3,9 @@ package cn.nukkit.event.server;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
-import cn.nukkit.utils.Binary;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -56,7 +55,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.plugins = server.getPluginManager() == null ? Plugin.EMPTY_ARRAY : server.getPluginManager().getPlugins().values().toArray(Plugin.EMPTY_ARRAY);
         this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
-        this.version = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
+        this.version = NetworkConstants.CODEC.getMinecraftVersion();
         this.server_engine = server.getName() + " " + server.getNukkitVersion() + " (" + server.getGitCommit() + ")";
         this.map = server.getDefaultLevel() == null ? "unknown" : server.getDefaultLevel().getName();
         this.numPlayers = this.players.length;
@@ -209,7 +208,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         buf.writeByte((byte) 0x00);
         buf.writeBytes(String.valueOf(this.maxPlayers).getBytes(StandardCharsets.UTF_8));
         buf.writeByte((byte) 0x00);
-        buf.writeBytes(Binary.writeLShort(this.port));
+        buf.writeShortLE(this.port);
         buf.writeBytes(this.ip.getBytes(StandardCharsets.UTF_8));
         buf.writeByte((byte) 0x00);
         return buf;

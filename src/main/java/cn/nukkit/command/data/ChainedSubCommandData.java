@@ -66,6 +66,18 @@ public class ChainedSubCommandData {
      * @author PowerNukkitX Project Team
      * @since PowerNukkitX 2.0.0
      */
-        public record Value(String first, String second) {
+    public record Value(String first, String second) {
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.command.ChainedSubCommandData toNetwork() {
+        final List<org.cloudburstmc.protocol.bedrock.data.command.ChainedSubCommandData.Value> list = new ObjectArrayList<>();
+        for (Value value : this.values) {
+            list.add(new org.cloudburstmc.protocol.bedrock.data.command.ChainedSubCommandData.Value(value.first, value.second));
+        }
+        final org.cloudburstmc.protocol.bedrock.data.command.ChainedSubCommandData data = new org.cloudburstmc.protocol.bedrock.data.command.ChainedSubCommandData(
+                this.name
+        );
+        data.getValues().addAll(list);
+        return data;
     }
 }

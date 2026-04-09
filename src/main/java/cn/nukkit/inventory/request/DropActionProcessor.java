@@ -4,13 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.event.player.PlayerDropItemEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DropAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
 
@@ -28,9 +28,9 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
 
     @Override
     public ActionResponse handle(DropAction action, Player player, ItemStackRequestContext context) {
-        FullContainerName containerName = action.getSource().getContainerName();
-        Integer dynamicId = containerName.getDynamicId();
-        Inventory inventory = NetworkMapping.getInventory(player, containerName.getContainer(), dynamicId);
+        FullContainerName containerName = action.getSource().getFullContainerName();
+        Integer dynamicId = containerName.getDynamicID();
+        Inventory inventory = NetworkMapping.getInventory(player, containerName.getContainerName(), dynamicId);
         var count = action.getCount();
         var slot = inventory.fromNetworkSlot(action.getSource().getSlot());
         var item = inventory.getItem(slot);
@@ -66,16 +66,17 @@ public class DropActionProcessor implements ItemStackRequestActionProcessor<Drop
             inventory.setItem(slot, item, false);
         }
         return context.success(List.of(
-                new ItemStackResponseContainer(
-                        inventory.getSlotType(slot),
+                new ItemStackResponseContainerInfo(
+                        inventory.getContainerEnumName(slot),
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         inventory.toNetworkSlot(slot),
                                         inventory.toNetworkSlot(slot),
                                         item.getCount(),
                                         item.getNetId(),
                                         item.getCustomName(),
-                                        item.getDamage()
+                                        item.getDamage(),
+                                        ""
                                 )
                         ),
                         containerName

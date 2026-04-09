@@ -3,14 +3,12 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.api.DoNotModify;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jline.utils.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -221,7 +219,7 @@ public interface Inventory {
 
     Set<Player> getViewers();
 
-    InventoryType getType();
+    ContainerType getType();
 
     InventoryHolder getHolder();
 
@@ -245,7 +243,7 @@ public interface Inventory {
      *
      * @param index  物品变动的格子索引<br>The grid index of the item's changes
      * @param before 变动前的物品<br>Items before the change
-     * @param send   是否发送{@link InventorySlotPacket}到客户端<br>Whether to send {@link InventorySlotPacket} to the client
+     * @param send   是否发送{@link org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket}到客户端<br>Whether to send {@link org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket} to the client
      */
     void onSlotChange(int index, Item before, boolean send);
 
@@ -271,7 +269,7 @@ public interface Inventory {
      * slot id -> ContainerSlotType
      */
     @ApiStatus.Internal
-    default Map<Integer, ContainerSlotType> slotTypeMap() {
+    default Map<Integer, ContainerEnumName> slotTypeMap() {
         return new HashMap<>();
     }
 
@@ -286,8 +284,8 @@ public interface Inventory {
     }
 
     @ApiStatus.Internal
-    default ContainerSlotType getSlotType(int nativeSlot) {
-        ContainerSlotType type = slotTypeMap().get(fromNetworkSlot(nativeSlot));
+    default ContainerEnumName getContainerEnumName(int nativeSlot) {
+        ContainerEnumName type = slotTypeMap().get(fromNetworkSlot(nativeSlot));
         if (type == null) {
             throw new IllegalStateException("ContainerSlotType " + nativeSlot + " does not exist!");
         }

@@ -3,17 +3,18 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.entity.IHuman;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
 
 import java.util.Map;
 
 public class HumanOffHandInventory extends BaseInventory {
     public HumanOffHandInventory(IHuman holder) {
-        super(holder, InventoryType.INVENTORY, 1);
+        super(holder, ContainerType.INVENTORY, 1);
     }
 
     @Override
@@ -21,8 +22,8 @@ public class HumanOffHandInventory extends BaseInventory {
         BiMap<Integer, Integer> map = super.networkSlotMap();
         map.put(0, 1);
 
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-        map2.put(0, ContainerSlotType.OFFHAND);
+        Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
+        map2.put(0, ContainerEnumName.OFFHAND_CONTAINER);
     }
 
     public void setItem(Item item) {
@@ -58,18 +59,20 @@ public class HumanOffHandInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         Item item = this.getItem(0);
-        MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
+        final MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
 
         for (Player player : players) {
             if (player == this.getHolder()) {
-                InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = SpecialWindowId.OFFHAND.getId();
-                pk2.slots = new Item[]{item};
-                pk2.fullContainerName = new FullContainerName(
-                        ContainerSlotType.OFFHAND,
-                        0
+                final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+                inventoryContentPacket.setInventoryId(SpecialWindowId.OFFHAND.getId());
+                inventoryContentPacket.getSlots().add(item.toNetwork());
+                inventoryContentPacket.setFullContainerName(
+                        new FullContainerName(
+                                ContainerEnumName.OFFHAND_CONTAINER,
+                                null
+                        )
                 );
-                player.dataPacket(pk2);
+                player.dataPacket(inventoryContentPacket);
                 player.dataPacket(pk);
             } else {
                 player.dataPacket(pk);
@@ -83,12 +86,14 @@ public class HumanOffHandInventory extends BaseInventory {
     }
 
     private MobEquipmentPacket createMobEquipmentPacket(Item item) {
-        MobEquipmentPacket pk = new MobEquipmentPacket();
-        pk.eid = this.getHolder().getEntity().getId();
-        pk.item = item;
-        pk.inventorySlot = 1;
-        pk.windowId = SpecialWindowId.OFFHAND.getId();
-        return pk;
+        final int slot = 1;
+        final MobEquipmentPacket packet = new MobEquipmentPacket();
+        packet.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        packet.setItem(item.toNetwork());
+        packet.setSlot(slot);
+        packet.setSelectedSlot(slot);
+        packet.setContainerId(SpecialWindowId.OFFHAND.getId());
+        return packet;
     }
 
     @Override

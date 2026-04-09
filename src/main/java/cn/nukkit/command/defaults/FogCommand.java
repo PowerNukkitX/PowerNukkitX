@@ -3,13 +3,12 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.utils.Identifier;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ public class FogCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        /* TODO protocol var list = result.getValue();
         List<Player> targets = list.getResult(0);
         if (targets.isEmpty()) {
             log.addNoTargetMatch().output();
@@ -53,10 +52,9 @@ public class FogCommand extends VanillaCommand {
                     return 0;
                 }
                 String userProvidedId = list.getResult(3);
-                var fog = new PlayerFogPacket.Fog(fogId, userProvidedId);
                 targets.forEach(player -> {
-                    player.getFogStack().add(fog);
-                    player.sendFogStack();//刷新到客户端
+                    player.getFogStack().add(fogIdStr);
+                    player.sendFogStack();
                 });
                 log.addSuccess("commands.fog.success.push", userProvidedId, fogIdStr).output();
                 return 1;
@@ -111,6 +109,7 @@ public class FogCommand extends VanillaCommand {
             default -> {
                 return 0;
             }
-        }
+        }*/
+        return 0;
     }
 }

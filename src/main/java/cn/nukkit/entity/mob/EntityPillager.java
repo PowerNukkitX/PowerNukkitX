@@ -23,7 +23,7 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +37,7 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     }
     
 
-    public EntityPillager(IChunk chunk, CompoundTag nbt) {
+    public EntityPillager(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

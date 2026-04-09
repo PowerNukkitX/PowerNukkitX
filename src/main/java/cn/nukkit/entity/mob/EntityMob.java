@@ -17,14 +17,16 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -46,7 +48,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Getter
     private EntityArmorInventory armorInventory;
 
-    public EntityMob(IChunk chunk, CompoundTag nbt) {
+    public EntityMob(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -57,25 +59,24 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         super.initEntity();
 
-        if (this.namedTag.contains(TAG_MAINHAND)) {
-            this.equipmentInventory.setItemInHand(NBTIO.getItemHelper(this.namedTag.getCompound(TAG_MAINHAND)), true);
+        if (this.namedTag.containsKey(TAG_MAINHAND)) {
+            this.equipmentInventory.setItemInHand(ItemHelper.read(this.namedTag.getCompound(TAG_MAINHAND)), true);
         }
 
-        if (this.namedTag.contains(TAG_OFFHAND)) {
-            this.equipmentInventory.setItemInOffhand(NBTIO.getItemHelper(this.namedTag.getCompound(TAG_OFFHAND)), true);
+        if (this.namedTag.containsKey(TAG_OFFHAND)) {
+            this.equipmentInventory.setItemInOffhand(ItemHelper.read(this.namedTag.getCompound(TAG_OFFHAND)), true);
         }
 
-        if (this.namedTag.contains(TAG_ARMOR)) {
-            ListTag<CompoundTag> armorList = this.namedTag.getList(TAG_ARMOR, CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
-                this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
+        if (this.namedTag.containsKey(TAG_ARMOR)) {
+            List<NbtMap> armorList = this.namedTag.getList(TAG_ARMOR, NbtType.COMPOUND);
+            for (NbtMap armorTag : armorList) {
+                this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
         }
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
-        //怪物不能在和平模式下生存
         if (this.getServer().getDifficulty() == 0) {
             this.close();
             return true;
@@ -101,15 +102,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.put(TAG_MAINHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInHand()));
-        this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
+        this.namedTag.put(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null));
+        this.namedTag.put(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
 
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>();
+            List<NbtMap> armorTag = new ObjectArrayList<>();
             for (int i = 0; i < 4; i++) {
-                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(TAG_ARMOR,armorTag);
+            this.namedTag = this.namedTag.toBuilder().putList(TAG_ARMOR, NbtType.COMPOUND, armorTag).build();
         }
     }
 

@@ -2,16 +2,20 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.BossEventPacket;
-import cn.nukkit.network.protocol.MoveEntityAbsolutePacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityDataPacket;
-import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.BossEventUpdateType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.MoveActorAbsoluteData;
+import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MoveActorAbsolutePacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetActorDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateAttributesPacket;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -114,77 +118,73 @@ public class DummyBossBar {
     }
 
     private void createBossEntity() {
-        AddEntityPacket pkAdd = new AddEntityPacket();
+        final ActorDataMap actorDataMap = new ActorDataMap();
+        actorDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 400);
+        actorDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
+        actorDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
+        actorDataMap.put(ActorDataTypes.NAME, this.text);
+        actorDataMap.put(ActorDataTypes.SCALE, 0f);
 
-        pkAdd.type = Registries.ENTITY.getEntityNetworkId(EntityID.CREEPER);
-        pkAdd.entityUniqueId = bossBarId;
-        pkAdd.entityRuntimeId = bossBarId;
-        pkAdd.x = (float) player.x;
-        pkAdd.y = (float) -74; // Below the bedrock
-        pkAdd.z = (float) player.z;
-        pkAdd.speedX = 0;
-        pkAdd.speedY = 0;
-        pkAdd.speedZ = 0;
-        EntityDataMap entityDataMap = new EntityDataMap();
-        entityDataMap.getOrCreateFlags();
-        entityDataMap.put(Entity.AIR_SUPPLY, 400);
-        entityDataMap.put(Entity.AIR_SUPPLY_MAX, 400);
-        entityDataMap.put(Entity.LEASH_HOLDER, -1);
-        entityDataMap.put(Entity.NAME, text);
-        entityDataMap.put(Entity.SCALE, 0);
-        pkAdd.entityData = entityDataMap;
-        player.dataPacket(pkAdd);
+        final AddActorPacket packet = new AddActorPacket();
+        packet.setActorData(actorDataMap);
+        packet.setTargetActorID(this.bossBarId);
+        packet.setTargetRuntimeID(this.bossBarId);
+        packet.setPosition(Vector3f.from(this.player.getX(), -74, this.player.getZ()));
+        packet.setEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.CREEPER));
+        packet.setVelocity(Vector3f.ZERO);
+        packet.setRotation(Vector2f.ZERO);
+        this.player.dataPacket(packet);
     }
 
     private void sendAttributes() {
-        UpdateAttributesPacket pkAttributes = new UpdateAttributesPacket();
-        pkAttributes.entityId = bossBarId;
-        Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
+        final Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
         attr.setMaxValue(100); // Max value - We need to change the max value first, or else the "setValue" will return a IllegalArgumentException
-        attr.setValue(length); // Entity health
-        pkAttributes.entries = new Attribute[]{attr};
-        player.dataPacket(pkAttributes);
+        attr.setValue(this.length); // Entity health
+        final UpdateAttributesPacket packet = new UpdateAttributesPacket();
+        packet.setRuntimeID(this.bossBarId);
+        packet.getAttributeList().add(attr.toNetwork());
+        player.dataPacket(packet);
     }
 
     private void sendShowBossBar() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_SHOW;
-        pkBoss.title = text;
-        pkBoss.healthPercent = this.length / 100;
-        player.dataPacket(pkBoss);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.bossBarId);
+        bossEventPacket.setEventType(BossEventUpdateType.ADD);
+        bossEventPacket.setName(this.text);
+        bossEventPacket.setHealthPercent(this.length / 100);
+        this.player.dataPacket(bossEventPacket);
     }
 
     private void sendHideBossBar() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_HIDE;
-        player.dataPacket(pkBoss);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.bossBarId);
+        bossEventPacket.setEventType(BossEventUpdateType.REMOVE);
+        this.player.dataPacket(bossEventPacket);
     }
 
     private void sendSetBossBarTexture() {
-        BossEventPacket pk = new BossEventPacket();
-        pk.bossEid = this.bossBarId;
-        pk.type = BossEventPacket.TYPE_TEXTURE;
-        pk.color = color != null ? color.ordinal() : 0;
-        player.dataPacket(pk);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.bossBarId);
+        bossEventPacket.setEventType(BossEventUpdateType.UPDATE_STYLE);
+        bossEventPacket.setColor(color != null ? color.ordinal() : 0);
+        this.player.dataPacket(bossEventPacket);
     }
 
     private void sendSetBossBarTitle() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_TITLE;
-        pkBoss.title = text;
-        pkBoss.healthPercent = this.length / 100;
-        player.dataPacket(pkBoss);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.bossBarId);
+        bossEventPacket.setEventType(BossEventUpdateType.UPDATE_NAME);
+        bossEventPacket.setName(this.text);
+        bossEventPacket.setHealthPercent(this.length / 100);
+        this.player.dataPacket(bossEventPacket);
     }
 
     private void sendSetBossBarLength() {
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = bossBarId;
-        pkBoss.type = BossEventPacket.TYPE_HEALTH_PERCENT;
-        pkBoss.healthPercent = this.length / 100;
-        player.dataPacket(pkBoss);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.bossBarId);
+        bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
+        bossEventPacket.setHealthPercent(this.length / 100);
+        this.player.dataPacket(bossEventPacket);
     }
 
     /**
@@ -192,30 +192,27 @@ public class DummyBossBar {
      * Update boss entity's position when teleport and each 5s.
      */
     public void updateBossEntityPosition() {
-        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-        pk.eid = this.bossBarId;
-        pk.x = this.player.x;
-        pk.y = -74;
-        pk.z = this.player.z;
-        pk.headYaw = 0;
-        pk.yaw = 0;
-        pk.pitch = 0;
-        player.dataPacket(pk);
+        final MoveActorAbsoluteData moveData = new MoveActorAbsoluteData();
+        moveData.setPos(Vector3f.from(this.player.getX(), -74, this.player.getZ()));
+        moveData.setRotation(Vector3f.ZERO);
+
+        final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
+        packet.setMoveData(moveData);
+
+        this.player.dataPacket(packet);
     }
 
     private void updateBossEntityNameTag() {
-        SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.eid = this.bossBarId;
-        EntityDataMap entityDataMap = new EntityDataMap();
-        entityDataMap.put(Entity.NAME, text);
-        pk.entityData = entityDataMap;
-        player.dataPacket(pk);
+        final SetActorDataPacket packet = new SetActorDataPacket();
+        packet.getActorData().put(ActorDataTypes.NAME, this.text);
+        packet.setTargetRuntimeID(this.bossBarId);
+        this.player.dataPacket(packet);
     }
 
     private void removeBossEntity() {
-        RemoveEntityPacket pkRemove = new RemoveEntityPacket();
-        pkRemove.eid = bossBarId;
-        player.dataPacket(pkRemove);
+        final RemoveActorPacket packet = new RemoveActorPacket();
+        packet.setTargetActorID(this.bossBarId);
+        this.player.dataPacket(packet);
     }
 
     public void create() {

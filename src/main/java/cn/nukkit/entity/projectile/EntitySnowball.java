@@ -7,8 +7,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.level.particle.Particle;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.DataPacket;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -34,11 +35,11 @@ public class EntitySnowball extends EntityProjectile {
         }
     }
 
-    public EntitySnowball(IChunk chunk, CompoundTag nbt) {
+    public EntitySnowball(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntitySnowball(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntitySnowball(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -100,9 +101,9 @@ public class EntitySnowball extends EntityProjectile {
     @Override
     protected void addHitEffect() {
         int particles = nextParticleCount();
-        DataPacket[] particlePackets = new GenericParticle(this, Particle.TYPE_SNOWBALL_POOF).encode();
+        BedrockPacket[] particlePackets = new GenericParticle(this, ParticleType.SNOWBALL_POOF).encode();
         int length = particlePackets.length;
-        DataPacket[] allPackets = Arrays.copyOf(particlePackets, length * particles);
+        BedrockPacket[] allPackets = Arrays.copyOf(particlePackets, length * particles);
         for (int i = length; i < allPackets.length; i++) {
             allPackets[i] = particlePackets[i % length];
         }

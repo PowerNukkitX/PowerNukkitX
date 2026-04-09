@@ -3,13 +3,17 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobArmorEquipmentPacket;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -26,7 +30,7 @@ public class EntityArmorInventory extends BaseInventory {
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
     public EntityArmorInventory(InventoryHolder holder) {
-        super(holder, InventoryType.INVENTORY, 5);
+        super(holder, ContainerType.INVENTORY, 5);
         this.entity = (Entity) holder;
     }
 
@@ -98,21 +102,23 @@ public class EntityArmorInventory extends BaseInventory {
     @Override
     public void sendSlot(int index, Player player) {
         if (player == this.holder) {
-            InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+            final InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
             int id = player.getWindowId(this);
-            inventorySlotPacket.inventoryId = id;
-            inventorySlotPacket.slot = index;
-            inventorySlotPacket.item = this.getItem(index);
-            inventorySlotPacket.fullContainerName = new FullContainerName(
-                    this.getSlotType(index),
-                    id
+            inventorySlotPacket.setContainerID(id);
+            inventorySlotPacket.setSlot(index);
+            inventorySlotPacket.setItem(this.getItem(index).toNetwork());
+            inventorySlotPacket.setFullContainerName(
+                    new FullContainerName(this.getContainerEnumName(index), null)
             );
             player.dataPacket(inventorySlotPacket);
         } else {
-            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.eid = this.entity.getId();
-            mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
-            mobArmorEquipmentPacket.body = this.getBody();
+            final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.getId());
+            mobArmorEquipmentPacket.setHead(this.getHelmet().toNetwork());
+            mobArmorEquipmentPacket.setTorso(this.getChestplate().toNetwork());
+            mobArmorEquipmentPacket.setLegs(this.getLeggings().toNetwork());
+            mobArmorEquipmentPacket.setFeet(this.getBoots().toNetwork());
+            mobArmorEquipmentPacket.setBody(this.getBody().toNetwork());
             player.dataPacket(mobArmorEquipmentPacket);
         }
     }
@@ -127,20 +133,28 @@ public class EntityArmorInventory extends BaseInventory {
     @Override
     public void sendContents(Player player) {
         if (player == this.holder) {
-            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            int id = player.getWindowId(this);
-            inventoryContentPacket.inventoryId = id;
-            inventoryContentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
-            inventoryContentPacket.fullContainerName = new FullContainerName(
-                    ContainerSlotType.ARMOR,
-                    id
+            final int id = player.getWindowId(this);
+            final List<ItemData> slots = new ObjectArrayList<>();
+            slots.add(this.getHelmet().toNetwork());
+            slots.add(this.getChestplate().toNetwork());
+            slots.add(this.getLeggings().toNetwork());
+            slots.add(this.getBoots().toNetwork());
+
+            final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+            inventoryContentPacket.setInventoryId(id);
+            inventoryContentPacket.setSlots(slots);
+            inventoryContentPacket.setFullContainerName(
+                    new FullContainerName(ContainerEnumName.ARMOR_CONTAINER, null)
             );
             player.dataPacket(inventoryContentPacket);
         } else {
-            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.eid = this.entity.getId();
-            mobArmorEquipmentPacket.slots = new Item[]{this.getHelmet(), this.getChestplate(), this.getLeggings(), this.getBoots()};
-            mobArmorEquipmentPacket.body = this.getBody();
+            final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.getId());
+            mobArmorEquipmentPacket.setHead(this.getHelmet().toNetwork());
+            mobArmorEquipmentPacket.setTorso(this.getChestplate().toNetwork());
+            mobArmorEquipmentPacket.setLegs(this.getLeggings().toNetwork());
+            mobArmorEquipmentPacket.setFeet(this.getBoots().toNetwork());
+            mobArmorEquipmentPacket.setBody(this.getBody().toNetwork());
             player.dataPacket(mobArmorEquipmentPacket);
         }
     }

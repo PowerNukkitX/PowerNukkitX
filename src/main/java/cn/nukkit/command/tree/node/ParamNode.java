@@ -1,8 +1,8 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 /**
  * Abstract base class for generic command parameter nodes in PowerNukkitX command trees.

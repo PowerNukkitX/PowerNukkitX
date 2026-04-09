@@ -42,10 +42,9 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
-
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +73,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
         new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
-    public EntityPig(IChunk chunk, CompoundTag nbt) {
+    public EntityPig(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -223,7 +222,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     public void initEntity() {
         super.initEntity();
 
-        if(namedTag.contains("variant")) {
+        if(namedTag.containsKey("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 
@@ -257,7 +256,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
         if (!item.isNull()) {
             if (item.getId() == Item.SADDLE && !this.isSaddled()) {
                 if (!player.isCreative()) player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                getLevel().addLevelSoundEvent(this, LevelSoundEvent.SADDLE, -1, getIdentifier(), false, false);
+                getLevel().addLevelSoundEvent(this, SoundEvent.SADDLE, -1, getIdentifier(), false, false);
                 setSaddle(true);
                 return true;
 

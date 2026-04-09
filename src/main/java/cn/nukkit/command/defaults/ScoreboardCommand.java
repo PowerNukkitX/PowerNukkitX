@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
@@ -13,20 +12,28 @@ import cn.nukkit.command.selector.EntitySelectorAPI;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.WildcardIntNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.ScoreboardLine;
+import cn.nukkit.scoreboard.data.DisplaySlot;
+import cn.nukkit.scoreboard.manager.IScoreboardManager;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import javax.swing.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 
@@ -124,9 +131,9 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
                     String criteriaName = list.getResult(3);
                     if (list.hasResult(4)) {
-                        manager.addScoreboard(new Scoreboard(objectiveName, list.getResult(4), criteriaName, SortOrder.ASCENDING));
+                        manager.addScoreboard(new Scoreboard(objectiveName, list.getResult(4), criteriaName, ObjectiveSortOrder.ASCENDING));
                     } else {
-                        manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, SortOrder.ASCENDING));
+                        manager.addScoreboard(new Scoreboard(objectiveName, objectiveName, criteriaName, ObjectiveSortOrder.ASCENDING));
                     }
                     log.addSuccess("commands.scoreboard.objectives.add.success", objectiveName).output();
                     return 1;
@@ -169,11 +176,11 @@ public class ScoreboardCommand extends VanillaCommand {
                         }
                         var scoreboard = manager.getScoreboards().get(objectiveName);
                         String orderName = list.getResult(4);
-                        SortOrder order = list.hasResult(4) ? switch (orderName) {
-                            case "ascending" -> SortOrder.ASCENDING;
-                            case "descending" -> SortOrder.DESCENDING;
-                            default -> SortOrder.ASCENDING;
-                        } : SortOrder.ASCENDING;
+                        ObjectiveSortOrder order = list.hasResult(4) ? switch (orderName) {
+                            case "ascending" -> ObjectiveSortOrder.ASCENDING;
+                            case "descending" -> ObjectiveSortOrder.DESCENDING;
+                            default -> ObjectiveSortOrder.ASCENDING;
+                        } : ObjectiveSortOrder.ASCENDING;
                         scoreboard.setSortOrder(order);
                         manager.setDisplay(slot, scoreboard);
                         log.addSuccess("commands.scoreboard.objectives.setdisplay.successSet", slot.getSlotName(), objectiveName).output();

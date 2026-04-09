@@ -2,9 +2,10 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 public abstract class SmeltingInventory extends ContainerInventory {
-    public SmeltingInventory(InventoryHolder holder, InventoryType type, int size) {
+    public SmeltingInventory(InventoryHolder holder, ContainerType type, int size) {
         super(holder, type, size);
     }
 

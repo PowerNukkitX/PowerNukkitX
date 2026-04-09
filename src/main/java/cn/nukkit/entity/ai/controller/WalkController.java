@@ -6,8 +6,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityPhysical;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.Arrays;
 
@@ -42,7 +42,7 @@ public class WalkController implements IController {
             var speed = entity.getMovementSpeed();
 
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
-                entity.setDataFlag(EntityFlag.MOVING, false);
+                entity.setDataFlag(ActorFlags.MOVING, false);
                 return false;
             }
 
@@ -54,7 +54,7 @@ public class WalkController implements IController {
 
             var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
-                entity.setDataFlag(EntityFlag.MOVING, false);
+                entity.setDataFlag(ActorFlags.MOVING, false);
                 return false;
             }
 
@@ -97,7 +97,7 @@ public class WalkController implements IController {
             }
 
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
-            entity.setDataFlag(EntityFlag.MOVING, true);
+            entity.setDataFlag(ActorFlags.MOVING, true);
 
             if (xzLength < speed) {
                 needNewDirection(entity);
@@ -106,7 +106,7 @@ public class WalkController implements IController {
 
             return true;
         } else {
-            entity.setDataFlag(EntityFlag.MOVING, false);
+            entity.setDataFlag(ActorFlags.MOVING, false);
             return false;
         }
     }

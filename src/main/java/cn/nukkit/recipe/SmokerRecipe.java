@@ -30,4 +30,9 @@ public class SmokerRecipe extends SmeltingRecipe {
     public RecipeType getType() {
         return RecipeType.SMOKER;
     }
+
+    @Override
+    public String getRecipeIdTag() {
+        return "smoker";
+    }
 }

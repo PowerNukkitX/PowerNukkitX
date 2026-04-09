@@ -10,19 +10,29 @@ import cn.nukkit.entity.components.InventoryComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.UpdateEquipmentPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.*;
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobArmorEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateEquipPacket;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class HorseInventory<T extends EntityCreature & InventoryHolder> extends BaseInventory {
     protected final T equineHolder;
@@ -30,7 +40,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
     private final EquippableComponent equippable;
 
     public HorseInventory(T holder, int size) {
-        super(holder, InventoryType.HORSE, Math.max(size, resolveMinSize(holder)));
+        super(holder, ContainerType.HORSE, Math.max(size, resolveMinSize(holder)));
         this.equineHolder = holder;
         this.equippable = resolveEquippable(holder);
     }
@@ -92,13 +102,13 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         for (Map.Entry<Integer, EquippableComponent.Slot> e : slotsByIndex.entrySet()) {
             int idx = e.getKey();
             if (idx >= 0 && idx < this.getSize()) {
-                slotTypeMap.put(idx, ContainerSlotType.HORSE_EQUIP);
+                slotTypeMap.put(idx, ContainerEnumName.HORSE_EQUIP_CONTAINER);
             }
         }
         // Everything else is a regular slot
         for (int i = 0; i < this.getSize(); i++) {
             if (!slotTypeMap.containsKey(i)) {
-                slotTypeMap.put(i, ContainerSlotType.ANVIL_INPUT);
+                slotTypeMap.put(i, ContainerEnumName.ANVIL_INPUT_CONTAINER);
             }
         }
     }
@@ -150,7 +160,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
                 }
                 if (getHolder().hasHome()) getHolder().setHomePosition();
             } else {
-                getHolder().getLevel().addLevelSoundEvent(getHolder(), LevelSoundEvent.SADDLE, -1, getHolder().getIdentifier(), false, false);
+                getHolder().getLevel().addLevelSoundEvent(getHolder(), SoundEvent.SADDLE, -1, getHolder().getIdentifier(), false, false);
                 getHolder().setSaddle(true);
                 getHolder().setInputControls(true);
 
@@ -169,10 +179,13 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
 
             if (!armor.isNull()) getHolder().getLevel().addSound(getHolder(), Sound.MOB_HORSE_ARMOR);
 
-            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.eid = getHolder().getId();
-            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR, armor, Item.AIR, Item.AIR};
-            mobArmorEquipmentPacket.body = armor;
+            final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getId());
+            mobArmorEquipmentPacket.setHead(ItemData.AIR);
+            mobArmorEquipmentPacket.setTorso(ItemData.AIR);
+            mobArmorEquipmentPacket.setLegs(ItemData.AIR);
+            mobArmorEquipmentPacket.setFeet(ItemData.AIR);
+            mobArmorEquipmentPacket.setBody(armor.toNetwork());
 
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
             return;
@@ -183,23 +196,25 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
 
             // TODO: Do Nautilus play a sound on equip armor?
 
-            MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
-            mobArmorEquipmentPacket.eid = getHolder().getId();
-            mobArmorEquipmentPacket.slots = new Item[]{Item.AIR, armor, Item.AIR, Item.AIR};
-            mobArmorEquipmentPacket.body = armor;
+            final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+            mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getId());
+            mobArmorEquipmentPacket.setHead(ItemData.AIR);
+            mobArmorEquipmentPacket.setTorso(ItemData.AIR);
+            mobArmorEquipmentPacket.setLegs(ItemData.AIR);
+            mobArmorEquipmentPacket.setFeet(ItemData.AIR);
+            mobArmorEquipmentPacket.setBody(armor.toNetwork());
 
             Server.broadcastPacket(this.getViewers(), mobArmorEquipmentPacket);
             return;
         }
-
     }
 
     @Override
     public void onClose(Player who) {
-        ContainerClosePacket pk = new ContainerClosePacket();
-        pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        pk.type = getType();
+        final ContainerClosePacket pk = new ContainerClosePacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
+        pk.setContainerType(this.getType());
         who.dataPacket(pk);
         super.onClose(who);
     }
@@ -216,44 +231,42 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         sendEquippedVisuals(who);
     }
 
-    protected UpdateEquipmentPacket createUpdateEquipmentPacket(Player who) {
-        var slots = new ListTag<CompoundTag>();
+    protected UpdateEquipPacket createUpdateEquipmentPacket(Player who) {
+        final List<NbtMap> slots = new ObjectArrayList<>();
 
         int storageIdx = 0;
         for (EquippableComponent.Slot def : getSortedEquippableSlots()) {
             if (def == null) continue;
 
-            CompoundTag slotTag = new CompoundTag()
+            NbtMapBuilder slotTag = NbtMap.builder()
                     .putInt("slotNumber", def.slot())
-                    .putList("acceptedItems", buildAcceptedItemsTag(def.acceptedItems()));
+                    .putList("acceptedItems", NbtType.COMPOUND, buildAcceptedItemsTag(def.acceptedItems()));
 
             Item equipped = (storageIdx >= 0 && storageIdx < this.getSize()) ? this.getItem(storageIdx) : Item.AIR;
             if (!equipped.isNull()) {
-                slotTag.putCompound("item", new CompoundTag()
+                slotTag.putCompound("item", NbtMap.builder()
                         .putString("Name", equipped.getId())
-                        .putShort("Aux", Short.MAX_VALUE));
+                        .putShort("Aux", Short.MAX_VALUE)
+                        .build()
+                );
             }
 
-            slots.add(slotTag);
+            slots.add(slotTag.build());
             storageIdx++;
         }
 
-        var nbt = new CompoundTag().putList("slots", slots);
+        var nbt = NbtMap.builder().putList("slots", NbtType.COMPOUND, slots).build();
 
-        UpdateEquipmentPacket updateEquipmentPacket = new UpdateEquipmentPacket();
-        updateEquipmentPacket.windowId = who.getWindowId(this);
-        updateEquipmentPacket.windowType = this.getType().getNetworkType();
-        updateEquipmentPacket.eid = getHolder().getId();
-        try {
-            updateEquipmentPacket.namedtag = NBTIO.writeNetwork(nbt);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return updateEquipmentPacket;
+        final UpdateEquipPacket updateEquipPacket = new UpdateEquipPacket();
+        updateEquipPacket.setContainerId((short) who.getWindowId(this));
+        updateEquipPacket.setType((short) this.getType().getId());
+        updateEquipPacket.setEntityUniqueId(this.getHolder().getId());
+        updateEquipPacket.setTag(nbt);
+        return updateEquipPacket;
     }
 
-    private static ListTag<CompoundTag> buildAcceptedItemsTag(Set<String> acceptedItems) {
-        ListTag<CompoundTag> list = new ListTag<>();
+    private static List<NbtMap> buildAcceptedItemsTag(Set<String> acceptedItems) {
+        final List<NbtMap> list = new ObjectArrayList<>();
 
         if (acceptedItems == null || acceptedItems.isEmpty()) {
             return list;
@@ -264,9 +277,13 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
             String s = id.trim();
             if (s.isEmpty()) continue;
 
-            list.add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                    .putShort("Aux", Short.MAX_VALUE)
-                    .putString("Name", s)));
+            list.add(NbtMap.builder()
+                    .putCompound("slotItem", NbtMap.builder()
+                            .putShort("Aux", Short.MAX_VALUE)
+                            .putString("Name", s)
+                            .build()
+                    ).build()
+            );
         }
 
         return list;
@@ -280,10 +297,13 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         if (armor.isNull()) armor = getEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR);
         if (armor.isNull()) armor = Item.AIR;
 
-        MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-        pk.eid = getHolder().getId();
-        pk.slots = new Item[]{Item.AIR, armor, Item.AIR, Item.AIR};
-        pk.body = armor;
+        final MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
+        pk.setTargetRuntimeID(this.getHolder().getId());
+        pk.setHead(ItemData.AIR);
+        pk.setTorso(ItemData.AIR);
+        pk.setLegs(ItemData.AIR);
+        pk.setFeet(ItemData.AIR);
+        pk.setBody(armor.toNetwork());
 
         Server.broadcastPacket(players, pk);
     }
@@ -362,7 +382,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         }
     }
 
-    public void load(ListTag<CompoundTag> inventoryTag) {
+    public void load(List<NbtMap> inventoryTag) {
         if (inventoryTag == null) return;
 
         EquippableComponent eq = this.getEquippableDefinition();
@@ -370,10 +390,10 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         int base = getStorageBaseUiSlot();
 
         for (int i = 0; i < inventoryTag.size(); i++) {
-            CompoundTag entry = inventoryTag.get(i);
-            int slot = entry.contains("Slot") ? (entry.getByte("Slot") & 0xff) : i;
+            NbtMap entry = inventoryTag.get(i);
+            int slot = entry.containsKey("Slot") ? (entry.getByte("Slot") & 0xff) : i;
 
-            Item it = NBTIO.getItemHelper(entry);
+            Item it = ItemHelper.read(entry);
             if (it == null || it.isNull()) continue;
 
             // 1) Equippable by UI slotNumber
@@ -399,8 +419,8 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         }
     }
 
-    public ListTag<CompoundTag> save(boolean includeStorage) {
-        ListTag<CompoundTag> inventoryTag = new ListTag<>();
+    public List<NbtMap> save(boolean includeStorage) {
+        final List<NbtMap> inventoryTag = new ObjectArrayList<>();
 
         EquippableComponent eq = this.getEquippableDefinition();
         int equipCount = eq != null ? eq.getEquipCount() : 0;
@@ -416,7 +436,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
                 if (storageIdx >= this.getSize()) break;
                 Item it = this.getItem(storageIdx);
                 if (it == null) it = Item.AIR;
-                inventoryTag.add(NBTIO.putItemHelper(it, def.slot()));
+                inventoryTag.add(ItemHelper.write(it, def.slot()));
                 storageIdx++;
             }
         }
@@ -431,7 +451,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
                 if (it == null || it.isNull()) continue;
 
                 int uiSlot = base + storageIdx;
-                inventoryTag.add(NBTIO.putItemHelper(it, uiSlot));
+                inventoryTag.add(ItemHelper.write(it, uiSlot));
                 storageIdx++;
             }
         }

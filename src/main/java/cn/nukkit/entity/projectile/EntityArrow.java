@@ -2,14 +2,15 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.item.ItemArrow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,15 +30,15 @@ public class EntityArrow extends SlenderProjectile {
 
     protected ItemArrow item;
 
-    public EntityArrow(IChunk chunk, CompoundTag nbt) {
+    public EntityArrow(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityArrow(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         this(chunk, nbt, shootingEntity, false);
     }
 
-    public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
+    public EntityArrow(IChunk chunk, NbtMap nbt, Entity shootingEntity, boolean critical) {
         super(chunk, nbt, shootingEntity);
         this.setCritical(critical);
     }
@@ -79,7 +80,7 @@ public class EntityArrow extends SlenderProjectile {
     protected void initEntity() {
         super.initEntity();
 
-        this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
+        this.pickupMode = namedTag.containsKey("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
     }
 
     public void setCritical() {
@@ -87,11 +88,11 @@ public class EntityArrow extends SlenderProjectile {
     }
 
     public boolean isCritical() {
-        return this.getDataFlag(EntityFlag.CRITICAL);
+        return this.getDataFlag(ActorFlags.CRITICAL);
     }
 
     public void setCritical(boolean value) {
-        this.setDataFlag(EntityFlag.CRITICAL, value);
+        this.setDataFlag(ActorFlags.CRITICAL, value);
     }
 
     @Override
@@ -144,8 +145,8 @@ public class EntityArrow extends SlenderProjectile {
     @Override
     protected void afterCollisionWithEntity(Entity entity) {
         if (hadCollision) {
-            if(getArrowItem() != null) {
-                if(getArrowItem().getTippedArrowPotion() != null) {
+            if (getArrowItem() != null) {
+                if (getArrowItem().getTippedArrowPotion() != null) {
                     getArrowItem().getTippedArrowPotion().getEffects(PotionApplicationMode.ARROW).forEach(entity::addEffect);
                 }
             }
@@ -158,10 +159,10 @@ public class EntityArrow extends SlenderProjectile {
     @Override
     protected void addHitEffect() {
         this.level.addSound(this, Sound.RANDOM_BOWHIT);
-        EntityEventPacket packet = new EntityEventPacket();
-        packet.eid = getId();
-        packet.event = EntityEventPacket.ARROW_SHAKE;
-        packet.data = 7; // TODO Magic value. I have no idea why we have to set it to 7 here...
+        final ActorEventPacket packet = new ActorEventPacket();
+        packet.setTargetRuntimeID(this.getId());
+        packet.setType(ActorEvent.SHAKE);
+        packet.setData(7); // TODO Magic value. I have no idea why we have to set it to 7 here...
         Server.broadcastPacket(this.hasSpawned.values(), packet);
         onGround = true;
     }
@@ -170,7 +171,7 @@ public class EntityArrow extends SlenderProjectile {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putByte("pickup", this.pickupMode);
+        this.namedTag = this.namedTag.toBuilder().putByte("pickup", (byte) this.pickupMode).build();
     }
 
     public int getPickupMode() {
@@ -183,8 +184,8 @@ public class EntityArrow extends SlenderProjectile {
 
     public void setItem(ItemArrow arrow) {
         this.item = arrow;
-        if(arrow.getTippedArrowPotion() != null) {
-            this.setDataProperty(EntityDataTypes.CUSTOM_DISPLAY, arrow.getTippedArrowPotion().id() + 1);
+        if (arrow.getTippedArrowPotion() != null) {
+            this.setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) arrow.getTippedArrowPotion().id() + 1);
         }
     }
 

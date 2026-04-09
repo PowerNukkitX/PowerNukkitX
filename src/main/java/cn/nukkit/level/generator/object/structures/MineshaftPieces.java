@@ -2,12 +2,10 @@ package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.enums.TorchFacingDirection;
-import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.item.EntityChestMinecart;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
@@ -15,17 +13,16 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.IntArrayTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 import static cn.nukkit.block.property.CommonBlockProperties.RAIL_DIRECTION_10;
@@ -90,14 +87,14 @@ public class MineshaftPieces {
             this.type = type;
         }
 
-        public MineshaftPiece(CompoundTag tag) {
+        public MineshaftPiece(NbtMap tag) {
             super(tag);
             this.type = Type.byId(tag.getInt("MST"));
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            tag.putInt("MST", this.type.ordinal());
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            return tag.toBuilder().putInt("MST", this.type.ordinal()).build();
         }
 
         protected BlockState getPlanksBlock() {
@@ -142,9 +139,9 @@ public class MineshaftPieces {
             this.boundingBox = new BoundingBox(x, 50, z, x + 7 + random.nextBoundedInt(6), 54 + random.nextBoundedInt(6), z + 7 + random.nextBoundedInt(6));
         }
 
-        public MineshaftRoom(CompoundTag tag) {
+        public MineshaftRoom(NbtMap tag) {
             super(tag);
-            tag.getList("Entrances", IntArrayTag.class).getAll().forEach(arrayTag -> this.childEntranceBoxes.add(new BoundingBox(arrayTag.data)));
+            tag.getList("Entrances", NbtType.INT_ARRAY).forEach(arrayTag -> this.childEntranceBoxes.add(new BoundingBox(arrayTag)));
         }
 
         @Override //\\ MineshaftRoom::getType() // 1297306189i64;
@@ -239,13 +236,14 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            ListTag<IntArrayTag> entrances = new ListTag<>();
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            List<int[]> entrances = new ObjectArrayList<>();
             for (BoundingBox childEntranceBox : this.childEntranceBoxes) {
                 entrances.add(childEntranceBox.createTag());
             }
             tag.put("Entrances", entrances);
+            return tag;
         }
     }
 
@@ -269,7 +267,7 @@ public class MineshaftPieces {
             }
         }
 
-        public MineshaftCorridor(CompoundTag tag) {
+        public MineshaftCorridor(NbtMap tag) {
             super(tag);
             this.hasRails = tag.getBoolean("hr");
             this.spiderCorridor = tag.getBoolean("sc");
@@ -320,12 +318,13 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("hr", this.hasRails);
-            tag.putBoolean("sc", this.spiderCorridor);
-            tag.putBoolean("hps", this.hasPlacedSpider);
-            tag.putInt("Num", this.numSections);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("hr", this.hasRails)
+                    .putBoolean("sc", this.spiderCorridor)
+                    .putBoolean("hps", this.hasPlacedSpider)
+                    .putInt("Num", this.numSections)
+                    .build();
         }
 
         @Override
@@ -407,18 +406,13 @@ public class MineshaftPieces {
                     IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
                         EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
-                                chunk, new CompoundTag()
-                                        .putList("Pos", new ListTag<>()
-                                                .add(new DoubleTag(vec.getX() + 0.5))
-                                                .add(new DoubleTag(vec.getY() + 0.0625D))
-                                                .add(new DoubleTag(vec.getZ() + 0.5)))
-                                        .putList("Motion", new ListTag<>()
-                                                .add(new DoubleTag(0))
-                                                .add(new DoubleTag(0))
-                                                .add(new DoubleTag(0)))
-                                        .putList("Rotation", new ListTag<>()
-                                                .add(new FloatTag(0))
-                                                .add(new FloatTag(0)))
+                                chunk, NbtMap.builder()
+                                        .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                                vec.getX() + 0.5, vec.getY() + 0.0625D, vec.getZ() + 0.5
+                                        ))
+                                        .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                                        .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
+                                        .build()
                         );
                         new ChestPopulator().create(minecart.getInventory(), random);
                     }
@@ -544,7 +538,7 @@ public class MineshaftPieces {
             this.isTwoFloored = boundingBox.getYSpan() > 3;
         }
 
-        public MineshaftCrossing(CompoundTag tag) {
+        public MineshaftCrossing(NbtMap tag) {
             super(tag);
             this.isTwoFloored = tag.getBoolean("tf");
             this.direction = BlockFace.fromHorizontalIndex(tag.getInt("D"));
@@ -589,10 +583,11 @@ public class MineshaftPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("tf", this.isTwoFloored);
-            tag.putInt("D", this.direction.getHorizontalIndex());
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("tf", this.isTwoFloored)
+                    .putInt("D", this.direction.getHorizontalIndex())
+                    .build();
         }
 
         @Override
@@ -687,7 +682,7 @@ public class MineshaftPieces {
             this.boundingBox = boundingBox;
         }
 
-        public MineshaftStairs(CompoundTag tag) {
+        public MineshaftStairs(NbtMap tag) {
             super(tag);
         }
 
@@ -759,6 +754,7 @@ public class MineshaftPieces {
             return true;
         }
     }
+
     public enum Type {
         NORMAL,
         MESA;
@@ -778,7 +774,7 @@ public class MineshaftPieces {
                     .register(new ItemEntry(Item.GOLDEN_APPLE, 20))
                     .register(new ItemEntry(Item.ENCHANTED_GOLDEN_APPLE, 1))
                     .register(new ItemEntry(Item.NAME_TAG, 30))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1,1, 10, getDefaultEnchantments()))
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 10, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.IRON_PICKAXE, 5))
                     .register(new ItemEntry(Item.AIR.getId(), 5));
             this.pools.put(pool1.build(), new RollEntry(1, pool1.getTotalWeight()));

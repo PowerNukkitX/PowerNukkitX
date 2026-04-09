@@ -7,7 +7,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.particle.DestroyBlockParticle;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 public class EatGrassExecutor implements IBehaviorExecutor {
 
@@ -53,9 +54,9 @@ public class EatGrassExecutor implements IBehaviorExecutor {
     }
 
     protected void playEatGrassAnimation(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.EAT_GRASS_ANIMATION;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.EAT_GRASS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

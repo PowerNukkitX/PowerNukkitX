@@ -86,7 +86,7 @@ public interface CustomBlock {
         var block = this.toBlock();
         double breakTime = block.calculateBreakTime(item, player);
         var comp = this.getDefinition().nbt().getCompound("components");
-        if (comp.containsCompound("minecraft:destructible_by_mining")) {
+        if (comp.containsKey("minecraft:destructible_by_mining")) {
             var clientBreakTime = comp.getCompound("minecraft:destructible_by_mining").getFloat("value");
             if (player != null) {
                 if (player.getLevel().getTick() - player.getLastInAirTick() < 5) {

@@ -29,22 +29,21 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
-
 
 import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 
@@ -52,7 +51,7 @@ import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
  * @author PikyCZ
  */
 public class EntityEvocationIllager extends EntityIllager implements EntityWalkable {
-    public EntityEvocationIllager(IChunk chunk, CompoundTag nbt) {
+    public EntityEvocationIllager(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -145,9 +144,9 @@ public class EntityEvocationIllager extends EntityIllager implements EntityWalka
                                 ), 4, 1),
                         new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                entity -> !entity.getDataFlag(EntityFlag.CASTING)
+                                entity -> !entity.getDataFlag(ActorFlags.CASTING)
                         ), 3, 1),
-                        new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(EntityFlag.CASTING), 2, 1),
+                        new Behavior(new DoNothingExecutor(), entity -> entity.getDataFlag(ActorFlags.CASTING), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
                 Set.of(

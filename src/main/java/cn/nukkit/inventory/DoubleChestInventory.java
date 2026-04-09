@@ -5,10 +5,11 @@ import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class DoubleChestInventory extends ContainerInventory {
     private final ChestInventory right;
 
     public DoubleChestInventory(BlockEntityChest left, BlockEntityChest right) {
-        super(null, InventoryType.CONTAINER, 27 + 27);
+        super(null, ContainerType.CONTAINER, 27 + 27);
 
         this.left = left.getRealInventory();
         this.left.setDoubleInventory(this);
@@ -49,9 +50,9 @@ public class DoubleChestInventory extends ContainerInventory {
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+            map.put(i, ContainerEnumName.LEVEL_ENTITY_CONTAINER);
         }
     }
 
@@ -124,24 +125,21 @@ public class DoubleChestInventory extends ContainerInventory {
         this.right.viewers.add(who);
 
         if (this.getVisibleViewersCount() == 1) {
-            BlockEventPacket pk1 = new BlockEventPacket();
-            pk1.x = (int) this.left.getHolder().getX();
-            pk1.y = (int) this.left.getHolder().getY();
-            pk1.z = (int) this.left.getHolder().getZ();
-            pk1.type = 1;
-            pk1.value = 2;
+            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk1 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
+            pk1.setBlockPosition(Vector3i.from(this.left.getHolder().getX(), this.left.getHolder().getY(), this.left.getHolder().getZ()));
+            pk1.setEventType(1);
+            pk1.setEventValue(2);
+
             Level level = this.left.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
                 level.addChunkPacket((int) this.left.getHolder().getX() >> 4, (int) this.left.getHolder().getZ() >> 4, pk1);
             }
 
-            BlockEventPacket pk2 = new BlockEventPacket();
-            pk2.x = (int) this.right.getHolder().getX();
-            pk2.y = (int) this.right.getHolder().getY();
-            pk2.z = (int) this.right.getHolder().getZ();
-            pk2.type = 1;
-            pk2.value = 2;
+            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk2 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
+            pk2.setBlockPosition(Vector3i.from(this.right.getHolder().getX(), this.right.getHolder().getY(), this.right.getHolder().getZ()));
+            pk2.setEventType(1);
+            pk2.setEventValue(2);
 
             level = this.right.getHolder().getLevel();
             if (level != null) {
@@ -154,12 +152,10 @@ public class DoubleChestInventory extends ContainerInventory {
     @Override
     public void onClose(Player who) {
         if (this.getVisibleViewersCount() == 1) {
-            BlockEventPacket pk1 = new BlockEventPacket();
-            pk1.x = (int) this.right.getHolder().getX();
-            pk1.y = (int) this.right.getHolder().getY();
-            pk1.z = (int) this.right.getHolder().getZ();
-            pk1.type = 1;
-            pk1.value = 0;
+            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk1 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
+            pk1.setBlockPosition(Vector3i.from(this.right.getHolder().getX(), this.right.getHolder().getY(), this.right.getHolder().getZ()));
+            pk1.setEventType(1);
+            pk1.setEventValue(0);
 
             Level level = this.right.getHolder().getLevel();
             if (level != null) {
@@ -167,12 +163,10 @@ public class DoubleChestInventory extends ContainerInventory {
                 level.addChunkPacket((int) this.right.getHolder().getX() >> 4, (int) this.right.getHolder().getZ() >> 4, pk1);
             }
 
-            BlockEventPacket pk2 = new BlockEventPacket();
-            pk2.x = (int) this.left.getHolder().getX();
-            pk2.y = (int) this.left.getHolder().getY();
-            pk2.z = (int) this.left.getHolder().getZ();
-            pk2.type = 1;
-            pk2.value = 0;
+            final org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket pk2 = new org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket();
+            pk2.setBlockPosition(Vector3i.from(this.left.getHolder().getX(), this.left.getHolder().getY(), this.left.getHolder().getZ()));
+            pk2.setEventType(1);
+            pk2.setEventValue(0);
 
             level = this.left.getHolder().getLevel();
             if (level != null) {
@@ -195,10 +189,10 @@ public class DoubleChestInventory extends ContainerInventory {
     }
 
     public void sendSlot(Inventory inv, int index, Player... players) {
-        InventorySlotPacket pk = new InventorySlotPacket();
+        final InventorySlotPacket pk = new InventorySlotPacket();
         int i = inv == this.right ? this.left.getSize() + index : index;
-        pk.slot = toNetworkSlot(i);
-        pk.item = inv.getUnclonedItem(index);
+        pk.setSlot(this.toNetworkSlot(i));
+        pk.setItem(inv.getUnclonedItem(index).toNetwork());
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -206,10 +200,12 @@ public class DoubleChestInventory extends ContainerInventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
-            pk.fullContainerName = new FullContainerName(
-                    this.getSlotType(pk.slot),
-                    id
+            pk.setContainerID(id);
+            pk.setFullContainerName(
+                    new FullContainerName(
+                            this.getContainerEnumName(pk.getSlot()),
+                            id
+                    )
             );
             player.dataPacket(pk);
         }

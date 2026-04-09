@@ -29,4 +29,9 @@ public class CampfireRecipe extends SmeltingRecipe {
     public RecipeType getType() {
         return RecipeType.CAMPFIRE;
     }
+
+    @Override
+    public String getRecipeIdTag() {
+        return "campfire";
+    }
 }

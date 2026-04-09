@@ -1,11 +1,10 @@
 package cn.nukkit.scoreboard.scorer;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.network.protocol.SetScorePacket;
-import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.IScoreboardLine;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
 
 import java.util.UUID;
 
@@ -24,8 +23,8 @@ public class EntityScorer implements IScorer {
     }
 
     @Override
-    public ScorerType getScorerType() {
-        return ScorerType.ENTITY;
+    public ScoreInfo.IdentityDefinitionType getScorerType() {
+        return ScoreInfo.IdentityDefinitionType.ENTITY;
     }
 
     @Override
@@ -47,7 +46,13 @@ public class EntityScorer implements IScorer {
     }
 
     @Override
-    public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.ENTITY, entityUuid.getMostSignificantBits());
+    public ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        return new ScoreInfo(
+                line.getLineId(),
+                scoreboard.getObjectiveName(),
+                line.getScore(),
+                this.getScorerType(),
+                entityUuid.getMostSignificantBits()
+        );
     }
 }

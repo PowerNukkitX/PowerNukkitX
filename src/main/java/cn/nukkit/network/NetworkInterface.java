@@ -2,10 +2,10 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.network.connection.BedrockPong;
-import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.process.NetworkState;
 import cn.nukkit.network.security.BotnetDetector;
+import org.cloudburstmc.protocol.bedrock.BedrockPong;
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import oshi.hardware.NetworkIF;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,9 +42,9 @@ public interface NetworkInterface {
     @Nullable
     List<NetworkIF> getHardWareNetworkInterfaces();
 
-    BedrockSession getSession(InetSocketAddress address);
+    BedrockServerSession getSession(InetSocketAddress address);
 
-    void replaceSessionAddress(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockSession newSession);
+    void replaceSessionAddress(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockServerSession newSession);
 
     void onSessionDisconnect(InetSocketAddress address);
 
@@ -59,6 +59,8 @@ public interface NetworkInterface {
     boolean isAddressBlocked(InetSocketAddress address);
 
     BedrockPong getPong();
+
+    void updatePong(BedrockPong pong);
 
     BotnetDetector getBotnetDetector();
 }

@@ -2,20 +2,27 @@ package cn.nukkit.registry;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.*;
-import cn.nukkit.item.armor.copper.*;
+import cn.nukkit.item.armor.copper.ItemCopperBoots;
+import cn.nukkit.item.armor.copper.ItemCopperChestplate;
+import cn.nukkit.item.armor.copper.ItemCopperHelmet;
+import cn.nukkit.item.armor.copper.ItemCopperHorseArmor;
+import cn.nukkit.item.armor.copper.ItemCopperLeggings;
 import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
-import cn.nukkit.item.tools.copper.*;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.item.tools.copper.ItemCopperAxe;
+import cn.nukkit.item.tools.copper.ItemCopperHoe;
+import cn.nukkit.item.tools.copper.ItemCopperPickaxe;
+import cn.nukkit.item.tools.copper.ItemCopperShovel;
+import cn.nukkit.item.tools.copper.ItemCopperSword;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -37,7 +44,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
 
     @Getter
-    private static CompoundTag itemComponents = new CompoundTag();
+    private static NbtMap itemComponents = NbtMap.EMPTY;
 
     @UnmodifiableView
     public Map<String, CustomItemDefinition> getCustomItemDefinition() {
@@ -622,8 +629,9 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     }
 
     private void loadItemComponents() {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_components.nbt")) {
-            itemComponents = NBTIO.readCompressed(stream);
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_components.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            itemComponents = (NbtMap) nbtInputStream.readTag();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -697,7 +705,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
-    public Item get(String id, int meta, int count, CompoundTag tags) {
+    public Item get(String id, int meta, int count, NbtMap tags) {
         try {
             var c = CACHE_CONSTRUCTORS.get(id);
             if (c == null) return null;
@@ -801,7 +809,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             CUSTOM_ITEM_DEFINITIONS.put(key, def);
             Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
 
-            CompoundTag nbt = def.nbt();
+            NbtMap nbt = def.nbt();
             if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
                 Item ci = (Item) customItem;
                 ci.setNetId(null);
@@ -823,7 +831,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         int rid = CustomItemDefinition.ensureRuntimeIdAllocated(eggId);
         Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(eggId, rid, false));
 
-        CompoundTag nbt = def.nbt();
+        NbtMap nbt = def.nbt();
         if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
             Item ci = this.get(eggId, 0);
             if (ci != null) {

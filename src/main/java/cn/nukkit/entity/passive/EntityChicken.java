@@ -34,8 +34,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,27 +48,28 @@ import java.util.Set;
  */
 public class EntityChicken extends EntityAnimal implements EntityWalkable, ClimateVariant {
     private static final String[] CLIMATE_VARIANTS = {
-        "temperate",
-        "warm",
-        "cold"
+            "temperate",
+            "warm",
+            "cold"
     };
 
     private static final String[] SOUND_VARIANTS = {
-        "default",
-        "picky"
+            "default",
+            "picky"
     };
 
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new EnumEntityProperty("minecraft:climate_variant", CLIMATE_VARIANTS, "temperate", true),
-        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
+            new EnumEntityProperty("minecraft:climate_variant", CLIMATE_VARIANTS, "temperate", true),
+            new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return CHICKEN;
     }
 
-    public EntityChicken(IChunk chunk, CompoundTag nbt) {
+    public EntityChicken(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -83,8 +84,8 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     private Item getEgg() {
-        if(getVariant() == Variant.COLD) return Item.get(Item.BLUE_EGG);
-        if(getVariant() == Variant.WARM) return Item.get(Item.BROWN_EGG);
+        if (getVariant() == Variant.COLD) return Item.get(Item.BLUE_EGG);
+        if (getVariant() == Variant.WARM) return Item.get(Item.BROWN_EGG);
         return Item.get(Item.EGG);
     }
 
@@ -118,15 +119,15 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
-                    ItemID.WHEAT_SEEDS,
-                    ItemID.BEETROOT_SEEDS,
-                    ItemID.MELON_SEEDS,
-                    ItemID.PUMPKIN_SEEDS,
-                    ItemID.PITCHER_POD,
-                    ItemID.TORCHFLOWER_SEEDS
+                        ItemID.WHEAT_SEEDS,
+                        ItemID.BEETROOT_SEEDS,
+                        ItemID.MELON_SEEDS,
+                        ItemID.PUMPKIN_SEEDS,
+                        ItemID.PITCHER_POD,
+                        ItemID.TORCHFLOWER_SEEDS
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.CHICKEN, EntityID.CHICKEN)
+                        new BreedableComponent.BreedsWith(EntityID.CHICKEN, EntityID.CHICKEN)
                 ),
                 false
         );
@@ -138,12 +139,12 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(ItemID.WHEAT_SEEDS),
-                    new AgeableComponent.FeedItem(ItemID.BEETROOT_SEEDS),
-                    new AgeableComponent.FeedItem(ItemID.MELON_SEEDS),
-                    new AgeableComponent.FeedItem(ItemID.PUMPKIN_SEEDS),
-                    new AgeableComponent.FeedItem(ItemID.PITCHER_POD),
-                    new AgeableComponent.FeedItem(ItemID.TORCHFLOWER_SEEDS)
+                        new AgeableComponent.FeedItem(ItemID.WHEAT_SEEDS),
+                        new AgeableComponent.FeedItem(ItemID.BEETROOT_SEEDS),
+                        new AgeableComponent.FeedItem(ItemID.MELON_SEEDS),
+                        new AgeableComponent.FeedItem(ItemID.PUMPKIN_SEEDS),
+                        new AgeableComponent.FeedItem(ItemID.PITCHER_POD),
+                        new AgeableComponent.FeedItem(ItemID.TORCHFLOWER_SEEDS)
                 ),
                 null,
                 null,
@@ -190,7 +191,7 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(namedTag.contains("variant")) {
+        if (namedTag.containsKey("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 
@@ -198,12 +199,12 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.WHEAT_SEEDS,
-        ItemID.BEETROOT_SEEDS,
-        ItemID.MELON_SEEDS,
-        ItemID.PUMPKIN_SEEDS,
-        ItemID.PITCHER_POD,
-        ItemID.TORCHFLOWER_SEEDS
+            ItemID.WHEAT_SEEDS,
+            ItemID.BEETROOT_SEEDS,
+            ItemID.MELON_SEEDS,
+            ItemID.PUMPKIN_SEEDS,
+            ItemID.PITCHER_POD,
+            ItemID.TORCHFLOWER_SEEDS
     );
 
     @Override
@@ -211,83 +212,83 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
-                ),
-                Set.of(
-                    new Behavior(
-                        new PlaySoundExecutor(Sound.MOB_CHICKEN_SAY),
-                            new RandomSoundEvaluator(),
-                        7,1
-                    ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.35f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        6
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.0f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.22f, 12, 40, true, 100, true, 10),
-                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.22f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    ),
-                    new Behavior(
-                            entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
-                            entity.getLevel().dropItem(entity, getEgg());
-                            entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
-                            return false;
-                            },
-                            any(
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                2, 1
+                        ),
+                        new Behavior(
+                                new AnimalGrowExecutor(),
                                 all(
-                                    new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
-                                    new ProbabilityEvaluator(20, 100)
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
                                 ),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
-                            ),
-                        1, 1, 20
-                    )
+                                1, 1, 1200
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20)
+                        new Behavior(
+                                new PlaySoundExecutor(Sound.MOB_CHICKEN_SAY),
+                                new RandomSoundEvaluator(),
+                                7, 1
+                        ),
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.35f),
+                                all(
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                6
+                        ),
+                        new Behavior(
+                                new TemptExecutor(1.0f, TEMPT_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.22f, 12, 40, true, 100, true, 10),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                                4, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                new ProbabilityEvaluator(4, 10),
+                                1, 1, 100
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.22f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1, 1
+                        ),
+                        new Behavior(
+                                entity -> {
+                                    entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, getLevel().getTick());
+                                    entity.getLevel().dropItem(entity, getEgg());
+                                    entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
+                                    return false;
+                                },
+                                any(
+                                        all(
+                                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
+                                                new ProbabilityEvaluator(20, 100)
+                                        ),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
+                                ),
+                                1, 1, 20
+                        )
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new NearestPlayerSensor(8, 0, 20)
+                ),
+                Set.of(
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

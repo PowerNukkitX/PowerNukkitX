@@ -9,7 +9,7 @@ import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BubbleParticle;
-import cn.nukkit.level.particle.SplashParticle;
+import cn.nukkit.level.particle.WaterSplashParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -119,7 +119,7 @@ public class BlockBubbleColumn extends BlockTransparent {
                 
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 for(int i = 0; i < 2; ++i) {
-                    level.addParticle(new SplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
+                    level.addParticle(new WaterSplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                     level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                 }
                 

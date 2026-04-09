@@ -24,7 +24,7 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class EntityEndermite extends EntityMob implements EntityWalkable, Entity
         return ENDERMITE;
     }
 
-    public EntityEndermite(IChunk chunk, CompoundTag nbt) {
+    public EntityEndermite(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

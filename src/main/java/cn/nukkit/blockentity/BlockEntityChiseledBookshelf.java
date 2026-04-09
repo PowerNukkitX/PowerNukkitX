@@ -4,9 +4,11 @@ import cn.nukkit.api.DoNotModify;
 import cn.nukkit.block.BlockChiseledBookshelf;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -16,7 +18,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     private Integer lastInteractedSlot;
     private Item[] items;
 
-    public BlockEntityChiseledBookshelf(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityChiseledBookshelf(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -28,7 +30,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        addBookshelfNbt(namedTag);
+        addBookshelfNbt(namedTag, true);
     }
 
     public Item removeBook(int index) {
@@ -66,9 +68,9 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag compoundTag = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
-        addBookshelfNbt(compoundTag);
+    public NbtMap getSpawnCompound() {
+        NbtMap compoundTag = super.getSpawnCompound().toBuilder().putBoolean("isMovable", this.isMovable()).build();
+        addBookshelfNbt(compoundTag, false);
         return compoundTag;
     }
 
@@ -82,15 +84,14 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         items = new Item[]{Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR, Item.AIR};
-        if (namedTag.containsInt(LAST_INTERACTED_SLOT)) {
+        if (namedTag.containsKey(LAST_INTERACTED_SLOT, NbtType.INT)) {
             this.lastInteractedSlot = namedTag.getInt(LAST_INTERACTED_SLOT);
         }
-        if (namedTag.containsList("Items")) {
-            ListTag<CompoundTag> items = namedTag.getList("Items", CompoundTag.class);
+        if (namedTag.containsKey("Items", NbtType.LIST)) {
+            List<NbtMap> items = namedTag.getList("Items", NbtType.COMPOUND);
             if (items.size() > 6) return;
-            List<CompoundTag> all = items.getAll();
-            for (int i = 0; i < all.size(); i++) {
-                CompoundTag compoundTag = all.get(i);
+            for (int i = 0; i < items.size(); i++) {
+                NbtMap compoundTag = items.get(i);
                 String name = compoundTag.getString("Name");
                 if (name.equals("")) {
                     this.items[i] = null;
@@ -99,7 +100,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                 Item item = Item.get(name);
                 item.setDamage(compoundTag.getByte("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
-                if (compoundTag.containsCompound("tag")) {
+                if (compoundTag.containsKey("tag", NbtType.COMPOUND)) {
                     item.setNamedTag(compoundTag.getCompound("tag"));
                 }
                 this.items[i] = item;
@@ -107,32 +108,35 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         }
     }
 
-    private void addBookshelfNbt(CompoundTag namedTag) {
+    private void addBookshelfNbt(NbtMap namedTag, boolean setSelf) {
         if (lastInteractedSlot != null) {
-            namedTag.putInt(LAST_INTERACTED_SLOT, lastInteractedSlot);
+            namedTag = namedTag.toBuilder().putInt(LAST_INTERACTED_SLOT, lastInteractedSlot).build();
         }
-        ListTag<CompoundTag> compoundTagListTag = new ListTag<>();
+        List<NbtMap> compoundTagListTag = new ObjectArrayList<>();
         for (var item : items) {
             if (item == null || item.isNull()) {
-                compoundTagListTag.add(new CompoundTag()
-                        .putByte("Count", 0)
+                compoundTagListTag.add(NbtMap.builder()
+                        .putByte("Count", (byte) 0)
                         .putString("Name", "")
-                        .putByte("Damage", 0)
+                        .putByte("Damage", (byte) 0)
                         .putBoolean("WasPickedUp", false)
+                        .build()
                 );
             } else {
-                CompoundTag compoundTag = new CompoundTag()
-                        .putByte("Count", item.getCount())
+                NbtMapBuilder compoundTag = NbtMap.builder()
+                        .putByte("Count", (byte) item.getCount())
                         .putString("Name", item.getId())
-                        .putByte("Damage", item.getDamage())
+                        .putByte("Damage", (byte) item.getDamage())
                         .putBoolean("WasPickedUp", false);
                 if (item.hasCompoundTag()) {
                     compoundTag.putCompound("tag", item.getNamedTag());
                 }
-                compoundTagListTag.add(compoundTag);
+                compoundTagListTag.add(compoundTag.build());
             }
 
         }
-        namedTag.putList("Items", compoundTagListTag);
+        namedTag = namedTag.toBuilder().putList("Items", NbtType.COMPOUND, compoundTagListTag).build();
+        if (setSelf)
+            this.namedTag = namedTag;
     }
 }

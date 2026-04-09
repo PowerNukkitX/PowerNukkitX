@@ -10,12 +10,12 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class ObjectDesertWell extends ObjectGenerator implements RuledObjectGenerator {
 
@@ -82,10 +82,10 @@ public class ObjectDesertWell extends ObjectGenerator implements RuledObjectGene
         int y = location.getFloorY();
         int z = location.getFloorZ();
         Level level = location.getLevel();
-        random.setSeed(level.getSeed() ^ (x+y+z));
+        random.setSeed(level.getSeed() ^ (x + y + z));
 
         int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (!definition.getTags().contains(BiomeTags.DESERT) || random.nextBoundedInt(500) != 0) {
             return false;
         }

@@ -45,7 +45,7 @@ public class SwampHutPopulator extends Populator {
     }
 
     protected boolean isBiomeValid(IChunk chunk) {
-        return Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7)).getTags().contains(BiomeTags.SWAMP);
+        return Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7)).second().getTags().contains(BiomeTags.SWAMP);
     }
 
     @Override

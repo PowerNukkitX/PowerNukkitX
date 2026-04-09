@@ -15,15 +15,18 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
 import cn.nukkit.recipe.ContainerRecipe;
 import cn.nukkit.recipe.MixRecipe;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 
 import java.util.HashSet;
+import java.util.List;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
 
@@ -35,7 +38,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public int fuelTotal;
     public int fuelAmount;
 
-    public BlockEntityBrewingStand(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityBrewingStand(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -51,15 +54,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void loadNBT() {
         super.loadNBT();
         inventory = new BrewingInventory(this);
-        if (!namedTag.contains("Items") || !(namedTag.get("Items") instanceof ListTag)) {
-            namedTag.putList("Items", new ListTag<>());
+        if (!namedTag.containsKey("Items") || !(namedTag.get("Items") instanceof List<?>)) {
+            this.namedTag = namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
         }
 
         for (int i = 0; i < getSize(); i++) {
             inventory.setItem(i, this.getItem(i));
         }
 
-        if (!namedTag.contains("CookTime") || namedTag.getShort("CookTime") > MAX_BREW_TIME) {
+        if (!namedTag.containsKey("CookTime") || namedTag.getShort("CookTime") > MAX_BREW_TIME) {
             this.brewTime = MAX_BREW_TIME;
         } else {
             this.brewTime = namedTag.getShort("CookTime");
@@ -76,7 +79,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public boolean hasName() {
-        return namedTag.contains("CustomName");
+        return namedTag.containsKey("CustomName");
     }
 
     @Override
@@ -86,7 +89,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             return;
         }
 
-        namedTag.putString("CustomName", name);
+        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
     }
 
     @Override
@@ -110,14 +113,15 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putList("Items", new ListTag<>());
+        this.namedTag = this.namedTag.toBuilder()
+                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+                .putShort("CookTime", (short) brewTime)
+                .putShort("FuelAmount", (short) this.fuelAmount)
+                .putShort("FuelTotal", (short) this.fuelTotal)
+                .build();
         for (int index = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
         }
-
-        namedTag.putShort("CookTime", brewTime);
-        namedTag.putShort("FuelAmount", this.fuelAmount);
-        namedTag.putShort("FuelTotal", this.fuelTotal);
     }
 
     @Override
@@ -130,7 +134,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
+        List<NbtMap> list = this.namedTag.getList("Items", NbtType.COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -145,24 +149,24 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         if (i < 0) {
             return Item.AIR;
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
+            NbtMap data = this.namedTag.getList("Items", NbtType.COMPOUND).get(i);
+            return ItemHelper.read(data);
         }
     }
 
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        NbtMap d = ItemHelper.write(item, index);
 
         if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
             if (i >= 0) {
-                this.namedTag.getList("Items").getAll().remove(i);
+                this.namedTag.getList("Items", NbtType.COMPOUND).remove(i);
             }
         } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
+            (this.namedTag.getList("Items", NbtType.COMPOUND)).add(d);
         } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
+            (this.namedTag.getList("Items", NbtType.COMPOUND)).add(i, d);
         }
     }
 
@@ -173,7 +177,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) this.close();
+        if (!isBlockEntityValid()) this.close();
 
         if (closed) {
             return false;
@@ -302,30 +306,30 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
-                pk1.windowId = windowId;
-                pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
-                pk1.value = this.fuelAmount;
+                final ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+                pk1.setContainerID((byte) windowId);
+                pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_AMOUNT);
+                pk1.setValue(this.fuelAmount);
                 p.dataPacket(pk1);
 
-                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
-                pk2.windowId = windowId;
-                pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
-                pk2.value = this.fuelTotal;
+                final ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+                pk1.setContainerID((byte) windowId);
+                pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_TOTAL);
+                pk1.setValue(this.fuelTotal);
                 p.dataPacket(pk2);
             }
         }
     }
 
     protected void sendBrewTime() {
-        ContainerSetDataPacket pk = new ContainerSetDataPacket();
-        pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-        pk.value = brewTime;
+        final ContainerSetDataPacket pk = new ContainerSetDataPacket();
+        pk.setId(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+        pk.setValue(this.fuelTotal);
 
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                pk.windowId = windowId;
+                pk.setContainerID((byte) windowId);
                 p.dataPacket(pk);
             }
         }
@@ -372,21 +376,21 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder nbt = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable())
-                .putShort("FuelTotal", this.fuelTotal)
-                .putShort("FuelAmount", this.fuelAmount);
+                .putShort("FuelTotal", (short) this.fuelTotal)
+                .putShort("FuelAmount", (short) this.fuelAmount);
 
         if (this.brewTime < MAX_BREW_TIME) {
-            nbt.putShort("CookTime", this.brewTime);
+            nbt.putShort("CookTime", (short) this.brewTime);
         }
 
         if (this.hasName()) {
             nbt.put("CustomName", namedTag.get("CustomName"));
         }
 
-        return nbt;
+        return nbt.build();
     }
 
     @Override

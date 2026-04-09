@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.selector.args.impl.Type;
 import cn.nukkit.command.tree.ParamList;
@@ -12,6 +11,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.List;

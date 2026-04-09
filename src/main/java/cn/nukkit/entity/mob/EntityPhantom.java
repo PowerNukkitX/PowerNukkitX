@@ -32,8 +32,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +50,7 @@ public class EntityPhantom extends EntityMob implements EntityFlyable, EntitySmi
         return PHANTOM;
     }
 
-    public EntityPhantom(IChunk chunk, CompoundTag nbt) {
+    public EntityPhantom(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

@@ -35,10 +35,11 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventGenericPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import lombok.Setter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,19 +49,21 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityCreaking extends EntityMob {
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new EnumEntityProperty("minecraft:creaking_state", new String[]{
-            "neutral",
-            "hostile_observed",
-            "hostile_unobserved",
-            "twitching",
-            "crumbling"
-        }, "neutral", true),
-        new IntEntityProperty("minecraft:creaking_swaying_ticks", 0, 0, 6, true)
+            new EnumEntityProperty("minecraft:creaking_state", new String[]{
+                    "neutral",
+                    "hostile_observed",
+                    "hostile_unobserved",
+                    "twitching",
+                    "crumbling"
+            }, "neutral", true),
+            new IntEntityProperty("minecraft:creaking_swaying_ticks", 0, 0, 6, true)
     };
     private final static String PROPERTY_CREAKING = "minecraft:creaking_state";
     private final static String PROPERTY_SWAYING_TICKS = "minecraft:creaking_swaying_ticks";
 
-    @Override @NotNull public String getIdentifier() {
+    @Override
+    @NotNull
+    public String getIdentifier() {
         return CREAKING;
     }
 
@@ -72,7 +75,7 @@ public class EntityCreaking extends EntityMob {
     @Setter
     protected BlockEntityCreakingHeart creakingHeart;
 
-    public EntityCreaking(IChunk chunk, CompoundTag nbt) {
+    public EntityCreaking(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -110,10 +113,10 @@ public class EntityCreaking extends EntityMob {
     protected void initEntity() {
         this.setHealthMax(1);
         this.diffHandDamage = new float[]{2.5f, 3, 4.5f};
-        if(namedTag.containsCompound("creakingHeart")) {
-            CompoundTag tag = namedTag.getCompound("creakingHeart");
+        if (namedTag.containsKey("creakingHeart")) {
+            NbtMap tag = namedTag.getCompound("creakingHeart");
             Vector3 vec = new Vector3(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
-            if(getLevel().getBlock(vec, true) instanceof BlockCreakingHeart heart) {
+            if (getLevel().getBlock(vec, true) instanceof BlockCreakingHeart heart) {
                 heart.getOrCreateBlockEntity().setLinkedCreaking(this);
             }
         }
@@ -122,8 +125,8 @@ public class EntityCreaking extends EntityMob {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.isCancelled()) return false;
-        if(creakingHeart == null) return super.attack(source);
+        if (source.isCancelled()) return false;
+        if (creakingHeart == null) return super.attack(source);
         if (this.isClosed() || !this.isAlive()) {
             return false;
         }
@@ -140,15 +143,15 @@ public class EntityCreaking extends EntityMob {
         int maxResinSpawn = ThreadLocalRandom.current().nextInt(1, 3);
         int resinSpawned = 0;
         logs:
-        for(Block log : paleLogs) {
-            for(BlockFace face : BlockFace.values()) {
+        for (Block log : paleLogs) {
+            for (BlockFace face : BlockFace.values()) {
                 Block side = log.getSide(face);
-                if(side.isAir()) {
+                if (side.isAir()) {
                     BlockResinClump clump = (BlockResinClump) Block.get(Block.RESIN_CLUMP);
                     clump.setPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS, clump.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS) | (0b000001 << face.getOpposite().getDUSWNEIndex()));
                     side.getLevel().setBlock(side, clump);
                     resinSpawned++;
-                    if(resinSpawned >= maxResinSpawn) break logs;
+                    if (resinSpawned >= maxResinSpawn) break logs;
                 }
             }
         }
@@ -156,18 +159,19 @@ public class EntityCreaking extends EntityMob {
     }
 
     public void sendParticleTrail() {
-        LevelEventGenericPacket packet = new LevelEventGenericPacket();
-        packet.eventId = LevelEventPacket.EVENT_PARTICLE_CREAKING_HEART_TRIAL;
-        CompoundTag tag = new CompoundTag();
-        tag.putInt("CreakingAmount", 1);
-        tag.putFloat("CreakingX", (float) this.x);
-        tag.putFloat("CreakingY", (float) this.y);
-        tag.putFloat("CreakingZ", (float) this.z);
-        tag.putInt("HeartAmount", 1);
-        tag.putFloat("HeartX", (float) creakingHeart.x);
-        tag.putFloat("HeartY", (float) creakingHeart.y);
-        tag.putFloat("HeartZ", (float) creakingHeart.z);
-        packet.tag = tag;
+        final LevelEventGenericPacket packet = new LevelEventGenericPacket();
+        packet.setType(LevelEvent.PARTICLE_CREAKING_HEART_TRIAL);
+        packet.setTag(NbtMap.builder()
+                .putInt("CreakingAmount", 1)
+                .putFloat("CreakingX", (float) this.x)
+                .putFloat("CreakingY", (float) this.y)
+                .putFloat("CreakingZ", (float) this.z)
+                .putInt("HeartAmount", 1)
+                .putFloat("HeartX", (float) creakingHeart.x)
+                .putFloat("HeartY", (float) creakingHeart.y)
+                .putFloat("HeartZ", (float) creakingHeart.z)
+                .build()
+        );
         Server.broadcastPacket(this.getViewers().values(), packet);
     }
 
@@ -179,35 +183,35 @@ public class EntityCreaking extends EntityMob {
     public void kill() {
         //ToDo: Creaking Death Animation
         super.kill();
-        if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
+        if (creakingHeart != null && creakingHeart.isBlockEntityValid()) {
             creakingHeart.setLinkedCreaking(null);
         }
     }
 
     @Override
     public void saveNBT() {
-        if(creakingHeart != null) {
-            CompoundTag tag = new CompoundTag();
+        if (creakingHeart != null) {
+            NbtMapBuilder tag = NbtMap.builder();
             tag.putInt("x", creakingHeart.getFloorX());
             tag.putInt("y", creakingHeart.getFloorY());
             tag.putInt("z", creakingHeart.getFloorZ());
-            this.namedTag.putCompound("creakingHeart", tag);
+            this.namedTag = this.namedTag.toBuilder().putCompound("creakingHeart", tag.build()).build();
         }
         super.saveNBT();
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if(!(!getLevel().isDay() || getLevel().isRaining() || getLevel().isThundering())) {
+        if (!(!getLevel().isDay() || getLevel().isRaining() || getLevel().isThundering())) {
             this.kill();
         }
-        if(creakingHeart != null) {
-            if(this.distance(creakingHeart) > 32) {
+        if (creakingHeart != null) {
+            if (this.distance(creakingHeart) > 32) {
                 setMoveTarget(creakingHeart);
                 setLookTarget(creakingHeart);
             }
-            if(getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_BE_ATTACKED_TIME)) {
-                if(getLevel().getTick() - getMemoryStorage().get(CoreMemoryTypes.LAST_BE_ATTACKED_TIME) < 51) {
+            if (getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_BE_ATTACKED_TIME)) {
+                if (getLevel().getTick() - getMemoryStorage().get(CoreMemoryTypes.LAST_BE_ATTACKED_TIME) < 51) {
                     sendParticleTrail();
                 }
             }
@@ -239,7 +243,7 @@ public class EntityCreaking extends EntityMob {
         if (this.ticksLived < 5) return;
 
         try {
-            if(creakingHeart != null && creakingHeart.isBlockEntityValid()) {
+            if (creakingHeart != null && creakingHeart.isBlockEntityValid()) {
                 creakingHeart.getHeart().updateAroundRedstone(BlockFace.UP, BlockFace.DOWN);
             } else kill();
         } catch (Exception e) {
@@ -259,10 +263,10 @@ public class EntityCreaking extends EntityMob {
             Player before = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
             super.sense(entity);
             Player after = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-            if(before != after) {
-                if(before == null) {
+            if (before != after) {
+                if (before == null) {
                     entity.level.addSound(entity, Sound.MOB_CREAKING_ACTIVATE);
-                } else if(after == null) {
+                } else if (after == null) {
                     entity.level.addSound(entity, Sound.MOB_CREAKING_DEACTIVATE);
                 }
             }
@@ -280,10 +284,10 @@ public class EntityCreaking extends EntityMob {
             Player before = entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER);
             super.sense(entity);
             Player after = entity.getMemoryStorage().get(CoreMemoryTypes.STARING_PLAYER);
-            if(before != after) {
-                if(before == null) {
+            if (before != after) {
+                if (before == null) {
                     entity.level.addSound(entity, Sound.MOB_CREAKING_FREEZE);
-                } else if(after == null) {
+                } else if (after == null) {
                     entity.level.addSound(entity, Sound.MOB_CREAKING_UNFREEZE);
                 }
             }

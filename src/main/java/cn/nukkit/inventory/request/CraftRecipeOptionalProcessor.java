@@ -12,14 +12,15 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftRecipeOptionalAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import io.netty.util.internal.StringUtil;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeOptionalAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -46,9 +47,9 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
         Inventory inventory = topWindow.get();
 
         String filterString = null;
-        if (itemStackRequest.getFilterStrings().length != 0 && !itemStackRequest.getFilterStrings()[0].isBlank()) {
+        if (itemStackRequest.getStringsToFilter().length != 0 && !itemStackRequest.getStringsToFilter()[0].isBlank()) {
             int filteredStringIndex = action.getFilteredStringIndex();
-            String[] filterStrings = itemStackRequest.getFilterStrings();
+            String[] filterStrings = itemStackRequest.getStringsToFilter();
             filterString = filterStrings[filteredStringIndex];
             if (filterString.isBlank() || filterString.length() > 64) {
                 log.debug("{}: FilterTextPacket with too long text", player.getName());
@@ -60,8 +61,8 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             Pair<Item, Integer> pair = updateAnvilResult(player, anvilInventory, filterString);
             if (pair != null) {
                 player.getCreativeOutputInventory().setItem(pair.left());
-                player.setExperience(player.getExperience(),player.getExperienceLevel() - pair.right());
-            } else{
+                player.setExperience(player.getExperience(), player.getExperienceLevel() - pair.right());
+            } else {
                 return context.error();
             }
         } else if (inventory instanceof CartographyTableInventory cartographyInventory) {
@@ -254,13 +255,13 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 repairCost = repairCost * 2 + 1;
             }
 
-            CompoundTag namedTag = result.getNamedTag();
+            NbtMapBuilder namedTag = result.getNamedTag().toBuilder();
             if (namedTag == null) {
-                namedTag = new CompoundTag();
+                namedTag = NbtMap.builder();
             }
             namedTag.putInt("RepairCost", repairCost);
             namedTag.remove("ench");
-            result.setNamedTag(namedTag);
+            result.setNamedTag(namedTag.build());
             if (!enchantments.isEmpty()) {
                 result.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
             }
@@ -328,25 +329,30 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
     }
 
     private static int getRepairCost(Item item) {
-        return item.hasCompoundTag() && item.getNamedTag().contains("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
+        return item.hasCompoundTag() && item.getNamedTag().containsKey("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
     }
 
     private static String getRepairMaterial(Item target) {
         return switch (target.getId()) {
-            case ItemID.WOODEN_SWORD, ItemID.WOODEN_PICKAXE, ItemID.WOODEN_SHOVEL, ItemID.WOODEN_AXE, ItemID.WOODEN_HOE ->
-                    ItemID.PLANKS;
-            case ItemID.IRON_SWORD, ItemID.IRON_PICKAXE, ItemID.IRON_SHOVEL, ItemID.IRON_AXE, ItemID.IRON_HOE, ItemID.IRON_HELMET, ItemID.IRON_CHESTPLATE, ItemID.IRON_LEGGINGS, ItemID.IRON_BOOTS, ItemID.CHAINMAIL_HELMET, ItemID.CHAINMAIL_CHESTPLATE, ItemID.CHAINMAIL_LEGGINGS, ItemID.CHAINMAIL_BOOTS ->
-                    ItemID.IRON_INGOT;
-            case ItemID.GOLDEN_SWORD, ItemID.GOLDEN_PICKAXE, ItemID.GOLDEN_SHOVEL, ItemID.GOLDEN_AXE, ItemID.GOLDEN_HOE, ItemID.GOLDEN_HELMET, ItemID.GOLDEN_CHESTPLATE, ItemID.GOLDEN_LEGGINGS, ItemID.GOLDEN_BOOTS ->
+            case ItemID.WOODEN_SWORD, ItemID.WOODEN_PICKAXE, ItemID.WOODEN_SHOVEL, ItemID.WOODEN_AXE,
+                 ItemID.WOODEN_HOE -> ItemID.PLANKS;
+            case ItemID.IRON_SWORD, ItemID.IRON_PICKAXE, ItemID.IRON_SHOVEL, ItemID.IRON_AXE, ItemID.IRON_HOE,
+                 ItemID.IRON_HELMET, ItemID.IRON_CHESTPLATE, ItemID.IRON_LEGGINGS, ItemID.IRON_BOOTS,
+                 ItemID.CHAINMAIL_HELMET, ItemID.CHAINMAIL_CHESTPLATE, ItemID.CHAINMAIL_LEGGINGS,
+                 ItemID.CHAINMAIL_BOOTS -> ItemID.IRON_INGOT;
+            case ItemID.GOLDEN_SWORD, ItemID.GOLDEN_PICKAXE, ItemID.GOLDEN_SHOVEL, ItemID.GOLDEN_AXE, ItemID.GOLDEN_HOE,
+                 ItemID.GOLDEN_HELMET, ItemID.GOLDEN_CHESTPLATE, ItemID.GOLDEN_LEGGINGS, ItemID.GOLDEN_BOOTS ->
                     ItemID.GOLD_INGOT;
-            case ItemID.DIAMOND_SWORD, ItemID.DIAMOND_PICKAXE, ItemID.DIAMOND_SHOVEL, ItemID.DIAMOND_AXE, ItemID.DIAMOND_HOE, ItemID.DIAMOND_HELMET, ItemID.DIAMOND_CHESTPLATE, ItemID.DIAMOND_LEGGINGS, ItemID.DIAMOND_BOOTS ->
-                    ItemID.DIAMOND;
+            case ItemID.DIAMOND_SWORD, ItemID.DIAMOND_PICKAXE, ItemID.DIAMOND_SHOVEL, ItemID.DIAMOND_AXE,
+                 ItemID.DIAMOND_HOE, ItemID.DIAMOND_HELMET, ItemID.DIAMOND_CHESTPLATE, ItemID.DIAMOND_LEGGINGS,
+                 ItemID.DIAMOND_BOOTS -> ItemID.DIAMOND;
             case ItemID.LEATHER_HELMET, ItemID.LEATHER_CHESTPLATE, ItemID.LEATHER_LEGGINGS, ItemID.LEATHER_BOOTS ->
                     ItemID.LEATHER;
             case ItemID.STONE_SWORD, ItemID.STONE_PICKAXE, ItemID.STONE_SHOVEL, ItemID.STONE_AXE, ItemID.STONE_HOE ->
                     BlockID.COBBLESTONE;
-            case ItemID.NETHERITE_SWORD, ItemID.NETHERITE_PICKAXE, ItemID.NETHERITE_SHOVEL, ItemID.NETHERITE_AXE, ItemID.NETHERITE_HOE, ItemID.NETHERITE_HELMET, ItemID.NETHERITE_CHESTPLATE, ItemID.NETHERITE_LEGGINGS, ItemID.NETHERITE_BOOTS ->
-                    ItemID.NETHERITE_INGOT;
+            case ItemID.NETHERITE_SWORD, ItemID.NETHERITE_PICKAXE, ItemID.NETHERITE_SHOVEL, ItemID.NETHERITE_AXE,
+                 ItemID.NETHERITE_HOE, ItemID.NETHERITE_HELMET, ItemID.NETHERITE_CHESTPLATE, ItemID.NETHERITE_LEGGINGS,
+                 ItemID.NETHERITE_BOOTS -> ItemID.NETHERITE_INGOT;
             case ItemID.ELYTRA -> ItemID.PHANTOM_MEMBRANE;
             default -> BlockID.AIR;
         };

@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
@@ -12,15 +11,17 @@ import cn.nukkit.item.AliasItem;
 import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,16 +33,16 @@ import java.util.*;
 @Slf4j
 public abstract class BaseInventory implements Inventory {
     protected final HashMap<Integer, Item> slots = new HashMap<>();
-    protected final InventoryType type;
+    protected final ContainerType type;
     protected final Set<Player> viewers = new HashSet<>();
     protected final int size;
     protected int maxStackSize = Inventory.MAX_STACK;
     protected InventoryHolder holder;
     protected List<InventoryListener> listeners;
-    protected Map<Integer, ContainerSlotType> slotTypeMap;
+    protected Map<Integer, ContainerEnumName> slotTypeMap;
     protected BiMap<Integer, Integer> networkSlotMap;
 
-    public BaseInventory(InventoryHolder holder, InventoryType type, int size) {
+    public BaseInventory(InventoryHolder holder, ContainerType type, int size) {
         this.holder = holder;
         this.type = type;
         this.size = size;
@@ -51,7 +52,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
         return this.slotTypeMap;
     }
 
@@ -135,15 +136,18 @@ public abstract class BaseInventory implements Inventory {
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity entity) {
             int held = -1;
-            ContainerSlotType type = ContainerSlotType.INVENTORY;
+            ContainerEnumName type = ContainerEnumName.INVENTORY_CONTAINER;
 
 
             if (holder instanceof Player p) {
                 if (p.getOffhandInventory() == this) {
-                    type = ContainerSlotType.OFFHAND;
+                    type = ContainerEnumName.OFFHAND_CONTAINER;
                 } else if (this instanceof HumanInventory) {
                     held = ((HumanInventory) this).getHeldItemIndex();
-                    try { type = this.getSlotType(index); } catch (Throwable ignored) {}
+                    try {
+                        type = this.getContainerEnumName(index);
+                    } catch (Throwable ignored) {
+                    }
                 }
             }
 
@@ -383,18 +387,21 @@ public abstract class BaseInventory implements Inventory {
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
                 int held = -1;
-                ContainerSlotType type = ContainerSlotType.INVENTORY;
+                ContainerEnumName type = ContainerEnumName.INVENTORY_CONTAINER;
 
                 if (holder instanceof Player p) {
                     if (p.getOffhandInventory() == this) {
-                        type = ContainerSlotType.OFFHAND;
+                        type = ContainerEnumName.OFFHAND_CONTAINER;
                     } else if (this instanceof HumanInventory) {
                         held = ((HumanInventory) this).getHeldItemIndex();
-                        try { type = this.getSlotType(index); } catch (Throwable ignored) {}
+                        try {
+                            type = this.getContainerEnumName(index);
+                        } catch (Throwable ignored) {
+                        }
                     }
                 }
 
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent( (Entity) holder, old, item, index, type, held);
+                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index, type, held);
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     this.sendSlot(index, this.getViewers());
@@ -429,7 +436,7 @@ public abstract class BaseInventory implements Inventory {
 
     public long getVisibleViewersCount() {
         return this.getViewers().stream()
-                .filter(v -> !v.getDataFlag(EntityFlag.SILENT))
+                .filter(v -> !v.getDataFlag(ActorFlags.SILENT))
                 .count();
     }
 
@@ -475,11 +482,11 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
 
-        if(this.getUnclonedItem(index) instanceof AliasItem aliasItem) {
+        if (this.getUnclonedItem(index) instanceof AliasItem aliasItem) {
             this.setItem(index, aliasItem.getItem());
         }
 
-        if(this.getUnclonedItem(index) instanceof INBT nbtItem) {
+        if (this.getUnclonedItem(index) instanceof INBT nbtItem) {
             nbtItem.onChange(this);
         }
 
@@ -514,9 +521,9 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void sendContents(Player... players) {
         InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
-        for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getUnclonedItem(i);
+
+        for (int i = 0; i < this.getSize(); i++) {
+            pk.getSlots().add(this.getUnclonedItem(i).toNetwork());
         }
 
         for (Player player : players) {
@@ -525,7 +532,7 @@ public abstract class BaseInventory implements Inventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
+            pk.setInventoryId(id);
             player.dataPacket(pk);
         }
     }
@@ -597,8 +604,8 @@ public abstract class BaseInventory implements Inventory {
     public void sendSlot(int index, Player... players) {
         InventorySlotPacket pk = new InventorySlotPacket();
         int slot = toNetworkSlot(index);
-        pk.slot = slot;
-        pk.item = this.getUnclonedItem(index);
+        pk.setSlot(slot);
+        pk.setItem(this.getUnclonedItem(index).toNetwork());
 
         for (Player player : players) {
             int id = player.getWindowId(this);
@@ -606,10 +613,12 @@ public abstract class BaseInventory implements Inventory {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
-            pk.fullContainerName = new FullContainerName(
-                    this.getSlotType(slot),
-                    id
+            pk.setContainerID(id);
+            pk.setFullContainerName(
+                    new FullContainerName(
+                            this.getContainerEnumName(slot),
+                            id
+                    )
             );
             player.dataPacket(pk);
         }
@@ -638,7 +647,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public InventoryType getType() {
+    public ContainerType getType() {
         return type;
     }
 

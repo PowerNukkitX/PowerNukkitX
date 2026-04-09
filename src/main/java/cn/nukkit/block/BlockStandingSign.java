@@ -9,8 +9,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -91,7 +91,7 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
         Block layer0 = level.getBlock(this, 0);
         Block layer1 = level.getBlock(this, 1);
 
-        CompoundTag nbt = new CompoundTag();
+        NbtMap nbt = NbtMap.EMPTY;
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = CompassRoseDirection.from((int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f);
@@ -104,9 +104,7 @@ public class BlockStandingSign extends BlockSignBase implements BlockEntityHolde
             getLevel().setBlock(block, wall, true);
         }
         if (item.hasCustomBlockData()) {
-            for (var e : item.getCustomBlockData().getEntrySet()) {
-                nbt.put(e.getKey(), e.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
         try {

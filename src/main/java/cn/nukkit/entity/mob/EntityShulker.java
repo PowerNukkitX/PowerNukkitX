@@ -22,7 +22,6 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
@@ -32,9 +31,10 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,16 +73,16 @@ public class EntityShulker extends EntityMob implements EntityVariant {
         );
     }
 
-    public EntityShulker(IChunk chunk, CompoundTag nbt) {
+    public EntityShulker(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     public boolean isPeeking() {
-        return getDataProperty(EntityDataTypes.SHULKER_PEEK_AMOUNT, 0) == 0;
+        return getDataProperty(ActorDataTypes.PEEK_ID, 0) == 0;
     }
 
     public void setPeeking(int height) {
-        setDataProperty(EntityDataTypes.SHULKER_PEEK_AMOUNT, height);
+        setDataProperty(ActorDataTypes.PEEK_ID, height);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     protected void initEntity() {
         super.initEntity();
         if(getMemoryStorage().get(CoreMemoryTypes.VARIANT) == null) setVariant(16);
-        setDataProperty(EntityDataTypes.SHULKER_ATTACH_POS, getLevelBlock().getSide(BlockFace.UP).asBlockVector3());
+        setDataProperty(ActorDataTypes.ATTACH_POS, getLevelBlock().getSide(BlockFace.UP).asBlockVector3());
     }
 
     @Override
@@ -192,9 +192,9 @@ public class EntityShulker extends EntityMob implements EntityVariant {
         Arrays.stream(getLevel().getCollisionBlocks(getBoundingBox().grow(7, 7, 7))).filter(block -> block.isFullBlock() && block.up().isAir()).findAny().ifPresent(
                 block -> {
                     Location location = block.up().getLocation();
-                    getLevel().addLevelSoundEvent(this, LevelSoundEvent.TELEPORT, -1, getIdentifier(), false, false);
+                    getLevel().addLevelSoundEvent(this, SoundEvent.TELEPORT, -1, getIdentifier(), false, false);
                     teleport(location, PlayerTeleportEvent.TeleportCause.SHULKER);
-                    getLevel().addLevelSoundEvent(location, LevelSoundEvent.SPAWN, -1, getIdentifier(), false, false);
+                    getLevel().addLevelSoundEvent(location, SoundEvent.SPAWN, -1, getIdentifier(), false, false);
                 }
         );
     }

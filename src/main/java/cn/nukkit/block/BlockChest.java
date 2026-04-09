@@ -6,18 +6,18 @@ import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -121,20 +121,17 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
+        NbtMapBuilder nbt = NbtMap.builder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
-        BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
+        BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build());
         if (blockEntity == null) {
             return false;
         }
@@ -219,7 +216,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) return false;
 
         // Check if the chest can be opened - bypass for SILENT
-        if (!player.getDataFlag(EntityFlag.SILENT) && !this.hasFreeSpaceAbove()) {
+        if (!player.getDataFlag(ActorFlags.SILENT) && !this.hasFreeSpaceAbove()) {
             return false;
         }
 
@@ -236,7 +233,7 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             }
         }
 
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
+        if (chest.namedTag.containsKey("Lock") && chest.namedTag.get("Lock") instanceof String
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }

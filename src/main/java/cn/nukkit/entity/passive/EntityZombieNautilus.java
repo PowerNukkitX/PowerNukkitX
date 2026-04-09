@@ -32,9 +32,10 @@ import cn.nukkit.item.ItemShears;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,11 +50,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityZombieNautilus extends EntityNautilus {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ZOMBIE_NAUTILUS;
     }
 
-    public EntityZombieNautilus(IChunk chunk, CompoundTag nbt) {
+    public EntityZombieNautilus(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -104,15 +106,15 @@ public class EntityZombieNautilus extends EntityNautilus {
                 false,
                 1,
                 List.of(
-                    new RideableComponent.Seat(
-                        0,
-                        2,
-                        new Vector3f( 0.0f, yOffset, zOffset),
-                        null,
-                        null,
-                        7.0f,
-                        null
-                    )
+                        new RideableComponent.Seat(
+                                0,
+                                2,
+                                new Vector3f(0.0f, yOffset, zOffset),
+                                null,
+                                null,
+                                7.0f,
+                                null
+                        )
                 )
         );
     }
@@ -155,12 +157,12 @@ public class EntityZombieNautilus extends EntityNautilus {
     public void initEntity() {
         super.initEntity();
 
-        if (this.namedTag != null && this.namedTag.contains(NBT_RIDEABLE_TYPE)) {
+        if (this.namedTag != null && this.namedTag.containsKey(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.namedTag.getInt(NBT_RIDEABLE_TYPE));
         } else {
             this.jockeyType = rollInitialRideableType();
             if (this.namedTag != null) {
-                this.namedTag.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
+                this.namedTag = this.namedTag.toBuilder().putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId()).build();
             }
         }
 
@@ -184,7 +186,7 @@ public class EntityZombieNautilus extends EntityNautilus {
 
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
-        return new Item[] {
+        return new Item[]{
                 Item.get(Item.ROTTEN_FLESH, 0, Utils.rand(0, 3))
         };
     }
@@ -200,20 +202,20 @@ public class EntityZombieNautilus extends EntityNautilus {
         if (!item.isNull()) {
             // Saddle interaction
             if ((item instanceof ItemSaddle saddle) && this.isTamed() && !this.isSaddled()) {
-                        this.getInventory().setEquippedItem(EquippableComponent.Type.SADDLE, saddle);
-                        this.setHomePosition();
-                        return true;
+                this.getInventory().setEquippedItem(EquippableComponent.Type.SADDLE, saddle);
+                this.setHomePosition();
+                return true;
 
-            // Armor interaction
+                // Armor interaction
             } else if ((item instanceof ItemNautilusArmor armor) && this.isTamed() && this.getInventory().getEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR).isNull()) {
-                        this.getInventory().setEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR, armor);
-                        return true;
+                this.getInventory().setEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR, armor);
+                return true;
 
-            // Shears interaction
+                // Shears interaction
             } else if (item instanceof ItemShears
-                        && (!this.getInventory().getEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR).isNull()
-                            || !this.getInventory().getEquippedItem(EquippableComponent.Type.SADDLE).isNull())) {
-                
+                    && (!this.getInventory().getEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR).isNull()
+                    || !this.getInventory().getEquippedItem(EquippableComponent.Type.SADDLE).isNull())) {
+
                 Item armor = this.getInventory().getEquippedItem(EquippableComponent.Type.NAUTILUS_ARMOR);
                 Item saddle = this.getInventory().getEquippedItem(EquippableComponent.Type.SADDLE);
 
@@ -260,7 +262,8 @@ public class EntityZombieNautilus extends EntityNautilus {
         if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+            if (this.namedTag != null)
+                this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
             return;
         }
 
@@ -274,18 +277,19 @@ public class EntityZombieNautilus extends EntityNautilus {
         rider.spawnToAll();
         this.mountEntity(rider, true);
 
-        if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+        if (this.namedTag != null)
+            this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
+        NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
 
         if (this.jockeyType == SpawnRiderType.DROWNED_JOCKEY) {
             Item trident = Item.get(Item.TRIDENT, 0, 1);
-            nbt.put("Mainhand", NBTIO.putItemHelper(trident));
+            nbt.putCompound("Mainhand", ItemHelper.write(trident));
         }
 
-        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
+        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt.build());
         if (rider == null) return null;
         return rider;
     }
@@ -295,8 +299,8 @@ public class EntityZombieNautilus extends EntityNautilus {
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.PUFFERFISH,
-        ItemID.PUFFERFISH_BUCKET
+            ItemID.PUFFERFISH,
+            ItemID.PUFFERFISH_BUCKET
     );
 
     @Override
@@ -306,82 +310,82 @@ public class EntityZombieNautilus extends EntityNautilus {
                 Set.of(
                 ),
                 Set.of(
-                    new Behavior(
-                        new MoveToRiderTargetExecutor(this.getEnvironmentalMoveSpeed() * 2.00f, true),
-                            e -> this.isRiddenByMob(),
-                        7, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.2f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior( // RETURN HOME if too far
-                        new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getEnvironmentalMoveSpeed() * 8f, true),
-                        entity -> {
-                            EntityNautilus n = (EntityNautilus) entity;
+                        new Behavior(
+                                new MoveToRiderTargetExecutor(this.getEnvironmentalMoveSpeed() * 2.00f, true),
+                                e -> this.isRiddenByMob(),
+                                7, 1
+                        ),
+                        new Behavior(
+                                new TemptExecutor(1.2f, TEMPT_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                4, 1
+                        ),
+                        new Behavior( // RETURN HOME if too far
+                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getEnvironmentalMoveSpeed() * 8f, true),
+                                entity -> {
+                                    EntityNautilus n = (EntityNautilus) entity;
 
-                            if (!n.isTamed()) return false;
-                            if (n.hasControllingPassenger()) return false;
+                                    if (!n.isTamed()) return false;
+                                    if (n.hasControllingPassenger()) return false;
 
-                            if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
+                                    if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
 
-                            Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                            if (home == null) return false;
+                                    Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                                    if (home == null) return false;
 
-                            double max = n.roamDistance();
-                            return entity.distanceSquared(home) > (max * max);
-                        },
-                        3, 1
-                    ),
-                    new Behavior( // ROAM freely (not tamed)
-                        new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed(), 64, 16, 80, false, -1, false, 10),
-                        entity -> {
-                            EntityNautilus n = (EntityNautilus) entity;
-                            return !n.isTamed() && !n.hasControllingPassenger();
-                        },
-                        2
-                    ),
-                    new Behavior( // ROAM but only while inside home radius (tamed only)
-                        new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed() * 3, roamDistance(), 16, 80, false, -1, false, 10),
-                        entity -> {
-                            EntityNautilus n = (EntityNautilus) entity;
+                                    double max = n.roamDistance();
+                                    return entity.distanceSquared(home) > (max * max);
+                                },
+                                3, 1
+                        ),
+                        new Behavior( // ROAM freely (not tamed)
+                                new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed(), 64, 16, 80, false, -1, false, 10),
+                                entity -> {
+                                    EntityNautilus n = (EntityNautilus) entity;
+                                    return !n.isTamed() && !n.hasControllingPassenger();
+                                },
+                                2
+                        ),
+                        new Behavior( // ROAM but only while inside home radius (tamed only)
+                                new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed() * 3, roamDistance(), 16, 80, false, -1, false, 10),
+                                entity -> {
+                                    EntityNautilus n = (EntityNautilus) entity;
 
-                            if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
-                            Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                            if (home == null) return false;
+                                    if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
+                                    Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                                    if (home == null) return false;
 
-                            double max = n.roamDistance();
-                            return entity.distanceSquared(home) <= (max * max);
-                        },
-                        1
-                    )
+                                    double max = n.roamDistance();
+                                    return entity.distanceSquared(home) <= (max * max);
+                                },
+                                1
+                        )
                 ),
                 Set.of(
-                    new ISensor() {
-                        @Override
-                        public void sense(EntityIntelligent entity) {
-                            EntityNautilus n = (EntityNautilus) entity;
+                        new ISensor() {
+                            @Override
+                            public void sense(EntityIntelligent entity) {
+                                EntityNautilus n = (EntityNautilus) entity;
 
-                            if (!n.isTamed()) return;
-                            Block home = n.getHomePosition();
-                            if (home == null) return;
-                            entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
-                        }
+                                if (!n.isTamed()) return;
+                                Block home = n.getHomePosition();
+                                if (home == null) return;
+                                entity.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
+                            }
 
-                        @Override
-                        public int getPeriod() {
-                            return 60;
+                            @Override
+                            public int getPeriod() {
+                                return 60;
+                            }
                         }
-                    }
                 ),
                 Set.of(
-                    new SpaceMoveController(),
-                    new LookController(true, true),
-                    new DiveController()
+                        new SpaceMoveController(),
+                        new LookController(true, true),
+                        new DiveController()
                 ),
                 new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this),
                 this

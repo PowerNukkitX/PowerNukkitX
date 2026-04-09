@@ -5,8 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class EntityParched extends EntitySkeleton {
         return PARCHED;
     }
 
-    public EntityParched(IChunk chunk, CompoundTag nbt) {
+    public EntityParched(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

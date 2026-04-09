@@ -3,26 +3,23 @@ package cn.nukkit.registry;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.network.connection.util.HandleByteBuf;
-import cn.nukkit.network.protocol.CraftingDataPacket;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
-import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
 import cn.nukkit.recipe.special.DecoratedPotRecipe;
+import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
 import cn.nukkit.utils.Utils;
 import com.google.common.collect.Collections2;
+import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.collection.CharObjectHashMap;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -30,9 +27,12 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.packet.CraftingDataPacket;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,12 +54,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     /**
      * 缓存着配方数据包
      */
-    private static ByteBuf buffer = null;
+    private static CraftingDataPacket PACKET = null;
     private final VanillaRecipeParser vanillaRecipeParser = new VanillaRecipeParser();
     private final EnumMap<RecipeType, Int2ObjectArrayMap<Set<Recipe>>> recipeMaps = new EnumMap<>(RecipeType.class);
     private final Object2ObjectOpenHashMap<String, Recipe> allRecipeMaps = new Object2ObjectOpenHashMap<>();
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
     private final List<Recipe> networkIdRecipeList = new ArrayList<>();
+    public static int RECIPE_NET_ID_COUNTER = 1;
 
     public VanillaRecipeParser getVanillaRecipeParser() {
         return vanillaRecipeParser;
@@ -329,8 +330,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         return null;
     }
 
-    public ByteBuf getCraftingPacket() {
-        return buffer.copy();
+    public CraftingDataPacket getCraftingPacket() {
+        return PACKET;
     }
 
     public int getRecipeCount() {
@@ -377,14 +378,13 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public static void setCraftingPacket(ByteBuf craftingPacket) {
-        ReferenceCountUtil.safeRelease(buffer);
-        buffer = craftingPacket.retain();
+        final byte[] data = new byte[craftingPacket.readableBytes()];
+        craftingPacket.readBytes(data);
+        PACKET = new Gson().fromJson(new String(data), CraftingDataPacket.class);
     }
 
-    void writePktCache(DataOutputStream out) throws java.io.IOException {
-        byte[] bytes = new byte[buffer.readableBytes()];
-        buffer.getBytes(buffer.readerIndex(), bytes);
-        out.write(bytes);
+    void writePktCache(DataOutputStream out) throws IOException {
+        out.write(new Gson().toJson(PACKET).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
@@ -418,9 +418,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     public void reload() {
         isLoad.set(false);
         RECIPE_COUNT = 0;
-        if (buffer != null) {
-            buffer.release();
-            buffer = null;
+        if (PACKET != null) {
+            PACKET = null;
         }
         recipeMaps.clear();
         recipeXpMap.clear();
@@ -463,37 +462,47 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeMaps.values().forEach(Map::clear);
         allRecipeMaps.clear();
         RECIPE_COUNT = 0;
-        ReferenceCountUtil.safeRelease(buffer);
-        buffer = null;
+        PACKET = null;
     }
 
     public void rebuildPacket() {
         ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(64);
         CraftingDataPacket pk = new CraftingDataPacket();
-        pk.cleanRecipes = true;
 
-        pk.addNetworkIdRecipe(networkIdRecipeList);
+        // TODO protocol stonecutter recipe
+
+        for (Recipe netIdRecipe : this.getNetworkIdRecipeList()) {
+            switch (netIdRecipe) {
+                case ShapelessRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                case ShapedRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                case MultiRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                case SmithingTransformRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                case SmithingTrimRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                default -> {
+                }
+            }
+        }
 
         for (FurnaceRecipe recipe : getFurnaceRecipeMap()) {
-            pk.addFurnaceRecipe(recipe);
+            pk.getCraftingEntries().add(recipe.toNetwork());
         }
         for (SmokerRecipe recipe : getSmokerRecipeMap()) {
-            pk.addSmokerRecipe(recipe);
+            pk.getCraftingEntries().add(recipe.toNetwork());
         }
         for (BlastFurnaceRecipe recipe : getBlastFurnaceRecipeMap()) {
-            pk.addBlastFurnaceRecipe(recipe);
+            pk.getCraftingEntries().add(recipe.toNetwork());
         }
         for (CampfireRecipe recipe : getCampfireRecipeMap()) {
-            pk.addCampfireRecipeRecipe(recipe);
+            pk.getCraftingEntries().add(recipe.toNetwork());
         }
         for (BrewingRecipe recipe : getBrewingRecipeMap()) {
-            pk.addBrewingRecipe(recipe);
+            pk.getPotionMixes().add(recipe.toNetwork());
         }
         for (ContainerRecipe recipe : getContainerRecipeMap()) {
-            pk.addContainerRecipe(recipe);
+            pk.getContainerMixes().add(recipe.toNetwork());
         }
-        pk.encode(HandleByteBuf.of(buf));
-        buffer = buf;
+        pk.setClearRecipes(true);
+        PACKET = pk;
     }
 
     @SneakyThrows

@@ -27,29 +27,32 @@ import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.HomeComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemHarness;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemShears;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -70,7 +73,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         return HAPPY_GHAST;
     }
 
-    public EntityHappyGhast(IChunk chunk, CompoundTag nbt) {
+    public EntityHappyGhast(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -115,13 +118,13 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     @Override
     protected void initEntity() {
         super.initEntity();
-        setDataFlag(EntityFlag.COLLIDABLE, true); //allow standing on them
+        setDataFlag(ActorFlags.COLLIDABLE, true); //allow standing on them
         this.armorInventory = new EntityArmorInventory(this);
-        if (this.namedTag.contains("Armor")) {
-            ListTag<CompoundTag> armorList = this.namedTag.getList("Armor", CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
+        if (this.namedTag.containsKey("Armor")) {
+            List<NbtMap> armorList = this.namedTag.getList("Armor", NbtType.COMPOUND);
+            for (NbtMap armorTag : armorList) {
                 int slot = armorTag.getByte("Slot");
-                var item = NBTIO.getItemHelper(armorTag);
+                var item = ItemHelper.read(armorTag);
 
                 this.armorInventory.setItem(slot, item);
                 if (!item.isNull()) this.setInputControls(true);
@@ -129,7 +132,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         }
 
         // Init home memory
-        if (this.namedTag.contains("HomeX")) {
+        if (this.namedTag.containsKey("HomeX")) {
             this.initHome();
         } else {
             this.setHomePosition();
@@ -140,11 +143,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     public void saveNBT() {
         super.saveNBT();
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>();
+            List<NbtMap> armorTag = new ObjectArrayList<>();
             for (int i = 0; i < 5; i++) {
-                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList("Armor", armorTag);
+            this.namedTag = this.namedTag.toBuilder().putList("Armor", NbtType.COMPOUND, armorTag).build();
         }
     }
 

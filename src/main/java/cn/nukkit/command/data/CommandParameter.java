@@ -2,7 +2,12 @@ package cn.nukkit.command.data;
 
 import cn.nukkit.command.tree.node.IParamNode;
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParam;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +21,7 @@ import java.util.List;
  * <p>
  * Features:
  * <ul>
- *   <li>Supports primitive types and enum-based parameters via {@link CommandParamType} and {@link CommandEnum}.</li>
+ *   <li>Supports primitive types and enum-based parameters via {@link CommandParam} and {@link CommandEnum}.</li>
  *   <li>Allows marking parameters as optional.</li>
  *   <li>Supports postfixes for argument formatting.</li>
  *   <li>Integrates with {@link IParamNode} for advanced argument parsing and validation.</li>
@@ -81,11 +86,11 @@ public class CommandParameter {
     /**
      * Constructs a CommandParameter with all fields specified.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param type the primitive type
+     * @param type     the primitive type
      * @param enumData the enum data
-     * @param postFix the postfix string
+     * @param postFix  the postfix string
      */
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this(name, optional, type, enumData, postFix, null);
@@ -94,11 +99,11 @@ public class CommandParameter {
     /**
      * Constructs a CommandParameter with all fields specified, including param node.
      *
-     * @param name the parameter name
-     * @param optional whether the parameter is optional
-     * @param type the primitive type
-     * @param enumData the enum data
-     * @param postFix the postfix string
+     * @param name      the parameter name
+     * @param optional  whether the parameter is optional
+     * @param type      the primitive type
+     * @param enumData  the enum data
+     * @param postFix   the postfix string
      * @param paramNode the parameter node for advanced parsing
      */
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix, IParamNode<?> paramNode) {
@@ -118,7 +123,7 @@ public class CommandParameter {
      * @param name the parameter name
      * @param type the primitive type
      * @return the command parameter
-     * @see #newType(String, boolean, CommandParamType)
+     * @see #newType(String, CommandParamType)
      */
     public static CommandParameter newType(String name, CommandParamType type) {
         return newType(name, false, type);
@@ -127,8 +132,8 @@ public class CommandParameter {
     /**
      * Creates a primitive type parameter with a param node (not optional).
      *
-     * @param name the parameter name
-     * @param type the primitive type
+     * @param name      the parameter name
+     * @param type      the primitive type
      * @param paramNode the parameter node
      * @return the command parameter
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
@@ -140,9 +145,9 @@ public class CommandParameter {
     /**
      * Creates a primitive type parameter with optionality and no param node.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param type the primitive type
+     * @param type     the primitive type
      * @return the command parameter
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
@@ -153,10 +158,10 @@ public class CommandParameter {
     /**
      * Creates a primitive type parameter with optionality and custom options.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param type the primitive type
-     * @param options custom options for auto-completion/validation
+     * @param type     the primitive type
+     * @param options  custom options for auto-completion/validation
      * @return the command parameter
      * @see #newType(String, boolean, CommandParamType, IParamNode, CommandParamOption...)
      */
@@ -167,11 +172,11 @@ public class CommandParameter {
     /**
      * Creates a primitive type parameter with all fields specified.
      *
-     * @param name the parameter name
-     * @param optional whether the parameter is optional
-     * @param type the primitive type
+     * @param name      the parameter name
+     * @param optional  whether the parameter is optional
+     * @param type      the primitive type
      * @param paramNode the parameter node
-     * @param options custom options for auto-completion/validation
+     * @param options   custom options for auto-completion/validation
      * @return the command parameter
      */
     public static CommandParameter newType(String name, boolean optional, CommandParamType type, IParamNode<?> paramNode, CommandParamOption... options) {
@@ -185,7 +190,7 @@ public class CommandParameter {
     /**
      * Creates an enum parameter (not optional).
      *
-     * @param name the parameter name
+     * @param name   the parameter name
      * @param values the enum values
      * @return the command parameter
      * @see #newEnum(String, boolean, String[])
@@ -197,9 +202,9 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with optionality and values.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param values the enum values
+     * @param values   the enum values
      * @return the command parameter
      * @see #newEnum(String, boolean, CommandEnum)
      */
@@ -210,10 +215,10 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with optionality, values, and soft flag.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param values the enum values
-     * @param soft true for soft enum, false for static
+     * @param values   the enum values
+     * @param soft     true for soft enum, false for static
      * @return the command parameter
      * @see #newEnum(String, boolean, CommandEnum)
      */
@@ -236,9 +241,9 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with optionality and a type name.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param type the enum type name
+     * @param type     the enum type name
      * @return the command parameter
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
@@ -261,9 +266,9 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with optionality and enum data.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param data the enum data
+     * @param data     the enum data
      * @return the command parameter
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
@@ -274,10 +279,10 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with optionality, enum data, and custom options.
      *
-     * @param name the parameter name
+     * @param name     the parameter name
      * @param optional whether the parameter is optional
-     * @param data the enum data
-     * @param options custom options for auto-completion/validation
+     * @param data     the enum data
+     * @param options  custom options for auto-completion/validation
      * @return the command parameter
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
      */
@@ -288,9 +293,9 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with optionality, enum data, and param node.
      *
-     * @param name the parameter name
-     * @param optional whether the parameter is optional
-     * @param data the enum data
+     * @param name      the parameter name
+     * @param optional  whether the parameter is optional
+     * @param data      the enum data
      * @param paramNode the parameter node
      * @return the command parameter
      * @see #newEnum(String, boolean, CommandEnum, IParamNode, CommandParamOption...)
@@ -302,11 +307,11 @@ public class CommandParameter {
     /**
      * Creates an enum parameter with all fields specified.
      *
-     * @param name the parameter name
-     * @param optional whether the parameter is optional
-     * @param data the enum data
+     * @param name      the parameter name
+     * @param optional  whether the parameter is optional
+     * @param data      the enum data
      * @param paramNode the parameter node
-     * @param options custom options for auto-completion/validation
+     * @param options   custom options for auto-completion/validation
      * @return the command parameter
      */
     public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, IParamNode<?> paramNode, CommandParamOption... options) {
@@ -315,5 +320,29 @@ public class CommandParameter {
             result.paramOptions = Lists.newArrayList(options);
         }
         return result;
+    }
+
+    public CommandParamData toNetwork() {
+        final CommandParamData data = new CommandParamData();
+        data.setName(this.name);
+        data.setOptional(this.optional);
+        data.setEnumData(this.enumData != null ? this.enumData.toNetwork() : null);
+        try {
+            final Field field = CommandParam.class.getDeclaredField(this.type.name());
+            field.setAccessible(true);
+            final CommandParam param = (CommandParam) field.get(null);
+            data.setType(param);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        data.setPostfix(this.postFix);
+        if (this.paramOptions != null) {
+            final List<org.cloudburstmc.protocol.bedrock.data.command.CommandParamOption> list = new ObjectArrayList<>();
+            for (CommandParamOption paramOption : this.paramOptions) {
+                list.add(org.cloudburstmc.protocol.bedrock.data.command.CommandParamOption.valueOf(paramOption.name()));
+            }
+            data.getOptions().addAll(list);
+        }
+        return data;
     }
 }

@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.entity.ClimateVariant;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -21,7 +21,7 @@ public class ItemBrownEgg extends ItemEgg {
     }
 
     @Override
-    protected void correctNBT(CompoundTag nbt) {
-        nbt.putString("variant", ClimateVariant.Variant.WARM.getName());
+    protected void correctNBT(NbtMap nbt) {
+        nbt = nbt.toBuilder().putString("variant", ClimateVariant.Variant.WARM.getName()).build();
     }
 }

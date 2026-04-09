@@ -3,12 +3,11 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.types.SpawnPointType;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
             return 0;
         }
         for (Player player : players) {
-            player.setSpawn(Server.getInstance().getDefaultLevel().getSpawnLocation(), SpawnPointType.WORLD);
+            player.setSpawn(Server.getInstance().getDefaultLevel().getSpawnLocation(), Player.SpawnPointType.WORLD);
         }
         String players_str = players.stream().map(Player::getName).collect(Collectors.joining(" "));
         if (players.size() > 1) {

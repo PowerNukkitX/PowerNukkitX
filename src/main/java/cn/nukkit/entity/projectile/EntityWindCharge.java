@@ -9,10 +9,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.GenericParticle;
-import cn.nukkit.level.particle.Particle;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -20,11 +20,11 @@ public class EntityWindCharge extends EntityProjectile {
 
     private Entity directionChanged;
 
-    public EntityWindCharge(IChunk chunk, CompoundTag nbt) {
+    public EntityWindCharge(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityWindCharge(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityWindCharge(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -57,7 +57,7 @@ public class EntityWindCharge extends EntityProjectile {
                 this.knockBack(entityLiving);
             }
         }
-        level.addLevelSoundEvent(position.add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
+        level.addLevelSoundEvent(position.add(0, 1), SoundEvent.WIND_CHARGE_BURST);
         this.kill();
 
         return true;
@@ -69,8 +69,8 @@ public class EntityWindCharge extends EntityProjectile {
             if (directionChanged == entity) return;
         }
         entity.attack(new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.PROJECTILE, 1f));
-        level.addLevelSoundEvent(entity.getPosition().add(0, 1), LevelSoundEvent.WIND_CHARGE_BURST);
-        this.level.addParticle(new GenericParticle(this, Particle.TYPE_WIND_EXPLOSION));
+        level.addLevelSoundEvent(entity.getPosition().add(0, 1), SoundEvent.WIND_CHARGE_BURST);
+        this.level.addParticle(new GenericParticle(this, ParticleType.WIND_EXPLOSION));
         knockBack(entity);
         this.kill();
     }
@@ -86,7 +86,7 @@ public class EntityWindCharge extends EntityProjectile {
 
     @Override
     protected void addHitEffect() {
-        this.level.addParticle(new GenericParticle(this, Particle.TYPE_WIND_EXPLOSION));
+        this.level.addParticle(new GenericParticle(this, ParticleType.WIND_EXPLOSION));
     }
 
     @Override

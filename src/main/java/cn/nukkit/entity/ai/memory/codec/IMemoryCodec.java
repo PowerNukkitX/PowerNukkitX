@@ -1,7 +1,7 @@
 package cn.nukkit.entity.ai.memory.codec;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
@@ -20,7 +20,7 @@ public interface IMemoryCodec<Data> {
      *
      * @return the decoder
      */
-    Function<CompoundTag, Data> getDecoder();
+    Function<NbtMap, Data> getDecoder();
 
     /**
      * 获取记忆编码器，将实体记忆中的数据持久化进实体CompoundTag
@@ -29,7 +29,7 @@ public interface IMemoryCodec<Data> {
      *
      * @return the encoder
      */
-    BiConsumer<Data, CompoundTag> getEncoder();
+    BiConsumer<Data, NbtMap> getEncoder();
 
     /**
      * 从实体记忆初始化实体，可以用于初始化实体DataFlag.
@@ -42,11 +42,11 @@ public interface IMemoryCodec<Data> {
     void init(@Nullable Data data, EntityIntelligent entity);
 
     @Nullable
-    default Data decode(CompoundTag tag) {
+    default Data decode(NbtMap tag) {
         return getDecoder().apply(tag);
     }
 
-    default void encode(Data data, CompoundTag tag) {
+    default void encode(Data data, NbtMap tag) {
         getEncoder().accept(data, tag);
     }
 }

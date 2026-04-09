@@ -16,13 +16,8 @@ import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.components.*;
 import cn.nukkit.entity.custom.CustomEntity;
-import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.custom.CustomEntityComponents;
-import cn.nukkit.entity.data.EntityDataMap;
-import cn.nukkit.entity.data.EntityDataType;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
-import cn.nukkit.entity.data.PlayerFlag;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
@@ -44,8 +39,8 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.event.player.PlayerTeleportEvent;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTotemOfUndying;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -70,17 +65,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.NumberTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
-import cn.nukkit.network.protocol.types.PropertySyncData;
-import cn.nukkit.network.protocol.types.SwingSource;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
@@ -91,15 +75,34 @@ import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
-
 import com.google.common.collect.Iterables;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.ActorSwingSource;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
+import org.cloudburstmc.protocol.bedrock.data.actor.MoveActorAbsoluteData;
+import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
@@ -109,9 +112,9 @@ import java.util.random.RandomGenerator;
  * @author MagicDroidX
  */
 @Slf4j
-public abstract class Entity extends Location implements Metadatable, EntityID, EntityDataTypes {
+public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
-    protected final EntityDataMap entityDataMap = new EntityDataMap();
+    protected final ActorDataMap entityDataMap = new ActorDataMap();
     public static AtomicLong entityCount = new AtomicLong(1);
     public final List<Entity> passengers = new ArrayList<>();
     public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -127,10 +130,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     protected int restoreMountTries = 0;
     protected Vector3f seatRawOffset;
 
-    /** The entity is this targeting to */
+    /**
+     * The entity is this targeting to
+     */
     public Entity targetEntity = null;
 
-    /** Tolerance factor to compute onGround state */
+    /**
+     * Tolerance factor to compute onGround state
+     */
     private static final double GROUND_PROBE_DEPTH = 0.06d; // ~1/16 block
     private static final double GROUND_EPS = 1.0e-4;        // tolerant eps for BB rounding
 
@@ -184,7 +191,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public int inPortalTicks = 0;
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
-    public CompoundTag namedTag;
+    public NbtMap namedTag;
     public boolean isCollided = false;
     public boolean isCollidedHorizontally = false;
     public boolean isCollidedVertically = false;
@@ -230,7 +237,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     protected static final int DEFAULT_HARD_DESPAWN_DISTANCE = 128;
     protected static final int DEFAULT_SOFT_DESPAWN_GRACE_TICKS = 20 * 45;
 
-    /** Entity growth */
+    /**
+     * Entity growth
+     */
     public static final String TAG_ENTITY_BIRTH_DATE = "entity_birth_date";
     public static final String TAG_ENTITY_GROW_LEFT = "entity_grow_left";
     public static final String TAG_ENTITY_GROW_PAUSED = "entity_grow_paused";
@@ -238,11 +247,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     protected int ticksGrowLeft = -1;
     protected boolean growDirty = false;
 
-    /** Nameable Entity */
+    /**
+     * Nameable Entity
+     */
     protected static final NameableComponent DEFAULT_NAMEABLE = new NameableComponent(true, false);
     protected static final NameableComponent DEFAULT_NOT_NAMEABLE = new NameableComponent(false, false);
 
-    /** Entity Boostable ticks */
+    /**
+     * Entity Boostable ticks
+     */
     protected int boostableTicks = -1;
 
     private String idConvertToName() {
@@ -258,7 +271,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return this.name;
     }
 
-    public Entity(IChunk chunk, CompoundTag nbt) {
+    public Entity(IChunk chunk, NbtMap nbt) {
         initEntityProperties(this.getIdentifier());
         if (!(this instanceof Player)) {
             this.init(chunk, nbt);
@@ -316,14 +329,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return the entity
      */
     @Nullable
-    public static Entity createEntity(int type, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public static Entity createEntity(int type, @NotNull IChunk chunk, @NotNull NbtMap nbt, @Nullable Object... args) {
         String entityIdentifier = Registries.ENTITY.getEntityIdentifier(type);
         if (entityIdentifier == null) return null;
         return Registries.ENTITY.provideEntity(entityIdentifier, chunk, nbt, args);
     }
 
     @Nullable
-    public static Entity createEntity(@NotNull String identifier, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public static Entity createEntity(@NotNull String identifier, @NotNull IChunk chunk, @NotNull NbtMap nbt, @Nullable Object... args) {
         Identifier.assertValid(identifier);
         return Registries.ENTITY.provideEntity(identifier, chunk, nbt, args);
     }
@@ -344,12 +357,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @see #getDefaultNBT(Vector3, Vector3, float, float)
      */
     @NotNull
-    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
+    public static NbtMap getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
     }
 
     @NotNull
-    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
+    public static NbtMap getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
         Location loc = pos instanceof Location ? (Location) pos : null;
 
         if (loc != null) {
@@ -369,19 +382,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return the default nbt
      */
     @NotNull
-    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
-        return new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(pos.x))
-                        .add(new DoubleTag(pos.y))
-                        .add(new DoubleTag(pos.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(motion != null ? motion.x : 0))
-                        .add(new DoubleTag(motion != null ? motion.y : 0))
-                        .add(new DoubleTag(motion != null ? motion.z : 0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(yaw))
-                        .add(new FloatTag(pitch)));
+    public static NbtMap getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+        return NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x, pos.y, pos.z))
+                .putList("Motion", NbtType.DOUBLE, Arrays.asList(
+                        motion != null ? motion.x : 0,
+                        motion != null ? motion.y : 0,
+                        motion != null ? motion.z : 0
+                ))
+                .putList("Rotation", NbtType.FLOAT, Arrays.asList(yaw, pitch))
+                .build();
     }
 
     /**
@@ -393,17 +403,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param entities  Group of entities that need to play animations
      * @param players   Visible Player
      */
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
-        var pk = new AnimateEntityPacket();
-        pk.parseFromAnimation(animation);
-        entities.forEach(entity -> pk.entityRuntimeIds.add(entity.getId()));
+    public static void playAnimationOnEntities(EntityAnimation animation, Collection<Entity> entities, Collection<Player> players) {
+        var pk = animation.toNetwork();
+        entities.forEach(entity -> pk.getRuntimeIds().add(entity.getId()));
         Server.broadcastPacket(players, pk);
     }
 
     /**
-     * @see #playAnimationOnEntities(AnimateEntityPacket.Animation, Collection, Collection)
+     * @see #playAnimationOnEntities(EntityAnimation, Collection, Collection)
      */
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
+    public static void playAnimationOnEntities(EntityAnimation animation, Collection<Entity> entities) {
         var viewers = new HashSet<Player>();
         entities.forEach(entity -> {
             viewers.addAll(entity.getViewers().values());
@@ -423,7 +432,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public float getCurrentHeight() {
         if (isSwimming()) {
             return getSwimmingHeight();
-        } else if(isSneaking()) {
+        } else if (isSneaking()) {
             return getSneakingHeight();
         } else if (isCrawling()) {
             return getCrawlingHeight();
@@ -440,6 +449,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * Entity Width
+     *
      * @return the width
      */
     public float getWidth() {
@@ -452,6 +462,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * Entity Default Height
+     *
      * @return the default height
      */
     public float getHeight() {
@@ -511,7 +522,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void setPersistent(boolean persistent) {
         this.despawnable = !persistent;
-        namedTag.putBoolean("Persistent", persistent);
+        this.namedTag = namedTag.toBuilder().putBoolean("Persistent", persistent).build();
     }
 
     public boolean isInvulnerable() {
@@ -520,7 +531,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
-        this.namedTag.putBoolean("Invulnerable", invulnerable);
+        this.namedTag = this.namedTag.toBuilder().putBoolean("Invulnerable", invulnerable).build();
     }
 
     /**
@@ -533,7 +544,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         // Load or generate UUID for non-player entities
         // =========================================================
         if (!(this instanceof Player)) {
-            if (this.namedTag.contains("uuid")) {
+            if (this.namedTag.containsKey("uuid")) {
                 this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
             } else {
                 this.entityUniqueId = UUID.randomUUID();
@@ -544,27 +555,27 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         // Initialize entity data defaults first
         // =========================================================
         this.entityDataMap.getOrCreateFlags();
-        this.entityDataMap.put(AIR_SUPPLY, this.namedTag.getShort("Air"));
-        this.entityDataMap.put(AIR_SUPPLY_MAX, 400);
-        this.entityDataMap.put(NAME, "");
-        this.entityDataMap.put(LEASH_HOLDER, -1);
-        this.entityDataMap.put(SCALE, 1f);
-        this.entityDataMap.put(HEIGHT, this.getHeight());
-        this.entityDataMap.put(WIDTH, this.getWidth());
-        this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
+        this.entityDataMap.put(ActorDataTypes.AIR_SUPPLY, this.namedTag.getShort("Air"));
+        this.entityDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
+        this.entityDataMap.put(ActorDataTypes.NAME, "");
+        this.entityDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
+        this.entityDataMap.put(ActorDataTypes.SCALE, 1f);
+        this.entityDataMap.put(ActorDataTypes.HEIGHT, this.getHeight());
+        this.entityDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
+        this.entityDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
 
         // =========================================================
         // Load Effects from NBT
         // =========================================================
-        if (this.namedTag.contains("ActiveEffects")) {
-            ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
-            for (CompoundTag e : effects.getAll()) {
+        if (this.namedTag.containsKey("ActiveEffects")) {
+            List<NbtMap> effects = this.namedTag.getList("ActiveEffects", NbtType.COMPOUND);
+            for (NbtMap e : effects) {
                 Effect effect = Effect.get(e.getByte("Id"));
                 if (effect == null) continue;
 
                 effect.setAmplifier(e.getByte("Amplifier"))
-                    .setDuration(e.getInt("Duration"))
-                    .setVisible(e.getBoolean("ShowParticles"));
+                        .setDuration(e.getInt("Duration"))
+                        .setVisible(e.getBoolean("ShowParticles"));
 
                 this.addEffect(effect);
             }
@@ -573,15 +584,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         // =========================================================
         // Load Custom name from NBT
         // =========================================================
-        if (this.namedTag.contains("CustomName")) {
+        if (this.namedTag.containsKey("CustomName")) {
             String name = this.namedTag.getString("CustomName");
             if (name != null) {
                 this.setNameTag(name);
             }
-            if (this.namedTag.contains("CustomNameVisible")) {
+            if (this.namedTag.containsKey("CustomNameVisible")) {
                 this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
             }
-            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
+            if (this.namedTag.containsKey("CustomNameAlwaysVisible")) {
                 this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
             }
         }
@@ -589,9 +600,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         // =========================================================
         // Load Attributes from NBT
         // =========================================================
-        if (this.namedTag.contains("Attributes")) {
-            ListTag<CompoundTag> attributes = this.namedTag.getList("Attributes", CompoundTag.class);
-            for (var nbt : attributes.getAll()) {
+        if (this.namedTag.containsKey("Attributes")) {
+            List<NbtMap> attributes = this.namedTag.getList("Attributes", NbtType.COMPOUND);
+            for (var nbt : attributes) {
                 Attribute attribute = Attribute.fromNBT(nbt);
                 this.attributes.put(attribute.getId(), attribute);
             }
@@ -608,18 +619,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             this.setFireImmune(true);
         }
         this.setDataFlags(EnumSet.of(
-            EntityFlag.CAN_WALK,
-            EntityFlag.CAN_CLIMB,
-            EntityFlag.BREATHING,
-            EntityFlag.HAS_COLLISION,
-            EntityFlag.HAS_GRAVITY
+                ActorFlags.CAN_WALK,
+                ActorFlags.CAN_CLIMB,
+                ActorFlags.BREATHING,
+                ActorFlags.HAS_COLLISION,
+                ActorFlags.HAS_GRAVITY
         ));
 
         this.applyInitialInputControlFlags();
         this.applyInitialPowerJumpFlags();
     }
 
-    protected final void init(IChunk chunk, CompoundTag nbt) {
+    protected final void init(IChunk chunk, NbtMap nbt) {
         if ((chunk == null || chunk.getProvider() == null)) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
@@ -630,22 +641,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.namedTag = nbt;
 
         // Restore entity properties from NBT (overwriting defaults)
-        if (this.namedTag.contains("IntProperties")) {
-            CompoundTag intProps = this.namedTag.getCompound("IntProperties");
-            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : intProps.getTags().entrySet()) {
+        if (this.namedTag.containsKey("IntProperties")) {
+            NbtMap intProps = this.namedTag.getCompound("IntProperties");
+            for (Map.Entry<String, Object> entry : intProps.entrySet()) {
                 String key = entry.getKey();
-                if (entry.getValue() instanceof NumberTag<?> numTag) {
-                    this.intProperties.put(key, numTag.getData().intValue());
+                if (entry.getValue() instanceof Number number) {
+                    this.intProperties.put(key, number.intValue());
                 }
             }
         }
 
-        if (this.namedTag.contains("FloatProperties")) {
-            CompoundTag floatProps = this.namedTag.getCompound("FloatProperties");
-            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : floatProps.getTags().entrySet()) {
+        if (this.namedTag.containsKey("FloatProperties")) {
+            NbtMap floatProps = this.namedTag.getCompound("FloatProperties");
+            for (Map.Entry<String, Object> entry : floatProps.entrySet()) {
                 String key = entry.getKey();
-                if (entry.getValue() instanceof NumberTag<?> numTag) {
-                    this.floatProperties.put(key, numTag.getData().floatValue());
+                if (entry.getValue() instanceof Number number) {
+                    this.floatProperties.put(key, number.floatValue());
                 }
             }
         }
@@ -655,59 +666,59 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.server = chunk.getProvider().getLevel().getServer();
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-        ListTag<DoubleTag> posList = this.namedTag.getList("Pos", DoubleTag.class);
-        ListTag<FloatTag> rotationList = this.namedTag.getList("Rotation", FloatTag.class);
-        ListTag<DoubleTag> motionList = this.namedTag.getList("Motion", DoubleTag.class);
+        List<Double> posList = this.namedTag.getList("Pos", NbtType.DOUBLE);
+        List<Float> rotationList = this.namedTag.getList("Rotation", NbtType.FLOAT);
+        List<Double> motionList = this.namedTag.getList("Motion", NbtType.DOUBLE);
         this.setPositionAndRotation(
                 this.temporalVector.setComponents(
-                        posList.get(0).data,
-                        posList.get(1).data,
-                        posList.get(2).data
+                        posList.get(0),
+                        posList.get(1),
+                        posList.get(2)
                 ),
-                rotationList.get(0).data,
-                rotationList.get(1).data
+                rotationList.get(0),
+                rotationList.get(1)
         );
 
         this.setMotion(this.temporalVector.setComponents(
-                motionList.get(0).data,
-                motionList.get(1).data,
-                motionList.get(2).data
+                motionList.get(0),
+                motionList.get(1),
+                motionList.get(2)
         ));
 
-        if (!this.namedTag.contains("FallDistance")) {
-            this.namedTag.putFloat("FallDistance", 0);
+        if (!this.namedTag.containsKey("FallDistance")) {
+            this.namedTag = this.namedTag.toBuilder().putFloat("FallDistance", 0).build();
         }
         this.fallDistance = this.namedTag.getFloat("FallDistance");
         this.highestPosition = this.y + this.namedTag.getFloat("FallDistance");
 
-        if (!this.namedTag.contains("Fire") || this.namedTag.getShort("Fire") > 32767) {
-            this.namedTag.putShort("Fire", 0);
+        if (!this.namedTag.containsKey("Fire") || this.namedTag.getShort("Fire") > 32767) {
+            this.namedTag = this.namedTag.toBuilder().putShort("Fire", (short) 0).build();
         }
         this.fireTicks = this.namedTag.getShort("Fire");
 
-        if (!this.namedTag.contains("Air")) {
-            this.namedTag.putShort("Air", 300);
+        if (!this.namedTag.containsKey("Air")) {
+            this.namedTag = this.namedTag.toBuilder().putShort("Air", (short) 300).build();
         }
-        if (!this.namedTag.contains("OnGround")) {
-            this.namedTag.putBoolean("OnGround", false);
+        if (!this.namedTag.containsKey("OnGround")) {
+            this.namedTag = this.namedTag.toBuilder().putBoolean("OnGround", false).build();
         }
         this.onGround = this.namedTag.getBoolean("OnGround");
 
-        if (!this.namedTag.contains("Invulnerable")) {
-            this.namedTag.putBoolean("Invulnerable", false);
+        if (!this.namedTag.containsKey("Invulnerable")) {
+            this.namedTag = this.namedTag.toBuilder().putBoolean("Invulnerable", false).build();
         }
         this.invulnerable = this.namedTag.getBoolean("Invulnerable");
 
-        if (!this.namedTag.contains("Scale")) {
-            this.namedTag.putFloat("Scale", 1);
+        if (!this.namedTag.containsKey("Scale")) {
+            this.namedTag = this.namedTag.toBuilder().putFloat("Scale", 1).build();
         }
         this.scale = this.namedTag.getFloat("Scale");
-        if (!this.namedTag.contains("Despawnable")) {
+        if (!this.namedTag.containsKey("Despawnable")) {
             boolean persistent =
                     (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
                             this.namedTag.getBoolean("Persistent");
 
-            this.namedTag.putBoolean("Despawnable", !persistent);
+            this.namedTag = this.namedTag.toBuilder().putBoolean("Despawnable", !persistent).build();
         }
         this.despawnable = this.namedTag.getBoolean("Despawnable");
         try {
@@ -758,99 +769,99 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public String getScoreTag() {
-        return this.getDataProperty(SCORE, "");
+        return this.getDataProperty(ActorDataTypes.SCORE, "");
     }
 
     public void setScoreTag(String score) {
-        this.setDataProperty(SCORE, score);
+        this.setDataProperty(ActorDataTypes.SCORE, score);
     }
 
     public boolean isSneaking() {
-        return this.getDataFlag(EntityFlag.SNEAKING);
+        return this.getDataFlag(ActorFlags.SNEAKING);
     }
 
     public void setSneaking(boolean value) {
-        boolean changed = this.getEntityDataMap().existFlag(EntityFlag.SNEAKING) ^ value;
+        boolean changed = this.getEntityDataMap().getOrCreateFlags().contains(ActorFlags.SNEAKING) ^ value;
 
         if (changed) {
-            this.getEntityDataMap().setFlag(EntityFlag.SNEAKING, value);
+            this.getEntityDataMap().setFlag(ActorFlags.SNEAKING, value);
         }
 
         recalculateBoundingBox(false);
-        float newHeight = this.getEntityDataMap().getOrDefault(EntityDataTypes.HEIGHT, getCurrentHeight());
+        float newHeight = (float) this.getEntityDataMap().getOrDefault(ActorDataTypes.HEIGHT, getCurrentHeight());
 
         if (changed) {
-            EntityDataMap delta = new EntityDataMap();
-            delta.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
-            delta.putType(EntityDataTypes.HEIGHT, newHeight);
+            ActorDataMap delta = new ActorDataMap();
+            delta.put(ActorDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+            delta.putType(ActorDataTypes.HEIGHT, newHeight);
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
         } else {
-            EntityDataMap delta = new EntityDataMap();
-            delta.putType(EntityDataTypes.HEIGHT, newHeight);
+            ActorDataMap delta = new ActorDataMap();
+            delta.putType(ActorDataTypes.HEIGHT, newHeight);
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
         }
     }
 
     public boolean isSwimming() {
-        return this.getDataFlag(EntityFlag.SWIMMING);
+        return this.getDataFlag(ActorFlags.SWIMMING);
     }
 
     public void setSwimming(boolean value) {
         if (isSwimming() == value) {
             return;
         }
-        this.setDataFlag(EntityFlag.SWIMMING, value);
+        this.setDataFlag(ActorFlags.SWIMMING, value);
         if (Float.compare(getSwimmingHeight(), getHeight()) != 0) {
             recalculateBoundingBox(true);
         }
     }
 
     public boolean isSprinting() {
-        return this.getDataFlag(EntityFlag.SPRINTING);
+        return this.getDataFlag(ActorFlags.SPRINTING);
     }
 
     public void setSprinting(boolean value) {
-        this.setDataFlag(EntityFlag.SPRINTING, value);
+        this.setDataFlag(ActorFlags.SPRINTING, value);
     }
 
     public boolean isCrawling() {
-        return this.getDataFlag(EntityFlag.CRAWLING);
+        return this.getDataFlag(ActorFlags.CRAWLING);
     }
 
     public void setCrawling(boolean value) {
-        this.setDataFlag(EntityFlag.CRAWLING, value);
+        this.setDataFlag(ActorFlags.CRAWLING, value);
     }
 
     public boolean isGliding() {
-        return this.getDataFlag(EntityFlag.GLIDING);
+        return this.getDataFlag(ActorFlags.GLIDING);
     }
 
     public void setGliding(boolean value) {
-        this.setDataFlag(EntityFlag.GLIDING, value);
+        this.setDataFlag(ActorFlags.GLIDING, value);
     }
 
     public boolean isImmobile() {
-        return this.getDataFlag(EntityFlag.NO_AI);
+        return this.getDataFlag(ActorFlags.NO_AI);
     }
 
     public void setImmobile(boolean value) {
-        this.setDataFlag(EntityFlag.NO_AI, value);
+        this.setDataFlag(ActorFlags.NO_AI, value);
     }
 
     public boolean canClimb() {
-        return this.getDataFlag(EntityFlag.CAN_CLIMB);
+        return this.getDataFlag(ActorFlags.CAN_CLIMB);
     }
 
     public void setCanClimb(boolean value) {
-        this.setDataFlag(EntityFlag.CAN_CLIMB, value);
+        this.setDataFlag(ActorFlags.CAN_CLIMB, value);
     }
 
     public boolean canClimbWalls() {
-        return this.getDataFlag(EntityFlag.WALL_CLIMBING);
+        return this.getDataFlag(ActorFlags.WALL_CLIMBING);
     }
 
     public void setCanClimbWalls(boolean value) {
-        this.setDataFlag(EntityFlag.WALL_CLIMBING, value);
+        this.setDataFlag(ActorFlags.WALL_CLIMBING, value);
     }
 
     public float getScale() {
@@ -859,7 +870,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void setScale(float scale) {
         this.scale = scale;
-        this.setDataProperty(SCALE, this.scale);
+        this.setDataProperty(ActorDataTypes.SCALE, this.scale);
         this.recalculateBoundingBox();
     }
 
@@ -902,10 +913,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
 
             if (this instanceof Player player && effect.getId() != null) {
-                MobEffectPacket packet = new MobEffectPacket();
-                packet.eid = player.getId();
-                packet.effectId = effect.getId();
-                packet.eventId = MobEffectPacket.EVENT_REMOVE;
+                final MobEffectPacket packet = new MobEffectPacket();
+                packet.setTargetRuntimeID(player.getId());
+                packet.setEffectID(effect.getId());
+                packet.setEvent(MobEffectPacket.Event.REMOVE);
                 player.dataPacket(packet);
             }
 
@@ -913,7 +924,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             effects.remove(type);
 
             this.recalculateEffectColor();
-            this.setDataProperty(EntityDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
+            this.setDataProperty(ActorDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
             if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
         }
     }
@@ -949,18 +960,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         if (this instanceof Player player && effect.getId() != null) {
-            MobEffectPacket packet = new MobEffectPacket();
-            packet.eid = player.getId();
-            packet.effectId = effect.getId();
-            packet.amplifier = effect.getAmplifier();
-            packet.particles = effect.isVisible();
-            packet.duration = effect.getDuration();
-            if (oldEffect != null) {
-                packet.eventId = MobEffectPacket.EVENT_MODIFY;
-            } else {
-                packet.eventId = MobEffectPacket.EVENT_ADD;
-            }
-
+            final MobEffectPacket packet = new MobEffectPacket();
+            packet.setTargetRuntimeID(player.getId());
+            packet.setEffectID(effect.getId());
+            packet.setEffectAmplifier(effect.getAmplifier());
+            packet.setShowParticles(effect.isVisible());
+            packet.setEffectDurationTicks(effect.getDuration());
+            packet.setEvent(
+                    oldEffect != null ? MobEffectPacket.Event.MODIFY : MobEffectPacket.Event.ADD
+            );
             player.dataPacket(packet);
         }
 
@@ -968,7 +976,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         effects.put(effect.getType(), effect);
 
         this.recalculateEffectColor();
-        this.setDataProperty(EntityDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
+        this.setDataProperty(ActorDataTypes.VISIBLE_MOB_EFFECTS, computeVisibleMobEffects());
         if (this instanceof EntityLiving) ((EntityLiving) this).recalcMovementSpeedFromEffects();
     }
 
@@ -991,17 +999,27 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         );
 
         boolean change = false;
-        if (this.getEntityDataMap().get(HEIGHT) != entityHeight) {
+        if (!this.getEntityDataMap().containsKey(ActorDataTypes.HEIGHT) || this.getEntityDataMap().get(ActorDataTypes.HEIGHT) != entityHeight) {
             change = true;
-            this.getEntityDataMap().put(HEIGHT, entityHeight);
+            this.getEntityDataMap().put(ActorDataTypes.HEIGHT, entityHeight);
         }
-        if (this.getEntityDataMap().get(WIDTH) != this.getWidth()) {
+        if (!this.getEntityDataMap().containsKey(ActorDataTypes.WIDTH) || this.getEntityDataMap().get(ActorDataTypes.WIDTH) != this.getWidth()) {
             change = true;
-            this.getEntityDataMap().put(WIDTH, this.getWidth());
+            this.getEntityDataMap().put(ActorDataTypes.WIDTH, this.getWidth());
         }
         if (send && change) {
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.entityDataMap.copy(WIDTH, HEIGHT));
+            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.copyEntityData(ActorDataTypes.WIDTH, ActorDataTypes.HEIGHT));
         }
+    }
+
+    private ActorDataMap copyEntityData(ActorDataType<?>... types) {
+        final ActorDataMap map = new ActorDataMap();
+        for (ActorDataType<?> type : types) {
+            if (this.entityDataMap.containsKey(type)) {
+                map.put(type, map.get(type));
+            }
+        }
+        return map;
     }
 
     protected void recalculateEffectColor() {
@@ -1026,13 +1044,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             int g = (color[1] / count) & 0xff;
             int b = (color[2] / count) & 0xff;
             setDataProperties(Map.of(
-                    EFFECT_COLOR, (r << 16) + (g << 8) + b,
-                    EFFECT_AMBIENCE, ambient ? 1 : 0
+                    ActorDataTypes.EFFECT_COLOR, (r << 16) + (g << 8) + b,
+                    ActorDataTypes.EFFECT_AMBIENCE, ambient ? 1 : 0
             ));
         } else {
             setDataProperties(Map.of(
-                    EFFECT_COLOR, 0,
-                    EFFECT_AMBIENCE, 0
+                    ActorDataTypes.EFFECT_COLOR, 0,
+                    ActorDataTypes.EFFECT_AMBIENCE, 0
             ));
         }
     }
@@ -1059,96 +1077,84 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
             int ambient = e.isAmbient() ? 1 : 0;
             int slotByte = (id & 0x3F) | (ambient << 6);
-            data |= ((long)(slotByte & 0xFF)) << (packed * 8);
+            data |= ((long) (slotByte & 0xFF)) << (packed * 8);
             packed++;
         }
         return data;
     }
 
     public void saveNBT() {
+        final NbtMapBuilder builder = this.namedTag.toBuilder();
         if (!(this instanceof Player)) {
-            this.namedTag.putString("identifier", this.getIdentifier());
+            builder.putString("identifier", this.getIdentifier());
             if (!this.getNameTag().isEmpty()) {
-                this.namedTag.putString("CustomName", this.getNameTag());
-                this.namedTag.putBoolean("CustomNameVisible", this.isNameTagVisible());
-                this.namedTag.putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());
+                builder.putString("CustomName", this.getNameTag())
+                        .putBoolean("CustomNameVisible", this.isNameTagVisible())
+                        .putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());
             } else {
-                this.namedTag.remove("CustomName");
-                this.namedTag.remove("CustomNameVisible");
-                this.namedTag.remove("CustomNameAlwaysVisible");
+                builder.remove("CustomName");
+                builder.remove("CustomNameVisible");
+                builder.remove("CustomNameAlwaysVisible");
             }
             if (this.entityUniqueId == null) {
                 this.entityUniqueId = UUID.randomUUID();
             }
-            this.namedTag.putString("uuid", this.entityUniqueId.toString());
+            builder.putString("uuid", this.entityUniqueId.toString());
         }
 
-        this.namedTag.putList("Pos", new ListTag<DoubleTag>()
-                .add(new DoubleTag(this.x))
-                .add(new DoubleTag(this.y))
-                .add(new DoubleTag(this.z))
-        );
-
-        this.namedTag.putList("Motion", new ListTag<DoubleTag>()
-                .add(new DoubleTag(this.motionX))
-                .add(new DoubleTag(this.motionY))
-                .add(new DoubleTag(this.motionZ))
-        );
-
-        this.namedTag.putList("Rotation", new ListTag<FloatTag>()
-                .add(new FloatTag((float) this.yaw))
-                .add(new FloatTag((float) this.pitch))
-        );
-
-        this.namedTag.putFloat("FallDistance", this.fallDistance);
-        this.namedTag.putShort("Fire", this.fireTicks);
-        this.namedTag.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
-        this.namedTag.putBoolean("OnGround", this.onGround);
-        this.namedTag.putBoolean("Invulnerable", this.invulnerable);
-        this.namedTag.putBoolean("Despawnable", this.despawnable);
-        this.namedTag.putFloat("Scale", this.scale);
+        builder.putList("Pos", NbtType.DOUBLE, Arrays.asList(this.x, this.y, this.z));
+        builder.putList("Motion", NbtType.DOUBLE, Arrays.asList(this.motionX, this.motionY, this.motionZ));
+        builder.putList("Rotation", NbtType.FLOAT, Arrays.asList((float) this.yaw, (float) this.pitch));
+        builder.putFloat("FallDistance", this.fallDistance)
+                .putShort("Fire", (short) this.fireTicks)
+                .putShort("Air", this.getDataProperty(ActorDataTypes.AIR_SUPPLY, (short) 0))
+                .putBoolean("OnGround", this.onGround)
+                .putBoolean("Invulnerable", this.invulnerable)
+                .putBoolean("Despawnable", this.despawnable)
+                .putFloat("Scale", this.scale);
 
         if (!this.effects.isEmpty()) {
-            ListTag<CompoundTag> list = new ListTag<>();
+            final List<NbtMap> list = new ObjectArrayList<>();
             for (Effect effect : this.effects.values()) {
-                list.add(new CompoundTag()
-                        .putByte("Id", effect.getId())
-                        .putByte("Amplifier", effect.getAmplifier())
+                list.add(NbtMap.builder()
+                        .putByte("Id", effect.getId().byteValue())
+                        .putByte("Amplifier", (byte) effect.getAmplifier())
                         .putInt("Duration", effect.getDuration())
                         .putBoolean("Ambient", false)
                         .putBoolean("ShowParticles", effect.isVisible())
+                        .build()
                 );
             }
 
-            this.namedTag.putList("ActiveEffects", list);
+            builder.putList("ActiveEffects", NbtType.COMPOUND, list);
         } else {
-            this.namedTag.remove("ActiveEffects");
+            builder.remove("ActiveEffects");
         }
 
         if (!this.attributes.isEmpty()) {
-            ListTag<CompoundTag> attributes = new ListTag<>();
+            List<NbtMap> attributes = new ObjectArrayList<>();
             for (var attribute : this.attributes.values()) {
-                CompoundTag nbt = Attribute.toNBT(attribute);
+                NbtMap nbt = Attribute.toNBT(attribute);
                 attributes.add(nbt);
             }
-            this.namedTag.putList("Attributes", attributes);
+            builder.putList("Attributes", NbtType.COMPOUND, attributes);
         } else {
-            this.namedTag.remove("Attributes");
+            builder.remove("Attributes");
         }
 
         // Save intProperties & boolProperties
-        CompoundTag intProps = new CompoundTag();
+        NbtMapBuilder intProps = NbtMap.builder();
         for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
             intProps.putInt(entry.getKey(), entry.getValue());
         }
-        this.namedTag.putCompound("IntProperties", intProps);
+        builder.putCompound("IntProperties", intProps.build());
 
         // Save floatProperties
-        CompoundTag floatProps = new CompoundTag();
+        NbtMapBuilder floatProps = NbtMap.builder();
         for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
             floatProps.putFloat(entry.getKey(), entry.getValue());
         }
-        this.namedTag.putCompound("FloatProperties", floatProps);
+        builder.putCompound("FloatProperties", floatProps.build());
     }
 
     /**
@@ -1192,7 +1198,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param player the player
      */
     public void spawnTo(Player player) {
-        if(this.closed) return;
+        if (this.closed) return;
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(createAddEntityPacket());
@@ -1201,49 +1207,58 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (this.riding != null) {
             this.riding.spawnTo(player);
 
-            SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-            pkk.vehicleUniqueId = this.riding.getId();
-            pkk.riderUniqueId = this.getId();
-            pkk.type = EntityLink.Type.RIDER;
-            pkk.immediate = 1;
-
-            player.dataPacket(pkk);
+            final SetActorLinkPacket setActorLinkPacket = new SetActorLinkPacket();
+            setActorLinkPacket.setLink(
+                    new ActorLink(
+                            this.riding.getId(),
+                            this.getId(),
+                            ActorLinkType.RIDING,
+                            true,
+                            false,
+                            0f
+                    )
+            );
+            player.dataPacket(setActorLinkPacket);
         }
     }
 
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = this.getNetworkId();
-        addEntity.entityUniqueId = this.getId();
-        if (this instanceof CustomEntity) {
-            addEntity.id = this.getIdentifier();
+    protected BedrockPacket createAddEntityPacket() {
+        final AddActorPacket addActorPacket = new AddActorPacket();
+        if (!this.isPlayer && !this.attributes.isEmpty()) {
+            addActorPacket.getAttributesList().addAll(
+                    this.attributes.values().stream()
+                            .map(Attribute::toNetwork)
+                            .toList()
+            );
         }
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
 
-        if (!this.isPlayer && this.attributes != null && !this.attributes.isEmpty()) {
-            addEntity.attributes = this.attributes.values().toArray(Attribute.EMPTY_ARRAY);
-        }
+        addActorPacket.setActorData(this.entityDataMap);
 
         int controlSeat = getControllingSeatIndex();
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            EntityLink.Type t = (i == controlSeat ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER);
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), t, false, false, 0f);
+        for (int i = 0; i < this.passengers.size(); i++) {
+            final ActorLinkType actorLinkType = (i == controlSeat ? ActorLinkType.RIDING : ActorLinkType.PASSENGER);
+            final ActorLink actorLink = new ActorLink(
+                    this.getId(),
+                    this.passengers.get(i).getId(),
+                    actorLinkType,
+                    false,
+                    false,
+                    0f
+            );
+            addActorPacket.getActorLinks().add(actorLink);
         }
-
-        addEntity.syncedProperties = this.getClientSyncProperties();
-
-        return addEntity;
+        addActorPacket.setTargetActorID(this.getId());
+        addActorPacket.setTargetRuntimeID(this.getId());
+        addActorPacket.setActorType(this.getIdentifier());
+        addActorPacket.setPosition(this.getPosition().toNetwork());
+        addActorPacket.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
+        addActorPacket.setRotation(Vector2f.from(this.pitch, this.yaw));
+        addActorPacket.setHeadRotation((float) this.headYaw);
+        addActorPacket.setBodyRotation((float) this.yaw);
+        final PropertySyncData propertySyncData = this.getClientSyncProperties();
+        addActorPacket.getSyncedProperties().getIntProperties().addAll(propertySyncData.getIntProperties());
+        addActorPacket.getSyncedProperties().getFloatProperties().addAll(propertySyncData.getFloatProperties());
+        return addActorPacket;
     }
 
     public Map<Integer, Player> getViewers() {
@@ -1253,13 +1268,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public void sendPotionEffects(Player player) {
         for (Effect effect : effects.values()) {
             if (effect.getId() != null) {
-                MobEffectPacket packet = new MobEffectPacket();
-                packet.eid = this.getId();
-                packet.effectId = effect.getId();
-                packet.amplifier = effect.getAmplifier();
-                packet.particles = effect.isVisible();
-                packet.duration = effect.getDuration();
-                packet.eventId = MobEffectPacket.EVENT_ADD;
+                final MobEffectPacket packet = new MobEffectPacket();
+                packet.setTargetRuntimeID(this.getId());
+                packet.setEffectID(effect.getId());
+                packet.setEffectAmplifier(effect.getAmplifier());
+                packet.setShowParticles(effect.isVisible());
+                packet.setEffectDurationTicks(effect.getDuration());
+                packet.setEvent(MobEffectPacket.Event.ADD);
                 player.dataPacket(packet);
             }
         }
@@ -1269,47 +1284,50 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.sendData(player, null);
     }
 
-    public void sendData(Player player, EntityDataMap data) {
-        SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.eid = this.getId();
-        pk.entityData = data == null ? this.entityDataMap : data;
-        pk.syncedProperties = this.propertySyncData();
+    public void sendData(Player player, ActorDataMap data) {
+        final SetActorDataPacket packet = new SetActorDataPacket();
+        packet.setActorData(data == null ? this.entityDataMap : data);
+        packet.setTargetRuntimeID(this.getId());
+        packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
+        packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
 
-        player.dataPacket(pk);
+        player.dataPacket(packet);
     }
 
     public void sendData(Player[] players) {
         this.sendData(players, null);
     }
 
-    public void sendData(Player[] players, EntityDataMap data) {
-        SetEntityDataPacket pk = new SetEntityDataPacket();
-        pk.eid = this.getId();
-        pk.entityData = data == null ? this.entityDataMap : data;
-        pk.syncedProperties = this.propertySyncData();
+    public void sendData(Player[] players, ActorDataMap data) {
+        final SetActorDataPacket packet = new SetActorDataPacket();
+        packet.setActorData(data == null ? this.entityDataMap : data);
+        packet.setTargetRuntimeID(this.getId());
+        packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
+        packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
 
         for (Player player : players) {
             if (player == this) {
                 continue;
             }
-            player.dataPacket(pk);
+            player.dataPacket(packet);
         }
         if (this instanceof Player player) {
-            player.dataPacket(pk);
+            player.dataPacket(packet);
         }
     }
 
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
-            player.dataPacket(pk);
+            final RemoveActorPacket packet = new RemoveActorPacket();
+            packet.setTargetActorID(this.getId());
+            player.dataPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }
 
     /**
      * Called when an entity is attacked (i.e. receives an entity damage event. This event can be caused by an attack by another entity, or it can be a natural damage).
+     *
      * @param source Record the event of the source of the attack
      * @return Whether the attack was successful
      */
@@ -1371,7 +1389,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 }
                 // Resurrection Totem Implementation
                 if (totem) {
-                    this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM_USED);
+                    this.getLevel().addLevelEvent(this, LevelEvent.SOUND_TOTEM_USED);
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
 
                     this.extinguish();
@@ -1382,10 +1400,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                     this.addEffect(Effect.get(EffectType.FIRE_RESISTANCE).setDuration(800));
                     this.addEffect(Effect.get(EffectType.ABSORPTION).setDuration(100).setAmplifier(1));
 
-                    EntityEventPacket pk = new EntityEventPacket();
-                    pk.eid = this.getId();
-                    pk.event = EntityEventPacket.CONSUME_TOTEM;
-                    player.dataPacket(pk);
+                    final ActorEventPacket actorEventPacket = new ActorEventPacket();
+                    actorEventPacket.setTargetRuntimeID(this.getId());
+                    actorEventPacket.setType(ActorEvent.TALISMAN_ACTIVATE);
+                    player.dataPacket(actorEventPacket);
 
                     if (isOffhand) {
                         player.getOffhandInventory().clear(0, true);
@@ -1569,7 +1587,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean entityBaseTick(int tickDiff) {
-        if(!getServer().isRunning()) return true;
+        if (!getServer().isRunning()) return true;
         if (!this.isAlive()) {
             if (this instanceof EntityCreature) {
                 this.deadTicks += tickDiff;
@@ -1643,7 +1661,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             }
         }
 
-        if(this.fireTicks > 0 && this.hasEffect(EffectType.FIRE_RESISTANCE)) fireTicks = 0;
+        if (this.fireTicks > 0 && this.hasEffect(EffectType.FIRE_RESISTANCE)) fireTicks = 0;
         if (this.fireTicks > 0) {
             if (this.fireProof) {
                 this.fireTicks -= 4 * tickDiff;
@@ -1659,7 +1677,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             if (this.fireTicks <= 0) {
                 this.extinguish();
             } else if (!this.fireProof && (!(this instanceof Player player) || !player.isSpectator())) {
-                this.setDataFlag(EntityFlag.ON_FIRE);
+                this.setDataFlag(ActorFlags.ON_FIRE);
                 hasUpdate = true;
             }
         }
@@ -1751,7 +1769,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void updateMovement() {
         // This is done for backward compatibility with older plugins.
-        if(isImmobile()) return; //Do not move when immobile
+        if (isImmobile()) return; //Do not move when immobile
 
         if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
@@ -1814,36 +1832,34 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-    * Please note that this method only sends a motion packet to the client and does not actually add the motion value to the entity's motion(x|y|z).<p/>
-    * If you want to add to the entity's motion, please directly add the motion value to the entity's motion(x|y|z), like this:<p/>
-    * entity.motionX += vector3.x;<p/>
-    * entity.motionY += vector3.y;<p/>
-    * entity.motionZ += vector3.z;<p/>
-    * You should not use this method for player entities!
+     * Please note that this method only sends a motion packet to the client and does not actually add the motion value to the entity's motion(x|y|z).<p/>
+     * If you want to add to the entity's motion, please directly add the motion value to the entity's motion(x|y|z), like this:<p/>
+     * entity.motionX += vector3.x;<p/>
+     * entity.motionY += vector3.y;<p/>
+     * entity.motionZ += vector3.z;<p/>
+     * You should not use this method for player entities!
      */
     public void addMotion(double motionX, double motionY, double motionZ) {
-        SetEntityMotionPacket pk = new SetEntityMotionPacket();
-        pk.eid = this.getId();
-        pk.motionX = (float) motionX;
-        pk.motionY = (float) motionY;
-        pk.motionZ = (float) motionZ;
+        final SetActorMotionPacket packet = new SetActorMotionPacket();
+        packet.setTargetRuntimeID(this.getId());
+        packet.setMotion(org.cloudburstmc.math.vector.Vector3f.from(motionX, motionY, motionZ));
 
-        Server.broadcastPacket(this.hasSpawned.values(), pk);
+        Server.broadcastPacket(this.hasSpawned.values(), packet);
     }
 
 
     protected void broadcastMovement(boolean tp) {
-        var pk = new MoveEntityAbsolutePacket();
-        pk.eid = this.getId();
-        pk.x = this.x;
-        pk.y = this.y + this.getBaseOffset();
-        pk.z = this.z;
-        pk.headYaw = yaw;
-        pk.pitch = pitch;
-        pk.yaw = yaw;
-        pk.teleport = tp;
-        pk.onGround = this.onGround;
-        Server.broadcastPacket(hasSpawned.values(), pk);
+        final MoveActorAbsoluteData moveData = new MoveActorAbsoluteData();
+        moveData.setActorRuntimeID(this.getId());
+        moveData.setOnGround(this.onGround);
+        moveData.setTeleported(tp);
+        moveData.setPos(this.getPosition().toNetwork());
+        moveData.setRotation(org.cloudburstmc.math.vector.Vector3f.from(this.pitch, this.yaw, this.yaw));
+
+        final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
+        packet.setMoveData(moveData);
+
+        Server.broadcastPacket(hasSpawned.values(), packet);
     }
 
     public Vector2 getDirectionPlane() {
@@ -1875,15 +1891,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
 
-    //////////////////////////////////////////////
-    ////////////// RIDEABLE APIS /////////////////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// /////////// RIDEABLE APIS /////////////////
+    /// ///////////////////////////////////////////
 
     public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
         return false;
     }
 
-    /** Return true if getComponentRideable() is not null. */
+    /**
+     * Return true if getComponentRideable() is not null.
+     */
     public boolean isRideable() {
         return getComponentRideable() != null;
     }
@@ -1952,26 +1970,30 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean isChested() {
-        return this.getDataFlag(EntityFlag.CHESTED);
+        return this.getDataFlag(ActorFlags.CHESTED);
     }
 
     public void setChest(boolean chested) {
-        this.setDataFlag(EntityFlag.CHESTED, chested);
+        this.setDataFlag(ActorFlags.CHESTED, chested);
     }
 
     public boolean isEquine() {
         return false;
     }
 
-    /** Play an animation failed to tame */
+    /**
+     * Play an animation failed to tame
+     */
     public void equinePlayTameFailAnimation() {
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
-        this.setDataFlag(EntityFlag.STANDING);
+        this.getLevel().addLevelSoundEvent(this, SoundEvent.MAD, -1, "minecraft:horse", this.isBaby(), false);
+        this.setDataFlag(ActorFlags.STANDING);
     }
 
-    /** Stop playing animation failed to tame */
+    /**
+     * Stop playing animation failed to tame
+     */
     public void equineStopTameFailAnimation() {
-        this.setDataFlag(EntityFlag.STANDING, false);
+        this.setDataFlag(ActorFlags.STANDING, false);
     }
 
     /**
@@ -2005,10 +2027,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * Returns allowed rider family types (Bedrock rideable family_types).
      */
-        public Set<String> getAllowedRiderFamilyTypes() {
-            RideableComponent r = getComponentRideable();
-            return r != null ? r.familyTypes() : Collections.emptySet();
-        }
+    public Set<String> getAllowedRiderFamilyTypes() {
+        RideableComponent r = getComponentRideable();
+        return r != null ? r.familyTypes() : Collections.emptySet();
+    }
 
     /**
      * Checks whether a rider entity is allowed to ride this entity.
@@ -2050,15 +2072,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link RideableComponent} if defined for this custom entity,
-     *         or {@code null} if the entity is not custom or does not have
-     *         the {@code minecraft:rideable} component.
+     * or {@code null} if the entity is not custom or does not have
+     * the {@code minecraft:rideable} component.
      */
     public @Nullable RideableComponent getComponentRideable() {
         if (!isCustomEntity()) return null;
         return meta().getRideableComponent(CustomEntityComponents.RIDEABLE);
     }
 
-    /** Return the default base mounted offset for a passenger. */
+    /**
+     * Return the default base mounted offset for a passenger.
+     */
     public Vector3f getMountedOffset(Entity passenger) {
         if (passenger.isPlayer) {
             float standingEyeHeight = passenger.getHeight() * 0.9f;
@@ -2069,42 +2093,45 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return new Vector3f(0f, mountedOffsetY, 0f);
     }
 
-    /** Set ride to allow input controls. */
+    /**
+     * Set ride to allow input controls.
+     */
     public boolean setInputControls(boolean enabled) {
         if (enabled && !this.canEnableWASDControls()) return false;
 
         switch (getInputControlType()) {
             case GROUND: {
-                this.setDataFlag(EntityFlag.WASD_CONTROLLED, enabled);
-                this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, false);
+                this.setDataFlag(ActorFlags.WASD_CONTROLLED, enabled);
+                this.setDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED, false);
 
                 if (enabled) {
-                    this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
-                    this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                    this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
+                    this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
                 }
                 return true;
             }
             case AIR: {
-                this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, enabled);
-                this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
+                this.setDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED, enabled);
+                this.setDataFlag(ActorFlags.WASD_CONTROLLED, false);
 
                 if (enabled) {
-                    this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, true);
-                    this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, true);
+                    this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, true);
+                    this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, true);
                 } else {
-                    this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
-                    this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                    this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
+                    this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
                 }
                 return true;
             }
             case WATER: {
-                this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, enabled);
-                this.setDataFlag(EntityFlag.WASD_CONTROLLED, false);
-                this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
-                this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
+                this.setDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED, enabled);
+                this.setDataFlag(ActorFlags.WASD_CONTROLLED, false);
+                this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, false);
+                this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, false);
                 return true;
             }
-            default: return false;
+            default:
+                return false;
         }
     }
 
@@ -2113,7 +2140,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean rideCanJump() {
-        return this.isRideable() && (this.getRideJumpStrength() > 0f && this.getDataFlag(EntityFlag.CAN_POWER_JUMP));
+        return this.isRideable() && (this.getRideJumpStrength() > 0f && this.getDataFlag(ActorFlags.CAN_POWER_JUMP));
     }
 
     public boolean rideHasVerticalMove() {
@@ -2121,82 +2148,89 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean isSaddled() {
-        return this.getDataFlag(EntityFlag.SADDLED);
+        return this.getDataFlag(ActorFlags.SADDLED);
     }
 
     public boolean setSaddle(boolean saddled) {
         if (!this.isRideable()) return false;
         if (!this.canBeSaddled()) return false;
 
-        boolean current = this.getDataFlag(EntityFlag.SADDLED);
+        boolean current = this.getDataFlag(ActorFlags.SADDLED);
         if (current == saddled) return false;
 
-        this.setDataFlag(EntityFlag.SADDLED, saddled);
+        this.setDataFlag(ActorFlags.SADDLED, saddled);
         return true;
     }
 
     public boolean removeSaddle() {
         if (!this.isRideable()) return false;
         if (!this.canBeSaddled()) return false;
-        if (!this.getDataFlag(EntityFlag.SADDLED)) return false;
+        if (!this.getDataFlag(ActorFlags.SADDLED)) return false;
 
-        this.setDataFlag(EntityFlag.SADDLED, false);
+        this.setDataFlag(ActorFlags.SADDLED, false);
         return true;
     }
 
     public boolean setCanPowerJump(boolean enabled) {
         if (enabled && !this.isRideable()) return false;
-        this.setDataFlag(EntityFlag.CAN_POWER_JUMP, enabled);
+        this.setDataFlag(ActorFlags.CAN_POWER_JUMP, enabled);
         return true;
     }
 
     public boolean canPowerJump() {
-        return this.getDataFlag(EntityFlag.CAN_POWER_JUMP);
+        return this.getDataFlag(ActorFlags.CAN_POWER_JUMP);
     }
 
     public boolean setCanDash(boolean enabled) {
         if (enabled && !this.isRideable()) return false;
-        this.setDataFlag(EntityFlag.CAN_DASH, enabled);
+        this.setDataFlag(ActorFlags.CAN_DASH, enabled);
         return true;
     }
 
     public void setDashCooldown(boolean value) {
-        this.setDataFlag(EntityFlag.HAS_DASH_COOLDOWN, value);
+        this.setDataFlag(ActorFlags.HAS_DASH_COOLDOWN, value);
     }
 
     public boolean hasDashCooldown() {
-        return this.getDataFlag(EntityFlag.HAS_DASH_COOLDOWN);
+        return this.getDataFlag(ActorFlags.HAS_DASH_COOLDOWN);
     }
 
     public boolean canDash() {
-        return this.getDataFlag(EntityFlag.CAN_DASH);
+        return this.getDataFlag(ActorFlags.CAN_DASH);
     }
 
-    /** Returns runtime state of entity has any WASD controls */
+    /**
+     * Returns runtime state of entity has any WASD controls
+     */
     public boolean hasWASDControls() {
         return this.isGroundControlled() || this.isAirControlled();
     }
 
-    /** Returns runtime state of entity if is ground controlled */
+    /**
+     * Returns runtime state of entity if is ground controlled
+     */
     public boolean isGroundControlled() {
-        return this.getDataFlag(EntityFlag.WASD_CONTROLLED);
+        return this.getDataFlag(ActorFlags.WASD_CONTROLLED);
     }
 
-    /** Returns runtime state of entity if is air controlled */
+    /**
+     * Returns runtime state of entity if is air controlled
+     */
     public boolean isAirControlled() {
-        return this.getDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED);
+        return this.getDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED);
     }
 
-    /** Define the default input control type */
+    /**
+     * Define the default input control type
+     */
     public RideableComponent.InputType getInputControlType() {
         return null;
     }
 
 
-
-    //////////////////////////////////////////////
-    /////////////// MOUNT CHAIN //////////////////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// //////////// MOUNT CHAIN //////////////////
+    /// ///////////////////////////////////////////
 
     public boolean mountEntity(Entity entity) {
         return mountEntity(entity, false);
@@ -2206,14 +2240,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @deprecated Use {@link #mountEntity(Entity, boolean)}. Link type is derived from seat index.
      */
     @Deprecated
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, ActorLinkType mode) {
         boolean ok = mountEntity(entity, false); // not rider initiated by default
         if (!ok || entity.riding != this) return ok;
 
         // Preserve legacy intent:
-        if (mode == EntityLink.Type.RIDER) {
+        if (mode == ActorLinkType.RIDING) {
             forcePassengerToSeat(entity, 0);
-        } else if (mode == EntityLink.Type.PASSENGER) {
+        } else if (mode == ActorLinkType.PASSENGER) {
             forcePassengerToPassengerSeat(entity);
         }
         // refresh seats/positions/links after forcing
@@ -2223,11 +2257,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * INTERNAL LEGACY COMPATIBILITY HELPER.
-     *
+     * <p>
      * Forces a passenger to occupy a given seat index (list index).
      * <p>
      * This exists ONLY to preserve behavior of deprecated
-     * {@link #mountEntity(Entity, EntityLink.Type)} and MUST NOT be exposed
+     * {@link #mountEntity(Entity, ActorLinkType)} and MUST NOT be exposed
      * to plugins or subclasses.
      * <p>
      * Does not broadcast or reposition passengers; caller must invoke
@@ -2253,10 +2287,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * INTERNAL LEGACY COMPATIBILITY HELPER.
-     *
+     * <p>
      * Forces a passenger to be placed in a non-rider seat (index >= 1),
      * preserving old PASSENGER semantics from
-     * {@link #mountEntity(Entity, EntityLink.Type)}.
+     * {@link #mountEntity(Entity, ActorLinkType)}.
      *
      * @return true if passenger order changed
      * Planned removal: after 6 months (>= 2026-08-19).
@@ -2296,11 +2330,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (ev.isCancelled()) return false;
 
         entity.riding = this;
-        entity.setDataFlag(EntityFlag.RIDING, true);
+        entity.setDataFlag(ActorFlags.RIDING, true);
         passengers.add(entity);
 
         if (!this.isPlayer && !(entity instanceof Player)) {
-            entity.namedTag.putString(NBT_RIDING_UUID, this.getUniqueId().toString());
+            entity.namedTag = entity.namedTag.toBuilder().putString(NBT_RIDING_UUID, this.getUniqueId().toString()).build();
         }
 
         updatePassengers(true, riderInitiated);
@@ -2381,7 +2415,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         int bestIdx = -1;
         for (int i = 0; i < passengers.size(); i++) {
-            if (passengers.get(i) instanceof Player) { bestIdx = i; break; }
+            if (passengers.get(i) instanceof Player) {
+                bestIdx = i;
+                break;
+            }
         }
         if (bestIdx == -1 || bestIdx == controlSeat) return false;
 
@@ -2406,7 +2443,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
-    /** Resolves the seat offset to apply to a passenger for a specific seat index. */
+    /**
+     * Resolves the seat offset to apply to a passenger for a specific seat index.
+     */
     public @Nullable RideableComponent.Seat getRideSeatFor(int seatIndex) {
         RideableComponent r = getComponentRideable();
         if (r == null) return null;
@@ -2428,9 +2467,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         Vector3f base = getMountedOffset(passenger);
 
         return new Vector3f(
-            base.x + seat.x,
-            base.y + seat.y,
-            base.z + seat.z
+                base.x + seat.x,
+                base.y + seat.y,
+                base.z + seat.z
         );
     }
 
@@ -2462,9 +2501,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
 
-    //////////////////////////////////////////////
-    ///////////// DISMOUNT CHAIN /////////////////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// ////////// DISMOUNT CHAIN /////////////////
+    /// ///////////////////////////////////////////
 
     public boolean dismountEntity(Entity entity) {
         return this.dismountEntity(entity, true);
@@ -2477,20 +2516,20 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             if (seatIndex == 0) {
-                broadcastLinkPacket(entity, EntityLink.Type.RIDER);
+                broadcastLinkPacket(entity, ActorLinkType.RIDING);
             } else if (seatIndex != -1) {
-                broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
+                broadcastLinkPacket(entity, ActorLinkType.PASSENGER);
             }
             return false;
         }
 
         if (entity instanceof Player p) clearSeatData(p);
         if (sendLinks) {
-            broadcastLinkPacket(entity, EntityLink.Type.REMOVE, false);
+            broadcastLinkPacket(entity, ActorLinkType.NONE, false);
         }
 
         entity.riding = null;
-        entity.setDataFlag(EntityFlag.RIDING, false);
+        entity.setDataFlag(ActorFlags.RIDING, false);
         entity.setSeatPosition(new Vector3f());
         entity.seatRawOffset = null;
         passengers.remove(entity);
@@ -2541,8 +2580,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         final double r = Math.max(0.6, (this.getWidth() * 0.5) + 0.3);
 
         final double[][] offsets = new double[][]{
-                { r, 0 }, {-r, 0 }, { 0, r }, { 0, -r },
-                { r, r }, { r, -r }, {-r, r }, {-r, -r }
+                {r, 0}, {-r, 0}, {0, r}, {0, -r},
+                {r, r}, {r, -r}, {-r, r}, {-r, -r}
         };
 
         for (double[] o : offsets) {
@@ -2575,8 +2614,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     protected boolean hasSpaceToDismount(double x, int y, double z, Entity passenger) {
-        Block feet = this.level.getBlock((int)Math.floor(x), y, (int)Math.floor(z));
-        Block head = this.level.getBlock((int)Math.floor(x), y + 1, (int)Math.floor(z));
+        Block feet = this.level.getBlock((int) Math.floor(x), y, (int) Math.floor(z));
+        Block head = this.level.getBlock((int) Math.floor(x), y + 1, (int) Math.floor(z));
 
         if (feet != null && feet.isSolid()) return false;
         if (head != null && head.isSolid()) return false;
@@ -2585,80 +2624,85 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void clearSeatData(Player passenger) {
-        passenger.setDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, 0.0f, false);
-        passenger.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 0.0f, false);
-        passenger.setDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS, 0.0f, false);
-        passenger.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, 0.0f, false);
-        passenger.setDataProperty(SEAT_HAS_ROTATION, false, true);
+        passenger.setDataProperty(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, 0.0f, false);
+        passenger.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0.0f, false);
+        passenger.setDataProperty(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, 0.0f, false);
+        passenger.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, 0.0f, false);
+        passenger.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET, false, true);
         passenger.sendData(passenger);
     }
 
 
-    //////////////////////////////////////////////
-    //////// PASSENGER SEAT META SYNC ////////////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// ///// PASSENGER SEAT META SYNC ////////////
+    /// ///////////////////////////////////////////
 
     public Vector3f getSeatPosition() {
-        return this.getDataProperty(SEAT_OFFSET);
+        return Vector3f.fromNetwork(this.getDataProperty(ActorDataTypes.SEAT_OFFSET));
     }
 
     public void setSeatPosition(Vector3f pos) {
-        this.setDataProperty(SEAT_OFFSET, pos);
+        this.setDataProperty(ActorDataTypes.SEAT_OFFSET, pos);
     }
 
     public @Nullable Float getSeatThirdPersonCameraRadius() {
-        return this.getDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS);
+        return this.getDataProperty(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS);
     }
 
     public void setSeatThirdPersonCameraRadius(@Nullable Float v) {
         if (v == null) return;
-        this.setDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS, v);
+        this.setDataProperty(ActorDataTypes.SEAT_THIRD_PERSON_CAMERA_RADIUS, v);
     }
 
     public @Nullable Float getSeatCameraRelaxDistanceSmoothing() {
-        return this.getDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING);
+        return this.getDataProperty(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING);
     }
 
     public void setSeatCameraRelaxDistanceSmoothing(@Nullable Float v) {
         if (v == null) return;
-        this.setDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, v);
+        this.setDataProperty(ActorDataTypes.SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, v);
     }
 
     public @Nullable Float getSeatLockRiderRotationDegrees() {
-        return this.getDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES);
+        return this.getDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES);
     }
 
     public void setSeatLockRiderRotationDegrees(@Nullable Float v) {
         if (v == null) return;
-        this.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, v);
+        this.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, v);
     }
 
     public @Nullable Float getSeatRotateRiderByDegrees() {
-        return this.getDataProperty(SEAT_ROTATION_OFFSET_DEGREES);
+        return this.getDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES);
     }
 
     public void setSeatRotateRiderByDegrees(@Nullable Float v) {
         if (v == null) return;
-        this.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, v);
+        this.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, v);
     }
 
 
+    /// ///////////////////////////////////////////
+    /// //////// UPDATE LINK PACKETS //////////////
+    /// ///////////////////////////////////////////
 
-    //////////////////////////////////////////////
-    /////////// UPDATE LINK PACKETS //////////////
-    //////////////////////////////////////////////
-
-    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type) {
-        broadcastLinkPacket(rider, type, type != EntityLink.Type.REMOVE);
+    protected void broadcastLinkPacket(Entity rider, ActorLinkType type) {
+        broadcastLinkPacket(rider, type, type != ActorLinkType.NONE);
     }
 
-    protected void broadcastLinkPacket(Entity rider, EntityLink.Type type, boolean riderInitiated) {
-        SetEntityLinkPacket pk = new SetEntityLinkPacket();
-        pk.vehicleUniqueId = getId();
-        pk.riderUniqueId = rider.getId();
-        pk.type = type;
-        pk.riderInitiated = riderInitiated;
-        Server.broadcastPacket(this.hasSpawned.values(), pk);
+    protected void broadcastLinkPacket(Entity rider, ActorLinkType type, boolean riderInitiated) {
+        final SetActorLinkPacket packet = new SetActorLinkPacket();
+        packet.setLink(
+                new ActorLink(
+                        this.getId(),
+                        rider.getId(),
+                        type,
+                        false,
+                        riderInitiated,
+                        0f
+                )
+        );
+        Server.broadcastPacket(this.hasSpawned.values(), packet);
     }
 
     protected void broadcastLinksForAllPassengers(boolean riderInitiated) {
@@ -2666,7 +2710,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         for (int i = 0; i < passengers.size(); i++) {
             Entity p = passengers.get(i);
-            broadcastLinkPacket(p, i == controlSeat ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, riderInitiated);
+            broadcastLinkPacket(p, i == controlSeat ? ActorLinkType.RIDING : ActorLinkType.PASSENGER, riderInitiated);
         }
     }
 
@@ -2684,7 +2728,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the controlling item identifier, or {@code null} if the entity is
-     *         not custom or no controllable item is defined.
+     * not custom or no controllable item is defined.
      */
     public @Nullable String getItemControllable() {
         if (!isCustomEntity()) return null;
@@ -2704,8 +2748,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link EquippableComponent} if defined for this custom entity,
-     *         or {@code null} if the entity is not custom or does not define the
-     *         {@code minecraft:equippable} component.
+     * or {@code null} if the entity is not custom or does not define the
+     * {@code minecraft:equippable} component.
      */
     public @Nullable EquippableComponent getComponentEquippable() {
         if (!isCustomEntity()) return null;
@@ -2818,7 +2862,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @deprecated Since 2.0.0 (2026-02-19).
      * Naming was standardized to {@link #setHealthMax(int)} so health-related methods are grouped
      * consistently under the {@code getHealth...}/{@code setHealth...} naming pattern.
-     *
+     * <p>
      * Planned removal: after 6 months (>= 2026-08-19). <p>
      * Obs: When removing this method the logic under this must be moved to {@link #setHealthMax(int)}
      */
@@ -2853,7 +2897,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @deprecated Since 2.0.0 (2026-02-19).
      * Naming was standardized to {@link #getHealthMax()} so health-related methods are grouped
      * consistently under the {@code getHealth...}/{@code setHealth...} naming pattern.
-     *
+     * <p>
      * Planned removal: after 6 months (>= 2026-08-19). <p>
      * Obs: When removing this method the logic under this must be moved to {@link #getHealthMax()}
      */
@@ -2932,7 +2976,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Naming was standardized to {@link #setHealthCurrent(float)} so health-related
      * methods follow the {@code setHealth...} naming pattern and are easier to
      * discover through API filtering.
-     *
+     * <p>
      * Planned removal: after 6 months (>= 2026-08-19). <p>
      * Obs: When removing this method the logic under this must be moved to {@link #setHealthCurrent(float)}
      */
@@ -2950,7 +2994,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         Attribute attr = this.attributes.get(Attribute.HEALTH);
         if (attr != null) attr.setValue(this.health, true);
-        setDataProperty(STRUCTURAL_INTEGRITY, (int) this.health);
+        setDataProperty(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.health);
     }
 
     /**
@@ -2969,7 +3013,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @deprecated Since 2.0.0 (2026-02-19).
      * Naming was standardized to {@link #getHealthCurrent()} so health-related methods are grouped
      * consistently under the {@code getHealth...}/{@code setHealth...} naming pattern.
-     *
+     * <p>
      * Planned removal: after 6 months (>= 2026-08-19). <p>
      * Obs: When removing this method the logic under this must be moved to {@link #getHealthCurrent()}
      */
@@ -3078,7 +3122,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * {@code minecraft:horse_jump_strength} in their entity metadata.</p>
      *
      * @return the horse jump strength component definition for this entity, or
-     *         {@code null} if the entity does not define this component.
+     * {@code null} if the entity does not define this component.
      */
     protected @Nullable HorseJumpStrengthComponent getComponentHorseJumpStrength() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.HORSE_JUMP_STRENGTH)) {
@@ -3234,8 +3278,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link DashActionComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not present.
+     * or {@code null} if the entity is not custom or the component
+     * is not present.
      */
     public @Nullable DashActionComponent getComponentDashAction() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.DASH_ACTION)) {
@@ -3255,8 +3299,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link BoostableComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not present.
+     * or {@code null} if the entity is not custom or the component
+     * is not present.
      */
     public @Nullable BoostableComponent getComponentBoostable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.BOOSTABLE)) {
@@ -3271,7 +3315,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity has the {@code minecraft:boostable} component.
      *
      * @return {@code true} if the entity defines a boostable component,
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean isBoostable() {
         return getComponentBoostable() != null;
@@ -3287,6 +3331,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     /**
      * Starts boost using duration in seconds.
+     *
      * @param durationSeconds Boost duration in seconds.
      */
     public void setBoostableDuration(float durationSeconds) {
@@ -3297,7 +3342,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.boostableTicks = Math.max(1, (int) (durationSeconds * 20f));
     }
 
-    /** Stops the current boost immediately. */
+    /**
+     * Stops the current boost immediately.
+     */
     public void clearBoostable() {
         this.boostableTicks = -1;
     }
@@ -3310,8 +3357,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link InventoryComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not present.
+     * or {@code null} if the entity is not custom or the component
+     * is not present.
      */
     public @Nullable InventoryComponent getComponentInventory() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.INVENTORY)) {
@@ -3326,7 +3373,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity defines an inventory component.
      *
      * @return {@code true} if the entity has an {@link InventoryComponent},
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean hasInventory() {
         return getComponentInventory() != null;
@@ -3334,26 +3381,26 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void updateInventoryFlags() {
         if (!hasInventory()) {
-            this.setDataProperty(Entity.CONTAINER_TYPE, (byte) 0);
-            this.setDataProperty(Entity.CONTAINER_SIZE, 0);
-            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, 0);
-            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, false);
+            this.setDataProperty(ActorDataTypes.CONTAINER_TYPE, (byte) 0);
+            this.setDataProperty(ActorDataTypes.CONTAINER_SIZE, 0);
+            this.setDataProperty(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+            this.setDataFlag(ActorFlags.CONTAINER_IS_PRIVATE, false);
             return;
         }
 
         if ((this instanceof EntityLiving ei) && ei.isTamed()) {
-            this.setDataProperty(Entity.CONTAINER_TYPE, getComponentInventory().typeId());
-            this.setDataProperty(Entity.CONTAINER_SIZE, getComponentInventory().size());
-            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, getComponentInventory().strengthModifier());
-            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, getComponentInventory().isRestrictedToOwner());
+            this.setDataProperty(ActorDataTypes.CONTAINER_TYPE, (byte) getComponentInventory().typeId());
+            this.setDataProperty(ActorDataTypes.CONTAINER_SIZE, getComponentInventory().size());
+            this.setDataProperty(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, getComponentInventory().strengthModifier());
+            this.setDataFlag(ActorFlags.CONTAINER_IS_PRIVATE, getComponentInventory().isRestrictedToOwner());
             return;
         }
 
         if (this instanceof EntityVehicle) {
-            this.setDataProperty(Entity.CONTAINER_TYPE, getComponentInventory().typeId());
-            this.setDataProperty(Entity.CONTAINER_SIZE, getComponentInventory().size());
-            this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, 0);
-            this.setDataFlag(EntityFlag.CONTAINER_IS_PRIVATE, false);
+            this.setDataProperty(ActorDataTypes.CONTAINER_TYPE, (byte) getComponentInventory().typeId());
+            this.setDataProperty(ActorDataTypes.CONTAINER_SIZE, getComponentInventory().size());
+            this.setDataProperty(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+            this.setDataFlag(ActorFlags.CONTAINER_IS_PRIVATE, false);
         }
     }
 
@@ -3365,8 +3412,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link HomeComponent} if defined and present,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not configured.
+     * or {@code null} if the entity is not custom or the component
+     * is not configured.
      */
     public @Nullable HomeComponent getComponentHome() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.HOME)) {
@@ -3380,7 +3427,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity defines a home component.
      *
      * @return {@code true} if the entity has a {@link HomeComponent},
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean hasHome() {
         return getComponentHome() != null;
@@ -3394,8 +3441,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link BreedableComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not configured.
+     * or {@code null} if the entity is not custom or the component
+     * is not configured.
      */
     public @Nullable BreedableComponent getComponentBreedable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.BREEDABLE)) {
@@ -3409,7 +3456,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity supports breeding behavior.
      *
      * @return {@code true} if the entity defines a valid {@link BreedableComponent},
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean isBreedable() {
         BreedableComponent breedable = getComponentBreedable();
@@ -3433,7 +3480,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * Sets the pregnancy state of this entity.
      * <p>
-     * This updates both the AI memory and the {@link EntityFlag#IS_PREGNANT}
+     * This updates both the AI memory and the {@link ActorFlags#IS_PREGNANT}
      * entity data flag for client synchronization.
      * </p>
      *
@@ -3442,7 +3489,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public void setPregnant(boolean value) {
         if (!(this instanceof EntityIntelligent ei)) return;
         ei.getMemoryStorage().put(CoreMemoryTypes.IS_PREGNANT, value);
-        ei.setDataFlag(EntityFlag.IS_PREGNANT, value);
+        ei.setDataFlag(ActorFlags.IS_PREGNANT, value);
     }
 
     /**
@@ -3462,7 +3509,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * Sets the angry state of this entity.
      * <p>
-     * This updates both the AI memory and the {@link EntityFlag#ANGRY}
+     * This updates both the AI memory and the {@link ActorFlags#ANGRY}
      * entity data flag for client synchronization.
      * </p>
      *
@@ -3471,7 +3518,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public void setAngry(boolean value) {
         if (!(this instanceof EntityIntelligent ei)) return;
         ei.getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, value);
-        ei.setDataFlag(EntityFlag.ANGRY, value);
+        ei.setDataFlag(ActorFlags.ANGRY, value);
     }
 
     /**
@@ -3487,7 +3534,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!(this instanceof EntityIntelligent ei)) return;
         ei.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity);
         ei.getMemoryStorage().put(CoreMemoryTypes.IS_ANGRY, true);
-        ei.setDataFlag(EntityFlag.ANGRY, true);
+        ei.setDataFlag(ActorFlags.ANGRY, true);
     }
 
     /**
@@ -3498,7 +3545,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link NameableComponent} if defined and not empty,
-     *         otherwise a default nameable configuration.
+     * otherwise a default nameable configuration.
      */
     public NameableComponent getComponentNameable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.NAMEABLE)) {
@@ -3522,27 +3569,27 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public String getNameTag() {
-        return this.getDataProperty(NAME, "");
+        return this.getDataProperty(ActorDataTypes.NAME, "");
     }
 
     public void setNameTag(String name) {
-        this.setDataProperty(NAME, name);
+        this.setDataProperty(ActorDataTypes.NAME, name);
     }
 
     public boolean isNameTagVisible() {
-        return this.getDataFlag(EntityFlag.CAN_SHOW_NAME);
+        return this.getDataFlag(ActorFlags.CAN_SHOW_NAME);
     }
 
     public void setNameTagVisible(boolean value) {
-        this.setDataFlag(EntityFlag.CAN_SHOW_NAME, value);
+        this.setDataFlag(ActorFlags.CAN_SHOW_NAME, value);
     }
 
     public boolean isNameTagAlwaysVisible() {
-        return this.getDataProperty(NAMETAG_ALWAYS_SHOW, (byte) 0) == 1;
+        return this.getDataProperty(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) 0) == 1;
     }
 
     public void setNameTagAlwaysVisible(boolean value) {
-        this.setDataProperty(NAMETAG_ALWAYS_SHOW, value ? 1 : 0);
+        this.setDataProperty(ActorDataTypes.NAMETAG_ALWAYS_SHOW, value ? (byte) 1 : 0);
     }
 
     /**
@@ -3553,8 +3600,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link HealableComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not configured.
+     * or {@code null} if the entity is not custom or the component
+     * is not configured.
      */
     public HealableComponent getComponentHealable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.HEALABLE)) {
@@ -3568,7 +3615,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity supports healing via items.
      *
      * @return {@code true} if the entity defines a valid {@link HealableComponent},
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean isHealable() {
         HealableComponent healable = getComponentHealable();
@@ -3583,8 +3630,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link AgeableComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not configured.
+     * or {@code null} if the entity is not custom or the component
+     * is not configured.
      */
     public AgeableComponent getComponentAgeable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.AGEABLE)) {
@@ -3598,7 +3645,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity supports age and growth behavior.
      *
      * @return {@code true} if the entity defines a valid {@link AgeableComponent},
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean isAgeable() {
         AgeableComponent ageable = getComponentAgeable();
@@ -3616,23 +3663,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      */
     public final boolean isGrowthPaused() {
         if (!isAgeable() || !isBaby()) return false;
-        return this.namedTag.contains(TAG_ENTITY_GROW_PAUSED) && this.namedTag.getBoolean(TAG_ENTITY_GROW_PAUSED);
+        return this.namedTag.containsKey(TAG_ENTITY_GROW_PAUSED) && this.namedTag.getBoolean(TAG_ENTITY_GROW_PAUSED);
     }
 
     /**
      * Checks whether this entity is currently a baby.
      *
-     * @return {@code true} if the {@link EntityFlag#BABY} data flag is set,
-     *         otherwise {@code false}.
+     * @return {@code true} if the {@link ActorFlags#BABY} data flag is set,
+     * otherwise {@code false}.
      */
     public boolean isBaby() {
-        return ((Entity) this).getDataFlag(EntityFlag.BABY);
+        return ((Entity) this).getDataFlag(ActorFlags.BABY);
     }
 
     /**
      * Sets whether this entity is a baby.
      * <p>
-     * Updates the {@link EntityFlag#BABY} data flag and applies the corresponding scale.
+     * Updates the {@link ActorFlags#BABY} data flag and applies the corresponding scale.
      * For ageable entities, this also initializes or clears growth-related NBT
      * (birth date, remaining growth ticks, and pause state) and marks growth data as dirty.
      * </p>
@@ -3640,7 +3687,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param value {@code true} to set as baby, {@code false} to set as adult.
      */
     public void setBaby(boolean value) {
-        this.setDataFlag(EntityFlag.BABY, value);
+        this.setDataFlag(ActorFlags.BABY, value);
         this.setScale(value ? 0.5f : 1f);
 
         if (this.isAgeable()) {
@@ -3650,9 +3697,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 ticksGrowLeft = -1;
                 growDirty = true;
             } else {
-                if (!this.namedTag.contains(Entity.TAG_ENTITY_BIRTH_DATE)) {
+                if (!this.namedTag.containsKey(Entity.TAG_ENTITY_BIRTH_DATE)) {
                     long nowSec = System.currentTimeMillis() / 1000L;
-                    this.namedTag.putLong(Entity.TAG_ENTITY_BIRTH_DATE, nowSec);
+                    this.namedTag = this.namedTag.toBuilder().putLong(Entity.TAG_ENTITY_BIRTH_DATE, nowSec).build();
                 }
                 ticksGrowLeft = -1;
                 growDirty = true;
@@ -3673,7 +3720,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!isAgeable() || !isBaby()) return;
 
         if (paused) {
-            this.namedTag.putBoolean(TAG_ENTITY_GROW_PAUSED, true);
+            this.namedTag = this.namedTag.toBuilder().putBoolean(TAG_ENTITY_GROW_PAUSED, true).build();
         } else {
             this.namedTag.remove(TAG_ENTITY_GROW_PAUSED);
         }
@@ -3723,7 +3770,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             return;
         }
 
-        int left = this.namedTag.contains(TAG_ENTITY_GROW_LEFT) ? this.namedTag.getInt(TAG_ENTITY_GROW_LEFT) : total;
+        int left = this.namedTag.containsKey(TAG_ENTITY_GROW_LEFT) ? this.namedTag.getInt(TAG_ENTITY_GROW_LEFT) : total;
 
         if (left < 0 || left > total) left = total;
         ticksGrowLeft = left;
@@ -3778,13 +3825,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             namedTag.remove(TAG_ENTITY_GROW_PAUSED);
             ticksGrowLeft = -1;
             growDirty = false;
-            setDataFlag(EntityFlag.BABY, false, false);
+            setDataFlag(ActorFlags.BABY, false, false);
             setScale(1f);
             return;
         }
 
-        if (!namedTag.contains(TAG_ENTITY_GROW_LEFT)) {
-            setDataFlag(EntityFlag.BABY, false, false);
+        if (!namedTag.containsKey(TAG_ENTITY_GROW_LEFT)) {
+            setDataFlag(ActorFlags.BABY, false, false);
             setScale(1f);
             ticksGrowLeft = -1;
             return;
@@ -3797,7 +3844,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         boolean baby = left > 0;
 
-        setDataFlag(EntityFlag.BABY, baby, false);
+        setDataFlag(ActorFlags.BABY, baby, false);
         setScale(baby ? 0.5f : 1f);
 
         ticksGrowLeft = left;
@@ -3810,13 +3857,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public final void playBabyGrowthParticle() {
         for (int i = 0; i < 6; i++) {
             this.level.addParticle(
-                new HappyVillagerParticle(
-                    this.add(
-                        Utils.rand(-0.3, 0.3),
-                        Utils.rand(0.3, 1.0),
-                        Utils.rand(-0.3, 0.3)
+                    new HappyVillagerParticle(
+                            this.add(
+                                    Utils.rand(-0.3, 0.3),
+                                    Utils.rand(0.3, 1.0),
+                                    Utils.rand(-0.3, 0.3)
+                            )
                     )
-                )
             );
         }
     }
@@ -3839,7 +3886,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * movement speed or a spawn-time range used to generate genetic variation.</p>
      *
      * @return the movement component definition for this entity, or {@code null}
-     *         if the entity does not define a movement component.
+     * if the entity does not define a movement component.
      */
     protected @Nullable MovementComponent getComponentMovement() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.MOVEMENT)) {
@@ -3947,7 +3994,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @deprecated Since 2.0.0 (2026-02-19).
      * Naming was standardized to {@link #getMovementSpeedDefault()} so movement-related methods are grouped
      * consistently under the {@code getMovement...}/{@code setMovement...} naming pattern.
-     *
+     * <p>
      * Planned removal: after 6 months (>= 2026-08-19). <p>
      * Obs: When removing this method the logic under this must be moved to {@link #getMovementSpeedDefault()}
      */
@@ -4071,7 +4118,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * legacy entities and will be removed once all movement behaviors
      * implement proper runtime multipliers.
      * </p>
-     *
+     * <p>
      * Planned removal: after behavior parity is complete (>= 2026-09-05).
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
@@ -4088,8 +4135,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!isRideable()) return;
         if (!hasJumpStrength()) return;
 
-        this.setDataFlag(EntityFlag.CAN_POWER_JUMP, true);
-        this.entityDataMap.put(CHARGE_AMOUNT, (byte) 0);
+        this.setDataFlag(ActorFlags.CAN_POWER_JUMP, true);
+        this.entityDataMap.put(ActorDataTypes.CHARGE_AMOUNT, (byte) 0);
     }
 
     public boolean hasGroundInputControlsMeta() {
@@ -4112,21 +4159,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!hasAnyInputControlMeta()) return;
 
         if (hasAirInputControlsMeta()) {
-            this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, true, false);
-            this.setDataFlag(EntityFlag.WASD_CONTROLLED, false, false);
+            this.setDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED, true, false);
+            this.setDataFlag(ActorFlags.WASD_CONTROLLED, false, false);
 
-            this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, true, false);
-            this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, true, true);
+            this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, true, false);
+            this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, true, true);
         } else {
-            this.setDataFlag(EntityFlag.WASD_CONTROLLED, true, false);
-            this.setDataFlag(EntityFlag.WASD_FREE_CAMERA_CONTROLLED, false, false);
+            this.setDataFlag(ActorFlags.WASD_CONTROLLED, true, false);
+            this.setDataFlag(ActorFlags.WASD_FREE_CAMERA_CONTROLLED, false, false);
 
-            this.setDataFlag(EntityFlag.DOES_SERVER_AUTH_ONLY_DISMOUNT, false, false);
-            this.setDataFlag(EntityFlag.CAN_USE_VERTICAL_MOVEMENT_ACTION, false, true);
+            this.setDataFlag(ActorFlags.DOES_SERVER_AUTH_ONLY_DISMOUNT, false, false);
+            this.setDataFlag(ActorFlags.CAN_USE_VERTICAL_MOVEMENT_ACTION, false, true);
         }
     }
 
-    /** Relative offset used for attaching follower entities (fishing hook, lead, etc). */
+    /**
+     * Relative offset used for attaching follower entities (fishing hook, lead, etc).
+     */
     public Vector3f getAttachmentOffset(Entity follower) {
         return new Vector3f(0f, getHeight() * SEATED_FACTOR, 0f);
     }
@@ -4139,8 +4188,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the {@link TameableComponent} if defined and not empty,
-     *         or {@code null} if the entity is not custom or the component
-     *         is not configured.
+     * or {@code null} if the entity is not custom or the component
+     * is not configured.
      */
     public TameableComponent getComponentTameable() {
         if (isCustomEntity() && meta().has(CustomEntityComponents.TAMEABLE)) {
@@ -4154,7 +4203,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Checks whether this entity supports taming behavior.
      *
      * @return {@code true} if the entity defines a valid {@link TameableComponent},
-     *         otherwise {@code false}.
+     * otherwise {@code false}.
      */
     public boolean isTameable() {
         TameableComponent tameable = getComponentTameable();
@@ -4164,25 +4213,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     /**
      * Checks whether this entity is currently tamed.
      *
-     * @return {@code true} if the {@link EntityFlag#TAMED} data flag is set,
-     *         otherwise {@code false}.
+     * @return {@code true} if the {@link ActorFlags#TAMED} data flag is set,
+     * otherwise {@code false}.
      */
     public boolean isTamed() {
-        return this.getDataFlag(EntityFlag.TAMED);
+        return this.getDataFlag(ActorFlags.TAMED);
     }
 
     /**
      * Sets the tamed state of this entity.
      * <p>
-     * This updates the {@link EntityFlag#TAMED} data flag and stores the
+     * This updates the {@link ActorFlags#TAMED} data flag and stores the
      * corresponding value in the entity NBT.
      * </p>
      *
      * @param value {@code true} to mark the entity as tamed, otherwise {@code false}.
      */
     public void setTamed(boolean value) {
-        this.setDataFlag(EntityFlag.TAMED, value);
-        this.namedTag.putBoolean("Tamed", true);
+        this.setDataFlag(ActorFlags.TAMED, value);
+        this.namedTag = this.namedTag.toBuilder().putBoolean("Tamed", true).build();
     }
 
     /**
@@ -4212,20 +4261,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void onTameSuccess(Player player) {
-        EntityEventPacket packet = new EntityEventPacket();
         this.setOwnerName(player.getName());
         this.setTamed(true);
-        packet.eid = this.getId();
-        packet.event = EntityEventPacket.TAME_SUCCESS;
+
+        final ActorEventPacket packet = new ActorEventPacket();
+        packet.setTargetRuntimeID(this.getId());
+        packet.setType(ActorEvent.TAMING_SUCCEEDED);
+
         player.dataPacket(packet);
 
         this.saveNBT();
     }
 
     public void onTameFail(Player player) {
-        EntityEventPacket packet = new EntityEventPacket();
-        packet.eid = this.getId();
-        packet.event = EntityEventPacket.TAME_FAIL;
+        final ActorEventPacket packet = new ActorEventPacket();
+        packet.setTargetRuntimeID(this.getId());
+        packet.setType(ActorEvent.TAMING_FAILED);
+
         player.dataPacket(packet);
     }
 
@@ -4239,9 +4291,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * </p>
      *
      * @return the owning {@link Player} if found and online,
-     *         otherwise {@code null}.
+     * otherwise {@code null}.
      */
-    @Nullable public Player getOwner() {
+    @Nullable
+    public Player getOwner() {
         if (!(this instanceof EntityIntelligent ei)) return null;
 
         var owner = ei.getMemoryStorage().get(CoreMemoryTypes.OWNER);
@@ -4294,7 +4347,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Sets whether this entity is immune to fire damage.
      * <p>
      * This updates both the internal fire-proof state and the
-     * {@link EntityFlag#FIRE_IMMUNE} data flag for client synchronization.
+     * {@link ActorFlags#FIRE_IMMUNE} data flag for client synchronization.
      * </p>
      *
      * @param isFireImmune {@code true} to make the entity immune to fire,
@@ -4302,7 +4355,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      */
     public void setFireImmune(boolean isFireImmune) {
         this.fireProof = isFireImmune;
-        this.setDataFlag(EntityFlag.FIRE_IMMUNE, isFireImmune);
+        this.setDataFlag(ActorFlags.FIRE_IMMUNE, isFireImmune);
     }
 
     public float getAbsorption() {
@@ -4316,17 +4369,23 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void syncAttribute(Attribute attribute) {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new Attribute[]{attribute};
-        pk.entityId = this.getId();
-        Server.broadcastPacket(this.getViewers().values(), pk);
+        final UpdateAttributesPacket packet = new UpdateAttributesPacket();
+        packet.setRuntimeID(this.getId());
+        packet.getAttributeList().add(attribute.toNetwork());
+
+        Server.broadcastPacket(this.getViewers().values(), packet);
     }
 
     public void syncAttributes() {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = this.attributes.values().stream().filter(Attribute::isSyncable).toArray(Attribute[]::new);
-        pk.entityId = this.getId();
-        Server.broadcastPacket(this.getViewers().values(), pk);
+        final UpdateAttributesPacket packet = new UpdateAttributesPacket();
+        packet.setRuntimeID(this.getId());
+        packet.getAttributeList().addAll(
+                this.attributes.values().stream()
+                        .filter(Attribute::isSyncable)
+                        .map(Attribute::toNetwork)
+                        .toList()
+        );
+        Server.broadcastPacket(this.getViewers().values(), packet);
     }
 
     public String[] getSoundVariants() {
@@ -4343,11 +4402,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     protected void initSoundVariantProperty() {
         String soundVariant;
-        if (this.namedTag.contains(NBT_SOUND_VARIANT)) {
+        if (this.namedTag.containsKey(NBT_SOUND_VARIANT)) {
             soundVariant = this.namedTag.getString(NBT_SOUND_VARIANT);
         } else {
             soundVariant = this.getRandomSoundVariant();
-            this.namedTag.putString(NBT_SOUND_VARIANT, soundVariant);
+            this.namedTag = this.namedTag.toBuilder().putString(NBT_SOUND_VARIANT, soundVariant).build();
         }
         if (soundVariant == null) return;
         this.setEnumEntityProperty("minecraft:sound_variant", soundVariant);
@@ -4417,7 +4476,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void extinguish() {
         this.fireTicks = 0;
-        this.setDataFlag(EntityFlag.ON_FIRE, false);
+        this.setDataFlag(ActorFlags.ON_FIRE, false);
     }
 
     public boolean canTriggerWalking() {
@@ -4501,7 +4560,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 if (onPhysicalInteraction(down, false)) {
                     return;
                 }
-                if(this instanceof EntityFlyable) return;
+                if (this instanceof EntityFlyable) return;
                 var farmEvent = new FarmLandDecayEvent(this, down);
                 this.server.getPluginManager().callEvent(farmEvent);
                 if (farmEvent.isCancelled()) return;
@@ -4532,7 +4591,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         ev.setCancelled(cancelled);
 
         this.server.getPluginManager().callEvent(ev);
-        if(this instanceof Player player) new PlayerHandle(player).setInteract();
+        if (this instanceof Player player) new PlayerHandle(player).setInteract();
         return ev.isCancelled();
     }
 
@@ -4609,10 +4668,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
-    /** 
+    /**
      * return true if opening inventory, otherwise players inventory will be opnened. <p>
      * If inventory is restricted to owner no inventory UI is opened
-     * */
+     */
     public boolean openInventory(Player player) {
         if (!this.hasInventory()) return false;
         boolean isRestricted = this.getComponentInventory().restrictToOwner();
@@ -4774,8 +4833,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     private static final float Y_SIZE_DAMPING = 0.4F;
     private static final float Y_SIZE_THRESHOLD = 0.05F;
     private static final float Y_SIZE_BOOST = 0.5F;
+
     public boolean move(double dx, double dy, double dz) {
-        if(isImmobile()) return true; //Do not move when immobile
+        if (isImmobile()) return true; //Do not move when immobile
 
         if (dx == 0 && dz == 0 && dy == 0) {
             this.onGround = !this.getPosition().setComponents(this.down()).getTickCachedLevelBlock().canPassThrough();
@@ -4917,7 +4977,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         AxisAlignedBB below = new SimpleAxisAlignedBB(
                 bb.getMinX(), feetY - GROUND_PROBE_DEPTH, bb.getMinZ(),
-                bb.getMaxX(), feetY + GROUND_EPS,         bb.getMaxZ()
+                bb.getMaxX(), feetY + GROUND_EPS, bb.getMaxZ()
         );
 
         var cubes = this.level.fastCollisionCubes(this, below, false);
@@ -5098,7 +5158,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 block.addVelocityToEntity(this, vector);
         }
 
-        setDataFlagExtend(EntityFlag.IN_SCAFFOLDING, scaffolding);
+        setDataFlag(ActorFlags.IN_SCAFFOLDING, scaffolding);
 
         if (Math.abs(this.y % 1) > 0.125) {
             int minX = NukkitMath.floorDouble(boundingBox.getMinX());
@@ -5112,7 +5172,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 for (int j = minZ; j <= maxZ; j++) {
                     Location location = new Location(i, Y, j, level);
                     if (BlockID.SCAFFOLDING.equals(location.getLevelBlock(false).getId())) {
-                        setDataFlagExtend(EntityFlag.OVER_SCAFFOLDING, true);
+                        setDataFlag(ActorFlags.OVER_SCAFFOLDING, true);
                         break outerScaffolding;
                     }
                 }
@@ -5483,14 +5543,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
-    public void setDataProperties(Map<EntityDataType<?>, Object> maps) {
+    public void setDataProperties(Map<ActorDataType<?>, Object> maps) {
         setDataProperties(maps, true);
     }
 
-    public void setDataProperties(Map<EntityDataType<?>, Object> maps, boolean send) {
-        EntityDataMap sendMap = new EntityDataMap();
+    public void setDataProperties(Map<ActorDataType<?>, Object> maps, boolean send) {
+        ActorDataMap sendMap = new ActorDataMap();
         for (var e : maps.entrySet()) {
-            EntityDataType<?> key = e.getKey();
+            ActorDataType<?> key = e.getKey();
             Object value = e.getValue();
             if (this.getEntityDataMap().containsKey(key) && this.getEntityDataMap().get(key).equals(value)) {
                 continue;
@@ -5503,128 +5563,62 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
     }
 
-    public boolean setDataProperty(EntityDataType<?> key, Object value) {
+    public boolean setDataProperty(ActorDataType<?> key, Object value) {
         return setDataProperty(key, value, true);
     }
 
-    public boolean setDataProperty(EntityDataType<?> key, Object value, boolean send) {
+    public boolean setDataProperty(ActorDataType<?> key, Object value, boolean send) {
         if (this.getEntityDataMap().containsKey(key) && this.getEntityDataMap().get(key).equals(value)) {
             return false;
         }
 
         this.getEntityDataMap().put(key, value);
         if (send) {
-            EntityDataMap map = new EntityDataMap();
+            ActorDataMap map = new ActorDataMap();
             map.put(key, value);
             this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), map);
         }
         return true;
     }
 
-    public EntityDataMap getEntityDataMap() {
+    public ActorDataMap getEntityDataMap() {
         return this.entityDataMap;
     }
 
     @NotNull
-    public <T> T getDataProperty(EntityDataType<T> key) {
+    public <T> T getDataProperty(ActorDataType<T> key) {
         return this.getEntityDataMap().get(key);
     }
 
     @NotNull
-    public <T> T getDataProperty(EntityDataType<T> key, T d) {
-        return this.getEntityDataMap().getOrDefault(key, d);
+    public <T> T getDataProperty(ActorDataType<T> key, T d) {
+        return (T) this.getEntityDataMap().getOrDefault(key, d);
     }
 
-    public void setDataFlag(EntityFlag entityFlag) {
+    public void setDataFlag(ActorFlags entityFlag) {
         this.setDataFlag(entityFlag, true);
     }
 
-    public void setDataFlag(EntityFlag entityFlag, boolean value) {
+    public void setDataFlag(ActorFlags entityFlag, boolean value) {
         setDataFlag(entityFlag, value, true);
     }
 
-    public void setDataFlag(EntityFlag entityFlag, boolean value, boolean send) {
-        if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
+    public void setDataFlag(ActorFlags entityFlag, boolean value, boolean send) {
+        if (this.getEntityDataMap().getOrCreateFlags().contains(entityFlag) ^ value) {
             this.getEntityDataMap().setFlag(entityFlag, value);
-
             if (send) {
-                EntityDataMap entityDataMap = new EntityDataMap();
-
-                if (entityFlag.getValue() >= 64) {
-                    entityDataMap.put(EntityDataTypes.FLAGS_2, this.getEntityDataMap().getFlags2());
-                } else {
-                    entityDataMap.put(EntityDataTypes.FLAGS, this.getEntityDataMap().getFlags());
-                }
-
-                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getEntityDataMap());
             }
         }
     }
 
-    public void setDataFlags(EnumSet<EntityFlag> entityFlags) {
-        // split the incoming set into FLAGS and FLAGS_2 in the backing map
+    public void setDataFlags(EnumSet<ActorFlags> entityFlags) {
         this.getEntityDataMap().putFlags(entityFlags);
-
-        // send both lanes (only if non-empty)
-        EnumSet<EntityFlag> f0 = this.getEntityDataMap().getFlags();
-        EnumSet<EntityFlag> f1 = this.getEntityDataMap().getFlags2();
-
-        if (f0 != null && !f0.isEmpty()) {
-            EntityDataMap d0 = new EntityDataMap();
-            d0.put(EntityDataTypes.FLAGS, f0);
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), d0);
-        }
-
-        if (f1 != null && !f1.isEmpty()) {
-            EntityDataMap d1 = new EntityDataMap();
-            d1.put(EntityDataTypes.FLAGS_2, f1);
-            sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), d1);
-        }
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getEntityDataMap());
     }
 
-    public void setDataFlagExtend(EntityFlag entityFlag) {
-        this.setDataFlagExtend(entityFlag, true);
-    }
-
-    public void setDataFlagExtend(EntityFlag entityFlag, boolean value) {
-        setDataFlagExtend(entityFlag, value, true);
-    }
-
-    public void setDataFlagExtend(EntityFlag entityFlag, boolean value, boolean send) {
-        if (entityFlag.getValue() < 64) {
-            this.setDataFlag(entityFlag, value, send);
-            return;
-        }
-
-        if (this.getEntityDataMap().existFlag(entityFlag) ^ value) {
-            EnumSet<EntityFlag> entityFlags = this.getEntityDataMap().getOrCreateFlags2();
-            if (value) {
-                entityFlags.add(entityFlag);
-            } else {
-                entityFlags.remove(entityFlag);
-            }
-
-            if(send) {
-                EntityDataMap entityDataMap = new EntityDataMap();
-                entityDataMap.put(EntityDataTypes.FLAGS_2, entityFlags);
-                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-            }
-        }
-    }
-
-    public void setDataFlagsExtend(EnumSet<EntityFlag> entityFlags) {
-        this.getEntityDataMap().put(FLAGS_2, entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
-    }
-
-    public boolean getDataFlag(EntityFlag id) {
-        return this.getEntityDataMap().existFlag(id);
-    }
-
-    public void setPlayerFlag(PlayerFlag entityFlag) {
-        byte flags = this.getEntityDataMap().getOrDefault(EntityDataTypes.PLAYER_FLAGS, (byte) 0);
-        flags ^= (byte) (1 << entityFlag.getValue());
-        this.setDataProperty(EntityDataTypes.PLAYER_FLAGS, flags);
+    public boolean getDataFlag(ActorFlags id) {
+        return this.getEntityDataMap().getOrCreateFlags().contains(id);
     }
 
     @Override
@@ -5693,11 +5687,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public boolean isSpinAttacking() {
-        return this.getDataFlag(EntityFlag.DAMAGE_NEARBY_MOBS);
+        return this.getDataFlag(ActorFlags.DAMAGE_NEARBY_MOBS);
     }
 
     public void setSpinAttacking(boolean value) {
-        this.setDataFlag(EntityFlag.DAMAGE_NEARBY_MOBS, value);
+        this.setDataFlag(ActorFlags.DAMAGE_NEARBY_MOBS, value);
     }
 
     public void setSpinAttacking() {
@@ -5710,7 +5704,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void setNoClip(boolean noClip) {
         this.noClip = noClip;
-        this.setDataFlag(EntityFlag.HAS_COLLISION, noClip);
+        this.setDataFlag(ActorFlags.HAS_COLLISION, noClip);
     }
 
     public boolean isBoss() {
@@ -5721,16 +5715,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Add a tag to the entity
      */
     public void addTag(String tag) {
-        this.namedTag.putList("Tags", this.namedTag.getList("Tags", StringTag.class).add(new StringTag(tag)));
+        final List<String> tags = this.namedTag.getList("Tags", NbtType.STRING);
+        tags.add(tag);
+        this.namedTag = this.namedTag.toBuilder().putList("Tags", NbtType.STRING, tags).build();
     }
 
     /**
      * Remove tag from entity if exist
      */
     public void removeTag(String tag) {
-        ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
-        tags.remove(new StringTag(tag));
-        this.namedTag.putList("Tags", tags);
+        List<String> tags = this.namedTag.getList("Tags", NbtType.STRING);
+        tags.remove(tag);
+        this.namedTag = this.namedTag.toBuilder().putList("Tags", NbtType.STRING, tags).build();
     }
 
     /**
@@ -5745,24 +5741,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return true if entity has a string tag
      */
     public boolean hasTag(String tag) {
-        return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
+        return this.namedTag.getList("Tags", NbtType.STRING).stream().anyMatch(t -> t.equals(tag));
     }
 
     /**
      * @return List of tags for the entity
      */
-    public List<StringTag> getAllTags() {
-        return this.namedTag.getList("Tags", StringTag.class).getAll();
+    public List<String> getAllTags() {
+        return this.namedTag.getList("Tags", NbtType.STRING);
     }
 
     public float getFreezingEffectStrength() {
-        return this.getDataProperty(FREEZING_EFFECT_STRENGTH);
+        return this.getDataProperty(ActorDataTypes.FREEZING_EFFECT_STRENGTH);
     }
 
     public void setFreezingEffectStrength(float strength) {
         if (strength < 0 || strength > 1)
             throw new IllegalArgumentException("Freezing Effect Strength must be between 0 and 1");
-        this.setDataProperty(FREEZING_EFFECT_STRENGTH, strength);
+        this.setDataProperty(ActorDataTypes.FREEZING_EFFECT_STRENGTH, strength);
     }
 
     public int getFreezingTicks() {
@@ -5782,11 +5778,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setAmbientSoundInterval(float interval) {
-        this.setDataProperty(AMBIENT_SOUND_INTERVAL, interval);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL, interval);
     }
 
     public void setAmbientSoundIntervalRange(float range) {
-        this.setDataProperty(AMBIENT_SOUND_INTERVAL, range);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL, range);
     }
 
     public void setAmbientSoundEvent(Sound sound) {
@@ -5794,10 +5790,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public void setAmbientSoundEventName(String eventName) {
-        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, eventName);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, eventName);
     }
 
-    public void playAnimation(AnimateEntityPacket.Animation animation) {
+    public void playAnimation(EntityAnimation animation) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
         playAnimation(animation, viewers);
@@ -5811,14 +5807,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @param animation 动画对象 Animation objects
      * @param players   可视玩家 Visible Player
      */
-    public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
-        var pk = new AnimateEntityPacket();
-        pk.parseFromAnimation(animation);
-        pk.entityRuntimeIds.add(this.getId());
+    public void playAnimation(EntityAnimation animation, Collection<Player> players) {
+        var pk = animation.toNetwork();
+        pk.getRuntimeIds().add(this.getId());
         Server.broadcastPacket(players, pk);
     }
 
-    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource) {
+    public void playActionAnimation(AnimatePacket.Action action, ActorSwingSource swingSource) {
         var viewers = new HashSet<>(this.getViewers().values());
         if (this.isPlayer) viewers.add((Player) this);
         playActionAnimation(action, swingSource, viewers);
@@ -5829,14 +5824,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * <p>
      * 向指定玩家群体播放此实体的action动画
      *
-     * @param action     the action
+     * @param action      the action
      * @param swingSource the swing source
-     * @param players    可视玩家 Visible Player
+     * @param players     可视玩家 Visible Player
      */
-    public void playActionAnimation(AnimatePacket.Action action, SwingSource swingSource, Collection<Player> players) {
+    public void playActionAnimation(AnimatePacket.Action action, ActorSwingSource swingSource, Collection<Player> players) {
         var pk = new AnimatePacket();
-        pk.action = action;
-        pk.eid = this.getId();
+        pk.setAction(action);
+        pk.setTargetRuntimeID(this.getId());
         pk.setSwingSource(swingSource);
         Server.broadcastPacket(players, pk);
     }
@@ -5850,7 +5845,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public double getLookingAngleAtPitch(Vector3 location) {
         double anglePosition = Math.abs(Math.toDegrees(Math.atan2(location.y - (this.y + getEyeHeight()), 0)));
         double angleVector = Math.abs(getPitch());
-        return Math.abs(Math.abs(anglePosition - angleVector)-90);
+        return Math.abs(Math.abs(anglePosition - angleVector) - 90);
     }
 
     public boolean isLookingAt(Vector3 location, double tolerance, boolean checkRaycast) {
@@ -5951,28 +5946,41 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     public PropertySyncData getClientSyncProperties() {
-        List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
-
-        int[] intArray = propertyDefs.stream()
-                .filter(this::shouldSyncIntProperty)
-                .map(this::getIntPropertyValue)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .toArray();
-
-        double[] doubleArray = propertyDefs.stream()
-                .filter(this::shouldSyncFloatProperty)
-                .map(this::getFloatPropertyValue)
-                .filter(Objects::nonNull)
-                .mapToDouble(Float::doubleValue)
-                .toArray();
-
-        float[] floatArray = new float[doubleArray.length];
-        for (int i = 0; i < doubleArray.length; i++) {
-            floatArray[i] = (float) doubleArray[i];
+        final List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
+        final List<Integer> ints = new IntArrayList();
+        final List<Float> floats = new FloatArrayList();
+        for (final EntityProperty property : propertyDefs) {
+            Object value;
+            if (this.shouldSyncIntProperty(property) && (value = this.getIntPropertyValue(property)) != null) {
+                ints.add((int) value);
+                continue;
+            }
+            if (this.shouldSyncFloatProperty(property) && (value = this.getFloatPropertyValue(property)) != null) {
+                floats.add((float) value);
+            }
         }
-
-        return new PropertySyncData(intArray, floatArray);
+        final List<org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty> intProperties = new ObjectArrayList<>();
+        for (Integer anInt : ints) {
+            intProperties.add(
+                    new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(
+                            ints.indexOf(anInt),
+                            anInt
+                    )
+            );
+        }
+        final List<org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty> floatProperties = new ObjectArrayList<>();
+        for (Float aFloat : floats) {
+            floatProperties.add(
+                    new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(
+                            floats.indexOf(aFloat),
+                            aFloat
+                    )
+            );
+        }
+        final PropertySyncData syncData = new PropertySyncData();
+        syncData.getIntProperties().addAll(intProperties);
+        syncData.getFloatProperties().addAll(floatProperties);
+        return syncData;
     }
 
     private boolean shouldSyncIntProperty(EntityProperty prop) {
@@ -6063,27 +6071,37 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                         intProperties.put(identifier, enumProperty.findIndex(enumProperty.getDefaultValue()));
                     }
                 }
-                default -> {}
+                default -> {
+                }
             }
         }
     }
 
     private PropertySyncData propertySyncData() {
-        Collection<Integer> intValues = intProperties.values();
-        int[] intArray = new int[intValues.size()];
-        int i = 0;
-        for (Integer value : intValues) {
-            intArray[i++] = value;
+        final List<Integer> ints = new IntArrayList(intProperties.values());
+        final List<Float> floats = new FloatArrayList(floatProperties.values());
+        final List<org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty> intProperties = new ObjectArrayList<>();
+        for (Integer anInt : ints) {
+            intProperties.add(
+                    new org.cloudburstmc.protocol.bedrock.data.actor.IntEntityProperty(
+                            ints.indexOf(anInt),
+                            anInt
+                    )
+            );
         }
-
-        Collection<Float> floatValues = floatProperties.values();
-        float[] floatArray = new float[floatValues.size()];
-        i = 0;
-        for (Float value : floatValues) {
-            floatArray[i++] = value;
+        final List<org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty> floatProperties = new ObjectArrayList<>();
+        for (Float aFloat : floats) {
+            floatProperties.add(
+                    new org.cloudburstmc.protocol.bedrock.data.actor.FloatEntityProperty(
+                            floats.indexOf(aFloat),
+                            aFloat
+                    )
+            );
         }
-
-        return new PropertySyncData(intArray, floatArray);
+        final PropertySyncData syncData = new PropertySyncData();
+        syncData.getIntProperties().addAll(intProperties);
+        syncData.getFloatProperties().addAll(floatProperties);
+        return syncData;
     }
 
     public Map<Integer, Attribute> getAttributes() {

@@ -11,7 +11,6 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class ForestFlowerFoliageFeature extends CountGenerateFeature {
@@ -89,7 +88,7 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
                 Registries.BIOME.get(support.getLevel().getBiomeId(
                         support.getFloorX(),
                         support.getFloorY(),
-                        support.getFloorZ())).getTags().contains(BiomeTags.FOREST);
+                        support.getFloorZ())).second().getTags().contains(BiomeTags.FOREST);
     }
 
     @Override

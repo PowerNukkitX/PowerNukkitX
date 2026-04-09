@@ -1,11 +1,11 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -90,7 +90,7 @@ public class TagCommand extends VanillaCommand {
             case "list" -> {
                 Set<String> tagSet = new HashSet<>();
                 for (Entity entity : entities) {
-                    tagSet.addAll(entity.getAllTags().stream().map(t -> t.data).collect(Collectors.toSet()));
+                    tagSet.addAll(new HashSet<>(entity.getAllTags()));
                 }
                 int tagCount = tagSet.size();
                 String tagStr = tagSet.stream().collect(Collectors.joining(" "));

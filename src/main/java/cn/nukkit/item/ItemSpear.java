@@ -12,8 +12,8 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -50,7 +50,7 @@ public abstract class ItemSpear extends ItemTool {
         applyLunge(player);
 
         if (movementSpeed < getMinimumSpeed() || !player.isSprinting()) {
-            LevelSoundEvent missSound = getMissSound();
+            SoundEvent missSound = getMissSound();
             if (missSound != null) {
                 player.getLevel().addLevelSoundEvent(player.getPosition(), missSound);
             }
@@ -100,12 +100,12 @@ public abstract class ItemSpear extends ItemTool {
             );
 
             target.attack(damageEvent);
-            LevelSoundEvent hitSound = getHitSound();
+            SoundEvent hitSound = getHitSound();
             if (hitSound != null) {
                 level.addLevelSoundEvent(player.getPosition(), hitSound);
             }
         } else {
-            LevelSoundEvent missSound = getMissSound();
+            SoundEvent missSound = getMissSound();
             if (missSound != null) {
                 level.addLevelSoundEvent(player.getPosition(), missSound);
             }
@@ -158,7 +158,7 @@ public abstract class ItemSpear extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        LevelSoundEvent useSound = getUseSound();
+        SoundEvent useSound = getUseSound();
         if (useSound != null) {
             player.getLevel().addLevelSoundEvent(player.getPosition(), useSound);
         }
@@ -212,45 +212,45 @@ public abstract class ItemSpear extends ItemTool {
             );
 
             closest.attack(event);
-            LevelSoundEvent hitSound = getHitSound();
+            SoundEvent hitSound = getHitSound();
             if (hitSound != null) {
                 level.addLevelSoundEvent(player.getPosition(), hitSound);
             }
         }
     }
 
-    private @Nullable LevelSoundEvent getHitSound() {
+    private @Nullable SoundEvent getHitSound() {
         return switch (this.getTier()) {
-            case TIER_DIAMOND -> LevelSoundEvent.DIAMOND_SPEAR_ATTACK_HIT;
-            case TIER_GOLD -> LevelSoundEvent.GOLDEN_SPEAR_ATTACK_HIT;
-            case TIER_COPPER -> LevelSoundEvent.COPPER_SPEAR_ATTACK_HIT;
-            case TIER_IRON -> LevelSoundEvent.IRON_SPEAR_ATTACK_HIT;
-            case TIER_NETHERITE -> LevelSoundEvent.NETHERITE_SPEAR_ATTACK_HIT;
-            case TIER_WOODEN -> LevelSoundEvent.WOODEN_SPEAR_ATTACK_HIT;
+            case TIER_DIAMOND -> SoundEvent.DIAMOND_SPEAR_ATTACK_HIT;
+            case TIER_GOLD -> SoundEvent.GOLDEN_SPEAR_ATTACK_HIT;
+            case TIER_COPPER -> SoundEvent.COPPER_SPEAR_ATTACK_HIT;
+            case TIER_IRON -> SoundEvent.IRON_SPEAR_ATTACK_HIT;
+            case TIER_NETHERITE -> SoundEvent.NETHERITE_SPEAR_ATTACK_HIT;
+            case TIER_WOODEN -> SoundEvent.WOODEN_SPEAR_ATTACK_HIT;
             default -> null;
         };
     }
 
-    private @Nullable LevelSoundEvent getMissSound() {
+    private @Nullable SoundEvent getMissSound() {
         return switch (this.getTier()) {
-            case TIER_DIAMOND -> LevelSoundEvent.DIAMOND_SPEAR_ATTACK_MISS;
-            case TIER_GOLD -> LevelSoundEvent.GOLDEN_SPEAR_ATTACK_MISS;
-            case TIER_COPPER -> LevelSoundEvent.COPPER_SPEAR_ATTACK_MISS;
-            case TIER_IRON -> LevelSoundEvent.IRON_SPEAR_ATTACK_MISS;
-            case TIER_NETHERITE -> LevelSoundEvent.NETHERITE_SPEAR_ATTACK_MISS;
-            case TIER_WOODEN -> LevelSoundEvent.WOODEN_SPEAR_ATTACK_MISS;
+            case TIER_DIAMOND -> SoundEvent.DIAMOND_SPEAR_ATTACK_MISS;
+            case TIER_GOLD -> SoundEvent.GOLDEN_SPEAR_ATTACK_MISS;
+            case TIER_COPPER -> SoundEvent.COPPER_SPEAR_ATTACK_MISS;
+            case TIER_IRON -> SoundEvent.IRON_SPEAR_ATTACK_MISS;
+            case TIER_NETHERITE -> SoundEvent.NETHERITE_SPEAR_ATTACK_MISS;
+            case TIER_WOODEN -> SoundEvent.WOODEN_SPEAR_ATTACK_MISS;
             default -> null;
         };
     }
 
-    private @Nullable LevelSoundEvent getUseSound() {
+    private @Nullable SoundEvent getUseSound() {
         return switch (this.getTier()) {
-            case TIER_DIAMOND -> LevelSoundEvent.DIAMOND_SPEAR_USE;
-            case TIER_GOLD -> LevelSoundEvent.GOLDEN_SPEAR_USE;
-            case TIER_COPPER -> LevelSoundEvent.COPPER_SPEAR_USE;
-            case TIER_IRON -> LevelSoundEvent.IRON_SPEAR_USE;
-            case TIER_NETHERITE -> LevelSoundEvent.NETHERITE_SPEAR_USE;
-            case TIER_WOODEN -> LevelSoundEvent.WOODEN_SPEAR_USE;
+            case TIER_DIAMOND -> SoundEvent.DIAMOND_SPEAR_USE;
+            case TIER_GOLD -> SoundEvent.GOLDEN_SPEAR_USE;
+            case TIER_COPPER -> SoundEvent.COPPER_SPEAR_USE;
+            case TIER_IRON -> SoundEvent.IRON_SPEAR_USE;
+            case TIER_NETHERITE -> SoundEvent.NETHERITE_SPEAR_USE;
+            case TIER_WOODEN -> SoundEvent.WOODEN_SPEAR_USE;
             default -> null;
         };
     }

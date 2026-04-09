@@ -6,9 +6,9 @@ import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 public abstract class AbstractStructure {
     protected static final BlockState STATE_AIR = BlockAir.STATE;
@@ -16,10 +16,10 @@ public abstract class AbstractStructure {
     protected static final BlockState STATE_STRUCTURE_VOID = BlockStructureVoid.PROPERTIES.getDefaultState();
     protected String name;
 
-    public static AbstractStructure fromNbt(CompoundTag tag) {
-        if(tag.contains("format_version")) return Structure.fromNbtAsync(tag).join();
-        if(tag.contains("PNX")) return PNXStructure.fromNbtAsync(tag).join();
-        if(tag.contains("DataVersion")) return JeStructure.fromNbtAsync(tag).join();
+    public static AbstractStructure fromNbt(NbtMap tag) {
+        if (tag.containsKey("format_version")) return Structure.fromNbtAsync(tag).join();
+        if (tag.containsKey("PNX")) return PNXStructure.fromNbtAsync(tag).join();
+        if (tag.containsKey("DataVersion")) return JeStructure.fromNbtAsync(tag).join();
         return null;
     }
 
@@ -31,16 +31,23 @@ public abstract class AbstractStructure {
         this.name = name;
     }
 
-    public abstract CompoundTag toNBT();
+    public abstract NbtMap toNBT();
+
     public abstract void place(Position pos, boolean includeEntities, BlockManager blockManager);
+
     public abstract void preparePlace(Position pos, BlockManager blockManager);
+
     public abstract AbstractStructure rotate(Rotation rotation);
-    public abstract AbstractStructure mirror(StructureMirror mirror);
+
+    public abstract AbstractStructure mirror(Mirror mirror);
 
     protected interface BlockAccessor<T> {
         int x(T block);
+
         int y(T block);
+
         int z(T block);
+
         BlockState state(T block);
     }
 

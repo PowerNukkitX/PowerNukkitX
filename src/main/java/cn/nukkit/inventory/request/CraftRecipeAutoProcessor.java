@@ -4,24 +4,24 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.request.action.AutoCraftRecipeAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.recipe.descriptor.DefaultDescriptor;
-import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.registry.Registries;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemTagDescriptor;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.AutoCraftRecipeAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
 
 import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.RECIPE_DATA_KEY;
 import static cn.nukkit.inventory.request.CraftRecipeActionProcessor.findAllConsumeActions;
-import static cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType.CRAFT_RECIPE_AUTO;
 
 @Slf4j
 public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor<AutoCraftRecipeAction> {
     @Override
     public ItemStackRequestActionType getType() {
-        return CRAFT_RECIPE_AUTO;
+        return ItemStackRequestActionType.CRAFT_RECIPE_AUTO;
     }
 
     @Nullable
@@ -29,7 +29,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
     public ActionResponse handle(AutoCraftRecipeAction action, Player player, ItemStackRequestContext context) {
         var recipe = Registries.RECIPE.getRecipeByNetworkId(action.getRecipeNetworkId());
 
-        Item[] eventItems = action.getIngredients().stream().map(ItemDescriptor::toItem).toArray(Item[]::new);
+        Item[] eventItems = action.getIngredients().stream().map(ItemDescriptorWithCount::toItem).map(Item::fromNetwork).toArray(Item[]::new);
 
         CraftItemEvent craftItemEvent = new CraftItemEvent(player, eventItems, recipe, 1);
         player.getServer().getPluginManager().callEvent(craftItemEvent);
@@ -39,12 +39,12 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
 
         int success = 0;
         for (Item clientInputItem : eventItems) {
-            for (ItemDescriptor serverExpect : action.getIngredients()) {
+            for (ItemDescriptorWithCount serverExpect : action.getIngredients()) {
                 boolean match = false;
-                if (serverExpect instanceof ItemTagDescriptor tagDescriptor) {
-                    match = tagDescriptor.match(clientInputItem);
-                } else if (serverExpect instanceof DefaultDescriptor descriptor) {
-                    match = descriptor.match(clientInputItem);
+                if (serverExpect.getDescriptor() instanceof ItemTagDescriptor tagDescriptor) {
+                    match = this.match(tagDescriptor, clientInputItem);
+                } else if (serverExpect.getDescriptor() instanceof DefaultDescriptor descriptor) {
+                    match = this.match(descriptor, clientInputItem);
                 }
                 if (match) {
                     success++;
@@ -79,5 +79,9 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             }
         }
         return null;
+    }
+
+    private boolean match(ItemDescriptor descriptor, Item item) {
+        return false; // TODO protocol
     }
 }

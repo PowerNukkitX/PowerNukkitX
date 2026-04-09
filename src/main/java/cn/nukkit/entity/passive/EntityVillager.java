@@ -10,12 +10,11 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.Set;
-
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * @author Pub4Game
@@ -24,18 +23,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return VILLAGER;
     }
+
     public static final int PROFESSION_FARMER = 0;
     public static final int PROFESSION_LIBRARIAN = 1;
     public static final int PROFESSION_PRIEST = 2;
     public static final int PROFESSION_BLACKSMITH = 3;
     public static final int PROFESSION_BUTCHER = 4;
     public static final int PROFESSION_GENERIC = 5;
-    
 
-    public EntityVillager(IChunk chunk, CompoundTag nbt) {
+
+    public EntityVillager(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -89,7 +90,7 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     public void initEntity() {
         super.initEntity();
 
-        if (!this.namedTag.contains("Profession")) {
+        if (!this.namedTag.containsKey("Profession")) {
             this.setProfession(PROFESSION_GENERIC);
         }
     }
@@ -99,19 +100,19 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     }
 
     public void setProfession(int profession) {
-        this.namedTag.putInt("Profession", profession);
+        this.namedTag = this.namedTag.toBuilder().putInt("Profession", profession).build();
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(getHealthCurrent()-source.getFinalDamage() <= 1) {
-            if(source instanceof EntityDamageByEntityEvent entityEvent) {
-                if(entityEvent.getDamager() instanceof EntityThrownTrident trident) {
-                    if(trident.shootingEntity instanceof EntityDrowned) {
+        if (getHealthCurrent() - source.getFinalDamage() <= 1) {
+            if (source instanceof EntityDamageByEntityEvent entityEvent) {
+                if (entityEvent.getDamager() instanceof EntityThrownTrident trident) {
+                    if (trident.shootingEntity instanceof EntityDrowned) {
                         transform();
                         return true;
                     }
-                } else if(entityEvent.getDamager() instanceof EntityZombie) {
+                } else if (entityEvent.getDamager() instanceof EntityZombie) {
                     transform();
                     return true;
                 }

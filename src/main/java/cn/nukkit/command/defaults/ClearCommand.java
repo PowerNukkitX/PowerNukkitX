@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.data.GenericParameter;
 import cn.nukkit.command.tree.ParamList;
@@ -11,6 +10,7 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.HumanOffHandInventory;
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;

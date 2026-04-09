@@ -52,13 +52,12 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -68,11 +67,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityIronGolem extends EntityGolem {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return IRON_GOLEM;
     }
 
-    public EntityIronGolem(IChunk chunk, CompoundTag nbt) {
+    public EntityIronGolem(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -89,9 +89,9 @@ public class EntityIronGolem extends EntityGolem {
                                 not(any(
                                         entity -> entity.getServer().getDifficulty() == 0,
                                         all(
-                                        entity -> attackingPlayer = getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player,
-                                        entity -> hasOwner(false)
-                                )))
+                                                entity -> attackingPlayer = getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player,
+                                                entity -> hasOwner(false)
+                                        )))
                         ), 3, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.2f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
@@ -156,9 +156,9 @@ public class EntityIronGolem extends EntityGolem {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if(item instanceof ItemIronIngot && getHealthCurrent() <= getHealthMax()*0.75f) {
+        if (item instanceof ItemIronIngot && getHealthCurrent() <= getHealthMax() * 0.75f) {
             this.level.addSound(this, Sound.MOB_IRONGOLEM_REPAIR);
-            if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().decrement(1);
+            if (player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().decrement(1);
             heal(25);
         }
         return super.onInteract(player, item);
@@ -188,9 +188,9 @@ public class EntityIronGolem extends EntityGolem {
     @Override
     public boolean attack(EntityDamageEvent source) {
         float health = getHealthCurrent();
-        if(!super.attack(source)) return false;
-        for(int i : new int[] {74, 50, 25}) {
-            if(health > i && getHealthCurrent() <= i) {
+        if (!super.attack(source)) return false;
+        for (int i : new int[]{74, 50, 25}) {
+            if (health > i && getHealthCurrent() <= i) {
                 this.level.addSound(this, Sound.MOB_IRONGOLEM_CRACK);
             }
         }
@@ -205,8 +205,8 @@ public class EntityIronGolem extends EntityGolem {
 
     @Override
     public float getDiffHandDamage(int difficulty) {
-        if(attackingPlayer) {
-            switch(this.getServer().getDifficulty()) {
+        if (attackingPlayer) {
+            switch (this.getServer().getDifficulty()) {
                 case 1:
                     return ThreadLocalRandom.current().nextFloat(4.5f, 11.5f);
                 case 2:
@@ -219,29 +219,29 @@ public class EntityIronGolem extends EntityGolem {
     }
 
     public static void checkAndSpawnGolem(Block block, Player player) {
-        if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            if(block instanceof BlockPumpkin) {
+        if (block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (block instanceof BlockPumpkin) {
                 faces:
-                for(BlockFace blockFace : BlockFace.values()) {
-                    for(int i = 1; i<=2; i++) {
-                        if(!(block.getSide(blockFace, i) instanceof BlockIronBlock)) {
+                for (BlockFace blockFace : BlockFace.values()) {
+                    for (int i = 1; i <= 2; i++) {
+                        if (!(block.getSide(blockFace, i) instanceof BlockIronBlock)) {
                             continue faces;
                         }
                     }
                     faces1:
-                    for(BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
-                        for(int i = -1; i<=1; i++) {
-                            if(!(block.getSide(blockFace).getSide(face, i) instanceof BlockIronBlock)) {
+                    for (BlockFace face : Set.of(BlockFace.UP, BlockFace.NORTH, BlockFace.EAST)) {
+                        for (int i = -1; i <= 1; i++) {
+                            if (!(block.getSide(blockFace).getSide(face, i) instanceof BlockIronBlock)) {
                                 continue faces1;
                             }
                         }
-                        for(int i = 0; i<=2; i++) {
+                        for (int i = 0; i <= 2; i++) {
                             Block location = block.getSide(blockFace, i);
                             block.level.setBlock(location, Block.get(Block.AIR));
                             block.level.addParticle(new DestroyBlockParticle(location.add(0.5, 0.5, 0.5), block));
                             block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(null, location.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
                         }
-                        for(int i = -1; i<=1; i++) {
+                        for (int i = -1; i <= 1; i++) {
                             Block location = block.getSide(blockFace).getSide(face, i);
                             block.level.setBlock(location, Block.get(Block.AIR));
                             block.level.addParticle(new DestroyBlockParticle(location.add(0.5, 0.5, 0.5), block));
@@ -249,23 +249,15 @@ public class EntityIronGolem extends EntityGolem {
 
                         }
                         Block pos = block.getSide(blockFace, 2);
-                        CompoundTag nbt = new CompoundTag()
-                                .putList("Pos", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(pos.x + 0.5))
-                                        .add(new DoubleTag(pos.y))
-                                        .add(new DoubleTag(pos.z + 0.5)))
-                                .putList("Motion", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0)))
-                                .putList("Rotation", new ListTag<FloatTag>()
-                                        .add(new FloatTag(0f))
-                                        .add(new FloatTag(0f)));
-
+                        NbtMap nbt = NbtMap.builder()
+                                .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x + 0.5, pos.y, pos.z + 0.5)
+                                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
+                                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
+                                ).build();
                         Entity irongolem = Entity.createEntity(EntityID.IRON_GOLEM, block.level.getChunk(block.getChunkX(), block.getChunkZ()), nbt);
                         irongolem.spawnToAll();
-                        if(irongolem instanceof EntityIronGolem golem) {
-                            if(player != null) {
+                        if (irongolem instanceof EntityIronGolem golem) {
+                            if (player != null) {
                                 golem.setOwnerName(player.getName());
                             }
                         }

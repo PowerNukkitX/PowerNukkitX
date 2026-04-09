@@ -7,13 +7,13 @@ import cn.nukkit.event.player.PlayerChunkRequestEvent;
 import cn.nukkit.event.player.PlayerPreChunkRequestEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayPriorityQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.packet.NetworkChunkPublisherUpdatePacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -234,10 +234,10 @@ public final class PlayerChunkManager {
 
     private void sendChunk() {
         if (!chunkReadyToSend.isEmpty()) {
-            NetworkChunkPublisherUpdatePacket ncp = new NetworkChunkPublisherUpdatePacket();
-            ncp.position = player.asBlockVector3();
-            ncp.radius = player.getViewDistance() << 4;
-            player.dataPacket(ncp);
+            final NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
+            packet.setNewPositionForView(player.asBlockVector3().toNetwork());
+            packet.setNewRadiusForView(player.getViewDistance() << 4);
+            player.dataPacket(packet);
             while (!chunkReadyToSend.isEmpty()) {
                 long chunkHash = chunkReadyToSend.dequeueLong();
                 int chunkX = Level.getHashX(chunkHash);

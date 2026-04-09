@@ -3,15 +3,17 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockLoom;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 
 import java.util.Map;
 
 public class LoomInventory extends BaseInventory {
     public LoomInventory(BlockLoom blockLoom) {
-        super(blockLoom, InventoryType.LOOM, 3);
+        super(blockLoom, ContainerType.LOOM, 3);
     }
 
     @Override
@@ -21,22 +23,20 @@ public class LoomInventory extends BaseInventory {
             map.put(i, 9 + i);
         }
 
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-        map2.put(0, ContainerSlotType.LOOM_INPUT);
-        map2.put(1, ContainerSlotType.LOOM_DYE);
-        map2.put(2, ContainerSlotType.LOOM_MATERIAL);
+        Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
+        map2.put(0, ContainerEnumName.LOOM_INPUT_CONTAINER);
+        map2.put(1, ContainerEnumName.LOOM_DYE_CONTAINER);
+        map2.put(2, ContainerEnumName.LOOM_MATERIAL_CONTAINER);
     }
 
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
+        final InventoryHolder holder = this.getHolder();
+        final ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setContainerType(this.getType());
+        pk.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
         who.dataPacket(pk);
         this.sendContents(who);
     }

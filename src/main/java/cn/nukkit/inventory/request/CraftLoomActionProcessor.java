@@ -9,10 +9,10 @@ import cn.nukkit.item.ItemBannerPattern;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.network.protocol.types.BannerPatternType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.CraftLoomAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
 import cn.nukkit.utils.DyeColor;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftLoomAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

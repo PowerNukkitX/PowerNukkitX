@@ -19,20 +19,19 @@ import cn.nukkit.level.format.leveldb.LevelDBChunkSerializer.NormalTickInfo;
 import cn.nukkit.level.format.leveldb.LevelDBChunkSerializer.ScheduledTickInfo;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
-import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +45,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.ref.WeakReference;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -73,8 +71,9 @@ public class LevelDBProvider implements LevelProvider {
     protected final LevelDBStorage storage;
     protected final Level level;
     protected final String path;
-    protected CompoundTag worldDynamicProperties = new CompoundTag();
+    protected NbtMap worldDynamicProperties = NbtMap.EMPTY;
     protected boolean worldDynamicPropertiesDirty = false;
+
     /**
      * @return int The nether coordinate scale for the world
      */
@@ -85,7 +84,7 @@ public class LevelDBProvider implements LevelProvider {
     public LevelDBStorage getStorage() {
         return this.storage;
     }
-    
+
     public LevelDBProvider(Level level, String path) throws IOException {
         this.storage = CACHE.computeIfAbsent(path, p -> {
             try {
@@ -108,8 +107,8 @@ public class LevelDBProvider implements LevelProvider {
             this.levelDat = levelDat;
         }
 
-        CompoundTag dp = this.storage.readWorldDynamicProperties();
-        this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
+        NbtMap dp = this.storage.readWorldDynamicProperties();
+        this.worldDynamicProperties = (dp == null) ? NbtMap.EMPTY : dp;
         this.worldDynamicPropertiesDirty = false;
     }
 
@@ -154,7 +153,7 @@ public class LevelDBProvider implements LevelProvider {
                 levelDatNow.createNewFile();
             }
             output.write(levelDatMagic);//magic number
-            NBTIO.write(createWorldDataNBT(levelDat), output, ByteOrder.LITTLE_ENDIAN);
+            NbtUtils.createWriterLE(output).writeTag(createWorldDataNBT(levelDat));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -162,7 +161,7 @@ public class LevelDBProvider implements LevelProvider {
 
     public IChunk loadChunk(long index, int chunkX, int chunkZ, boolean create) {
         IChunk chunk = this.chunks.get(index);
-        if(chunk == null) {
+        if (chunk == null) {
             try {
                 chunk = storage.readChunk(chunkX, chunkZ, this);
             } catch (IOException e) {
@@ -175,7 +174,7 @@ public class LevelDBProvider implements LevelProvider {
             }
         } else {
             if (Server.getInstance().getSettings().chunkSettings().convertBDSChunks() && chunk.isPopulated()) {
-                CompoundTag extra = chunk.getExtraData();
+                NbtMap extra = chunk.getExtraData();
                 if (extra == null || extra.isEmpty()) {
                     chunk = ChunkConversion.convert(chunk);
                 }
@@ -191,6 +190,7 @@ public class LevelDBProvider implements LevelProvider {
     public static Map<Long, List<ScheduledTickInfo>> getScheduledTicksMap() {
         return scheduledTicksMap;
     }
+
     public static Map<Long, List<NormalTickInfo>> getNormalTicksMap() {
         return normalTicksMap;
     }
@@ -270,11 +270,11 @@ public class LevelDBProvider implements LevelProvider {
 
     public IChunk getOrPutChunk(long index, IChunk chunk) {
         IChunk existing = this.chunks.putIfAbsent(index, chunk);
-        return existing != null ? existing : chunk; 
+        return existing != null ? existing : chunk;
     }
 
     public void putChunk(long index, IChunk chunk) {
-        if(this.chunks.containsKey(index)) {
+        if (this.chunks.containsKey(index)) {
             level.getPlayers().values().forEach(player -> {
                 synchronized (player.getPlayerChunkManager().getUsedChunks()) {
                     player.getPlayerChunkManager().getUsedChunks().remove(index);
@@ -306,69 +306,66 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     @Override
-    public Pair<byte[], Integer> requestChunkData(int x, int z) {
+    public Pair<ByteBuf, Integer> requestChunkData(int x, int z) {
         IChunk chunk = this.getChunk(x, z, false);
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        AtomicReference<byte[]> data = new AtomicReference<>();
+        AtomicReference<ByteBuf> data = new AtomicReference<>();
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
-            try {
-                final ChunkSection[] sections = unsafeChunk.getSections();
-                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
-                while (subChunkCount-- != 0) {
-                    if (sections[subChunkCount] != null) {
-                        break;
-                    }
+            final ChunkSection[] sections = unsafeChunk.getSections();
+            int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
+            while (subChunkCount-- != 0) {
+                if (sections[subChunkCount] != null) {
+                    break;
                 }
-                int total = subChunkCount + 1;
-                //write block
-                if (level != null && level.isAntiXrayEnabled()) {
-                    for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
-                        }
-                        assert sections[i] != null;
-                        sections[i].writeObfuscatedToBuf(level, byteBuf);
-                    }
-                } else {
-                    for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
-                        }
-                        assert sections[i] != null;
-                        sections[i].writeToBuf(byteBuf);
-                    }
-                }
-
-                // Write biomes
-                for (int i = 0; i < total; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
-                }
-
-                byteBuf.writeByte(0); // edu- border blocks
-
-                // Block entities
-                final List<CompoundTag> tagList = new ArrayList<>();
-                for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
-                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                        tagList.add(blockEntitySpawnable.getSpawnCompound());
-                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
-                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
-                    }
-                }
-                try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
-                    NBTIO.write(tagList, stream, ByteOrder.LITTLE_ENDIAN, true);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                data.set(Utils.convertByteBuf2Array(byteBuf));
-                subChunkCountRef.set(total);
-            } finally {
-                byteBuf.release();
             }
+            int total = subChunkCount + 1;
+            //write block
+            if (level != null && level.isAntiXrayEnabled()) {
+                for (int i = 0; i < total; i++) {
+                    if (sections[i] == null) {
+                        sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                    }
+                    assert sections[i] != null;
+                    sections[i].writeObfuscatedToBuf(level, byteBuf);
+                }
+            } else {
+                for (int i = 0; i < total; i++) {
+                    if (sections[i] == null) {
+                        sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                    }
+                    assert sections[i] != null;
+                    sections[i].writeToBuf(byteBuf.retain());
+                }
+            }
+
+            // Write biomes
+            for (int i = 0; i < total; i++) {
+                sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
+            }
+
+            byteBuf.writeByte(0); // edu- border blocks
+
+            // Block entities
+            final List<NbtMap> tagList = new ArrayList<>();
+            for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
+                if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                    tagList.add(blockEntitySpawnable.getSpawnCompound());
+                    //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
+                    level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
+                }
+            }
+            try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
+                final NbtMap nbtMap = NbtMap.builder().putList("blockEntities", NbtType.COMPOUND, tagList).build();
+                NbtUtils.createNetworkWriter(stream).writeTag(nbtMap);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            data.set(byteBuf);
+            subChunkCountRef.set(total);
         });
         return Pair.of(data.get(), subChunkCountRef.get());
     }
@@ -637,12 +634,12 @@ public class LevelDBProvider implements LevelProvider {
         return true;
     }
 
-    public CompoundTag getWorldDynamicProperties() {
+    public NbtMap getWorldDynamicProperties() {
         return this.worldDynamicProperties;
     }
 
-    public void setWorldDynamicProperties(CompoundTag tag) {
-        this.worldDynamicProperties = tag == null ? new CompoundTag() : tag;
+    public void setWorldDynamicProperties(NbtMap tag) {
+        this.worldDynamicProperties = tag == null ? NbtMap.EMPTY : tag;
         this.worldDynamicPropertiesDirty = false;
     }
 
@@ -667,10 +664,10 @@ public class LevelDBProvider implements LevelProvider {
             //The first 8 bytes are magic number
             input.skip(8);
             BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
-            CompoundTag d = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+            final NbtMap d = (NbtMap) NbtUtils.createReaderLE(stream).readTag();
             stream.close();
-            CompoundTag abilities = d.getCompound("abilities");
-            CompoundTag experiments = d.getCompound("experiments");
+            NbtMap abilities = d.getCompound("abilities");
+            NbtMap experiments = d.getCompound("experiments");
             GameRules gameRules = GameRules.getDefault();
             gameRules.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, d.getBoolean("commandBlockOutput"));
             gameRules.setGameRule(GameRule.COMMAND_BLOCKS_ENABLED, d.getBoolean("commandBlocksEnabled"));
@@ -712,10 +709,10 @@ public class LevelDBProvider implements LevelProvider {
             gameRules.setGameRule(GameRule.TNT_EXPLOSION_DROP_DECAY, d.getBoolean("tntExplosionDropDecay"));
 
             Map<String, Boolean> experimentMap = new HashMap<>();
-            for (Map.Entry<String, Tag> entry : experiments.getTags().entrySet()) {
-                Tag tag = entry.getValue();
-                if (tag instanceof ByteTag byteTag) {
-                    experimentMap.put(entry.getKey(), byteTag.getData() != 0);
+            for (Map.Entry<String, Object> entry : experiments.entrySet()) {
+                Object tag = entry.getValue();
+                if (tag instanceof Byte byteTag) {
+                    experimentMap.put(entry.getKey(), byteTag != 0);
                 }
             }
             LevelDat.Experiments experimentData = new LevelDat.Experiments(experimentMap);
@@ -735,7 +732,7 @@ public class LevelDBProvider implements LevelProvider {
                     .lastPlayed(d.getLong("LastPlayed"))
                     .name(d.getString("LevelName"))
                     .limitedWorldOriginPoint(new BlockVector3(d.getInt("LimitedWorldOriginX"), d.getInt("LimitedWorldOriginY"), d.getInt("LimitedWorldOriginZ")))
-                    .minimumCompatibleClientVersion(SemVersion.from(d.getList("MinimumCompatibleClientVersion", IntTag.class)))
+                    .minimumCompatibleClientVersion(SemVersion.from(d.getList("MinimumCompatibleClientVersion", NbtType.INT)))
                     .multiplayerGame(d.getBoolean("MultiplayerGame"))
                     .multiplayerGameIntent(d.getBoolean("MultiplayerGameIntent"))
                     .netherScale(d.getInt("NetherScale"))
@@ -789,7 +786,7 @@ public class LevelDBProvider implements LevelProvider {
                     .isRandomSeedAllowed(d.getBoolean("isRandomSeedAllowed"))
                     .isSingleUseWorld(d.getBoolean("isSingleUseWorld"))
                     .isWorldTemplateOptionLocked(d.getBoolean("isWorldTemplateOptionLocked"))
-                    .lastOpenedWithVersion(SemVersion.from(d.getList("lastOpenedWithVersion", IntTag.class)))
+                    .lastOpenedWithVersion(SemVersion.from(d.getList("lastOpenedWithVersion", NbtType.INT)))
                     .lightningLevel(d.getFloat("lightningLevel"))
                     .lightningTime(d.getInt("lightningTime"))
                     .limitedWorldDepth(d.getInt("limitedWorldDepth"))
@@ -810,10 +807,10 @@ public class LevelDBProvider implements LevelProvider {
                     .useMsaGamertagsOnly(d.getBoolean("useMsaGamertagsOnly"))
                     .worldStartCount(d.getLong("worldStartCount"))
                     .worldPolicies(LevelDat.WorldPolicies.builder().build());
-            if (d.contains("raining")) {
+            if (d.containsKey("raining")) {
                 levelDatBuilder.raining(d.getBoolean("raining"));//PNX Custom field
             }
-            if (d.contains("thundering")) {
+            if (d.containsKey("thundering")) {
                 levelDatBuilder.thundering(d.getBoolean("thundering"));//PNX Custom field
             }
             return levelDatBuilder.build();
@@ -823,9 +820,8 @@ public class LevelDBProvider implements LevelProvider {
         throw new IllegalStateException("level.dat is null!");
     }
 
-    private static CompoundTag createWorldDataNBT(LevelDat worldData) {
-        CompoundTag levelDat = new CompoundTag();
-
+    private static NbtMap createWorldDataNBT(LevelDat worldData) {
+        NbtMapBuilder levelDat = NbtMap.builder();
         levelDat.putString("BiomeOverride", worldData.getBiomeOverride());
         levelDat.putBoolean("CenterMapsToOrigin", worldData.isCenterMapsToOrigin());
         levelDat.putBoolean("ConfirmedPlatformLockedContent", worldData.isConfirmedPlatformLockedContent());
@@ -842,8 +838,8 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putInt("LimitedWorldOriginX", worldData.getLimitedWorldOriginPoint().getX());
         levelDat.putInt("LimitedWorldOriginY", worldData.getLimitedWorldOriginPoint().getY());
         levelDat.putInt("LimitedWorldOriginZ", worldData.getLimitedWorldOriginPoint().getZ());
-        levelDat.putList("MinimumCompatibleClientVersion", worldData.getMinimumCompatibleClientVersion().toTag());
-        levelDat.putList("lastOpenedWithVersion", worldData.getLastOpenedWithVersion().toTag());
+        levelDat.putList("MinimumCompatibleClientVersion", NbtType.INT, worldData.getMinimumCompatibleClientVersion().toTag());
+        levelDat.putList("lastOpenedWithVersion", NbtType.INT, worldData.getLastOpenedWithVersion().toTag());
         levelDat.putBoolean("MultiplayerGame", worldData.isMultiplayerGame());
         levelDat.putBoolean("MultiplayerGameIntent", worldData.isMultiplayerGameIntent());
         levelDat.putInt("NetherScale", worldData.getNetherScale());
@@ -859,7 +855,7 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putLong("Time", worldData.getTime());
         levelDat.putInt("WorldVersion", worldData.getWorldVersion());
         levelDat.putInt("XBLBroadcastIntent", worldData.getXBLBroadcastIntent());
-        CompoundTag abilities = new CompoundTag()
+        NbtMap abilities = NbtMap.builder()
                 .putBoolean("attackmobs", worldData.getAbilities().isAttackMobs())
                 .putBoolean("attackplayers", worldData.getAbilities().isAttackPlayers())
                 .putBoolean("build", worldData.getAbilities().isBuild())
@@ -874,8 +870,9 @@ public class LevelDBProvider implements LevelProvider {
                 .putBoolean("opencontainers", worldData.getAbilities().isOpenContainers())
                 .putBoolean("teleport", worldData.getAbilities().isTeleport())
                 .putFloat("flySpeed", worldData.getAbilities().getFlySpeed())
-                .putFloat("walkSpeed", worldData.getAbilities().getWalkSpeed());
-        CompoundTag experiments = new CompoundTag();
+                .putFloat("walkSpeed", worldData.getAbilities().getWalkSpeed())
+                .build();
+        NbtMapBuilder experiments = NbtMap.builder();
         for (Map.Entry<String, Boolean> entry : worldData.getExperiments().getEntries().entrySet()) {
             experiments.putBoolean(entry.getKey(), entry.getValue());
         }
@@ -886,7 +883,7 @@ public class LevelDBProvider implements LevelProvider {
         }
 
         levelDat.put("abilities", abilities);
-        levelDat.put("experiments", experiments);
+        levelDat.put("experiments", experiments.build());
 
         levelDat.putBoolean("bonusChestEnabled", worldData.isBonusChestEnabled());
         levelDat.putBoolean("bonusChestSpawned", worldData.isBonusChestSpawned());
@@ -941,6 +938,6 @@ public class LevelDBProvider implements LevelProvider {
         levelDat.putBoolean("raining", worldData.isRaining());
         levelDat.putBoolean("thundering", worldData.isThundering());
         levelDat.putInt("nosleepnights", worldData.getNoSleepNight());
-        return levelDat;
+        return levelDat.build();
     }
 }

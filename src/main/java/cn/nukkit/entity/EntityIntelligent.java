@@ -15,8 +15,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.Objects;
 
@@ -36,7 +36,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Getter
     protected boolean isActive = true;
 
-    public EntityIntelligent(IChunk chunk, CompoundTag nbt) {
+    public EntityIntelligent(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         IMemoryStorage storage = getMemoryStorage();
         if (storage != null) {

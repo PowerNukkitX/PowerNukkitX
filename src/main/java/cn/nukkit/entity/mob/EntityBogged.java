@@ -24,8 +24,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,12 +34,13 @@ import java.util.List;
 import java.util.Set;
 
 public class EntityBogged extends EntityMob implements EntityWalkable, EntitySmite {
-    @Override @NotNull
+    @Override
+    @NotNull
     public String getIdentifier() {
         return BOGGED;
     }
 
-    public EntityBogged(IChunk chunk, CompoundTag nbt) {
+    public EntityBogged(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

@@ -1,10 +1,10 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.Collection;
 import java.util.List;

@@ -4,8 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockGrindstone;
 import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
     private static final int SLOT_RESULT = 2;
 
     public GrindstoneInventory(BlockGrindstone blockGrindstone) {
-        super(blockGrindstone, InventoryType.GRINDSTONE, 3);
+        super(blockGrindstone, ContainerType.GRINDSTONE, 3);
     }
 
     @Override
@@ -30,11 +31,11 @@ public class GrindstoneInventory extends ContainerInventory implements CraftType
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(0, ContainerSlotType.GRINDSTONE_INPUT);
-        map.put(1, ContainerSlotType.GRINDSTONE_ADDITIONAL);
-        map.put(2, ContainerSlotType.GRINDSTONE_RESULT);
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        map.put(0, ContainerEnumName.GRINDSTONE_INPUT_CONTAINER);
+        map.put(1, ContainerEnumName.GRINDSTONE_ADDITIONAL_CONTAINER);
+        map.put(2, ContainerEnumName.GRINDSTONE_RESULT_PREVIEW_CONTAINER);
         return map;
     }
 

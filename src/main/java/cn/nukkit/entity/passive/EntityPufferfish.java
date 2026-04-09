@@ -3,12 +3,11 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.Set;
-
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * @author PetteriM1
@@ -20,7 +19,7 @@ public class EntityPufferfish extends EntityFish {
         return PUFFERFISH;
     }
 
-    public EntityPufferfish(IChunk chunk, CompoundTag nbt) {
+    public EntityPufferfish(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

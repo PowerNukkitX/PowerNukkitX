@@ -4,10 +4,9 @@ import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.object.ObjectBigSpruceTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class MegaTaigaTreeFeature extends GriddedFeature {
 
@@ -21,7 +20,7 @@ public class MegaTaigaTreeFeature extends GriddedFeature {
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
         return definition.getTags().contains(BiomeTags.TAIGA);
     }
 

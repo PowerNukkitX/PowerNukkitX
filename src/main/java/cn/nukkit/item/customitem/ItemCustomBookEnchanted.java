@@ -21,6 +21,7 @@ public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implemen
                 .glint(true)
                 .customBuild(nbt -> nbt.getCompound("components")
                         .getCompound("item_properties")
+                        .toBuilder()
                         .putString("enchantable_slot", "all")
                         .putInt("enchantable_value", 20)
                         .putBoolean("hand_equipped", false)
@@ -29,6 +30,7 @@ public abstract class ItemCustomBookEnchanted extends ItemEnchantedBook implemen
                         .putInt("use_animation", 0)
                         .putInt("use_duration", 0)
                         .putBoolean("animates_in_toolbar", false)
+                        .build()
                 );
     }
 

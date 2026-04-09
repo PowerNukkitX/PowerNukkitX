@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+// TODO protocol move to container id protocol enum
 public enum SpecialWindowId {
     CREATIVE(-2),
     NONE(-1),

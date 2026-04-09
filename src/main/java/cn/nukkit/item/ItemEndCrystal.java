@@ -10,11 +10,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class ItemEndCrystal extends Item {
@@ -47,21 +46,18 @@ public class ItemEndCrystal extends Item {
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(target.x + 0.5))
-                        .add(new DoubleTag(up.y))
-                        .add(new DoubleTag(target.z + 0.5)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(new Random().nextFloat() * 360))
-                        .add(new FloatTag(0)));
+        NbtMap nbt = NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                target.x + 0.5,
+                                up.y,
+                                target.z + 0.5
+                        )
+                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
+                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(new Random().nextFloat() * 360, 0f)
+                ).build();
 
         if (this.hasCustomName()) {
-            nbt.putString("CustomName", this.getCustomName());
+            nbt = nbt.toBuilder().putString("CustomName", this.getCustomName()).build();
         }
 
         Entity entity = Entity.createEntity(Entity.ENDER_CRYSTAL, chunk, nbt);

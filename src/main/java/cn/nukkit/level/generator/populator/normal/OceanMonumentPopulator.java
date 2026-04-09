@@ -58,7 +58,7 @@ public class OceanMonumentPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level l = chunk.getLevel();
-        if(Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7,7), 7)).getTags().contains(BiomeTags.OCEAN)) {
+        if (Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7)).second().getTags().contains(BiomeTags.OCEAN)) {
             BlockManager level = new BlockManager(l);
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
             int cZ = (chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING;
@@ -88,8 +88,8 @@ public class OceanMonumentPopulator extends Populator {
                 if (!chunks.isEmpty()) {
                     this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
                     for (IChunk ck : chunks) {
-                        if(ck.isGenerated())
-                        level.getLevel().syncGenerateChunk(ck.getX(), ck.getZ());
+                        if (ck.isGenerated())
+                            level.getLevel().syncGenerateChunk(ck.getX(), ck.getZ());
                         generateChunkCallback(level, startX, startZ, chunk, ck.getX(), ck.getZ());
                     }
                     queueObject(chunk, level);

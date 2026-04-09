@@ -33,4 +33,9 @@ public class FurnaceRecipe extends SmeltingRecipe {
     public RecipeType getType() {
         return RecipeType.FURNACE;
     }
+
+    @Override
+    public String getRecipeIdTag() {
+        return "furnace";
+    }
 }

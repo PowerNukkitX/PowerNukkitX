@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBedrock;
@@ -8,15 +7,17 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.BlockEventPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author GoodLucky777
@@ -35,7 +36,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
     private static final BlockState STATE_BEDROCK = BlockBedrock.PROPERTIES.getDefaultState();
 
-    public BlockEntityEndGateway(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityEndGateway(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -48,23 +49,23 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.namedTag.contains("Age")) {
+        if (this.namedTag.containsKey("Age")) {
             this.age = this.namedTag.getInt("Age");
         } else {
             this.age = 0;
         }
 
-        if (this.namedTag.contains("ExitPortal")) {
-            ListTag<IntTag> exitPortalList = this.namedTag.getList("ExitPortal", IntTag.class);
-            this.exitPortal = new BlockVector3(exitPortalList.get(0).data, exitPortalList.get(1).data, exitPortalList.get(2).data);
+        if (this.namedTag.containsKey("ExitPortal")) {
+            List<Integer> exitPortalList = this.namedTag.getList("ExitPortal", NbtType.INT);
+            this.exitPortal = new BlockVector3(exitPortalList.get(0), exitPortalList.get(1), exitPortalList.get(2));
         } else {
             this.exitPortal = defaultExitPortal.clone();
-            if(this.toHorizontal().distance(Vector2.ZERO) < 100) {
+            if (this.toHorizontal().distance(Vector2.ZERO) < 100) {
                 shift:
-                for(int shift : new int[] {0, -5, 5, -10, 10}) { //Reduces the probability of a no hit
-                    for(int i = 0; i < 16; i++) {
-                        if(exitPortal.getY() <= 16 || exitPortal.getY() > 128) {
-                            this.exitPortal = new Vector3(this.x+shift, 0, this.z+shift).normalize().multiply(0x500 + (i*0xF)).asBlockVector3();
+                for (int shift : new int[]{0, -5, 5, -10, 10}) { //Reduces the probability of a no hit
+                    for (int i = 0; i < 16; i++) {
+                        if (exitPortal.getY() <= 16 || exitPortal.getY() > 128) {
+                            this.exitPortal = new Vector3(this.x + shift, 0, this.z + shift).normalize().multiply(0x500 + (i * 0xF)).asBlockVector3();
                             this.exitPortal = getSafeExitPortal();
                         } else break shift;
                     }
@@ -83,12 +84,9 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putInt("Age", this.age);
-        this.namedTag.putList("ExitPortal", new ListTag<IntTag>()
-                .add(new IntTag(this.exitPortal.x))
-                .add(new IntTag(this.exitPortal.y))
-                .add(new IntTag( this.exitPortal.z))
-        );
+        this.namedTag = this.namedTag.toBuilder().putInt("Age", this.age)
+                .putList("ExitPortal", NbtType.INT, Arrays.asList(this.exitPortal.x, this.exitPortal.y, this.exitPortal.z))
+                .build();
     }
 
     @Override
@@ -138,13 +136,13 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     }
 
     protected BlockVector3 checkTeleport(BlockVector3 vector3) {
-        if(vector3.getY() <= 16 || vector3.getY() > 128) {
+        if (vector3.getY() <= 16 || vector3.getY() > 128) {
             // Place a little platform in case no safe spawn was found
             vector3.setY(65);
-            for(int i = -2; i <= 2; i++) {
-                for(int j = -1; j <= 1; j++) {
-                    getLevel().setBlock(new Vector3(vector3.x+j, 64, vector3.z+j), Block.get(Block.END_STONE));
-                    getLevel().setBlock(new Vector3(vector3.x+j, 64, vector3.z+i), Block.get(Block.END_STONE));
+            for (int i = -2; i <= 2; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    getLevel().setBlock(new Vector3(vector3.x + j, 64, vector3.z + j), Block.get(Block.END_STONE));
+                    getLevel().setBlock(new Vector3(vector3.x + j, 64, vector3.z + i), Block.get(Block.END_STONE));
                 }
             }
         }
@@ -223,12 +221,10 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             return;
         }
 
-        BlockEventPacket pk = new BlockEventPacket();
-        pk.x = this.getFloorX();
-        pk.y = this.getFloorY();
-        pk.z = this.getFloorZ();
-        pk.type = 1;
-        pk.value = eventData;
+        final BlockEventPacket pk = new BlockEventPacket();
+        pk.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+        pk.setEventType(1);
+        pk.setEventValue(eventData);
         this.getLevel().addChunkPacket(this.getChunkX(), this.getChunkZ(), pk);
     }
 }

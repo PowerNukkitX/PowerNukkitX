@@ -4,9 +4,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.IntArrayTag;
 import cn.nukkit.utils.random.Xoroshiro128;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
 import java.util.HashMap;
 
@@ -30,16 +30,16 @@ public abstract class Populator {
     }
 
     protected void writeOutsideChunkStructureData(IChunk current) {
-        CompoundTag chunkExtra = current.getExtraData();
-        if(!chunkExtra.containsCompound("outsideChunkStructureData")) {
-            chunkExtra.putCompound("outsideChunkStructureData", new CompoundTag());
+        NbtMap chunkExtra = current.getExtraData();
+        if(!chunkExtra.containsKey("outsideChunkStructureData")) {
+            chunkExtra = chunkExtra.toBuilder().putCompound("outsideChunkStructureData", NbtMap.EMPTY).build();
         }
-        CompoundTag outsideChunkStructureData = chunkExtra.getCompound("outsideChunkStructureData");
+        NbtMap outsideChunkStructureData = chunkExtra.getCompound("outsideChunkStructureData");
         for(long chunkIdx : PLACEMENT_QUEUE.keySet()) {
             String targetChunkKey = String.valueOf(chunkIdx);
             BlockManager temp = new BlockManager(current.getLevel());
-            if(outsideChunkStructureData.containsList(targetChunkKey)) {
-                temp = BlockManager.fromTag(outsideChunkStructureData.getList(targetChunkKey, IntArrayTag.class), temp);
+            if(outsideChunkStructureData.containsKey(targetChunkKey, NbtType.LIST)) {
+                temp = BlockManager.fromTag(outsideChunkStructureData.getList(targetChunkKey, NbtType.INT_ARRAY), temp);
             }
             temp.merge(getChunkPlacementQueue(chunkIdx, current.getLevel()));
             outsideChunkStructureData.put(targetChunkKey, temp.toTag());

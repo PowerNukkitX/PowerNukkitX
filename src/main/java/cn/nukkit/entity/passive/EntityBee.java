@@ -31,7 +31,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,13 +41,14 @@ import java.util.Set;
 
 public class EntityBee extends EntityAnimal implements EntityFlyable {
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new BooleanEntityProperty("minecraft:has_nectar", false, true)
+            new BooleanEntityProperty("minecraft:has_nectar", false, true)
     };
     private static final String PROPERTY_HAS_NECTAR = "minecraft:has_nectar";
     private static final int POLLINATION_REQUIRED_TICKS = 400;
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return BEE;
     }
 
@@ -73,7 +74,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     private int currentFlowerY = Integer.MIN_VALUE;
     private int currentFlowerZ = Integer.MIN_VALUE;
 
-    public EntityBee(IChunk chunk, CompoundTag nbt) {
+    public EntityBee(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -350,7 +351,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.contains("HomeHiveX")) {
+        if (this.namedTag.containsKey("HomeHiveX")) {
             this.homeHiveX = this.namedTag.getInt("HomeHiveX");
             this.homeHiveY = this.namedTag.getInt("HomeHiveY");
             this.homeHiveZ = this.namedTag.getInt("HomeHiveZ");
@@ -362,9 +363,11 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
         super.saveNBT();
 
         if (hasHomeHive()) {
-            this.namedTag.putInt("HomeHiveX", homeHiveX);
-            this.namedTag.putInt("HomeHiveY", homeHiveY);
-            this.namedTag.putInt("HomeHiveZ", homeHiveZ);
+            this.namedTag = this.namedTag.toBuilder()
+                    .putInt("HomeHiveX", homeHiveX)
+                    .putInt("HomeHiveY", homeHiveY)
+                    .putInt("HomeHiveZ", homeHiveZ)
+                    .build();
         } else {
             this.namedTag.remove("HomeHiveX");
             this.namedTag.remove("HomeHiveY");

@@ -9,14 +9,7 @@ import cn.nukkit.level.format.bitarray.BitArray;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.updater.block.BlockStateUpdaters;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.stream.NBTOutputStream;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.TreeMapCompoundTag;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.utils.LittleEndianByteBufOutputStream;
-import cn.nukkit.utils.ByteBufVarInt;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
 import io.netty.buffer.ByteBuf;
@@ -24,13 +17,19 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.common.util.VarInts;
+import org.cloudburstmc.protocol.common.util.stream.LittleEndianByteBufOutputStream;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.TreeMap;
 
 @Slf4j
 public class Palette<V> {
@@ -77,7 +76,7 @@ public class Palette<V> {
     public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         readWords(byteBuf, readBitArrayVersion(byteBuf));
         final int size = this.bitArray.readSizeFromNetwork(byteBuf);
-        for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(ByteBufVarInt.readInt(byteBuf)));
+        for (int i = 0; i < size; i++) this.palette.add(deserializer.deserialize(VarInts.readInt(byteBuf)));
     }
 
     protected boolean writeEmpty(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
@@ -101,7 +100,9 @@ public class Palette<V> {
         byteBuf.writeByte(getPaletteHeader(this.bitArray.version(), true));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         this.bitArray.writeSizeToNetwork(byteBuf, this.palette.size());
-        for (V value : this.palette) ByteBufVarInt.writeInt(byteBuf, serializer.serialize(value));
+        for (V value : this.palette) {
+            VarInts.writeInt(byteBuf, serializer.serialize(value));
+        }
     }
 
     public void writeToStoragePersistent(ByteBuf byteBuf, PersistentDataSerializer<V> serializer) {
@@ -109,7 +110,7 @@ public class Palette<V> {
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
         try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(byteBuf);
-             final NBTOutputStream nbtOutputStream = new NBTOutputStream(bufOutputStream, ByteOrder.LITTLE_ENDIAN, false)) {
+             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
             for (V value : this.palette) {
                 if (value == null) {
                     continue;
@@ -128,7 +129,7 @@ public class Palette<V> {
 
     public void readFromStoragePersistent(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
         try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf);
-             NBTInputStream nbtInputStream = new NBTInputStream(bufInputStream, ByteOrder.LITTLE_ENDIAN)) {
+             NBTInputStream nbtInputStream = NbtUtils.createReaderLE(bufInputStream)) {
             final BitArrayVersion bversion = readBitArrayVersion(byteBuf);
             if (bversion == BitArrayVersion.V0) {
                 this.bitArray = bversion.createArray(ChunkSection.SIZE, null);
@@ -211,7 +212,7 @@ public class Palette<V> {
     protected void addBlockPalette(ByteBuf byteBuf,
                                    RuntimeDataDeserializer<V> deserializer,
                                    NBTInputStream input) throws IOException {
-        Pair<Integer, SemVersion> p = PaletteUtils.fastReadBlockHash(input, byteBuf);//depend on LinkCompoundTag
+        Pair<Integer, SemVersion> p = Pair.of(0, null); /* TODO protocol PaletteUtils.fastReadBlockHash(input, byteBuf); *///depend on LinkCompoundTag
 
         final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
 
@@ -224,7 +225,7 @@ public class Palette<V> {
         SemVersion semVersion = p.right();
 
         if (semVersion == null) {
-            semVersion = ProtocolInfo.MINECRAFT_SEMVERSION;
+            semVersion = SemVersion.fromString(NetworkConstants.CODEC.getMinecraftVersion());
         }
 
         int version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
@@ -245,13 +246,13 @@ public class Palette<V> {
         }
 
         if (isBlockOutdated) {
-            CompoundTag oldBlockNbt = (CompoundTag) input.readTag();
-            CompoundTag newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
-            TreeMapCompoundTag states = new TreeMapCompoundTag(newNbtMap.getCompound("states").getTags());
-
-            CompoundTag newBlockNbt = new CompoundTag()
+            NbtMap oldBlockNbt = (NbtMap) input.readTag();
+            NbtMap newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
+            final TreeMap<String, Object> states = new TreeMap<>(newNbtMap.getCompound("states"));
+            final NbtMap newBlockNbt = NbtMap.builder()
                     .putString("name", newNbtMap.getString("name"))
-                    .putCompound("states", states);
+                    .putCompound("states", NbtMap.fromMap(states))
+                    .build();
 
             int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
 
@@ -329,6 +330,6 @@ public class Palette<V> {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(new Object[]{ palette, bitArray });
+        return Arrays.hashCode(new Object[]{palette, bitArray});
     }
 }

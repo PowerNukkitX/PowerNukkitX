@@ -6,6 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDoor;
 import cn.nukkit.block.BlockSoulFire;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityAnimation;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -35,8 +36,6 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
@@ -50,11 +49,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AnimateEntityPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
-import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         return PIGLIN;
     }
 
-    public EntityPiglin(IChunk chunk, CompoundTag nbt) {
+    public EntityPiglin(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -240,7 +240,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
     }
 
     public boolean isAngry() {
-        return getDataFlag(EntityFlag.ANGRY);
+        return getDataFlag(ActorFlags.ANGRY);
     }
 
     @Override
@@ -263,10 +263,10 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         && !hoglin.isBaby()) {
                     if (hoglin.getHealthCurrent() - getDiffHandDamage(getServer().getDifficulty()) <= 0) {
                         List<Entity> entities = Arrays.stream(getLevel().getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin piglin && piglin.distance(this) < 16).toList();
-                        AnimateEntityPacket.Animation.AnimationBuilder builder = AnimateEntityPacket.Animation.builder();
-                        builder.animation("animation.piglin.celebrate_hunt_special");
-                        builder.nextState("r");
-                        builder.blendOutTime(1);
+                        final EntityAnimation.EntityAnimationBuilder builder = EntityAnimation.builder()
+                                .animation("animation.piglin.celebrate_hunt_special")
+                                .nextState("r")
+                                .blendOutTime(1);
                         Entity.playAnimationOnEntities(builder.build(), entities);
                         entities.forEach(entity1 -> entity1.level.addSound(entity1, Sound.MOB_PIGLIN_CELEBRATE));
                     }
@@ -295,9 +295,9 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         pickup = true;
                     }
                     if (pickup) {
-                        TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                        pk.entityId = entity.getId();
-                        pk.target = i.getId();
+                        final TakeItemActorPacket pk = new TakeItemActorPacket();
+                        pk.setActorRuntimeID(entity.getId());
+                        pk.setItemRuntimeID(i.getId());
                         Server.broadcastPacket(entity.getViewers().values(), pk);
                         i.close();
                     }
@@ -345,9 +345,9 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
-            entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.PIGLIN, false, false);
+            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).getId());
+            entity.setDataFlag(ActorFlags.ANGRY);
+            entity.level.addLevelSoundEvent(entity, SoundEvent.ANGRY, -1, Entity.PIGLIN, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(memory)));
             if (entity.getMemoryStorage().get(memory) instanceof EntityHoglin) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, entity.getLevel().getTick());
@@ -357,15 +357,15 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
         @Override
         public void onStop(EntityIntelligent entity) {
             super.onStop(entity);
-            entity.setDataFlag(EntityFlag.ANGRY, false);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
+            entity.setDataFlag(ActorFlags.ANGRY, false);
+            entity.setDataProperty(ActorDataTypes.TARGET, 0L);
         }
 
         @Override
         public void onInterrupt(EntityIntelligent entity) {
             super.onInterrupt(entity);
-            entity.setDataFlag(EntityFlag.ANGRY, false);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
+            entity.setDataFlag(ActorFlags.ANGRY, false);
+            entity.setDataProperty(ActorDataTypes.TARGET, 0L);
         }
     }
 

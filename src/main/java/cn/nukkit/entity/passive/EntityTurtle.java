@@ -30,7 +30,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +48,7 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
     }
     
 
-    public EntityTurtle(IChunk chunk, CompoundTag nbt) {
+    public EntityTurtle(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

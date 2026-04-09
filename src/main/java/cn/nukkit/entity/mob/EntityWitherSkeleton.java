@@ -28,9 +28,8 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,11 +43,12 @@ import java.util.Set;
 public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, EntitySmite {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return WITHER_SKELETON;
     }
 
-    public EntityWitherSkeleton(IChunk chunk, CompoundTag nbt) {
+    public EntityWitherSkeleton(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -73,7 +73,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
                 ),
                 Set.of(
                         new Behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT), new RandomSoundEvaluator(), 5, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.WITHER).setDuration(200)),new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
+                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 10, Effect.get(EffectType.WITHER).setDuration(200)), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
                         new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 40, false, 10, Effect.get(EffectType.WITHER).setDuration(200)), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 2, 1),
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
                 ),
@@ -93,8 +93,8 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
     public boolean attackTarget(Entity entity) {
         return switch (entity.getIdentifier()) {
             case EntityID.SNOW_GOLEM, EntityID.IRON_GOLEM,
-                    EntityID.TURTLE, EntityID.PIGLIN,
-                    EntityID.PIGLIN_BRUTE -> true;
+                 EntityID.TURTLE, EntityID.PIGLIN,
+                 EntityID.PIGLIN_BRUTE -> true;
             default -> false;
         };
     }
@@ -108,7 +108,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
         // Set the Withered Skeleton to play an idle sound when it's idle.
-        this.setDataProperty(AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
+        // TODO protocol check id this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT.getId());
     }
 
     @Override

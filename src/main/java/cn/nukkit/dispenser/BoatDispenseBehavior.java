@@ -35,8 +35,9 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
     protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
         EntityBoat boat = new EntityBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
-                Entity.getDefaultNBT(pos)
+                Entity.getDefaultNBT(pos).toBuilder()
                         .putInt("Variant", item.getDamage())
+                        .build()
         );
         boat.spawnToAll();
     }

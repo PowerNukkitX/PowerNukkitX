@@ -3,11 +3,11 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 
-    public BlockEntityCrafter(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityCrafter(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -17,17 +17,18 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder()
                 .putInt("crafting_ticks_remaining", 0)
-                .putShort("disabled_slots", getInventory().getLockedBitMask());
+                .putShort("disabled_slots", (short) getInventory().getLockedBitMask())
+                .build();
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("disabledSlots")) {
-            this.namedTag.putShort("disabledSlots", 0);
+        if (!this.namedTag.containsKey("disabledSlots")) {
+            this.namedTag = this.namedTag.toBuilder().putShort("disabledSlots", (short) 0).build();
         }
         this.getInventory().setLockedBitMask(this.namedTag.getShort("disabledSlots"));
     }
@@ -35,7 +36,7 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putShort("disabledSlots", getInventory().getLockedBitMask());
+        this.namedTag = this.namedTag.toBuilder().putShort("disabledSlots", (short) getInventory().getLockedBitMask()).build();
     }
 
     @Override
@@ -55,7 +56,7 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.namedTag.containsKey("CustomName");
     }
 
     @Override
@@ -65,6 +66,6 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
     }
 }

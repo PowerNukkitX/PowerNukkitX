@@ -1,10 +1,11 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,5 +67,23 @@ public class ShapelessRecipe extends CraftingRecipe {
             return false;
         }
         return true;
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapelessRecipe.of(
+                CraftingDataEntryType.SHAPELESS_RECIPE,
+                this.getRecipeId(),
+                this.getIngredients().stream().map(ItemDescriptor::toNetwork).toList(),
+                this.getResults().stream().map(Item::toNetwork).toList(),
+                this.getUUID(),
+                this.getRecipeIdTag(),
+                this.getPriority(),
+                RecipeRegistry.RECIPE_NET_ID_COUNTER++,
+                this.getRequirement()
+        );
+    }
+
+    public String getRecipeIdTag() {
+        return "crafting_table";
     }
 }

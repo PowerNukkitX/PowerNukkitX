@@ -2,7 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public abstract class EntityHanging extends Entity {
     protected int direction;
 
-    public EntityHanging(IChunk chunk, CompoundTag nbt) {
+    public EntityHanging(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -21,9 +21,9 @@ public abstract class EntityHanging extends Entity {
         this.setHealthMax(1);
         this.setHealthCurrent(1);
 
-        if (this.namedTag.contains("Direction")) {
+        if (this.namedTag.containsKey("Direction")) {
             this.direction = this.namedTag.getByte("Direction");
-        } else if (this.namedTag.contains("Dir")) {
+        } else if (this.namedTag.containsKey("Dir")) {
             int d = this.namedTag.getByte("Dir");
             if (d == 2) {
                 this.direction = 0;
@@ -37,11 +37,12 @@ public abstract class EntityHanging extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-
-        this.namedTag.putByte("Direction", this.getDirection().getHorizontalIndex());
-        this.namedTag.putInt("TileX", (int) this.x);
-        this.namedTag.putInt("TileY", (int) this.y);
-        this.namedTag.putInt("TileZ", (int) this.z);
+        this.namedTag = this.namedTag.toBuilder()
+                .putByte("Direction", (byte) this.getDirection().getHorizontalIndex())
+                .putInt("TileX", (int) this.x)
+                .putInt("TileY", (int) this.y)
+                .putInt("TileZ", (int) this.z)
+                .build();
     }
 
     @Override

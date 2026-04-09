@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.entity.effect.PotionType;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 public class ItemLingeringPotion extends ProjectileItem {
 
@@ -54,7 +54,7 @@ public class ItemLingeringPotion extends ProjectileItem {
     }
 
     @Override
-    protected void correctNBT(CompoundTag nbt) {
-        nbt.putInt("PotionId", this.meta);
+    protected void correctNBT(NbtMap nbt) {
+        nbt = nbt.toBuilder().putInt("PotionId", this.meta).build();
     }
 }

@@ -15,12 +15,12 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_VERTICAL_HALF;
@@ -60,7 +60,7 @@ public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectG
         for (int x2 = 0; x2 < 21; x2++) {
             for (int z2 = 0; z2 < 21; z2++) {
                 AxisAlignedBB b = this.getBoundingBox();
-                BlockVector3 vec =  new BlockVector3((int) b.getMinX(), (int) b.getMinY(), (int) b.getMinZ()).add(new BlockVector3(x2, 13, z2));
+                BlockVector3 vec = new BlockVector3((int) b.getMinX(), (int) b.getMinY(), (int) b.getMinZ()).add(new BlockVector3(x2, 13, z2));
                 int y2 = vec.y;
                 while (!builder.getBlockAt(vec.x, y2, vec.z).isSolid() && y2 > 1) {
                     builder.setBlockStateAt(vec.x, y2, vec.z, SANDSTONE);
@@ -263,7 +263,7 @@ public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectG
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (!definition.getTags().contains(BiomeTags.DESERT) ||
                 !((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
             return false;

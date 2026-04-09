@@ -5,7 +5,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 
 public class ItemMace extends ItemTool {
     public ItemMace() {
@@ -38,7 +38,7 @@ public class ItemMace extends ItemTool {
             Level level = victim.getLevel();
             Vector3 pos = victim.getPosition();
 
-            level.addLevelEvent(LevelEventPacket.EVENT_PARTICLE_SMASH_ATTACK_GROUND_DUST, 0, pos);
+            level.addLevelEvent(LevelEvent.PARTICLE_SMASH_ATTACK_GROUND_DUST, 0, pos);
             if (damage >= 16) {
                 level.addSound(pos, Sound.MACE_HEAVY_SMASH_GROUND);
             } else {

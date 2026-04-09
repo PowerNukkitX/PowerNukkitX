@@ -1,10 +1,14 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockFlowingLava;
+import cn.nukkit.block.BlockFlowingWater;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockObsidian;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -22,30 +26,32 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.StructureAPI;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.LongTag;
-import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinitionData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.utils.OptionalValue;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.TextFormat;
+import it.unimi.dsi.fastutil.Pair;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionChunkGenData;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
@@ -145,8 +151,17 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             log.addError("Structure " + structureName + " not found").output();
             return 0;
         }
-
-        structure.place(loc);
+        final BlockManager manager = new BlockManager(player.getLevel());
+        structure.preparePlace(loc, manager);
+        for (Block block : manager.getBlocks()) {
+            if (block.getId().equalsIgnoreCase(BlockID.AIR) && player.getLevel().getBlock(block.getLocation()) instanceof BlockFlowingWater) {
+                manager.setBlockStateAt(block.getPosition(), BlockFlowingWater.PROPERTIES.getBlockState());
+            }
+            if (block instanceof BlockFlowingLava && player.getLevel().getBlock(block.up()) instanceof BlockFlowingWater) {
+                manager.setBlockStateAt(block, BlockObsidian.PROPERTIES.getBlockState());
+            }
+        }
+        manager.applySubChunkUpdate();
         log.addSuccess("Placed structure " + structureName + " at " + loc).output();
         return 1;
     }
@@ -154,8 +169,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     private AbstractStructure loadJavaStructure(String name, CommandSender sender) {
         try (var stream = getClass().getClassLoader().getResourceAsStream("structures/" + name + ".nbt")) {
             if (stream == null) return null;
-            CompoundTag root = NBTIO.readCompressed(stream);
-            return JeStructure.fromNbt(root);
+            try (final NBTInputStream inputStream = NbtUtils.createReader(stream)) {
+                return JeStructure.fromNbt((NbtMap) inputStream.readTag());
+            }
         } catch (Exception e) {
             sender.sendMessage(e.getMessage());
             return null;
@@ -201,16 +217,16 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         Location loc = sender.getLocation();
 
         if (!list.hasResult(1)) {
-            var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-            sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+            var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ())).second();
+            sender.sendMessage(biome.getId() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
             return 1;
         }
 
         switch (list.getResult(1).toString()) {
             case "parameter" -> {
-                BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                sender.sendMessage("Scale: " + biome.data.scale);
-                sender.sendMessage("Depth: " + biome.data.depth);
+                Pair<String, BiomeDefinitionData> biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                sender.sendMessage("Scale: " + biome.second().getScale());
+                sender.sendMessage("Depth: " + biome.second().getDepth());
             }
             case "pick" -> {
                 BiomePicker picker = loc.getLevel().getBiomePicker();
@@ -223,23 +239,22 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage("Erosion: " + res.getErosion());
                     sender.sendMessage("Weirdness: " + res.getWeirdness());
                     sender.sendMessage("Peaks: " + res.getPv());
-                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4)))  / 128f));
-                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
+                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4))) / 128f));
+                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).first());
                 }
             }
             case "features" -> {
-                BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                BiomeDefinitionData biome = definition.data;
-                OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
-                if (chunkGenDataOptional.isPresent()) {
-                    OptionalValue<BiomeConsolidatedFeatureData[]> featuresOpt = chunkGenDataOptional.get().consolidatedFeatures;
-                    if (featuresOpt.isPresent()) {
-                        BiomeConsolidatedFeatureData[] features = featuresOpt.get();
-                        sender.sendMessage("§eFeatures of " + definition.getName() + " [" + features.length + "]");
+                Pair<String, BiomeDefinitionData> definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                BiomeDefinitionData biome = definition.second();
+                BiomeDefinitionChunkGenData chunkGenDataOptional = biome.getChunkGenData();
+                if (chunkGenDataOptional != null) {
+                    List<BiomeConsolidatedFeatureData> features = chunkGenDataOptional.getConsolidatedFeatures();
+                    if (features != null) {
+                        sender.sendMessage("§eFeatures of " + definition.first() + " [" + features.size() + "]");
                         for (BiomeConsolidatedFeatureData f : features) {
-                            String id = Registries.BIOME.getFromBiomeStringList(f.identifier);
-                            String name = Registries.BIOME.getFromBiomeStringList(f.feature);
-                            int order = f.scatter.evalOrder;
+                            String id = f.getIdentifier();
+                            String name = f.getFeature();
+                            int order = f.getScatter().getEvalOrder().ordinal();
                             boolean registered = Registries.GENERATE_FEATURE.has(name) || Registries.GENERATE_FEATURE.has(id);
                             sender.sendMessage((registered ? "§a" : "§c") + name + " (" + id + ") §e[" + order + "]");
                         }
@@ -282,10 +297,9 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "regenerate" -> level.regenerateChunk(chunk.getX(), chunk.getZ());
             case "resend" -> level.requestChunk(chunk.getX(), chunk.getZ(), player);
             case "queue" -> {
-                CompoundTag extra = chunk.getExtraData();
-                if (extra.containsList("structureAnchor")) {
-                    for (LongTag tag : extra.getList("structureAnchor", LongTag.class).getAll()) {
-                        long hash = tag.getData();
+                NbtMap extra = chunk.getExtraData();
+                if (extra.containsKey("structureAnchor")) {
+                    for (long hash : extra.getList("structureAnchor", NbtType.LONG)) {
                         IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
                         if (target != null && target != chunk)
                             player.sendMessage(target.getX() + " " + target.getZ());
@@ -293,7 +307,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 }
             }
             case "extras" ->
-                    player.sendMessage(chunk.getExtraData().toSNBT().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
+                    player.sendMessage(chunk.getExtraData().toString().replace("[[", "§e[[§r").replace("]]", "§e]]§r"));
             case "reload" -> {
                 player.sendMessage("§eReloading chunk...");
                 int cx = player.getChunkX();
@@ -318,7 +332,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         Player player = sender.asPlayer();
 
         switch (list.getResult(1).toString()) {
-            case "nbt" -> player.sendMessage(player.getInventory().getItemInHand().getNamedTag().toSNBT());
+            case "nbt" -> player.sendMessage(player.getInventory().getItemInHand().getNamedTag().toString());
             case "bundle" -> {
                 Item item = player.getInventory().getItemInHand();
                 if (item instanceof ItemBundle bundle)
@@ -331,8 +345,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             }
             case "data" -> {
                 Item item = player.getInventory().getItemInHand();
-                CompoundTag nbt = NBTIO.putItemHelper(item);
-                player.sendMessage(nbt.toSNBT(2));
+                NbtMap nbt = ItemHelper.write(item);
+                player.sendMessage(nbt.toString());
             }
         }
         return 1;
@@ -408,7 +422,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     age.setValue(18L);
                     difficulty.setValue(3L);
                 }));
-                form.button("Confirm", player -> {
+        form.button("Confirm", player -> {
                     player.sendMessage("Confirmed successfully!");
                     String _name = name.getValue();
                     String _bio = bio.getValue();

@@ -8,7 +8,8 @@ import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected BeaconInventory inventory;
 
-    public BlockEntityBeacon(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityBeacon(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         inventory = new BeaconInventory(this);
     }
@@ -32,21 +33,23 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Lock")) {
-            namedTag.putString("Lock", "");
+        NbtMapBuilder builder = this.namedTag.toBuilder();
+        if (!namedTag.containsKey("Lock")) {
+            builder.putString("Lock", "");
         }
 
-        if (!namedTag.contains("Levels")) {
-            namedTag.putInt("Levels", 0);
+        if (!namedTag.containsKey("Levels")) {
+            builder.putInt("Levels", 0);
         }
 
-        if (!namedTag.contains("Primary")) {
-            namedTag.putInt("Primary", 0);
+        if (!namedTag.containsKey("Primary")) {
+            builder.putInt("Primary", 0);
         }
 
-        if (!namedTag.contains("Secondary")) {
-            namedTag.putInt("Secondary", 0);
+        if (!namedTag.containsKey("Secondary")) {
+            builder.putInt("Secondary", 0);
         }
+        this.namedTag = builder.build();
     }
 
     @Override
@@ -56,22 +59,23 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder()
                 .putString("Lock", this.namedTag.getString("Lock"))
                 .putInt("Levels", this.namedTag.getInt("Levels"))
                 .putInt("primary", this.namedTag.getInt("Primary"))
-                .putInt("secondary", this.namedTag.getInt("Secondary"));
+                .putInt("secondary", this.namedTag.getInt("Secondary"))
+                .build();
     }
 
     private long currentTick = 0;
 
     @Override
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) {
+        if (!isBlockEntityValid()) {
             this.close();
         }
-        if(closed) return true;
+        if (closed) return true;
         //Only apply effects every 4 secs
         if (currentTick++ % 80 != 0) {
             return true;
@@ -201,7 +205,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     public void setPowerLevel(int level) {
         int currentLevel = getPowerLevel();
         if (level != currentLevel) {
-            namedTag.putInt("Levels", level);
+            this.namedTag = namedTag.toBuilder().putInt("Levels", level).build();
             setDirty();
             this.spawnToAll();
         }
@@ -214,7 +218,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     public void setPrimaryPower(int power) {
         int currentPower = getPrimaryPower();
         if (power != currentPower) {
-            namedTag.putInt("Primary", power);
+            this.namedTag = namedTag.toBuilder().putInt("Primary", power).build();
             setDirty();
             this.spawnToAll();
         }
@@ -227,14 +231,14 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     public void setSecondaryPower(int power) {
         int currentPower = getSecondaryPower();
         if (power != currentPower) {
-            namedTag.putInt("Secondary", power);
+            this.namedTag = namedTag.toBuilder().putInt("Secondary", power).build();
             setDirty();
             this.spawnToAll();
         }
     }
 
     @Override
-    public boolean updateCompoundTag(CompoundTag nbt, Player player) {
+    public boolean updateCompoundTag(NbtMap nbt, Player player) {
         if (!nbt.getString("id").equals(BlockEntity.BEACON)) {
             return false;
         }
@@ -273,7 +277,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.namedTag.containsKey("CustomName");
     }
 
     @Override
@@ -283,7 +287,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
     }
 
     @Override

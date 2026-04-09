@@ -1,7 +1,8 @@
 package cn.nukkit.block.customblock.data;
 
-import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.base.Preconditions;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -57,17 +58,17 @@ public class Geometry implements NBTData {
     }
 
     @Override
-    public CompoundTag toCompoundTag() {
-        var boneVisibility = new CompoundTag();
+    public NbtMap toCompoundTag() {
+        var boneVisibility = NbtMap.builder();
         for (var entry : boneVisibilities.entrySet()) {
             boneVisibility.putString(entry.getKey(), entry.getValue());
         }
-        CompoundTag compoundTag = new CompoundTag()
+        NbtMapBuilder compoundTag = NbtMap.builder()
                 .putString("identifier", geometryName)
-                .putByte("legacyBlockLightAbsorption", 0)
-                .putByte("legacyTopRotation", 0);
+                .putByte("legacyBlockLightAbsorption", (byte) 0)
+                .putByte("legacyTopRotation", (byte) 0);
         if (!boneVisibilities.isEmpty()) {
-            compoundTag.putCompound("bone_visibility", boneVisibility);
+            compoundTag.putCompound("bone_visibility", boneVisibility.build());
         }
         if (!culling.isBlank()) {
             compoundTag.putString("culling", culling);
@@ -76,6 +77,6 @@ public class Geometry implements NBTData {
             compoundTag.putString("culling_shape", culling_shape);
         }
 
-        return compoundTag;
+        return compoundTag.build();
     }
 }

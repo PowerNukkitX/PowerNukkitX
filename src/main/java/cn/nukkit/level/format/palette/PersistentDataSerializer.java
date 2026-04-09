@@ -1,6 +1,6 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * Allay Project 2023/4/14
@@ -9,5 +9,5 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 @FunctionalInterface
 public interface PersistentDataSerializer<V> {
-    CompoundTag serialize(V value);
+    NbtMap serialize(V value);
 }

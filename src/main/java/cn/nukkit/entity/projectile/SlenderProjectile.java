@@ -8,7 +8,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,11 +20,11 @@ public abstract class SlenderProjectile extends EntityProjectile {
     private static final int SPLIT_NUMBER = 10;
     private MovingObjectPosition lastHitBlock;
 
-    public SlenderProjectile(IChunk chunk, CompoundTag nbt) {
+    public SlenderProjectile(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
-    public SlenderProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public SlenderProjectile(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 

@@ -35,9 +35,10 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +51,8 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected int lastDetectTime = getLevel().getTick();
     protected int lastCollideTime = getLevel().getTick();
     protected boolean waitForVibration = false;
-    public EntityWarden(IChunk chunk, CompoundTag nbt) {
+
+    public EntityWarden(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -114,7 +116,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                         }, (entity) -> true, 1, 1, 120),
                         new Behavior((entity) -> {
                             //计算心跳间隔
-                            this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
+                            this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
                             return false;
                         }, (entity) -> true, 1, 1, 20)),
                 Set.of(
@@ -189,8 +191,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.setDataProperty(Entity.HEARTBEAT_INTERVAL_TICKS, 40);
-        this.setDataProperty(Entity.HEARTBEAT_SOUND_EVENT, LevelSoundEvent.HEARTBEAT.getId());
+        this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, 40);
+
+        // TODO protocol check id this.setDataProperty(ActorDataTypes.HEARTBEAT_SOUND_EVENT, SoundEvent.HEARTBEAT.getId());
         //空闲声音
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
@@ -233,9 +236,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     public void onVibrationArrive(VibrationEvent event) {
         this.waitForVibration = false;
         this.lastDetectTime = getLevel().getTick();
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = this.getId();
-        pk.event = EntityEventPacket.VIBRATION_DETECTED;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(this.getId());
+        pk.setType(ActorEvent.VIBRATION_DETECTED);
         Server.broadcastPacket(this.getViewers().values(), pk);
 
         //handle anger value
@@ -270,7 +273,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
 
     @Override
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
-        if (getLevel().getTick()- this.lastCollideTime > 20) {
+        if (getLevel().getTick() - this.lastCollideTime > 20) {
             for (Entity collidingEntity : collidingEntities) {
                 if (isValidAngerEntity(collidingEntity))
                     addEntityAngerValue(collidingEntity, 35);

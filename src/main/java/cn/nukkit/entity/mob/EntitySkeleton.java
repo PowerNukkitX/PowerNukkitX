@@ -28,8 +28,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,12 +42,13 @@ import java.util.Set;
  */
 public class EntitySkeleton extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SKELETON;
     }
 
 
-    public EntitySkeleton(IChunk chunk, CompoundTag nbt) {
+    public EntitySkeleton(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

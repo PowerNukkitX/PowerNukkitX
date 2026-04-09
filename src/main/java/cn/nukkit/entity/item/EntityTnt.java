@@ -2,7 +2,6 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
@@ -12,29 +11,31 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MagicDroidX
  */
 public class EntityTnt extends Entity implements EntityExplosive {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return TNT;
     }
 
     protected int fuse;
     protected Entity source;
 
-    public EntityTnt(IChunk chunk, CompoundTag nbt) {
+    public EntityTnt(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityTnt(IChunk chunk, CompoundTag nbt, Entity source) {
+    public EntityTnt(IChunk chunk, NbtMap nbt, Entity source) {
         super(chunk, nbt);
         this.source = source;
     }
@@ -80,18 +81,18 @@ public class EntityTnt extends Entity implements EntityExplosive {
     }
 
     @Override
-    
+
     protected void initEntity() {
         super.initEntity();
 
-        if (namedTag.contains("Fuse")) {
+        if (namedTag.containsKey("Fuse")) {
             fuse = namedTag.getByte("Fuse");
         } else {
             fuse = 80;
         }
 
-        this.setDataFlag(EntityFlag.IGNITED, true);
-        this.setDataProperty(FUSE_TIME, fuse);
+        this.setDataFlag(ActorFlags.IGNITED, true);
+        this.setDataProperty(ActorDataTypes.FUSE_TIME, fuse);
 
         this.getLevel().addSound(this, Sound.RANDOM_FUSE);
     }
@@ -104,7 +105,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putByte("Fuse", fuse);
+        this.namedTag = namedTag.toBuilder().putByte("Fuse", (byte) fuse).build();
     }
 
     @Override
@@ -120,7 +121,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
         }
 
         if (fuse % 5 == 0) {
-            this.setDataProperty(FUSE_TIME, fuse);
+            this.setDataProperty(ActorDataTypes.FUSE_TIME, fuse);
         }
 
         lastUpdate = currentTick;
@@ -150,7 +151,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
             fuse -= tickDiff;
 
             if (fuse <= 0) {
-                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)){
+                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
                     explode();
                 }
                 kill();

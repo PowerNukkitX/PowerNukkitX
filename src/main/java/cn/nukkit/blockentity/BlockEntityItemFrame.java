@@ -10,9 +10,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,22 +24,24 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
-    public BlockEntityItemFrame(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityItemFrame(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Item")) {
-            namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
+        NbtMapBuilder builder = this.namedTag.toBuilder();
+        if (!namedTag.containsKey("Item")) {
+            builder.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
-        if (!namedTag.contains("ItemRotation")) {
-            namedTag.putByte("ItemRotation", 0);
+        if (!namedTag.containsKey("ItemRotation")) {
+            builder.putByte("ItemRotation", (byte) 0);
         }
-        if (!namedTag.contains("ItemDropChance")) {
-            namedTag.putFloat("ItemDropChance", 1.0f);
+        if (!namedTag.containsKey("ItemDropChance")) {
+            builder.putFloat("ItemDropChance", 1.0f);
         }
+        this.namedTag = builder.build();
         this.level.updateComparatorOutputLevel(this);
     }
 
@@ -57,14 +60,13 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItemRotation(int itemRotation) {
-        this.namedTag.putByte("ItemRotation", itemRotation);
+        this.namedTag = this.namedTag.toBuilder().putByte("ItemRotation", (byte) itemRotation).build();
         this.level.updateComparatorOutputLevel(this);
         this.setDirty();
     }
 
     public Item getItem() {
-        CompoundTag NBTTag = this.namedTag.getCompound("Item");
-        return NBTIO.getItemHelper(NBTTag);
+        return ItemHelper.read(this.namedTag.getCompound("Item"));
     }
 
     public void setItem(Item item) {
@@ -72,7 +74,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+        this.namedTag = this.namedTag.toBuilder().putCompound("Item", ItemHelper.write(item, null)).build();
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
@@ -83,7 +85,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItemDropChance(float chance) {
-        this.namedTag.putFloat("ItemDropChance", chance);
+        this.namedTag = this.namedTag.toBuilder().putFloat("ItemDropChance", chance).build();
     }
 
     @Override
@@ -93,29 +95,29 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        if (!this.namedTag.contains("Item")) {
+    public NbtMap getSpawnCompound() {
+        if (!this.namedTag.containsKey("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
-        CompoundTag tag = super.getSpawnCompound();
+        NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
 
         if (!item.isNull()) {
-            CompoundTag itemTag = NBTIO.putItemHelper(item);
+            NbtMapBuilder itemTag = ItemHelper.write(item, null).toBuilder();
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
                 itemTag.remove("id");
-                itemTag.putShort("Damage", networkDamage);
+                itemTag.putShort("Damage", (short) networkDamage);
                 itemTag.putString("Name", namespacedId);
             }
             if (item.isBlock()) {
                 itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
-            tag.putCompound("Item", itemTag)
-                    .putByte("ItemRotation", this.getItemRotation());
+            tag.putCompound("Item", itemTag.build())
+                    .putByte("ItemRotation", (byte) this.getItemRotation());
         }
-        return tag;
+        return tag.build();
     }
 
     public int getAnalogOutput() {
@@ -165,7 +167,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         setItem(Item.get(BlockID.AIR, 0, 1), true);
         setItemRotation(0);
         spawnToAll();
-        level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
+        level.addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_BREAK);
 
         return itemEntity;
     }

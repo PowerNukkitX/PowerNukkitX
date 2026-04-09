@@ -5,10 +5,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
 
+import java.util.List;
 import java.util.Random;
 
 public class ProfessionFisherman extends Profession {
@@ -18,8 +19,8 @@ public class ProfessionFisherman extends Profession {
     }
 
     @Override
-    public ListTag<CompoundTag> buildTrades(int seed) {
-        ListTag<CompoundTag> recipes = new ListTag<>();
+    public List<NbtMap> buildTrades(int seed) {
+        List<NbtMap> recipes = new ObjectArrayList<>();
         Random random = new Random(seed);
 
         Item rod = Item.get(ItemID.FISHING_ROD);
@@ -87,40 +88,40 @@ public class ProfessionFisherman extends Profession {
                     .build());
         }
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.SALMON, 0, 13), Item.get(Item.EMERALD, 0, 1))
-                        .setMaxUses(16)
-                        .setRewardExp((byte) 1)
-                        .setTier(3)
-                        .setTraderExp(20)
-                        .setPriceMultiplierA(0.05f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 8 + random.nextInt(23 - 8)), rod)
-                        .setMaxUses(3)
-                        .setRewardExp((byte) 1)
-                        .setTier(3)
-                        .setTraderExp(10)
-                        .setPriceMultiplierA(0.2f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.TROPICAL_FISH, 0, 6), Item.get(Item.EMERALD))
-                        .setMaxUses(16)
-                        .setRewardExp((byte) 1)
-                        .setTier(4)
-                        .setTraderExp(30)
-                        .setPriceMultiplierA(0.05f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.PUFFERFISH, 0, 4), Item.get(Item.EMERALD))
-                        .setMaxUses(16)
-                        .setRewardExp((byte) 1)
-                        .setTier(5)
-                        .setTraderExp(30)
-                        .setPriceMultiplierA(0.05f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.BOAT, 0, 1), Item.get(Item.EMERALD))
-                        .setMaxUses(16)
-                        .setRewardExp((byte) 1)
-                        .setTier(5)
-                        .setTraderExp(30)
-                        .setPriceMultiplierA(0.05f)
-                        .build());
+                .setMaxUses(16)
+                .setRewardExp((byte) 1)
+                .setTier(3)
+                .setTraderExp(20)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 8 + random.nextInt(23 - 8)), rod)
+                .setMaxUses(3)
+                .setRewardExp((byte) 1)
+                .setTier(3)
+                .setTraderExp(10)
+                .setPriceMultiplierA(0.2f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.TROPICAL_FISH, 0, 6), Item.get(Item.EMERALD))
+                .setMaxUses(16)
+                .setRewardExp((byte) 1)
+                .setTier(4)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.PUFFERFISH, 0, 4), Item.get(Item.EMERALD))
+                .setMaxUses(16)
+                .setRewardExp((byte) 1)
+                .setTier(5)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.BOAT, 0, 1), Item.get(Item.EMERALD))
+                .setMaxUses(16)
+                .setRewardExp((byte) 1)
+                .setTier(5)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.05f)
+                .build());
         return recipes;
     }
 

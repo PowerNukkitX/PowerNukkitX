@@ -33,8 +33,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +52,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return CREEPER;
     }
 
-    public EntityCreeper(IChunk chunk, CompoundTag nbt) {
+    public EntityCreeper(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -90,18 +91,18 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                         new NearestEntitySensor(EntityCat.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
                         new NearestEntitySensor(EntityOcelot.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0),
                         entity -> {
-                    var memoryStorage = entity.getMemoryStorage();
-                    Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
-                    if (attacker == null)
-                        attacker = memoryStorage.get(CoreMemoryTypes.NEAREST_PLAYER);
-                    if (attacker != null && (!(attacker instanceof Player player) || player.isSurvival()) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
-                        memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
-                        return;
-                    }
-                    if ((attacker == null || (attacker instanceof Player player && !player.isSurvival()) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true) && memoryStorage.get(CoreMemoryTypes.EXPLODE_CANCELLABLE)) {
-                        memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
-                    }
-                }),
+                            var memoryStorage = entity.getMemoryStorage();
+                            Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
+                            if (attacker == null)
+                                attacker = memoryStorage.get(CoreMemoryTypes.NEAREST_PLAYER);
+                            if (attacker != null && (!(attacker instanceof Player player) || player.isSurvival()) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
+                                memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
+                                return;
+                            }
+                            if ((attacker == null || (attacker instanceof Player player && !player.isSurvival()) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true) && memoryStorage.get(CoreMemoryTypes.EXPLODE_CANCELLABLE)) {
+                                memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
+                            }
+                        }),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
@@ -135,7 +136,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     public boolean isPowered() {
-        return getDataProperty(HORSE_TYPE) > 0;
+        return getDataProperty(ActorDataTypes.SWELL) > 0;
     }
 
     public void setPowered(EntityLightningStrike bolt) {
@@ -143,8 +144,8 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(HORSE_TYPE, 1);
-            this.namedTag.putBoolean("powered", true);
+            this.setDataProperty(ActorDataTypes.SWELL, 1);
+            this.namedTag = this.namedTag.toBuilder().putBoolean("powered", true).build();
         }
     }
 
@@ -153,8 +154,8 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(HORSE_TYPE, powered ? 1 : 0);
-            this.namedTag.putBoolean("powered", powered);
+            this.setDataProperty(ActorDataTypes.SWELL, powered ? 1 : 0);
+            this.namedTag = this.namedTag.toBuilder().putBoolean("powered", powered).build();
         }
     }
 
@@ -168,7 +169,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
-            this.entityDataMap.put(HORSE_TYPE, 1);
+            this.entityDataMap.put(ActorDataTypes.SWELL, 1);
         }
     }
 

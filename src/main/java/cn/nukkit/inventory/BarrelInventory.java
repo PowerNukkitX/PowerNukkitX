@@ -7,21 +7,22 @@ import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.Map;
 
 
 public class BarrelInventory extends ContainerInventory implements BlockEntityInventoryNameable {
     public BarrelInventory(BlockEntityBarrel barrel) {
-        super(barrel, InventoryType.CONTAINER, 27);
+        super(barrel, ContainerType.CONTAINER, 27);
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.BARREL);
+            map.put(i, ContainerEnumName.BARREL_CONTAINER);
         }
     }
 

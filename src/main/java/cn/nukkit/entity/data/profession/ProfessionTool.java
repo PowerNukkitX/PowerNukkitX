@@ -4,10 +4,11 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
 
+import java.util.List;
 import java.util.Random;
 
 public class ProfessionTool extends Profession {
@@ -17,8 +18,8 @@ public class ProfessionTool extends Profession {
     }
 
     @Override
-    public ListTag<CompoundTag> buildTrades(int seed) {
-        ListTag<CompoundTag> recipes = new ListTag<>();
+    public List<NbtMap> buildTrades(int seed) {
+        List<NbtMap> recipes = new ObjectArrayList<>();
         Random random = new Random(seed);
 
         int[] ench = new int[]{Enchantment.ID_DURABILITY, Enchantment.ID_EFFICIENCY, Enchantment.ID_FORTUNE_DIGGING, Enchantment.ID_SILK_TOUCH};
@@ -94,26 +95,26 @@ public class ProfessionTool extends Profession {
                         .build());
         }
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.IRON_INGOT, 0, 4), Item.get(Item.EMERALD))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(2)
-                        .setTraderExp(10)
-                        .setPriceMultiplierA(0.05f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 36), Item.get(BlockID.BELL))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(2)
-                        .setTraderExp(5)
-                        .setPriceMultiplierA(0.2f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0, 24), Item.get(Item.EMERALD))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(3)
-                        .setTraderExp(20)
-                        .setPriceMultiplierA(0.05f)
-                        .build());
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(2)
+                .setTraderExp(10)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 36), Item.get(BlockID.BELL))
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(2)
+                .setTraderExp(5)
+                .setPriceMultiplierA(0.2f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0, 24), Item.get(Item.EMERALD))
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(3)
+                .setTraderExp(20)
+                .setPriceMultiplierA(0.05f)
+                .build());
         switch (random.nextInt(4)) {
             case 0:
                 recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 6 + random.nextInt(21 - 6)), iaxe)

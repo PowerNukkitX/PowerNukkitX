@@ -20,14 +20,13 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CAULDRON_LIQUID;
 import static cn.nukkit.block.property.CommonBlockProperties.FILL_LEVEL;
@@ -129,7 +128,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         // lava
         if (getCauldronLiquid() == CauldronLiquid.LAVA) {
             return onLavaActivate(item, player, blockFace, fx, fy, fz);
@@ -164,7 +163,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     this.setFillLevel(FILL_LEVEL.getMin(), player); // empty
                     this.level.setBlock(this, this, true);
                     cauldron.clearCustomColor();
-                    this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
+                    this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEvent.CAULDRON_TAKE_WATER);
                 }
             } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
                 if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
@@ -244,9 +243,9 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 }
 
                 if (cauldron.isCustomColor()) {
-                    CompoundTag compoundTag = item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag();
+                    NbtMapBuilder compoundTag = item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder();
                     compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
-                    item.setCompoundTag(compoundTag);
+                    item.setCompoundTag(compoundTag.build());
                     player.getInventory().setItemInHand(item);
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                     this.level.setBlock(this, this, true, true);
@@ -256,8 +255,8 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    CompoundTag compoundTag = item.getNamedTag();
-                    if (!compoundTag.exist("customColor")) {
+                    NbtMap compoundTag = item.getNamedTag();
+                    if (!compoundTag.containsKey("customColor")) {
                         break;
                     }
 
@@ -299,7 +298,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                 consumePotion(item, player);
 
-                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POTION);
+                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEvent.CAULDRON_FILL_POTION);
                 break;
             case ItemID.GLASS_BOTTLE:
                 if (isEmpty()) {
@@ -342,7 +341,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     }
                 }
 
-                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_POTION);
+                this.level.addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEvent.CAULDRON_TAKE_POTION);
                 break;
             case ItemID.BANNER:
                 if (isEmpty() || cauldron.isCustomColor() || cauldron.hasPotion()) {
@@ -538,15 +537,13 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        CompoundTag nbt = new CompoundTag()
-                .putShort("PotionId", -1)
-                .putByte("SplashPotion", 0);
+        NbtMap nbt = NbtMap.builder()
+                .putShort("PotionId", (short) -1)
+                .putByte("SplashPotion", (byte) 0)
+                .build();
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;

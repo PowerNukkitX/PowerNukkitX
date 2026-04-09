@@ -8,7 +8,7 @@ import cn.nukkit.item.Item;
 
 /**
  * Handles real-time growth progression for ageable baby entities.
- *
+ * <p>
  * Converts elapsed time into grow ticks, reduces the remaining
  * growth duration, and when fully grown, finalizes adulthood state,
  * plays growth particles, and drops configured ageable items.
@@ -24,14 +24,14 @@ public class AnimalGrowExecutor implements IBehaviorExecutor {
         int left = entity.getTicksGrowLeft();
         if (left < 0) return false;
 
-        if (!entity.namedTag.contains(Entity.TAG_ENTITY_BIRTH_DATE)) return false;
+        if (!entity.namedTag.containsKey(Entity.TAG_ENTITY_BIRTH_DATE)) return false;
         long birthSec = entity.namedTag.getLong(Entity.TAG_ENTITY_BIRTH_DATE);
         if (birthSec <= 0) return false;
 
         long nowSec = System.currentTimeMillis() / 1000L;
 
         long lastSyncSec;
-        if (entity.namedTag.contains(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC)) {
+        if (entity.namedTag.containsKey(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC)) {
             lastSyncSec = entity.namedTag.getLong(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC);
             if (lastSyncSec < birthSec) lastSyncSec = birthSec;
         } else {
@@ -48,7 +48,7 @@ public class AnimalGrowExecutor implements IBehaviorExecutor {
         int deltaTicks = (deltaTicksLong > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) deltaTicksLong;
 
         entity.reduceGrowLeft(deltaTicks);
-        entity.namedTag.putLong(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC, nowSec);
+        entity.namedTag = entity.namedTag.toBuilder().putLong(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC, nowSec).build();
 
         // If fully grown, finalize + particles + drop items
         if (entity.getTicksGrowLeft() == 0) {

@@ -28,9 +28,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +50,7 @@ public class EntityAllay extends EntityMob implements EntityFlyable {
     public int dropCollectCooldown = 60;
 
 
-    public EntityAllay(IChunk chunk, CompoundTag nbt) {
+    public EntityAllay(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

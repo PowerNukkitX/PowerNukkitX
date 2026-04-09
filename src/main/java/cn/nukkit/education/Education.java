@@ -6,9 +6,8 @@ import cn.nukkit.education.block.elements.*;
 import cn.nukkit.education.block.glass.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.network.protocol.types.inventory.creative.CreativeCustomGroups;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemData;
 import cn.nukkit.registry.CreativeGroupsRegistry;
 import cn.nukkit.registry.CreativeItemRegistry;
 import cn.nukkit.registry.Registries;
@@ -17,6 +16,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
 
 import java.io.InputStreamReader;
 import java.util.*;
@@ -380,7 +381,7 @@ public class Education implements BlockID, ItemID {
 
     private static void addCreativeGroup(String name, String icon) {
         Item item = Item.get(icon, 0, 1, null, false);
-        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(item, 0));
+        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(item.toNetwork(), item.getNetId(), 0));
         CreativeCustomGroups.define(CreativeItemCategory.CONSTRUCTION, name, icon);
     }
 
@@ -410,9 +411,9 @@ public class Education implements BlockID, ItemID {
 
                 for (String group : tmpGroups) {
                     groups.put(group, Registries.CREATIVE.resolveGroupIndexFromGroupName(group));
-                    CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> d.getItem().getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
+                    CreativeCustomGroups.getDefinedGroups().stream().filter(d -> d.getName().equalsIgnoreCase(group)).findFirst().flatMap(def -> CreativeItemRegistry.ITEM_DATA.stream().filter(d -> Item.fromNetwork(d.getItemInstance()).getId().equalsIgnoreCase(def.getIconId())).findFirst()).ifPresent(entry -> {
                         CreativeItemRegistry.ITEM_DATA.remove(entry);
-                        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItem(), groups.get(group)));
+                        CreativeItemRegistry.ITEM_DATA.add(new CreativeItemData(entry.getItemInstance(), entry.getCreativeNetId(), groups.get(group)));
                     });
                 }
 

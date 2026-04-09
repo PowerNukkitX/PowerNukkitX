@@ -12,7 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 import static cn.nukkit.math.CompassRoseDirection.Precision.PRIMARY_INTER_CARDINAL;
 
@@ -54,9 +54,9 @@ public class ItemArmorStand extends Item {
         }
 
         CompassRoseDirection direction = CompassRoseDirection.getClosestFromYaw(player.yaw, PRIMARY_INTER_CARDINAL).getOppositeFace();
-        CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), direction.getYaw(), 0f);
+        NbtMap nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), direction.getYaw(), 0f);
         if (this.hasCustomName()) {
-            nbt.putString("CustomName", this.getCustomName());
+            nbt = nbt.toBuilder().putString("CustomName", this.getCustomName()).build();
         }
 
         if (!removeForPlacement(block) || !removeForPlacement(block.up())) {
@@ -78,6 +78,8 @@ public class ItemArmorStand extends Item {
     }
 
     /**
+     * 1
+     *
      * @param block The block which is in the same space as the armor stand.
      * @return {@code true} if the armor stand entity can be placed
      */

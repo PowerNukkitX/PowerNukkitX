@@ -2,14 +2,15 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.SetHudPacket;
-import cn.nukkit.network.protocol.types.hud.HudElement;
-import cn.nukkit.network.protocol.types.hud.HudVisibility;
+import org.cloudburstmc.protocol.bedrock.data.HudElement;
+import org.cloudburstmc.protocol.bedrock.data.HudVisibility;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.packet.SetHudPacket;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,16 +48,16 @@ public class HudCommand extends VanillaCommand {
 
         HudElement element = switch ((String) list.getResult(2)) {
             case "armor" -> HudElement.ARMOR;
-            case "air_bubbles_bar" -> HudElement.AIR_BUBBLES_BAR;
+            case "air_bubbles_bar" -> HudElement.AIR_BUBBLES;
             case "crosshair" -> HudElement.CROSSHAIR;
-            case "food_bar" -> HudElement.FOOD_BAR;
+            case "food_bar" -> HudElement.HUNGER;
             case "health" -> HudElement.HEALTH;
-            case "hotbar" -> HudElement.HOTBAR;
+            case "hotbar" -> HudElement.HOT_BAR;
             case "paper_doll" -> HudElement.PAPER_DOLL;
             case "tool_tips" -> HudElement.TOOL_TIPS;
             case "progress_bar" -> HudElement.PROGRESS_BAR;
             case "touch_controls" -> HudElement.TOUCH_CONTROLS;
-            case "vehicle_health" -> HudElement.VEHICLE_HEALTH;
+            case "vehicle_health" -> HudElement.HORSE_HEALTH;
 
             default -> null;
         };
@@ -68,10 +69,10 @@ public class HudCommand extends VanillaCommand {
 
         for (Player player : players) {
             SetHudPacket packet = new SetHudPacket();
-            packet.elements.add(element);
-            packet.visibility = visibility;
+            packet.getHudElementList().add(element);
+            packet.setHudVisible(visibility);
             player.dataPacket(packet);
-            
+
             return 1;
         }
 

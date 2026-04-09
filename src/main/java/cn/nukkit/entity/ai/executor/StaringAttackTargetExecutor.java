@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.evaluator.EntityCheckEvaluator;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.level.Sound;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 public class StaringAttackTargetExecutor implements IBehaviorExecutor {
 
@@ -27,13 +27,13 @@ public class StaringAttackTargetExecutor implements IBehaviorExecutor {
             }
         }
         if(entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-            if(entity.getDataFlag(EntityFlag.ANGRY)) {
-                entity.setDataFlag(EntityFlag.ANGRY, false);
+            if(entity.getDataFlag(ActorFlags.ANGRY)) {
+                entity.setDataFlag(ActorFlags.ANGRY, false);
             }
         } else {
             if(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET).evaluate(entity)) {
-                if (!entity.getDataFlag(EntityFlag.ANGRY)) {
-                    entity.setDataFlag(EntityFlag.ANGRY);
+                if (!entity.getDataFlag(ActorFlags.ANGRY)) {
+                    entity.setDataFlag(ActorFlags.ANGRY);
                 }
             } else entity.getMemoryStorage().clear(CoreMemoryTypes.ATTACK_TARGET);
         }

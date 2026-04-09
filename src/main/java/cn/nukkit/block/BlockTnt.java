@@ -12,15 +12,14 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.random.NukkitRandom;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 import static cn.nukkit.block.property.CommonBlockProperties.EXPLODE_BIT;
 
@@ -83,19 +82,20 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
         double mot = (new NukkitRandom()).nextFloat() * Math.PI * 2;
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(this.x + 0.5))
-                        .add(new DoubleTag(this.y))
-                        .add(new DoubleTag(this.z + 0.5)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(mot) * 0.02))
-                        .add(new DoubleTag(0.2))
-                        .add(new DoubleTag(-Math.cos(mot) * 0.02)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(0))
-                        .add(new FloatTag(0)))
-                .putShort("Fuse", fuse);
+        NbtMap nbt = NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                this.x + 0.5,
+                                this.y,
+                                this.z + 0.5
+                        )
+                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
+                                -Math.sin(mot) * 0.02,
+                                0.2,
+                                -Math.cos(mot) * 0.02
+                        )
+                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
+                .putShort("Fuse", (short) fuse)
+                .build();
         Entity tnt = Entity.createEntity(Entity.TNT,
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source

@@ -14,17 +14,19 @@ import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.entity.spawners.*;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -33,7 +35,6 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +55,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static final List<SpawnRule> SPAWN_RULES = new ArrayList<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final ConcurrentHashMap<String, CustomEntityDefinition> CUSTOM_ENTITY_DEFINITION_MAP = new ConcurrentHashMap<>();
-    private static byte[] TAG;
+    private static NbtMap TAG;
 
 
     @Override
@@ -300,7 +301,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         return Collections.unmodifiableMap(CLASS);
     }
 
-    public Entity provideEntity(String id, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
+    public Entity provideEntity(String id, @NotNull IChunk chunk, @NotNull NbtMap nbt, @Nullable Object... args) {
         Class<? extends Entity> clazz = getEntityClass(id);
         if (clazz == null) return null;
 
@@ -385,7 +386,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     public void register(EntityDefinition key, Class<? extends Entity> value) throws RegisterException {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
             try {
-                FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class)));
+                FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, NbtMap.class)));
             } catch (NoSuchMethodException e) {
                 throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
             }
@@ -416,7 +417,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
         try {
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-            FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
+            FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, NbtMap.class), memberLoader, false));
         } catch (NoSuchMethodException e) {
             throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
         }
@@ -442,7 +443,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                 throw new RegisterException("This entity has already been registered with the identifier: " + id);
             }
 
-            FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false);
+            FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, NbtMap.class), memberLoader, false);
             FAST_NEW.put(id, runtimeCtor);
 
             int rid = RUNTIME_ID.getAndIncrement();
@@ -474,7 +475,8 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
     }
 
-    private static final String[] PREFERRED_METHODS = { "definition", "getDefinition" };
+    private static final String[] PREFERRED_METHODS = {"definition", "getDefinition"};
+
     private CustomEntityDefinition resolveDefinitionFromClass(Class<?> clazz) throws RegisterException {
         try {
             var f = clazz.getField("DEF");
@@ -517,7 +519,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
 
         throw new RegisterException("Could not resolve CustomEntityDefinition for " + clazz.getName()
-                    + ". Provide one of: static DEF field; or a static definition()/getDefinition() method.");
+                + ". Provide one of: static DEF field; or a static definition()/getDefinition() method.");
     }
 
     private void registerInternal(EntityDefinition key, Class<? extends Entity> value) {
@@ -548,18 +550,19 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     private static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
 
     public record EntityDefinition(String id, String bid, int rid, boolean hasSpawnEgg, boolean isSummonable) {
-        public CompoundTag toNBT() {
-            return new CompoundTag()
+        public NbtMap toNBT() {
+            return NbtMap.builder()
                     .putString("bid", bid)
                     .putBoolean("hasspawnegg", hasSpawnEgg)
                     .putString("id", id)
                     .putInt("rid", rid)
-                    .putBoolean("summonable", isSummonable);
+                    .putBoolean("summonable", isSummonable)
+                    .build();
         }
     }
 
-    public byte[] getTag() {
-        return TAG.clone();
+    public NbtMap getTag() {
+        return TAG;
     }
 
     public void rebuildTag() {
@@ -569,18 +572,19 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             }
 
             BufferedInputStream bis = new BufferedInputStream(inputStream);
-            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
-            ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+            try (NBTInputStream nbtInputStream = NbtUtils.createGZIPReader(bis)) {
+                NbtMap nbt = (NbtMap) nbtInputStream.readTag();
+                List<NbtMap> list = new ObjectArrayList<>(nbt.getList("idlist", NbtType.COMPOUND));
 
-            // Add fake inventory entity definition
-            EntityRegistry.EntityDefinition fakeEntityInventory = Registries.ENTITY.getEntityDefinition(EntityID.FAKE_INVENTORY);
-            list.add(fakeEntityInventory.toNBT());
+                // Add fake inventory entity definition
+                EntityRegistry.EntityDefinition fakeEntityInventory = Registries.ENTITY.getEntityDefinition(EntityID.FAKE_INVENTORY);
+                list.add(fakeEntityInventory.toNBT());
 
-            for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
-                list.add(customEntityDefinition.toNBT());
+                for (var customEntityDefinition : Registries.ENTITY.getCustomEntityDefinitions()) {
+                    list.add(customEntityDefinition.toNBT());
+                }
+                TAG = nbt.toBuilder().putList("idlist", NbtType.COMPOUND, list).build();
             }
-            nbt.putList("idlist", list);
-            TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
             throw new AssertionError("Error whilst loading entity_identifiers.nbt", e);
         }

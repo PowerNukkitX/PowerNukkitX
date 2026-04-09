@@ -1,8 +1,8 @@
 package cn.nukkit.utils.firework;
 
 import cn.nukkit.item.ItemFireworkRocket.FireworkExplosion.ExplosionType;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * Builder for firework explosions supporting multiple colors and face colors per explosion.
@@ -12,10 +12,10 @@ import cn.nukkit.utils.DyeColor;
  * @since 2025/04/08
  */
 public class ExplosionBuilder {
-    private final CompoundTag explosionTag;
+    private NbtMap explosionTag;
 
     public ExplosionBuilder() {
-        this.explosionTag = new CompoundTag();
+        this.explosionTag = NbtMap.EMPTY;
     }
 
     public ExplosionBuilder setColors(DyeColor... colors) {
@@ -23,7 +23,7 @@ public class ExplosionBuilder {
         for (int i = 0; i < colors.length; i++) {
             colorBytes[i] = (byte) colors[i].getDyeData();
         }
-        this.explosionTag.putByteArray("FireworkColor", colorBytes);
+        this.explosionTag = this.explosionTag.toBuilder().putByteArray("FireworkColor", colorBytes).build();
         return this;
     }
 
@@ -32,26 +32,26 @@ public class ExplosionBuilder {
         for (int i = 0; i < fadeColors.length; i++) {
             fadeColorBytes[i] = (byte) fadeColors[i].getDyeData();
         }
-        this.explosionTag.putByteArray("FireworkFade", fadeColorBytes);
+        this.explosionTag = this.explosionTag.toBuilder().putByteArray("FireworkFade", fadeColorBytes).build();
         return this;
     }
 
     public ExplosionBuilder setFlicker(boolean flicker) {
-        this.explosionTag.putBoolean("FireworkFlicker", flicker);
+        this.explosionTag = this.explosionTag.toBuilder().putBoolean("FireworkFlicker", flicker).build();
         return this;
     }
 
     public ExplosionBuilder setTrail(boolean trail) {
-        this.explosionTag.putBoolean("FireworkTrail", trail);
+        this.explosionTag = this.explosionTag.toBuilder().putBoolean("FireworkTrail", trail).build();
         return this;
     }
 
     public ExplosionBuilder setType(ExplosionType type) {
-        this.explosionTag.putByte("FireworkType", (byte) type.ordinal());
+        this.explosionTag = this.explosionTag.toBuilder().putByte("FireworkType", (byte) type.ordinal()).build();
         return this;
     }
 
-    public CompoundTag build() {
+    public NbtMap build() {
         return this.explosionTag;
     }
 }

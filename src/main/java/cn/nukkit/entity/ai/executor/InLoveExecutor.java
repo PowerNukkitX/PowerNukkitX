@@ -3,7 +3,8 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 
 public class InLoveExecutor implements IBehaviorExecutor {
@@ -40,9 +41,9 @@ public class InLoveExecutor implements IBehaviorExecutor {
     }
 
     protected void sendLoveParticle(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.LOVE_PARTICLES;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

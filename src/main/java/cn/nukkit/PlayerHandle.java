@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.Entity;
@@ -12,14 +11,13 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.PlayerFogPacket;
-import cn.nukkit.network.protocol.types.PlayerBlockActionData;
+import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.security.PacketRateLimiter;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
-import cn.nukkit.utils.LoginChainData;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -82,28 +80,28 @@ public final class PlayerHandle {
         return player.spawnThreshold;
     }
 
-    public int getMessageCounter() {
-        return player.messageLimitCounter;
-    }
+        public int getMessageCounter() {
+            return player.messageLimitCounter;
+        }
 
-    public void setMessageCounter(int messageCounter) {
-        player.messageLimitCounter = messageCounter;
-    }
+        public void setMessageCounter(int messageCounter) {
+            player.messageLimitCounter = messageCounter;
+        }
 
-    public void setConnected(boolean connected) {
-        player.connected.set(connected);
-    }
+        public void setConnected(boolean connected) {
+            player.connected.set(connected);
+        }
 
-    public void setSocketAddress(InetSocketAddress socketAddress) {
-        player.socketAddress = socketAddress;
-    }
+        public void setSocketAddress(InetSocketAddress socketAddress) {
+            player.socketAddress = socketAddress;
+        }
 
-    public boolean isRemoveFormat() {
-        return player.removeFormat;
-    }
+        public boolean isRemoveFormat() {
+            return player.removeFormat;
+        }
 
-    public String getUsername() {
-        return player.getName();
+        public String getUsername() {
+            return player.getName();
     }
 
     public String getDisplayName() {
@@ -254,11 +252,11 @@ public final class PlayerHandle {
         player.lastAttackEntity = lastAttackEntity;
     }
 
-    public List<PlayerFogPacket.Fog> getFogStack() {
+    public List<String> getFogStack() {
         return player.fogStack;
     }
 
-    public void setFogStack(List<PlayerFogPacket.Fog> fogStack) {
+    public void setFogStack(List<String> fogStack) {
         player.fogStack = fogStack;
     }
 
@@ -266,8 +264,8 @@ public final class PlayerHandle {
         player.lastBeAttackEntity = lastBeAttackEntity;
     }
 
-    public LoginChainData getLoginChainData() {
-        return player.loginChainData;
+    public ClientChainData getLoginChainData() {
+        return player.clientChainData;
     }
 
     public AsyncTask getPreLoginEventTask() {

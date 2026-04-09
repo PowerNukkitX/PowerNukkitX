@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
@@ -11,6 +10,7 @@ import cn.nukkit.command.utils.RawText;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonSyntaxException;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class TellrawCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET, new PlayersNode()),
-                CommandParameter.newType("rawtext", CommandParamType.RAWTEXT)
+                CommandParameter.newType("rawtext", CommandParamType.TEXT)
         });
         this.enableParamTree();
     }

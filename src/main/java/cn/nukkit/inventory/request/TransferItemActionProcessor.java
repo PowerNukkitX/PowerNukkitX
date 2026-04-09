@@ -7,12 +7,12 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SoleInventory;
 import cn.nukkit.item.INBT;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.TransferItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
 
@@ -22,15 +22,15 @@ import static cn.nukkit.inventory.request.CraftCreativeActionProcessor.CRAFT_CRE
 public abstract class TransferItemActionProcessor<T extends TransferItemStackRequestAction> implements ItemStackRequestActionProcessor<T> {
     @Override
     public ActionResponse handle(T action, Player player, ItemStackRequestContext context) {
-        var srcFCN = action.getSource().getContainerName();
-        var dstFCN = action.getDestination().getContainerName();
+        var srcFCN = action.getSource().getFullContainerName();
+        var dstFCN = action.getDestination().getFullContainerName();
 
-        ContainerSlotType sourceSlotType      = srcFCN.getContainer();
-        ContainerSlotType destinationSlotType = dstFCN.getContainer();
-        Integer dynamicSrc = srcFCN.getDynamicId();
-        Integer dynamicDst = dstFCN.getDynamicId();
+        ContainerEnumName sourceSlotType = srcFCN.getContainerName();
+        ContainerEnumName destinationSlotType = dstFCN.getContainerName();
+        Integer dynamicSrc = srcFCN.getDynamicID();
+        Integer dynamicDst = dstFCN.getDynamicID();
 
-        Inventory source      = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
+        Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
         Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
 
         int sourceSlot = source.fromNetworkSlot(action.getSource().getSlot());
@@ -43,7 +43,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             log.debug("transfer an air item is not allowed");
             return context.error();
         }
-        if(sourItem.isUsingNetId()) {
+        if (sourItem.isUsingNetId()) {
             if (validateStackNetworkId(sourItem.getNetId(), sourceStackNetworkId)) {
                 log.warn("mismatch source stack network id!");
                 return context.error();
@@ -57,24 +57,25 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         if (context.has(CRAFT_CREATIVE_KEY) && (Boolean) context.get(CRAFT_CREATIVE_KEY)) {//If the player takes an item from creative mode, the destination is overridden directly
             if (source instanceof CreativeOutputInventory) {
                 sourItem = sourItem.clone().autoAssignStackNetworkId();
-                if(sourItem instanceof INBT inbt) {
+                if (sourItem instanceof INBT inbt) {
                     inbt.onChange(destination);
                     Server.getInstance().getScheduler().scheduleTask(() -> destination.sendSlot(destinationSlot, player)); //sending the player the slot
                 }
                 destination.setItem(destinationSlot, sourItem, false);
-                return context.success(List.of(new ItemStackResponseContainer(
-                        destination.getSlotType(destinationSlot),
+                return context.success(List.of(new ItemStackResponseContainerInfo(
+                        destination.getContainerEnumName(destinationSlot),
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         destination.toNetworkSlot(destinationSlot),
                                         destination.toNetworkSlot(destinationSlot),
                                         sourItem.getCount(),
                                         sourItem.getNetId(),
                                         sourItem.getCustomName(),
-                                        sourItem.getDamage()
+                                        sourItem.getDamage(),
+                                        ""
                                 )
                         ),
-                        action.getDestination().getContainerName()
+                        action.getDestination().getFullContainerName()
                 )));
             }
         }
@@ -97,7 +98,7 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
         Item resultDestItem;
         // Not sending the source helps avoid drag distribution glitches for normal inventories.
         // HOWEVER: equipment containers (OFFHAND/ARMOR) must be sent, otherwise viewers won't get MobEquipment/MobArmor updates.
-        boolean sendSource = sourceSlotType == ContainerSlotType.OFFHAND || sourceSlotType == ContainerSlotType.ARMOR;
+        boolean sendSource = sourceSlotType == ContainerEnumName.OFFHAND_CONTAINER || sourceSlotType == ContainerEnumName.ARMOR_CONTAINER;
         boolean sendDest = !(destination instanceof SoleInventory);
 
         if (sourItem.getCount() == count) { // first case：transfer all item
@@ -149,38 +150,40 @@ public abstract class TransferItemActionProcessor<T extends TransferItemStackReq
             resultDestItem = destination.getItem(destinationSlot);
         }
         var destItemStackResponseSlot =
-                new ItemStackResponseContainer(
-                        destination.getSlotType(destinationSlot),
+                new ItemStackResponseContainerInfo(
+                        destination.getContainerEnumName(destinationSlot),
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         destination.toNetworkSlot(destinationSlot),
                                         destination.toNetworkSlot(destinationSlot),
                                         resultDestItem.getCount(),
                                         resultDestItem.getNetId(),
                                         resultDestItem.getCustomName(),
-                                        resultDestItem.getDamage()
+                                        resultDestItem.getDamage(),
+                                        ""
                                 )
                         ),
-                        action.getDestination().getContainerName()
+                        action.getDestination().getFullContainerName()
                 );
         // CREATED_OUTPUT does not require a source response
         if (source instanceof CreativeOutputInventory) {
             return context.success(List.of(destItemStackResponseSlot));
         } else {
             return context.success(List.of(
-                    new ItemStackResponseContainer(
-                            source.getSlotType(sourceSlot),
+                    new ItemStackResponseContainerInfo(
+                            source.getContainerEnumName(sourceSlot),
                             Lists.newArrayList(
-                                    new ItemStackResponseSlot(
+                                    new ItemStackResponseSlotInfo(
                                             source.toNetworkSlot(sourceSlot),
                                             source.toNetworkSlot(sourceSlot),
                                             resultSourItem.getCount(),
                                             resultSourItem.getNetId(),
                                             resultSourItem.getCustomName(),
-                                            resultSourItem.getDamage()
+                                            resultSourItem.getDamage(),
+                                            ""
                                     )
                             ),
-                            action.getSource().getContainerName()
+                            action.getSource().getFullContainerName()
                     ), destItemStackResponseSlot));
         }
     }

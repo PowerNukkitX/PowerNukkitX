@@ -1,7 +1,7 @@
 package cn.nukkit.block.customblock.data;
 
-import cn.nukkit.nbt.tag.CompoundTag;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,10 +12,10 @@ import java.util.Locale;
  * Used to map the face of the block to the actual material instance and set the rendering method and parameters
  */
 public class Materials implements NBTData {
-    private final CompoundTag tag;
+    private NbtMap tag;
 
     private Materials() {
-        this.tag = new CompoundTag();
+        this.tag = NbtMap.EMPTY;
     }
 
     /**
@@ -59,6 +59,7 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
+     *
      * @see TintMethod      Set tintint method for the block
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
@@ -88,8 +89,8 @@ public class Materials implements NBTData {
      * @param texture          Specify the texture's name of the up face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
      * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
-     * @see TintMethod         Set tintint method for the block
      * @return the materials
+     * @see TintMethod         Set tintint method for the block
      */
     public Materials up(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
         this.process("up", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
@@ -108,8 +109,8 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
+     *
      * @see TintMethod         Set tintint method for the block
-     * 
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
     public Materials down(RenderMethod renderMethod, String texture, TintMethod tintMethod) {
@@ -138,8 +139,8 @@ public class Materials implements NBTData {
      * @param texture          指定down方向的Specify the texture's name of the down face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
      * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
-     * @see TintMethod         Set tintint method for the block
      * @return the materials
+     * @see TintMethod         Set tintint method for the block
      */
     public Materials down(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
         this.process("down", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
@@ -158,6 +159,7 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
+     *
      * @see TintMethod         Set tintint method for the block
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
@@ -187,8 +189,8 @@ public class Materials implements NBTData {
      * @param texture          Specify the texture's name of the north face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
      * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
-     * @see TintMethod         Set tintint method for the block
      * @return the materials
+     * @see TintMethod         Set tintint method for the block
      */
     public Materials north(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
         this.process("north", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
@@ -207,6 +209,7 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
+     *
      * @see TintMethod         Set tintint method for the block
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
@@ -236,8 +239,8 @@ public class Materials implements NBTData {
      * @param texture          Specify the texture's name of the south face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
      * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
-     * @see TintMethod         Set tintint method for the block
      * @return the materials
+     * @see TintMethod         Set tintint method for the block
      */
     public Materials south(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
         this.process("south", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
@@ -256,8 +259,8 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
+     *
      * @see TintMethod         Set tintint method for the block
-     * 
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
     public Materials east(RenderMethod renderMethod, String texture, TintMethod tintMethod) {
@@ -286,8 +289,8 @@ public class Materials implements NBTData {
      * @param texture          Specify the texture's name of the east face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
      * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
-     * @see TintMethod         Set tintint method for the block
      * @return the materials
+     * @see TintMethod         Set tintint method for the block
      */
     public Materials east(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
         this.process("east", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
@@ -306,6 +309,7 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
+     *
      * @see TintMethod         Set tintint method for the block
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
@@ -335,8 +339,8 @@ public class Materials implements NBTData {
      * @param texture          指定west方向的Specify the texture's name of the west face
      * @param ambientOcclusion Should I apply ambient light shielding when lighting?
      * @param packedBools      Carries bools for face dimming, random UV rotation and texture variation support.
-     * @see TintMethod         Set tintint method for the block
      * @return the materials
+     * @see TintMethod         Set tintint method for the block
      */
     public Materials west(RenderMethod renderMethod, boolean ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
         this.process("west", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
@@ -355,8 +359,7 @@ public class Materials implements NBTData {
 
     /**
      * ambientOcclusion=true, PackedBools(true, false, false)
-     * 
-     * 
+     *
      * @see #up(RenderMethod, boolean, boolean, String, String)
      */
     public Materials any(RenderMethod renderMethod, String texture, TintMethod tintMethod) {
@@ -404,46 +407,46 @@ public class Materials implements NBTData {
      * @see TintMethod       Specify the tinting type
      */
     public void process(
-        @NotNull String face,
-        boolean ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull String renderMethodName,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            boolean ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull String renderMethodName,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
-        CompoundTag faceTag = new CompoundTag()
-            .putBoolean("ambient_occlusion", ambientOcclusion)
-            .putByte("packed_bools", packedBools.toByte())
-            .putString("render_method", renderMethodName)
-            .putString("texture", texture);
+        NbtMapBuilder faceTag = NbtMap.builder()
+                .putBoolean("ambient_occlusion", ambientOcclusion)
+                .putByte("packed_bools", packedBools.toByte())
+                .putString("render_method", renderMethodName)
+                .putString("texture", texture);
 
         if (tintMethod != null && tintMethod != TintMethod.NONE) {
             faceTag.putString("tint_method", tintMethod.name().toLowerCase(Locale.ENGLISH));
         }
-        this.tag.putCompound(face, faceTag);
+        this.tag = this.tag.toBuilder().putCompound(face, faceTag.build()).build();
     }
 
     private void process(
-        @NotNull String face,
-        boolean ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            boolean ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
-        CompoundTag faceTag = new CompoundTag()
-            .putBoolean("ambient_occlusion", ambientOcclusion)
-            .putByte("packed_bools", packedBools.toByte())
-            .putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH))
-            .putString("texture", texture);
+        NbtMapBuilder faceTag = NbtMap.builder()
+                .putBoolean("ambient_occlusion", ambientOcclusion)
+                .putByte("packed_bools", packedBools.toByte())
+                .putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH))
+                .putString("texture", texture);
 
         if (tintMethod != null && tintMethod != TintMethod.NONE) {
             faceTag.putString("tint_method", tintMethod.name().toLowerCase(Locale.ENGLISH));
         }
-        this.tag.putCompound(face, faceTag);
+        this.tag = this.tag.toBuilder().putCompound(face, faceTag.build()).build();
     }
 
-    public CompoundTag toCompoundTag() {
+    public NbtMap toCompoundTag() {
         return tag;
     }
 
@@ -458,6 +461,7 @@ public class Materials implements NBTData {
      * ALPHA_TEST_TO_OPAQUE,                >> Transparency Yes | Translucency No | Backface Culling No | Distant Culling Yes | will shift to "opaque" in the distance.
      * ALPHA_TEST_SINGLE_SIDED_TO_OPAQUE,   >> Transparency Yes | Translucency No | Backface Culling Yes | Distant Culling Yes | will shift to "opaque" in the distance.
      * BLEND_TO_OPAQUE                      >> Transparency No | Translucency No | Backface Culling Yes | Distant Culling No | will shift to "opaque" in the distance.
+     *
      * @see <a href="https://wiki.bedrock.dev/blocks/blocks-16.html#additional-notes">wiki.bedrock.dev</a><p>
      */
     public enum RenderMethod {
@@ -471,10 +475,10 @@ public class Materials implements NBTData {
         BLEND_TO_OPAQUE
     }
 
-    /** 
+    /**
      * Tint multiplied to the color. Tint method logic varies, but often refers to the "rain" and "temperature" of the biome <p>
      * Supported tint methods are "NONE", "DEFAULT_FOLIAGE", "BIRCH_FOLIAGE", "EVERGREEN_FOLIAGE", "DRY_FOLIAGE", "GRASS" and "WATER".
-     * */
+     */
     public enum TintMethod {
         NONE,
         DEFAULT_FOLIAGE,
@@ -487,21 +491,28 @@ public class Materials implements NBTData {
         public static @Nullable TintMethod fromString(String s) {
             if (s == null || s.isBlank()) return null;
             String key = s.trim()
-                          .toUpperCase(Locale.ENGLISH)
-                          .replaceAll("[\\s-]+", "_");
+                    .toUpperCase(Locale.ENGLISH)
+                    .replaceAll("[\\s-]+", "_");
             switch (key) {
-                case "NONE": return NONE;
-                case "DEFAULT_FOLIAGE": return DEFAULT_FOLIAGE;
-                case "BIRCH_FOLIAGE": return BIRCH_FOLIAGE;
-                case "EVERGREEN_FOLIAGE": return EVERGREEN_FOLIAGE;
-                case "DRY_FOLIAGE": return DRY_FOLIAGE;
-                case "GRASS": return GRASS;
-                case "WATER": return WATER;
-                default: return NONE;
+                case "NONE":
+                    return NONE;
+                case "DEFAULT_FOLIAGE":
+                    return DEFAULT_FOLIAGE;
+                case "BIRCH_FOLIAGE":
+                    return BIRCH_FOLIAGE;
+                case "EVERGREEN_FOLIAGE":
+                    return EVERGREEN_FOLIAGE;
+                case "DRY_FOLIAGE":
+                    return DRY_FOLIAGE;
+                case "GRASS":
+                    return GRASS;
+                case "WATER":
+                    return WATER;
+                default:
+                    return NONE;
             }
         }
     }
-
 
 
     // Deprecated methods.

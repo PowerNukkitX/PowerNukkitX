@@ -1,6 +1,7 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 /**
  * @author xtypr
@@ -13,6 +14,6 @@ public class InkParticle extends GenericParticle {
     }
 
     public InkParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_INK, scale);
+        super(pos, ParticleType.INK, scale);
     }
 }

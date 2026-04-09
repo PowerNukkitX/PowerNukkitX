@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
@@ -9,14 +8,12 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparent implements BlockEntityHolder<BlockEntityBrewingStand> {
 
@@ -74,19 +71,16 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
 
-        CompoundTag nbt = new CompoundTag();
+        NbtMapBuilder nbt = NbtMap.builder();
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
     }
 
     @Override
@@ -107,19 +101,19 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
                 }
             }
 
-            if (brewing.namedTag.contains("Lock")
-                    && brewing.namedTag.get("Lock") instanceof StringTag tag
-                    && !tag.data.equals(item.getCustomName())) {
+            if (brewing.namedTag.containsKey("Lock")
+                    && brewing.namedTag.get("Lock") instanceof String tag
+                    && !tag.equals(item.getCustomName())) {
                 return false;
             }
 
             player.addWindow(brewing.getInventory());
             // Without this, the brewing stand starts brewing (visually) once opened.
-            if(brewing.brewTime == BlockEntityBrewingStand.MAX_BREW_TIME) {
-                ContainerSetDataPacket pk = new ContainerSetDataPacket();
-                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-                pk.value = 0;
-                pk.windowId = player.getWindowId(brewing.getInventory());;
+            if (brewing.brewTime == BlockEntityBrewingStand.MAX_BREW_TIME) {
+                final ContainerSetDataPacket pk = new ContainerSetDataPacket();
+                pk.setContainerID((byte) player.getWindowId(brewing.getInventory()));
+                pk.setId(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
+                pk.setValue(0);
                 player.dataPacket(pk);
             }
         }
@@ -199,17 +193,15 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return this.createBrewingStand(null);
     }
 
-    protected BlockEntityBrewingStand createBrewingStand(CompoundTag additions) {
-        CompoundTag nbt = new CompoundTag()
-                .putList("Items", new ListTag<>())
+    protected BlockEntityBrewingStand createBrewingStand(NbtMap additions) {
+        NbtMap nbt = NbtMap.builder()
+                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
                 .putString("id", BlockEntity.BREWING_STAND)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
-
-        if (additions != null) {
-            additions.getTags().forEach(nbt::put);
-        }
+                .putInt("z", (int) this.z)
+                .build();
+        nbt.putAll(additions);
 
         return (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
     }

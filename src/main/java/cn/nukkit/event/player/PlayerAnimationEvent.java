@@ -3,8 +3,8 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.network.protocol.AnimatePacket;
-import cn.nukkit.network.protocol.types.SwingSource;
+import org.cloudburstmc.protocol.bedrock.data.ActorSwingSource;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
 
 public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
@@ -15,23 +15,23 @@ public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
 
     private final AnimatePacket.Action animationType;
     private final float data;
-    private final SwingSource swingSource;
+    private final ActorSwingSource swingSource;
 
     public PlayerAnimationEvent(Player player, AnimatePacket animatePacket) {
         this.player = player;
-        animationType = animatePacket.action;
-        data = animatePacket.data;
-        swingSource = animatePacket.swingSource;
+        animationType = animatePacket.getAction();
+        data = animatePacket.getData();
+        swingSource = animatePacket.getSwingSource();
     }
 
     public PlayerAnimationEvent(Player player) {
-        this(player, AnimatePacket.Action.SWING_ARM);
+        this(player, AnimatePacket.Action.SWING);
     }
 
     public PlayerAnimationEvent(Player player, AnimatePacket.Action animation) {
         this.player = player;
         this.animationType = animation;
-        this.swingSource = SwingSource.NONE;
+        this.swingSource = ActorSwingSource.NONE;
         data = 0;
     }
 
@@ -43,7 +43,7 @@ public class PlayerAnimationEvent extends PlayerEvent implements Cancellable {
         return data;
     }
 
-    public SwingSource getSwingSource() {
+    public ActorSwingSource getSwingSource() {
         return swingSource;
     }
 }

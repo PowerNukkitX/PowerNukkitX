@@ -1,7 +1,6 @@
 package cn.nukkit.level.updater.util.tagupdater;
 
-import cn.nukkit.level.updater.util.TagUtils;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,26 +57,26 @@ public class CompoundTagUpdaterContext {
         return updater.builder();
     }
 
-    public CompoundTag update(CompoundTag tag, int version) {
+    public NbtMap update(NbtMap tag, int version) {
         Map<String, Object> updated = this.updateStates0(tag, version);
 
         if (updated == null && version != this.getLatestVersion()) {
-            tag.putInt("version", this.getLatestVersion());
+            tag = tag.toBuilder().putInt("version", this.getLatestVersion()).build();
             return tag;
         } else if (updated == null) {
             return tag;
         } else {
             updated.put("version", this.getLatestVersion());
-            return (CompoundTag) TagUtils.toImmutable(updated);
+            return NbtMap.fromMap(updated);
         }
     }
 
-    public CompoundTag updateStates(CompoundTag tag, int version) {
+    public NbtMap updateStates(NbtMap tag, int version) {
         Map<String, Object> updated = this.updateStates0(tag, version);
-        return updated == null ? tag : (CompoundTag) TagUtils.toImmutable(updated);
+        return updated == null ? tag : NbtMap.fromMap(updated);
     }
 
-    private Map<String, Object> updateStates0(CompoundTag tag, int version) {
+    private Map<String, Object> updateStates0(NbtMap tag, int version) {
         Map<String, Object> mutableTag = null;
         boolean updated = false;
         for (CompoundTagUpdater updater : updaters) {
@@ -86,7 +85,7 @@ public class CompoundTagUpdaterContext {
             }
 
             if (mutableTag == null) {
-                mutableTag = (Map<String, Object>) TagUtils.toMutable(tag);
+                mutableTag = tag;
             }
             updated |= updater.update(mutableTag);
         }

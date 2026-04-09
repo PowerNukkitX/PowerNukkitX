@@ -2,10 +2,11 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -21,9 +22,9 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = Inventory.super.slotTypeMap();
-        map.put(0, ContainerSlotType.CREATED_OUTPUT);
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = Inventory.super.slotTypeMap();
+        map.put(0, ContainerEnumName.CREATED_OUTPUT_CONTAINER);
         return map;
     }
 
@@ -183,8 +184,8 @@ public class CreativeOutputInventory implements Inventory {
     }
 
     @Override
-    public InventoryType getType() {
-        return InventoryType.NONE;
+    public ContainerType getType() {
+        return ContainerType.NONE;
     }
 
     @Override

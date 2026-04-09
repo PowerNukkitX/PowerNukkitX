@@ -119,16 +119,19 @@ public class Position extends NamedPosition {
         return getValidLevel().getBlockEntity(this);
     }
 
-    public @Nullable final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
+    public @Nullable
+    final <T extends BlockEntity> T getTypedBlockEntity(@NotNull Class<T> type) {
         BlockEntity blockEntity = getValidLevel().getBlockEntity(this);
         return type.isInstance(blockEntity) ? type.cast(blockEntity) : null;
     }
 
-    @NotNull public BlockState getLevelBlockState() {
+    @NotNull
+    public BlockState getLevelBlockState() {
         return getLevelBlockState(0);
     }
 
-    @NotNull public BlockState getLevelBlockState(int layer) {
+    @NotNull
+    public BlockState getLevelBlockState(int layer) {
         return getValidLevel().getBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), layer);
     }
 
@@ -164,16 +167,19 @@ public class Position extends NamedPosition {
         return getValidLevel().getTickCachedBlock(this, layer);
     }
 
-    @NotNull public Location getLocation() {
+    @NotNull
+    public Location getLocation() {
         return new Location(this.x, this.y, this.z, 0, 0, getValidLevel());
     }
 
     @Override
-    @NotNull public String getLevelName() {
+    @NotNull
+    public String getLevelName() {
         return getValidLevel().getName();
     }
 
-    @NotNull public final Level getValidLevel() {
+    @NotNull
+    public final Level getValidLevel() {
         Level level = this.level;
         if (level == null) {
             throw new LevelException("Undefined Level reference");
@@ -258,5 +264,9 @@ public class Position extends NamedPosition {
 
     public IChunk getChunk() {
         return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
+    }
+
+    public org.cloudburstmc.math.vector.Vector3f toNetwork() {
+        return org.cloudburstmc.math.vector.Vector3f.from((float) this.x, (float) this.y, (float) this.z);
     }
 }

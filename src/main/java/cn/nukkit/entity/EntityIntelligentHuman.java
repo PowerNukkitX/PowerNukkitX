@@ -2,7 +2,6 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityArmorInventory;
@@ -20,12 +19,15 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
+import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -47,12 +49,12 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
     protected UUID uuid;
     protected byte[] rawUUID;
-    protected Skin skin;
+    protected SerializedSkin skin;
     protected HumanInventory inventory;
     protected HumanEnderChestInventory enderChestInventory;
     protected HumanOffHandInventory offhandInventory;
 
-    public EntityIntelligentHuman(IChunk chunk, CompoundTag nbt) {
+    public EntityIntelligentHuman(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -86,11 +88,11 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         return 1.62f;
     }
 
-    public Skin getSkin() {
+    public SerializedSkin getSkin() {
         return skin;
     }
 
-    public void setSkin(Skin skin) {
+    public void setSkin(SerializedSkin skin) {
         this.skin = skin;
     }
 
@@ -348,34 +350,36 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
 
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
-            AddPlayerPacket pk = new AddPlayerPacket();
-            pk.uuid = this.getUniqueId();
-            pk.username = this.getName();
-            pk.entityUniqueId = this.getId();
-            pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
-            pk.speedX = (float) this.motionX;
-            pk.speedY = (float) this.motionY;
-            pk.speedZ = (float) this.motionZ;
-            pk.yaw = (float) this.yaw;
-            pk.pitch = (float) this.pitch;
-            pk.item = this.getInventory().getItemInHand();
-            pk.entityData = this.entityDataMap;
+            final AddPlayerPacket pk = new AddPlayerPacket();
+            pk.setActorData(this.entityDataMap);
+            pk.setUuid(this.getUniqueId());
+            pk.setPlayerName(this.getName());
+            pk.setTargetActorID(this.getId());
+            pk.setTargetRuntimeID(this.getId());
+            pk.setPlatformChatId("");
+            pk.setPosition(Vector3f.from(this.x, this.y, this.z));
+            pk.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
+            pk.setRotation(Vector3f.from(this.pitch, this.yaw, this.yaw));
+            pk.setCarriedItem(this.getInventory().getItemInHand().toNetwork());
             player.dataPacket(pk);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
 
             if (this.riding != null) {
-                SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-                pkk.vehicleUniqueId = this.riding.getId();
-                pkk.riderUniqueId = this.getId();
-                pkk.type = EntityLink.Type.RIDER;
-                pkk.immediate = 1;
+                final SetActorLinkPacket setActorLinkPacket = new SetActorLinkPacket();
+                setActorLinkPacket.setLink(
+                        new ActorLink(
+                                this.riding.getId(),
+                                this.getId(),
+                                ActorLinkType.RIDING,
+                                true,
+                                false,
+                                0f
+                        )
+                );
 
-                player.dataPacket(pkk);
+                player.dataPacket(setActorLinkPacket);
             }
             this.server.removePlayerListData(this.getUniqueId(), player);
         }
@@ -384,10 +388,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
-
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
-            player.dataPacket(pk);
+            final RemoveActorPacket removeActorPacket = new RemoveActorPacket();
+            removeActorPacket.setTargetActorID(this.getId());
+            player.dataPacket(removeActorPacket);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }

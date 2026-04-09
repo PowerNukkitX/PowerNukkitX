@@ -55,13 +55,15 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,19 +77,19 @@ import java.util.Set;
  */
 public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCanAttack, EntityCanSit, EntityColor, EntityVariant, InventoryHolder {
     private static final String[] SOUND_VARIANTS = {
-        "default",
-        "big",
-        "cute",
-        "grumpy",
-        "mad",
-        "puglin",
-        "sad"
+            "default",
+            "big",
+            "cute",
+            "grumpy",
+            "mad",
+            "puglin",
+            "sad"
     };
 
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new BooleanEntityProperty("minecraft:is_armorable", false),
-        new BooleanEntityProperty("minecraft:has_increased_max_health", false),
-        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
+            new BooleanEntityProperty("minecraft:is_armorable", false),
+            new BooleanEntityProperty("minecraft:has_increased_max_health", false),
+            new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
     private final static String PROPERTY_IS_ARMORABLE = "minecraft:is_armorable";
@@ -118,7 +120,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
-    public EntityWolf(IChunk chunk, CompoundTag nbt) {
+    public EntityWolf(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -169,7 +171,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         return new TameableComponent(
                 0.33f,
                 Set.of(
-                    ItemID.BONE
+                        ItemID.BONE
                 )
         );
     }
@@ -194,20 +196,20 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                 null,
                 null,
                 Set.of(
-                    ItemID.CHICKEN,
-                    ItemID.COOKED_CHICKEN,
-                    ItemID.BEEF,
-                    ItemID.COOKED_BEEF,
-                    ItemID.MUTTON,
-                    ItemID.COOKED_MUTTON,
-                    ItemID.PORKCHOP,
-                    ItemID.COOKED_PORKCHOP,
-                    ItemID.RABBIT,
-                    ItemID.COOKED_RABBIT,
-                    ItemID.ROTTEN_FLESH
+                        ItemID.CHICKEN,
+                        ItemID.COOKED_CHICKEN,
+                        ItemID.BEEF,
+                        ItemID.COOKED_BEEF,
+                        ItemID.MUTTON,
+                        ItemID.COOKED_MUTTON,
+                        ItemID.PORKCHOP,
+                        ItemID.COOKED_PORKCHOP,
+                        ItemID.RABBIT,
+                        ItemID.COOKED_RABBIT,
+                        ItemID.ROTTEN_FLESH
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.WOLF, EntityID.WOLF)
+                        new BreedableComponent.BreedsWith(EntityID.WOLF, EntityID.WOLF)
                 ),
                 null,
                 null,
@@ -226,24 +228,24 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
-                    new HealableComponent.Item(ItemID.PORKCHOP, 6),
-                    new HealableComponent.Item(ItemID.COOKED_PORKCHOP, 16),
-                    new HealableComponent.Item(ItemID.COD, 4),
-                    new HealableComponent.Item(ItemID.SALMON, 4),
-                    new HealableComponent.Item(ItemID.TROPICAL_FISH, 2),
-                    new HealableComponent.Item(ItemID.PUFFERFISH, 2),
-                    new HealableComponent.Item(ItemID.COOKED_COD, 10),
-                    new HealableComponent.Item(ItemID.COOKED_SALMON, 12),
-                    new HealableComponent.Item(ItemID.BEEF, 6),
-                    new HealableComponent.Item(ItemID.COOKED_BEEF, 16),
-                    new HealableComponent.Item(ItemID.CHICKEN, 4),
-                    new HealableComponent.Item(ItemID.COOKED_CHICKEN, 12),
-                    new HealableComponent.Item(ItemID.MUTTON, 4),
-                    new HealableComponent.Item(ItemID.COOKED_MUTTON, 12),
-                    new HealableComponent.Item(ItemID.ROTTEN_FLESH, 8),
-                    new HealableComponent.Item(ItemID.RABBIT, 6),
-                    new HealableComponent.Item(ItemID.COOKED_RABBIT, 10),
-                    new HealableComponent.Item(ItemID.RABBIT_STEW, 20)
+                        new HealableComponent.Item(ItemID.PORKCHOP, 6),
+                        new HealableComponent.Item(ItemID.COOKED_PORKCHOP, 16),
+                        new HealableComponent.Item(ItemID.COD, 4),
+                        new HealableComponent.Item(ItemID.SALMON, 4),
+                        new HealableComponent.Item(ItemID.TROPICAL_FISH, 2),
+                        new HealableComponent.Item(ItemID.PUFFERFISH, 2),
+                        new HealableComponent.Item(ItemID.COOKED_COD, 10),
+                        new HealableComponent.Item(ItemID.COOKED_SALMON, 12),
+                        new HealableComponent.Item(ItemID.BEEF, 6),
+                        new HealableComponent.Item(ItemID.COOKED_BEEF, 16),
+                        new HealableComponent.Item(ItemID.CHICKEN, 4),
+                        new HealableComponent.Item(ItemID.COOKED_CHICKEN, 12),
+                        new HealableComponent.Item(ItemID.MUTTON, 4),
+                        new HealableComponent.Item(ItemID.COOKED_MUTTON, 12),
+                        new HealableComponent.Item(ItemID.ROTTEN_FLESH, 8),
+                        new HealableComponent.Item(ItemID.RABBIT, 6),
+                        new HealableComponent.Item(ItemID.COOKED_RABBIT, 10),
+                        new HealableComponent.Item(ItemID.RABBIT_STEW, 20)
                 )
         );
     }
@@ -254,17 +256,17 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(ItemID.CHICKEN),
-                    new AgeableComponent.FeedItem(ItemID.COOKED_CHICKEN),
-                    new AgeableComponent.FeedItem(ItemID.BEEF),
-                    new AgeableComponent.FeedItem(ItemID.COOKED_BEEF),
-                    new AgeableComponent.FeedItem(ItemID.MUTTON),
-                    new AgeableComponent.FeedItem(ItemID.COOKED_MUTTON),
-                    new AgeableComponent.FeedItem(ItemID.PORKCHOP),
-                    new AgeableComponent.FeedItem(ItemID.COOKED_PORKCHOP),
-                    new AgeableComponent.FeedItem(ItemID.RABBIT),
-                    new AgeableComponent.FeedItem(ItemID.COOKED_RABBIT),
-                    new AgeableComponent.FeedItem(ItemID.ROTTEN_FLESH)
+                        new AgeableComponent.FeedItem(ItemID.CHICKEN),
+                        new AgeableComponent.FeedItem(ItemID.COOKED_CHICKEN),
+                        new AgeableComponent.FeedItem(ItemID.BEEF),
+                        new AgeableComponent.FeedItem(ItemID.COOKED_BEEF),
+                        new AgeableComponent.FeedItem(ItemID.MUTTON),
+                        new AgeableComponent.FeedItem(ItemID.COOKED_MUTTON),
+                        new AgeableComponent.FeedItem(ItemID.PORKCHOP),
+                        new AgeableComponent.FeedItem(ItemID.COOKED_PORKCHOP),
+                        new AgeableComponent.FeedItem(ItemID.RABBIT),
+                        new AgeableComponent.FeedItem(ItemID.COOKED_RABBIT),
+                        new AgeableComponent.FeedItem(ItemID.ROTTEN_FLESH)
                 ),
                 null,
                 null,
@@ -279,15 +281,15 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
             this.setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
         }
         // Update CollarColor to Color
-        if (namedTag.contains("CollarColor")) {
+        if (namedTag.containsKey("CollarColor")) {
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
         }
         this.armorInventory = new EntityArmorInventory(this);
 
-        if (this.namedTag.contains(TAG_ARMOR)) {
-            ListTag<CompoundTag> armorList = this.namedTag.getList(TAG_ARMOR, CompoundTag.class);
-            for (CompoundTag armorTag : armorList.getAll()) {
-                this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
+        if (this.namedTag.containsKey(TAG_ARMOR)) {
+            List<NbtMap> armorList = this.namedTag.getList(TAG_ARMOR, NbtType.COMPOUND);
+            for (NbtMap armorTag : armorList) {
+                this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
         }
     }
@@ -297,8 +299,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
-                this.setDataProperty(Entity.OWNER_EID, owner.getId());
+            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+                this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }
         return super.onUpdate(currentTick);
@@ -331,11 +333,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     public void saveNBT() {
         super.saveNBT();
         if (this.armorInventory != null) {
-            ListTag<CompoundTag> armorTag = new ListTag<>();
+            final List<NbtMap> armorTag = new ObjectArrayList<>();
             for (int i = 0; i < 4; i++) {
-                armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
+                armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag.putList(TAG_ARMOR,armorTag);
+            this.namedTag = this.namedTag.toBuilder().putList(TAG_ARMOR, NbtType.COMPOUND, armorTag).build();
         }
     }
 
@@ -375,7 +377,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(!getArmor().isNull()) {
+        if (!getArmor().isNull()) {
             switch (source.getCause()) {
                 case DROWNING,
                      FREEZING,
@@ -424,33 +426,33 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     }
 
     public static int getBiomeVariant(int biomeId) {
-        BiomeDefinition definition = Registries.BIOME.get(biomeId);
-        Set<String> tags = definition.getTags();
-        String name = definition.getName();
-        if(name.equals("cold_taiga")) return ASHEN;
-        if(name.equals("mega_taiga")) return BLACK;
-        if(name.equals("redwood_taiga_mutated")) return CHESSNUT;
-        if(tags.contains("jungle")) return RUSTY;
-        if(name.equals("grove") || tags.contains("frozen")) return SNOWY;
-        if(tags.contains("mesa")) return STRIPPED;
-        if(tags.contains("savanna")) return SPOTTED;
-        if(name.equals("forest")) return WOODS;
+        BiomeDefinitionData definition = Registries.BIOME.get(biomeId).second();
+        List<String> tags = definition.getTags();
+        String name = definition.getId();
+        if (name.equals("cold_taiga")) return ASHEN;
+        if (name.equals("mega_taiga")) return BLACK;
+        if (name.equals("redwood_taiga_mutated")) return CHESSNUT;
+        if (tags.contains("jungle")) return RUSTY;
+        if (name.equals("grove") || tags.contains("frozen")) return SNOWY;
+        if (tags.contains("mesa")) return STRIPPED;
+        if (tags.contains("savanna")) return SPOTTED;
+        if (name.equals("forest")) return WOODS;
         return PALE;
     }
 
     private static final Set<String> BEG_ITEMS = Set.of(
-        ItemID.BONE,
-        ItemID.PORKCHOP,
-        ItemID.COOKED_PORKCHOP,
-        ItemID.CHICKEN,
-        ItemID.COOKED_CHICKEN,
-        ItemID.BEEF,
-        ItemID.COOKED_BEEF,
-        ItemID.ROTTEN_FLESH,
-        ItemID.MUTTON,
-        ItemID.COOKED_MUTTON,
-        ItemID.RABBIT,
-        ItemID.COOKED_RABBIT
+            ItemID.BONE,
+            ItemID.PORKCHOP,
+            ItemID.COOKED_PORKCHOP,
+            ItemID.CHICKEN,
+            ItemID.COOKED_CHICKEN,
+            ItemID.BEEF,
+            ItemID.COOKED_BEEF,
+            ItemID.ROTTEN_FLESH,
+            ItemID.MUTTON,
+            ItemID.COOKED_MUTTON,
+            ItemID.RABBIT,
+            ItemID.COOKED_RABBIT
     );
 
     @Override
@@ -458,144 +460,144 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        2, 1, 1200
-                    ),
-                    new Behavior( // Refresh attack target
-                            entity -> {
-                                var storage = getMemoryStorage();
-                                var hasOwner = hasOwner();
-                                Entity attackTarget = null;
-                                var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                EntityDamageByEntityEvent attackByEntityEvent = null;
-                                if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
-                                    attackByEntityEvent = attackByEntityEv;
-                                boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
-                                if (hasOwner) {
-                                    // Tamed
-                                    if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
-                                        // Attacks creatures that attack their master (excluding themselves).
-                                        attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                        storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                    } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
-                                        // The creature that attacks its master
-                                        attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
-                                        storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
-                                    } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
-                                        // Attacks creatures that attack themselves (except their owners).
-                                        attackTarget = attackByEntityEvent.getDamager();
-                                        storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                    } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
-                                        // Attack the nearest skeleton
-                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
-                                        storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                2, 1, 1200
+                        ),
+                        new Behavior( // Refresh attack target
+                                entity -> {
+                                    var storage = getMemoryStorage();
+                                    var hasOwner = hasOwner();
+                                    Entity attackTarget = null;
+                                    var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                    EntityDamageByEntityEvent attackByEntityEvent = null;
+                                    if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
+                                        attackByEntityEvent = attackByEntityEv;
+                                    boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
+                                    if (hasOwner) {
+                                        // Tamed
+                                        if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).equals(this)) {
+                                            // Attacks creatures that attack their master (excluding themselves).
+                                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                                        } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
+                                            // The creature that attacks its master
+                                            attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                                            storage.clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                                        } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
+                                            // Attacks creatures that attack themselves (except their owners).
+                                            attackTarget = attackByEntityEvent.getDamager();
+                                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
+                                            // Attack the nearest skeleton
+                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
+                                            storage.clear(CoreMemoryTypes.NEAREST_SKELETON);
+                                        }
+                                    } else {
+                                        // Untamed
+                                        if (validAttacker) {
+                                            // Attack the creature that attacks itself
+                                            attackTarget = attackByEntityEvent.getDamager();
+                                            storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                        } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                                            // Attack the nearest suitable creature
+                                            attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                            storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                        }
                                     }
-                                } else {
-                                    // Untamed
-                                    if (validAttacker) {
-                                        // Attack the creature that attacks itself
-                                        attackTarget = attackByEntityEvent.getDamager();
-                                        storage.clear(CoreMemoryTypes.BE_ATTACKED_EVENT);
-                                    } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                        // Attack the nearest suitable creature
-                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                        storage.clear(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                    }
-                                }
-                                storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                return false;
-                            },
-                            entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
-                    )
+                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                                    return false;
+                                },
+                                entity -> this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 1
+                        )
                 ),
                 Set.of(
-                    new Behavior(
-                        new PlaySoundExecutor(Sound.MOB_WOLF_BARK),
-                            new RandomSoundEvaluator(),
-                        6,1
-                    ),
-                    new Behavior(
-                        new BegExecutor(true, 8, BEG_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> BegExecutor.hasBeggingPlayer(e, false, 10, BEG_ITEMS)
-                            ),
-                        5, 1
-                    ),
-                    // Attack the target of hatred (todo) and summon allies.
-                    new Behavior(
-                        new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
-                            all(
-                                e -> !this.isSitting(),
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.35f),
-                            all(
-                                e -> !this.isSitting(),
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new EntityMoveToOwnerExecutor(0.7f, true, 15),
-                            entity -> {
-                                if (this.isSitting()) return false;
+                        new Behavior(
+                                new PlaySoundExecutor(Sound.MOB_WOLF_BARK),
+                                new RandomSoundEvaluator(),
+                                6, 1
+                        ),
+                        new Behavior(
+                                new BegExecutor(true, 8, BEG_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> BegExecutor.hasBeggingPlayer(e, false, 10, BEG_ITEMS)
+                                ),
+                                5, 1
+                        ),
+                        // Attack the target of hatred (todo) and summon allies.
+                        new Behavior(
+                                new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, 33, true, 20),
+                                all(
+                                        e -> !this.isSitting(),
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                                ),
+                                4, 1
+                        ),
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.35f),
+                                all(
+                                        e -> !this.isSitting(),
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new EntityMoveToOwnerExecutor(0.7f, true, 15),
+                                entity -> {
+                                    if (this.isSitting()) return false;
 
-                                if (this.hasOwner()) {
-                                    var player = getOwner();
-                                    if (!player.isOnGround()) return false;
-                                    var distanceSquared = this.distanceSquared(player);
-                                    return distanceSquared >= 100;
-                                } else return false;
-                            }, 
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10)
-                            ),
-                        1, 1, 25
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
-                            all(
-                                e -> !this.isSitting(),
-                                new ProbabilityEvaluator(5, 10)
-                            ),
-                        1, 1, 50
-                    )
+                                    if (this.hasOwner()) {
+                                        var player = getOwner();
+                                        if (!player.isOnGround()) return false;
+                                        var distanceSquared = this.distanceSquared(player);
+                                        return distanceSquared >= 100;
+                                    } else return false;
+                                },
+                                2, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10)
+                                ),
+                                1, 1, 25
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 10),
+                                all(
+                                        e -> !this.isSitting(),
+                                        new ProbabilityEvaluator(5, 10)
+                                ),
+                                1, 1, 50
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20),
-                    new NearestTargetEntitySensor<>(0, 20, 20,
-                        List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
-                        entity -> switch (entity.getIdentifier()) {
-                            case SKELETON, WITHER_SKELETON, STRAY -> true;
-                            default -> false;
-                        }),
-                    new EntityAttackedByOwnerSensor(5, false)
+                        new NearestPlayerSensor(8, 0, 20),
+                        new NearestTargetEntitySensor<>(0, 20, 20,
+                                List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
+                                entity -> switch (entity.getIdentifier()) {
+                                    case SKELETON, WITHER_SKELETON, STRAY -> true;
+                                    default -> false;
+                                }),
+                        new EntityAttackedByOwnerSensor(5, false)
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

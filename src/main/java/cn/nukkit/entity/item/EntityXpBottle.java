@@ -5,9 +5,9 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
-import cn.nukkit.level.particle.SpellParticle;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.level.particle.PotionSplashParticle;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,20 +17,20 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityXpBottle extends EntityProjectile {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return XP_BOTTLE;
     }
-    
 
-    public EntityXpBottle(IChunk chunk, CompoundTag nbt) {
+
+    public EntityXpBottle(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityXpBottle(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityXpBottle(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -92,10 +92,10 @@ public class EntityXpBottle extends EntityProjectile {
     }
 
     public void dropXp() {
-        Particle particle2 = new SpellParticle(this, 0x00385dc6);
+        Particle particle2 = new PotionSplashParticle(this, 0x00385dc6);
         this.getLevel().addParticle(particle2);
 
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEvent.GLASS);
+        this.getLevel().addLevelSoundEvent(this, SoundEvent.GLASS);
 
         this.getLevel().dropExpOrb(this, ThreadLocalRandom.current().nextInt(3, 12));
     }

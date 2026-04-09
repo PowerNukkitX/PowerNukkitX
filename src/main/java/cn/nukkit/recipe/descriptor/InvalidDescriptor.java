@@ -1,6 +1,7 @@
 package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 
 public class InvalidDescriptor implements ItemDescriptor {
@@ -29,6 +30,14 @@ public class InvalidDescriptor implements ItemDescriptor {
     @Override
     public int getCount() {
         return count;
+    }
+
+    @Override
+    public ItemDescriptorWithCount toNetwork() {
+        return new ItemDescriptorWithCount(
+                org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.InvalidDescriptor.INSTANCE,
+                this.count
+        );
     }
 
     public String toString() {

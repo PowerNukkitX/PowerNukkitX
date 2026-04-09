@@ -10,46 +10,49 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.Arrays;
 
 
 public class StrafeExecutor implements EntityControl, IBehaviorExecutor {
 
     private boolean fired = false;
 
-    public StrafeExecutor() {}
+    public StrafeExecutor() {
+    }
+
     @Override
     public boolean execute(EntityIntelligent entity) {
 
-        if(fired) return false;
+        if (fired) return false;
 
         Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-        if(player == null) return false;
+        if (player == null) return false;
         setLookTarget(entity, player);
         setRouteTarget(entity, player);
 
-        if(entity.distance(player) <= 64) {
+        if (entity.distance(player) <= 64) {
 
             Vector3 toPlayerVector = new Vector3(player.x - entity.x, player.y - entity.y, player.z - entity.z).normalize();
 
             Location fireballLocation = entity.getLocation().add(toPlayerVector.multiply(5));
             double yaw = BVector3.getYawFromVector(toPlayerVector);
             double pitch = BVector3.getPitchFromVector(toPlayerVector);
-            CompoundTag nbt = new CompoundTag()
-                    .putList("Pos", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(fireballLocation.x))
-                            .add(new DoubleTag(fireballLocation.y))
-                            .add(new DoubleTag(fireballLocation.z)))
-                    .putList("Motion", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(-Math.sin(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI)))
-                            .add(new DoubleTag(-Math.sin(pitch / 180 * Math.PI)))
-                            .add(new DoubleTag(Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI))))
-                    .putList("Rotation", new ListTag<FloatTag>()
-                            .add(new FloatTag(0))
-                            .add(new FloatTag(0)));
+            final NbtMap nbt = NbtMap.builder()
+                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                    fireballLocation.x,
+                                    fireballLocation.y,
+                                    fireballLocation.z
+                            )
+                    ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
+                                    -Math.sin(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI),
+                                    -Math.sin(pitch / 180 * Math.PI),
+                                    Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI)
+                            )
+                    ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
+                    ).build();
 
             Entity projectile = Entity.createEntity(EntityID.DRAGON_FIREBALL, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
             projectile.spawnToAll();
@@ -63,7 +66,7 @@ public class StrafeExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public void onStart(EntityIntelligent entity) {
         Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-        if(player == null) return;
+        if (player == null) return;
         setLookTarget(entity, player);
         setRouteTarget(entity, player);
         this.fired = false;

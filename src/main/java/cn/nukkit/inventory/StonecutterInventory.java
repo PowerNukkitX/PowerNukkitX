@@ -1,11 +1,11 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockStonecutterBlock;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public class StonecutterInventory extends ContainerInventory implements CraftTyp
 
 
     public StonecutterInventory(BlockStonecutterBlock blockStonecutterBlock) {
-        super(blockStonecutterBlock, InventoryType.STONECUTTER, 3);
+        super(blockStonecutterBlock, ContainerType.STONECUTTER, 3);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class StonecutterInventory extends ContainerInventory implements CraftTyp
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
-        if(index == 3) {
+        if (index == 3) {
             slots.put(index, item);
             return true;
         } else return false;
@@ -48,10 +48,10 @@ public class StonecutterInventory extends ContainerInventory implements CraftTyp
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(3, ContainerSlotType.STONECUTTER_INPUT);
-        map.put(4, ContainerSlotType.STONECUTTER_RESULT);
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        map.put(3, ContainerEnumName.STONECUTTER_INPUT_CONTAINER);
+        map.put(4, ContainerEnumName.STONECUTTER_RESULT_PREVIEW_CONTAINER);
         return map;
     }
 }

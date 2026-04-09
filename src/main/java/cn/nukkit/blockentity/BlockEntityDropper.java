@@ -3,13 +3,13 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.DropperInventory;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 
 public class BlockEntityDropper extends BlockEntityEjectable {
 
 
-    public BlockEntityDropper(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityDropper(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

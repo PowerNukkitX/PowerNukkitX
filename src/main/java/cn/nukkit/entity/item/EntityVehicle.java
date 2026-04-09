@@ -11,7 +11,8 @@ import cn.nukkit.event.vehicle.VehicleDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyByEntityEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyEvent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -20,32 +21,32 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
 
     protected boolean rollingDirection = true;
 
-    public EntityVehicle(IChunk chunk, CompoundTag nbt) {
+    public EntityVehicle(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     public int getRollingAmplitude() {
-        return this.getDataProperty(HURT_TICKS);
+        return this.getDataProperty(ActorDataTypes.HURT);
     }
 
     public void setRollingAmplitude(int time) {
-        this.setDataProperty(HURT_TICKS, time);
+        this.setDataProperty(ActorDataTypes.HURT, time);
     }
 
     public int getRollingDirection() {
-        return this.getDataProperty(HURT_DIRECTION);
+        return this.getDataProperty(ActorDataTypes.HURT_DIR);
     }
 
     public void setRollingDirection(int direction) {
-        this.setDataProperty(HURT_DIRECTION, direction);
+        this.setDataProperty(ActorDataTypes.HURT_DIR, direction);
     }
 
     public int getDamage() {
-        return this.getDataProperty(STRUCTURAL_INTEGRITY); // false data name (should be DATA_DAMAGE_TAKEN)
+        return this.getDataProperty(ActorDataTypes.STRUCTURAL_INTEGRITY); // false data name (should be DATA_DAMAGE_TAKEN)
     }
 
     public void setDamage(int damage) {
-        this.setDataProperty(STRUCTURAL_INTEGRITY, damage);
+        this.setDataProperty(ActorDataTypes.STRUCTURAL_INTEGRITY, damage);
     }
 
     @Override

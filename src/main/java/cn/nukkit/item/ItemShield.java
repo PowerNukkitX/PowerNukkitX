@@ -1,7 +1,8 @@
 package cn.nukkit.item;
 
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -34,20 +35,19 @@ public class ItemShield extends ItemTool {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasBannerPattern() {
-        return this.hasCompoundTag() && (this.getNamedTag().containsInt("Base") ||
-                this.getNamedTag().containsInt("Type") || this.getNamedTag().containsList("Patterns"));
+        return this.hasCompoundTag() && (this.getNamedTag().containsKey("Base") ||
+                this.getNamedTag().containsKey("Type") || this.getNamedTag().containsKey("Patterns"));
     }
 
     public @Nullable ItemBanner getBannerPattern() {
         if (!this.hasBannerPattern()) {
             return null;
         }
-        var tag = this.getNamedTag();
+        var tag = this.getNamedTag().toBuilder();
         var item = new ItemBanner();
-        for (var e : item.getNamedTag().getEntrySet()) {
-            tag.put(e.getKey(), e.getValue());
-        }
-        if (this.getNamedTag().containsInt("Base")) {
+        tag.putAll(item.getNamedTag());
+        this.setNamedTag(tag.build());
+        if (this.getNamedTag().containsKey("Base")) {
             item.setBaseColor(DyeColor.getByDyeData(this.getNamedTag().getInt("Base")));
         }
         return item;
@@ -58,17 +58,16 @@ public class ItemShield extends ItemTool {
             this.clearNamedTag();
             return;
         }
-        CompoundTag tag;
+        NbtMap tag;
         if (!hasBannerPattern()) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         } else {
             tag = this.getNamedTag();
         }
-        for (var e : banner.getNamedTag().getEntrySet()) {
-            tag.put(e.getKey(), e.getValue());
-        }
-        tag.putInt("Base", banner.getBaseColor());
-        this.setNamedTag(tag);
+        final NbtMapBuilder builder = tag.toBuilder();
+        builder.putAll(banner.getNamedTag());
+        builder.putInt("Base", banner.getBaseColor());
+        this.setNamedTag(builder.build());
     }
 
     @Override

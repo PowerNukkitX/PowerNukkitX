@@ -8,7 +8,8 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.Objects;
 
@@ -18,7 +19,7 @@ import java.util.Objects;
 public class BlockEntityChest extends BlockEntitySpawnableContainer {
     protected DoubleChestInventory doubleInventory = null;
 
-    public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityChest(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -77,17 +78,19 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
                 this.pairWith(pair);
             }
 
+            NbtMapBuilder builder = this.namedTag.toBuilder();
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
-                this.namedTag.putBoolean("pairlead", false);
+                builder.putBoolean("pairlead", false);
             } else if (this.doubleInventory == null) {
-                this.namedTag.putBoolean("pairlead", true);
+                builder.putBoolean("pairlead", true);
                 if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { //Order them correctly
                     this.doubleInventory = new DoubleChestInventory(pair, this);
                 } else {
                     this.doubleInventory = new DoubleChestInventory(this, pair);
                 }
             }
+            this.namedTag = builder.build();
         } else {
             if (level.isChunkLoaded(this.namedTag.getInt("pairx") >> 4, this.namedTag.getInt("pairz") >> 4)) {
                 this.doubleInventory = null;
@@ -99,7 +102,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean isPaired() {
-        return this.namedTag.contains("pairx") && this.namedTag.contains("pairz");
+        return this.namedTag.containsKey("pairx") && this.namedTag.containsKey("pairz");
     }
 
     public BlockEntityChest getPair() {
@@ -144,10 +147,14 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public void createPair(BlockEntityChest chest) {
-        this.namedTag.putInt("pairx", (int) chest.x);
-        this.namedTag.putInt("pairz", (int) chest.z);
-        chest.namedTag.putInt("pairx", (int) this.x);
-        chest.namedTag.putInt("pairz", (int) this.z);
+        this.namedTag = this.namedTag.toBuilder()
+                .putInt("pairx", (int) chest.x)
+                .putInt("pairz", (int) chest.z)
+                .build();
+        chest.namedTag = chest.namedTag.toBuilder()
+                .putInt("pairx", (int) this.x)
+                .putInt("pairz", (int) this.z)
+                .build();
     }
 
     public boolean unpair() {
@@ -175,8 +182,8 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag spawnCompound = super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder spawnCompound = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable());
         if (this.isPaired()) {
             spawnCompound.putBoolean("pairlead", this.namedTag.getBoolean("pairlead"))
@@ -186,12 +193,15 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         if (this.hasName()) {
             spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
         }
-        return spawnCompound;
+        return spawnCompound.build();
     }
 
     @Override
-    public CompoundTag getCleanedNBT() {
-        return super.getCleanedNBT().remove("pairx").remove("pairz");
+    public NbtMap getCleanedNBT() {
+        final NbtMap nbtMap = super.getCleanedNBT();
+        nbtMap.remove("pairx");
+        nbtMap.remove("pairz");
+        return nbtMap;
     }
 
     @Override
@@ -201,7 +211,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.namedTag.containsKey("CustomName");
     }
 
     @Override
@@ -211,7 +221,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
     }
 
     @Override

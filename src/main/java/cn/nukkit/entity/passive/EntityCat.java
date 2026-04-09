@@ -45,10 +45,10 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,7 +76,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     protected float[] diffHandDamage = new float[]{4, 4, 4};
 
-    public EntityCat(IChunk chunk, CompoundTag nbt) {
+    public EntityCat(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -134,8 +134,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         // Synchronize owner eid
         if (hasOwner()) {
             Player owner = getOwner();
-            if (owner != null && getDataProperty(Entity.OWNER_EID) != owner.getId()) {
-                this.setDataProperty(Entity.OWNER_EID, owner.getId());
+            if (owner != null && getDataProperty(ActorDataTypes.OWNER) != owner.getId()) {
+                this.setDataProperty(ActorDataTypes.OWNER, owner.getId());
             }
         }
         return super.onUpdate(currentTick);
@@ -144,16 +144,16 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     @Override
     public void initEntity() {
         super.initEntity();
-        if (this.isBaby()) {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT_BABY.getId());
+        /* TODO protocol if (this.isBaby()) {
+            this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT_BABY.getId());
         } else {
-            this.setDataProperty(Entity.AMBIENT_SOUND_EVENT_NAME, LevelSoundEvent.AMBIENT.getId());
-        }
+            this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT.getId());
+        }*/
         if (!hasVariant()) {
             this.setVariant(randomVariant());
         }
         // Update collar color
-        if (namedTag.contains("Color")) {
+        if (namedTag.containsKey("Color")) {
             this.setColor(DyeColor.getByWoolData(namedTag.getByte("Color")));
         }
 

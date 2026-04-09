@@ -11,8 +11,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -71,9 +71,9 @@ public class ItemSpawnEgg extends Item {
         float yaw = java.util.concurrent.ThreadLocalRandom.current().nextFloat() * 360f;
         Location loc = new Location(block.getX() + 0.5, spawnY, block.getZ() + 0.5, yaw, 0f, level);
 
-        CompoundTag nbt = Entity.getDefaultNBT(loc);
+        NbtMap nbt = Entity.getDefaultNBT(loc);
         if (this.hasCustomName()) {
-            nbt.putString("CustomName", this.getCustomName());
+            nbt = nbt.toBuilder().putString("CustomName", this.getCustomName()).build();
         }
 
         int networkId = getEntityNetworkId();

@@ -1,6 +1,6 @@
 package cn.nukkit.entity.data.property;
 
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author Peng_Lx
@@ -30,8 +30,9 @@ public class BooleanEntityProperty extends EntityProperty {
     }
 
     @Override
-    public void populateTag(CompoundTag tag) {
-        tag.putInt("type", 2);
-        tag.putBoolean("clientSync", isClientSync());
+    public NbtMap populateTag(NbtMap tag) {
+        return tag.toBuilder().putInt("type", 2)
+                .putBoolean("clientSync", isClientSync())
+                .build();
     }
 }

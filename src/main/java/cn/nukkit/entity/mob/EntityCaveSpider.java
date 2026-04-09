@@ -28,8 +28,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,11 +43,12 @@ import java.util.Set;
 public class EntityCaveSpider extends EntityMob implements EntityWalkable, EntityArthropod {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return CAVE_SPIDER;
     }
 
-    public EntityCaveSpider(IChunk chunk, CompoundTag nbt) {
+    public EntityCaveSpider(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

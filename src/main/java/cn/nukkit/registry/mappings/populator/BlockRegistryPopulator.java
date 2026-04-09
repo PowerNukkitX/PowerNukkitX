@@ -3,18 +3,18 @@ package cn.nukkit.registry.mappings.populator;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockFlowingLava;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.registry.mappings.BlockMappings;
-import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.block.*;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.mappings.BlockMappings;
+import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +22,7 @@ import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 
 /**
@@ -32,7 +33,7 @@ public final class BlockRegistryPopulator {
     @FunctionalInterface
     private interface Remapper {
 
-        CompoundTag remap(CompoundTag tag);
+        NbtMap remap(NbtMap tag);
 
         static Remapper of(Updater... updaters) {
             CompoundTagUpdaterContext context = new CompoundTagUpdaterContext();
@@ -41,9 +42,9 @@ public final class BlockRegistryPopulator {
             }
 
             return tag -> {
-                CompoundTag updated = context.update(tag, 0);
+                NbtMap updated = context.update(tag, 0);
                 updated.remove("version"); // we already removed this, but the context adds it. remove it again.
-                return new TreeMapCompoundTag(updated.getTags());
+                return NbtMap.fromMap(new TreeMap<>(updated));
             };
         }
 
@@ -75,10 +76,10 @@ public final class BlockRegistryPopulator {
             Object2ObjectOpenHashMap<JeBlockState, cn.nukkit.block.BlockState> MAP1 = new Object2ObjectOpenHashMap<>();
             Object2ObjectOpenHashMap<cn.nukkit.block.BlockState, JeBlockState> MAP2 = new Object2ObjectOpenHashMap<>();
             blocks.forEach((k, v) -> {
-                final TreeMapCompoundTag treeMapCompoundTag = new TreeMapCompoundTag();
+                final NbtMapBuilder treeMapCompoundTag = NbtMap.builder();
                 var name = v.get("bedrock_identifier").toString();
                 treeMapCompoundTag.putString("name", name);
-                final TreeMapCompoundTag stateTag = new TreeMapCompoundTag();
+                final NbtMapBuilder stateTag = NbtMap.builder();
                 if (v.containsKey("bedrock_states")) {
                     Map<String, Object> states = asStringObjectMap(v.get("bedrock_states"));
                     states.forEach((key, value) -> {
@@ -92,10 +93,10 @@ public final class BlockRegistryPopulator {
                         }
                     });
                 }
-                treeMapCompoundTag.putCompound("states", stateTag);
+                treeMapCompoundTag.putCompound("states", NbtMap.fromMap(new TreeMap<>(stateTag.build())));
                 treeMapCompoundTag.putString("version", "18087936");
 
-                final CompoundTag remappedTag = mapper.remap(treeMapCompoundTag);
+                final NbtMap remappedTag = mapper.remap(NbtMap.fromMap(new TreeMap<>(treeMapCompoundTag.build())));
                 final int i = HashUtils.fnv1a_32_nbt(remappedTag);
                 cn.nukkit.block.BlockState pnxBlockState = Registries.BLOCKSTATE.get(i);
                 if (pnxBlockState == null && !experimentalBlocks.contains(remappedTag.getString("name"))) {

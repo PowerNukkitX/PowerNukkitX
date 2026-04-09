@@ -11,9 +11,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -76,15 +77,13 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
             return false;
 
         setBlockFace(face);
-        CompoundTag nbt = new CompoundTag()
-                .putByte("SkullType", item.getDamage())
-                .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
+        NbtMapBuilder nbt = NbtMap.builder()
+                .putByte("SkullType", (byte) item.getDamage())
+                .putByte("Rot", (byte) ((int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f));
         if (item.hasCustomBlockData()) {
-            for (var e : item.getCustomBlockData().getEntrySet()) {
-                nbt.put(e.getKey(), e.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
-        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt.build()) != null;
     }
 
     @Override

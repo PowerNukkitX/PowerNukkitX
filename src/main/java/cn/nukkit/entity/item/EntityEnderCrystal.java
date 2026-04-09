@@ -4,7 +4,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.components.NameableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -13,7 +12,9 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,7 +33,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
      */
     protected boolean detonated = false;
 
-    public EntityEnderCrystal(IChunk chunk, CompoundTag nbt) {
+    public EntityEnderCrystal(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -41,7 +42,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.contains("ShowBottom")) {
+        if (this.namedTag.containsKey("ShowBottom")) {
             this.setShowBase(this.namedTag.getBoolean("ShowBottom"));
         }
     }
@@ -50,7 +51,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putBoolean("ShowBottom", this.showBase());
+        this.namedTag = this.namedTag.toBuilder().putBoolean("ShowBottom", this.showBase()).build();
     }
 
     @Override
@@ -135,19 +136,19 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     }
 
     public boolean showBase() {
-        return this.getDataFlag(EntityFlag.SHOW_BOTTOM);
+        return this.getDataFlag(ActorFlags.SHOW_BOTTOM);
     }
 
     public void setShowBase(boolean value) {
-        this.setDataFlag(EntityFlag.SHOW_BOTTOM, value);
+        this.setDataFlag(ActorFlags.SHOW_BOTTOM, value);
     }
 
     public BlockVector3 getBeamTarget() {
-        return this.getDataProperty(BLOCK_TARGET_POS);
+        return BlockVector3.fromNetwork(this.getDataProperty(ActorDataTypes.BLOCK_TARGET));
     }
 
     public void setBeamTarget(BlockVector3 beamTarget) {
-        this.setDataProperty(BLOCK_TARGET_POS, beamTarget);
+        this.setDataProperty(ActorDataTypes.BLOCK_TARGET, beamTarget.toNetwork());
     }
 
     @Override

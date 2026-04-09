@@ -1,7 +1,6 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.RecipeRegistry;
@@ -9,6 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -158,7 +160,7 @@ public class ShapedRecipe extends CraftingRecipe {
             mirrorInput = new Input(3, 3, mirrorItemArray(input.getData()));
         }
         tryShrinkMatrix(input);
-        if(input.getRow() != row || input.getCol() != col) return false;
+        if (input.getRow() != row || input.getCol() != col) return false;
 
         boolean checkMirror = false;
         next:
@@ -221,7 +223,7 @@ public class ShapedRecipe extends CraftingRecipe {
      */
     public static void tryShrinkMatrix(Input input) {
         Item[][] inputs = input.getData();
-        if(inputs.length == 0) return;
+        if (inputs.length == 0) return;
         int startRow = 0, endRow = inputs.length - 1;
         for (int row = 0; row < inputs.length; row++) {
             if (notAllEmptyRow(inputs[row])) {
@@ -297,5 +299,28 @@ public class ShapedRecipe extends CraftingRecipe {
     @Override
     public RecipeType getType() {
         return RecipeType.SHAPED;
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapedRecipe toNetwork() {
+        final List<ItemDescriptor> ingredients = new ObjectArrayList<>();
+        for (int y = 0; y < this.getHeight(); y++) {
+            for (int x = 0; x < this.getWidth(); x++) {
+                ingredients.add(this.getIngredient(x, y));
+            }
+        }
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.ShapedRecipe.of(
+                CraftingDataEntryType.SHAPED_RECIPE,
+                this.getRecipeId(),
+                this.getWidth(),
+                this.getHeight(),
+                ingredients.stream().map(ItemDescriptor::toNetwork).toList(),
+                this.getResults().stream().map(Item::toNetwork).toList(),
+                this.getUUID(),
+                "crafting_table",
+                this.getPriority(),
+                RecipeRegistry.RECIPE_NET_ID_COUNTER++,
+                this.isMirror(),
+                this.getRequirement()
+        );
     }
 }

@@ -2,11 +2,12 @@ package cn.nukkit.registry;
 
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.PNXStructure;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.util.InternalApi;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -23,8 +24,9 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
 
     @Override
     public void init() {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/unknown/structures.nbt")) {
-            CompoundTag structureTag = NBTIO.readCompressed(stream);
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/unknown/structures.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            NbtMap structureTag = (NbtMap) nbtInputStream.readTag();
             registerFromTag("", structureTag);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -32,18 +34,18 @@ public final class StructureRegistry implements IRegistry<String, AbstractStruct
     }
 
     @SneakyThrows
-    private void registerFromTag(String name, CompoundTag tag) {
-        for(var entry : tag.getTags().entrySet()) {
+    private void registerFromTag(String name, NbtMap tag) {
+        for (var entry : tag.entrySet()) {
             String name1 = entry.getKey();
             String identifier = name + (name.isEmpty() ? "" : "/") + name1;
-            if(entry.getValue() instanceof CompoundTag tag1) {
-                if(tag1.getTags().containsKey("object")) {
+            if (entry.getValue() instanceof NbtMap tag1) {
+                if (tag1.containsKey("object")) {
                     PNXStructure structure = PNXStructure.fromNbt(tag1.getCompound("object"));
                     structure.setName(identifier);
                     this.register(structure);
-                    tag1.remove("object");
+                    tag1 = NbtHelper.remove(tag1, "object");
                 }
-                if(!tag1.isEmpty()) {
+                if (!tag1.isEmpty()) {
                     registerFromTag(identifier, tag1);
                 }
             }

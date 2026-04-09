@@ -2,18 +2,18 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 
 public class EntityBreezeWindCharge extends EntityWindCharge {
 
 
-    public EntityBreezeWindCharge(IChunk chunk, CompoundTag nbt) {
+    public EntityBreezeWindCharge(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityBreezeWindCharge(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityBreezeWindCharge(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 

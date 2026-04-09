@@ -1,6 +1,7 @@
 package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 
 public class DefaultDescriptor implements ItemDescriptor {
@@ -33,6 +34,13 @@ public class DefaultDescriptor implements ItemDescriptor {
     @Override
     public boolean match(Item item) {
         return this.item.equals(item, true, false);
+    }
+
+    @Override
+    public ItemDescriptorWithCount toNetwork() {
+        final org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor descriptor =
+                new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor(this.item.getItemDefinition(), this.item.getDamage());
+        return new ItemDescriptorWithCount(descriptor, this.getCount());
     }
 
     @Override

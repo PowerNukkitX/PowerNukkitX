@@ -7,17 +7,17 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.noise.minecraft.utils.Pair;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.plugin.InternalPlugin;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import com.google.common.base.Preconditions;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -37,7 +37,8 @@ public class BlockSnowLayer extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW_LAYER, COVERED_BIT, HEIGHT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -196,7 +197,7 @@ public class BlockSnowLayer extends BlockFallable {
     public int onUpdate(int type) {
         super.onUpdate(type);
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            BiomeDefinition biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
+            BiomeDefinitionData biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).second();
             if (biomeDefinition.getTags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
                 melt();
                 return Level.BLOCK_UPDATE_RANDOM;

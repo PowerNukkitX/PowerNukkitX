@@ -57,14 +57,13 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import lombok.Getter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,7 +92,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
             }, "unoxidized", true),
     };
 
-    public EntityCopperGolem(IChunk chunk, CompoundTag nbt) {
+    public EntityCopperGolem(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -119,7 +118,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                                         entity -> entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) > 0,
                                         entity -> {
                                             entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING,
-                                                    entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING)-1);
+                                                    entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) - 1);
                                             return true;
                                         }
                                 )
@@ -128,7 +127,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 2.1f)
-                        ),6, 1),
+                        ), 6, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.2f, true), all(
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
@@ -137,13 +136,13 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
                                 entity -> inventory.getItemInHand().isNull(),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2, 2.1f)
-                        ),4, 1),
+                        ), 4, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK_2, 0.2f, true), all(
                                 entity -> inventory.getItemInHand().isNull(),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2)
                         ), 3, 1),
                         new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7*20);
+                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
                             return true;
                         }, all(
                                 not(entity -> inventory.getItemInHand().isNull()),
@@ -164,13 +163,13 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(!namedTag.containsString("oxidationLevel")) {
-            namedTag.putString("oxidationLevel", Oxidation.UNOXIDIZED.getName());
+        if (!namedTag.containsKey("oxidationLevel")) {
+            this.namedTag = namedTag.toBuilder().putString("oxidationLevel", Oxidation.UNOXIDIZED.getName()).build();
         }
         this.inventory = new EntityEquipmentInventory(this);
 
-        if (this.namedTag.contains("Mainhand")) {
-            this.inventory.setItemInHand(NBTIO.getItemHelper(this.namedTag.getCompound("Mainhand")), true);
+        if (this.namedTag.containsKey("Mainhand")) {
+            this.inventory.setItemInHand(ItemHelper.read(this.namedTag.getCompound("Mainhand")), true);
         }
         setOxidation(Oxidation.valueOf(namedTag.getString("oxidationLevel").toUpperCase()));
         this.weatherTick = namedTag.getInt("weatheredTick");
@@ -194,11 +193,11 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING) return false;
-        if(source.getCause() == EntityDamageEvent.DamageCause.FALL) return false;
-        if(super.attack(source)) {
-            if(source.getCause() == EntityDamageEvent.DamageCause.LIGHTNING && !isWaxed()) {
-                setOxidation(Oxidation.VALUES[getOxidation().ordinal()-1]);
+        if (source.getCause() == EntityDamageEvent.DamageCause.DROWNING) return false;
+        if (source.getCause() == EntityDamageEvent.DamageCause.FALL) return false;
+        if (super.attack(source)) {
+            if (source.getCause() == EntityDamageEvent.DamageCause.LIGHTNING && !isWaxed()) {
+                setOxidation(Oxidation.VALUES[getOxidation().ordinal() - 1]);
                 weatherTick = -1;
             }
             return true;
@@ -209,35 +208,39 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.put("Mainhand", NBTIO.putItemHelper(this.getInventory().getItem(0)));
-        this.namedTag.putString("oxidationLevel", this.getOxidation().getName());
-        this.namedTag.putInt("weatheredTick", this.weatherTick);
+        this.namedTag = this.namedTag.toBuilder().putCompound("Mainhand", ItemHelper.write(this.getInventory().getItem(0), null))
+                .putString("oxidationLevel", this.getOxidation().getName())
+                .putInt("weatheredTick", this.weatherTick)
+                .build();
     }
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if(item instanceof ItemShears) {
-            if(hasFlower()) {
+        if (item instanceof ItemShears) {
+            if (hasFlower()) {
                 this.setFlower(false);
-                this.level.addLevelSoundEvent(this, LevelSoundEvent.SHEAR);
-                if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
+                this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
+                if (player.getGamemode() != Player.CREATIVE)
+                    player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.POPPY));
             }
-        } else if(item instanceof ItemHoneycomb) {
-            if(!isWaxed()) {
-                if(player.getGamemode() != Player.CREATIVE) player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+        } else if (item instanceof ItemHoneycomb) {
+            if (!isWaxed()) {
+                if (player.getGamemode() != Player.CREATIVE)
+                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 setWaxed(true);
                 getLevel().addSound(this, Sound.COPPER_WAX_ON);
                 Server.broadcastPacket(getViewers().values(), new WaxOnParticle(getVector3()).encode()[0]);
             }
-        } else if(item.isAxe()) {
-            if(isWaxed()) {
-                if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
+        } else if (item.isAxe()) {
+            if (isWaxed()) {
+                if (player.getGamemode() != Player.CREATIVE)
+                    player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
                 setWaxed(false);
                 getLevel().addSound(this, Sound.SCRAPE);
                 Server.broadcastPacket(getViewers().values(), new WaxOffParticle(this).encode()[0]);
-            } else if(getOxidation() != Oxidation.UNOXIDIZED) {
-                setOxidation(Oxidation.VALUES[getOxidation().ordinal()-1]);
+            } else if (getOxidation() != Oxidation.UNOXIDIZED) {
+                setOxidation(Oxidation.VALUES[getOxidation().ordinal() - 1]);
                 getLevel().addSound(this, Sound.SCRAPE);
                 Server.broadcastPacket(getViewers().values(), new ScrapeParticle(this).encode()[0]);
             }
@@ -247,17 +250,17 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if(!isWaxed()) {
-            if(getOxidation() != Oxidation.OXIDIZED) {
-                if(weatherTick == -1) {
+        if (!isWaxed()) {
+            if (getOxidation() != Oxidation.OXIDIZED) {
+                if (weatherTick == -1) {
                     weatherTick = NukkitMath.randomRange(random, 504000, 552000);
                 } else {
-                    if(weatherTick <= 0) {
-                        setOxidation(Oxidation.VALUES[getOxidation().ordinal()+1]);
+                    if (weatherTick <= 0) {
+                        setOxidation(Oxidation.VALUES[getOxidation().ordinal() + 1]);
                         weatherTick = -1;
                     } else weatherTick--;
                 }
-            } else if(getLevelBlock().isAir() && random.nextFloat() <=  0.0058F) {
+            } else if (getLevelBlock().isAir() && random.nextFloat() <= 0.0058F) {
                 turnToStatue();
             }
         }
@@ -331,14 +334,14 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     }
 
     public static void checkAndSpawnGolem(Block block) {
-        if(block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            if(block instanceof BlockPumpkin pumpkin) {
-                for(BlockFace blockFace : BlockFace.values()) {
-                    if(pumpkin.getSide(blockFace) instanceof BlockCopperBlock copperBlock) {
+        if (block.getLevel().getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (block instanceof BlockPumpkin pumpkin) {
+                for (BlockFace blockFace : BlockFace.values()) {
+                    if (pumpkin.getSide(blockFace) instanceof BlockCopperBlock copperBlock) {
                         block.level.setBlock(copperBlock, Block.get(copperBlock.getId().replace("_block", "") + "_chest"));
                         block.level.addParticle(new DestroyBlockParticle(copperBlock.add(0.5, 0.5, 0.5), block));
                         block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(null, copperBlock.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
-                        CompoundTag nbt = Entity.getDefaultNBT(pumpkin.add(0.5, 0, 0.5f));
+                        NbtMap nbt = Entity.getDefaultNBT(pumpkin.add(0.5, 0, 0.5f));
                         EntityCopperGolem copperGolem = (EntityCopperGolem) Entity.createEntity(EntityID.COPPER_GOLEM, block.level.getChunk(block.getChunkX(), block.getChunkZ()), nbt);
                         copperGolem.setOxidation(Oxidation.getGolemOxidation(copperBlock.getOxidizationLevel()));
                         copperGolem.spawnToAll();
@@ -382,8 +385,8 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
 
         @Override
         public boolean evaluate(Block block) {
-            if(block instanceof BlockChest chest) {
-                if(copper ^ (chest instanceof BlockCopperChest)) return false;
+            if (block instanceof BlockChest chest) {
+                if (copper ^ (chest instanceof BlockCopperChest)) return false;
                 MemoryType<ObjectList<InventoryHolder>> memory = copper ? CoreMemoryTypes.COPPER_CHESTS : CoreMemoryTypes.CHESTS;
                 return getMemoryStorage().get(memory).stream().noneMatch(b -> b.getInventory() == chest.getOrCreateBlockEntity().getInventory());
             }

@@ -19,10 +19,10 @@ import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.BreedingExecutor;
-import cn.nukkit.entity.ai.executor.RideableTameExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.RideableTameExecutor;
 import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -37,7 +37,6 @@ import cn.nukkit.entity.components.HorseJumpStrengthComponent;
 import cn.nukkit.entity.components.InventoryComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
@@ -46,9 +45,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,11 +63,12 @@ import java.util.Set;
  */
 public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityVariant, EntityMarkVariant, InventoryHolder {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return HORSE;
     }
 
-    public EntityHorse(IChunk chunk, CompoundTag nbt) {
+    public EntityHorse(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -117,15 +118,15 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 false,
                 1,
                 List.of(
-                    new RideableComponent.Seat(
-                        0,
-                        1,
-                        new Vector3f(0.0f, 1.1f, -0.2f),
-                        null,
-                        null,
-                        null,
-                        null
-                    )
+                        new RideableComponent.Seat(
+                                0,
+                                1,
+                                new Vector3f(0.0f, 1.1f, -0.2f),
+                                null,
+                                null,
+                                null,
+                                null
+                        )
                 )
         );
     }
@@ -153,16 +154,16 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                         1,
                         EquippableComponent.Type.HORSE_ARMOR,
                         Set.of(
-                            ItemID.LEATHER_HORSE_ARMOR,
-                            ItemID.IRON_HORSE_ARMOR,
-                            ItemID.GOLDEN_HORSE_ARMOR,
-                            ItemID.DIAMOND_HORSE_ARMOR,
-                            ItemID.COPPER_HORSE_ARMOR,
-                            ItemID.NETHERITE_HORSE_ARMOR
+                                ItemID.LEATHER_HORSE_ARMOR,
+                                ItemID.IRON_HORSE_ARMOR,
+                                ItemID.GOLDEN_HORSE_ARMOR,
+                                ItemID.DIAMOND_HORSE_ARMOR,
+                                ItemID.COPPER_HORSE_ARMOR,
+                                ItemID.NETHERITE_HORSE_ARMOR
                         ),
                         null
                 )
-            ));
+        ));
     }
 
     @Override
@@ -226,19 +227,19 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 null,
                 null,
                 BreedableComponent.blendAttributesOf(
-                    Attribute.HEALTH,
-                    Attribute.MOVEMENT_SPEED,
-                    Attribute.HORSE_JUMP_STRENGTH
+                        Attribute.HEALTH,
+                        Attribute.MOVEMENT_SPEED,
+                        Attribute.HORSE_JUMP_STRENGTH
                 ),
                 null,
                 Set.of(
-                    ItemID.GOLDEN_CARROT,
-                    ItemID.GOLDEN_APPLE,
-                    ItemID.ENCHANTED_GOLDEN_APPLE
+                        ItemID.GOLDEN_CARROT,
+                        ItemID.GOLDEN_APPLE,
+                        ItemID.ENCHANTED_GOLDEN_APPLE
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.HORSE, EntityID.HORSE),
-                    new BreedableComponent.BreedsWith(EntityID.DONKEY, EntityID.MULE)
+                        new BreedableComponent.BreedsWith(EntityID.HORSE, EntityID.HORSE),
+                        new BreedableComponent.BreedsWith(EntityID.DONKEY, EntityID.MULE)
                 ),
                 null,
                 null,
@@ -257,14 +258,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
-                    new HealableComponent.Item(BlockID.WHEAT, 2),
-                    new HealableComponent.Item(BlockID.HAY_BLOCK, 20),
-                    new HealableComponent.Item(ItemID.SUGAR, 1),
-                    new HealableComponent.Item(ItemID.APPLE, 3),
-                    new HealableComponent.Item(ItemID.CARROT, 3),
-                    new HealableComponent.Item(ItemID.GOLDEN_CARROT, 4),
-                    new HealableComponent.Item(ItemID.GOLDEN_APPLE, 10),
-                    new HealableComponent.Item(ItemID.ENCHANTED_GOLDEN_APPLE, 10)
+                        new HealableComponent.Item(BlockID.WHEAT, 2),
+                        new HealableComponent.Item(BlockID.HAY_BLOCK, 20),
+                        new HealableComponent.Item(ItemID.SUGAR, 1),
+                        new HealableComponent.Item(ItemID.APPLE, 3),
+                        new HealableComponent.Item(ItemID.CARROT, 3),
+                        new HealableComponent.Item(ItemID.GOLDEN_CARROT, 4),
+                        new HealableComponent.Item(ItemID.GOLDEN_APPLE, 10),
+                        new HealableComponent.Item(ItemID.ENCHANTED_GOLDEN_APPLE, 10)
                 )
         );
     }
@@ -275,14 +276,14 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
-                    new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.15f),
-                    new AgeableComponent.FeedItem(ItemID.SUGAR, 0.025f),
-                    new AgeableComponent.FeedItem(ItemID.APPLE, 0.05f),
-                    new AgeableComponent.FeedItem(ItemID.CARROT, 0.05f),
-                    new AgeableComponent.FeedItem(ItemID.GOLDEN_CARROT, 0.05f),
-                    new AgeableComponent.FeedItem(ItemID.GOLDEN_APPLE, 0.2f),
-                    new AgeableComponent.FeedItem(ItemID.ENCHANTED_GOLDEN_APPLE, 0.2f)
+                        new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
+                        new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.15f),
+                        new AgeableComponent.FeedItem(ItemID.SUGAR, 0.025f),
+                        new AgeableComponent.FeedItem(ItemID.APPLE, 0.05f),
+                        new AgeableComponent.FeedItem(ItemID.CARROT, 0.05f),
+                        new AgeableComponent.FeedItem(ItemID.GOLDEN_CARROT, 0.05f),
+                        new AgeableComponent.FeedItem(ItemID.GOLDEN_APPLE, 0.2f),
+                        new AgeableComponent.FeedItem(ItemID.ENCHANTED_GOLDEN_APPLE, 0.2f)
                 ),
                 null,
                 null,
@@ -309,7 +310,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     private void ensureInventories() {
-        if (this.entityInventory == null) this.entityInventory = new HorseInventory<>(this, getComponentInventory().size());
+        if (this.entityInventory == null)
+            this.entityInventory = new HorseInventory<>(this, getComponentInventory().size());
     }
 
     @Override
@@ -318,8 +320,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
         // Load items
         ensureInventories();
-        if (namedTag.containsList("Inventory")) {
-            entityInventory.load(namedTag.getList("Inventory", CompoundTag.class));
+        if (namedTag.containsKey("Inventory")) {
+            entityInventory.load(namedTag.getList("Inventory", NbtType.COMPOUND));
         }
 
         if (!hasVariant()) {
@@ -341,7 +343,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         super.saveNBT();
 
         var inv = getInventory();
-        namedTag.putList("Inventory", inv.save(isChested()));
+        this.namedTag = namedTag.toBuilder().putList("Inventory", NbtType.COMPOUND, inv.save(isChested())).build();
     }
 
     @Override
@@ -369,7 +371,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         boolean b = super.onUpdate(currentTick);
 
         if (currentTick % 2 == 0 && getRideJumping() != null && currentTick - getRideJumping().get() > 5 && this.isOnGround()) {
-            this.setDataFlag(EntityFlag.STANDING, false);
+            this.setDataFlag(ActorFlags.STANDING, false);
             this.rideJumping.set(-1);
         }
         return b;
@@ -387,9 +389,9 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.GOLDEN_APPLE,
-        ItemID.ENCHANTED_GOLDEN_APPLE,
-        ItemID.GOLDEN_CARROT
+            ItemID.GOLDEN_APPLE,
+            ItemID.ENCHANTED_GOLDEN_APPLE,
+            ItemID.GOLDEN_CARROT
     );
 
     @Override
@@ -397,82 +399,82 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                1, 1, 1200
+                        )
                 ),
                 Set.of(
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.25f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
-                            all(
-                                e -> !e.isTamed(),
-                                e -> e.passengers.isEmpty(),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
-                            all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
-                                e -> !this.hasOwner(false)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.2f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                e -> {
-                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                    return p != null && !e.isPassenger(p);
-                                },
-                                e -> e.passengers == null || e.passengers.isEmpty()
-                            ),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.25f),
+                                all(
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                5, 1
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
+                                all(
+                                        e -> !e.isTamed(),
+                                        e -> e.passengers.isEmpty(),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                                ),
+                                4, 1
+                        ),
+                        new Behavior(
+                                new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
+                                all(
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
+                                        e -> !this.hasOwner(false)
+                                ),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new TemptExecutor(1.2f, TEMPT_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                2, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ProbabilityEvaluator(4, 10),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                        e -> {
+                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                            return p != null && !e.isPassenger(p);
+                                        },
+                                        e -> e.passengers == null || e.passengers.isEmpty()
+                                ),
+                                1, 1, 100
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1, 1
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20)
+                        new NearestPlayerSensor(8, 0, 20)
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

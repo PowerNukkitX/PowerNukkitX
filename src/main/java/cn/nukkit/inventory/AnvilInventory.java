@@ -3,8 +3,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class AnvilInventory extends ContainerInventory implements CraftTypeInven
     public static final int OUTPUT = 2;
 
     public AnvilInventory(BlockAnvil anvil) {
-        super(anvil, InventoryType.ANVIL, 3);
+        super(anvil, ContainerType.ANVIL, 3);
     } //2 INPUT, 1 OUTPUT
 
     @Override
@@ -30,11 +31,11 @@ public class AnvilInventory extends ContainerInventory implements CraftTypeInven
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(0, ContainerSlotType.ANVIL_INPUT);
-        map.put(1, ContainerSlotType.ANVIL_MATERIAL);
-        map.put(2, ContainerSlotType.ANVIL_RESULT);
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        map.put(0, ContainerEnumName.ANVIL_INPUT_CONTAINER);
+        map.put(1, ContainerEnumName.ANVIL_MATERIAL_CONTAINER);
+        map.put(2, ContainerEnumName.ANVIL_RESULT_PREVIEW_CONTAINER);
         return map;
     }
 

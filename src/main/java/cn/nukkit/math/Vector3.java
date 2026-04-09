@@ -67,6 +67,7 @@ public class Vector3 implements Cloneable {
         this.z = z;
         return this;
     }
+
     public int getFloorX() {
         return (int) Math.floor(this.x);
     }
@@ -236,7 +237,7 @@ public class Vector3 implements Cloneable {
         double x = Math.abs(pos.getX() - this.getX());
         double y = Math.abs(pos.getY() - this.getY());
         double z = Math.abs(pos.getZ() - this.getZ());
-        return (int)(x + y + z);
+        return (int) (x + y + z);
     }
 
     public double distance(Vector3 pos) {
@@ -413,18 +414,21 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-    @NotNull public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
+    @NotNull
+    public Vector3 setComponentsAdding(double x, double y, double z, double ax, double ay, double az) {
         this.x = x + ax;
         this.y = y + ay;
         this.z = z + az;
         return this;
     }
 
-    @NotNull public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
+    @NotNull
+    public Vector3 setComponentsAdding(@NotNull Vector3 pos, @NotNull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
 
-    @NotNull public Vector3 setComponents(@NotNull Vector3 pos) {
+    @NotNull
+    public Vector3 setComponents(@NotNull Vector3 pos) {
         this.x = pos.x;
         this.y = pos.y;
         this.z = pos.z;
@@ -474,5 +478,9 @@ public class Vector3 implements Cloneable {
 
     public BlockVector3 asBlockVector3() {
         return new BlockVector3(this.getFloorX(), this.getFloorY(), this.getFloorZ());
+    }
+
+    public org.cloudburstmc.math.vector.Vector3f toNetwork() {
+        return org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z);
     }
 }

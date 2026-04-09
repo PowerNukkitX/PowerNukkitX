@@ -1,13 +1,13 @@
 package cn.nukkit.level.structure;
 
 import cn.nukkit.Server;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.ByteOrder;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +37,9 @@ public class StructureAPI {
             return structureCache.get(name);
         }
 
-        try (var stream = new FileInputStream(resolvePathWithFallback(name))) {
-            CompoundTag root = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+        try (var stream = new FileInputStream(resolvePathWithFallback(name));
+             var nbtInputStream = NbtUtils.createReaderLE(stream)) {
+            NbtMap root = (NbtMap) nbtInputStream.readTag();
 
             Structure structure = Structure.fromNbtAsync(root).join();
 
@@ -58,7 +59,10 @@ public class StructureAPI {
             File file = resolvePathNamespaced(name); // always save in namespace path
             file.getParentFile().mkdirs();
 
-            NBTIO.write(structure.toNBT(), file, ByteOrder.LITTLE_ENDIAN);
+            try (var stream = new FileOutputStream(file);
+                 var nbtOutputStream = NbtUtils.createWriterLE(stream)) {
+                nbtOutputStream.writeTag(structure.toNBT());
+            }
 
             if (Server.getInstance().getSettings().gameplaySettings().cacheStructures()) {
                 structureCache.put(name, structure);

@@ -38,6 +38,7 @@ commons-rng                                     = "1.5"
 com-github-stateless4j                          = "2.6.0"
 eu-okaeri-core                                  = "5.0.1"
 disruptor                                       = "4.0.0"
+bedrock-protocol                                = "3.0.0.Beta7-Debug-SNAPSHOT"
 
 [libraries]
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
@@ -65,7 +66,6 @@ jose4j               = { module = "org.bitbucket.b_c:jose4j",                   
 stateless4j          = { module = "com.github.stateless4j:stateless4j",             version.ref = "com-github-stateless4j"                          }
 netty-epoll          = { module = "io.netty:netty-transport-classes-epoll",         version.ref = "io-netty-netty-transport-classes-epoll"          }
 netty-kqueue         = { module = "io.netty:netty-transport-classes-kqueue",        version.ref = "io-netty-netty-transport-classes-kqueue"         }
-netty-raknet         = { module = "org.cloudburstmc.netty:netty-transport-raknet",  version.ref = "org-cloudburstmc-netty-netty-transport-raknet"   }
 consoleappender      = { module = "net.minecrell:terminalconsoleappender",          version.ref = "net-minecrell-terminalconsoleappender"           }
 jline-reader         = { module = "org.jline:jline-reader",                         version.ref = "org-jline-jline-reader"                          }
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
@@ -79,11 +79,12 @@ jmh-generator        = { module = "org.openjdk.jmh:jmh-generator-annprocess",   
 snappy               = { module = "org.xerial.snappy:snappy-java",                  version.ref = "org-xerial-snappy-snappy-java"                   }
 rng-simple           = { module = "org.apache.commons:commons-rng-simple",          version.ref = "commons-rng"                                     }
 rng-sampling         = { module = "org.apache.commons:commons-rng-sampling",        version.ref = "commons-rng"                                     }
+bedrock-connection   = { module = "org.cloudburstmc.protocol:bedrock-connection",   version.ref = "bedrock-protocol"                                }
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
 test            = ["junit",             "mockito",          "jmh-core",             "jmh-generator"     ]
-netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"                              ]
+netty           = [      "netty-epoll",      "netty-kqueue"                              ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]

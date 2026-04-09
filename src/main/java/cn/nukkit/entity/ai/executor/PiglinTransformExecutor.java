@@ -1,12 +1,12 @@
 package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.level.Sound;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 public class PiglinTransformExecutor implements EntityControl, IBehaviorExecutor {
 
@@ -28,12 +28,12 @@ public class PiglinTransformExecutor implements EntityControl, IBehaviorExecutor
     @Override
     public void onStart(EntityIntelligent entity) {
         tick = -1;
-        entity.setDataFlag(EntityFlag.SHAKING);
+        entity.setDataFlag(ActorFlags.SHAKING);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.SHAKING, false);
+        entity.setDataFlag(ActorFlags.SHAKING, false);
     }
 
     @Override

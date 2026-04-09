@@ -3,21 +3,18 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor {
@@ -37,7 +34,6 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
     private int tick2;//control the pullBowTick
 
     /**
-     *
      * @param memory            <br>Used to read the memory of the attack target
      * @param speed             <br>The speed of movement towards the attacking target
      * @param maxShootDistance  <br>The maximum distance at which it is permissible to shoot, and only at this distance can be fired
@@ -130,18 +126,23 @@ public class SnowGolemShootExecutor implements EntityControl, IBehaviorExecutor 
         Location snowballLocation = entity.getLocation();
         Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f)).normalize();
         snowballLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY() + 1.0f);
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(snowballLocation.x))
-                        .add(new DoubleTag(snowballLocation.y))
-                        .add(new DoubleTag(snowballLocation.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
-                        .add(new FloatTag((float) -entity.pitch)));
+
+        final NbtMap nbt = NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                snowballLocation.x,
+                                snowballLocation.y,
+                                snowballLocation.z
+                        )
+                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
+                                -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI),
+                                -Math.sin(entity.pitch / 180 * Math.PI),
+                                Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)
+                        )
+                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
+                                (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw,
+                                (float) -entity.pitch
+                        )
+                ).build();
 
         EntitySnowball projectile = new EntitySnowball(entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 

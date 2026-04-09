@@ -5,13 +5,13 @@ import cn.nukkit.inventory.SmeltingInventory;
 import cn.nukkit.inventory.SmokerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.recipe.SmeltingRecipe;
+import org.cloudburstmc.nbt.NbtMap;
 
 
 public class BlockEntitySmoker extends BlockEntityFurnace {
 
-    public BlockEntitySmoker(IChunk chunk, CompoundTag nbt) {
+    public BlockEntitySmoker(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

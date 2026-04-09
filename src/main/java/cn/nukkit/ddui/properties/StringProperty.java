@@ -1,6 +1,6 @@
 package cn.nukkit.ddui.properties;
 
-import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
 
 /**
  * A property that holds a {@link String} value.
@@ -11,8 +11,8 @@ import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
 public class StringProperty extends DataDrivenProperty<String, String> {
 
     @Override
-    public DataStorePropertyType getType() {
-        return DataStorePropertyType.STRING;
+    public DataStorePropertyValueType getType() {
+        return DataStorePropertyValueType.STRING;
     }
 
     public StringProperty(String name, String value) {

@@ -2,11 +2,9 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.passive.EntityVillagerV2;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.UpdateTradePacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.Map;
 
@@ -16,7 +14,7 @@ public class TradeInventory extends BaseInventory {
     public String displayName;
 
     public TradeInventory(EntityVillagerV2 holder) {
-        super(holder, InventoryType.TRADE, 3);
+        super(holder, ContainerType.TRADE, 3);
         this.holder = holder;
     }
 
@@ -25,9 +23,9 @@ public class TradeInventory extends BaseInventory {
         BiMap<Integer, Integer> networkedSlotMap = networkSlotMap();
         networkedSlotMap.put(0, 4);
         networkedSlotMap.put(1, 5);
-        Map<Integer, ContainerSlotType> slotTypeMap = slotTypeMap();
-        slotTypeMap.put(0, ContainerSlotType.TRADE2_INGREDIENT_1);
-        slotTypeMap.put(1, ContainerSlotType.TRADE2_INGREDIENT_2);
+        Map<Integer, ContainerEnumName> slotTypeMap = slotTypeMap();
+        slotTypeMap.put(0, ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER);
+        slotTypeMap.put(1, ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER);
     }
 
     @Override

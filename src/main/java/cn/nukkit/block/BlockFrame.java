@@ -13,9 +13,10 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -139,7 +140,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_REMOVE);
+                this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_ITEM_REMOVE);
             } else {
                 blockEntity.dropItem(player);
             }
@@ -179,7 +180,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ADD);
+                this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_ITEM_ADD);
             } else {
                 ItemFrameUseEvent event = new ItemFrameUseEvent(player, this, itemFrame, null, ItemFrameUseEvent.Action.ROTATION);
                 this.getLevel().getServer().getPluginManager().callEvent(event);
@@ -192,7 +193,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_ITEM_ROTATE);
+                this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_ITEM_ROTATE);
             }
 
             return true;
@@ -207,7 +208,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if ((!(target.isSolid() || target instanceof BlockWallBase) && !target.equals(block) || target instanceof BlockFrame ||  (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWallBase) && !target.equals(block) || target instanceof BlockFrame || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
@@ -221,19 +222,17 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
         setBlockFace(face);
         setStoringMap(Objects.equals(item.getId(), ItemID.FILLED_MAP));
-        CompoundTag nbt = new CompoundTag()
-                .putByte("ItemRotation", 0)
+        NbtMapBuilder nbt = NbtMap.builder()
+                .putByte("ItemRotation", (byte) 0)
                 .putFloat("ItemDropChance", 1.0f);
         if (item.hasCustomBlockData()) {
-            for (var e : item.getCustomBlockData().getEntrySet()) {
-                nbt.put(e.getKey(), e.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
         level.setBlock(block, this, true, true);
         BlockFrame levelBlock = (BlockFrame) block.getLevelBlock();
         BlockEntityItemFrame frame = levelBlock.getBlockEntity();
         if (frame == null) {
-            frame = levelBlock.createBlockEntity(nbt);
+            frame = levelBlock.createBlockEntity(nbt.build());
         }
 
         this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_PLACE);
@@ -243,7 +242,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     @Override
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
-        this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEMFRAME_BREAK);
+        this.getLevel().addLevelEvent(this, LevelEvent.SOUND_ITEMFRAME_BREAK);
         return true;
     }
 

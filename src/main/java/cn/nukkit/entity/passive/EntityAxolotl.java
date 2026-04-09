@@ -54,9 +54,9 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.Pair;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,20 +66,21 @@ import java.util.Set;
 
 public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, EntityVariant, EntityCanAttack {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return AXOLOTL;
     }
 
-    private final static int[] VARIANTS = new int[] {0, 1, 2, 3, 4};
+    private final static int[] VARIANTS = new int[]{0, 1, 2, 3, 4};
 
-    private final static float[] DIFF_DAMAGE = new float[] {2, 2, 2};
+    private final static float[] DIFF_DAMAGE = new float[]{2, 2, 2};
 
-    public EntityAxolotl(IChunk chunk, CompoundTag nbt) {
+    public EntityAxolotl(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.TROPICAL_FISH_BUCKET
+            ItemID.TROPICAL_FISH_BUCKET
     );
 
     @Override
@@ -87,127 +88,130 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    ),
-                    new Behavior(entity -> { setMoveTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK)); return true; },
-                            all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
-                                entity -> !isInsideOfWater(),
-                                not(new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 9))
-                            ),
-                        1, 1
-                    )
-                ),
-                Set.of(
-                    new Behavior(
-                            new PlaySoundExecutor(Sound.MOB_AXOLOTL_SPLASH), all(
-                                entity -> getAirTicks() == 399
-                            ),
-                        8, 1
-                    ),
-                    new Behavior(
-                        new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE_WATER),
-                            all(
-                                new RandomSoundEvaluator(), entity -> isInsideOfWater()
-                            ),
-                        7, 1
-                    ),
-                    new Behavior(
-                        new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE),
-                            all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                2, 1
                         ),
-                        6, 1
-                    ),
-                    new Behavior(
-                        new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 17, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.35f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.1f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, false, 10),
-                            entity -> !entity.isInsideOfWater(),
-                        1, 1
-                    ),
-                    new Behavior(
-                        new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
-                            Entity::isInsideOfWater,
-                        1, 1
-                    )
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                1, 1, 1200
+                        ),
+                        new Behavior(entity -> {
+                            setMoveTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK));
+                            return true;
+                        },
+                                all(
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
+                                        entity -> !isInsideOfWater(),
+                                        not(new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 9))
+                                ),
+                                1, 1
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20),
-                    new NearestTargetEntitySensor<>(0, 16, 20,
-                            List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
-                    new BlockSensor(BlockFlowingWater.class, CoreMemoryTypes.NEAREST_BLOCK, 16, 5, 10),
-                    entity -> {
-                        if(getLevel().getTick() % 20 == 0) {
-                            Entity lastAttack = getMemoryStorage().get(CoreMemoryTypes.LAST_ATTACK_ENTITY);
-                            if(lastAttack != null) {
-                                if(!lastAttack.isAlive()) {
-                                    if(lastAttack instanceof EntityIntelligent intelligent) {
-                                        if(intelligent.getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
-                                            if(event.getDamager() instanceof Player player) {
-                                                player.removeEffect(EffectType.MINING_FATIGUE);
-                                                player.addEffect(Effect.get(EffectType.REGENERATION).setDuration((player.hasEffect(EffectType.REGENERATION) ? player.getEffect(EffectType.REGENERATION).getDuration() : 0) + 100));
+                        new Behavior(
+                                new PlaySoundExecutor(Sound.MOB_AXOLOTL_SPLASH), all(
+                                entity -> getAirTicks() == 399
+                        ),
+                                8, 1
+                        ),
+                        new Behavior(
+                                new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE_WATER),
+                                all(
+                                        new RandomSoundEvaluator(), entity -> isInsideOfWater()
+                                ),
+                                7, 1
+                        ),
+                        new Behavior(
+                                new PlaySoundExecutor(Sound.MOB_AXOLOTL_IDLE),
+                                all(new RandomSoundEvaluator(), entity -> !isInsideOfWater()
+                                ),
+                                6, 1
+                        ),
+                        new Behavior(
+                                new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 17, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
+                                5, 1
+                        ),
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.35f),
+                                all(
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                4, 1
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new TemptExecutor(1.1f, TEMPT_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                2, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10),
+                                1, 1, 100
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, false, 10),
+                                entity -> !entity.isInsideOfWater(),
+                                1, 1
+                        ),
+                        new Behavior(
+                                new SpaceRandomRoamExecutor(0.36f, 12, 1, 80, false, -1, false, 10),
+                                Entity::isInsideOfWater,
+                                1, 1
+                        )
+                ),
+                Set.of(
+                        new NearestPlayerSensor(8, 0, 20),
+                        new NearestTargetEntitySensor<>(0, 16, 20,
+                                List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
+                        new BlockSensor(BlockFlowingWater.class, CoreMemoryTypes.NEAREST_BLOCK, 16, 5, 10),
+                        entity -> {
+                            if (getLevel().getTick() % 20 == 0) {
+                                Entity lastAttack = getMemoryStorage().get(CoreMemoryTypes.LAST_ATTACK_ENTITY);
+                                if (lastAttack != null) {
+                                    if (!lastAttack.isAlive()) {
+                                        if (lastAttack instanceof EntityIntelligent intelligent) {
+                                            if (intelligent.getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
+                                                if (event.getDamager() instanceof Player player) {
+                                                    player.removeEffect(EffectType.MINING_FATIGUE);
+                                                    player.addEffect(Effect.get(EffectType.REGENERATION).setDuration((player.hasEffect(EffectType.REGENERATION) ? player.getEffect(EffectType.REGENERATION).getDuration() : 0) + 100));
+                                                }
                                             }
                                         }
+                                        getMemoryStorage().clear(CoreMemoryTypes.LAST_ATTACK_ENTITY);
                                     }
-                                    getMemoryStorage().clear(CoreMemoryTypes.LAST_ATTACK_ENTITY);
                                 }
                             }
                         }
-                    }
                 ),
                 Set.of(
-                    new LookController(true, true),
+                        new LookController(true, true),
                         new ConditionalController(
-                            Pair.of(Entity::isInsideOfWater, new DiveController()),
-                            Pair.of(Entity::isInsideOfWater, new SpaceMoveController()),
-                            Pair.of(entity -> !entity.isInsideOfWater(), new WalkController()),
-                            Pair.of(entity -> !entity.isInsideOfWater(), new FluctuateController())
+                                Pair.of(Entity::isInsideOfWater, new DiveController()),
+                                Pair.of(Entity::isInsideOfWater, new SpaceMoveController()),
+                                Pair.of(entity -> !entity.isInsideOfWater(), new WalkController()),
+                                Pair.of(entity -> !entity.isInsideOfWater(), new FluctuateController())
                         )
                 ),
-                    new ConditionalAStarRouteFinder(
+                new ConditionalAStarRouteFinder(
                         this,
                         Pair.of(ent -> !ent.isInsideOfWater(), new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)),
                         Pair.of(Entity::isInsideOfWater, new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
-                    )
+                        )
                 ),
                 this
         );
@@ -218,10 +222,11 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
-        if(Objects.equals(item.getId(), Item.WATER_BUCKET)) {
+        if (Objects.equals(item.getId(), Item.WATER_BUCKET)) {
             Item bucket = Item.get(Item.AXOLOTL_BUCKET);
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("Variant", getVariant());
+            final NbtMap tag = NbtMap.builder()
+                    .putInt("Variant", getVariant())
+                    .build();
             bucket.setCompoundTag(tag);
             player.getInventory().setItemInHand(bucket);
             this.close();
@@ -241,8 +246,8 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && getLevelBlock().canPassThrough()) {
-            if(getAirTicks() > -5600 || getLevel().isRaining() || getLevel().isThundering()) return false;
+        if (source.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && getLevelBlock().canPassThrough()) {
+            if (getAirTicks() > -5600 || getLevel().isRaining() || getLevel().isThundering()) return false;
         }
         return super.attack(source);
     }
@@ -250,7 +255,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(!hasVariant()) {
+        if (!hasVariant()) {
             setVariant(randomVariant());
         }
     }
@@ -283,10 +288,10 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                 null,
                 null,
                 Set.of(
-                    ItemID.TROPICAL_FISH_BUCKET
+                        ItemID.TROPICAL_FISH_BUCKET
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.AXOLOTL, EntityID.AXOLOTL)
+                        new BreedableComponent.BreedsWith(EntityID.AXOLOTL, EntityID.AXOLOTL)
                 ),
                 null,
                 null,
@@ -307,7 +312,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(ItemID.TROPICAL_FISH_BUCKET, 0.05f)
+                        new AgeableComponent.FeedItem(ItemID.TROPICAL_FISH_BUCKET, 0.05f)
                 ),
                 null,
                 null,
@@ -322,8 +327,8 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
 
     @Override
     public int randomVariant() {
-        if(Utils.rand(0, 1200) == 0) return VARIANTS[VARIANTS.length-1];
-        return VARIANTS[Utils.rand(0, VARIANTS.length-2)];
+        if (Utils.rand(0, 1200) == 0) return VARIANTS[VARIANTS.length - 1];
+        return VARIANTS[Utils.rand(0, VARIANTS.length - 2)];
     }
 
     @Override

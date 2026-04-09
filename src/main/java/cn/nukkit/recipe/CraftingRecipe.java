@@ -1,6 +1,6 @@
 package cn.nukkit.recipe;
 
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.UUID;
 

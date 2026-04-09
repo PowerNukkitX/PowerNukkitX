@@ -2,11 +2,11 @@ package cn.nukkit.ddui;
 
 import cn.nukkit.Player;
 import cn.nukkit.ddui.properties.DataDrivenProperty;
-import cn.nukkit.network.protocol.ClientboundDataStorePacket;
-import cn.nukkit.network.protocol.types.ddui.DataStoreUpdate;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyType;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStoreUpdate;
+import org.cloudburstmc.protocol.bedrock.packet.ClientboundDataStorePacket;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,7 +15,6 @@ import java.util.Set;
  * live DataStore update for connected clients.
  *
  * @param <T> Value type — typically {@link String}, {@link Boolean}, or {@link Long}.
- *
  * @author xRookieFight
  * @since 06/03/2026
  */
@@ -63,18 +62,25 @@ public class Observable<T> {
                 continue;
             }
 
-            DataStoreUpdate update = new DataStoreUpdate();
+            final DataStoreUpdate update = new DataStoreUpdate();
 
             update.setDataStoreName(screen.getIdentifier().split(":")[0]);
             update.setProperty(screen.getProperty());
             update.setPath(element.getPath());
-            update.setType(element.getType());
+            update.setType(
+                    switch (value) {
+                        case Boolean n -> DataStorePropertyType.BOOLEAN;
+                        case Number n -> DataStorePropertyType.DOUBLE;
+                        case String n -> DataStorePropertyType.STRING;
+                        default -> throw new IllegalStateException("Unexpected value: " + value);
+                    }
+            );
             update.setData(value);
             update.setPropertyUpdateCount(1);
             update.setPathUpdateCount(1);
 
             ClientboundDataStorePacket cbDataStore = new ClientboundDataStorePacket();
-            cbDataStore.setUpdates(List.of(update));
+            cbDataStore.getUpdates().add(update);
 
             for (Player viewer : screen.getAllViewers()) {
                 viewer.dataPacket(cbDataStore);

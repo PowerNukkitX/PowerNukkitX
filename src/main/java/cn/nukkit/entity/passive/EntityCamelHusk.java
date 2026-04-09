@@ -34,10 +34,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,11 +49,12 @@ import java.util.Set;
 
 public class EntityCamelHusk extends EntityCamel {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return CAMEL_HUSK;
     }
 
-    public EntityCamelHusk(IChunk chunk, CompoundTag nbt) {
+    public EntityCamelHusk(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -91,24 +92,24 @@ public class EntityCamelHusk extends EntityCamel {
                 false,
                 2,
                 List.of(
-                    new RideableComponent.Seat(
-                        0,
-                        2,
-                        new Vector3f( 0.0f, 1.905f, 0.5f),
-                        null,
-                        null,
-                        null,
-                        null
-                    ),
-                    new RideableComponent.Seat(
-                        1,
-                        2,
-                        new Vector3f(0.0f, 1.905f, -0.5f),
-                        null,
-                        null,
-                        null,
-                        null
-                    )
+                        new RideableComponent.Seat(
+                                0,
+                                2,
+                                new Vector3f(0.0f, 1.905f, 0.5f),
+                                null,
+                                null,
+                                null,
+                                null
+                        ),
+                        new RideableComponent.Seat(
+                                1,
+                                2,
+                                new Vector3f(0.0f, 1.905f, -0.5f),
+                                null,
+                                null,
+                                null,
+                                null
+                        )
                 )
         );
     }
@@ -132,7 +133,7 @@ public class EntityCamelHusk extends EntityCamel {
     public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
-                    new HealableComponent.Item(ItemID.RABBIT_FOOT, 2)
+                        new HealableComponent.Item(ItemID.RABBIT_FOOT, 2)
                 )
         );
     }
@@ -223,7 +224,8 @@ public class EntityCamelHusk extends EntityCamel {
         if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+            if (this.namedTag != null)
+                this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
             return;
         }
 
@@ -235,23 +237,24 @@ public class EntityCamelHusk extends EntityCamel {
         this.mountEntity(rider, true);
         this.mountEntity(passenger, true);
 
-        if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+        if (this.namedTag != null)
+            this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
     }
 
     private Entity createRiderEntity(String entityId) {
-        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
+        NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
 
         if (entityId.equals(Entity.HUSK)) {
             Item ironSpear = Item.get(Item.IRON_SPEAR, 0, 1);
-            nbt.put("Mainhand", NBTIO.putItemHelper(ironSpear));
+            nbt.putCompound("Mainhand", ItemHelper.write(ironSpear));
             nbt.putBoolean(NBT_HUSK_RIDER, true);
         }
         if (entityId.equals(Entity.PARCHED)) {
             Item bow = Item.get(Item.BOW, 0, 1);
-            nbt.put("Mainhand", NBTIO.putItemHelper(bow));
+            nbt.putCompound("Mainhand", ItemHelper.write(bow));
         }
 
-        Entity newEntity = Entity.createEntity(entityId, this.getChunk(), nbt);
+        Entity newEntity = Entity.createEntity(entityId, this.getChunk(), nbt.build());
         return newEntity;
     }
 
@@ -260,7 +263,7 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.RABBIT_FOOT
+            ItemID.RABBIT_FOOT
     );
 
     @Override
@@ -270,68 +273,68 @@ public class EntityCamelHusk extends EntityCamel {
                 Set.of(
                 ),
                 Set.of(
-                    new Behavior(
-                        new MoveToRiderTargetExecutor(this.getMovementSpeedDefault() * 4.00f, true),
-                            e -> this.isRiddenByMob(),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
-                            all(
-                                e -> !this.isRiddenByMob(),
-                                e -> e.passengers.isEmpty(),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(2.5f, TEMPT_ITEMS),
-                            all(
-                                e -> !this.isRiddenByMob(),
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                e -> {
-                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                    return p != null && !e.isPassenger(p);
-                                },
-                                e -> e.passengers == null || e.passengers.isEmpty()
-                            ),
-                        2, 1, 100
-                    ),
-                    new Behavior(
-                        new CamelSittingExecutor(8),
-                        all(
-                            e -> !this.isRiddenByMob(),
-                            e -> !((EntityCamel) e).isSitting(),
-                            e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                            e -> Utils.rand(1, 35) == 1
+                        new Behavior(
+                                new MoveToRiderTargetExecutor(this.getMovementSpeedDefault() * 4.00f, true),
+                                e -> this.isRiddenByMob(),
+                                5, 1
                         ),
-                        2, 1, 200
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
-                            all(
-                                e -> !this.isRiddenByMob(),
-                                e -> !((EntityCamel) e).isSitting()
-                            ),
-                        1, 1
-                    )
+                        new Behavior(
+                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
+                                all(
+                                        e -> !this.isRiddenByMob(),
+                                        e -> e.passengers.isEmpty(),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                                ),
+                                4, 1
+                        ),
+                        new Behavior(
+                                new TemptExecutor(2.5f, TEMPT_ITEMS),
+                                all(
+                                        e -> !this.isRiddenByMob(),
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ProbabilityEvaluator(4, 10),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                        e -> {
+                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                            return p != null && !e.isPassenger(p);
+                                        },
+                                        e -> e.passengers == null || e.passengers.isEmpty()
+                                ),
+                                2, 1, 100
+                        ),
+                        new Behavior(
+                                new CamelSittingExecutor(8),
+                                all(
+                                        e -> !this.isRiddenByMob(),
+                                        e -> !((EntityCamel) e).isSitting(),
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> Utils.rand(1, 35) == 1
+                                ),
+                                2, 1, 200
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
+                                all(
+                                        e -> !this.isRiddenByMob(),
+                                        e -> !((EntityCamel) e).isSitting()
+                                ),
+                                1, 1
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20)
+                        new NearestPlayerSensor(8, 0, 20)
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

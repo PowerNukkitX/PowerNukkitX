@@ -4,13 +4,17 @@ import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.iq80.leveldb.DB;
 
 import java.io.ByteArrayInputStream;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class BedrockMigrationService {
@@ -21,7 +25,7 @@ public class BedrockMigrationService {
         this.server = server;
     }
 
-    public CompoundTag migrate(UUID uuid) {
+    public NbtMap migrate(UUID uuid) {
 
         server.getLogger().debug("Started Migration for " + uuid);
 
@@ -43,10 +47,7 @@ public class BedrockMigrationService {
                 return null;
             }
 
-            CompoundTag identity = NBTIO.read(
-                    new ByteArrayInputStream(identityBytes),
-                    ByteOrder.LITTLE_ENDIAN
-            );
+            NbtMap identity = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(identityBytes)).readTag();
 
             String serverId = identity.getString("ServerId");
 
@@ -60,12 +61,9 @@ public class BedrockMigrationService {
                 return null;
             }
 
-            CompoundTag gameplay = NBTIO.read(
-                    new ByteArrayInputStream(gameplayBytes),
-                    ByteOrder.LITTLE_ENDIAN
-            );
+            NbtMap gameplay = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(gameplayBytes)).readTag();
 
-            CompoundTag converted = convertBedrockNBT(gameplay, level);
+            NbtMap converted = convertBedrockNBT(gameplay, level);
 
             server.getLogger().debug("Migration Successful for " + uuid);
 
@@ -78,39 +76,29 @@ public class BedrockMigrationService {
         return null;
     }
 
-    private CompoundTag convertBedrockNBT(CompoundTag tag, Level level) {
+    private NbtMap convertBedrockNBT(NbtMap tag, Level level) {
 
         // Position
-        ListTag<?> posRaw = tag.getList("Pos");
+        List<Double> posRaw = tag.getList("Pos", NbtType.DOUBLE);
 
-        double x = 0, y = 100, z = 0;
+        /*double x = 0, y = 100, z = 0;
+        TODO protocol
         if (posRaw != null && posRaw.size() >= 3) {
             x = ((Number) posRaw.get(0).parseValue()).doubleValue();
             y = ((Number) posRaw.get(1).parseValue()).doubleValue();
             z = ((Number) posRaw.get(2).parseValue()).doubleValue();
-        }
+        }*/
 
-        ListTag<DoubleTag> pos = new ListTag<>();
-        pos.add(new DoubleTag(x));
-        pos.add(new DoubleTag(y));
-        pos.add(new DoubleTag(z));
-
-        ListTag<DoubleTag> motion = new ListTag<>();
-        motion.add(new DoubleTag(0));
-        motion.add(new DoubleTag(0));
-        motion.add(new DoubleTag(0));
-
-        ListTag<FloatTag> rotation = new ListTag<>();
-        rotation.add(new FloatTag(0));
-        rotation.add(new FloatTag(0));
+        final List<Double> motion = Arrays.asList(0.0, 0.0, 0.0);
+        final List<Float> rotation = Arrays.asList(0f, 0f);
 
         // Inventory
-        ListTag<CompoundTag> inventoryRaw = tag.getList("Inventory", CompoundTag.class);
-        ListTag<CompoundTag> inventory = new ListTag<>();
+        List<NbtMap> inventoryRaw = tag.getList("Inventory", NbtType.COMPOUND);
+        List<NbtMap> inventory = new ObjectArrayList<>();
 
         if (inventoryRaw != null) {
             for (int i = 0; i < inventoryRaw.size(); i++) {
-                CompoundTag converted = convertItem(inventoryRaw.get(i), i);
+                NbtMap converted = convertItem(inventoryRaw.get(i), i);
                 if (converted != null) {
                     inventory.add(converted);
                 }
@@ -118,7 +106,7 @@ public class BedrockMigrationService {
         }
 
         // Armor -> Inventory
-        ListTag<CompoundTag> armorRaw = tag.getList("Armor", CompoundTag.class);
+        List<NbtMap> armorRaw = tag.getList("Armor", NbtType.COMPOUND);
 
         if (armorRaw != null) {
             for (int i = 0; i < armorRaw.size(); i++) {
@@ -133,7 +121,7 @@ public class BedrockMigrationService {
 
                 if (slot == -1) continue;
 
-                CompoundTag converted = convertItem(armorRaw.get(i), slot);
+                NbtMap converted = convertItem(armorRaw.get(i), slot);
                 if (converted != null) {
                     inventory.add(converted);
                 }
@@ -141,30 +129,30 @@ public class BedrockMigrationService {
         }
 
         // Offhand
-        ListTag<CompoundTag> offhandRaw = tag.getList("Offhand", CompoundTag.class);
+        List<NbtMap> offhandRaw = tag.getList("Offhand", NbtType.COMPOUND);
 
         if (offhandRaw != null && offhandRaw.size() > 0) {
-            CompoundTag converted = convertItem(offhandRaw.get(0), 40);
+            NbtMap converted = convertItem(offhandRaw.get(0), 40);
             if (converted != null) {
                 inventory.add(converted);
             }
         }
 
         // Ender Chest
-        ListTag<CompoundTag> enderRaw = tag.getList("EnderChestInventory", CompoundTag.class);
-        ListTag<CompoundTag> ender = new ListTag<>();
+        List<NbtMap> enderRaw = tag.getList("EnderChestInventory", NbtType.COMPOUND);
+        List<NbtMap> ender = new ObjectArrayList<>();
 
         if (enderRaw != null) {
             for (int i = 0; i < enderRaw.size(); i++) {
 
-                CompoundTag item = enderRaw.get(i);
+                NbtMap item = enderRaw.get(i);
 
                 // remove Bedrock-only block data
-                if (item.contains("Block")) {
+                if (item.containsKey("Block")) {
                     item.remove("Block");
                 }
 
-                CompoundTag converted = convertItem(item, i);
+                NbtMap converted = convertItem(item, i);
                 if (converted != null) {
                     ender.add(converted);
                 }
@@ -189,21 +177,21 @@ public class BedrockMigrationService {
         boolean onGround = tag.getBoolean("OnGround");
 
         // Active Effects
-        ListTag<CompoundTag> effects = tag.getList("ActiveEffects", CompoundTag.class);
+        List<NbtMap> effects = tag.getList("ActiveEffects", NbtType.COMPOUND);
         if (effects == null) {
-            effects = new ListTag<>();
+            effects = new ObjectArrayList<>();
         }
 
         // Convert BDS -> PNX
-        CompoundTag pnx = new CompoundTag();
+        NbtMapBuilder pnx = NbtMap.builder();
 
-        pnx.putList("Pos", pos);
-        pnx.putList("Motion", motion);
-        pnx.putList("Rotation", rotation);
+        pnx.putList("Pos", NbtType.DOUBLE, posRaw);
+        pnx.putList("Motion", NbtType.DOUBLE, motion);
+        pnx.putList("Rotation", NbtType.FLOAT, rotation);
         pnx.putString("Level", level.getName());
         pnx.putInt("DimensionId", tag.getInt("DimensionId"));
         pnx.putString("SpawnLevel", level.getName());
-        if (tag.contains("SpawnX") && tag.contains("SpawnY") && tag.contains("SpawnZ")) {
+        if (tag.containsKey("SpawnX") && tag.containsKey("SpawnY") && tag.containsKey("SpawnZ")) {
 
             int sx = tag.getInt("SpawnX");
             int sy = tag.getInt("SpawnY");
@@ -216,8 +204,8 @@ public class BedrockMigrationService {
             }
         }
 
-        pnx.putList("Inventory", inventory);
-        pnx.putList("EnderItems", ender);
+        pnx.putList("Inventory", NbtType.COMPOUND, inventory);
+        pnx.putList("EnderItems", NbtType.COMPOUND, ender);
 
         pnx.putFloat("Health", health);
         pnx.putInt("foodLevel", food);
@@ -227,7 +215,7 @@ public class BedrockMigrationService {
         pnx.putInt("EXP", exp);
         pnx.putInt("expLevel", expLevel);
         pnx.putFloat("EXPProgress", expProgress);
-        pnx.putList("ActiveEffects", effects);
+        pnx.putList("ActiveEffects", NbtType.COMPOUND, effects);
 
         pnx.putInt("permissionsLevel", 1);
         pnx.putInt("playerPermissionsLevel", 1);
@@ -245,12 +233,12 @@ public class BedrockMigrationService {
 
         pnx.putBoolean("BedrockMigrated", true);
 
-        return pnx;
+        return pnx.build();
     }
 
-    private CompoundTag convertItem(CompoundTag item, int slot) {
+    private NbtMap convertItem(NbtMap item, int slot) {
 
-        if (!item.contains("Name")) return null;
+        if (!item.containsKey("Name")) return null;
 
         String name = item.getString("Name");
 
@@ -261,19 +249,19 @@ public class BedrockMigrationService {
         Item nukkitItem = Item.get(name);
 
         if (nukkitItem == null) {
-            if (!item.contains("Slot")) {
-                item.putByte("Slot", (byte) slot);
+            if (!item.containsKey("Slot")) {
+                item = item.toBuilder().putByte("Slot", (byte) slot).build();
             }
             return item;
         }
 
         nukkitItem.setCount(item.getByte("Count"));
 
-        if (item.contains("tag")) {
+        if (item.containsKey("tag")) {
             nukkitItem.setCompoundTag(item.getCompound("tag"));
         }
 
-        return NBTIO.putItemHelper(nukkitItem, slot);
+        return ItemHelper.write(nukkitItem, slot);
     }
 
     public boolean hasBedrockData(UUID uuid) {
@@ -294,10 +282,7 @@ public class BedrockMigrationService {
             }
 
             // Deeper Validation
-            CompoundTag identity = NBTIO.read(
-                    new ByteArrayInputStream(identityBytes),
-                    ByteOrder.LITTLE_ENDIAN
-            );
+            NbtMap identity = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(identityBytes)).readTag();
 
             String serverId = identity.getString("ServerId");
 

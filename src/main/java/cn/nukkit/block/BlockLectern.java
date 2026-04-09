@@ -7,16 +7,18 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.LecternDropBookEvent;
-import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -26,7 +28,8 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     public static final BlockProperties PROPERTIES = new BlockProperties(LECTERN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.POWERED_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -44,12 +47,14 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityLectern> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityLectern> getBlockEntityClass() {
         return BlockEntityLectern.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.LECTERN;
     }
 
@@ -120,7 +125,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         BlockEntityLectern lectern = getOrCreateBlockEntity();
         Item currentBook = lectern.getBook();
         if (!currentBook.isNull()) {
@@ -223,12 +228,10 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     }
 
     public void openBook(Player player) {
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = -1;
-        pk.type = InventoryType.LECTERN.getNetworkType();
-        pk.x = this.getFloorX();
-        pk.y = this.getFloorY();
-        pk.z = this.getFloorZ();
-        player.dataPacket(pk);
+        final ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
+        containerOpenPacket.setContainerID((byte) -1);
+        containerOpenPacket.setContainerType(ContainerType.LECTERN);
+        containerOpenPacket.setPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+        player.dataPacket(containerOpenPacket);
     }
 }

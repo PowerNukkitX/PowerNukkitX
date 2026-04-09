@@ -10,18 +10,18 @@ import cn.nukkit.entity.ai.evaluator.NotMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.mob.EntityShulker;
 import cn.nukkit.entity.mob.EntityShulkerBullet;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class ShulkerAttackExecutor implements IBehaviorExecutor {
@@ -33,29 +33,25 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         Entity target = entity.getMemoryStorage().get(this.target);
-        if(target == null) return false;
+        if (target == null) return false;
         tick++;
-        if(tick > nextAttack) {
+        if (tick > nextAttack) {
             tick = 0;
             nextAttack = Utils.rand(20, 110);
             Location bulletLocation = entity.getLocation().clone().add(new Vector3(target.x - entity.x, target.y - entity.y, target.z - entity.z).normalize()).add(0, 0.5f, 0);
-            CompoundTag nbt = new CompoundTag()
-                    .putList("Pos", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(bulletLocation.x))
-                            .add(new DoubleTag(bulletLocation.y))
-                            .add(new DoubleTag(bulletLocation.z)))
-                    .putList("Motion", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(0))
-                            .add(new DoubleTag(0))
-                            .add(new DoubleTag(0)))
-                    .putList("Rotation", new ListTag<FloatTag>()
-                            .add(new FloatTag(0))
-                            .add(new FloatTag(0)));
-
+            final NbtMap nbt = NbtMap.builder()
+                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                    bulletLocation.x,
+                                    bulletLocation.y,
+                                    bulletLocation.z
+                            )
+                    ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
+                    ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
+                    ).build();
 
             Entity bulletEntity = Entity.createEntity(EntityID.SHULKER_BULLET, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 
-            if(bulletEntity instanceof EntityShulkerBullet bullet) {
+            if (bulletEntity instanceof EntityShulkerBullet bullet) {
                 bullet.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, target);
             }
             bulletEntity.spawnToAll();
@@ -68,18 +64,18 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
     public void onStart(EntityIntelligent entity) {
         tick = 0;
         nextAttack = 0;
-        if(entity instanceof EntityShulker shulker) {
+        if (entity instanceof EntityShulker shulker) {
             shulker.setPeeking(40);
             Entity target = entity.getMemoryStorage().get(this.target);
-            if(target == null) return;
-            shulker.setDataProperty(EntityDataTypes.TARGET_EID, target.getId());
+            if (target == null) return;
+            shulker.setDataProperty(ActorDataTypes.TARGET, target.getId());
         }
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        if(entity instanceof EntityShulker shulker) {
-            shulker.setDataProperty(EntityDataTypes.TARGET_EID, 0);
+        if (entity instanceof EntityShulker shulker) {
+            shulker.setDataProperty(ActorDataTypes.TARGET, 0);
             shulker.setPeeking(0);
         }
     }

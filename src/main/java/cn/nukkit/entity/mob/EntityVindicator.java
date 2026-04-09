@@ -22,15 +22,15 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,7 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
         return VINDICATOR;
     }
 
-    public EntityVindicator(IChunk chunk, CompoundTag nbt) {
+    public EntityVindicator(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -154,9 +154,9 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, entity.getMemoryStorage().get(memory).getId());
-            entity.setDataFlag(EntityFlag.ANGRY);
-            entity.level.addLevelSoundEvent(entity, LevelSoundEvent.ANGRY, -1, Entity.VINDICATOR, false, false);
+            entity.setDataProperty(ActorDataTypes.TARGET, entity.getMemoryStorage().get(memory).getId());
+            entity.setDataFlag(ActorFlags.ANGRY);
+            entity.level.addLevelSoundEvent(entity, SoundEvent.ANGRY, -1, Entity.VINDICATOR, false, false);
             Arrays.stream(entity.level.getEntities()).filter(entity1 -> entity1 instanceof EntityPiglin && entity1.distance(entity) < 16 && ((EntityPiglin) entity1).getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)).forEach(entity1 -> ((EntityPiglin) entity1).getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)));
             if(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof EntityHoglin) {
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, entity.getLevel().getTick());
@@ -166,19 +166,19 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
         @Override
         public void onStop(EntityIntelligent entity) {
             super.onStop(entity);
-            entity.setDataFlag(EntityFlag.ANGRY, false);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
+            entity.setDataFlag(ActorFlags.ANGRY, false);
+            entity.setDataProperty(ActorDataTypes.TARGET, 0L);
         }
 
         @Override
         public void onInterrupt(EntityIntelligent entity) {
             super.onInterrupt(entity);
-            entity.setDataFlag(EntityFlag.ANGRY, false);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
+            entity.setDataFlag(ActorFlags.ANGRY, false);
+            entity.setDataProperty(ActorDataTypes.TARGET, 0L);
         }
     }
 
     public boolean isJohnny() {
-        return getNameTag().equals("Johnny") || (namedTag.exist("Johnny") && namedTag.getBoolean("Johnny"));
+        return getNameTag().equals("Johnny") || (namedTag.containsKey("Johnny") && namedTag.getBoolean("Johnny"));
     }
 }

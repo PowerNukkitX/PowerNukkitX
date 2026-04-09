@@ -3,15 +3,21 @@ package cn.nukkit.scoreboard;
 import cn.nukkit.Server;
 import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
 import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import javax.swing.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -21,7 +27,7 @@ public class Scoreboard implements IScoreboard{
     protected String displayName;
     protected String criteriaName;
     @Setter
-    protected SortOrder sortOrder;
+    protected ObjectiveSortOrder sortOrder;
 
     protected Map<DisplaySlot, Set<IScoreboardViewer>> viewers = new HashMap<>();
     protected Map<IScorer, IScoreboardLine> lines = new HashMap<>();
@@ -31,10 +37,10 @@ public class Scoreboard implements IScoreboard{
     }
 
     public Scoreboard(String objectiveName, String displayName, String criteriaName) {
-        this(objectiveName, displayName, criteriaName, SortOrder.ASCENDING);
+        this(objectiveName, displayName, criteriaName, ObjectiveSortOrder.ASCENDING);
     }
 
-    public Scoreboard(String objectiveName, String displayName, String criteriaName, SortOrder sortOrder) {
+    public Scoreboard(String objectiveName, String displayName, String criteriaName, ObjectiveSortOrder sortOrder) {
         this.objectiveName = objectiveName;
         this.displayName = displayName;
         this.criteriaName = criteriaName;

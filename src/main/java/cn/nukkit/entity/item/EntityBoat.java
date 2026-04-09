@@ -6,9 +6,6 @@ import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.data.EntityDataType;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
@@ -24,15 +21,20 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.AnimatePacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerAuthInputPacket;
-import cn.nukkit.network.protocol.types.AuthInputAction;
-import cn.nukkit.network.protocol.types.AuthInteractionModel;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.InputMode;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.InputInteractionModel;
+import org.cloudburstmc.protocol.bedrock.data.InputMode;
+import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
+import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AnimatePacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +74,7 @@ public class EntityBoat extends EntityVehicle {
     protected boolean sinking = true;
     private int ticksInWater;
 
-    public EntityBoat(IChunk chunk, CompoundTag nbt) {
+    public EntityBoat(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
 
         this.setHealthMax(40);
@@ -82,38 +84,57 @@ public class EntityBoat extends EntityVehicle {
     @Override
     protected void initEntity() {
         super.initEntity();
-        if (this.namedTag.contains("Variant")) {
+        if (this.namedTag.containsKey("Variant")) {
             woodID = this.namedTag.getInt("Variant");
-        } else if (this.namedTag.contains("woodID")) {
+        } else if (this.namedTag.containsKey("woodID")) {
             woodID = this.namedTag.getByte("woodID");
         }
 
-        this.setDataFlag(EntityFlag.HAS_GRAVITY);
-        this.setDataFlag(EntityFlag.STACKABLE);
-        this.entityDataMap.put(VARIANT, woodID);
-        this.entityDataMap.put(IS_BUOYANT, true);
-        this.entityDataMap.put(BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
-        this.entityDataMap.put(AIR_SUPPLY, 300);
-        this.entityDataMap.put(OWNER_EID, -1);
-        this.entityDataMap.put(ROW_TIME_LEFT, 0);
-        this.entityDataMap.put(ROW_TIME_RIGHT, 0);
-        this.entityDataMap.put(CONTROLLING_RIDER_SEAT_INDEX, 0);
-        this.entityDataMap.put(DATA_LIFETIME_TICKS, -1);
-        this.entityDataMap.put(NAMETAG_ALWAYS_SHOW, -1);
-        this.entityDataMap.put(AMBIENT_SOUND_INTERVAL, 8F);
-        this.entityDataMap.put(AMBIENT_SOUND_INTERVAL_RANGE, 16F);
-        this.entityDataMap.put(AMBIENT_SOUND_EVENT_NAME, "ambient");
-        this.entityDataMap.put(FALL_DAMAGE_MULTIPLIER, 1F);
-        setDataFlag(EntityFlag.COLLIDABLE);
+        this.setDataFlag(ActorFlags.HAS_GRAVITY);
+        this.setDataFlag(ActorFlags.STACKABLE);
+        this.entityDataMap.put(ActorDataTypes.VARIANT, woodID);
+        this.entityDataMap.put(ActorDataTypes.IS_BUOYANT, true);
+        this.entityDataMap.put(ActorDataTypes.BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
+        this.entityDataMap.put(ActorDataTypes.AIR_SUPPLY, (short) 300);
+        this.entityDataMap.put(ActorDataTypes.OWNER, -1);
+        this.entityDataMap.put(ActorDataTypes.ROW_TIME_LEFT, 0);
+        this.entityDataMap.put(ActorDataTypes.ROW_TIME_RIGHT, 0);
+        this.entityDataMap.put(ActorDataTypes.CONTROLLING_RIDER_SEAT_INDEX, 0);
+        this.entityDataMap.put(ActorDataTypes.DATA_LIFETIME_TICKS, -1);
+        this.entityDataMap.put(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) -1);
+        this.entityDataMap.put(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8F);
+        this.entityDataMap.put(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16F);
+        this.entityDataMap.put(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
+        this.entityDataMap.put(ActorDataTypes.FALL_DAMAGE_MULTIPLIER, 1F);
+        setDataFlag(ActorFlags.COLLIDABLE);
         entityCollisionReduction = -0.5;
     }
 
 
-    @Override public float getHeight() { return 0.5f; }
-    @Override public float getWidth()  { return 1.3f; }
-    @Override protected float getDrag() { return 0.02f; }
-    @Override protected float getGravity() { return 0.04f; }
-    @Override public float getBaseOffset() { return 0.37f; }
+    @Override
+    public float getHeight() {
+        return 0.5f;
+    }
+
+    @Override
+    public float getWidth() {
+        return 1.3f;
+    }
+
+    @Override
+    protected float getDrag() {
+        return 0.02f;
+    }
+
+    @Override
+    protected float getGravity() {
+        return 0.04f;
+    }
+
+    @Override
+    public float getBaseOffset() {
+        return 0.37f;
+    }
 
 
     @Override
@@ -148,29 +169,29 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = 0;
-        addEntity.id = "minecraft:boat";
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+    protected BedrockPacket createAddEntityPacket() {
+        final AddActorPacket packet = new AddActorPacket();
+        packet.setTargetActorID(this.getId());
+        packet.setTargetRuntimeID(this.getId());
+        packet.setActorType("minecraft:boat");
+        packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
+        packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
+        packet.setRotation(Vector2f.from(this.pitch, this.yaw));
+        packet.setActorData(this.entityDataMap);
 
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+        for (int i = 0; i < this.passengers.size(); i++) {
+            packet.getActorLinks().add(
+                    new ActorLink(
+                            this.getId(),
+                            this.passengers.get(i).getId(),
+                            i == 0 ? ActorLinkType.RIDING : ActorLinkType.PASSENGER,
+                            false,
+                            false,
+                            0f
+                    )
+            );
         }
-
-        return addEntity;
+        return packet;
     }
 
     @Override
@@ -331,19 +352,19 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public @Nullable RideableComponent getComponentRideable() {
         return new RideableComponent(
-            0,
-            true,
-            RideableComponent.DismountMode.DEFAULT,
-            Set.of(),
-            "action.interact.ride.boat",
-            1.375f,
-            true,
-            false,
-            2,
-            List.of(
-                new RideableComponent.Seat(0, 1, new Vector3f(0.0f, -0.2f, 0.0f), null, null, null, null),
-                new RideableComponent.Seat(1, 2, new Vector3f(0.2f, -0.2f, 0.0f), null, null, null, null)
-            )
+                0,
+                true,
+                RideableComponent.DismountMode.DEFAULT,
+                Set.of(),
+                "action.interact.ride.boat",
+                1.375f,
+                true,
+                false,
+                2,
+                List.of(
+                        new RideableComponent.Seat(0, 1, new Vector3f(0.0f, -0.2f, 0.0f), null, null, null, null),
+                        new RideableComponent.Seat(1, 2, new Vector3f(0.2f, -0.2f, 0.0f), null, null, null, null)
+                )
         );
     }
 
@@ -357,9 +378,9 @@ public class EntityBoat extends EntityVehicle {
         Vector3f extra = (seatIndex == 0) ? RIDER_PASSENGER_OFFSET : PASSENGER_OFFSET;
 
         return new Vector3f(
-            base.x + extra.x,
-            base.y + extra.y,
-            base.z + extra.z
+                base.x + extra.x,
+                base.y + extra.y,
+                base.z + extra.z
         );
     }
 
@@ -396,7 +417,7 @@ public class EntityBoat extends EntityVehicle {
      */
     @Deprecated
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return super.mountEntity(entity, mode);
     }
 
@@ -404,7 +425,7 @@ public class EntityBoat extends EntityVehicle {
     public boolean dismountEntity(Entity entity, boolean sendLinks) {
         boolean ok = super.dismountEntity(entity, sendLinks);
         if (ok) {
-            entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false);
+            entity.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, false);
             if (entity instanceof EntityHuman) ignoreCollision.add(entity);
         }
         return ok;
@@ -431,7 +452,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     public void onPaddle(AnimatePacket.Action animation, float value) {
-        EntityDataType<Float> propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? ROW_TIME_RIGHT : ROW_TIME_LEFT;
+        ActorDataType<Float> propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? ActorDataTypes.ROW_TIME_RIGHT : ActorDataTypes.ROW_TIME_LEFT;
 
         if (Float.compare(getDataProperty(propertyId), value) != 0) {
             this.setDataProperty(propertyId, value);
@@ -505,8 +526,9 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putInt("Variant", this.woodID); // Correct way in Bedrock Edition
-        this.namedTag.putByte("woodID", this.woodID); // Compatibility with Cloudburst Nukkit
+        this.namedTag = this.namedTag.toBuilder().putInt("Variant", this.woodID)
+                .putByte("woodID", (byte) this.woodID) // compatibility cb nukkit
+                .build();
     }
 
     public int getVariant() {
@@ -515,7 +537,7 @@ public class EntityBoat extends EntityVehicle {
 
     public void setVariant(int variant) {
         this.woodID = variant;
-        this.entityDataMap.put(VARIANT, variant);
+        this.entityDataMap.put(ActorDataTypes.VARIANT, variant);
     }
 
     @Override
@@ -538,18 +560,18 @@ public class EntityBoat extends EntityVehicle {
     public boolean onRiderInput(Player player, PlayerAuthInputPacket pk) {
         float acceleration = 0.0F;
 
-        boolean isMobileAndClassicMovement = pk.getInputMode() == InputMode.TOUCH && pk.getInteractionModel() == AuthInteractionModel.CLASSIC;
+        boolean isMobileAndClassicMovement = pk.getInputMode() == InputMode.TOUCH && pk.getNewInteractionModel() == InputInteractionModel.CLASSIC;
         Vector2 input;
         if (isMobileAndClassicMovement) {
             // Press both left and right to move forward and press 1 to turn the boat.
-            boolean left = pk.getInputData().contains(AuthInputAction.PADDLE_LEFT), right = pk.getInputData().contains(AuthInputAction.PADDLE_RIGHT);
+            boolean left = pk.getInputData().contains(PlayerAuthInputData.PADDLING_LEFT), right = pk.getInputData().contains(PlayerAuthInputData.PADDLING_RIGHT);
             if (left && right) {
                 input = new Vector2(0, 1);
             } else {
-                input = new Vector2(1,0).multiply(left ? -1 : right ? 1 : 0);
+                input = new Vector2(1, 0).multiply(left ? -1 : right ? 1 : 0);
             }
         } else {
-            input = pk.motion;
+            input = Vector2.fromNetwork(pk.getMoveVector());
         }
         boolean up = input.getY() > 0;
         boolean down = input.getY() < 0;
@@ -567,29 +589,29 @@ public class EntityBoat extends EntityVehicle {
         this.setMotion(this.getMotion().add(motion));
         float animationSpeed = (float) Math.max(0.01, Math.min(0.08,
                 Math.sqrt(motionX * motionX + motionZ * motionZ) * 0.05));
-        double turnRate = NukkitMath.min((Math.abs(Math.toDegrees(Math.atan2(pk.motion.y, pk.motion.x)) - 90) / 90d) * 4, 4);
+        double turnRate = NukkitMath.min((Math.abs(Math.toDegrees(Math.atan2(pk.getMoveVector().getY(), pk.getMoveVector().getX())) - 90) / 90d) * 4, 4);
 
         if (up) {
-            paddleTimeLeft  += animationSpeed;
+            paddleTimeLeft += animationSpeed;
             paddleTimeRight += animationSpeed;
-            if (left)  this.yaw -= turnRate;
+            if (left) this.yaw -= turnRate;
             if (right) this.yaw += turnRate;
         } else if (down) {
-            paddleTimeLeft  -= animationSpeed;
+            paddleTimeLeft -= animationSpeed;
             paddleTimeRight -= animationSpeed;
-            if (left)  this.yaw -= turnRate;
+            if (left) this.yaw -= turnRate;
             if (right) this.yaw += turnRate;
         } else {
-            double yawRad = Math.toRadians(pk.yaw);
+            double yawRad = Math.toRadians(pk.getPlayerRotation().getY());
             double pz = Math.cos(yawRad);
             double fz = Math.sin(yawRad);
-            if (left && !right) applyTurn(true,  turnRate, acceleration, pz, fz, animationSpeed);
+            if (left && !right) applyTurn(true, turnRate, acceleration, pz, fz, animationSpeed);
             if (right && !left) applyTurn(false, turnRate, acceleration, pz, fz, animationSpeed);
-            if (!left)  paddleTimeLeft = 0;
+            if (!left) paddleTimeLeft = 0;
             if (!right) paddleTimeRight = 0;
         }
-        this.setDataProperty(EntityDataTypes.ROW_TIME_RIGHT, paddleTimeLeft);
-        this.setDataProperty(EntityDataTypes.ROW_TIME_LEFT,  paddleTimeRight);
+        this.setDataProperty(ActorDataTypes.ROW_TIME_RIGHT, paddleTimeLeft);
+        this.setDataProperty(ActorDataTypes.ROW_TIME_LEFT, paddleTimeRight);
 
         this.headYaw = this.yaw;
         broadcastMovement(false);
@@ -637,12 +659,12 @@ public class EntityBoat extends EntityVehicle {
     private void applyBoatSeatFlags(Entity entity, int idx) {
         if (idx < 0) return;
 
-        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
-        entity.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 90);
+        entity.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION, true);
+        entity.setDataProperty(ActorDataTypes.SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 90);
 
-        entity.setDataProperty(SEAT_HAS_ROTATION, idx == 0);
+        entity.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET, idx == 0);
         if (idx == 0) {
-            entity.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, -90);
+            entity.setDataProperty(ActorDataTypes.SEAT_ROTATION_OFFSET_DEGREES, -90);
         }
 
         entity.setRotation(yaw, entity.pitch);

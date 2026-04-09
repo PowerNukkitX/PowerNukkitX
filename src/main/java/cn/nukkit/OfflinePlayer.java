@@ -1,8 +1,8 @@
 package cn.nukkit;
 
 import cn.nukkit.metadata.MetadataValue;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.List;
 import java.util.Locale;
@@ -18,13 +18,13 @@ import java.util.UUID;
  */
 public class OfflinePlayer implements IPlayer {
     private final Server server;
-    private final CompoundTag namedTag;
+    private final NbtMap namedTag;
 
     /**
      * Initializes the object {@code OfflinePlayer}.
      *
      * @param server The server this player is in, as a {@code Server} object.
-     * @param uuid  UUID of this player.
+     * @param uuid   UUID of this player.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
     public OfflinePlayer(Server server, UUID uuid) {
@@ -38,21 +38,23 @@ public class OfflinePlayer implements IPlayer {
     public OfflinePlayer(Server server, UUID uuid, String name) {
         this.server = server;
 
-        CompoundTag tag;
+        NbtMap tag;
 
         if (uuid != null) {
             tag = this.server.getOfflinePlayerData(uuid, false);
 
-            if (tag == null) tag = new CompoundTag();
+            if (tag == null) tag = NbtMap.EMPTY;
 
-            tag.putLong("UUIDMost", uuid.getMostSignificantBits());
-            tag.putLong("UUIDLeast", uuid.getLeastSignificantBits());
+            tag = tag.toBuilder()
+                    .putLong("UUIDMost", uuid.getMostSignificantBits())
+                    .putLong("UUIDLeast", uuid.getLeastSignificantBits())
+                    .build();
         } else if (name != null) {
             tag = this.server.getOfflinePlayerData(name, false);
 
-            if (tag == null) tag = new CompoundTag();
+            if (tag == null) tag = NbtMap.EMPTY;
 
-            tag.putString("NameTag", name);
+            tag = tag.toBuilder().putString("NameTag", name).build();
         } else {
             throw new IllegalArgumentException("Name and UUID cannot both be null");
         }
@@ -67,7 +69,7 @@ public class OfflinePlayer implements IPlayer {
 
     @Override
     public String getName() {
-        if (namedTag != null && namedTag.contains("NameTag")) {
+        if (namedTag != null && namedTag.containsKey("NameTag")) {
             return namedTag.getString("NameTag");
         }
         return null;

@@ -14,9 +14,10 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -189,14 +190,12 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
         Instrument instrument = this.getInstrument();
 
-        this.level.addLevelSoundEvent(this, LevelSoundEvent.NOTE, instrument.ordinal() << 8 | this.getStrength());
+        this.level.addLevelSoundEvent(this, SoundEvent.NOTE, instrument.ordinal() << 8 | this.getStrength());
 
-        BlockEventPacket pk = new BlockEventPacket();
-        pk.x = this.getFloorX();
-        pk.y = this.getFloorY();
-        pk.z = this.getFloorZ();
-        pk.type = instrument.ordinal();
-        pk.value = this.getStrength();
+        final BlockEventPacket pk = new BlockEventPacket();
+        pk.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+        pk.setEventType(instrument.ordinal());
+        pk.setEventValue(this.getStrength());
         this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
     }
 

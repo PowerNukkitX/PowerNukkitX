@@ -1,14 +1,13 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 
 
 public interface ClimateVariant {
@@ -19,27 +18,27 @@ public interface ClimateVariant {
     String[] warmTags = new String[]{BiomeTags.SAVANNA, BiomeTags.JUNGLE, BiomeTags.MESA, BiomeTags.DESERT, BiomeTags.LUKEWARM, BiomeTags.SWAMP, BiomeTags.NETHER};
 
     default Variant getBiomeVariant(int biomeId) {
-        BiomeDefinition definition = Registries.BIOME.get(biomeId);
-        Set<String> tags = definition.getTags();
-        for(String tag : coldTags) if(tags.contains(tag)) return Variant.COLD;
-        for(String tag : warmTags) if(tags.contains(tag)) return Variant.WARM;
+        BiomeDefinitionData definition = Registries.BIOME.get(biomeId).second();
+        List<String> tags = definition.getTags();
+        for (String tag : coldTags) if (tags.contains(tag)) return Variant.COLD;
+        for (String tag : warmTags) if (tags.contains(tag)) return Variant.WARM;
         return Variant.TEMPERATE;
     }
 
     default Variant getVariant() {
-        if(this instanceof Entity entity) {
+        if (this instanceof Entity entity) {
             String var = entity.getEnumEntityProperty(PROPERTY_STATE);
-            if(var == null) return null;
+            if (var == null) return null;
             return Arrays.stream(Variant.VALUES).filter(variant -> variant.getName().equals(var)).findFirst().get();
         }
         return null;
     }
 
     default void setVariant(Variant variant) {
-        if(this instanceof Entity entity) {
+        if (this instanceof Entity entity) {
             entity.setEnumEntityProperty(PROPERTY_STATE, variant.getName());
             entity.sendData(entity.getViewers().values().toArray(Player[]::new));
-            entity.namedTag.putString("variant", variant.getName());
+            entity.namedTag = entity.namedTag.toBuilder().putString("variant", variant.getName()).build();
         }
     }
 
@@ -51,6 +50,7 @@ public interface ClimateVariant {
 
         @Getter
         private final String name;
+
         Variant(String s) {
             name = s;
         }

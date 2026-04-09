@@ -2,14 +2,15 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.IPStringNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,16 +62,17 @@ public class BanIpCommand extends VanillaCommand {
                     String name = value.toLowerCase(Locale.ENGLISH);
                     String path = sender.getServer().getDataPath() + "players/";
                     File file = new File(path + name + ".dat");
-                    CompoundTag nbt = null;
+                    NbtMap nbt = null;
                     if (file.exists()) {
-                        try (FileInputStream inputStream = new FileInputStream(file)) {
-                            nbt = NBTIO.readCompressed(inputStream);
+                        try (FileInputStream inputStream = new FileInputStream(file);
+                             NBTInputStream nbtInputStream = NbtUtils.createReader(inputStream)) {
+                            nbt = (NbtMap) nbtInputStream.readTag();
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
                         }
                     }
 
-                    if (nbt != null && nbt.contains("lastIP") && Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", (value = nbt.getString("lastIP")))) {
+                    if (nbt != null && nbt.containsKey("lastIP") && Pattern.matches("^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$", (value = nbt.getString("lastIP")))) {
                         this.processIPBan(value, sender, reason);
                         log.addSuccess("commands.banip.success", value).output(true);
                         return 1;

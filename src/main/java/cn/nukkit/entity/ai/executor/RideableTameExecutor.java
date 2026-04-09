@@ -6,14 +6,16 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
+import org.checkerframework.checker.units.qual.A;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Handles ride-based taming behavior for rideable animals.
- *
+ * <p>
  * While being ridden, the entity performs random roaming for a period
  * and then rolls a probability check to either become tamed (assigning
  * the rider as owner) or fail and dismount the rider, triggering the
@@ -84,23 +86,22 @@ public class RideableTameExecutor extends FlatRandomRoamExecutor {
             durationTick = 0;
 
             if (Utils.rand(0, 100) <= tameProbability) {
-                EntityEventPacket packet = new EntityEventPacket();
+                final ActorEventPacket packet = new ActorEventPacket();
+                packet.setTargetRuntimeID(animal.getId());
+                packet.setType(ActorEvent.TAMING_SUCCEEDED);
 
                 animal.setOwnerName(animal.getMemoryStorage().get(CoreMemoryTypes.RIDER_NAME));
                 animal.setTamed(true);
                 animal.setPersistent(true);
                 animal.updateInventoryFlags();
-                packet.eid = animal.getId();
-                packet.event = EntityEventPacket.TAME_SUCCESS;
                 Player player = (Player) animal.getRider();
                 if (player == null) return false;
                 player.dataPacket(packet);
 
             } else {
-                EntityEventPacket packet = new EntityEventPacket();
-
-                packet.eid = animal.getId();
-                packet.event = EntityEventPacket.TAME_FAIL;
+                final ActorEventPacket packet = new ActorEventPacket();
+                packet.setTargetRuntimeID(animal.getId());
+                packet.setType(ActorEvent.TAMING_FAILED);
                 Player player = (Player) animal.getRider();
                 if (player == null) return false;
                 player.dataPacket(packet);

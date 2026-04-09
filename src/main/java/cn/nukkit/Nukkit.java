@@ -1,6 +1,5 @@
 package cn.nukkit;
 
-import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.wizard.SetupWizard;
 import cn.nukkit.wizard.WizardConfig;
 import com.google.common.base.Preconditions;
@@ -224,7 +223,6 @@ public class Nukkit {
         }
         log.info("Stopping other threads");
 
-        PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {
                 continue;

@@ -11,9 +11,9 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.mob.EntityCopperGolem;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Faceable;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
         if(item.isAxe() && !isWaxed()) {
             OxidizationLevel oxidizationLevel = getOxidizationLevel();
             if (OxidizationLevel.UNAFFECTED.equals(oxidizationLevel)) {
-                CompoundTag nbt = Entity.getDefaultNBT(this.add(0.5, 0, 0.5f));
+                NbtMap nbt = Entity.getDefaultNBT(this.add(0.5, 0, 0.5f));
                 EntityCopperGolem copperGolem = (EntityCopperGolem) Entity.createEntity(EntityID.COPPER_GOLEM, this.level.getChunk(this.getChunkX(), this.getChunkZ()), nbt);
                 copperGolem.spawnToAll();
                 this.level.setBlock(this, BlockAir.STATE.toBlock());

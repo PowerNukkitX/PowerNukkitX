@@ -20,6 +20,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import cn.nukkit.registry.RecipeRegistry;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -62,5 +63,17 @@ public class SmithingTransformRecipe extends BaseRecipe {
 
     public ItemDescriptor getTemplate() {
         return ingredients.get(2);
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTransformRecipe toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTransformRecipe.of(
+                this.getRecipeId(),
+                this.getTemplate().toNetwork(),
+                this.getBase().toNetwork(),
+                this.getAddition().toNetwork(),
+                this.getResult().toNetwork(),
+                "smithing_table",
+                RecipeRegistry.RECIPE_NET_ID_COUNTER++
+        );
     }
 }

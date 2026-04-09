@@ -1,8 +1,10 @@
 package cn.nukkit.entity.data.property;
 
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.SyncEntityPropertyPacket;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.packet.SyncActorPropertyPacket;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,8 +19,8 @@ public abstract class EntityProperty {
     private static final String PROPERTIES_KEY = "properties";
 
     private static final Map<String, List<EntityProperty>> entityPropertyMap = new LinkedHashMap<>();
-    private static final List<CompoundTag> entityPropertyCache = new ArrayList<>();
-    private static CompoundTag playerPropertyCache = new CompoundTag();
+    private static final List<NbtMap> entityPropertyCache = new ArrayList<>();
+    private static NbtMap playerPropertyCache = NbtMap.EMPTY;
 
     private final String identifier;
 
@@ -39,8 +41,8 @@ public abstract class EntityProperty {
     public static void buildEntityProperty() {
         entityPropertyCache.clear();
         for (Map.Entry<String, List<EntityProperty>> entry : entityPropertyMap.entrySet()) {
-            ListTag<CompoundTag> listProperty = buildPropertyList(entry.getValue());
-            CompoundTag tag = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", entry.getKey());
+            List<NbtMap> listProperty = buildPropertyList(entry.getValue());
+            NbtMap tag = NbtMap.builder().putList(PROPERTIES_KEY, NbtType.COMPOUND, listProperty).putString("type", entry.getKey()).build();
             entityPropertyCache.add(tag);
         }
     }
@@ -48,18 +50,22 @@ public abstract class EntityProperty {
     public static void buildPlayerProperty() {
         List<EntityProperty> properties = entityPropertyMap.get(PLAYER_KEY);
         if (properties == null) {
-            playerPropertyCache = new CompoundTag();
+            playerPropertyCache = NbtMap.EMPTY;
             return;
         }
-        ListTag<CompoundTag> listProperty = buildPropertyList(properties);
-        playerPropertyCache = new CompoundTag().putList(PROPERTIES_KEY, listProperty).putString("type", PLAYER_KEY);
+        List<NbtMap> listProperty = buildPropertyList(properties);
+        playerPropertyCache = NbtMap.builder().putList(PROPERTIES_KEY, NbtType.COMPOUND, listProperty).putString("type", PLAYER_KEY).build();
     }
 
-    public static List<SyncEntityPropertyPacket> getEntityPropertyCache() {
-        return entityPropertyCache.stream().map(SyncEntityPropertyPacket::new).toList();
+    public static List<SyncActorPropertyPacket> getEntityPropertyCache() {
+        return entityPropertyCache.stream().map(nbtMap -> {
+            final SyncActorPropertyPacket pk = new SyncActorPropertyPacket();
+            pk.setPropertyData(nbtMap);
+            return pk;
+        }).toList();
     }
 
-    public static CompoundTag getPlayerPropertyCache() {
+    public static NbtMap getPlayerPropertyCache() {
         return playerPropertyCache;
     }
 
@@ -71,20 +77,21 @@ public abstract class EntityProperty {
         return identifier;
     }
 
-    public abstract void populateTag(CompoundTag tag);
+    public abstract NbtMap populateTag(NbtMap tag);
 
     public abstract boolean isClientSync();
 
-    private static ListTag<CompoundTag> buildPropertyList(List<EntityProperty> properties) {
-        ListTag<CompoundTag> listProperty = new ListTag<>();
+    private static List<NbtMap> buildPropertyList(List<EntityProperty> properties) {
+        final List<NbtMap> listProperty = new ObjectArrayList<>();
         for (EntityProperty entityProperty : properties) {
             // Filter out properties not meant to sync to client
             if (entityProperty instanceof BooleanEntityProperty boolProp && !boolProp.isClientSync()) continue;
             if (entityProperty instanceof EnumEntityProperty enumProp && !enumProp.isClientSync()) continue;
 
-            CompoundTag propertyTag = new CompoundTag();
-            propertyTag.putString("name", entityProperty.getIdentifier());
-            entityProperty.populateTag(propertyTag);
+            NbtMap propertyTag = NbtMap.builder()
+                    .putString("name", entityProperty.getIdentifier())
+                    .build();
+            propertyTag = entityProperty.populateTag(propertyTag);
             listProperty.add(propertyTag);
         }
         return listProperty;

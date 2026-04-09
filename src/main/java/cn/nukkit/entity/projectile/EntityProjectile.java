@@ -23,7 +23,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -47,20 +48,20 @@ public abstract class EntityProjectile extends Entity {
      */
     private boolean noAge;
 
-    public EntityProjectile(IChunk chunk, CompoundTag nbt) {
+    public EntityProjectile(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityProjectile(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(OWNER_EID, shootingEntity.getId());
+            this.setDataProperty(ActorDataTypes.OWNER, shootingEntity.getId());
         }
     }
 
     protected double getDamage() {
-        return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
+        return namedTag.containsKey("damage") ? namedTag.getDouble("damage") : getBaseDamage();
     }
 
     protected double getBaseDamage() {
@@ -132,7 +133,7 @@ public abstract class EntityProjectile extends Entity {
 
         this.setHealthMax(1);
         this.setHealthCurrent(1);
-        if (this.namedTag.contains("Age") && !this.noAge) {
+        if (this.namedTag.containsKey("Age") && !this.noAge) {
             this.age = this.namedTag.getShort("Age");
         }
     }
@@ -146,7 +147,7 @@ public abstract class EntityProjectile extends Entity {
     public void saveNBT() {
         super.saveNBT();
         if (!this.noAge) {
-            this.namedTag.putShort("Age", this.age);
+            this.namedTag = this.namedTag.toBuilder().putShort("Age", (short) this.age).build();
         }
     }
 

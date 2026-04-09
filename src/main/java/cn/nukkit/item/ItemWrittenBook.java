@@ -1,7 +1,11 @@
 package cn.nukkit.item;
 
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.List;
 
 public class ItemWrittenBook extends ItemBookWritable {
     public static final int GENERATION_ORIGINAL = 0;
@@ -27,33 +31,35 @@ public class ItemWrittenBook extends ItemBookWritable {
     }
 
     public Item writeBook(String author, String title, String[] pages) {
-        ListTag<CompoundTag> pageList = new ListTag<>();
+        List<NbtMap> pageList = new ObjectArrayList<>();
         for (String page : pages) {
             pageList.add(createPageTag(page));
         }
         return writeBook(author, title, pageList);
     }
 
-    public Item writeBook(String author, String title, ListTag<CompoundTag> pages) {
-        if (pages.size() > 50 || pages.size() <= 0) return this; //Minecraft does not support more than 50 pages
-        CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
+    public Item writeBook(String author, String title, List<NbtMap> pages) {
+        if (pages.size() > 50 || pages.isEmpty()) return this; //Minecraft does not support more than 50 pages
+        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder();
 
         tag.putString("author", author);
         tag.putString("title", title);
-        tag.putList("pages", pages);
+        tag.putList("pages", NbtType.COMPOUND, pages);
 
         tag.putInt("generation", GENERATION_ORIGINAL);
         tag.putString("xuid", "");
 
-        return this.setNamedTag(tag);
+        return this.setNamedTag(tag.build());
     }
 
     public boolean signBook(String title, String author, String xuid, int generation) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag())
+        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder())
                 .putString("title", title)
                 .putString("author", author)
                 .putInt("generation", generation)
-                .putString("xuid", xuid));
+                .putString("xuid", xuid)
+                .build()
+        );
         return true;
     }
 
@@ -69,7 +75,7 @@ public class ItemWrittenBook extends ItemBookWritable {
      * Sets the generation of a book.
      */
     public void setGeneration(int generation) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).putInt("generation", generation));
+        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putInt("generation", generation).build());
     }
 
     /**
@@ -85,7 +91,7 @@ public class ItemWrittenBook extends ItemBookWritable {
      * Sets the author of this book.
      */
     public void setAuthor(String author) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).putString("author", author));
+        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putString("author", author).build());
     }
 
     /**
@@ -99,7 +105,7 @@ public class ItemWrittenBook extends ItemBookWritable {
      * Sets the title of this book.
      */
     public void setTitle(String title) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).putString("title", title));
+        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putString("title", title).build());
     }
 
     /**
@@ -113,6 +119,6 @@ public class ItemWrittenBook extends ItemBookWritable {
      * Sets the author's XUID of this book.
      */
     public void setXUID(String title) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).putString("xuid", title));
+        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putString("xuid", title).build());
     }
 }

@@ -4,14 +4,16 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockTrappedChest;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.blockentity.BlockEntityNameable;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
-import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,22 +27,22 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     protected DoubleChestInventory doubleInventory;
 
     public ChestInventory(BlockEntityChest chest) {
-        super(chest, InventoryType.CONTAINER, 27);
+        super(chest, ContainerType.CONTAINER, 27);
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+            map.put(i, ContainerEnumName.LEVEL_ENTITY_CONTAINER);
         }
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < this.getSize(); i++) {
-            map.put(i, ContainerSlotType.INVENTORY);
+            map.put(i, ContainerEnumName.INVENTORY_CONTAINER);
         }
         return map;
     }
@@ -55,17 +57,15 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     public void onOpen(Player who) {
         super.onOpen(who);
 
-        if (who.getDataFlag(EntityFlag.SILENT)) {
+        if (who.getDataFlag(ActorFlags.SILENT)) {
             return;
         }
 
         if (this.getVisibleViewersCount() == 1) {
-            BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
-            pk.type = 1;
-            pk.value = 2;
+            final BlockEventPacket pk = new BlockEventPacket();
+            pk.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
+            pk.setEventType(1);
+            pk.setEventValue(2);
 
             Level level = this.getHolder().getLevel();
             if (level != null) {
@@ -88,12 +88,10 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
     @Override
     public void onClose(Player who) {
         if (this.getVisibleViewersCount() == 1) {
-            BlockEventPacket pk = new BlockEventPacket();
-            pk.x = (int) this.getHolder().getX();
-            pk.y = (int) this.getHolder().getY();
-            pk.z = (int) this.getHolder().getZ();
-            pk.type = 1;
-            pk.value = 0;
+            final BlockEventPacket pk = new BlockEventPacket();
+            pk.setBlockPosition(Vector3i.from(this.getHolder().getX(), this.getHolder().getY(), this.getHolder().getZ()));
+            pk.setEventType(1);
+            pk.setEventValue(0);
 
             Level level = this.getHolder().getLevel();
             if (level != null) {

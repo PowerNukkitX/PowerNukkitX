@@ -10,11 +10,11 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class CaveGenerateFeature extends GenerateFeature {
 
@@ -209,8 +209,8 @@ public class CaveGenerateFeature extends GenerateFeature {
                                         chunk.setBlockState(xx, yy, zz, BlockAir.STATE);
 
                                         if (grassFound && (chunk.getBlockState(xx, yy - 1, zz).toBlock().hasTag(BlockTags.DIRT))) {
-                                            BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(xx, yy-1, zz));
-                                            BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceMaterial.get().topBlock);
+                                            BiomeDefinitionData definition = Registries.BIOME.get(chunk.getBiomeId(xx, yy - 1, zz)).second();
+                                            BlockState topBlock = Registries.BLOCKSTATE.get(definition.getChunkGenData().getSurfaceBuilderData().getSurfaceMaterial().getTopBlock().getRuntimeId());
                                             chunk.setBlockState(xx, yy - 1, zz, topBlock);
                                         }
                                     }

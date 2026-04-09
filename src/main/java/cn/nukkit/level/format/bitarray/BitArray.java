@@ -1,7 +1,7 @@
 package cn.nukkit.level.format.bitarray;
 
-import cn.nukkit.utils.ByteBufVarInt;
 import io.netty.buffer.ByteBuf;
+import org.cloudburstmc.protocol.common.util.VarInts;
 
 /**
  * Allay Project 2023/4/14
@@ -15,11 +15,11 @@ public interface BitArray {
     int get(int index);
 
     default void writeSizeToNetwork(ByteBuf buffer, int size) {
-        ByteBufVarInt.writeInt(buffer, size);
+        VarInts.writeInt(buffer, size);
     }
 
     default int readSizeFromNetwork(ByteBuf buffer) {
-        return ByteBufVarInt.readInt(buffer);
+        return VarInts.readInt(buffer);
     }
 
     int size();

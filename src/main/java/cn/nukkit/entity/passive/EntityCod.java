@@ -5,15 +5,14 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author PetteriM1
@@ -24,7 +23,7 @@ public class EntityCod extends EntityFish {
         return COD;
     }
 
-    public EntityCod(IChunk chunk, CompoundTag nbt) {
+    public EntityCod(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

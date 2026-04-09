@@ -12,8 +12,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,12 +126,12 @@ public class BlockDriedGhast extends BlockTransparent {
         MinecraftCardinalDirection cd = block.getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
         float yaw = cardinalToYaw(cd);
 
-        CompoundTag nbt = Entity.getDefaultNBT(new Vector3(sx, sy, sz), null, yaw, 0f);
+        NbtMapBuilder nbt = Entity.getDefaultNBT(new Vector3(sx, sy, sz), null, yaw, 0f).toBuilder();
         nbt.putDouble("HomeX", homeX);
         nbt.putDouble("HomeY", homeY);
         nbt.putDouble("HomeZ", homeZ);
 
-        Entity baby = Entity.createEntity(EntityID.HAPPY_GHAST, level.getChunk((int) sx >> 4, (int) sz >> 4), nbt);
+        Entity baby = Entity.createEntity(EntityID.HAPPY_GHAST, level.getChunk((int) sx >> 4, (int) sz >> 4), nbt.build());
         if (baby == null) return;
 
         baby.setBaby(true);

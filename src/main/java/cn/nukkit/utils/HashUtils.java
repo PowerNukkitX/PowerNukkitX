@@ -2,14 +2,16 @@ package cn.nukkit.utils;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.TreeMapCompoundTag;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtUtils;
 
-import java.nio.ByteOrder;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Utils for hash
@@ -31,7 +33,7 @@ public class HashUtils {
         }
 
         //build block state tag
-        var states = new TreeMapCompoundTag();
+        var states = NbtMap.builder();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -40,9 +42,10 @@ public class HashUtils {
             }
         }
 
-        var tag = new CompoundTag()
+        var tag = NbtMap.builder()
                 .putString("name", identifier)
-                .putCompound("states", states);
+                .putCompound("states", NbtMap.fromMap(new TreeMap<>(states.build())))
+                .build();
         return fnv1a_32_nbt(tag);
     }
 
@@ -51,7 +54,7 @@ public class HashUtils {
             return -2; // This is special case
         }
 
-        var states = new TreeMapCompoundTag();
+        var states = NbtMap.builder();
         for (var value : propertyValues) {
             switch (value.getPropertyType().getType()) {
                 case INT -> states.putInt(value.getPropertyType().getName(), (int) value.getSerializedValue());
@@ -59,9 +62,10 @@ public class HashUtils {
                 case BOOLEAN -> states.putByte(value.getPropertyType().getName(), (byte) value.getSerializedValue());
             }
         }
-        var tag = new CompoundTag()
+        var tag = NbtMap.builder()
                 .putString("name", identifier)
-                .putCompound("states", states);
+                .putCompound("states", NbtMap.fromMap(new TreeMap<>(states.build())))
+                .build();
         return fnv1a_32_nbt(tag);
     }
 
@@ -76,32 +80,34 @@ public class HashUtils {
     }
 
     @SneakyThrows
-    public int fnv1a_32_nbt(CompoundTag tag) {
+    public int fnv1a_32_nbt(NbtMap tag) {
         if (tag.getString("name").equals("minecraft:unknown")) {
             return -2; // This is special case
         }
-        return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            nbtOutputStream.writeTag(tag);
+            nbtOutputStream.close();
+            return fnv1a_32(outputStream.toByteArray());
+        }
     }
 
     @SneakyThrows
-    public int fnv1a_32_nbt_palette(CompoundTag tag) {
+    public int fnv1a_32_nbt_palette(NbtMap tag) {
         if (tag.getString("name").equals("minecraft:unknown")) {
             return -2; // This is special case
         }
-        CompoundTag states;
-        if (tag instanceof TreeMapCompoundTag) {
-            states = tag;
-        } else {
-            states = new TreeMapCompoundTag();
+        final TreeMap<String, Object> sorted = new TreeMap<>(tag.getCompound("states"));
+        final NbtMap states = NbtMap.fromMap(sorted);
+        final NbtMapBuilder builder = NbtMap.builder();
+        builder.putCompound("states", states);
+        builder.remove("version");
+        tag = builder.build();
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            nbtOutputStream.writeTag(tag);
+            return fnv1a_32(outputStream.toByteArray());
         }
-        for (var e : tag.getCompound("states").getTags().entrySet()) {
-            states.put(e.getKey(), e.getValue());
-        }
-        tag.put("states", states);
-        if (tag.contains("version")) {
-            tag.remove("version");
-        }
-        return fnv1a_32(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
     //CPU Ryzen PRO 5850U, 16G, Win11

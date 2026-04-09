@@ -22,9 +22,10 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -46,7 +47,7 @@ public class EntityFallingBlock extends Entity {
     protected boolean breakOnGround;
     protected int aliveTick = 0;
 
-    public EntityFallingBlock(IChunk chunk, CompoundTag nbt) {
+    public EntityFallingBlock(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -100,8 +101,8 @@ public class EntityFallingBlock extends Entity {
         super.initEntity();
 
         if (namedTag != null) {
-            if (namedTag.contains("Block")) {
-                BlockState blockState = NBTIO.getBlockStateHelper(namedTag.getCompound("Block"));
+            if (namedTag.containsKey("Block")) {
+                BlockState blockState = ItemHelper.getBlockStateHelper(namedTag.getCompound("Block"));
                 if (blockState == null) {
                     close();
                     return;
@@ -111,7 +112,7 @@ public class EntityFallingBlock extends Entity {
             breakOnLava = namedTag.getBoolean("BreakOnLava");
             breakOnGround = namedTag.getBoolean("BreakOnGround");
 
-            setDataProperty(VARIANT, blockState.blockStateHash());
+            setDataProperty(ActorDataTypes.VARIANT, blockState.blockStateHash());
         }
     }
 
@@ -224,8 +225,9 @@ public class EntityFallingBlock extends Entity {
                             }
                             level.addParticle(new DestroyBlockParticle(pos, Block.get(blockState)));
                         } else {
-                            while(pos.getY() < getLevel().getMaxHeight()) {
-                                if(!getLevel().getBlock(pos).canBeReplaced()) pos.y++; else break;
+                            while (pos.getY() < getLevel().getMaxHeight()) {
+                                if (!getLevel().getBlock(pos).canBeReplaced()) pos.y++;
+                                else break;
                             }
                             getLevel().setBlock(pos, eventTo, true);
                         }
@@ -248,9 +250,9 @@ public class EntityFallingBlock extends Entity {
                                     getLevel().setBlock(eventTo, anvil, true);
                                 }
                             }
-                            getLevel().addLevelEvent(eventTo, LevelEventPacket.EVENT_SOUND_ANVIL_LAND);
+                            getLevel().addLevelEvent(eventTo, LevelEvent.SOUND_ANVIL_LAND);
                         } else if (eventTo.getId().equals(BlockID.POINTED_DRIPSTONE)) {
-                            getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
+                            getLevel().addLevelEvent(block, LevelEvent.SOUND_POINTED_DRIPSTONE_LAND);
 
                             Entity[] e = level.getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
                             for (Entity entity : e) {
@@ -277,7 +279,7 @@ public class EntityFallingBlock extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putCompound("Block", blockState.getBlockStateTag());
+        this.namedTag = namedTag.toBuilder().putCompound("Block", blockState.getBlockStateTag()).build();
     }
 
     @Override

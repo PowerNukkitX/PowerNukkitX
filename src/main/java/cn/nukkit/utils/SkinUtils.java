@@ -8,7 +8,7 @@ import java.util.Base64;
 import java.util.List;
 
 public class SkinUtils {
-    public static SkinAnimation getAnimation(JsonObject element) {
+    /*public static SkinAnimation getAnimation(JsonObject element) {
         float frames = element.get("Frames").getAsFloat();
         int type = element.get("Type").getAsInt();
         byte[] data = Base64.getDecoder().decode(element.get("Image").getAsString());
@@ -16,7 +16,7 @@ public class SkinUtils {
         int height = element.get("ImageHeight").getAsInt();
         int expression = element.get("AnimationExpression").getAsInt();
         return new SkinAnimation(new SerializedImage(width, height, data), type, frames, expression);
-    }
+    }*/
 
     public static SerializedImage getImage(JsonObject token, String name) {
         if (token.has(name + "Data")) {

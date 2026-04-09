@@ -1,7 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -115,8 +113,8 @@ public abstract class ItemTool extends Item {
 
     @Override
     public boolean isUnbreakable() {
-        Tag tag = this.getNamedTagEntry("Unbreakable");
-        return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
+        final Object tag = this.getNamedTagEntry("Unbreakable");
+        return tag instanceof Byte b && b > 0;
     }
 
     @Override

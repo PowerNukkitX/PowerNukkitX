@@ -18,29 +18,27 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.RuledObjectGenerator;
+import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.jigsaw.JigsawStructure;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
-import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.Registries;
-import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtType;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * Trial Chamber Structure for PowerNukkitX
+ *
  * @author Buddelbubi
  */
 public class TrialChambersStructure extends JigsawStructure implements RuledObjectGenerator {
@@ -80,6 +78,7 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
         TRIAL_SPAWNER_ENTITY_LOOKUP.put("baby_zombie", EntityID.ZOMBIE);
 
     }
+
     private static final IntersectionBarrelPopulator INTERSECTION_BARREL = new IntersectionBarrelPopulator();
 
     private static final DecoratedPotPopulator DECORATED_POT = new DecoratedPotPopulator();
@@ -152,7 +151,7 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
             Level level = blockManager.getLevel();
             switch (block) {
                 case BlockChest chest -> {
-                    if(container != null) {
+                    if (container != null) {
                         blockManager.addHook(() -> {
                             container.create(chest.getOrCreateBlockEntity().getInventory(), createRandom(level, block.asBlockVector3()));
                         });
@@ -188,8 +187,10 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
                         });
                     }
                 }
-                default -> {}
-            };
+                default -> {
+                }
+            }
+            ;
         }
     }
 
@@ -773,20 +774,21 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
                                 Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
                                 applyRandomEnchantment(item, entry.getEnchantments(), random);
                                 blockEntity.setItem(item);
-                                blockEntity.namedTag.putList("sherds", createSherds(random));
+                                blockEntity.namedTag = blockEntity.namedTag.toBuilder().putList("sherds", NbtType.STRING, createSherds(random)).build();
                                 blockEntity.spawnToAll();
                                 return;
                             }
                         }
                     }
                 });
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
-        private ListTag<StringTag> createSherds(RandomSourceProvider random) {
-            ListTag<StringTag> sherds = new ListTag<>();
+        private List<String> createSherds(RandomSourceProvider random) {
+            List<String> sherds = new ObjectArrayList<>();
             for (int i = 0; i < 4; i++) {
-                sherds.add(new StringTag(ItemID.BRICK));
+                sherds.add(ItemID.BRICK);
             }
 
             int roll = random.nextBoundedInt(13);
@@ -799,7 +801,7 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
                 case 11 -> ItemID.GUSTER_POTTERY_SHERD;
                 default -> ItemID.SCRAPE_POTTERY_SHERD;
             };
-            sherds.add(random.nextBoundedInt(4), new StringTag(sherdId));
+            sherds.add(random.nextBoundedInt(4), sherdId);
             return sherds;
         }
     }

@@ -1,13 +1,12 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSculkSensor;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author Kevims KCodeYT
@@ -26,7 +25,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     protected boolean waitForVibration = false;
 
 
-    public BlockEntitySculkSensor(IChunk chunk, CompoundTag nbt) {
+    public BlockEntitySculkSensor(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

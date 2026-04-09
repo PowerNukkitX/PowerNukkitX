@@ -36,9 +36,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.TakeItemEntityPacket;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +54,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     }
 
 
-    public EntityZombie(IChunk chunk, CompoundTag nbt) {
+    public EntityZombie(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -88,8 +88,8 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(getHealthCurrent()-source.getFinalDamage() <= 1) {
-            if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
+        if (getHealthCurrent() - source.getFinalDamage() <= 1) {
+            if (source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
                 transform();
                 return true;
             }
@@ -151,7 +151,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             return super.onUpdate(currentTick);
         }
         burn(this);
-        if(currentTick%20 == 0) {
+        if (currentTick % 20 == 0) {
             pickupItems(this);
         }
         return super.onUpdate(currentTick);
@@ -172,7 +172,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
             drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
         }
 
-        float rareChance = (1f/120f) + ((1f/300f) * looting);
+        float rareChance = (1f / 120f) + ((1f / 300f) * looting);
         if (Utils.rand(0f, 1f) < rareChance) {
             int roll = Utils.rand(0, 3);
             switch (roll) {
@@ -190,22 +190,22 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         return switch (entity.getIdentifier()) {
             case Entity.VILLAGER_V2,
                  Entity.SNOW_GOLEM,
-                 Entity.IRON_GOLEM-> true;
+                 Entity.IRON_GOLEM -> true;
             case Entity.TURTLE -> entity instanceof EntityTurtle turtle && !turtle.isBaby();
             default -> false;
         };
     }
 
     public static void pickupItems(Entity entity) {
-        if(entity instanceof EntityInventoryHolder holder) {
-            for(Entity i : entity.level.getNearbyEntities(entity.getBoundingBox().grow(1, 0.5, 1))) {
-                if(i instanceof EntityItem entityItem) {
+        if (entity instanceof EntityInventoryHolder holder) {
+            for (Entity i : entity.level.getNearbyEntities(entity.getBoundingBox().grow(1, 0.5, 1))) {
+                if (i instanceof EntityItem entityItem) {
                     Item item = entityItem.getItem();
-                    if(item.isArmor() || item.isTool()) {
-                        if(holder.equip(item)) {
-                            TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                            pk.entityId = entity.getId();
-                            pk.target = i.getId();
+                    if (item.isArmor() || item.isTool()) {
+                        if (holder.equip(item)) {
+                            final TakeItemActorPacket pk = new TakeItemActorPacket();
+                            pk.setActorRuntimeID(entity.getId());
+                            pk.setItemRuntimeID(i.getId());
                             Server.broadcastPacket(entity.getViewers().values(), pk);
                             i.close();
                         }
@@ -223,7 +223,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         drowned.setPosition(this);
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();
-        drowned.namedTag.putBoolean("Transformed", true);
+        drowned.namedTag = drowned.namedTag.toBuilder().putBoolean("Transformed", true).build();
         drowned.level.addSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
     }
 }

@@ -29,7 +29,6 @@ import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.HorseJumpStrengthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -39,16 +38,19 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
-
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,11 +60,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SKELETON_HORSE;
     }
 
-    public EntitySkeletonHorse(IChunk chunk, CompoundTag nbt) {
+    public EntitySkeletonHorse(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -106,15 +109,15 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                 false,
                 1,
                 List.of(
-                    new RideableComponent.Seat(
-                        0,
-                        1,
-                        new Vector3f(0.0f, 1.1f, -0.2f),
-                        null,
-                        null,
-                        null,
-                        null
-                    )
+                        new RideableComponent.Seat(
+                                0,
+                                1,
+                                new Vector3f(0.0f, 1.1f, -0.2f),
+                                null,
+                                null,
+                                null,
+                                null
+                        )
                 )
         );
     }
@@ -192,17 +195,17 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         setInputControls(true);
 
         // EnableTrap
-        if (this.namedTag.contains("EnableTrap")) {
+        if (this.namedTag.containsKey("EnableTrap")) {
             this.enableTrap = this.namedTag.getBoolean("EnableTrap");
         } else {
             this.enableTrap = true;
-            this.namedTag.putBoolean("EnableTrap", true);
+            this.namedTag = this.namedTag.toBuilder().putBoolean("EnableTrap", true).build();
         }
 
         // SpawnReason
-        String reason = this.namedTag.contains("SpawnReason") ? this.namedTag.getString("SpawnReason") : null;
+        String reason = this.namedTag.containsKey("SpawnReason") ? this.namedTag.getString("SpawnReason") : null;
         this.naturalSpawn = reason != null && reason.equalsIgnoreCase("NATURAL");
-        
+
     }
 
     @Override
@@ -237,7 +240,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         boolean b = super.onUpdate(currentTick);
 
         if (currentTick % 2 == 0 && getRideJumping() != null && currentTick - getRideJumping().get() > 5 && this.isOnGround()) {
-            this.setDataFlag(EntityFlag.STANDING, false);
+            this.setDataFlag(ActorFlags.STANDING, false);
             this.rideJumping.set(-1);
         }
 
@@ -270,7 +273,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         if (!this.enableTrap) return;
 
         this.enableTrap = false;
-        this.namedTag.putBoolean("EnableTrap", false);
+        this.namedTag = this.namedTag.toBuilder().putBoolean("EnableTrap", false).build();
     }
 
     public boolean isStartedTrap() {
@@ -284,27 +287,36 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     public void skeletonTrap() {
         Vector3 vector = this.getPosition();
 
-        CompoundTag nbt = Entity.getDefaultNBT(vector, null, (float) this.yaw, (float) this.pitch);
+        NbtMap nbt = Entity.getDefaultNBT(vector, null, (float) this.yaw, (float) this.pitch);
         EntityLightningBolt bolt = new EntityLightningBolt(this.chunk, nbt);
 
         bolt.spawnToAll();
 
         int lightningRuntimeId = Registries.ENTITY.getEntityNetworkId(EntityID.LIGHTNING_BOLT);
-        this.level.addLevelSoundEvent(vector, LevelSoundEvent.THUNDER, -1, lightningRuntimeId);
-        this.level.addLevelSoundEvent(vector, LevelSoundEvent.EXPLODE, -1, lightningRuntimeId);
+        this.level.addLevelSoundEvent(vector, SoundEvent.THUNDER, -1, lightningRuntimeId);
+        this.level.addLevelSoundEvent(vector, SoundEvent.EXPLODE, -1, lightningRuntimeId);
 
         double spread = 1.5d;
-        CompoundTag nbt1 = nbt.copy();
-        nbt1.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x + spread));
-        nbt1.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z));
+        final NbtMap nbt1 = nbt.toBuilder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                        vector.x + spread,
+                        nbt.getList("Pos", NbtType.DOUBLE).get(1),
+                        vector.z
+                )).build();
 
-        CompoundTag nbt2 = nbt.copy();
-        nbt2.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
-        nbt2.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z + (spread * 0.866d)));
+        final NbtMap nbt2 = nbt.toBuilder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                        vector.x - (spread * 0.5d),
+                        nbt.getList("Pos", NbtType.DOUBLE).get(1),
+                        vector.z + (spread * 0.866d)
+                )).build();
 
-        CompoundTag nbt3 = nbt.copy();
-        nbt3.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
-        nbt3.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z - (spread * 0.866d)));
+        final NbtMap nbt3 = nbt.toBuilder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                        vector.x - (spread * 0.5d),
+                        nbt.getList("Pos", NbtType.DOUBLE).get(1),
+                        vector.z - (spread * 0.866d)
+                )).build();
 
         Entity skeletonHorse1 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt1);
         Entity skeletonHorse2 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt2);
@@ -333,7 +345,8 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+            if (this.namedTag != null)
+                this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
             return;
         }
 
@@ -343,11 +356,12 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         this.mountEntity(rider, true);
         rider.spawnToAll();
 
-        if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+        if (this.namedTag != null)
+            this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
+        NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
 
         // Bow + enchants
         Item bow = Item.get(Item.BOW, 0, 1);
@@ -356,7 +370,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                 1 + ThreadLocalRandom.current().nextInt(2),
                 false
         );
-        nbt.put("Mainhand", NBTIO.putItemHelper(bow));
+        nbt.putCompound("Mainhand", ItemHelper.write(bow));
 
         // Iron helmet + enchants
         Item helmet = Item.get(Item.IRON_HELMET, 0, 1);
@@ -365,11 +379,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                 1 + ThreadLocalRandom.current().nextInt(3),
                 false
         );
-        ListTag<CompoundTag> armor = new ListTag<>();
-        armor.add(NBTIO.putItemHelper(helmet, EntityArmorInventory.SLOT_HEAD));
-        nbt.putList("Armor", armor);
+        List<NbtMap> armor = new ObjectArrayList<>();
+        armor.add(ItemHelper.write(helmet, EntityArmorInventory.SLOT_HEAD));
+        nbt.putList("Armor", NbtType.COMPOUND, armor);
 
-        return Entity.createEntity(entityId, this.getChunk(), nbt);
+        return Entity.createEntity(entityId, this.getChunk(), nbt.build());
     }
 
     @Override
@@ -377,68 +391,68 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                1, 1, 1200
+                        )
                 ),
                 Set.of(
-                    new Behavior(
-                        new SkeletonHorseTrapExecutor(),
-                            e -> ((EntitySkeletonHorse) e).isStartedTrap(),
-                        4, 1, 1
-                    ),
-                    new Behavior( // Follow rider ONLY if rider has an attack target
-                        new FollowRiderExecutor(),
-                            all(
-                                new RiderItemControllableEvaluator(),
-                                e -> e.hasControllingPassenger(),
-                                e -> {
-                                    Entity rider = e.getRider();
-                                    if (rider == null || !rider.isAlive()) return false;
-                                    if (rider instanceof EntityIntelligent ri) {
-                                        return ri.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
-                                            && ri.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null;
-                                    }
-                                    return false;
-                                }
-                            ),
-                        3,
-                        1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            e -> e.passengers == null || e.passengers.isEmpty(),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                e -> {
-                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                    return p != null && !e.isPassenger(p);
-                                },
-                                e -> e.passengers == null || e.passengers.isEmpty()
-                            ),
-                        1, 1, 100
-                    )
+                        new Behavior(
+                                new SkeletonHorseTrapExecutor(),
+                                e -> ((EntitySkeletonHorse) e).isStartedTrap(),
+                                4, 1, 1
+                        ),
+                        new Behavior( // Follow rider ONLY if rider has an attack target
+                                new FollowRiderExecutor(),
+                                all(
+                                        new RiderItemControllableEvaluator(),
+                                        e -> e.hasControllingPassenger(),
+                                        e -> {
+                                            Entity rider = e.getRider();
+                                            if (rider == null || !rider.isAlive()) return false;
+                                            if (rider instanceof EntityIntelligent ri) {
+                                                return ri.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                                        && ri.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null;
+                                            }
+                                            return false;
+                                        }
+                                ),
+                                3,
+                                1
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                                e -> e.passengers == null || e.passengers.isEmpty(),
+                                2, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ProbabilityEvaluator(4, 10),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                        e -> {
+                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                            return p != null && !e.isPassenger(p);
+                                        },
+                                        e -> e.passengers == null || e.passengers.isEmpty()
+                                ),
+                                1, 1, 100
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20),
-                    new SkeletonHorseTrapSensor(10, 3)
+                        new NearestPlayerSensor(8, 0, 20),
+                        new SkeletonHorseTrapSensor(10, 3)
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

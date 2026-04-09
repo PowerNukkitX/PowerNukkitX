@@ -4,13 +4,13 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author PikyCZ
  */
 public abstract class EntityIllager extends EntityMob implements EntityWalkable {
-    public EntityIllager(IChunk chunk, CompoundTag nbt) {
+    public EntityIllager(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

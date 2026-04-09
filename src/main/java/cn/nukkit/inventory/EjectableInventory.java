@@ -1,20 +1,21 @@
 package cn.nukkit.inventory;
 
 
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.Map;
 
 public abstract class EjectableInventory extends ContainerInventory implements BlockEntityInventoryNameable {
-    public EjectableInventory(InventoryHolder holder, InventoryType type, int size) {
+    public EjectableInventory(InventoryHolder holder, ContainerType type, int size) {
         super(holder, type, size);
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.LEVEL_ENTITY);
+            map.put(i, ContainerEnumName.LEVEL_ENTITY_CONTAINER);
         }
     }
 }

@@ -5,12 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BossEventPacket;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.BossEventUpdateType;
+import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 
 public abstract class EntityBoss extends EntityMob {
 
-    public EntityBoss(IChunk chunk, CompoundTag nbt) {
+    public EntityBoss(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -19,17 +20,18 @@ public abstract class EntityBoss extends EntityMob {
     @Override
     public void setHealthCurrent(float health) {
         super.setHealthCurrent(health);
-        BossEventPacket pkBoss = new BossEventPacket();
-        pkBoss.bossEid = this.id;
-        pkBoss.type = BossEventPacket.TYPE_HEALTH_PERCENT;
-        pkBoss.healthPercent = health / getHealthMax();
-        Server.broadcastPacket(getViewers().values(), pkBoss);
+        final BossEventPacket bossEventPacket = new BossEventPacket();
+        bossEventPacket.setTargetActorID(this.getId());
+        bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
+        bossEventPacket.setName(this.getName());
+        bossEventPacket.setHealthPercent(health / getHealthMax());
+        Server.broadcastPacket(getViewers().values(), bossEventPacket);
     }
 
     @Override
     public void spawnTo(Player player) {
         super.spawnTo(player);
-        if(player.locallyInitialized) {
+        if (player.locallyInitialized) {
             addBossbar(player);
         }
     }

@@ -3,16 +3,18 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockCartographyTable;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 
 import java.util.Map;
 
 public class CartographyTableInventory extends BaseInventory {
 
     public CartographyTableInventory(BlockCartographyTable blockCartographyTable) {
-        super(blockCartographyTable, InventoryType.CARTOGRAPHY, 2);
+        super(blockCartographyTable, ContainerType.CARTOGRAPHY, 2);
     }
 
     @Override
@@ -22,21 +24,19 @@ public class CartographyTableInventory extends BaseInventory {
             map.put(i, 12 + i);
         }
 
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-        map2.put(0, ContainerSlotType.CARTOGRAPHY_INPUT);
-        map2.put(1, ContainerSlotType.CARTOGRAPHY_ADDITIONAL);
+        Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
+        map2.put(0, ContainerEnumName.CARTOGRAPHY_INPUT_CONTAINER);
+        map2.put(1, ContainerEnumName.CARTOGRAPHY_ADDITIONAL_CONTAINER);
     }
 
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
+        final InventoryHolder holder = this.getHolder();
+        final ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setContainerType(this.getType());
+        pk.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
         who.dataPacket(pk);
         this.sendContents(who);
     }

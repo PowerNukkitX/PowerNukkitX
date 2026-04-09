@@ -8,7 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -72,11 +72,9 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag();
+        final NbtMap nbt = NbtMap.EMPTY;
         if (item.hasCustomBlockData()) {
-            for (var e : item.getCustomBlockData().getEntrySet()) {
-                nbt.put(e.getKey(), e.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -85,7 +83,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @NotNull
     public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
-        if (blockEntity == null || !blockEntity.namedTag.containsCompound("PlantBlock")) {
+        if (blockEntity == null || !blockEntity.namedTag.containsKey("PlantBlock")) {
             return Item.AIR;
         }
         var plantBlockTag = blockEntity.namedTag.getCompound("PlantBlock");
@@ -102,7 +100,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         if (item.getBlock() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
             BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-            blockEntity.namedTag.putCompound("PlantBlock", potBlock.getPlantBlockTag());
+            blockEntity.namedTag = blockEntity.namedTag.toBuilder().putCompound("PlantBlock", potBlock.getPlantBlockTag()).build();
 
             setPropertyValue(CommonBlockProperties.UPDATE_BIT, true);
             getLevel().setBlock(this, this, true);
@@ -125,7 +123,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public boolean hasFlower() {
         var blockEntity = getBlockEntity();
         if (blockEntity == null) return false;
-        return blockEntity.namedTag.containsCompound("PlantBlock");
+        return blockEntity.namedTag.containsKey("PlantBlock");
     }
 
     @Override
@@ -252,12 +250,13 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          * @return The tag of the block in the flowerpot's NBT file
          */
 
-        default CompoundTag getPlantBlockTag() {
+        default NbtMap getPlantBlockTag() {
             var block = (Block) this;
-            var tag = block.getBlockState().getBlockStateTag().copy();
+            var tag = block.getBlockState().getBlockStateTag();
             var item = block.toItem();
-            return tag.putString("itemId", item.getId())
-                    .putInt("itemMeta", item.getDamage()); // only exists in PNX
+            return tag.toBuilder().putString("itemId", item.getId())
+                    .putInt("itemMeta", item.getDamage())
+                    .build(); // only exists in PNX
         }
 
         /**

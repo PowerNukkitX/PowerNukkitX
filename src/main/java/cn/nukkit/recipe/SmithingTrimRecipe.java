@@ -1,6 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import cn.nukkit.registry.RecipeRegistry;
 
 /**
  * The type Smithing recipe for trim equipment.
@@ -31,5 +32,16 @@ public class SmithingTrimRecipe extends BaseRecipe {
     @Override
     public RecipeType getType() {
         return RecipeType.SMITHING_TRIM;
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTrimRecipe toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTrimRecipe.of(
+                this.getRecipeId(),
+                this.getIngredients().getFirst().toNetwork(),
+                this.getIngredients().get(1).toNetwork(),
+                this.getIngredients().getLast().toNetwork(),
+                "smithing_table",
+                RecipeRegistry.RECIPE_NET_ID_COUNTER++
+        );
     }
 }

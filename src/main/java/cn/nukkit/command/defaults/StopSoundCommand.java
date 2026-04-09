@@ -3,12 +3,12 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.StopSoundPacket;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.packet.StopSoundPacket;
 
 import java.util.List;
 import java.util.Map;
@@ -43,14 +43,14 @@ public class StopSoundCommand extends VanillaCommand {
         if (list.hasResult(1)) {
             sound = list.getResult(1);
         }
-        StopSoundPacket packet = new StopSoundPacket();
-        packet.name = sound;
+        final StopSoundPacket packet = new StopSoundPacket();
+        packet.setSoundName(sound);
         if (sound.isEmpty()) {
-            packet.stopAll = true;
+            packet.setStopAllSounds(true);
         }
         Server.broadcastPacket(targets, packet);
         String players_str = targets.stream().map(Player::getName).collect(Collectors.joining(" "));
-        if (packet.stopAll) {
+        if (packet.isStopAllSounds()) {
             log.addSuccess("commands.stopsound.success.all", players_str).output();
         } else {
             log.addSuccess("commands.stopsound.success", sound, players_str).output();

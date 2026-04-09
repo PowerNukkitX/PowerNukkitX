@@ -1,8 +1,8 @@
 package cn.nukkit.entity.ai.memory.codec;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
+import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
@@ -11,14 +11,14 @@ import java.util.function.Function;
 
 @Getter
 public class MemoryCodec<Data> implements IMemoryCodec<Data> {
-    private final Function<CompoundTag, Data> decoder;
-    private final BiConsumer<Data, CompoundTag> encoder;
+    private final Function<NbtMap, Data> decoder;
+    private final BiConsumer<Data, NbtMap> encoder;
     @Nullable
     private BiConsumer<Data, EntityIntelligent> onInit = null;
 
     public MemoryCodec(
-            Function<CompoundTag, Data> decoder,
-            BiConsumer<Data, CompoundTag> encoder
+            Function<NbtMap, Data> decoder,
+            BiConsumer<Data, NbtMap> encoder
     ) {
         this.decoder = decoder;
         this.encoder = encoder;

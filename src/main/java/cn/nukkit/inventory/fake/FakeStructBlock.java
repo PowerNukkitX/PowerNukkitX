@@ -6,9 +6,11 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.IStructBlock;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BlockEntityDataPacket;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.utils.RuntimeBlockDefinition;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 
 import java.util.HashSet;
 
@@ -35,39 +37,34 @@ public class FakeStructBlock extends SingleFakeBlock {
     public void create(BlockVector3 targetStart, BlockVector3 targetEnd, Player player) {
         createAndGetLastPositions(player).add(this.getOffset(player));
         lastPositions.get(player).forEach(position -> {
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.blockRuntimeId = block.getRuntimeId();
-            updateBlockPacket.flags = UpdateBlockPacket.FLAG_NETWORK;
-            updateBlockPacket.x = position.getFloorX();
-            updateBlockPacket.y = position.getFloorY();
-            updateBlockPacket.z = position.getFloorZ();
+            final Vector3i vector3i = Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+            final UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
+            updateBlockPacket.setBlockPosition(vector3i);
+            updateBlockPacket.setDefinition(new RuntimeBlockDefinition(this.block.getRuntimeId()));
             player.dataPacket(updateBlockPacket);
 
-            BlockEntityDataPacket blockEntityDataPacket = new BlockEntityDataPacket();
-            blockEntityDataPacket.x = position.getFloorX();
-            blockEntityDataPacket.y = position.getFloorY();
-            blockEntityDataPacket.z = position.getFloorZ();
-            blockEntityDataPacket.namedTag = this.getBlockEntityDataAt(position, targetStart, targetEnd);
-
-            player.dataPacket(blockEntityDataPacket);
+            final BlockActorDataPacket blockActorDataPacket = new BlockActorDataPacket();
+            blockActorDataPacket.setBlockPosition(vector3i);
+            blockActorDataPacket.setActorDataTags(this.getBlockEntityDataAt(position, targetStart, targetEnd));
+            player.dataPacket(blockActorDataPacket);
         });
     }
 
     @Override
     public void remove(Player player) {
         this.lastPositions.getOrDefault(player, new HashSet<>()).forEach(position -> {
-            UpdateBlockPacket packet = new UpdateBlockPacket();
-            packet.blockRuntimeId = player.getLevel().getBlock(position).getRuntimeId();
-            packet.flags = UpdateBlockPacket.FLAG_NETWORK;
-            packet.x = position.getFloorX();
-            packet.y = position.getFloorY();
-            packet.z = position.getFloorZ();
-            player.dataPacket(packet);
+            final Vector3i vector3i = Vector3i.from(position.getFloorX(), position.getFloorY(), position.getFloorZ());
+            final UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
+            updateBlockPacket.setBlockPosition(vector3i);
+            updateBlockPacket.setDefinition(new RuntimeBlockDefinition(player.getLevel().getBlock(position).getRuntimeId()));
+            player.dataPacket(updateBlockPacket);
         });
         this.lastPositions.clear();
     }
 
-    private CompoundTag getBlockEntityDataAt(Vector3 base, BlockVector3 targetStart, BlockVector3 targetEnd) {
+    private NbtMap getBlockEntityDataAt(Vector3 base, BlockVector3 targetStart, BlockVector3 targetEnd) {
         int offsetX = targetStart.x - base.getFloorX();
         int offsetY = targetStart.y - base.getFloorY();
         int offsetZ = targetStart.z - base.getFloorZ();
@@ -90,7 +87,7 @@ public class FakeStructBlock extends SingleFakeBlock {
         } else {
             sizeZ = targetEnd.z - targetStart.z + 1;
         }
-        return new CompoundTag()
+        return NbtMap.builder()
                 .putString("id", tileId)
                 .putInt("x", base.getFloorX())
                 .putInt("y", base.getFloorY())
@@ -101,6 +98,7 @@ public class FakeStructBlock extends SingleFakeBlock {
                 .putInt(IStructBlock.TAG_Z_STRUCTURE_OFFSET, offsetZ)
                 .putInt(IStructBlock.TAG_X_STRUCTURE_SIZE, sizeX)
                 .putInt(IStructBlock.TAG_Y_STRUCTURE_SIZE, sizeY)
-                .putInt(IStructBlock.TAG_Z_STRUCTURE_SIZE, sizeZ);
+                .putInt(IStructBlock.TAG_Z_STRUCTURE_SIZE, sizeZ)
+                .build();
     }
 }

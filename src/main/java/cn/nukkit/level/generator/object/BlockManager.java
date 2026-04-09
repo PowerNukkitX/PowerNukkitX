@@ -7,18 +7,17 @@ import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.IntArrayTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
-import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.cloudburstmc.protocol.bedrock.data.ActorBlockSyncMessageId;
+import org.cloudburstmc.protocol.bedrock.data.BlockChangeEntry;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,12 +77,12 @@ public class BlockManager {
 
     public Block getBlockIfCachedOrLoaded(int x, int y, int z, BlockState fallback) {
         long hash = hashXYZ(x, y, z, 0);
-        if(caches.containsKey(hash)) {
+        if (caches.containsKey(hash)) {
             return caches.get(hash);
         }
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
-        if(level.isChunkLoaded(chunkX, chunkZ)) {
+        if (level.isChunkLoaded(chunkX, chunkZ)) {
             return getBlockAt(x, y, z);
         }
         return fallback.toBlock(new Position(x, y, z, level));
@@ -115,7 +114,7 @@ public class BlockManager {
 
     public boolean setBlockStateAtIfCacheAbsent(BlockVector3 blockVector3, BlockState blockState) {
         long hash = hashXYZ(blockVector3.getX(), blockVector3.getY(), blockVector3.getZ(), 0);
-        if(!this.caches.containsKey(hash)) {
+        if (!this.caches.containsKey(hash)) {
             setBlockStateAt(blockVector3, blockState);
             return true;
         }
@@ -224,8 +223,8 @@ public class BlockManager {
 
     @Deprecated(forRemoval = true)
     public void generateChunks() {
-        for(Block block : this.getBlocks()) {
-            if(!block.getChunk().isGenerated()) {
+        for (Block block : this.getBlocks()) {
+            if (!block.getChunk().isGenerated()) {
                 block.getLevel().syncGenerateChunk(block.getChunkX(), block.getChunkZ());
             }
         }
@@ -252,11 +251,17 @@ public class BlockManager {
         for (var b : blockList) {
             ArrayList<Block> chunk = chunks.computeIfAbsent(level.getChunk(b.getChunkX(), b.getChunkZ(), true), c -> new ArrayList<>());
             chunk.add(b);
-            UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> new UpdateSubChunkBlocksPacket(s.x, s.y, s.z));
+            UpdateSubChunkBlocksPacket batch = batchs.computeIfAbsent(new SubChunkEntry(b.getChunkX() << 4, (b.getFloorY() >> 4) << 4, b.getChunkZ() << 4), s -> {
+                final UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
+                packet.setChunkX(s.x);
+                packet.setChunkY(s.y);
+                packet.setChunkZ(s.z);
+                return packet;
+            });
             if (b.layer == 1) {
-                batch.extraBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), ProtocolInfo.UPDATE_BLOCK_PACKET, -1, BlockChangeEntry.MessageType.NONE));
+                batch.getExtraBlocks().add(new BlockChangeEntry(b.asBlockVector3().toNetwork(), new RuntimeBlockDefinition((int) b.getBlockState().unsignedBlockStateHash()), 0, -1, ActorBlockSyncMessageId.NONE));
             } else {
-                batch.standardBlocks.add(new BlockChangeEntry(b.asBlockVector3(), b.getBlockState().unsignedBlockStateHash(), ProtocolInfo.UPDATE_BLOCK_PACKET, -1, BlockChangeEntry.MessageType.NONE));
+                batch.getStandardBlocks().add(new BlockChangeEntry(b.asBlockVector3().toNetwork(), new RuntimeBlockDefinition((int) b.getBlockState().unsignedBlockStateHash()), 0, -1, ActorBlockSyncMessageId.NONE));
             }
         }
         chunks.entrySet().parallelStream().forEach(entry -> {
@@ -278,7 +283,7 @@ public class BlockManager {
 
         applyHooks();
         for (var b : blockList) {
-            if(b instanceof BlockEntityHolder<?> holder) {
+            if (b instanceof BlockEntityHolder<?> holder) {
                 holder.getOrCreateBlockEntity();
             }
         }
@@ -298,28 +303,27 @@ public class BlockManager {
         return level.getMinHeight();
     }
 
-    public ListTag<IntArrayTag> toTag() {
-        ListTag<IntArrayTag> tag = new ListTag<>();
+    public List<int[]> toTag() {
+        final List<int[]> list = new ObjectArrayList<>();
         for (var b : this.places.values()) {
-            tag.add(new IntArrayTag(new int[] {
+            list.add(new int[]{
                     b.getFloorX(),
                     b.getFloorY(),
                     b.getFloorZ(),
                     b.layer,
                     b.getBlockState().blockStateHash()
-            }));
+            });
         }
-        return tag;
+        return list;
     }
 
-    public static BlockManager fromTag(ListTag<IntArrayTag> tag, BlockManager level) {
-        for(var data : tag.getAll()) {
-            int[] array = data.getData();
-            int x = array[0];
-            int y = array[1];
-            int z = array[2];
-            int layer = array[3];
-            int blockHash = array[4];
+    public static BlockManager fromTag(List<int[]> tag, BlockManager level) {
+        for (var data : tag) {
+            int x = data[0];
+            int y = data[1];
+            int z = data[2];
+            int layer = data[3];
+            int blockHash = data[4];
             BlockState state = Registries.BLOCKSTATE.get(blockHash);
             level.setBlockStateAt(x, y, z, layer, state);
         }

@@ -34,7 +34,6 @@ import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.mob.EntityMob;
@@ -45,9 +44,10 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +66,7 @@ public class EntityArmadillo extends EntityAnimal {
     };
     private final static String PROPERTY_STATE = "minecraft:armadillo_state";
 
-    public EntityArmadillo(IChunk chunk, CompoundTag nbt) {
+    public EntityArmadillo(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -279,7 +279,7 @@ public class EntityArmadillo extends EntityAnimal {
     public void setRollState(RollState state) {
         this.rollState = state;
         setEnumEntityProperty(PROPERTY_STATE, state.getState());
-        setDataFlag(EntityFlag.BODY_ROTATION_BLOCKED, rollState != RollState.UNROLLED);
+        setDataFlag(ActorFlags.BODY_ROTATION_BLOCKED, rollState != RollState.UNROLLED);
     }
 
 

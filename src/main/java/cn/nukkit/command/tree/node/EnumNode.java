@@ -1,9 +1,9 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
 import com.google.common.collect.Sets;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.Set;
 

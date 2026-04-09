@@ -2,14 +2,14 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author GoodLucky777
  */
 public class BlockEntityEndPortal extends BlockEntitySpawnable {
 
-    public BlockEntityEndPortal(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityEndPortal(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
     
