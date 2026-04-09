@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSugarCane;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.tags.BlockTags;
@@ -102,20 +102,20 @@ public class BlockReeds extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        Level level = getLevel();
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        Dimension level = getLevel();
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 0);
             return type;
         }
 
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!isSupportValid(this.down())) {
                 level.useBreakOn(this);
             }
             return type;
         }
 
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (!isSupportValid(this.down())) {
                 level.scheduleUpdate(this, 0);
                 return type;

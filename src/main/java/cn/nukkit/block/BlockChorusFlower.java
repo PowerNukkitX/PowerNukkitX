@@ -9,7 +9,7 @@ import cn.nukkit.entity.projectile.EntitySnowball;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -84,15 +84,15 @@ public class BlockChorusFlower extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!isPositionValid()) {
                 this.getLevel().scheduleUpdate(this, 1);
                 return type;
             }
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             this.getLevel().useBreakOn(this, null, null, true);
             return type;
-        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+        } else if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             // Check limit
             if (this.up().isAir() && this.up().getY() <= level.getMaxHeight()) {
                 if (!isFullyAged()) {
@@ -130,7 +130,7 @@ public class BlockChorusFlower extends BlockTransparent {
                             this.getLevel().setBlock(block, ev.getNewState());
                             this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_GROW);
                         } else {
-                            return Level.BLOCK_UPDATE_RANDOM;
+                            return Dimension.BLOCK_UPDATE_RANDOM;
                         }
                     // Grow Horizontally
                     } else if (!isFullyAged()) {
@@ -151,7 +151,7 @@ public class BlockChorusFlower extends BlockTransparent {
                                     this.getLevel().setBlock(block, ev.getNewState());
                                     this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_GROW);
                                 } else {
-                                    return Level.BLOCK_UPDATE_RANDOM;
+                                    return Dimension.BLOCK_UPDATE_RANDOM;
                                 }
                             }
                         }
@@ -166,12 +166,12 @@ public class BlockChorusFlower extends BlockTransparent {
                             this.getLevel().setBlock(block, ev.getNewState());
                             this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_DEATH);
                         } else {
-                            return Level.BLOCK_UPDATE_RANDOM;
+                            return Dimension.BLOCK_UPDATE_RANDOM;
                         }
                     }
                 }
             } else {
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
         }
         

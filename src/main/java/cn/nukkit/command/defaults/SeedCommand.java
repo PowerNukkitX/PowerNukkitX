@@ -27,7 +27,7 @@ public class SeedCommand extends VanillaCommand {
         if (sender instanceof Player) {
             seed = ((Player) sender).getLevel().getSeed();
         } else {
-            seed = sender.getServer().getDefaultLevel().getSeed();
+            seed = sender.getServer().getDefaultLevel().getOverworld().getSeed();
         }
         log.addSuccess("commands.seed.success", String.valueOf(seed)).output();
         return 1;

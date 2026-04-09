@@ -7,7 +7,7 @@ import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -72,7 +72,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     }
 
     public boolean activatePower(int power, int ticks) {
-        Level level = getLevel();
+        Dimension level = getLevel();
         if (power <= 0 || ticks <= 0) {
             return deactivatePower();
         }
@@ -108,7 +108,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             deactivatePower();
             return type;
         }

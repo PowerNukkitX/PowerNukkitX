@@ -7,7 +7,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 import java.util.Map;
 
@@ -53,10 +53,12 @@ public class TimeCommand extends VanillaCommand {
                         log.addMessage("nukkit.command.generic.permission").output();
                         return 0;
                     }
-                    for (Level level : sender.getServer().getLevels().values()) {
-                        level.checkTime();
-                        level.startTime();
-                        level.checkTime();
+                    for (var lvl : sender.getServer().getLevels().values()) {
+                        for (Dimension level : lvl.getDimensions()) {
+                            level.checkTime();
+                            level.startTime();
+                            level.checkTime();
+                        }
                     }
                     log.addSuccess("Restarted the time").output(true);
                 } else if ("stop".equals(mode)) {
@@ -64,10 +66,12 @@ public class TimeCommand extends VanillaCommand {
                         log.addMessage("nukkit.command.generic.permission").output();
                         return 0;
                     }
-                    for (Level level : sender.getServer().getLevels().values()) {
-                        level.checkTime();
-                        level.stopTime();
-                        level.checkTime();
+                    for (var lvl : sender.getServer().getLevels().values()) {
+                        for (Dimension level : lvl.getDimensions()) {
+                            level.checkTime();
+                            level.stopTime();
+                            level.checkTime();
+                        }
                     }
                     log.addSuccess("Stopped the time").output(true);
                 } else if ("query".equals(mode)) {
@@ -75,11 +79,11 @@ public class TimeCommand extends VanillaCommand {
                         log.addMessage("nukkit.command.generic.permission").output();
                         return 0;
                     }
-                    Level level;
+                    Dimension level;
                     if (sender instanceof Player) {
                         level = ((Player) sender).getLevel();
                     } else {
-                        level = sender.getServer().getDefaultLevel();
+                        level = sender.getServer().getDefaultLevel().getOverworld();
                     }
                     log.addSuccess("commands.time.query.gametime", String.valueOf(level.getTime())).output(true);
                 }
@@ -95,10 +99,12 @@ public class TimeCommand extends VanillaCommand {
                     log.addNumTooSmall(1, 0).output();
                     return 0;
                 }
-                for (Level level : sender.getServer().getLevels().values()) {
-                    level.checkTime();
-                    level.setTime(level.getTime() + value);
-                    level.checkTime();
+                for (var lvl : sender.getServer().getLevels().values()) {
+                    for (Dimension level : lvl.getDimensions()) {
+                        level.checkTime();
+                        level.setTime(level.getTime() + value);
+                        level.checkTime();
+                    }
                 }
                 log.addSuccess("commands.time.added", String.valueOf(value)).output(true);
                 return 1;
@@ -113,10 +119,12 @@ public class TimeCommand extends VanillaCommand {
                     log.addNumTooSmall(1, 0).output();
                     return 0;
                 }
-                for (Level level : sender.getServer().getLevels().values()) {
-                    level.checkTime();
-                    level.setTime(value);
-                    level.checkTime();
+                for (var lvl : sender.getServer().getLevels().values()) {
+                    for (Dimension level : lvl.getDimensions()) {
+                        level.checkTime();
+                        level.setTime(value);
+                        level.checkTime();
+                    }
                 }
                 log.addSuccess("commands.time.set", String.valueOf(value)).output(true);
                 return 1;
@@ -129,22 +137,24 @@ public class TimeCommand extends VanillaCommand {
                 int value = 0;
                 String str = list.getResult(1);
                 if ("day".equals(str)) {
-                    value = Level.TIME_DAY;
+                    value = Dimension.TIME_DAY;
                 } else if ("night".equals(str)) {
-                    value = Level.TIME_NIGHT;
+                    value = Dimension.TIME_NIGHT;
                 } else if ("midnight".equals(str)) {
-                    value = Level.TIME_MIDNIGHT;
+                    value = Dimension.TIME_MIDNIGHT;
                 } else if ("noon".equals(str)) {
-                    value = Level.TIME_NOON;
+                    value = Dimension.TIME_NOON;
                 } else if ("sunrise".equals(str)) {
-                    value = Level.TIME_SUNRISE;
+                    value = Dimension.TIME_SUNRISE;
                 } else if ("sunset".equals(str)) {
-                    value = Level.TIME_SUNSET;
+                    value = Dimension.TIME_SUNSET;
                 }
-                for (Level level : sender.getServer().getLevels().values()) {
-                    level.checkTime();
-                    level.setTime(value);
-                    level.checkTime();
+                for (var lvl : sender.getServer().getLevels().values()) {
+                    for (Dimension level : lvl.getDimensions()) {
+                        level.checkTime();
+                        level.setTime(value);
+                        level.checkTime();
+                    }
                 }
                 log.addSuccess("commands.time.set", String.valueOf(value)).output(true);
                 return 1;

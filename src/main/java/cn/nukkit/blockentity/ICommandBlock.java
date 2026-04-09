@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.plugin.InternalPlugin;
@@ -131,7 +131,7 @@ public interface ICommandBlock extends CommandSender, InventoryHolder {
 
     void setExecutingOnFirstTick(boolean executingOnFirstTick);
 
-    Level getLevel();
+    Dimension getLevel();
 
     public class CommandBlockTrigger implements Runnable {
 

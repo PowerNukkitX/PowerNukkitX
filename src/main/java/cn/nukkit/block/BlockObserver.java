@@ -7,7 +7,7 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.utils.Faceable;
@@ -82,7 +82,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_MOVED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED || type == Dimension.BLOCK_UPDATE_MOVED) {
             RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
             PluginManager pluginManager = level.getServer().getPluginManager();
             pluginManager.callEvent(ev);
@@ -95,7 +95,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
                 setPowered(true);
 
                 if (level.setBlock(this, this)) {
-                    getSide(getBlockFace().getOpposite()).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+                    getSide(getBlockFace().getOpposite()).onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
                     RedstoneComponent.updateAroundRedstone(getSide(getBlockFace().getOpposite()));
                     level.scheduleUpdate(this, 2);
                 }
@@ -104,7 +104,7 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
                 setPowered(false);
 
                 level.setBlock(this, this);
-                getSide(getBlockFace().getOpposite()).onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+                getSide(getBlockFace().getOpposite()).onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
                 RedstoneComponent.updateAroundRedstone(getSide(getBlockFace().getOpposite()));
             }
             return type;

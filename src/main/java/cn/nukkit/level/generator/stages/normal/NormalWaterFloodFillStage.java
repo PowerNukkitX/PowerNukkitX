@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -25,7 +25,7 @@ public class NormalWaterFloodFillStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         int minY = level.getMinHeight();
@@ -67,7 +67,7 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         }
     }
 
-    private static void seedCurrentChunk(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
+    private static void seedCurrentChunk(Dimension level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
                                          IChunk chunk, int minY, int maxY) {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
@@ -85,7 +85,7 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         }
     }
 
-    private static void seedBorder(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
+    private static void seedBorder(Dimension level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
                                    int chunkX, int chunkZ, BlockFace face, int minY, int maxY) {
         int chunkOffsetX = face.getXOffset();
         int chunkOffsetZ = face.getZOffset();
@@ -114,7 +114,7 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         }
     }
 
-    private static boolean tryFlood(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
+    private static boolean tryFlood(Dimension level, Long2ObjectOpenHashMap<IChunk> chunkCache, LongArrayFIFOQueue queue, LongOpenHashSet visited,
                                     Long2ObjectOpenHashMap<BitSet> changedColumns, int x, int y, int z, int minY, int maxY) {
         if (y < minY || y > maxY) {
             return false;
@@ -146,14 +146,14 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         return true;
     }
 
-    private static boolean hasHorizontalAirNeighbor(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, int x, int y, int z) {
+    private static boolean hasHorizontalAirNeighbor(Dimension level, Long2ObjectOpenHashMap<IChunk> chunkCache, int x, int y, int z) {
         return isAir(level, chunkCache, x + 1, y, z)
                 || isAir(level, chunkCache, x - 1, y, z)
                 || isAir(level, chunkCache, x, y, z + 1)
                 || isAir(level, chunkCache, x, y, z - 1);
     }
 
-    private static boolean isAir(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, int x, int y, int z) {
+    private static boolean isAir(Dimension level, Long2ObjectOpenHashMap<IChunk> chunkCache, int x, int y, int z) {
         IChunk chunk = getGeneratedChunk(level, chunkCache, x >> 4, z >> 4);
         if (chunk == null) {
             return false;
@@ -161,8 +161,8 @@ public class NormalWaterFloodFillStage extends GenerateStage {
         return chunk.getBlockState(x & 0xF, y, z & 0xF) == AIR;
     }
 
-    private static IChunk getGeneratedChunk(Level level, Long2ObjectOpenHashMap<IChunk> chunkCache, int chunkX, int chunkZ) {
-        long index = Level.chunkHash(chunkX, chunkZ);
+    private static IChunk getGeneratedChunk(Dimension level, Long2ObjectOpenHashMap<IChunk> chunkCache, int chunkX, int chunkZ) {
+        long index = Dimension.chunkHash(chunkX, chunkZ);
         if (chunkCache.containsKey(index)) {
             return chunkCache.get(index);
         }

@@ -1,6 +1,6 @@
 package cn.nukkit.positiontracking;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -22,11 +22,11 @@ public class PositionTracking extends NamedPosition {
         this.levelName = levelName;
     }
 
-    public PositionTracking(@NotNull Level level, double x, double y, double z) {
+    public PositionTracking(@NotNull Dimension level, double x, double y, double z) {
         this(level.getName(), x, y, z);
     }
 
-    public PositionTracking(@NotNull Level level, Vector3 v) {
+    public PositionTracking(@NotNull Dimension level, Vector3 v) {
         this(level, v.x, v.y, v.z);
     }
 

@@ -1,7 +1,7 @@
 package cn.nukkit.event.level;
 
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -14,7 +14,7 @@ public class LevelSaveEvent extends LevelEvent {
         return handlers;
     }
 
-    public LevelSaveEvent(Level level) {
+    public LevelSaveEvent(Dimension level) {
         super(level);
     }
 

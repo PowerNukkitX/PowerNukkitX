@@ -12,7 +12,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -86,7 +86,7 @@ public class BlockFlowingLava extends BlockLiquid {
     public int onUpdate(int type) {
         int result = super.onUpdate(type);
 
-        if (type == Level.BLOCK_UPDATE_RANDOM && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
             Random random = ThreadLocalRandom.current();
 
             int i = random.nextInt(3);
@@ -105,13 +105,13 @@ public class BlockFlowingLava extends BlockLiquid {
                                 Block fire = Block.get(BlockID.FIRE);
                                 this.getLevel().setBlock(v, fire, true);
                                 this.getLevel().scheduleUpdate(fire, fire.tickRate());
-                                return Level.BLOCK_UPDATE_RANDOM;
+                                return Dimension.BLOCK_UPDATE_RANDOM;
                             }
 
                             return 0;
                         }
                     } else if (block.isSolid()) {
-                        return Level.BLOCK_UPDATE_RANDOM;
+                        return Dimension.BLOCK_UPDATE_RANDOM;
                     }
                 }
             } else {
@@ -154,7 +154,7 @@ public class BlockFlowingLava extends BlockLiquid {
 
     @Override
     public int tickRate() {
-        if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.level.getDimension() == Dimension.DIMENSION_NETHER) {
             return 10;
         }
         return 30;
@@ -162,7 +162,7 @@ public class BlockFlowingLava extends BlockLiquid {
 
     @Override
     public int getFlowDecayPerBlock() {
-        if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.level.getDimension() == Dimension.DIMENSION_NETHER) {
             return 1;
         }
         return 2;

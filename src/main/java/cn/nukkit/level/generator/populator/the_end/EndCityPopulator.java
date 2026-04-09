@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.the_end;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -22,13 +22,13 @@ public class EndCityPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
 
         if ((long) chunkX * (long) chunkX + (long) chunkZ * (long) chunkZ <= 4096L) {
             return;
         }
 
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         if (chunkX != (((chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
                 || chunkZ != (((chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
             return;
@@ -55,7 +55,7 @@ public class EndCityPopulator extends Populator {
                         postPlacement.itemFrames(),
                         postPlacement.brewingStands(),
                         postPlacement.shulkerMarkers(),
-                        new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)));
+                        new Xoroshiro128(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ)));
             });
             queueObject(chunk, manager);
 

@@ -7,7 +7,7 @@ import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.RedstoneComponent;
@@ -55,7 +55,7 @@ public abstract class BlockCopperBulbBase extends BlockSolid implements Redstone
     public int onUpdate(int type) {
         Oxidizable.super.onUpdate(type);
 
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE) {
             RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
             getLevel().getServer().getPluginManager().callEvent(ev);
 

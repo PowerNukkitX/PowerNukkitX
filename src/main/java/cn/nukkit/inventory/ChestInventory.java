@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
@@ -67,7 +67,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
             pk.type = 1;
             pk.value = 2;
 
-            Level level = this.getHolder().getLevel();
+            Dimension level = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
@@ -95,7 +95,7 @@ public class ChestInventory extends ContainerInventory implements BlockEntityInv
             pk.type = 1;
             pk.value = 0;
 
-            Level level = this.getHolder().getLevel();
+            Dimension level = this.getHolder().getLevel();
             if (level != null) {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);

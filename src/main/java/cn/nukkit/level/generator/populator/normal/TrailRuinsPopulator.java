@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
@@ -26,7 +26,7 @@ public class TrailRuinsPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
 
         int originX = chunkX << 4;
         int originZ = chunkZ << 4;
@@ -38,7 +38,7 @@ public class TrailRuinsPopulator extends Populator {
         TRAIL_RUINS.place(helper, random.fork());
     }
 
-    private int findGenerationY(IChunk chunk, Level level) {
+    private int findGenerationY(IChunk chunk, Dimension level) {
         int worldX = (chunk.getX() << 4) + 7;
         int worldZ = (chunk.getZ() << 4) + 7;
         int y = level.getHeightMap(worldX, worldZ);

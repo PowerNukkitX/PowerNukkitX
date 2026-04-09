@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockCoalOre;
 import cn.nukkit.block.BlockDeepslateDiamondOre;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -29,8 +29,8 @@ public class FossilPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
         BiomeDefinition definition = Registries.BIOME.get(biome);
         if (definition.getTags().contains(BiomeTags.DESERT) || definition.getTags().contains(BiomeTags.SWAMP) || definition.getTags().contains(BiomeTags.MANGROVE_SWAMP)

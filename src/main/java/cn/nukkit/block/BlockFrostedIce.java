@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,13 +62,13 @@ public class BlockFrostedIce extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (level.getFullLight(this) > 11 && (ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4)) {
                 slightlyMelt(true);
             } else {
                 level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(20, 40));
             }
-        } else if (type == Level.BLOCK_UPDATE_NORMAL) {
+        } else if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (countNeighbors() < 2) {
                 level.setBlock(this, layer, get(WATER), true);
             }

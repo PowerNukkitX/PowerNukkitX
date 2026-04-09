@@ -11,7 +11,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -134,7 +134,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
             return 0;
         }
 
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if(isTriggered()) {
                 getLevel().addSound(this, craft() ? Sound.CRAFTER_CRAFT : Sound.CRAFTER_FAIL);
                 updateAllAroundRedstone();
@@ -147,7 +147,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
                 this.level.setBlock(this, this, false, false);
             }
             return type;
-        } else if (type == Level.BLOCK_UPDATE_REDSTONE) {
+        } else if (type == Dimension.BLOCK_UPDATE_REDSTONE) {
             if (this.isGettingPower() && !isTriggered() && !getManualOverride()) {
                 this.setManualOverride(true);
                 this.setTriggered(true);

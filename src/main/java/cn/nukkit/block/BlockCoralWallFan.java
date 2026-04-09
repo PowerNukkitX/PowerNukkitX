@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 
 import static cn.nukkit.block.property.CommonBlockProperties.CORAL_DIRECTION;
@@ -20,7 +20,7 @@ public abstract class BlockCoralWallFan extends BlockCoralFan {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             return type;
         } else {
             return super.onUpdate(type);

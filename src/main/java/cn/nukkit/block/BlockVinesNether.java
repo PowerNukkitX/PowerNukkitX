@@ -6,7 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -92,23 +92,23 @@ public abstract class BlockVinesNether extends BlockTransparent {
     @Override
     public int onUpdate(int type) {
         switch (type) {
-            case Level.BLOCK_UPDATE_RANDOM -> {
+            case Dimension.BLOCK_UPDATE_RANDOM -> {
                 int maxVineAge = getMaxVineAge();
                 if (getVineAge() < maxVineAge && ThreadLocalRandom.current().nextInt(10) == 0
                         && findVineAge(true).orElse(maxVineAge) < maxVineAge) {
                     grow();
                 }
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
-            case Level.BLOCK_UPDATE_SCHEDULED -> {
+            case Dimension.BLOCK_UPDATE_SCHEDULED -> {
                 getLevel().useBreakOn(this, null, null, true);
-                return Level.BLOCK_UPDATE_SCHEDULED;
+                return Dimension.BLOCK_UPDATE_SCHEDULED;
             }
-            case Level.BLOCK_UPDATE_NORMAL -> {
+            case Dimension.BLOCK_UPDATE_NORMAL -> {
                 if (!isSupportValid()) {
                     getLevel().scheduleUpdate(this, 1);
                 }
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
             default -> {
                 return 0;

@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockClosedEyeblossom extends BlockFlower {
@@ -22,7 +22,7 @@ public class BlockClosedEyeblossom extends BlockFlower {
 
     @Override
     public int onUpdate(int type) {
-        if(type == Level.BLOCK_UPDATE_RANDOM || type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if(type == Dimension.BLOCK_UPDATE_RANDOM || type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             boolean changed = getId().equals(CLOSED_EYEBLOSSOM) && level.isNight() || getId().equals(OPEN_EYEBLOSSOM) && level.isDay();
             if(changed) {
                 changeState();

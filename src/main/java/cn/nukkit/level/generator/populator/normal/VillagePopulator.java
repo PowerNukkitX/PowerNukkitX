@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -33,7 +33,7 @@ public class VillagePopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
 
         if (!canGenerate(level.getSeed(), chunkX, chunkZ)) {
             return;
@@ -53,12 +53,12 @@ public class VillagePopulator extends Populator {
     }
 
     protected boolean canGenerate(long levelSeed, int chunkX, int chunkZ) {
-        random.setSeed((levelSeed ^ SALT) + Level.chunkHash(chunkX, chunkZ));
+        random.setSeed((levelSeed ^ SALT) + Dimension.chunkHash(chunkX, chunkZ));
         return (chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX
                 && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ;
     }
 
-    protected int findGenerationY(IChunk chunk, Level level) {
+    protected int findGenerationY(IChunk chunk, Dimension level) {
         int worldX = (chunk.getX() << 4) + 7;
         int worldZ = (chunk.getZ() << 4) + 7;
         int y = level.getHeightMap(worldX, worldZ);

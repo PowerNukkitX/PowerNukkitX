@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityElytraFirework;
 import cn.nukkit.entity.item.EntityFireworksRocket;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -37,7 +37,7 @@ public class ItemFireworkRocket extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Dimension level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
             return false;
         }
@@ -106,7 +106,7 @@ public class ItemFireworkRocket extends Item {
         this.getNamedTag().getCompound("Fireworks").putList("Explosions", new ListTag<CompoundTag>());
     }
 
-    private void spawnFirework(Level level, Vector3 pos) {
+    private void spawnFirework(Dimension level, Vector3 pos) {
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(pos.x + 0.5))

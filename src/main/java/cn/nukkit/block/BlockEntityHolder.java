@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
@@ -18,9 +18,9 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     @Nullable
     default E getBlockEntity() {
-        Level level = getLevel();
+        Dimension level = getLevel();
         if (level == null) {
-            throw new LevelException("Undefined Level reference");
+            throw new LevelException("Undefined Dimension reference");
         }
         BlockEntity blockEntity;
         if (this instanceof Vector3) {
@@ -46,7 +46,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         String typeName = getBlockEntityType();
         IChunk chunk = getChunk();
         if (chunk == null) {
-            throw new LevelException("Undefined Level or chunk reference");
+            throw new LevelException("Undefined Dimension or chunk reference");
         }
         if (initialData == null) {
             initialData = new CompoundTag();
@@ -99,7 +99,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     @NotNull
     Location getLocation();
 
-    Level getLevel();
+    Dimension getLevel();
 
     @Nullable
     static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(@NotNull H holder) {
@@ -117,7 +117,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
             @NotNull H holder, boolean direct, boolean update, @Nullable CompoundTag initialData,
             @Nullable Object... args) {
         Block block = holder.getBlock();
-        Level level = block.getLevel();
+        Dimension level = block.getLevel();
         Block layer0 = level.getBlock(block, 0);
         Block layer1 = level.getBlock(block, 1);
         if (level.setBlock(block, block, direct, update)) {

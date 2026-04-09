@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockDeepslate;
 import cn.nukkit.block.BlockNetherrack;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
@@ -47,8 +47,8 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        this.random.setSeed(Level.chunkHash(chunkX, chunkZ) ^ level.getSeed() + name().hashCode());
+        Dimension level = chunk.getLevel();
+        this.random.setSeed(Dimension.chunkHash(chunkX, chunkZ) ^ level.getSeed() + name().hashCode());
         int sx = chunkX << 4;
         int sz = chunkZ << 4;
         BlockManager manager = new BlockManager(level);
@@ -70,8 +70,8 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
             if (this.getClusterSize() == 1) {
                 object.setBlockStateAt(x, y, z, getState(original));
             } else {
-                spawn(object, random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ x + y + z), x, y, z);
-                this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+                spawn(object, random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ) ^ x + y + z), x, y, z);
+                this.random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
 
             }
             boolean skip = false;
@@ -85,7 +85,7 @@ public abstract class OreGeneratorFeature extends GenerateFeature {
                 for(Block block : object.getBlocks()) {
                     if(block.getChunk() != chunk) {
                         IChunk nextChunk = block.getChunk();
-                        long chunkHash = Level.chunkHash(nextChunk.getX(), nextChunk.getZ());
+                        long chunkHash = Dimension.chunkHash(nextChunk.getX(), nextChunk.getZ());
                         getChunkPlacementQueue(chunkHash, level).setBlockStateAt(block.asBlockVector3(), block.getBlockState());
                     }
                     if(block.getChunk().isGenerated()) {

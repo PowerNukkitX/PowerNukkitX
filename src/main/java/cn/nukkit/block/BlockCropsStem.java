@@ -4,7 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.Faceable;
@@ -68,27 +68,27 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (this.down().getId() != FARMLAND) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
             BlockFace blockFace = getBlockFace();
             if (blockFace.getAxis().isHorizontal() && getSide(blockFace).getId() != getFruitId()) {
                 setBlockFace(BlockFace.DOWN);
                 getLevel().setBlock(this, this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
             return 0;
         }
         
-        if (type != Level.BLOCK_UPDATE_RANDOM) {
+        if (type != Dimension.BLOCK_UPDATE_RANDOM) {
             return 0;
         }
         
         if (ThreadLocalRandom.current().nextInt(1, 3) != 1 
                 || getLevel().getFullLight(this) < MINIMUM_LIGHT_LEVEL) {
-            return Level.BLOCK_UPDATE_RANDOM;
+            return Dimension.BLOCK_UPDATE_RANDOM;
         }
         
         int growth = getGrowth();
@@ -100,11 +100,11 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             if (!ev.isCancelled()) {
                 this.getLevel().setBlock(this, ev.getNewState(), true);
             }
-            return Level.BLOCK_UPDATE_RANDOM;
+            return Dimension.BLOCK_UPDATE_RANDOM;
         }
 
         growFruit();
-        return Level.BLOCK_UPDATE_RANDOM;
+        return Dimension.BLOCK_UPDATE_RANDOM;
     }
 
     public boolean growFruit() {

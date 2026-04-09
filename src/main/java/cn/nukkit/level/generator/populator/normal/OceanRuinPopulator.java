@@ -9,7 +9,7 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.ChunkPosition;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -122,8 +122,8 @@ public class OceanRuinPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
         BiomeDefinition definition = Registries.BIOME.get(biome);
         if (definition.getTags().contains(BiomeTags.OCEAN)
@@ -171,7 +171,7 @@ public class OceanRuinPopulator extends Populator {
                 }
                 if(block instanceof BlockMagma) {
                     manager.addHook(() -> {
-                        level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        level.getBlock(block).onUpdate(Dimension.BLOCK_UPDATE_NORMAL);
                     });
                 }
                 //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.

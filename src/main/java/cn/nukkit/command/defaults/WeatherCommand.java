@@ -7,7 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class WeatherCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         String weather = list.getResult(0);
-        Level level = sender.getPosition().level;
+        Dimension level = sender.getPosition().level;
         int seconds;
         if (list.hasResult(1)) {
             seconds = list.getResult(1);

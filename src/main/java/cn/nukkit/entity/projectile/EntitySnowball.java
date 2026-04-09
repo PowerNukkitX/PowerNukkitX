@@ -3,7 +3,7 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityBlaze;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.level.particle.Particle;
@@ -108,7 +108,7 @@ public class EntitySnowball extends EntityProjectile {
         }
         int chunkX = (int) x >> 4;
         int chunkZ = (int) z >> 4;
-        Level level = this.level;
+        Dimension level = this.level;
         for (var p : allPackets) {
             Server.broadcastPacket(level.getChunkPlayers(chunkX, chunkZ).values(), p);
         }

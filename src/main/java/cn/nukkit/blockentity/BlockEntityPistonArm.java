@@ -8,7 +8,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockPistonArmCollision;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
@@ -168,7 +168,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         BlockEntityHolder.setBlockAndCreateEntity(holder, false, true, movedBlockEntity);
                     } else this.level.setBlock(movingBlock, moved, true, true);
                     // Piston Update
-                    moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
+                    moved.onUpdate(Dimension.BLOCK_UPDATE_MOVED);
                 }
             }
             for (var update : redstoneUpdateList) {

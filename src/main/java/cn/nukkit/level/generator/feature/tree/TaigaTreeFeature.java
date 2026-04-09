@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.feature.tree;
 import cn.nukkit.block.BlockSnowLayer;
 import cn.nukkit.block.BlockSpruceLeaves;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -46,7 +46,7 @@ public class TaigaTreeFeature extends GriddedFeature {
     public void apply(ChunkGenerateContext context) {
         super.apply(context);
         IChunk chunk = context.getChunk();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {

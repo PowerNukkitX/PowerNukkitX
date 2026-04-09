@@ -5,7 +5,7 @@ import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -62,7 +62,7 @@ public class BlockDragonEgg extends BlockFallable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_TOUCH) {
+        if (type == Dimension.BLOCK_UPDATE_TOUCH) {
             this.teleport();
         }
         return super.onUpdate(type);
@@ -74,7 +74,7 @@ public class BlockDragonEgg extends BlockFallable {
             if (player.isCreative() && action == Action.LEFT_CLICK_BLOCK) {
                 return;
             }
-            onUpdate(Level.BLOCK_UPDATE_TOUCH);
+            onUpdate(Dimension.BLOCK_UPDATE_TOUCH);
         }
     }
 

@@ -2,7 +2,7 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.Pair;
 
@@ -97,7 +97,7 @@ public interface LevelProvider {
 
     Map<Long, IChunk> getLoadedChunks();
 
-    Level getLevel();
+    Dimension getLevel();
 
     void close();
 

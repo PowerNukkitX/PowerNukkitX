@@ -9,7 +9,7 @@ import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -132,13 +132,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     }
 
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE || type == Dimension.BLOCK_UPDATE_MOVED || type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
             level.scheduleUpdate(this, 0);
             return type;
         }
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
@@ -191,7 +191,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 Block support = torch.getSide(torchAttachment.getAttachedFace());
 
                 if (support.getLocation().equals(this.getLocation())) {
-                    torch.onUpdate(Level.BLOCK_UPDATE_REDSTONE);
+                    torch.onUpdate(Dimension.BLOCK_UPDATE_REDSTONE);
                 }
             }
         }

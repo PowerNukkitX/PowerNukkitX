@@ -73,6 +73,7 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.ChunkLoader;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.PlayerChunkManager;
@@ -355,12 +356,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreak = -1;
         this.socketAddress = this.getSession().getAddress();
         this.rawSocketAddress = socketAddress;
-        this.loaderId = Level.generateChunkLoaderId(this);
+        this.loaderId = Dimension.generateChunkLoaderId(this);
         this.chunksPerTick = this.server.getSettings().chunkSettings().perTickSend();
         this.spawnThreshold = this.server.getSettings().chunkSettings().spawnThreshold();
         this.spawnPoint = null;
         this.gamemode = this.server.getGamemode();
-        this.setLevel(this.server.getDefaultLevel());
+        Level defaultLevel = this.server.getDefaultLevel();
+        this.setLevel(defaultLevel != null ? defaultLevel.getOverworld() : null);
         this.viewDistance = this.server.getViewDistance();
         this.chunkRadius = viewDistance;
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -628,10 +630,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     protected void initEntity() {
         super.initEntity();
-        Level level = null;
+        Dimension level = null;
         if (this.namedTag.containsString("SpawnLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
-        } else level = Server.getInstance().getDefaultLevel();
+            String spawnLevelName = this.namedTag.getString("SpawnLevel");
+            Level world = this.server.getLevelByName(spawnLevelName);
+            int dimId = this.namedTag.containsInt("SpawnDimension") ? this.namedTag.getInt("SpawnDimension") : Level.DIMENSION_OVERWORLD;
+            if (world != null) {
+                level = world.getDimension(dimId);
+            } else {
+                level = this.server.getDimensionByName(spawnLevelName);
+            }
+        } else {
+            Level defaultLevel = Server.getInstance().getDefaultLevel();
+            level = defaultLevel != null ? defaultLevel.getOverworld() : null;
+        }
         if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
             this.spawnPoint = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
         } else {
@@ -674,8 +686,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         synchronized (playerChunkManager) {
             for (long index : playerChunkManager.getUsedChunks()) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
+                int chunkX = Dimension.getHashX(index);
+                int chunkZ = Dimension.getHashZ(index);
                 for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
                     if (this != entity && !entity.closed && entity.isAlive()) {
                         entity.spawnTo(this);
@@ -828,7 +840,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (!ev.isCancelled()) {
                         final Position newPos = PortalHelper.convertPosBetweenEndAndOverworld(this);
                         if (newPos != null) {
-                            if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+                            if (newPos.getLevel().getDimension() == Dimension.DIMENSION_THE_END) {
                                 if (teleport(newPos, TeleportCause.END_PORTAL)) {
                                     newPos.getLevel().getScheduler().scheduleDelayedTask(new Task() {
                                         @Override
@@ -1182,10 +1194,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.adventureSettings = new AdventureSettings(this);
         this.adventureSettings.init(nbt);
 
-        Level level;
-        if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
-            this.setLevel(this.server.getDefaultLevel());
-            nbt.putString("Level", this.level.getName());
+        Dimension level;
+        if ((level = this.server.getDimensionByName(nbt.getString("Dimension"))) == null) {
+            Level defaultLevel = this.server.getDefaultLevel();
+            this.setLevel(defaultLevel != null ? defaultLevel.getOverworld() : null);
+            nbt.putString("Dimension", this.level.getName());
             Position spawnLocation = this.level.getSafeSpawn();
             nbt.getList("Pos", DoubleTag.class)
                     .add(new DoubleTag(spawnLocation.x))
@@ -1281,7 +1294,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public Vector3 getSafeSpawn() {
         Vector3 worldSpawnPoint;
         if (this.spawnPoint == null) {
-            worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
+            worldSpawnPoint = this.server.getDefaultLevel().getOverworld().getSafeSpawn();
         } else {
             worldSpawnPoint = spawnPoint;
         }
@@ -1331,11 +1344,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return Is it valid respawn block
      */
     protected boolean isValidRespawnBlock(Block block) {
-        if (block.getId().equals(BlockID.RESPAWN_ANCHOR) && block.getLevel().getDimension() == Level.DIMENSION_NETHER) {
+        if (block.getId().equals(BlockID.RESPAWN_ANCHOR) && block.getLevel().getDimension() == Dimension.DIMENSION_NETHER) {
             BlockRespawnAnchor anchor = (BlockRespawnAnchor) block;
             return anchor.getCharge() > 0;
         }
-        if (block.getId().equals(BlockID.BED) && block.getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
+        if (block.getId().equals(BlockID.BED) && block.getLevel().getDimension() == Dimension.DIMENSION_OVERWORLD) {
             BlockBed bed = (BlockBed) block;
             return bed.isBedValid();
         }
@@ -1375,11 +1388,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     }
                 }
             } else {//block is not available
-                Position defaultSpawn = this.getServer().getDefaultLevel().getSpawnLocation();
+                Position defaultSpawn = this.getServer().getDefaultLevel().getOverworld().getSpawnLocation();
                 this.setSpawn(defaultSpawn, SpawnPointType.WORLD);
                 playerRespawnEvent.setRespawnPosition(Pair.of(defaultSpawn, SpawnPointType.WORLD));
                 // handle spawn point change when block spawns not available
-                sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
+                sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile." + (this.getLevel().getDimension() == Dimension.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
             }
         }
 
@@ -2175,9 +2188,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.unloadChunk(x, z, null);
     }
 
-    public void unloadChunk(int x, int z, Level level) {
+    public void unloadChunk(int x, int z, Dimension level) {
         level = level == null ? this.level : level;
-        long index = Level.chunkHash(x, z);
+        long index = Dimension.chunkHash(x, z);
         if (level.unregisterChunkLoader(this, x, z, false)) {
             if (playerChunkManager.getUsedChunks().contains(index)) {
                 for (Entity entity : level.getChunkEntities(x, z).values()) {
@@ -2234,7 +2247,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.chunkLoadCount++;
         synchronized (playerChunkManager.getUsedChunks()) {
-            this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
+            this.playerChunkManager.getUsedChunks().add(Dimension.chunkHash(x, z));
         }
         this.dataPacket(packet);
 
@@ -3481,8 +3494,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         try {
             while (iterator.hasNext()) {
                 long l = iterator.nextLong();
-                int chunkX = Level.getHashX(l);
-                int chunkZ = Level.getHashZ(l);
+                int chunkX = Dimension.getHashX(l);
+                int chunkZ = Dimension.getHashZ(l);
                 if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
                     for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
                         if (entity != this) {
@@ -3517,12 +3530,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     .putInt("SpawnY", this.spawnPoint.getFloorY())
                     .putInt("SpawnZ", this.spawnPoint.getFloorZ());
             if (this.spawnPoint.getLevel() != null && this.spawnPoint.getLevel().getProvider() != null) {
-                this.namedTag.putString("SpawnLevel", this.spawnPoint.getLevel().getName());
+                this.namedTag.putString("SpawnLevel", this.spawnPoint.getLevel().getWorld().getName());
                 this.namedTag.putInt("SpawnDimension", this.spawnPoint.getLevel().getDimension());
             } else {
-                if (this.server.getDefaultLevel() != null && this.server.getDefaultLevel().getProvider() != null) {
+                if (this.server.getDefaultLevel() != null && this.server.getDefaultLevel().getOverworld() != null && this.server.getDefaultLevel().getOverworld().getProvider() != null) {
                     this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getName());
-                    this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
+                    this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getOverworld().getDimension());
                 } else {
                     throw new IllegalStateException("Default level or default level provider is null");
                 }
@@ -3538,7 +3551,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         saveNBT();
 
         if (this.level != null && this.level.getProvider() != null) {
-            this.namedTag.putString("Level", this.level.getName());
+            this.namedTag.putString("Dimension", this.level.getName());
 
             CompoundTag achievements = new CompoundTag();
             for (String achievement : this.achievements) {
@@ -3873,7 +3886,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         int added = now + add;
         int level = this.getExperienceLevel();
         int most = calculateRequireExperience(level);
-        while (added >= most) {  //Level Up!
+        while (added >= most) {  //Dimension Up!
             added = added - most;
             level++;
             most = calculateRequireExperience(level);
@@ -3922,7 +3935,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      *
      * @param playLevelUpSound Whether to play level-up sound
      * @param exp              Experience points
-     * @param level            Level
+     * @param level            Dimension
      */
     // TODO: something on performance, lots of exp orbs then lots of packets, could crash client
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
@@ -4770,8 +4783,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public boolean switchLevel(Level level) {
-        Level oldLevel = this.level;
+    public boolean switchLevel(Dimension level) {
+        Dimension oldLevel = this.level;
         if (super.switchLevel(level)) {
             this.clientMovements.clear();
             SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
@@ -4785,8 +4798,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             // Remove old chunks
             for (long index : new ArrayList<>(playerChunkManager.getUsedChunks())) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
+                int chunkX = Dimension.getHashX(index);
+                int chunkZ = Dimension.getHashZ(index);
                 this.unloadChunk(chunkX, chunkZ, oldLevel);
             }
             playerChunkManager.getUsedChunks().clear();

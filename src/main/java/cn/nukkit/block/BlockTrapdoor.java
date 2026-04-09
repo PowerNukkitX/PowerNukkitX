@@ -8,7 +8,7 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
@@ -156,7 +156,7 @@ public class BlockTrapdoor extends BlockTransparent implements RedstoneComponent
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE && this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             if ((this.isOpen() != this.isGettingPower()) && !this.getManualOverride()) {
                 level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this,
                         this.isOpen() ? 15 : 0, this.isOpen() ? 0 : 15));

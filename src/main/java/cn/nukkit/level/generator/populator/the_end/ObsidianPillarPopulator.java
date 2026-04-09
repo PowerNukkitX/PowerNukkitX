@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.the_end;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -20,7 +20,7 @@ public class ObsidianPillarPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         if(pillarPos == null) {
             pillarPos = new Vector2[10];
             for(int i = 0; i < 10; i++) {

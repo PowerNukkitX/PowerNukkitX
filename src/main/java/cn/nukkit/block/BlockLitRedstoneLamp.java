@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
@@ -43,12 +43,12 @@ public class BlockLitRedstoneLamp extends BlockRedstoneLamp {
             return 0;
         }
 
-        if ((type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) && !this.isGettingPower()) {
+        if ((type == Dimension.BLOCK_UPDATE_NORMAL || type == Dimension.BLOCK_UPDATE_REDSTONE) && !this.isGettingPower()) {
             this.level.scheduleUpdate(this, 4);
             return 1;
         }
 
-        if (type == Level.BLOCK_UPDATE_SCHEDULED && !this.isGettingPower()) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED && !this.isGettingPower()) {
             // Redstone event
             RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
             this.level.getServer().getPluginManager().callEvent(ev);

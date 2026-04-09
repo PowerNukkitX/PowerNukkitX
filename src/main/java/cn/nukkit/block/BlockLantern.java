@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.copper.chain.AbstractBlockCopperChain;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +83,7 @@ public class BlockLantern extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!isHanging()) {
                 if (!isBlockUnderValid()) {
                     level.useBreakOn(this, ItemTool.getBestTool(getToolType()));

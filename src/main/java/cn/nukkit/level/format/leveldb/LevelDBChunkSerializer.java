@@ -62,7 +62,7 @@ public class LevelDBChunkSerializer {
     public void serialize(WriteBatch writeBatch, IChunk chunk) {
 
         //Spawning block entities requires call the getSpawnPacket method,
-        //which is easy to call Level#getBlock, which can cause a deadlock,
+        //which is easy to call Dimension#getBlock, which can cause a deadlock,
         //so handle it without locking
 
         serializeTileAndEntity(writeBatch, chunk);

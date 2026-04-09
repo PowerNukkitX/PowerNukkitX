@@ -7,7 +7,7 @@ import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -99,7 +99,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block down = down();
             if (!ItemTags.getItemSet(ItemTags.SAND).contains(down.getId())
                     && !(down instanceof BlockCactus)) {
@@ -114,7 +114,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
             }
             return 0;
         }
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (down() instanceof BlockCactus) { return 0; }
             if (this.getAge() < getMaxAge()) {
                 this.setAge(this.getAge() + 1);
@@ -124,7 +124,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
             for (int y = 1; y < 4; ++y) {
                 Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
                 if (b.getId().equals(getId())) { continue; }
-                if(!b.isAir()) return Level.BLOCK_UPDATE_NORMAL;
+                if(!b.isAir()) return Dimension.BLOCK_UPDATE_NORMAL;
                 int rand = Utils.rand(0, 100);
                 boolean cactusFlower = (y < 2 && rand < 10) || y == 3 && rand <= 25;
                 if(cactusFlower) {

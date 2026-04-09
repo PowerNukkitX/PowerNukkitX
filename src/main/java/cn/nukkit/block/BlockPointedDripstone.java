@@ -13,7 +13,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -106,7 +106,7 @@ public class BlockPointedDripstone extends BlockFallable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness() == DripstoneThickness.TIP) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM && this.getThickness() == DripstoneThickness.TIP) {
             Random rand = new Random();
             double nextDouble = rand.nextDouble();
             if (nextDouble <= 0.011377778) {

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
@@ -21,8 +21,8 @@ public class MonsterRoomFeature extends GenerateFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) + name().hashCode());
+        Dimension level = chunk.getLevel();
+        this.random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ) + name().hashCode());
         int sourceX = chunkX << 4;
         int sourceZ = chunkZ << 4;
 

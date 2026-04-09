@@ -8,7 +8,7 @@ import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BlockForceFieldParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
@@ -180,7 +180,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * @param pos
      * @return cost
      */
-    protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
+    protected int getBlockMoveCostAt(@NotNull Dimension level, Vector3 pos) {
         return level.getTickCachedBlock(pos).getWalkThroughExtraCost() + level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
     }
 

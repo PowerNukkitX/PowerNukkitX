@@ -2,7 +2,7 @@ package cn.nukkit.event.level;
 
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 /**
  * @author funcraft (Nukkit Project)
@@ -17,7 +17,7 @@ public class WeatherChangeEvent extends WeatherEvent implements Cancellable {
 
     private final boolean to;
 
-    public WeatherChangeEvent(Level level, boolean to) {
+    public WeatherChangeEvent(Dimension level, boolean to) {
         super(level);
         this.to = to;
     }

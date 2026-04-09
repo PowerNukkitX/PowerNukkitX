@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.TheEndBiomePicker;
 import cn.nukkit.level.generator.biome.result.TheEndBiomeResult;
@@ -36,12 +36,12 @@ public class TheEnd extends PopulatedGenerator implements BiomedGenerator {
     }
 
     @Override
-    public BiomePicker<TheEndBiomeResult> createBiomePicker(Level level) {
+    public BiomePicker<TheEndBiomeResult> createBiomePicker(Dimension level) {
         return new TheEndBiomePicker();
     }
 
     @Override
-    public ObjectHolder createObjectHolder(Level level) {
+    public ObjectHolder createObjectHolder(Dimension level) {
         return new TheEndObjectHolder(new Xoroshiro128(level.getSeed()));
     }
 

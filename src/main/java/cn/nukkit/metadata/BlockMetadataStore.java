@@ -1,7 +1,7 @@
 package cn.nukkit.metadata;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.plugin.Plugin;
 
 import java.util.Collections;
@@ -12,9 +12,9 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockMetadataStore extends MetadataStore {
-    private final Level owningLevel;
+    private final Dimension owningLevel;
 
-    public BlockMetadataStore(Level owningLevel) {
+    public BlockMetadataStore(Dimension owningLevel) {
         this.owningLevel = owningLevel;
     }
 

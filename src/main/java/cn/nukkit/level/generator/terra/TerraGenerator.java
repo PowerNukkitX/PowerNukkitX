@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.terra;
 
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -158,7 +158,7 @@ public class TerraGenerator extends PopulatedGenerator implements GeneratorWrapp
         return dimensionData;
     }
 
-    public Level getLevel() {
+    public Dimension getLevel() {
         return level;
     }
 }

@@ -6,7 +6,7 @@ import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.block.LiquidFlowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.SmokeParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -226,7 +226,7 @@ public abstract class BlockLiquid extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {//for normal update tick
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {//for normal update tick
             this.checkForMixing();
             if (usesWaterLogging() && layer > 0) {
                 Block layer0 = this.level.getBlock(this, 0);
@@ -239,7 +239,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             }
             this.level.scheduleUpdate(this, this.tickRate());
             return 0;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             int x = (int) this.x;
             int y = (int) this.y;
             int z = (int) this.z;
@@ -398,7 +398,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             } else {
                 ++z;
             }
-            long hash = Level.blockHash(x, y, z, this.getLevel());
+            long hash = Dimension.blockHash(x, y, z, this.getLevel());
             if (!this.flowCostVisited.containsKey(hash)) {
                 Block blockSide = this.level.getBlock(x, y, z);
                 if (!this.canFlowInto(blockSide)) {
@@ -452,14 +452,14 @@ public abstract class BlockLiquid extends BlockTransparent {
         for (int j = 0; j < 4; ++j) {
             Block block = sideBlocks[j];
             if (!this.canFlowInto(block)) {
-                this.flowCostVisited.put(Level.blockHash((int) block.x, (int) block.y, (int) block.z, this.getLevel()), BLOCKED);
+                this.flowCostVisited.put(Dimension.blockHash((int) block.x, (int) block.y, (int) block.z, this.getLevel()), BLOCKED);
             } else if (usesWaterLogging() ?
                     bottomBlocks[j].canWaterloggingFlowInto() :
                     bottomBlocks[j].canBeFlowedInto()) {
-                this.flowCostVisited.put(Level.blockHash((int) block.x, (int) block.y, (int) block.z, this.getLevel()), CAN_FLOW_DOWN);
+                this.flowCostVisited.put(Dimension.blockHash((int) block.x, (int) block.y, (int) block.z, this.getLevel()), CAN_FLOW_DOWN);
                 flowCost[j] = maxCost = 0;
             } else if (maxCost > 0) {
-                this.flowCostVisited.put(Level.blockHash((int) block.x, (int) block.y, (int) block.z, this.getLevel()), CAN_FLOW);
+                this.flowCostVisited.put(Dimension.blockHash((int) block.x, (int) block.y, (int) block.z, this.getLevel()), CAN_FLOW);
                 flowCost[j] = this.calculateFlowCost((int) block.x, (int) block.y, (int) block.z, 1, maxCost, j ^ 0x01, j ^ 0x01);
                 maxCost = Math.min(maxCost, flowCost[j]);
             }

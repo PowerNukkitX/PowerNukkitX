@@ -40,7 +40,7 @@ import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -230,7 +230,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                     new Behavior(
                         new HoglinTransformExecutor(),
                             all(
-                                entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
+                                entity -> entity.getLevel().getDimension() != Dimension.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
                                 entity -> !entity.namedTag.getBoolean("IsImmuneToZombification")
                             ),

@@ -9,7 +9,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.ItemPainting;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
@@ -39,7 +39,7 @@ public class EntityPainting extends EntityHanging {
     }
 
 
-    private static boolean checkPlacePaint(int x, int z, Level level, BlockFace face, Block block, Block target) {
+    private static boolean checkPlacePaint(int x, int z, Dimension level, BlockFace face, Block block, Block target) {
         if (target.getSide(face.rotateYCCW(), x).up(z).isTransparent() ||
                     block.getSide(face.rotateYCCW(), x).up(z).isSolid()) {
             return true;
@@ -105,7 +105,7 @@ public class EntityPainting extends EntityHanging {
 
     @FunctionalInterface
     public interface PaintingPlacePredicate {
-        boolean test(Level level, BlockFace blockFace, Block block, Block target);
+        boolean test(Dimension level, BlockFace blockFace, Block block, Block target);
     }
 
     public final static Motive[] motives = Motive.values();

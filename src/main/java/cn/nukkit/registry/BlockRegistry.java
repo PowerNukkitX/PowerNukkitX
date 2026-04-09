@@ -13,7 +13,7 @@ import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.block.shelf.*;
 import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -1406,7 +1406,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    public Block get(String identifier, int x, int y, int z, Level level) {
+    public Block get(String identifier, int x, int y, int z, Dimension level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return null;
         try {
@@ -1421,7 +1421,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    public Block get(String identifier, int x, int y, int z, int layer, Level level) {
+    public Block get(String identifier, int x, int y, int z, int layer, Dimension level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
         if (constructor == null) return null;
         try {
@@ -1467,7 +1467,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    public Block get(BlockState blockState, int x, int y, int z, Level level) {
+    public Block get(BlockState blockState, int x, int y, int z, Dimension level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return null;
         try {
@@ -1482,7 +1482,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
     }
 
-    public Block get(BlockState blockState, int x, int y, int z, int layer, Level level) {
+    public Block get(BlockState blockState, int x, int y, int z, int layer, Dimension level) {
         FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(blockState.getIdentifier());
         if (constructor == null) return null;
         try {

@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockWallBanner;
 import cn.nukkit.blockentity.BlockEntityBanner;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
@@ -65,8 +65,8 @@ public class PillagerOutpostPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
         if ((biome == BiomeID.PLAINS || biome == BiomeID.DESERT || biome == BiomeID.SAVANNA || biome == BiomeID.TAIGA || biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA
                 || biome == BiomeID.SUNFLOWER_PLAINS || biome == BiomeID.MEADOW || biome == BiomeID.GROVE || biome == BiomeID.SNOWY_SLOPES || biome == BiomeID.JAGGED_PEAKS

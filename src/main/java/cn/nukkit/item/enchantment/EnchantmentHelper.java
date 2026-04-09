@@ -2,7 +2,7 @@ package cn.nukkit.item.enchantment;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -38,7 +38,7 @@ public final class EnchantmentHelper {
 
     private static int countBookshelves(Position tablePos) {
         int bookshelfCount = 0;
-        Level world = tablePos.getLevel();
+        Dimension world = tablePos.getLevel();
 
         for (int x = -2; x <= 2; x++) {
             outer:

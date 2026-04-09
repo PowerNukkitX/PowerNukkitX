@@ -15,7 +15,7 @@ import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
@@ -328,7 +328,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.successCount = 0;
         }
 
-        this.getLevelBlockAround().forEach(block -> block.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
+        this.getLevelBlockAround().forEach(block -> block.onUpdate(Dimension.BLOCK_UPDATE_REDSTONE));//update redstone
         return true;
     }
 
@@ -582,7 +582,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             }
         }
 
-        Level level = this.getLevel();
+        Dimension level = this.getLevel();
         if (level == null) {
             Server.getInstance().getLogger().error("CommandBlock message failed: level is null. Location approx at x=" + this.x + " y=" + this.y + " z=" + this.z);
             return;

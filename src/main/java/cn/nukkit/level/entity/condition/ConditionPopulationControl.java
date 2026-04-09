@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.level.DimensionEnum;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 
 public class ConditionPopulationControl extends Condition {
@@ -27,7 +27,7 @@ public class ConditionPopulationControl extends Condition {
 
     @Override
     public boolean evaluate(Block block) {
-        Level level = block.getLevel();
+        Dimension level = block.getLevel();
         int chunkX = block.getChunkX();
         int chunkZ = block.getChunkZ();
         int entityDensity = 0;

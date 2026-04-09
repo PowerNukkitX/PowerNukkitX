@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.stages.end;
 
 import cn.nukkit.block.BlockEndStone;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -24,7 +24,7 @@ public class TheEndTerrainStage extends GenerateStage {
 
     @Override
     public void apply(ChunkGenerateContext context) {
-        Level level = context.getLevel();
+        Dimension level = context.getLevel();
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();

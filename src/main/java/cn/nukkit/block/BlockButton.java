@@ -5,7 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
@@ -91,15 +91,15 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             BlockFace thisFace = getFacing();
             BlockFace touchingFace = thisFace.getOpposite();
             Block side = this.getSide(touchingFace);
             if (!BlockLever.isSupportValid(side, thisFace)) {
                 this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        } else if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (this.isActivated()) {
                 setActivated(false);
                 this.level.setBlock(this, this, true, false);
@@ -112,7 +112,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
                     RedstoneComponent.updateAroundRedstone(getSide(getFacing().getOpposite()), getFacing());
                 }
             }
-            return Level.BLOCK_UPDATE_SCHEDULED;
+            return Dimension.BLOCK_UPDATE_SCHEDULED;
         }
 
         return 0;

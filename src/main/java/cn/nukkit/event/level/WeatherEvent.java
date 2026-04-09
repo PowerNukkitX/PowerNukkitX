@@ -1,20 +1,20 @@
 package cn.nukkit.event.level;
 
 import cn.nukkit.event.Event;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 
 /**
  * @author funcraft (Nukkit Project)
  */
 public abstract class WeatherEvent extends Event {
 
-    private final Level level;
+    private final Dimension level;
 
-    public WeatherEvent(Level level) {
+    public WeatherEvent(Dimension level) {
         this.level = level;
     }
 
-    public Level getLevel() {
+    public Dimension getLevel() {
         return level;
     }
 }

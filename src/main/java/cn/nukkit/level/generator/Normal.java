@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
@@ -47,12 +47,12 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
     }
 
     @Override
-    public BiomePicker<OverworldBiomeResult> createBiomePicker(Level level) {
+    public BiomePicker<OverworldBiomeResult> createBiomePicker(Dimension level) {
         return new OverworldBiomePicker(level);
     }
 
     @Override
-    public ObjectHolder createObjectHolder(Level level) {
+    public ObjectHolder createObjectHolder(Dimension level) {
         return new NormalObjectHolder(new Xoroshiro128(level.getSeed()));
     }
 

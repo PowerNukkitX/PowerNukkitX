@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.populator.the_end;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -17,7 +17,7 @@ public class ExitPortalPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
 
         if(chunkX == 1 && chunkZ == 0) {
             BlockManager object = new BlockManager(level);

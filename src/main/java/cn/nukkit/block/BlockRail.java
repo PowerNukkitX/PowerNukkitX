@@ -5,7 +5,7 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -100,14 +100,14 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
             if (!checkCanBePlace(this.down()) || (ascendingDirection.isPresent() && !checkCanBePlace(this.getSide(ascendingDirection.get())))) {
                 this.getLevel().useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
+                return Dimension.BLOCK_UPDATE_NORMAL;
             }
         }
-        if (type == Level.BLOCK_UPDATE_REDSTONE && this.getRailDirection().isCurved()) {
+        if (type == Dimension.BLOCK_UPDATE_REDSTONE && this.getRailDirection().isCurved()) {
             var connect = checkRailsConnected().values();
             List<BlockFace> railFace = new ArrayList<>();
             for (BlockFace face : connect) {
@@ -303,7 +303,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
      * Note that the level block won't change if the current block has already the given orientation.
      *
      * @see #setRailDirection(Orientation)
-     * @see Level#setBlock(Vector3, int, Block, boolean, boolean)
+     * @see Dimension#setBlock(Vector3, int, Block, boolean, boolean)
      */
     public void setOrientation(Orientation o) {
         if (o != getOrientation()) {
@@ -337,7 +337,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
      * The level block will always update.
      *
      * @see #setRailDirection(Orientation)
-     * @see Level#setBlock(Vector3, int, Block, boolean, boolean)
+     * @see Dimension#setBlock(Vector3, int, Block, boolean, boolean)
      */
     public void setActive(boolean active) {
         if (getProperties().containProperty(CommonBlockProperties.ACTIVE)) {

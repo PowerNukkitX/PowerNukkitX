@@ -14,7 +14,7 @@ import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import lombok.Builder;
 import lombok.Getter;
@@ -339,14 +339,14 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 缓存section的blockChanges到blockChangeCache
      */
 
-    protected void cacheSectionBlockChange(Level level, Set<ChunkSectionVector> vecs) {
+    protected void cacheSectionBlockChange(Dimension level, Set<ChunkSectionVector> vecs) {
         this.blockChangeCache = vecs.stream().mapToLong(vector3 -> getSectionBlockChange(level, vector3)).sum();
     }
 
     /**
      * 返回sectionVector对应的section的blockChanges
      */
-    protected long getSectionBlockChange(Level level, ChunkSectionVector vector) {
+    protected long getSectionBlockChange(Dimension level, ChunkSectionVector vector) {
         var chunk = level.getChunk(vector.chunkX, vector.chunkZ);
         return chunk.getSectionBlockChanges(vector.sectionY);
     }
@@ -356,7 +356,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      *
      * @return (chunkX | chunkSectionY | chunkZ)
      */
-    protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Level level) {
+    protected Set<ChunkSectionVector> calPassByChunkSections(Collection<Vector3> nodes, Dimension level) {
         return nodes.stream()
                 .map(vector3 -> {
                     final DimensionData dimensionData = level.getDimensionData();

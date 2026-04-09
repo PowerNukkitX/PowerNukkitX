@@ -21,7 +21,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
@@ -187,7 +187,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (!isExtinguished()) {
                 Block layer1 = getLevelBlockAtLayer(1);
                 if (layer1 instanceof BlockFlowingWater || layer1 instanceof BlockFrostedIce) {

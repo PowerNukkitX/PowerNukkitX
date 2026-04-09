@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
@@ -83,7 +83,7 @@ public class ObjectSwampHut extends ObjectGenerator implements RuledObjectGenera
         int x = location.getFloorX();
         int y = location.getFloorY();
         int z = location.getFloorZ();
-        Level level = location.getLevel();
+        Dimension level = location.getLevel();
         random.setSeed(level.getSeed() ^ (x+y+z));
 
         chance:

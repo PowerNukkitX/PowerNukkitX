@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
@@ -33,7 +33,7 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
         return null;
     }
 
-    protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
+    protected void spawnBoatEntity(Dimension level, Vector3 pos, Item item) {
         EntityBoat boat = new EntityBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos)
                         .putInt("Variant", item.getDamage())

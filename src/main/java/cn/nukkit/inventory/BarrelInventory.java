@@ -5,7 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBarrel;
 import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.blockentity.BlockEntityNameable;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 
@@ -36,7 +36,7 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
 
         if (this.getVisibleViewersCount() == 1) {
             BlockEntityBarrel barrel = this.getHolder();
-            Level level = barrel.getLevel();
+            Dimension level = barrel.getLevel();
             if (level != null) {
                 Block block = barrel.getBlock();
                 if (block instanceof BlockBarrel blockBarrel) {
@@ -54,7 +54,7 @@ public class BarrelInventory extends ContainerInventory implements BlockEntityIn
     public void onClose(Player who) {
         if (this.getVisibleViewersCount() == 1) {
             BlockEntityBarrel barrel = this.getHolder();
-            Level level = barrel.getLevel();
+            Dimension level = barrel.getLevel();
             if (level != null) {
                 Block block = barrel.getBlock();
                 if (block instanceof BlockBarrel blockBarrel) {

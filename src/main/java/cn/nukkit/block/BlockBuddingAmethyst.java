@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +56,7 @@ public class BlockBuddingAmethyst extends BlockSolid {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             if (RANDOM.nextInt(5) == 1) {
                 tryGrow(0);
             }

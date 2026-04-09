@@ -7,7 +7,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityQueryOptions;
 import cn.nukkit.entity.passive.EntityHappyGhast;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 
@@ -66,7 +66,7 @@ public class ItemSnowball extends ProjectileItem {
     }
 
     public boolean isInteractingWithHappyGhast(Player player, double maxDistance) {
-        Level level = player.getLevel();
+        Dimension level = player.getLevel();
         Vector3 start = player.add(0, player.getEyeHeight(), 0);
         Vector3 dir   = player.getDirectionVector().normalize();
         Vector3 end   = start.add(dir.multiply(maxDistance));

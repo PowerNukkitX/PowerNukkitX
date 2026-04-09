@@ -5,7 +5,7 @@ import cn.nukkit.block.property.enums.DoublePlantType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.tags.BlockTags;
@@ -44,18 +44,18 @@ public abstract class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (isTopHalf()) {
                 // Top
                 if (!(this.down() instanceof BlockDoublePlant)) {
                     this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
-                    return Level.BLOCK_UPDATE_NORMAL;
+                    return Dimension.BLOCK_UPDATE_NORMAL;
                 }
             } else {
                 // Bottom
                 if (!isSupportValid(down()) || !(this.up() instanceof BlockDoublePlant)) {
                     this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
-                    return Level.BLOCK_UPDATE_NORMAL;
+                    return Dimension.BLOCK_UPDATE_NORMAL;
                 }
             }
         }

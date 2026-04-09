@@ -6,7 +6,7 @@ import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -175,7 +175,7 @@ public class BlockSnowLayer extends BlockFallable {
         }
 
         // Clear the layer1 block and do a small hack as workaround a vanilla client rendering bug
-        Level level = getLevel();
+        Dimension level = getLevel();
         level.setBlock(this, 0, layer1, true, false);
         level.setBlock(this, 1, get(AIR), true, false);
         level.setBlock(this, 0, newBlock, true, false);
@@ -195,13 +195,13 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     public int onUpdate(int type) {
         super.onUpdate(type);
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             BiomeDefinition biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ()));
             if (biomeDefinition.getTags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
                 melt();
-                return Level.BLOCK_UPDATE_RANDOM;
+                return Dimension.BLOCK_UPDATE_RANDOM;
             }
-        } else if (type == Level.BLOCK_UPDATE_NORMAL) {
+        } else if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             boolean covered = down().getId().equals(GRASS_BLOCK);
             if (isCovered() != covered) {
                 setCovered(covered);

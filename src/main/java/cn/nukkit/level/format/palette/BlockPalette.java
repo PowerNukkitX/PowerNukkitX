@@ -3,7 +3,7 @@ package cn.nukkit.level.format.palette;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.AntiXraySystem;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.registry.Registries;
@@ -43,7 +43,7 @@ public class BlockPalette extends Palette<BlockState> {
         }
     }
 
-    public void writeObfuscatedToNetwork(Level level, AtomicLong blockChanges, ByteBuf byteBuf, RuntimeDataSerializer<BlockState> serializer) {
+    public void writeObfuscatedToNetwork(Dimension level, AtomicLong blockChanges, ByteBuf byteBuf, RuntimeDataSerializer<BlockState> serializer) {
         var realOreToFakeMap = level.getAntiXraySystem().getRawRealOreToReplacedRuntimeIdMap();
         var fakeBlockMap = level.getAntiXraySystem().getRawFakeOreToPutRuntimeIdMap();
         var transparentBlockSet = AntiXraySystem.getRawTransparentBlockRuntimeIds();

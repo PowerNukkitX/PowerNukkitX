@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.stages.nether;
 
 import cn.nukkit.block.*;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -38,7 +38,7 @@ public class NetherTerrainStage extends GenerateStage {
         int chunkZ = chunk.getZ();
         int baseX = chunkX << 4;
         int baseZ = chunkZ << 4;
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
         NetherObjectHolder.TerrainHolder noises = ((NetherObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();

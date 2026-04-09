@@ -8,7 +8,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -38,9 +38,9 @@ public class BasaltDeltaLavaPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         int amount = random.nextInt(64) + 64;
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         NetherObjectHolder.BasaltDeltaHolder noises = ((NetherObjectHolder) level.getGeneratorObjectHolder()).getBasaltDeltasHolder();
 
         BlockManager object = new BlockManager(level);

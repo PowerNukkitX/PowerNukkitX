@@ -8,7 +8,7 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.utils.TextFormat;
@@ -46,7 +46,7 @@ public class SpawnpointCommand extends VanillaCommand {
                 log.addNoTargetMatch().output();
                 return 0;
             }
-            Level level = sender.getPosition().getLevel();
+            Dimension level = sender.getPosition().getLevel();
             if (list.hasResult(1)) {
                 if (level != null) {
                     Position position = list.getResult(1);

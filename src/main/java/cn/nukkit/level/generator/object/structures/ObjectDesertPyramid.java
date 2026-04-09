@@ -5,7 +5,7 @@ import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.block.property.enums.MinecraftVerticalHalf;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
@@ -259,8 +259,8 @@ public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectG
         int z = location.getFloorZ();
         int chunkX = location.getChunkX();
         int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = location.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
         BiomeDefinition definition = Registries.BIOME.get(biome);

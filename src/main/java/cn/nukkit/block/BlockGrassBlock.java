@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.legacytree.LegacyTallGrass;
@@ -76,7 +76,7 @@ public class BlockGrassBlock extends BlockDirt {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
+        if (type == Dimension.BLOCK_UPDATE_RANDOM) {
             // Grass dies and changes to dirt after a random time (when a random tick lands on the block)
             // if directly covered by any opaque block.
             // Transparent blocks can kill grass in a similar manner,

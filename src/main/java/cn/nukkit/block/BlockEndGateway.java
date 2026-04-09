@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntityEndGateway;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
             return false;
         }
         
-        if (this.getLevel().getDimension() != Level.DIMENSION_THE_END) {
+        if (this.getLevel().getDimension() != Dimension.DIMENSION_THE_END) {
             return false;
         } else {
             return !getOrCreateBlockEntity().isTeleportCooldown();
@@ -111,7 +111,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
             return;
         }
         
-        if (this.getLevel().getDimension() != Level.DIMENSION_THE_END) {
+        if (this.getLevel().getDimension() != Dimension.DIMENSION_THE_END) {
             return;
         }
         

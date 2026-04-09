@@ -4,7 +4,7 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockMossyCobblestone;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;

@@ -1,7 +1,7 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -12,13 +12,13 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockUpdateScheduler {
-    private final Level level;
+    private final Dimension level;
     private long lastTick;
     private final Long2ObjectNonBlockingMap<Set<BlockUpdateEntry>> queuedUpdates;
 
     private Set<BlockUpdateEntry> pendingUpdates;
 
-    public BlockUpdateScheduler(Level level, long currentTick) {
+    public BlockUpdateScheduler(Dimension level, long currentTick) {
         queuedUpdates = new Long2ObjectNonBlockingMap<>(); // Change to ConcurrentHashMap if this needs to be concurrent
         lastTick = currentTick;
         this.level = level;
@@ -60,9 +60,9 @@ public class BlockUpdateScheduler {
 
                         updateIterator.remove();
                         if (Block.equals(block, entry.block, false) && entry.checkBlockWhenUpdate) {
-                            block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                            block.onUpdate(Dimension.BLOCK_UPDATE_SCHEDULED);
                         } else {
-                            block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                            block.onUpdate(Dimension.BLOCK_UPDATE_SCHEDULED);
                         }
                     } else {
                         level.scheduleUpdate(entry.block, entry.pos, 0);

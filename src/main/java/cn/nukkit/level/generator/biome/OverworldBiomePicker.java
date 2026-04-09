@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.biome;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -29,9 +29,9 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     private final SimplexNoise weirdnessNoise;
     private final SimplexNoise offsetNoise;
 
-    private final Level level;
+    private final Dimension level;
 
-    public OverworldBiomePicker(Level level) {
+    public OverworldBiomePicker(Dimension level) {
         super(new NukkitRandom(level.getSeed()));
         continentalNoise = new SimplexNoise(random.fork(), -9, new float[]{ 1, 1, 2, 2, 2, 1, 1, 1, 1 });
         temperatureNoise = new SimplexNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });

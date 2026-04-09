@@ -50,7 +50,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventorySlice;
 import cn.nukkit.inventory.TradeInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Sound;
@@ -196,12 +196,12 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 2),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 100),
-                                entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Level.TIME_FULL
+                                entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Dimension.TIME_FULL
                         ), 7, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true), all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 any(
-                                        entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Level.TIME_FULL,
+                                        entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Dimension.TIME_FULL,
                                         all(
                                                 entity -> getLevel().getDayTime() >= 11000 && entity.getLevel().getDayTime() < 12000,
                                                 not(new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 5))

@@ -7,7 +7,7 @@ import cn.nukkit.event.block.ItemFrameUseEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -103,7 +103,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             Block support = this.getSideAtLayer(0, getFacing().getOpposite());
             if (!support.isSolid() && !support.getId().equals(COBBLESTONE_WALL)) {
                 // [ITEM_DEBUG] Log when item frame breaks due to missing support
@@ -135,7 +135,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
     @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
-        onUpdate(Level.BLOCK_UPDATE_TOUCH);
+        onUpdate(Dimension.BLOCK_UPDATE_TOUCH);
         if (player != null && action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
             long key = positionKey(getFloorX(), getFloorY(), getFloorZ());
             Object lock = frameInteractionLocks.computeIfAbsent(key, k -> new Object());

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.level.DimensionData;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.NetherBiomePicker;
 import cn.nukkit.level.generator.biome.result.NetherBiomeResult;
@@ -37,12 +37,12 @@ public class Nether extends PopulatedGenerator implements BiomedGenerator {
     }
 
     @Override
-    public BiomePicker<NetherBiomeResult> createBiomePicker(Level level) {
+    public BiomePicker<NetherBiomeResult> createBiomePicker(Dimension level) {
         return new NetherBiomePicker(new NukkitRandom(level.getSeed()));
     }
 
     @Override
-    public ObjectHolder createObjectHolder(Level level) {
+    public ObjectHolder createObjectHolder(Dimension level) {
         return new NetherObjectHolder(new Xoroshiro128(level.getSeed()));
     }
 

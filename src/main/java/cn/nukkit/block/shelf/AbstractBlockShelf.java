@@ -7,7 +7,7 @@ import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.blockentity.BlockEntityShelf;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
@@ -128,7 +128,7 @@ public abstract class AbstractBlockShelf extends BlockTransparent implements Fac
 
     @Override
     public int onUpdate(int type) {
-        if(type == Level.BLOCK_UPDATE_REDSTONE) {
+        if(type == Dimension.BLOCK_UPDATE_REDSTONE) {
             updateConnection(this);
             this.setPropertyValue(POWERED_BIT, this.isGettingPower());
             this.level.setBlock(this, this);

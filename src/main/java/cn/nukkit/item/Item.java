@@ -14,7 +14,7 @@ import cn.nukkit.item.customitem.CustomItem;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.utils.ItemArmorType;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
@@ -1554,7 +1554,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @param fz     the fz
      * @return boolean
      */
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Dimension level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         return false;
     }
 
@@ -2264,7 +2264,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean wearableOnClickAir(Player player, Vector3 directionVector) {
-        Level level = player.getLevel();
+        Dimension level = player.getLevel();
         HumanInventory inv = player.getInventory();
 
         Item old = getEquipped(inv);

@@ -13,7 +13,7 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
@@ -149,7 +149,7 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
         RandomizableContainer container = getChestLootContainer(structureName);
         RandomizableContainer dispenserLootContainer = getDispenserLootContainer(structureName);
         for (Block block : blockManager.getBlocks()) {
-            Level level = blockManager.getLevel();
+            Dimension level = blockManager.getLevel();
             switch (block) {
                 case BlockChest chest -> {
                     if(container != null) {
@@ -198,7 +198,7 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
         helper.applySubChunkUpdate();
     }
 
-    protected RandomSourceProvider createRandom(Level level, BlockVector3 pos) {
+    protected RandomSourceProvider createRandom(Dimension level, BlockVector3 pos) {
         long seed = level.getSeed();
         seed ^= 0x9E3779B97F4A7C15L * pos.getX();
         seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
@@ -614,8 +614,8 @@ public class TrialChambersStructure extends JigsawStructure implements RuledObje
     public boolean canGenerateAt(Location location) {
         int chunkX = location.getChunkX();
         int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        RandomSourceProvider random = new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = location.getLevel();
+        RandomSourceProvider random = new Xoroshiro128(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
 
         if (!((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
             return false;

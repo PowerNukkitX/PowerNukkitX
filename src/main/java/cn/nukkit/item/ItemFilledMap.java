@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
@@ -142,11 +142,11 @@ public class ItemFilledMap extends Item {
         return true;
     }
 
-    public void renderMap(Level level, int startX, int startZ) {
+    public void renderMap(Dimension level, int startX, int startZ) {
         renderMap(level, startX, startZ, 1);
     }
 
-    public void renderMap(Level level, int startX, int startZ, int zoom) {
+    public void renderMap(Dimension level, int startX, int startZ, int zoom) {
         if (zoom < 1)
             throw new IllegalArgumentException("Zoom must be greater than 0");
         int[] pixels = new int[128 * 128];
@@ -184,7 +184,7 @@ public class ItemFilledMap extends Item {
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (getDamage() == 6) return false;
         Server server = player.getServer();
-        renderMap(server.getLevel(getMapWorld()), getMapStartX(), getMapStartZ(), getMapScale());
+        renderMap(server.getLevel(getMapWorld()).getOverworld(), getMapStartX(), getMapStartZ(), getMapScale());
         player.getInventory().setItemInMainHand(this);
         sendImage(player, getMapScale());
         return true;

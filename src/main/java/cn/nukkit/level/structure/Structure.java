@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -60,9 +60,9 @@ public class Structure extends AbstractStructure {
         this.z = z;
     }
     /**
-     * @see #create(Level, int, int, int, int, int, int, boolean)
+     * @see #create(Dimension, int, int, int, int, int, int, boolean)
      */
-    public static Structure create(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
+    public static Structure create(Dimension dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
         return create(dimension, x, y, z, sizeX, sizeY, sizeZ, true);
     }
 
@@ -79,7 +79,7 @@ public class Structure extends AbstractStructure {
      * @param saveEntities whether to save the entities in the structure
      * @return the picked structure
      */
-    public static Structure create(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ, boolean saveEntities) {
+    public static Structure create(Dimension dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ, boolean saveEntities) {
         BlockState[][][][] blockStates = new BlockState[2][sizeX][sizeY][sizeZ];
         Map<Vector3, CompoundTag> blockEntities = new HashMap<>();
         List<CompoundTag> entities = new ArrayList<>();

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.feature;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -28,11 +28,11 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         BlockManager object = new BlockManager(level);
         for (int x = 0; x < getSplit(); x++) {
             for (int z = 0; z < getSplit(); z++) {
-                this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ)^ (x + z));
+                this.random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ)^ (x + z));
 
                 int placeX = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (x * splitLength()) + (chunkX << 4);
                 int placeZ = getDistanceToNextField() + random.nextInt(splitLength() - getDistanceToNextField()) + (z * splitLength()) + (chunkZ << 4);

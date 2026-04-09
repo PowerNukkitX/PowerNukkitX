@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 
@@ -22,7 +22,7 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
         var down = target.down();
         if (down.getId().equals(BlockID.OBSIDIAN)
-                && down.level.getDimension() != Level.DIMENSION_THE_END
+                && down.level.getDimension() != Dimension.DIMENSION_THE_END
                 && down.level.createPortal(down)) {
             item.useOn(target);
             return item.getDamage() >= item.getMaxDurability() ? null : item;

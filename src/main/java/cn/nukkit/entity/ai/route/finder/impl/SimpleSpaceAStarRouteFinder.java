@@ -3,7 +3,7 @@ package cn.nukkit.entity.ai.route.finder.impl;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
     }
 
     @Override
-    protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
+    protected int getBlockMoveCostAt(@NotNull Dimension level, Vector3 pos) {
         return level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
     }
 

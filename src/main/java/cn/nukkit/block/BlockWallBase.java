@@ -5,7 +5,7 @@ import cn.nukkit.block.property.enums.Attachment;
 import cn.nukkit.block.property.enums.WallConnectionType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -141,7 +141,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        if (type == Dimension.BLOCK_UPDATE_NORMAL) {
             if (autoConfigureState()) {
                 level.setBlock(this, this, true);
             }

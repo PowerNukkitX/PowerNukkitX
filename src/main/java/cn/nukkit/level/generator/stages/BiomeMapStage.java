@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.stages;
 
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -22,7 +22,7 @@ public class BiomeMapStage extends GenerateStage {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
+        Dimension level = chunk.getLevel();
         if(biomePicker == null) biomePicker = level.getBiomePicker();
         final int minHeight = level.getMinHeight();
         final int maxHeight = level.getMaxHeight();

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.player.PlayerTeleportEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -46,7 +46,7 @@ public class ItemChorusFruit extends ItemFood {
         int maxY = minY + 16;
         int maxZ = minZ + 16;
 
-        Level level = player.getLevel();
+        Dimension level = player.getLevel();
         if (level == null) return false;
         if (player.isInsideOfWater()) return false;
 

@@ -7,7 +7,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 
 import java.util.Map;
@@ -42,7 +42,7 @@ public class TestForBlockCommand extends VanillaCommand {
             return 0;
         }
 
-        Level level = position.getLevel();
+        Dimension level = position.getLevel();
 
         if (level.getChunkIfLoaded(position.getChunkX(), position.getChunkZ()) == null) {
             log.addError("commands.testforblock.outOfWorld").output();

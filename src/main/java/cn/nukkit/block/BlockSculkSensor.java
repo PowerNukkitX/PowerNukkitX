@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -68,7 +68,7 @@ public class BlockSculkSensor extends BlockFlowable implements BlockEntityHolder
     @Override
     public int onUpdate(int type) {
         getOrCreateBlockEntity();
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type == Dimension.BLOCK_UPDATE_SCHEDULED) {
             if (level.getServer().getSettings().gameplaySettings().enableRedstone()) {
                 this.getBlockEntity().calPower();
                 this.setPhase(0);

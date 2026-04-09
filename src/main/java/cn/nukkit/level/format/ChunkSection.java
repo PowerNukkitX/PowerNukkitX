@@ -3,7 +3,7 @@ package cn.nukkit.level.format;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
@@ -143,7 +143,7 @@ public record ChunkSection(byte y,
         blockLayer[1].writeToNetwork(byteBuf, BlockState::blockStateHash);
     }
 
-    public void writeObfuscatedToBuf(Level level, ByteBuf byteBuf) {
+    public void writeObfuscatedToBuf(Dimension level, ByteBuf byteBuf) {
         byteBuf.writeByte(VERSION);
         //block layer count
         byteBuf.writeByte(LAYER_COUNT);

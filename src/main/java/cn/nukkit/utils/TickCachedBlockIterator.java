@@ -1,7 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
@@ -33,15 +33,15 @@ public class TickCachedBlockIterator implements Iterator<Block> {
     private BlockFace secondFace;
     private BlockFace thirdFace;
 
-    public TickCachedBlockIterator(Level level, Vector3 start, Vector3 direction) {
+    public TickCachedBlockIterator(Dimension level, Vector3 start, Vector3 direction) {
         this(level, start, direction, 0);
     }
 
-    public TickCachedBlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset) {
+    public TickCachedBlockIterator(Dimension level, Vector3 start, Vector3 direction, double yOffset) {
         this(level, start, direction, yOffset, 0);
     }
 
-    public TickCachedBlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
+    public TickCachedBlockIterator(Dimension level, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
         this.maxDistance = maxDistance;
         this.blockQueue = new Block[3];
 

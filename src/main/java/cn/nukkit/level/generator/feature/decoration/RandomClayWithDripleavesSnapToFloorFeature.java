@@ -3,7 +3,7 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.enums.BigDripleafTilt;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -39,8 +39,8 @@ public class RandomClayWithDripleavesSnapToFloorFeature extends GenerateFeature 
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         SimplexF noise = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getFeatureHolder().getRandomClayWithDripleavesSnapToFloor();
         BlockManager manager = new BlockManager(level);
         for(int x = 0; x < 16; x++) {

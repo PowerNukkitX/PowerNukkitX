@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockChest;
 import cn.nukkit.block.BlockStructureBlock;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -96,8 +96,8 @@ public class ShipwreckPopulator extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(5, chunk.getHeightMap(5, 5), 5);
         BiomeDefinition definition = Registries.BIOME.get(biome);
         if ((definition.getTags().contains(BiomeTags.OCEAN) || definition.getTags().contains(BiomeTags.BEACH))
@@ -138,14 +138,14 @@ public class ShipwreckPopulator extends Populator {
                 IChunk ck = level.getChunk(chunkX + 1, chunkZ);
                 if (!ck.isGenerated()) {
                     chunks.add(ck);
-                    indexes.add(Level.chunkHash(ck.getX(), chunkZ));
+                    indexes.add(Dimension.chunkHash(ck.getX(), chunkZ));
                 }
             }
             if (size.getZ() > 16) {
                 IChunk ck = level.getChunk(chunkX, chunkZ + 1);
                 if (!ck.isGenerated()) {
                     chunks.add(ck);
-                    indexes.add(Level.chunkHash(chunkX, ck.getZ()));
+                    indexes.add(Dimension.chunkHash(chunkX, ck.getZ()));
                 }
             }
 

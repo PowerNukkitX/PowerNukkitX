@@ -1,7 +1,7 @@
 package cn.nukkit.event.level;
 
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 
 /**
@@ -17,7 +17,7 @@ public class SpawnChangeEvent extends LevelEvent {
 
     private final Position previousSpawn;
 
-    public SpawnChangeEvent(Level level, Position previousSpawn) {
+    public SpawnChangeEvent(Dimension level, Position previousSpawn) {
         super(level);
         this.previousSpawn = previousSpawn;
     }

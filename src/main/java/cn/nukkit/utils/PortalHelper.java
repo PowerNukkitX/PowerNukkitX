@@ -5,7 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
@@ -22,9 +22,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
-import static cn.nukkit.level.Level.DIMENSION_NETHER;
-import static cn.nukkit.level.Level.DIMENSION_OVERWORLD;
-import static cn.nukkit.level.Level.DIMENSION_THE_END;
+import static cn.nukkit.level.Dimension.DIMENSION_NETHER;
+import static cn.nukkit.level.Dimension.DIMENSION_OVERWORLD;
+import static cn.nukkit.level.Dimension.DIMENSION_THE_END;
 
 /**
  * Utility class for portal-related operations (Nether/End portals) in the Nukkit server.
@@ -52,7 +52,7 @@ public final class PortalHelper implements BlockID {
             log.warn("Cannot spawn portal: position or level is null");
             return;
         }
-        Level lvl = pos.level;
+        Dimension lvl = pos.level;
         int x = pos.getFloorX();
         int y = pos.getFloorY();
         int z = pos.getFloorZ();
@@ -146,7 +146,7 @@ public final class PortalHelper implements BlockID {
         DimensionData dimensionData;
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
             dimensionData = DimensionEnum.NETHER.getDimensionData();
-            Level netherLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_NETHER);
+            Dimension netherLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_NETHER);
             if (netherLevel == null)
                 return null;
             
@@ -192,10 +192,10 @@ public final class PortalHelper implements BlockID {
                 return portal.get();
             }
             return target;
-        } else if (current.level.getDimension() == Level.DIMENSION_NETHER) {
+        } else if (current.level.getDimension() == Dimension.DIMENSION_NETHER) {
 
             dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
-            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
+            Dimension overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
             if (overworldLevel == null)
                 return null;
             int x = current.getFloorX() * scale;
@@ -246,11 +246,11 @@ public final class PortalHelper implements BlockID {
             return null;
         }
         if (current.level.getDimension() == DIMENSION_OVERWORLD) {
-            Level endLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_THE_END);
+            Dimension endLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_THE_END);
             if (endLevel == null) return null;
             return new Location(100, 50, 0, endLevel);
         } else if (current.level.getDimension() == DIMENSION_THE_END) {
-            Level overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
+            Dimension overworldLevel = current.getLevel().getDimensionDestinationLevel(DIMENSION_OVERWORLD);
             if (overworldLevel == null) return null;
             return overworldLevel.getSafeSpawn();
         } else {

@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.generic;
 
 import cn.nukkit.block.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -60,8 +60,8 @@ public class PopulatorRuinedPortal extends Populator {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
-        Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        Dimension level = chunk.getLevel();
+        random.setSeed(level.getSeed() ^ Dimension.chunkHash(chunkX, chunkZ));
         if(canGenerate(random, chunk)) {
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
@@ -95,7 +95,7 @@ public class PopulatorRuinedPortal extends Populator {
                 }
                 if(block instanceof BlockMagma) {
                     manager.addHook(() -> {
-                        level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        level.getBlock(block).onUpdate(Dimension.BLOCK_UPDATE_NORMAL);
                     });
                 }
                 if(block instanceof BlockChest chest) {
@@ -103,7 +103,7 @@ public class PopulatorRuinedPortal extends Populator {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
-                if(level.getDimension() == Level.DIMENSION_NETHER) {
+                if(level.getDimension() == Dimension.DIMENSION_NETHER) {
                     if (block instanceof BlockChiseledStoneBricks) {
                         manager.setBlockStateAt(block, CHISELED_POLISHED_BLACKSTONE.setPropertyValues(block.getProperties()));
                     } else if(block instanceof BlockCrackedStoneBricks) {

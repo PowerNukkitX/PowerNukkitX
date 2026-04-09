@@ -16,7 +16,7 @@ import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
 import cn.nukkit.item.ItemFilledMap;
-import cn.nukkit.level.Level;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.biome.BiomePicker;
@@ -261,7 +261,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         if (!sender.isPlayer()) return 0;
         Player player = sender.asPlayer();
         IChunk chunk = player.getChunk();
-        Level level = chunk.getProvider().getLevel();
+        Dimension level = chunk.getProvider().getLevel();
 
         switch (list.getResult(1).toString()) {
             case "info" -> {
@@ -286,7 +286,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 if (extra.containsList("structureAnchor")) {
                     for (LongTag tag : extra.getList("structureAnchor", LongTag.class).getAll()) {
                         long hash = tag.getData();
-                        IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
+                        IChunk target = level.getChunk(Dimension.getHashX(hash), Dimension.getHashZ(hash));
                         if (target != null && target != chunk)
                             player.sendMessage(target.getX() + " " + target.getZ());
                     }

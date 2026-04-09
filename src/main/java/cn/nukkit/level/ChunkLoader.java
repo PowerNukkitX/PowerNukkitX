@@ -20,7 +20,7 @@ public interface ChunkLoader {
 
     double getZ();
 
-    Level getLevel();
+    Dimension getLevel();
 
     void onChunkChanged(IChunk chunk);
 
