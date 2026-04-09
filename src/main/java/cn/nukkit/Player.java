@@ -2179,14 +2179,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
         if (level.unregisterChunkLoader(this, x, z, false)) {
-            if (playerChunkManager.getUsedChunks().contains(index)) {
+            boolean wasTracked;
+            synchronized (playerChunkManager) {
+                wasTracked = playerChunkManager.getUsedChunks().remove(index);
+            }
+            if (wasTracked) {
                 for (Entity entity : level.getChunkEntities(x, z).values()) {
                     if (entity != this) {
                         entity.despawnFrom(this);
                     }
-                }
-                synchronized (playerChunkManager) {
-                    playerChunkManager.getUsedChunks().remove(index);
                 }
             }
         }
@@ -4785,13 +4786,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             spawnPosition.dimension = spawn.getLevel().getDimension();
             this.dataPacket(spawnPosition);
 
-            // Remove old chunks
-            for (long index : new ArrayList<>(playerChunkManager.getUsedChunks())) {
+            // Remove old chunks; snapshot under lock so tick() can't mutate sentChunks
+            // while we iterate, then clear any residual entries afterward.
+            long[] oldChunks;
+            synchronized (playerChunkManager) {
+                oldChunks = playerChunkManager.getUsedChunks().toLongArray();
+            }
+            for (long index : oldChunks) {
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
                 this.unloadChunk(chunkX, chunkZ, oldLevel);
             }
-            playerChunkManager.getUsedChunks().clear();
+            synchronized (playerChunkManager) {
+                playerChunkManager.getUsedChunks().clear();
+            }
 
             SetTimePacket setTime = new SetTimePacket();
             setTime.time = level.getTime();
