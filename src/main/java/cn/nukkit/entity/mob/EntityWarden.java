@@ -36,6 +36,7 @@ import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -193,8 +194,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
         super.initEntity();
         this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, 40);
 
-        // TODO protocol check id this.setDataProperty(ActorDataTypes.HEARTBEAT_SOUND_EVENT, SoundEvent.HEARTBEAT.getId());
-        //空闲声音
+        this.setDataProperty(ActorDataTypes.HEARTBEAT_SOUND_EVENT, SoundEvent.HEARTBEAT);
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
         this.setAmbientSoundIntervalRange(16.0f);
