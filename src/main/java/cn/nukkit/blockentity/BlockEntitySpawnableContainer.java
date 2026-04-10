@@ -88,17 +88,19 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         NbtMap d = ItemHelper.write(item, index);
 
         // If item is air or count less than 0, remove the item from the "Items" list
+        final List<NbtMap> items = new ObjectArrayList<>(this.namedTag.getList("Items", NbtType.COMPOUND));
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
-                this.namedTag.getList("Items", NbtType.COMPOUND).remove(i);
+                items.remove(i);
             }
         } else if (i < 0) {
             // If it is less than i, then it is a new item, so we are going to add it at the end of the list
-            (this.namedTag.getList("Items", NbtType.COMPOUND)).add(d);
+            items.add(d);
         } else {
             // If it is more than i, then it is an update on a inventorySlot, so we are going to overwrite the item in the list
-            (this.namedTag.getList("Items", NbtType.COMPOUND)).add(i, d);
+            items.add(i, d);
         }
+        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, items).build();
     }
 
     /**

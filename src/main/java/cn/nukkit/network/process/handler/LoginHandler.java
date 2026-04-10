@@ -112,16 +112,13 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 holder.disconnect(DisconnectFailReason.EDITION_MISMATCH_EDITOR_TO_VANILLA);
                 return;
             }
-
-            final Player.PlayerInfo playerInfo = new Player.PlayerInfo(
-                    identityClaims,
-                    clientChainData,
-                    clientJwtValidationResult.getSkin()
+            holder.setPlayerInfo(
+                    new Player.PlayerInfo(
+                            identityClaims,
+                            clientChainData,
+                            clientJwtValidationResult.getSkin()
+                    )
             );
-            holder.setPlayer(
-                    new Player(holder.getSession(), playerInfo)
-            );
-            holder.getPlayer().processLogin();
 
             if (server.enabledNetworkEncryption) {
                 this.enableEncryption(identityClaims, holder);

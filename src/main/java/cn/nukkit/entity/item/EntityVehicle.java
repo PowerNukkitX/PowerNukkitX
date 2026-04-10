@@ -26,7 +26,7 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
     }
 
     public int getRollingAmplitude() {
-        return this.getDataProperty(ActorDataTypes.HURT);
+        return !this.entityDataMap.containsKey(ActorDataTypes.HURT) ? 0 : this.getDataProperty(ActorDataTypes.HURT);
     }
 
     public void setRollingAmplitude(int time) {

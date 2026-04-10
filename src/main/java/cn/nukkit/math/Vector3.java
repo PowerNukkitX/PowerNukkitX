@@ -483,4 +483,8 @@ public class Vector3 implements Cloneable {
     public org.cloudburstmc.math.vector.Vector3f toNetwork() {
         return org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z);
     }
+
+    public static Vector3 fromNetwork(org.cloudburstmc.math.vector.Vector3f vector3f) {
+        return new Vector3(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+    }
 }

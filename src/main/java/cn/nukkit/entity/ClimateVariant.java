@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import lombok.Getter;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +17,7 @@ public interface ClimateVariant {
     String[] warmTags = new String[]{BiomeTags.SAVANNA, BiomeTags.JUNGLE, BiomeTags.MESA, BiomeTags.DESERT, BiomeTags.LUKEWARM, BiomeTags.SWAMP, BiomeTags.NETHER};
 
     default Variant getBiomeVariant(int biomeId) {
-        BiomeDefinitionData definition = Registries.BIOME.get(biomeId).second();
-        List<String> tags = definition.getTags();
+        List<String> tags = Registries.BIOME.getTags(biomeId);
         for (String tag : coldTags) if (tags.contains(tag)) return Variant.COLD;
         for (String tag : warmTags) if (tags.contains(tag)) return Variant.WARM;
         return Variant.TEMPERATE;

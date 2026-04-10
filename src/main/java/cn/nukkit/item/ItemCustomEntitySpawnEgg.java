@@ -15,12 +15,13 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ItemCustomEntitySpawnEgg extends Item {
+public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     private static final String SUFFIX = "_spawn_egg";
     private static final String PLACEHOLDER_ID = "pnx:auto_spawn_egg";
 
@@ -28,6 +29,8 @@ public class ItemCustomEntitySpawnEgg extends Item {
     private static final String COMP_CUSTOM_EGG = "custom_entity_spawn_egg";
     private static final String KEY_EGG_ID = "egg_identifier";
     private static final String KEY_ENTITY_ID = "entity_identifier";
+
+    private NbtMap entityNBT;
 
     public ItemCustomEntitySpawnEgg() {
         super(PLACEHOLDER_ID, 0, 1);
@@ -99,6 +102,15 @@ public class ItemCustomEntitySpawnEgg extends Item {
 
         if (this.hasCustomName()) {
             nbt = nbt.toBuilder().putString("CustomName", this.getCustomName()).build();
+        }
+
+        if (this.entityNBT != null) {
+            this.entityNBT.toBuilder()
+                    .putList("Pos", NbtType.DOUBLE, nbt.getList("Pos", NbtType.DOUBLE))
+                    .putList("Motion", NbtType.DOUBLE, nbt.getList("Motion", NbtType.DOUBLE))
+                    .putList("Rotation", NbtType.FLOAT, nbt.getList("Rotation", NbtType.FLOAT))
+                    .build();
+            nbt = this.entityNBT;
         }
 
         int networkId = Registries.ENTITY.getEntityNetworkId(entityId);
@@ -228,5 +240,10 @@ public class ItemCustomEntitySpawnEgg extends Item {
         pnxBuilder.putCompound(COMP_CUSTOM_EGG, ceBuilder.build());
         builder.putCompound(ROOT_PNX_EXTRA, pnx).build();
         this.setNamedTag(builder.build());
+    }
+
+    @Override
+    public void setEntityNBT(NbtMap entityNBT) {
+        this.entityNBT = entityNBT;
     }
 }

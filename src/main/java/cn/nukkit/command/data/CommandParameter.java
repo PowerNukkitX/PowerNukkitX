@@ -328,11 +328,15 @@ public class CommandParameter {
         data.setOptional(this.optional);
         data.setEnumData(this.enumData != null ? this.enumData.toNetwork() : null);
         try {
-            final Field field = CommandParam.class.getDeclaredField(this.type.name());
+            CommandParamType type = this.type;
+            if (type == null) {
+                type = CommandParamType.TEXT;
+            }
+            final Field field = CommandParam.class.getDeclaredField(type.name());
             field.setAccessible(true);
             final CommandParam param = (CommandParam) field.get(null);
             data.setType(param);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
         data.setPostfix(this.postFix);

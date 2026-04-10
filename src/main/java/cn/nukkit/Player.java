@@ -132,12 +132,13 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
@@ -295,6 +296,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private TaskHandler delayedPosTrackingUpdate;
     protected boolean showingCredits;
     protected static final int NO_SHIELD_DELAY = 10;
+    @Getter
+    @Setter
     protected PlayerBlockActionData lastBlockAction;
     protected AsyncTask preLoginEventTask = null;
     protected ClientChainData clientChainData;
@@ -324,19 +327,26 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     // lastUseItem System and item cooldown
     protected final HashMap<String, Integer> cooldownTickMap = new HashMap<>();
     protected final HashMap<String, Integer> lastUseItemMap = new HashMap<>(1);
+    @Getter
+    @Setter
+    protected Item lastUsedItem = null;
 
     // inventory system
     protected int windowsCnt = 1;
+    @Setter
     protected int closingWindowId = Integer.MIN_VALUE;
-    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
-    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
-    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
+    protected final BiMap<Inventory, Byte> windows = HashBiMap.create();
+    @Getter
+    protected final BiMap<Byte, Inventory> windowIndex = windows.inverse();
+    protected final Set<Byte> permanentWindows = new ByteOpenHashSet();
     protected CraftingGridInventory craftingGridInventory;
     protected PlayerCursorInventory playerCursorInventory;
     protected CreativeOutputInventory creativeOutputInventory;
     /**
      * Player opens its own inventory
      */
+    @Getter
+    @Setter
     protected boolean inventoryOpen;
     /**
      * Player open its own ender chest inventory
@@ -471,7 +481,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    protected void onBlockBreakStart(Vector3 pos, BlockFace face) {
+    public void onBlockBreakStart(Vector3 pos, BlockFace face) {
         BlockVector3 blockPos = pos.asBlockVector3();
         long currentBreak = System.currentTimeMillis();
 
@@ -556,7 +566,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
-    protected void onBlockBreakAbort(Vector3 pos) {
+    public void onBlockBreakAbort(Vector3 pos) {
         if (pos.distanceSquared(this) < 1000) { // same as with ACTION_START_BREAK
             final LevelEventPacket pk = new LevelEventPacket();
             pk.setType(LevelEvent.BLOCK_STOP_BREAK);
@@ -569,7 +579,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.breakingBlockFace = null;
     }
 
-    protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
+    public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
         if (!this.spawned || !this.isAlive()) {
             return;
         }
@@ -738,9 +748,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             );
             this.dataPacket(setSpawnPositionPacket);
         }
-
-        this.sendFogStack();
-        this.sendCameraPresets();
 
         this.sendPlayStatus(PlayStatus.PLAYER_SPAWN);
         log.debug("Sent PlayStatus.PLAYER_SPAWN to {}, waiting for init packet", getName());
@@ -1029,7 +1036,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Offers a new movement task to the player, considering distance and rotation thresholds.
      * Also handles the special case where an erroneous position may be received right after teleportation.
      */
-    protected void offerMovementTask(Location newPosition) {
+    public void offerMovementTask(Location newPosition) {
         double distance = newPosition.distance(this);
         boolean updatePosition = distance > movementDistanceThreshold;
         boolean updateRotation = Math.abs(this.getPitch() - newPosition.pitch) > rotationUpdateThreshold
@@ -1314,7 +1321,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         locallyInitialized = true;
 
         //init entity data property
-        this.setDataProperty(ActorDataTypes.NAME, info.getIdentityClaims().extraData.displayName, false);
+        this.setDataProperty(ActorDataTypes.NAME, this.getName(), false);
         this.setDataProperty(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) 1, false);
 
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
@@ -1498,31 +1505,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
-        this.addWindow(this.getInventory(), SpecialWindowId.PLAYER.getId());
+        this.addWindow(this.getInventory(), (byte) SpecialWindowId.PLAYER.getId());
         //addDefaultWindows when the player doesn't have a spawn yet,
         // so we need to manually open it to add the player to the viewer
         this.getInventory().open(this);
-        this.permanentWindows.add(SpecialWindowId.PLAYER.getId());
+        this.permanentWindows.add((byte) SpecialWindowId.PLAYER.getId());
 
-        this.addWindow(this.getCreativeOutputInventory(), SpecialWindowId.CREATIVE.getId());
+        this.addWindow(this.getCreativeOutputInventory(), (byte) SpecialWindowId.CREATIVE.getId());
         this.getCreativeOutputInventory().open(this);
-        this.permanentWindows.add(SpecialWindowId.CREATIVE.getId());
+        this.permanentWindows.add((byte) SpecialWindowId.CREATIVE.getId());
 
-        this.addWindow(this.getOffhandInventory(), SpecialWindowId.OFFHAND.getId());
+        this.addWindow(this.getOffhandInventory(), (byte) SpecialWindowId.OFFHAND.getId());
         this.getOffhandInventory().open(this);
-        this.permanentWindows.add(SpecialWindowId.OFFHAND.getId());
+        this.permanentWindows.add((byte) SpecialWindowId.OFFHAND.getId());
 
-        this.addWindow(this.getCraftingGrid(), SpecialWindowId.NONE.getId());
+        this.addWindow(this.getCraftingGrid(), (byte) SpecialWindowId.NONE.getId());
         this.getCraftingGrid().open(this);
-        this.permanentWindows.add(SpecialWindowId.NONE.getId());
+        this.permanentWindows.add((byte) SpecialWindowId.NONE.getId());
 
-        this.addWindow(this.getCursorInventory(), SpecialWindowId.CURSOR.getId());
+        this.addWindow(this.getCursorInventory(), (byte) SpecialWindowId.CURSOR.getId());
         this.getCursorInventory().open(this);
-        this.permanentWindows.add(SpecialWindowId.CURSOR.getId());
+        this.permanentWindows.add((byte) SpecialWindowId.CURSOR.getId());
     }
 
     @Override
-    protected float getBaseOffset() {
+    public float getBaseOffset() {
         return super.getBaseOffset();
     }
 
@@ -1972,7 +1979,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public boolean isConnected() {
-        return connected.get();
+        return connected.get() && this.session.isConnected();
     }
 
     /**
@@ -2248,7 +2255,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         synchronized (playerChunkManager.getUsedChunks()) {
             this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
         }
-        this.dataPacketImmediately(packet);
+        this.dataPacket(packet);
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
@@ -2631,24 +2638,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.dataPacket(pk);
     }
 
-    /**
-     * Send the fog settings to the client
-     */
-    public void sendFogStack() {
-        var pk = new PlayerFogPacket();
-        pk.getFogStack().addAll(this.fogStack);
-        this.dataPacket(pk);
-    }
-
-    /**
-     * Send camera presets to the client
-     */
-    public void sendCameraPresets() {
-        var pk = new CameraPresetsPacket();
-        // TODO protocol pk.presets.addAll(CameraPreset.getPresets().values());
-        dataPacket(pk);
-    }
-
     @Override
     public Set<String> typeFamily() {
         return Set.of("player");
@@ -2903,7 +2892,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && loggedIn) {
-            // TODO protocol this.getSession().notifyTerrainReady();
+            this.doFirstSpawn();
         }
     }
 
@@ -3525,7 +3514,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         log.debug("Closing player network session");
         log.debug(reason);
         assert this.session != null;
-        this.session.close(null);
     }
 
     public synchronized void unloadAllUsedChunk() {
@@ -4594,8 +4582,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
-        int cnt;
-        this.windowsCnt = cnt = Math.max(1, ++this.windowsCnt % 100);
+        byte cnt;
+        this.windowsCnt = cnt = (byte) Math.max(1, ++this.windowsCnt % 100);
         if (this.windowIndex.containsKey(cnt)) {
             this.windowIndex.get(cnt).close(this);
         }
@@ -4619,14 +4607,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return cnt;
     }
 
-    public int addWindow(@NotNull Inventory inventory, Integer forceId) {
+    public int addWindow(@NotNull Inventory inventory, Byte forceId) {
         Preconditions.checkNotNull(inventory);
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
-        int cnt;
+        byte cnt;
         if (forceId == null) {
-            this.windowsCnt = cnt = Math.max(1, ++this.windowsCnt % 101);//1-100
+            this.windowsCnt = cnt = (byte) Math.max(1, ++this.windowsCnt % 101);//1-100
         } else {
             cnt = forceId;
         }
@@ -4648,7 +4636,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public Optional<Inventory> getTopWindow() {
-        for (Entry<Inventory, Integer> entry : this.windows.entrySet()) {
+        for (Entry<Inventory, Byte> entry : this.windows.entrySet()) {
             if (!this.permanentWindows.contains(entry.getValue())) {
                 return Optional.of(entry.getKey());
             }
@@ -4752,7 +4740,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param permanent If false, it will skip deleting the corresponding window in {@link #permanentWindows}
      */
     public void removeAllWindows(boolean permanent) {
-        for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
+        for (Entry<Byte, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
             if (!permanent && this.permanentWindows.contains(entry.getKey())) {
                 continue;
             }
@@ -5588,7 +5576,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Set the fog stack, if you want to client effect, you need {@link #sendFogStack}
+     * Set the fog stack, if you want to client effect, you need to send the fog stack
      *
      * @param fogStack the fog stack
      */
@@ -5883,5 +5871,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         packet.getContents().addAll(Registries.CREATIVE.getCreativeItemData());
 
         this.dataPacketImmediately(packet);
+    }
+
+    public void clearLastUsedItem() {
+        if (this.lastUsedItem == null) {
+            return;
+        }
+        this.removeLastUseTick(this.lastUsedItem.getId());
+        this.lastUsedItem = null;
     }
 }

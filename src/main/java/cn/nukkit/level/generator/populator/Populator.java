@@ -25,25 +25,26 @@ public abstract class Populator {
     }
 
     public BlockManager getChunkPlacementQueue(Long chunkHash, Level level) {
-        if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
+        if (!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
         return PLACEMENT_QUEUE.get(chunkHash);
     }
 
     protected void writeOutsideChunkStructureData(IChunk current) {
         NbtMap chunkExtra = current.getExtraData();
-        if(!chunkExtra.containsKey("outsideChunkStructureData")) {
+        if (!chunkExtra.containsKey("outsideChunkStructureData")) {
             chunkExtra = chunkExtra.toBuilder().putCompound("outsideChunkStructureData", NbtMap.EMPTY).build();
         }
         NbtMap outsideChunkStructureData = chunkExtra.getCompound("outsideChunkStructureData");
-        for(long chunkIdx : PLACEMENT_QUEUE.keySet()) {
+        for (long chunkIdx : PLACEMENT_QUEUE.keySet()) {
             String targetChunkKey = String.valueOf(chunkIdx);
             BlockManager temp = new BlockManager(current.getLevel());
-            if(outsideChunkStructureData.containsKey(targetChunkKey, NbtType.LIST)) {
+            if (outsideChunkStructureData.containsKey(targetChunkKey, NbtType.LIST)) {
                 temp = BlockManager.fromTag(outsideChunkStructureData.getList(targetChunkKey, NbtType.INT_ARRAY), temp);
             }
             temp.merge(getChunkPlacementQueue(chunkIdx, current.getLevel()));
-            outsideChunkStructureData.put(targetChunkKey, temp.toTag());
+            outsideChunkStructureData = outsideChunkStructureData.toBuilder().putList(targetChunkKey, NbtType.INT_ARRAY, temp.toTag()).build();
         }
+        current.setExtraData(chunkExtra.toBuilder().putCompound("outsideChunkStructureData", outsideChunkStructureData).build());
     }
 
 }

@@ -1248,6 +1248,7 @@ public abstract class Item implements Cloneable, ItemID {
     public NbtMap getOrCreateNamedTag() {
         if (!hasCompoundTag()) {
             setNamedTag(NbtMap.EMPTY);
+            cachedNBT = NbtMap.EMPTY;
             return cachedNBT;
         }
         return getNamedTag();
@@ -2653,6 +2654,10 @@ public abstract class Item implements Cloneable, ItemID {
 
     public ItemData toNetwork() {
         final boolean hasNbt = this.getNamedTag() != null;
+        if (this.getNetId() == 0 && !this.getIdentifier().equals(Item.AIR.getIdentifier())) {
+            this.autoAssignStackNetworkId();
+        }
+
         return ItemData.builder()
                 .definition(this.getItemDefinition())
                 .damage(this.getDamage())
@@ -2660,8 +2665,8 @@ public abstract class Item implements Cloneable, ItemID {
                 .tag(this.getNamedTag())
                 .canPlace(!hasNbt ? new String[0] : this.getCanPlaceOn().toArray(String[]::new))
                 .canBreak(!hasNbt ? new String[0] : this.getCanDestroy().toArray(String[]::new))
-                .blockDefinition(this.block != null ? new RuntimeBlockDefinition(this.block.getRuntimeId()) : null)
-                .usingNetId(this.isUsingNetId())
+                .blockDefinition(new RuntimeBlockDefinition(this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId()))
+                .usingNetId(true)
                 .netId(this.getNetId())
                 .build();
     }
@@ -2683,7 +2688,7 @@ public abstract class Item implements Cloneable, ItemID {
         return new SimpleItemDefinition(
                 this.identifier.toString(),
                 this.getRuntimeId(),
-                this.customComponents() != null ? ItemVersion.DATA_DRIVEN : ItemVersion.LEGACY,
+                this.customComponents() != null ? ItemVersion.DATA_DRIVEN : ItemVersion.NONE,
                 this.customComponents() != null,
                 this.customComponents()
         );

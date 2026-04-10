@@ -510,7 +510,7 @@ public class LevelDBChunkSerializer {
 
     private NbtMap read(byte[] data) {
         try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-             final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+             final NBTInputStream nbtInputStream = NbtUtils.createNetworkReader(inputStream)) {
             return (NbtMap) nbtInputStream.readTag();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -519,7 +519,7 @@ public class LevelDBChunkSerializer {
 
     public byte[] write(NbtMap nbtMap) {
         try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+             final NBTOutputStream nbtOutputStream = NbtUtils.createNetworkWriter(outputStream)) {
             nbtOutputStream.writeTag(nbtMap);
             return outputStream.toByteArray();
         } catch (IOException e) {

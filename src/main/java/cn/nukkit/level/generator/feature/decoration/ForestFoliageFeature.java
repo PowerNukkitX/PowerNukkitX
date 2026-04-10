@@ -36,7 +36,7 @@ public class ForestFoliageFeature extends GenerateFeature {
             for (int z = 0; z < 16; z++) {
                 if(random.nextInt(10) < 6) {
                     int y = chunk.getHeightMap(x, z) + 1;
-                    List<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).second().getTags();
+                    List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(x, y, z));
                     if((tags.contains(BiomeTags.FOREST) || tags.contains(BiomeTags.STONE) && !tags.contains(BiomeTags.BIRCH))) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
                         if (support.isFullBlock() && !support.isTransparent()) {

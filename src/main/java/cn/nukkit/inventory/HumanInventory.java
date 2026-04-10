@@ -144,6 +144,25 @@ public class HumanInventory extends BaseInventory {
         return this.getItem(this.getHeldItemIndex());
     }
 
+    /**
+     * Sets the item in the player's main hand.
+     *
+     * @param item the item to set
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInMainHand(Item item) {
+        return this.setItem(this.getHeldItemIndex(), item);
+    }
+
+    /**
+     * Returns the item currently held in the player's main hand.
+     *
+     * @return the item in the main hand
+     */
+    public Item getItemInMainHand() {
+        return this.getItem(this.getHeldItemIndex());
+    }
+
     public Item getUnclonedItemInHand() {
         return this.getUnclonedItem(this.getHeldItemIndex());
     }

@@ -26,7 +26,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
@@ -48,7 +51,6 @@ import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -315,57 +317,66 @@ public class LevelDBProvider implements LevelProvider {
         AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
             final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
-            final ChunkSection[] sections = unsafeChunk.getSections();
-            int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
-            while (subChunkCount-- != 0) {
-                if (sections[subChunkCount] != null) {
-                    break;
-                }
-            }
-            int total = subChunkCount + 1;
-            //write block
-            if (level != null && level.isAntiXrayEnabled()) {
-                for (int i = 0; i < total; i++) {
-                    if (sections[i] == null) {
-                        sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+            try {
+                final ChunkSection[] sections = unsafeChunk.getSections();
+                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
+                while (subChunkCount-- != 0) {
+                    if (sections[subChunkCount] != null) {
+                        break;
                     }
-                    assert sections[i] != null;
-                    sections[i].writeObfuscatedToBuf(level, byteBuf);
                 }
-            } else {
-                for (int i = 0; i < total; i++) {
-                    if (sections[i] == null) {
-                        sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                int total = subChunkCount + 1;
+                //write block
+                if (level != null && level.isAntiXrayEnabled()) {
+                    for (int i = 0; i < total; i++) {
+                        if (sections[i] == null) {
+                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                        }
+                        assert sections[i] != null;
+                        sections[i].writeObfuscatedToBuf(level, byteBuf);
                     }
-                    assert sections[i] != null;
-                    sections[i].writeToBuf(byteBuf.retain());
+                } else {
+                    for (int i = 0; i < total; i++) {
+                        if (sections[i] == null) {
+                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
+                        }
+                        assert sections[i] != null;
+                        sections[i].writeToBuf(byteBuf);
+                    }
                 }
-            }
 
-            // Write biomes
-            for (int i = 0; i < total; i++) {
-                sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
-            }
-
-            byteBuf.writeByte(0); // edu- border blocks
-
-            // Block entities
-            final List<NbtMap> tagList = new ArrayList<>();
-            for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
-                if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                    tagList.add(blockEntitySpawnable.getSpawnCompound());
-                    //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
-                    level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
+                // Write biomes
+                for (int i = 0; i < total; i++) {
+                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
                 }
+
+                // Block entities
+                final List<NbtMap> tagList = new ObjectArrayList<>();
+                for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
+                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
+                        tagList.add(blockEntitySpawnable.getSpawnCompound());
+                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
+                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
+                    }
+                }
+                try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf);
+                     final NBTOutputStream outputStream = NbtUtils.createNetworkWriter(stream)) {
+                    if (tagList.isEmpty()) {
+                        stream.writeByte(0);
+                        stream.writeUTF("");
+                    } else {
+                        for (NbtMap nbtMap : tagList) {
+                            outputStream.writeTag(nbtMap);
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                data.set(byteBuf.copy());
+                subChunkCountRef.set(total);
+            } finally {
+                byteBuf.release();
             }
-            try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf)) {
-                final NbtMap nbtMap = NbtMap.builder().putList("blockEntities", NbtType.COMPOUND, tagList).build();
-                NbtUtils.createNetworkWriter(stream).writeTag(nbtMap);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            data.set(byteBuf);
-            subChunkCountRef.set(total);
         });
         return Pair.of(data.get(), subChunkCountRef.get());
     }

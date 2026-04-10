@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.type.BlockPropertyType;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.utils.HashUtils;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -30,7 +31,7 @@ public record BlockStateImpl(String identifier,
                         .putString("name", BlockID.UNKNOWN)
                         .putCompound("states", NbtMap.EMPTY)
                         .putCompound("Block", blockTag)
-                        .putInt("version", -1/* TODO protocol ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION */)
+                        .putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION)
                         .build()
                 )
         );
@@ -49,7 +50,7 @@ public record BlockStateImpl(String identifier,
         return NbtMap.builder()
                 .putString("name", identifier)
                 .putCompound("states", NbtMap.fromMap(new TreeMap<>(states.build())))
-                .putInt("version", -1/* TODO protocol ProtocolInfo.BLOCK_STATE_VERSION_NO_REVISION */)
+                .putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION)
                 .build();
     }
 

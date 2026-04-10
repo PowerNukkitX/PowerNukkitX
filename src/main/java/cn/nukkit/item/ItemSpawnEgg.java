@@ -13,15 +13,15 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
 import org.cloudburstmc.nbt.NbtMap;
-
-import java.util.concurrent.ThreadLocalRandom;
+import org.cloudburstmc.nbt.NbtType;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class ItemSpawnEgg extends Item {
+public class ItemSpawnEgg extends Item implements SpawnEggPickable {
 
     public ItemSpawnEgg() {
         this(0, 1);
@@ -39,6 +39,8 @@ public class ItemSpawnEgg extends Item {
     public ItemSpawnEgg(String id) {
         super(id, 0, 1);
     }
+
+    protected NbtMap entityNBT;
 
     @Override
     public void setDamage(int meta) {
@@ -74,6 +76,15 @@ public class ItemSpawnEgg extends Item {
         NbtMap nbt = Entity.getDefaultNBT(loc);
         if (this.hasCustomName()) {
             nbt = nbt.toBuilder().putString("CustomName", this.getCustomName()).build();
+        }
+
+        if (this.entityNBT != null) {
+            this.entityNBT.toBuilder()
+                    .putList("Pos", NbtType.DOUBLE, nbt.getList("Pos", NbtType.DOUBLE))
+                    .putList("Motion", NbtType.DOUBLE, nbt.getList("Motion", NbtType.DOUBLE))
+                    .putList("Rotation", NbtType.FLOAT, nbt.getList("Rotation", NbtType.FLOAT))
+                    .build();
+            nbt = this.entityNBT;
         }
 
         int networkId = getEntityNetworkId();
@@ -114,5 +125,10 @@ public class ItemSpawnEgg extends Item {
             }
         }
         return result.toString().trim();
+    }
+
+    @Override
+    public void setEntityNBT(NbtMap entityNBT) {
+
     }
 }

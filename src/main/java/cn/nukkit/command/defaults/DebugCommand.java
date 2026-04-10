@@ -106,7 +106,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     @Override
     public int execute(CommandSender sender, String label, Map.Entry<String, ParamList> result, CommandLogger log) {
         return switch (result.getKey()) {
-            case "structure" -> handleStructure(sender, result.getValue(), log);
+           /* case "structure" -> handleStructure(sender, result.getValue(), log);
             case "entity" -> handleEntity(result.getValue(), log);
             case "rendermap" -> handleRenderMap(sender, result.getValue(), log);
             case "biome" -> handleBiome(sender, result.getValue());
@@ -115,7 +115,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
             case "ddui" -> exampleDDUI(sender);
-            case "toggle" -> handleToggle(sender, result.getValue(), log);
+            case "toggle" -> handleToggle(sender, result.getValue(), log);*/
             default -> 0;
         };
     }
@@ -213,7 +213,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     }
 
     private int handleBiome(CommandSender sender, ParamList list) {
-        if (!sender.isPlayer()) return 0;
+        /*if (!sender.isPlayer()) return 0;
         Location loc = sender.getLocation();
 
         if (!list.hasResult(1)) {
@@ -224,7 +224,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
 
         switch (list.getResult(1).toString()) {
             case "parameter" -> {
-                Pair<String, BiomeDefinitionData> biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                Pair<Short, BiomeDefinitionData> biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
                 sender.sendMessage("Scale: " + biome.second().getScale());
                 sender.sendMessage("Depth: " + biome.second().getDepth());
             }
@@ -244,7 +244,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                 }
             }
             case "features" -> {
-                Pair<String, BiomeDefinitionData> definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                Pair<Short, BiomeDefinitionData> definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
                 BiomeDefinitionData biome = definition.second();
                 BiomeDefinitionChunkGenData chunkGenDataOptional = biome.getChunkGenData();
                 if (chunkGenDataOptional != null) {
@@ -252,8 +252,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     if (features != null) {
                         sender.sendMessage("§eFeatures of " + definition.first() + " [" + features.size() + "]");
                         for (BiomeConsolidatedFeatureData f : features) {
-                            String id = f.getIdentifier();
-                            String name = f.getFeature();
+                            String id = Registries.BIOME.getFromBiomeStringList(f.getIdentifier());
+                            String name = Registries.BIOME.getFromBiomeStringList(f.getFeature());
                             int order = f.getScatter().getEvalOrder().ordinal();
                             boolean registered = Registries.GENERATE_FEATURE.has(name) || Registries.GENERATE_FEATURE.has(id);
                             sender.sendMessage((registered ? "§a" : "§c") + name + " (" + id + ") §e[" + order + "]");
@@ -323,7 +323,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         }
                     }
             }
-        }
+        }*/
         return 1;
     }
 

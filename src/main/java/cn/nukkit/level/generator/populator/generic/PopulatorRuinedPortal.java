@@ -67,8 +67,7 @@ public class PopulatorRuinedPortal extends Populator {
         if (canGenerate(random, chunk)) {
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
-            BiomeDefinitionData definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7)).second();
-            List<String> tags = definition.getTags();
+            List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(7, SEA_LEVEL, 7));
             PortalHeight height = null;
             if (tags.contains(BiomeTags.DESERT)) height = PortalHeight.PARTLY_BURIED;
             else if (tags.contains(BiomeTags.JUNGLE) || tags.contains(BiomeTags.SWAMP))

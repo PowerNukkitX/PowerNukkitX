@@ -5,6 +5,9 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.UnknownItem;
+import cn.nukkit.level.updater.block.BlockStateUpdaters;
+import cn.nukkit.level.updater.item.ItemUpdaters;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.registry.Registries;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.nbt.NbtMap;
@@ -41,7 +44,7 @@ public class ItemHelper {
         if (item.isBlock() && item.getBlockId().equals(item.getId())) {
             tag = tag.toBuilder().putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag()).build();
         }
-        tag = tag.toBuilder().putInt("version", -1/*TODO protocol BLOCK_STATE_VERSION_NO_REVISION*/).build();
+        tag = tag.toBuilder().putInt("version", NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION).build();
         return tag;
     }
 
@@ -57,10 +60,10 @@ public class ItemHelper {
         //upgrade item
         if (tag.containsKey("version")) {
             int ver = tag.getInt("version");
-            /*TODO protocol if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
-                tag = ItemUpdaters.updateItem(tag, BLOCK_STATE_VERSION_NO_REVISION);
+            if (ver < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
+                tag = ItemUpdaters.updateItem(tag, NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION);
                 name = tag.getString("Name");
-            }*/
+            }
         }
 
         int damage = !tag.containsKey("Damage") ? 0 : tag.getShort("Damage");
@@ -80,9 +83,9 @@ public class ItemHelper {
             //upgrade block
             if (block.containsKey("version")) {
                 int ver = block.getInt("version");
-                /*TODO protocol if (ver < BLOCK_STATE_VERSION_NO_REVISION) {
-                    block = BlockStateUpdaters.updateBlockState(block, BLOCK_STATE_VERSION_NO_REVISION);
-                }*/
+                if (ver < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
+                    block = BlockStateUpdaters.updateBlockState(block, NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION);
+                }
             }
             BlockState blockState = getBlockStateHelper(block);
             if (blockState != null) {

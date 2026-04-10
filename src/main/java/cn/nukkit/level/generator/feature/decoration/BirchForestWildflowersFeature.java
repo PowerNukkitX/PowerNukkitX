@@ -35,10 +35,10 @@ public class BirchForestWildflowersFeature extends GenerateFeature {
         this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                if(random.nextInt(10) < 1) {
+                if (random.nextInt(10) < 1) {
                     int y = chunk.getHeightMap(x, z) + 1;
-                    List<String> tags = Registries.BIOME.get(chunk.getBiomeId(x, y, z)).second().getTags();
-                    if(tags.contains(BiomeTags.FOREST) && tags.contains(BiomeTags.BIRCH)) {
+                    List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(x, y, z));
+                    if (tags.contains(BiomeTags.FOREST) && tags.contains(BiomeTags.BIRCH)) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
                         if (support.hasTag(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {

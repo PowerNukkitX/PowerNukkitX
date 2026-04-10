@@ -26,7 +26,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -124,7 +123,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                     INTERNAL_DIFF_ITEM.put(i, item.clone());
                     item.setBlockUnsafe(null);
                 }
-                ITEM_DATA.add(new CreativeItemData(item.toNetwork(), item.getNetId(), groupIndex));
+                ITEM_DATA.add(new CreativeItemData(item.toNetwork(), i, groupIndex));
                 register(i, item);
             }
         } catch (IOException e) {
@@ -279,7 +278,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().equals(value))) {
             return;
         }
-        ITEM_DATA.add(new CreativeItemData(value.toNetwork(), value.getNetId(), groupIndex));
+        ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1, groupIndex));
     }
 
     @Override
@@ -288,7 +287,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
-            ITEM_DATA.add(new CreativeItemData(value.toNetwork(), value.getNetId(), CreativeItemRegistry.LAST_ITEMS_INDEX));
+            ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1, CreativeItemRegistry.LAST_ITEMS_INDEX));
         }
     }
 
@@ -548,7 +547,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             String id = in.readUTF();
 
             if (id.isEmpty()) {
-                ITEM_DATA.add(new CreativeItemData(Item.AIR.toNetwork(), Item.AIR.getNetId(), groupId));
+                ITEM_DATA.add(new CreativeItemData(Item.AIR.toNetwork(), index, groupId));
                 MAP.put(index, Item.AIR);
                 continue;
             }
@@ -578,7 +577,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 item.setBlockUnsafe(null);
             }
 
-            ITEM_DATA.add(new CreativeItemData(item.toNetwork(), item.getNetId(), groupId));
+            ITEM_DATA.add(new CreativeItemData(item.toNetwork(), index, groupId));
             MAP.put(index, item);
         }
     }

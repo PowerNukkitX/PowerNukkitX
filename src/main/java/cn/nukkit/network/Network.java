@@ -149,7 +149,6 @@ public class Network implements NetworkInterface {
                             session.setCodec(NetworkConstants.CODEC);
                             session.setPacketHandler(new NetworkPacketHandler(server, new PlayerSessionHolder(session)));
                             Network.this.sessionMap.put(address, session);
-                            System.out.println("put to map: " + Network.this.sessionMap.size());
                         }
                     }
                 })

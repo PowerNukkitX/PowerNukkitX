@@ -1,39 +1,41 @@
 package cn.nukkit.network.process;
 
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.entity.data.property.EntityProperty;
+import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.network.protocol.types.TrimData;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.registry.VoxelShapeRegistry;
+import cn.nukkit.utils.DefaultCameraAimAssistPresets;
+import cn.nukkit.utils.DefaultCameraPresets;
 import cn.nukkit.utils.RuntimeBlockDefinitionRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
+import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPresetPacketOperation;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
-import org.cloudburstmc.protocol.bedrock.packet.AvailableActorIdentifiersPacket;
-import org.cloudburstmc.protocol.bedrock.packet.DisconnectPacket;
-import org.cloudburstmc.protocol.bedrock.packet.ItemRegistryPacket;
-import org.cloudburstmc.protocol.bedrock.packet.PlayStatusPacket;
-import org.cloudburstmc.protocol.bedrock.packet.ResourcePacksInfoPacket;
-import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
-import org.cloudburstmc.protocol.bedrock.packet.SyncActorPropertyPacket;
-import org.cloudburstmc.protocol.bedrock.packet.TrimDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -44,11 +46,14 @@ import java.util.UUID;
  * @author Kaooot
  */
 @Data
+@Slf4j
 public class PlayerSessionHolder {
 
     private final BedrockServerSession session;
     private SessionState state = SessionState.INITIAL;
     private Player player;
+    private Player.PlayerInfo playerInfo;
+    private PlayerHandle playerHandle;
 
     public void sendPlayStatus(PlayStatus status) {
         final PlayStatusPacket packet = new PlayStatusPacket();
@@ -86,15 +91,16 @@ public class PlayerSessionHolder {
         );
         infoPacket.setResourcePackRequired(server.getForceResources());
         infoPacket.setWorldTemplateUUID(new UUID(0L, 0L));
-        infoPacket.setWorldTemplateVersion("");
+        infoPacket.setWorldTemplateVersion("0.0.0");
         infoPacket.setForceDisableVibrantVisuals(!server.allowVibrantVisuals());
         this.session.sendPacketImmediately(infoPacket);
     }
 
     public void sendBeforeSpawn(Server server) {
+        this.doPlayerCreation(this.playerInfo);
         this.setState(SessionState.BEFORE_SPAWN);
         this.session.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
-        this.sendStartGame();
+        this.sendStartGame(server);
         this.sendItemRegistry();
 
         this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
@@ -134,12 +140,26 @@ public class PlayerSessionHolder {
 
         server.addOnlinePlayer(this.player);
         server.onPlayerCompleteLoginSequence(this.player);
+        this.player.setImmobile(false);
+
+        final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
+        playerFogPacket.getFogStack().addAll(this.player.getFogStack());
+        this.session.sendPacketImmediately(playerFogPacket);
+
+        final CameraPresetsPacket cameraPresetsPacket = new CameraPresetsPacket();
+        cameraPresetsPacket.getCameraPresets().addAll(DefaultCameraPresets.getAll());
+        this.session.sendPacketImmediately(cameraPresetsPacket);
+
+        final CameraAimAssistPresetsPacket cameraAimAssistPresetsPacket = new CameraAimAssistPresetsPacket();
+        cameraAimAssistPresetsPacket.getCategoryDefinitions().addAll(DefaultCameraAimAssistPresets.getAllCategories());
+        cameraAimAssistPresetsPacket.getPresets().addAll(DefaultCameraAimAssistPresets.getAllPresets());
+        cameraAimAssistPresetsPacket.setOperation(CameraAimAssistPresetPacketOperation.SET);
+        this.session.sendPacketImmediately(cameraAimAssistPresetsPacket);
 
         this.player.doFirstSpawn();
     }
 
-    private void sendStartGame() {
-        Server server = this.player.getServer();
+    private void sendStartGame(Server server) {
         final StartGamePacket packet = new StartGamePacket();
         packet.setEntityID(this.player.getId());
         packet.setRuntimeID(this.player.getId());
@@ -155,7 +175,7 @@ public class PlayerSessionHolder {
         packet.getSettings().getSpawnSettings().setDimension(Dimension.from(this.player.level.getDimension()));
         packet.getSettings().getSpawnSettings().setType(SpawnBiomeType.DEFAULT);
         packet.getSettings().getSpawnSettings().setUserDefinedBiomeName("plains");
-        packet.getSettings().setGeneratorType(GeneratorType.UNDEFINED);
+        packet.getSettings().setGeneratorType(GeneratorType.OVERWORLD);
         packet.getSettings().setGameType(GameType.from(Player.toNetworkGamemode(server.getDefaultGamemode())));
         packet.getSettings().setHardcoreModeEnabled(false);
         packet.getSettings().setGameDifficulty(Difficulty.from(server.getDifficulty()));
@@ -171,7 +191,7 @@ public class PlayerSessionHolder {
         packet.getSettings().setRainLevel(0f);
         packet.getSettings().setLightningLevel(0f);
         packet.getSettings().setHasConfirmedPlatformLockedContent(false);
-        packet.getSettings().setWasMultiplayerIntendedToBeEnabled(false);
+        packet.getSettings().setWasMultiplayerIntendedToBeEnabled(true);
         packet.getSettings().setWasLANBroadcastingIntendedToBeEnabled(false);
         packet.getSettings().setXboxLiveBroadcastSetting(GamePublishSetting.PUBLIC);
         packet.getSettings().setPlatformBroadcastSetting(GamePublishSetting.PUBLIC);
@@ -179,6 +199,7 @@ public class PlayerSessionHolder {
         packet.getSettings().setTexturePacksRequired(server.getForceResources());
         packet.getSettings().getRuleData().getRulesList().addAll(this.player.getLevel().getGameRules().toNetwork());
         packet.getSettings().getExperiments().addAll(server.getExperiments());
+        packet.getSettings().setWereAnyExperimentsEverToggled(!server.getExperiments().isEmpty());
         packet.getSettings().setHasBonusChestEnabled(false);
         packet.getSettings().setStartWithMapEnabled(false);
         packet.getSettings().setPlayerPermissions(this.player.isOp() ? PlayerPermissionLevel.OPERATOR : PlayerPermissionLevel.MEMBER);
@@ -186,7 +207,7 @@ public class PlayerSessionHolder {
         packet.getSettings().setHasLockedBehaviorPack(false);
         packet.getSettings().setHasLockedResourcePack(false);
         packet.getSettings().setFromLockedWorldTemplate(false);
-        packet.getSettings().setUseMsaGamertagsOnly(true);
+        packet.getSettings().setUseMsaGamertagsOnly(false);
         packet.getSettings().setFromWorldTemplate(false);
         packet.getSettings().setWorldTemplateOptionLocked(false);
         packet.getSettings().setOnlySpawnV1Villagers(false);
@@ -208,7 +229,7 @@ public class PlayerSessionHolder {
         packet.setTrial(false);
         packet.setMovementSettings(new SyncedPlayerMovementSettings(
                         ServerAuthMovementMode.SERVER_AUTHORITATIVE_V3,
-                        40,
+                        0,
                         true
                 )
         );
@@ -243,13 +264,14 @@ public class PlayerSessionHolder {
             } else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
                 tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt().toBuilder();
             }
+            final NbtMap components = tag.build();
             itemDefinitions.add(
                     new SimpleItemDefinition(
                             data.identifier(),
                             data.runtimeId(),
                             ItemVersion.from(data.version()),
-                            data.componentBased(),
-                            tag.build()
+                            !components.isEmpty(),
+                            components
                     )
             );
         }
@@ -261,5 +283,33 @@ public class PlayerSessionHolder {
         this.session.getPeer().getCodecHelper().setItemDefinitions(itemDefinitionRegistry);
 
         this.player.dataPacketImmediately(itemRegistryPacket);
+    }
+
+    public void doPlayerCreation(Player.PlayerInfo playerInfo) {
+        log.debug("Creating player");
+
+        this.player = this.createPlayer(playerInfo);
+        if (this.player == null) {
+            this.session.close("Failed to create player");
+            return;
+        }
+        this.playerHandle = new PlayerHandle(this.player);
+        Server.getInstance().onPlayerLogin((InetSocketAddress) this.session.getSocketAddress(), player);
+        this.player.processLogin();
+        // The reason why teleport player to their position is for gracefully client-side spawn,
+        // although we need some hacks, It is definitely a fairly worthy trade.
+        this.player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn
+    }
+
+    private @Nullable Player createPlayer(Player.PlayerInfo playerInfo) {
+        try {
+            PlayerCreationEvent event = new PlayerCreationEvent(Player.class);
+            Server.getInstance().getPluginManager().callEvent(event);
+            Constructor<? extends Player> constructor = event.getPlayerClass().getConstructor(BedrockServerSession.class, Player.PlayerInfo.class);
+            return constructor.newInstance(this.session, playerInfo);
+        } catch (Exception e) {
+            log.error("Failed to create player", e);
+        }
+        return null;
     }
 }

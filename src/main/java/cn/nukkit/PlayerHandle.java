@@ -192,11 +192,11 @@ public final class PlayerHandle {
         return player.formWindows;
     }
 
-    public BiMap<Inventory, Integer> getWindows() {
+    public BiMap<Inventory, Byte> getWindows() {
         return player.windows;
     }
 
-    public BiMap<Integer, Inventory> getWindowIndex() {
+    public BiMap<Byte, Inventory> getWindowIndex() {
         return player.windowIndex;
     }
 
@@ -298,10 +298,6 @@ public final class PlayerHandle {
 
     public void initEntity() {
         player.initEntity();
-    }
-
-    public void doFirstSpawn() {
-        player.doFirstSpawn();
     }
 
     public void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {

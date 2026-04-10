@@ -75,6 +75,7 @@ import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -3996,8 +3997,8 @@ public class Level implements Metadatable {
                             levelChunkPacket.setChunkZ(z);
                             levelChunkPacket.setDimension(Dimension.from(this.getDimensionData().getDimensionId()));
                             levelChunkPacket.setSubChunksCount(pair.second());
-                            levelChunkPacket.setSerializedChunkData(pair.first());
-                            //player.sendChunk(x, z, levelChunkPacket);
+                            levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/pair.first());
+                            player.sendChunk(x, z, levelChunkPacket);
                             //player.refreshBlockEntity(chunk);
                         }
                     }

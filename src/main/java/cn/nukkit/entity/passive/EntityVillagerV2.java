@@ -965,8 +965,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         TAIGA;
 
         public static Clothing getClothing(int biomeId) {
-            BiomeDefinitionData definition = Registries.BIOME.get(biomeId).second();
-            List<String> tags = definition.getTags();
+            List<String> tags = Registries.BIOME.getTags(biomeId);
             if (tags.contains("desert") || tags.contains("mesa")) return DESERT;
             if (tags.contains("jungle")) return JUNGLE;
             if (tags.contains("savanna")) return SAVANNA;

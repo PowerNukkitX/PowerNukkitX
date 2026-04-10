@@ -39,14 +39,14 @@ public class NormalChunkFeatureStage extends GenerateStage {
                     biomes.add(chunk.getSection(i >> 4).getBiomeId(x, i & 0x0f, z));
                 }
                 for (int biomeId : biomes) {
-                    Pair<String, BiomeDefinitionData> definition = Registries.BIOME.get(biomeId);
+                    Pair<Short, BiomeDefinitionData> definition = Registries.BIOME.get(biomeId);
                     BiomeDefinitionData biome = definition.second();
                     BiomeDefinitionChunkGenData chunkGenData = biome.getChunkGenData();
                     if (chunkGenData != null) {
                         List<BiomeConsolidatedFeatureData> consolidatedFeaturesData = chunkGenData.getConsolidatedFeatures();
                         if (consolidatedFeaturesData != null) {
                             for (BiomeConsolidatedFeatureData consolidatedFeatureData : consolidatedFeaturesData) {
-                                if (featureIdentifiers.add(consolidatedFeatureData.getIdentifier())) {
+                                if (featureIdentifiers.add(Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.getIdentifier()))) {
                                     features.put(consolidatedFeatureData, consolidatedFeatureData.getScatter().getEvalOrder().ordinal());
                                 }
                             }
@@ -61,8 +61,8 @@ public class NormalChunkFeatureStage extends GenerateStage {
         }
         for (var entry : features.object2IntEntrySet().stream().sorted(Map.Entry.comparingByValue()).toList()) {
             var consolidatedFeatureData = entry.getKey();
-            String featureIdentifier = consolidatedFeatureData.getIdentifier(); //Usually more specific. Like contains biome and type.
-            String featureName = consolidatedFeatureData.getFeature(); //Usually globally usable. But not always descriptive enough to use (e.g. ores)
+            String featureIdentifier = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.getIdentifier()); //Usually more specific. Like contains biome and type.
+            String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.getFeature()); //Usually globally usable. But not always descriptive enough to use (e.g. ores)
             for (String key : new String[]{featureIdentifier, featureName}) {
                 if (Registries.GENERATE_FEATURE.has(key)) {
                     try {

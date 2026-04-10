@@ -319,8 +319,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     private @Nullable Set<String> getSpawnBiomeTags() {
         if (this.level == null) return null;
         int biomeId = this.level.getBiomeId((int) this.x, (int) this.y, (int) this.z);
-        BiomeDefinitionData def = Registries.BIOME.get(biomeId).second();
-        return def == null ? null : new ObjectOpenHashSet<>(def.getTags());
+        return new ObjectOpenHashSet<>(Registries.BIOME.getTags(biomeId));
     }
 
     private boolean hasSpawnBiomeTag(String tag) {

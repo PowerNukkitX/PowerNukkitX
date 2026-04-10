@@ -72,6 +72,7 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                 );
                 resourcePackStack.setBaseGameVersion("*");
                 resourcePackStack.getExperiments().addAll(server.getExperiments());
+                resourcePackStack.setWereAnyExperimentsEverToggled(!server.getExperiments().isEmpty());
 
                 holder.getSession().sendPacketImmediately(resourcePackStack);
             }

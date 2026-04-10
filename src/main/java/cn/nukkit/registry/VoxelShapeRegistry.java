@@ -49,6 +49,8 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.S
 
             register("minecraft:empty", EMPTY_SHAPE);
             register("minecraft:unit_cube", unitCubeShape);
+
+            rebuildPacket();
         } catch (RegisterException e) {
             e.printStackTrace();
         }
