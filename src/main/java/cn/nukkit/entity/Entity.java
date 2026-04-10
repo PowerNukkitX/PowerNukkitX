@@ -1016,7 +1016,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         final ActorDataMap map = new ActorDataMap();
         for (ActorDataType<?> type : types) {
             if (this.entityDataMap.containsKey(type)) {
-                map.put(type, map.get(type));
+                map.put(type, this.entityDataMap.get(type));
             }
         }
         return map;
