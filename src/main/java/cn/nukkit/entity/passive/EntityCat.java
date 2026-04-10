@@ -58,12 +58,12 @@ import java.util.Set;
 
 public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCanSit, EntityCanAttack, EntityVariant, EntityColor {
     private static final String[] SOUND_VARIANTS = {
-        "default",
-        "royal"
+            "default",
+            "royal"
     };
 
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
+            new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
     @Override
@@ -113,8 +113,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         return new TameableComponent(
                 0.33f,
                 Set.of(
-                    ItemID.COD,
-                    ItemID.SALMON
+                        ItemID.COD,
+                        ItemID.SALMON
                 )
         );
     }
@@ -144,11 +144,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     @Override
     public void initEntity() {
         super.initEntity();
-        /* TODO protocol if (this.isBaby()) {
-            this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT_BABY.getId());
-        } else {
-            this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT.getId());
-        }*/
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
         if (!hasVariant()) {
             this.setVariant(randomVariant());
         }
@@ -231,11 +227,11 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
                 null,
                 null,
                 Set.of(
-                    ItemID.COD,
-                    ItemID.SALMON
+                        ItemID.COD,
+                        ItemID.SALMON
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.CAT, EntityID.CAT)
+                        new BreedableComponent.BreedsWith(EntityID.CAT, EntityID.CAT)
                 ),
                 null,
                 null,
@@ -254,8 +250,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
-                    new HealableComponent.Item(ItemID.COD, 2),
-                    new HealableComponent.Item(ItemID.SALMON, 2)
+                        new HealableComponent.Item(ItemID.COD, 2),
+                        new HealableComponent.Item(ItemID.SALMON, 2)
                 )
         );
     }
@@ -266,8 +262,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(ItemID.COD),
-                    new AgeableComponent.FeedItem(ItemID.SALMON)
+                        new AgeableComponent.FeedItem(ItemID.COD),
+                        new AgeableComponent.FeedItem(ItemID.SALMON)
                 ),
                 null,
                 null,
@@ -281,8 +277,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.COD,
-        ItemID.SALMON
+            ItemID.COD,
+            ItemID.SALMON
     );
 
     @Override
@@ -290,138 +286,138 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior( // Untamed cats will seek out and attack rabbits and baby turtles within 15 blocks
-                            entity -> {
-                                if (this.hasOwner(false)) return false;
-                                var storage = getMemoryStorage();
-                                if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
-                                Entity attackTarget = null;
-                                if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET)
-                                        && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
-                                    attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
-                                }
-                                storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
-                                return false;
-                            },
-                            entity -> true,
-                        20
-                    ),
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        2, 1, 1200
-                    ),
-                    new Behavior( // Refresh random playback sound effects. The sounds a cat makes when it is tamed.
-                            (entity) -> {
-                            
-                            if (this.hasOwner(false))
-                                this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
-                            else
-                                this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
-                            return false;
-                            },
-                            (entity) -> true,
-                        1, 1, 20
-                    )
+                        new Behavior( // Untamed cats will seek out and attack rabbits and baby turtles within 15 blocks
+                                entity -> {
+                                    if (this.hasOwner(false)) return false;
+                                    var storage = getMemoryStorage();
+                                    if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
+                                    Entity attackTarget = null;
+                                    if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET)
+                                            && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                                        attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
+                                    }
+                                    storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                                    return false;
+                                },
+                                entity -> true,
+                                20
+                        ),
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                2, 1, 1200
+                        ),
+                        new Behavior( // Refresh random playback sound effects. The sounds a cat makes when it is tamed.
+                                (entity) -> {
+
+                                    if (this.hasOwner(false))
+                                        this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
+                                    else
+                                        this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
+                                    return false;
+                                },
+                                (entity) -> true,
+                                1, 1, 20
+                        )
                 ),
                 Set.of(
-                    new Behavior( // Sleep Priority 7
-                        new SleepOnOwnerBedExecutor(),
-                            entity -> {
-                                if (this.isSitting()) return false; // sitting should block sleeping pathing
-                                var player = this.getOwner();
-                                if (player == null) return false;
-                                if (player.getLevel().getId() != this.level.getId()) return false;
-                                return player.isSleeping();
-                            },
-                            7
-                    ),
-                    // Attack the target with the highest aggro. Priority 6
-                    new Behavior(
-                        new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10),
-                            all(
-                                e -> !this.isSitting(),
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
-                            ),
-                        6
-                    ),
-                    // Cat breeding priority 5
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.35f),
-                            all(
-                                e -> !this.isSitting(),
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        5
-                    ),
-                    // Cat moves toward owner (Priority 4)
-                    new Behavior(
-                        new EntityMoveToOwnerExecutor(0.35f, true, 15),
-                            entity -> {
-                                if (this.isSitting()) return false;
-                                if (this.hasOwner()) {
-                                    var player = getOwner();
-                                    if (!player.isOnGround()) return false;
-                                    var distanceSquared = entity.distanceSquared(player);
-                                    return distanceSquared >= 100;
-                                } else return false;
-                            },
-                        4
-                    ),
-                    new Behavior(
-                        new TemptExecutor(0.5f, false, false, true, 16, 2.0f, new TemptExecutor.TemptSound("tempt", 0.0f, 100.0f), TEMPT_ITEMS),
-                            all(
-                                e -> !e.isSitting(),
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        3, 1
-                    ),
-                    // The cat moves randomly around its owner. Priority 3
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.1f, 4, 100, false, -1, true, 20),
-                            all(
-                                e -> !this.isSitting(),
-                                e -> this.hasOwner() && this.getOwner().distanceSquared(this) < 100
-                            ),
-                        2
-                    ),
-                    // Cat moves to random target point. Priority 1
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20),
-                            all(
-                                e -> !this.isSitting(),
-                                new ProbabilityEvaluator(5, 10)
-                            ),
-                        1, 1, 25
-                    ),
-                    // The cat looks at the target player. Priority 1.
-                    // NOTE: do NOT gate with sitting for the same reason as feeding look.
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
-                        1, 1, 25
-                    )
+                        new Behavior( // Sleep Priority 7
+                                new SleepOnOwnerBedExecutor(),
+                                entity -> {
+                                    if (this.isSitting()) return false; // sitting should block sleeping pathing
+                                    var player = this.getOwner();
+                                    if (player == null) return false;
+                                    if (player.getLevel().getId() != this.level.getId()) return false;
+                                    return player.isSleeping();
+                                },
+                                7
+                        ),
+                        // Attack the target with the highest aggro. Priority 6
+                        new Behavior(
+                                new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10),
+                                all(
+                                        e -> !this.isSitting(),
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                                ),
+                                6
+                        ),
+                        // Cat breeding priority 5
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.35f),
+                                all(
+                                        e -> !this.isSitting(),
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                5
+                        ),
+                        // Cat moves toward owner (Priority 4)
+                        new Behavior(
+                                new EntityMoveToOwnerExecutor(0.35f, true, 15),
+                                entity -> {
+                                    if (this.isSitting()) return false;
+                                    if (this.hasOwner()) {
+                                        var player = getOwner();
+                                        if (!player.isOnGround()) return false;
+                                        var distanceSquared = entity.distanceSquared(player);
+                                        return distanceSquared >= 100;
+                                    } else return false;
+                                },
+                                4
+                        ),
+                        new Behavior(
+                                new TemptExecutor(0.5f, false, false, true, 16, 2.0f, new TemptExecutor.TemptSound("tempt", 0.0f, 100.0f), TEMPT_ITEMS),
+                                all(
+                                        e -> !e.isSitting(),
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                3, 1
+                        ),
+                        // The cat moves randomly around its owner. Priority 3
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.1f, 4, 100, false, -1, true, 20),
+                                all(
+                                        e -> !this.isSitting(),
+                                        e -> this.hasOwner() && this.getOwner().distanceSquared(this) < 100
+                                ),
+                                2
+                        ),
+                        // Cat moves to random target point. Priority 1
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20),
+                                all(
+                                        e -> !this.isSitting(),
+                                        new ProbabilityEvaluator(5, 10)
+                                ),
+                                1, 1, 25
+                        ),
+                        // The cat looks at the target player. Priority 1.
+                        // NOTE: do NOT gate with sitting for the same reason as feeding look.
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
+                                1, 1, 25
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20),
-                    new NearestTargetEntitySensor<>(0, 15, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
+                        new NearestPlayerSensor(8, 0, 20),
+                        new NearestTargetEntitySensor<>(0, 15, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this
