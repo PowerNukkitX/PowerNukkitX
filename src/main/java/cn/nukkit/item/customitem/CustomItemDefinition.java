@@ -206,7 +206,8 @@ public record CustomItemDefinition(String identifier, NbtMap nbt) implements Blo
             tagsList.add(tag);
             mcTags = mcTags.toBuilder().putList("tags", NbtType.STRING, tagsList).build();
             components = components.toBuilder().putCompound("minecraft:tags", mcTags).build();
-            // TODO protocol set components
+
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
         }
 
         private static String autoToolTagForSlot(String slotId) {
