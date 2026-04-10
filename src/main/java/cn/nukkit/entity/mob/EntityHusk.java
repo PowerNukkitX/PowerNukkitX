@@ -88,11 +88,7 @@ public class EntityHusk extends EntityZombie {
         super.initEntity();
         this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8);
         this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16);
-        /* TODO protocol check ids
-        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT.getId());
-        if (this.isBaby()) {
-            this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT_BABY.getId());
-        }*/
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
     }
 
     @Override
