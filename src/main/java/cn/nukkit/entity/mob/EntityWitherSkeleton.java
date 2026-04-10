@@ -30,6 +30,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,7 +109,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
             this.setItemInHand(Item.get(Item.STONE_SWORD));
         }
         // Set the Withered Skeleton to play an idle sound when it's idle.
-        // TODO protocol check id this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, SoundEvent.AMBIENT.getId());
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
     }
 
     @Override
