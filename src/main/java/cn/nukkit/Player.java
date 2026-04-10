@@ -3143,6 +3143,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         final TextPacket packet = new TextPacket();
         packet.setMessageType(type);
+        packet.setLocalize(true);
         packet.setSendersXUID("");
         packet.setBody(body);
 
@@ -3164,7 +3165,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void sendChat(String source, String message) {
         final AuthorAndMessage body = new AuthorAndMessage();
         body.setPlayerName(source);
-        body.setMessage(message);
+        body.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
         pk.setMessageType(TextPacketType.CHAT);
@@ -3188,7 +3189,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     // TODO: Support Translation Parameters
     public void sendPopup(String message, String subtitle) {
         final MessageOnly messageOnly = new MessageOnly();
-        messageOnly.setMessage(message);
+        messageOnly.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
         pk.setMessageType(TextPacketType.POPUP);
@@ -3204,7 +3205,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public void sendTip(String message) {
         final MessageOnly messageOnly = new MessageOnly();
-        messageOnly.setMessage(message);
+        messageOnly.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
         pk.setMessageType(TextPacketType.TIP);
@@ -5269,7 +5270,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     // TODO: Support Translation Parameters
     public void sendPopupJukebox(String message) {
         final MessageOnly body = new MessageOnly();
-        body.setMessage(message);
+        body.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
         pk.setMessageType(TextPacketType.JUKEBOX_POPUP);
@@ -5281,7 +5282,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void sendSystem(String message) {
         final MessageOnly body = new MessageOnly();
-        body.setMessage(message);
+        body.setMessage(this.server.getLanguage().tr(message));
 
         final TextPacket pk = new TextPacket();
         pk.setMessageType(TextPacketType.SYSTEM_MESSAGE);
