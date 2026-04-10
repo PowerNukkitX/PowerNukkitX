@@ -3,9 +3,11 @@ package cn.nukkit.command.data;
 import cn.nukkit.Server;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.DefaultCameraPresets;
 import cn.nukkit.utils.Identifier;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.cloudburstmc.protocol.bedrock.data.camera.CameraPreset;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumConstraint;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumData;
 import org.cloudburstmc.protocol.bedrock.data.command.SoftEnumUpdateType;
@@ -67,7 +69,7 @@ public class CommandEnum {
 
     public static final CommandEnum SCOREBOARD_OBJECTIVES = new CommandEnum("ScoreboardObjectives", () -> Server.getInstance().getScoreboardManager().getScoreboards().keySet());
 
-    public static final CommandEnum CAMERA_PRESETS = new CommandEnum("preset", () -> /* TODO protocol CameraPreset.getPresets()*/Collections.emptySet());
+    public static final CommandEnum CAMERA_PRESETS = new CommandEnum("preset", () -> DefaultCameraPresets.getAll().stream().map(CameraPreset::getName).toList());
 
     public static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0", "run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
 
