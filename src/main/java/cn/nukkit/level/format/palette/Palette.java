@@ -267,7 +267,7 @@ public class Palette<V> {
                     // this way the only possibility is that the block hash is not represented in block_palette.nbt
                     if (resultingBlockState == null || Objects.equals(resultingBlockState, unknownState)) {
                         resultingBlockState = unknownState;
-                        log.warn("missing block palette, blockHash: {}, blockId {}", hash, oldBlockNbt.getString("name"));
+                        log.warn("Block State updating failed, blockHash: {}, oldBlockState: {}, newBlockState: {}", hash, oldBlockNbt, newBlockNbt);
                     }
                 }
             }
