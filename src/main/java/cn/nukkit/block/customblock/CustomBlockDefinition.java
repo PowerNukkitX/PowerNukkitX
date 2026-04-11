@@ -482,7 +482,7 @@ public record CustomBlockDefinition(String identifier, NbtMap nbt, @Nullable Blo
             if (!this.nbt.containsKey("permutations")) {
                 this.nbt = this.nbt.toBuilder().putList("permutations", NbtType.COMPOUND, new ObjectArrayList<>()).build();
             }
-            List<NbtMap> permutations = this.nbt.getList("permutations", NbtType.COMPOUND);
+            List<NbtMap> permutations = new ObjectArrayList<>(this.nbt.getList("permutations", NbtType.COMPOUND));
             permutations.add(permutation.toCompoundTag());
             this.nbt = this.nbt.toBuilder().putList("permutations", NbtType.COMPOUND, permutations).build();
             return this;
@@ -519,7 +519,7 @@ public record CustomBlockDefinition(String identifier, NbtMap nbt, @Nullable Blo
             NbtMap collision = components.getCompound("minecraft:collision_box");
             if (collision.isEmpty()) collision = collision.toBuilder().putBoolean("enabled", true).build();
 
-            List<NbtMap> boxes = collision.getList("boxes", NbtType.COMPOUND);
+            List<NbtMap> boxes = new ObjectArrayList<>(collision.getList("boxes", NbtType.COMPOUND));
             boxes.add(NbtMap.builder()
                     .putFloat("minX", minX)
                     .putFloat("minY", minY)

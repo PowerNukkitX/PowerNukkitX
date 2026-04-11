@@ -31,6 +31,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -369,9 +370,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                     .putInt("HomeHiveZ", homeHiveZ)
                     .build();
         } else {
-            this.namedTag.remove("HomeHiveX");
-            this.namedTag.remove("HomeHiveY");
-            this.namedTag.remove("HomeHiveZ");
+            this.namedTag = NbtHelper.remove(this.namedTag, "HomeHiveX", "HomeHiveY", "HomeHiveZ");
         }
     }
 

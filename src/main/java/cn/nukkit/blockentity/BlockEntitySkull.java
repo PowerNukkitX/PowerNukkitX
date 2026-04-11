@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockHead;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -100,7 +101,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 .putBoolean("MouthMoving", this.mouthMoving)
                 .putInt("MouthTickCount", mouthTickCount)
                 .build();
-        this.namedTag.remove("Creator");
+        this.namedTag = NbtHelper.remove(this.namedTag, "Creator");
     }
 
     @Override

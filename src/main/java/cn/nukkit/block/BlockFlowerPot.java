@@ -8,7 +8,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -113,7 +115,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     public void removeFlower() {
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        blockEntity.namedTag.remove("PlantBlock");
+        blockEntity.namedTag = NbtHelper.remove(blockEntity.namedTag, "PlantBlock");
 
         setPropertyValue(CommonBlockProperties.UPDATE_BIT, false);
         getLevel().setBlock(this, this, true);

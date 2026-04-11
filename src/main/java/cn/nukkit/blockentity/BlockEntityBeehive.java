@@ -11,6 +11,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,7 +78,7 @@ public class BlockEntityBeehive extends BlockEntity {
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
-            this.namedTag.remove("HoneyLevel");
+            this.namedTag = NbtHelper.remove(this.namedTag, "HoneyLevel");
         }
     }
 
@@ -99,7 +100,7 @@ public class BlockEntityBeehive extends BlockEntity {
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
-            this.namedTag.remove("HoneyLevel");
+            this.namedTag = NbtHelper.remove(this.namedTag, "HoneyLevel");
         }
     }
 

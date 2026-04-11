@@ -21,6 +21,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
@@ -260,7 +261,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    compoundTag.remove("customColor");
+                    compoundTag = NbtHelper.remove(compoundTag, "customColor");
                     item.setCompoundTag(compoundTag);
                     player.getInventory().setItemInHand(item);
 

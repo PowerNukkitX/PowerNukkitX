@@ -26,6 +26,7 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.JSONUtils;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.RuntimeBlockDefinition;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.annotations.SerializedName;
@@ -252,8 +253,7 @@ public abstract class Item implements Cloneable, ItemID {
         NbtMap tag = this.getNamedTag();
 
         if (tag.containsKey("BlockEntityTag") && tag.get("BlockEntityTag") instanceof NbtMap) {
-            tag.remove("BlockEntityTag");
-            this.setNamedTag(tag);
+            this.setNamedTag(NbtHelper.remove(tag, "BlockEntityTag"));
         }
 
         return this;
@@ -467,14 +467,14 @@ public abstract class Item implements Cloneable, ItemID {
             ench = new ObjectArrayList<>();
             tag = tag.toBuilder().putList("ench", NbtType.COMPOUND, ench).build();
         } else {
-            ench = tag.getList("ench", NbtType.COMPOUND);
+            ench = new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND));
         }
         List<NbtMap> custom_ench;
         if (!tag.containsKey("custom_ench")) {
             custom_ench = new ObjectArrayList<>();
             tag = tag.toBuilder().putList("custom_ench", NbtType.COMPOUND, custom_ench).build();
         } else {
-            custom_ench = tag.getList("custom_ench", NbtType.COMPOUND);
+            custom_ench = new ObjectArrayList<>(tag.getList("custom_ench", NbtType.COMPOUND));
         }
 
         for (Enchantment enchantment : enchantments) {
@@ -557,7 +557,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
         List<Enchantment> enchantments = new ArrayList<>();
 
-        List<NbtMap> ench = this.getNamedTag().getList("ench", NbtType.COMPOUND);
+        List<NbtMap> ench = new ObjectArrayList<>(this.getNamedTag().getList("ench", NbtType.COMPOUND));
         for (NbtMap entry : ench) {
             Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
             if (e != null) {
@@ -566,7 +566,7 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
         //custom ench
-        List<NbtMap> custom_ench = this.getNamedTag().getList("custom_ench", NbtType.COMPOUND);
+        List<NbtMap> custom_ench = new ObjectArrayList<>(this.getNamedTag().getList("custom_ench", NbtType.COMPOUND));
         for (NbtMap entry : custom_ench) {
             Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
             if (e != null) {
@@ -604,7 +604,7 @@ public abstract class Item implements Cloneable, ItemID {
             return;
         }
 
-        List<NbtMap> ench = tag.getList("ench", NbtType.COMPOUND);
+        List<NbtMap> ench = new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND));
         for (int i = ench.size() - 1; i >= 0; i--) {
             NbtMap entry = ench.get(i);
             if (entry.getShort("id") == (short) id) {
@@ -612,8 +612,10 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
 
-        if (ench.size() == 0) {
-            tag.remove("ench");
+        if (ench.isEmpty()) {
+            NbtMapBuilder builder = tag.toBuilder();
+            builder.remove("ench");
+            tag = builder.build();
         }
 
         this.setNamedTag(tag);
@@ -641,7 +643,7 @@ public abstract class Item implements Cloneable, ItemID {
             return;
         }
 
-        List<NbtMap> custom = tag.getList("custom_ench", NbtType.COMPOUND);
+        List<NbtMap> custom = new ObjectArrayList<>(tag.getList("custom_ench", NbtType.COMPOUND));
         boolean removed = false;
 
         for (int i = custom.size() - 1; i >= 0; i--) {
@@ -653,8 +655,8 @@ public abstract class Item implements Cloneable, ItemID {
         }
 
         if (removed) {
-            if (custom.size() == 0) {
-                tag.remove("custom_ench");
+            if (custom.isEmpty()) {
+                tag = NbtHelper.remove(tag, "custom_ench");
             } else {
                 String customName = setCustomEnchantDisplay(custom);
                 if (tag.containsKey("display") && tag.get("display") instanceof NbtMap displayTag) {
@@ -678,10 +680,10 @@ public abstract class Item implements Cloneable, ItemID {
     public void removeAllEnchantments() {
         if (!this.hasCompoundTag()) return;
 
-        NbtMap tag = this.getNamedTag();
-        tag.remove("ench");
-        tag.remove("custom_ench");
-        this.setNamedTag(tag);
+        NbtMapBuilder builder = this.getNamedTag().toBuilder();
+        builder.remove("ench");
+        builder.remove("custom_ench");
+        this.setNamedTag(builder.build());
     }
 
     public int getRepairCost() {
@@ -699,9 +701,9 @@ public abstract class Item implements Cloneable, ItemID {
 
     public Item setRepairCost(int cost) {
         if (cost <= 0 && this.hasCompoundTag()) {
-            final NbtMap nbtMap = this.getNamedTag();
-            nbtMap.remove("RepairCost");
-            return this.setNamedTag(nbtMap);
+            final NbtMapBuilder builder = this.getNamedTag().toBuilder();
+            builder.remove("RepairCost");
+            return this.setNamedTag(builder.build());
         }
 
         NbtMap tag;
@@ -789,10 +791,10 @@ public abstract class Item implements Cloneable, ItemID {
 
         NbtMap tag = this.getNamedTag();
 
-        if (tag.containsKey("display") && tag.get("display") instanceof NbtMap) {
-            tag.getCompound("display").remove("Name");
-            if (tag.getCompound("display").isEmpty()) {
-                tag.remove("display");
+        if (tag.containsKey("display") && tag.get("display") instanceof NbtMap display) {
+            display = NbtHelper.remove(display, "Name");
+            if (display.isEmpty()) {
+                tag = NbtHelper.remove(tag, "display");
             }
 
             this.setNamedTag(tag);
@@ -1770,13 +1772,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setItemLockMode(ItemLockMode mode) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMapBuilder builder = getOrCreateNamedTag().toBuilder();
         if (mode == ItemLockMode.NONE) {
-            tag.remove("minecraft:item_lock");
+            builder.remove("minecraft:item_lock");
         } else {
-            tag = tag.toBuilder().putByte("minecraft:item_lock", (byte) mode.ordinal()).build();
+            builder = builder.putByte("minecraft:item_lock", (byte) mode.ordinal());
         }
-        this.setCompoundTag(tag);
+        this.setCompoundTag(builder.build());
     }
 
     /**
@@ -1793,13 +1795,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setKeepOnDeath(boolean keepOnDeath) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMapBuilder builder = getOrCreateNamedTag().toBuilder();
         if (keepOnDeath) {
-            tag = tag.toBuilder().putByte("minecraft:keep_on_death", (byte) 1).build();
+            builder = builder.putByte("minecraft:keep_on_death", (byte) 1);
         } else {
-            tag.remove("minecraft:keep_on_death");
+            builder.remove("minecraft:keep_on_death");
         }
-        this.setCompoundTag(tag);
+        this.setCompoundTag(builder.build());
     }
 
     /**

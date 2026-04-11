@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.block.BlockStandingBanner;
 import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.utils.DyeColor;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
@@ -67,7 +68,7 @@ public class ItemBanner extends Item {
     public void addPattern(BannerPattern bannerPattern) {
         NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
         assert tag != null;
-        List<NbtMap> patterns = tag.getList("Patterns", NbtType.COMPOUND);
+        List<NbtMap> patterns = new ObjectArrayList<>(tag.getList("Patterns", NbtType.COMPOUND));
         patterns.add(NbtMap.builder()
                 .putInt("Color", bannerPattern.color().getDyeData() & 0x0f)
                 .putString("Pattern", bannerPattern.type().getCode())

@@ -7,6 +7,7 @@ import cn.nukkit.event.block.SignChangeEvent;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.StringUtils;
 import cn.nukkit.utils.TextFormat;
 import org.cloudburstmc.nbt.NbtMap;
@@ -373,7 +374,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                             .putString(TAG_TEXT_BLOB, StringUtils.joinNotNull("\n", frontText))
                             .build()
                     ).build();
-            this.namedTag.remove(TAG_TEXT_BLOB);
+            this.namedTag = NbtHelper.remove(this.namedTag, TAG_TEXT_BLOB);
         } else {
             int count = 0;
             for (int i = 1; i <= 4; i++) {
@@ -381,7 +382,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 if (namedTag.containsKey(key)) {
                     String line = namedTag.getString(key);
                     this.frontText[i - 1] = line;
-                    this.namedTag.remove(key);
+                  this.namedTag = NbtHelper.remove(this.namedTag, key);
                     count++;
                 }
             }
@@ -395,13 +396,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         }
         if (this.namedTag.containsKey(TAG_GLOWING_TEXT)) {
             this.setGlowing(true, this.namedTag.getBoolean(TAG_GLOWING_TEXT));
-            this.namedTag.remove(TAG_GLOWING_TEXT);
+            this.namedTag = NbtHelper.remove(this.namedTag, TAG_GLOWING_TEXT);
         }
         if (this.namedTag.containsKey(TAG_TEXT_COLOR)) {
             this.setColor(true, new BlockColor(this.namedTag.getInt(TAG_TEXT_COLOR), true));
-            this.namedTag.remove(TAG_TEXT_COLOR);
+           this.namedTag = NbtHelper.remove(this.namedTag, TAG_TEXT_COLOR);
         }
-        this.namedTag.remove("Creator");
+        this.namedTag = NbtHelper.remove(this.namedTag, "Creator");
     }
 
     //验证Line Text是否符合要求

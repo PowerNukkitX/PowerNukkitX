@@ -149,7 +149,7 @@ public class BedrockMigrationService {
 
                 // remove Bedrock-only block data
                 if (item.containsKey("Block")) {
-                    item.remove("Block");
+                    item = NbtHelper.remove(item, "Block");
                 }
 
                 NbtMap converted = convertItem(item, i);

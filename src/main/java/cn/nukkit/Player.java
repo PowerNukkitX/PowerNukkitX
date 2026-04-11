@@ -118,6 +118,7 @@ import cn.nukkit.utils.BlockIterator;
 import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
@@ -665,12 +666,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         //TODO: Remove these
         if (this.namedTag.containsKey("SpawnBlockLevel")) {
-            this.namedTag.remove("SpawnBlockLevel");
+            this.namedTag = NbtHelper.remove(this.namedTag, "SpawnBlockLevel");
         }
         if (this.namedTag.containsKey("SpawnBlockPositionX") && this.namedTag.containsKey("SpawnBlockPositionY") && this.namedTag.containsKey("SpawnBlockPositionZ")) {
-            this.namedTag.remove("SpawnBlockPositionX");
-            this.namedTag.remove("SpawnBlockPositionY");
-            this.namedTag.remove("SpawnBlockPositionZ");
+            this.namedTag = NbtHelper.remove(this.namedTag, "SpawnBlockPositionX", "SpawnBlockPositionY", "SpawnBlockPositionZ");
         }
     }
 
@@ -3550,11 +3549,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void saveNBT() {
         super.saveNBT();
         if (spawnPoint == null) {
-            namedTag.remove("SpawnX");
-            namedTag.remove("SpawnY");
-            namedTag.remove("SpawnZ");
-            namedTag.remove("SpawnLevel");
-            namedTag.remove("SpawnDimension");
+            this.namedTag = NbtHelper.remove(this.namedTag, "SpawnX", "SpawnY", "SpawnZ", "SpawnLevel", "SpawnDimension");
         } else {
             this.namedTag = namedTag.toBuilder()
                     .putInt("SpawnX", this.spawnPoint.getFloorX())

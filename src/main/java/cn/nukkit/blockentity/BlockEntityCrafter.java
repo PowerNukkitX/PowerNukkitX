@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 
 public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
@@ -62,7 +63,7 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

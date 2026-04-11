@@ -11,6 +11,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -193,7 +194,7 @@ public class Structure extends AbstractStructure {
         List<Integer> origin = nbt.getList("structure_world_origin", NbtType.INT);
         return new Structure(
                 blockStates, blockEntities,
-                structureNBT.getList("entities", NbtType.COMPOUND),
+                new ObjectArrayList<>(structureNBT.getList("entities", NbtType.COMPOUND)),
                 sizeX, sizeY, sizeZ,
                 origin.get(0), origin.get(1), origin.get(2)
         );
@@ -392,7 +393,7 @@ public class Structure extends AbstractStructure {
         List<NbtMap> blockPaletteList = new ObjectArrayList<>();
         for (BlockState state : uniqueBlockStates) {
             NbtMap blockStateTag = state.getBlockStateTag();            // Remove version field if it exists to match expected format
-            blockStateTag.remove("version");
+            blockStateTag = NbtHelper.remove(blockStateTag, "version");
             blockPaletteList.add(blockStateTag);
         }
         defaultPalette.putList("block_palette", NbtType.COMPOUND, blockPaletteList);

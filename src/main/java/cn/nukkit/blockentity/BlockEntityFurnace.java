@@ -17,6 +17,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.recipe.SmeltingRecipe;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
@@ -95,7 +96,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
         if (this.namedTag.containsKey("BurnTicks")) {
             burnDuration = this.namedTag.getShort("BurnTicks");
-            this.namedTag.remove("BurnTicks");
+            this.namedTag = NbtHelper.remove(this.namedTag, "BurnTicks");
         }
 
         if (this.namedTag.containsKey("StoredXpInt")) {
@@ -126,7 +127,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

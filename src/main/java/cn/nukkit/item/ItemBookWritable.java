@@ -77,7 +77,7 @@ public abstract class ItemBookWritable extends Item {
             pages = new ObjectArrayList<>();
             tag = tag.toBuilder().putList("pages", NbtType.COMPOUND, pages).build();
         } else {
-            pages = tag.getList("pages", NbtType.COMPOUND);
+            pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
         }
         if (pages.size() <= pageId) {
             for (int current = pages.size(); current <= pageId; current++) {
@@ -108,7 +108,7 @@ public abstract class ItemBookWritable extends Item {
             pages = new ObjectArrayList<>();
             tag = tag.toBuilder().putList("pages", NbtType.COMPOUND, pages).build();
         } else {
-            pages = tag.getList("pages", NbtType.COMPOUND);
+            pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
         }
 
         for (int current = pages.size(); current <= pageId; current++) {
@@ -128,7 +128,7 @@ public abstract class ItemBookWritable extends Item {
         if (this.hasCompoundTag()) {
             NbtMap tag = this.getNamedTag();
             if (tag.containsKey("pages") && tag.get("pages") instanceof List<?>) {
-                List<NbtMap> pages = tag.getList("pages", NbtType.COMPOUND);
+                List<NbtMap> pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
                 if (pages.size() > pageId) {
                     pages.remove(pageId);
                     this.setCompoundTag(tag);
@@ -161,7 +161,7 @@ public abstract class ItemBookWritable extends Item {
             pages = new ObjectArrayList<>();
             tag = tag.toBuilder().putList("pages", NbtType.COMPOUND, pages).build();
         } else {
-            pages = tag.getList("pages", NbtType.COMPOUND);
+            pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
         }
 
         if (pages.size() <= pageId) {
@@ -187,7 +187,7 @@ public abstract class ItemBookWritable extends Item {
         if (this.hasCompoundTag()) {
             NbtMap tag = this.getNamedTag();
             if (tag.containsKey("pages") && tag.get("pages") instanceof List<?>) {
-                List<NbtMap> pages = tag.getList("pages", NbtType.COMPOUND);
+                List<NbtMap> pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
                 if (pages.size() > pageId1 && pages.size() > pageId2) {
                     String pageContents1 = pages.get(pageId1).getString("text");
                     String pageContents2 = pages.get(pageId2).getString("text");

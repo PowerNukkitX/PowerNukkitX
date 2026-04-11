@@ -8,6 +8,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.NbtHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -155,10 +156,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public NbtMap getCleanedNBT() {
         this.saveNBT();
         NbtMapBuilder builder = this.namedTag.toBuilder();
-        builder.remove("x");
-        builder.remove("y");
-        builder.remove("z");
-        builder.remove("id");
+        this.namedTag = NbtHelper.remove(this.namedTag, "x", "y", "z", "id");
         if (!builder.isEmpty()) {
             return builder.build();
         } else {

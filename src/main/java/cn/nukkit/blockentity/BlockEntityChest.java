@@ -8,6 +8,7 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -94,9 +95,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         } else {
             if (level.isChunkLoaded(this.namedTag.getInt("pairx") >> 4, this.namedTag.getInt("pairz") >> 4)) {
                 this.doubleInventory = null;
-                this.namedTag.remove("pairx");
-                this.namedTag.remove("pairz");
-                this.namedTag.remove("pairlead");
+                this.namedTag = NbtHelper.remove(this.namedTag, "pairx", "pairz", "pairlead");
             }
         }
     }
@@ -164,14 +163,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         BlockEntityChest chest = this.getPair();
 
         this.doubleInventory = null;
-        this.namedTag.remove("pairx");
-        this.namedTag.remove("pairz");
+        this.namedTag = NbtHelper.remove(this.namedTag, "pairx", "pairz");
 
         this.spawnToAll();
 
         if (chest != null) {
-            chest.namedTag.remove("pairx");
-            chest.namedTag.remove("pairz");
+            chest.namedTag = NbtHelper.remove(chest.namedTag, "pairx", "pairz");
             chest.doubleInventory = null;
             chest.checkPairing();
             chest.spawnToAll();
@@ -198,10 +195,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public NbtMap getCleanedNBT() {
-        final NbtMap nbtMap = super.getCleanedNBT();
-        nbtMap.remove("pairx");
-        nbtMap.remove("pairz");
-        return nbtMap;
+        final NbtMapBuilder builder = super.getCleanedNBT().toBuilder();
+        builder.remove("pairx");
+        builder.remove("pairz");
+        return builder.build();
     }
 
     @Override
@@ -217,7 +214,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

@@ -26,6 +26,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
@@ -134,7 +135,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

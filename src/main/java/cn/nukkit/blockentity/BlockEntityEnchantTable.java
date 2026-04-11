@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -32,7 +33,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

@@ -6,6 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.RedstoneComponent;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -31,11 +32,11 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         if (!(this.namedTag.get("book") instanceof NbtMap)) {
-            this.namedTag.remove("book");
+            this.namedTag = NbtHelper.remove(this.namedTag, "book");
         }
 
         if (!(this.namedTag.get("page") instanceof Integer)) {
-            this.namedTag.remove("page");
+          this.namedTag = NbtHelper.remove(this.namedTag, "page");
         }
     }
 
@@ -83,8 +84,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         if (item.getId().equals(Item.WRITTEN_BOOK) || item.getId().equals(Item.WRITABLE_BOOK)) {
             this.namedTag = this.namedTag.toBuilder().putCompound("book", ItemHelper.write(item, null)).build();
         } else {
-            this.namedTag.remove("book");
-            this.namedTag.remove("page");
+            this.namedTag = NbtHelper.remove(this.namedTag, "book", "page");
         }
         updateTotalPages();
     }

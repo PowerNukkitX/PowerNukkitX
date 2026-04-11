@@ -91,7 +91,7 @@ public class ItemFireworkRocket extends Item {
             fds[i] = (byte) fades.get(i).getDyeData();
         }
 
-        List<NbtMap> explosions = this.getNamedTag().getCompound("Fireworks").getList("Explosions", NbtType.COMPOUND);
+        List<NbtMap> explosions = new ObjectArrayList<>(this.getNamedTag().getCompound("Fireworks").getList("Explosions", NbtType.COMPOUND));
         NbtMap tag = NbtMap.builder()
                 .putByteArray("FireworkColor", clrs)
                 .putByteArray("FireworkFade", fds)
@@ -101,6 +101,8 @@ public class ItemFireworkRocket extends Item {
                 .build();
 
         explosions.add(tag);
+        final NbtMap fireworks = this.getNamedTag().getCompound("Fireworks").toBuilder().putList("Explosions", NbtType.COMPOUND, explosions).build();
+        this.setNamedTag(this.getNamedTag().toBuilder().putCompound("Fireworks", fireworks).build());
     }
 
     public void clearExplosions() {

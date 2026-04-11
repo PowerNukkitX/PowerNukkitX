@@ -12,6 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -165,7 +166,7 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder())
                         .putInt("Type", type).build());
             }
-            List<NbtMap> patterns = banner.namedTag.getList("Patterns", NbtType.COMPOUND);
+            List<NbtMap> patterns = new ObjectArrayList<>(banner.namedTag.getList("Patterns", NbtType.COMPOUND));
             if (!patterns.isEmpty()) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder())
                         .putList("Patterns", NbtType.COMPOUND, patterns).build());

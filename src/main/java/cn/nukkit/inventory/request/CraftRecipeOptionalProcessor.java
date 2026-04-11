@@ -255,13 +255,10 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 repairCost = repairCost * 2 + 1;
             }
 
-            NbtMapBuilder namedTag = result.getNamedTag().toBuilder();
-            if (namedTag == null) {
-                namedTag = NbtMap.builder();
-            }
-            namedTag.putInt("RepairCost", repairCost);
-            namedTag.remove("ench");
-            result.setNamedTag(namedTag.build());
+            NbtMapBuilder namedTagBuilder = result.getNamedTag() == null ? NbtMap.builder() : result.getNamedTag().toBuilder();
+            namedTagBuilder.putInt("RepairCost", repairCost);
+            namedTagBuilder.remove("ench");
+            result.setNamedTag(namedTagBuilder.build());
             if (!enchantments.isEmpty()) {
                 result.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
             }

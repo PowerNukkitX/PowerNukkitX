@@ -11,6 +11,7 @@ import cn.nukkit.registry.mappings.BlockMappings;
 import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.JSONUtils;
+import cn.nukkit.utils.NbtHelper;
 import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.cloudburstmc.nbt.NbtMap;
@@ -43,7 +44,7 @@ public final class BlockRegistryPopulator {
 
             return tag -> {
                 NbtMap updated = context.update(tag, 0);
-                updated.remove("version"); // we already removed this, but the context adds it. remove it again.
+                updated = NbtHelper.remove(updated, "version"); // we already removed this, but the context adds it. remove it again.
                 return NbtMap.fromMap(new TreeMap<>(updated));
             };
         }

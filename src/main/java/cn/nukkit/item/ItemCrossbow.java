@@ -11,6 +11,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -166,8 +167,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public void removeChargedItem(Player player) {
-        this.getNamedTag().remove("chargedItem");
-        this.setCompoundTag(this.getNamedTag());
+        this.setCompoundTag(NbtHelper.remove(this.getNamedTag(), "chargedItem"));
         player.getInventory().setItemInHand(this);
     }
 

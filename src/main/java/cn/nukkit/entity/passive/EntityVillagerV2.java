@@ -57,6 +57,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -252,7 +253,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                     }
                                     if (block != null && !block.isOccupied()) setBed(block);
                                 } else if (!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
-                                    this.namedTag.remove("bed");
+                                    this.namedTag = NbtHelper.remove(this.namedTag, "bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 }
                             }
@@ -530,7 +531,9 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             }
         }
         if (this.namedTag.containsKey("purifyPlayer")) {
-            String xuid = this.namedTag.remove("purifyPlayer").toString();
+            NbtMapBuilder builder = this.namedTag.toBuilder();
+            String xuid = builder.remove("purifyPlayer").toString();
+            this.namedTag = builder.build();
             this.addGossip(xuid, Gossip.MAJOR_POSITIVE, 20);
             this.addGossip(xuid, Gossip.MINOR_POSITIVE, 25);
         }

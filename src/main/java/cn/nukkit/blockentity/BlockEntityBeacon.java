@@ -8,6 +8,7 @@ import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -283,7 +284,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

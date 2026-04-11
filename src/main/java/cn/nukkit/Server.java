@@ -93,7 +93,6 @@ import org.apache.commons.io.FileUtils;
 import org.cloudburstmc.nbt.NBTInputStream;
 import org.cloudburstmc.nbt.NBTOutputStream;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
@@ -135,8 +134,6 @@ import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 
 /**
  * Represents the main server singleton for PowerNukkitX.
@@ -1941,13 +1938,7 @@ public class Server {
     }
 
     private NbtMap cleanupOfflinePlayerData(NbtMap tag) {
-        final NbtMapBuilder builder = tag.toBuilder();
-        builder.remove("Colors");
-        builder.remove("PieceTintColors");
-        builder.remove("Skin");
-
-        tag = builder.build();
-        return tag;
+        return NbtHelper.remove(tag, "Colors", "PieceTintColors", "Skin");
     }
 
     /**

@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BarrelInventory;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 
 
@@ -49,8 +50,8 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer {
 
     @Override
     public void setName(String name) {
-        if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
+        if (name == null || name.isEmpty()) {
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

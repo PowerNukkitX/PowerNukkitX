@@ -6,6 +6,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
@@ -31,7 +32,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         if (namedTag.containsKey("trackingHandler")) {
-            namedTag.put("trackingHandle", namedTag.remove("trackingHandler"));
+            this.namedTag = namedTag.toBuilder().putCompound("trackingHandle", NbtHelper.remove(this.namedTag, "trackingHandler")).build();
         }
     }
 

@@ -42,6 +42,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -273,7 +274,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         ensureInventories();
         if (namedTag.containsKey("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(namedTag.getList("Inventory", NbtType.COMPOUND));
+            inv.load(new ObjectArrayList<>(namedTag.getList("Inventory", NbtType.COMPOUND)));
             syncEquippableInventories();
         }
     }

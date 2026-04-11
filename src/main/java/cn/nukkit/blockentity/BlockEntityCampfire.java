@@ -12,6 +12,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -127,9 +128,8 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                namedTag.remove("Item" + i);
+                namedTag = NbtHelper.remove(namedTag, "Item" + i, "KeepItem" + i);
                 this.namedTag = namedTag.toBuilder().putInt("ItemTime" + i, 0).build();
-                namedTag.remove("KeepItem" + i);
             } else {
                 this.namedTag = namedTag.toBuilder().putCompound("Item" + i, ItemHelper.write(item, null))
                         .putInt("ItemTime" + i, burnTime[i - 1])
@@ -168,7 +168,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            namedTag.remove("CustomName");
+            namedTag = NbtHelper.remove(namedTag, "CustomName");
             return;
         }
         this.namedTag = namedTag.toBuilder().putString("CustomName", name).build();
@@ -181,18 +181,18 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public NbtMap getSpawnCompound() {
-        NbtMapBuilder c = super.getSpawnCompound().toBuilder();
+        NbtMapBuilder builder = super.getSpawnCompound().toBuilder();
 
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item.isNull()) {
-                c.remove("Item" + i);
+                builder.remove("Item" + i);
             } else {
-                c.putCompound("Item" + i, ItemHelper.write(item, null));
+                builder.putCompound("Item" + i, ItemHelper.write(item, null));
             }
         }
 
-        return c.build();
+        return builder.build();
     }
 
     @Override

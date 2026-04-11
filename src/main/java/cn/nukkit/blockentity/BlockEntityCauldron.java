@@ -6,6 +6,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -118,7 +119,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public void clearCustomColor() {
-        namedTag.remove("CustomColor");
+        namedTag = NbtHelper.remove(namedTag, "CustomColor");
         spawnToAll();
     }
 

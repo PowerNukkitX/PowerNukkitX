@@ -15,4 +15,12 @@ public class NbtHelper {
         builder.remove(key);
         return builder.build();
     }
+
+    public NbtMap remove(NbtMap nbtMap, String... keys) {
+        NbtMapBuilder builder = nbtMap.toBuilder();
+        for (String key : keys) {
+            builder.remove(key);
+        }
+        return builder.build();
+    }
 }

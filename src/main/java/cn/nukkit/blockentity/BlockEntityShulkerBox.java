@@ -8,6 +8,7 @@ import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -139,7 +140,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

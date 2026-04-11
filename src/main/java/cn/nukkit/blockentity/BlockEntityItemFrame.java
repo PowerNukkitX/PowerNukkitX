@@ -103,18 +103,18 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
 
         if (!item.isNull()) {
-            NbtMapBuilder itemTag = ItemHelper.write(item, null).toBuilder();
+            NbtMapBuilder builder = ItemHelper.write(item, null).toBuilder();
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
-                itemTag.remove("id");
-                itemTag.putShort("Damage", (short) networkDamage);
-                itemTag.putString("Name", namespacedId);
+                builder.remove("id");
+                builder.putShort("Damage", (short) networkDamage);
+                builder.putString("Name", namespacedId);
             }
             if (item.isBlock()) {
-                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+                builder.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
-            tag.putCompound("Item", itemTag.build())
+            tag.putCompound("Item", builder.build())
                     .putByte("ItemRotation", (byte) this.getItemRotation());
         }
         return tag.build();

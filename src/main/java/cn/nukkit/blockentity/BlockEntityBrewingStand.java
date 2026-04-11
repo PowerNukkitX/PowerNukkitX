@@ -19,6 +19,7 @@ import cn.nukkit.recipe.ContainerRecipe;
 import cn.nukkit.recipe.MixRecipe;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -85,7 +86,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            namedTag.remove("CustomName");
+            namedTag = NbtHelper.remove(namedTag, "CustomName");
             return;
         }
 

@@ -6,6 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -119,7 +120,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
+           this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 

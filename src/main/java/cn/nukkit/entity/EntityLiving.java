@@ -38,6 +38,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -113,7 +114,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (this.namedTag.containsKey("HealF")) {
             this.namedTag = this.namedTag.toBuilder().putFloat("Health", this.namedTag.getShort("HealF")).build();
-            this.namedTag.remove("HealF");
+            this.namedTag = NbtHelper.remove(this.namedTag, "HealF");
         }
 
         if (!this.namedTag.containsKey("Health") || !(this.namedTag.get("Health") instanceof Float)) {

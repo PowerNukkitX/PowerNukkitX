@@ -221,7 +221,7 @@ public interface IHuman extends InventoryHolder {
 
         builder.putList("EnderItems", NbtType.COMPOUND, new ObjectArrayList<>());
         if (this.getEnderChestInventory() != null) {
-            List<NbtMap> enderItems = human.namedTag.getList("EnderItems", NbtType.COMPOUND);
+            List<NbtMap> enderItems = new ObjectArrayList<>(human.namedTag.getList("EnderItems", NbtType.COMPOUND));
             for (int slot = 0; slot < this.getEnderChestInventory().getSize(); ++slot) {
                 Item item = this.getEnderChestInventory().getItem(slot);
                 if (!item.isNull()) {
