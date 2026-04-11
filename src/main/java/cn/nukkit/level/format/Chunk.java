@@ -694,7 +694,7 @@ public class Chunk implements IChunk {
                     if (nbt != null) {
                         if (!nbt.containsKey("id")) {
                             changed = true;
-                            log.warn("BlockEntity tag without id: {} in chunk {};{}", nbt, this.x, this.z);
+                            log.warn("BlockEntity tag without id: {} in chunk {};{}, blockX: {}, blockZ: {}", nbt, this.x, this.z, (this.x << 4), (this.z << 4));
                             continue;
                         }
                         if ((nbt.getInt("x") >> 4) != this.getX() || ((nbt.getInt("z") >> 4) != this.getZ())) {

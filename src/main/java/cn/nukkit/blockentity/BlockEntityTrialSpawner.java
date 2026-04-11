@@ -848,8 +848,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
                 .putDouble(TAG_SIMULTANEOUS_MOBS, this.simultaneousMobs)
                 .putDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, this.simultaneousMobsAddedPerPlayer)
                 .putBoolean(TAG_SPAWN_BABY, this.spawnBaby)
-                .putInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.nextOminousProjectileTick)
-                .build();
+                .putInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.nextOminousProjectileTick);
         if (this.ominousLingeringPotion != null) {
             builder.putInt(TAG_OMINOUS_LINGERING_POTION, this.ominousLingeringPotion.id());
         }
