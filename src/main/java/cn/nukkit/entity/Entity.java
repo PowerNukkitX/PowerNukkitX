@@ -1045,12 +1045,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             int b = (color[2] / count) & 0xff;
             setDataProperties(Map.of(
                     ActorDataTypes.EFFECT_COLOR, (r << 16) + (g << 8) + b,
-                    ActorDataTypes.EFFECT_AMBIENCE, ambient ? 1 : 0
+                    ActorDataTypes.EFFECT_AMBIENCE, ambient ? (byte) 1 : 0
             ));
         } else {
             setDataProperties(Map.of(
                     ActorDataTypes.EFFECT_COLOR, 0,
-                    ActorDataTypes.EFFECT_AMBIENCE, 0
+                    ActorDataTypes.EFFECT_AMBIENCE, (byte) 0
             ));
         }
     }
