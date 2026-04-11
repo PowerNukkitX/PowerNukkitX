@@ -4718,6 +4718,7 @@ public class Level implements Metadatable {
             pk.setType(LevelEvent.STOP_RAINING);
             setRainTime(ThreadLocalRandom.current().nextInt(168000) + 12000);
         }
+        pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         for (var p : this.getPlayers().values()) {
             this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
@@ -4795,6 +4796,7 @@ public class Level implements Metadatable {
         } else {
             pk.setType(LevelEvent.STOP_RAINING);
         }
+        pk.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
 
         Server.broadcastPacket(players, pk);
 
