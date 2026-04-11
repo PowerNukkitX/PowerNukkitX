@@ -223,7 +223,7 @@ public class GameRules {
 
         public Object getTag() {
             return switch (this.type) {
-                case BOOLEAN -> getValueAsBoolean() ? 1 : 0;
+                case BOOLEAN -> getValueAsBoolean() ? (byte) 1 : 0;
                 case INTEGER -> getValueAsInteger();
                 case FLOAT -> getValueAsFloat();
                 case UNKNOWN -> throw new IllegalArgumentException("unknown type");

@@ -156,7 +156,7 @@ public class PlayerSessionHolder {
         cameraAimAssistPresetsPacket.setOperation(CameraAimAssistPresetPacketOperation.SET);
         this.session.sendPacketImmediately(cameraAimAssistPresetsPacket);
 
-        this.player.doFirstSpawn();
+        this.playerHandle.doFirstSpawn();
     }
 
     private void sendStartGame(Server server) {
@@ -295,7 +295,7 @@ public class PlayerSessionHolder {
         }
         this.playerHandle = new PlayerHandle(this.player);
         Server.getInstance().onPlayerLogin((InetSocketAddress) this.session.getSocketAddress(), player);
-        this.player.processLogin();
+        this.playerHandle.processLogin();
         // The reason why teleport player to their position is for gracefully client-side spawn,
         // although we need some hacks, It is definitely a fairly worthy trade.
         this.player.setImmobile(true); //TODO: HACK: fix client-side falling pre-spawn

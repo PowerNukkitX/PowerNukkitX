@@ -379,4 +379,8 @@ public final class PlayerHandle {
     public void addDefaultWindows() {
         player.addDefaultWindows();
     }
+
+    public void doFirstSpawn() {
+        this.player.doFirstSpawn();
+    }
 }

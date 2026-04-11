@@ -676,7 +676,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Execute after completeLoginSequence is completed
      */
-    public void doFirstSpawn() {
+    protected void doFirstSpawn() {
         this.spawned = true;
 
         this.session.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
@@ -1152,7 +1152,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Processing execution in LoginPacket
      */
-    public void processLogin() {
+    protected void processLogin() {
 
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
