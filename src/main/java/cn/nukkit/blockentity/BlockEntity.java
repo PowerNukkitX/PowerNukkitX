@@ -108,7 +108,6 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.x = this.namedTag.getInt("x");
         this.y = this.namedTag.getInt("y");
         this.z = this.namedTag.getInt("z");
-        log.info("create block entity with nbt: {}", nbt);
 
         if (namedTag.containsKey("isMovable")) {
             this.movable = this.namedTag.getBoolean("isMovable");
