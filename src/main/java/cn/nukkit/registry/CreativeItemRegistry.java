@@ -275,7 +275,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
      * Register a creative item and specify its group index directly.
      */
     public void register(Integer key, Item value, int groupIndex) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().equals(value))) {
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
         }
         ITEM_DATA.add(new CreativeItemData(value.toNetwork(), MAP.isEmpty() ? 0 : MAP.lastIntKey() + 1, groupIndex));
@@ -283,7 +283,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
     @Override
     public void register(Integer key, Item value) throws RegisterException {
-        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().equals(value))) {
+        if (MAP.putIfAbsent(key, value) != null || ITEM_DATA.stream().anyMatch(data -> data.getItemInstance().getDefinition().getIdentifier().equals(value.getItemDefinition().getIdentifier()))) {
             return;
             //throw new RegisterException("This creative item has already been registered with the identifier: " + key);
         } else {
