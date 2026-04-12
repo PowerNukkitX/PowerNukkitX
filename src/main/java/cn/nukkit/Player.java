@@ -768,9 +768,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         } else setHealthCurrent(getHealthCurrent()); // Sends health to player
 
         ServerScheduler scheduler = this.getServer().getSettings().levelSettings().levelThread() ? this.getLevel().getScheduler() : this.getServer().getScheduler();
-        scheduler.scheduleDelayedTask(InternalPlugin.INSTANCE, () -> {
-            /* TODO protocol  this.session.getMachine().fire(SessionState.IN_GAME); */
-        }, 5);
     }
 
     @Override
@@ -1283,7 +1280,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var fogIdentifiers = this.namedTag.getList("fogIdentifiers", NbtType.STRING);
         var userProvidedFogIds = this.namedTag.getList("userProvidedFogIds", NbtType.STRING);
         for (int i = 0; i < fogIdentifiers.size(); i++) {
-            // TODO protocol
             this.fogStack.add(i, fogIdentifiers.get(i));
         }
 

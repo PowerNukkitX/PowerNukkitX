@@ -358,8 +358,6 @@ public class Server {
         while (updateConfiguration()) { /* repeat until all configuration updates are applied */ }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
-        // TODO protocol NBTIO.MAX_NBT_DEPTH = Math.max(1, this.settings.performanceSettings().nbtMaxDepth());
-
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
         levelArray = Level.EMPTY_ARRAY;

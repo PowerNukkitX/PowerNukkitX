@@ -343,7 +343,7 @@ public class Attribute implements Cloneable {
                 this.defaultMinimum,
                 this.defaultMaximum,
                 this.defaultValue,
-                Collections.emptyList() // TODO protocol
+                Collections.emptyList()
         );
     }
 

@@ -75,7 +75,6 @@ import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
-import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -1098,7 +1097,6 @@ public class Level implements Metadatable {
     }
 
     public void doTick(int currentTick) {
-        // TODO protocol players.values().forEach(player -> player.getSession().tick());
         requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
@@ -1496,8 +1494,9 @@ public class Level implements Metadatable {
             updateBlockPacket.setBlockPosition(Vector3i.from(b.x, b.y, b.z));
             if (flags != null && first) {
                 updateBlockPacket.getFlags().addAll(flags);
+            } else {
+                updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.UNUSED);
             }
-            // TODO protocol flags  updateBlockPacket.getFlags().add(first ? flags : UpdateBlockPacket.Flag.UNUSED);
             updateBlockPacket.setLayer(dataLayer);
             int runtimeId;
             if (b instanceof Block block) {
@@ -2688,7 +2687,7 @@ public class Level implements Metadatable {
             }
         }
 
-        NbtMap itemTag = NbtMap.builder().build(); // TODO protocol
+        NbtMap itemTag = ItemHelper.write(item);
         EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
                 (Position) this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
                 NbtMap.builder().putList("Pos", NbtType.DOUBLE, List.of(source.getX(), source.getY(), source.getZ()))

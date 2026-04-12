@@ -281,7 +281,6 @@ public class Palette<V> {
                 this.palette.add(resultingBlockState);
             }
         }
-        /* TODO protocol PaletteUtils.fastReadBlockHash(input, byteBuf); *///depend on LinkCompoundTag
     }
 
 
