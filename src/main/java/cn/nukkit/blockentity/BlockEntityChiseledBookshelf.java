@@ -30,7 +30,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        addBookshelfNbt(namedTag, true);
+        addBookshelfNbt(namedTag);
     }
 
     public Item removeBook(int index) {
@@ -70,7 +70,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
     @Override
     public NbtMap getSpawnCompound() {
         NbtMap compoundTag = super.getSpawnCompound().toBuilder().putBoolean("isMovable", this.isMovable()).build();
-        addBookshelfNbt(compoundTag, false);
+        addBookshelfNbt(compoundTag);
         return compoundTag;
     }
 
@@ -108,7 +108,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
         }
     }
 
-    private void addBookshelfNbt(NbtMap namedTag, boolean setSelf) {
+    private void addBookshelfNbt(NbtMap namedTag) {
         if (lastInteractedSlot != null) {
             namedTag = namedTag.toBuilder().putInt(LAST_INTERACTED_SLOT, lastInteractedSlot).build();
         }
@@ -136,7 +136,6 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
 
         }
         namedTag = namedTag.toBuilder().putList("Items", NbtType.COMPOUND, compoundTagListTag).build();
-        if (setSelf)
             this.namedTag = namedTag;
     }
 }

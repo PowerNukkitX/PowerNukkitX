@@ -27,6 +27,7 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Predicates;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
@@ -35,7 +36,6 @@ import org.cloudburstmc.nbt.NBTOutputStream;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.common.util.stream.LittleEndianByteBufOutputStream;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
 
@@ -353,7 +353,7 @@ public class LevelDBChunkSerializer {
         //Write blockEntities
         Collection<BlockEntity> blockEntities = chunk.getBlockEntities().values();
         ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-        try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(tileBuffer);
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(tileBuffer);
              final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
             byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
             if (blockEntities.isEmpty()) writeBatch.delete(key);
@@ -372,7 +372,7 @@ public class LevelDBChunkSerializer {
 
         Collection<Entity> entities = chunk.getEntities().values();
         ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
-        try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(entityBuffer);
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(entityBuffer);
              final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
             byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
             if (entities.isEmpty()) {

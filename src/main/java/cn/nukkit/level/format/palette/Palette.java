@@ -14,6 +14,7 @@ import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NBTInputStream;
@@ -22,7 +23,6 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.common.util.VarInts;
-import org.cloudburstmc.protocol.common.util.stream.LittleEndianByteBufOutputStream;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,7 +109,7 @@ public class Palette<V> {
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
-        try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(byteBuf);
+        try (final ByteBufOutputStream bufOutputStream = new ByteBufOutputStream(byteBuf);
              final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(bufOutputStream)) {
             for (V value : this.palette) {
                 if (value == null) {
@@ -267,7 +267,7 @@ public class Palette<V> {
                     // this way the only possibility is that the block hash is not represented in block_palette.nbt
                     if (resultingBlockState == null || Objects.equals(resultingBlockState, unknownState)) {
                         resultingBlockState = unknownState;
-                        log.warn("Block State updating failed, blockHash: {}, oldBlockState: {}, newBlockState: {}", hash, oldBlockNbt, newBlockNbt);
+                        log.warn("Block State updating failed, blockHash: {}, oldBlockState: {}, newBlockState: {}, blockTag: {}", hash, oldBlockNbt, newBlockNbt, blockTag);
                     }
                 }
             }
