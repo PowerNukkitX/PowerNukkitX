@@ -3,6 +3,8 @@ package cn.nukkit.block.copper.chest;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OxidizationLevel;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
@@ -95,5 +97,10 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
             case WEATHERED -> waxed ? WAXED_WEATHERED_COPPER_CHEST : WEATHERED_COPPER_CHEST;
             case OXIDIZED -> waxed ? WAXED_OXIDIZED_COPPER_CHEST : OXIDIZED_COPPER_CHEST;
         };
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{new ItemBlock(Block.get(this.getCopperId(isWaxed(), getOxidizationLevel())), 0) };
     }
 }
