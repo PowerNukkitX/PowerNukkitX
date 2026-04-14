@@ -11,6 +11,7 @@ import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author joserobjr
@@ -22,7 +23,7 @@ public interface Waxable {
 
     default boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         boolean waxed = isWaxed();
-        if ((item.getId() != ItemID.HONEYCOMB || waxed) && (!item.isAxe() || !waxed)) {
+        if ((!Objects.equals(item.getId(), ItemID.HONEYCOMB) || waxed) && (!item.isAxe() || !waxed)) {
             return false;
         }
 

@@ -101,6 +101,6 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(Block.get(this.getCopperId(isWaxed(), getOxidizationLevel())), 0) };
+        return new Item[]{new ItemBlock(this.getBlockWithOxidizationLevel(this.getOxidizationLevel()), 0) };
     }
 }
