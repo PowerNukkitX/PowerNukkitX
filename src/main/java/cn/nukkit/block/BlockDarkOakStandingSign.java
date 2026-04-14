@@ -5,7 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDarkOakSign;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockDarkoakStandingSign extends BlockStandingSign {
+public class BlockDarkOakStandingSign extends BlockStandingSign {
     public static final BlockProperties PROPERTIES = new BlockProperties(DARKOAK_STANDING_SIGN, CommonBlockProperties.GROUND_SIGN_DIRECTION);
 
     @Override
@@ -13,11 +13,11 @@ public class BlockDarkoakStandingSign extends BlockStandingSign {
         return PROPERTIES;
     }
 
-    public BlockDarkoakStandingSign() {
+    public BlockDarkOakStandingSign() {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockDarkoakStandingSign(BlockState blockstate) {
+    public BlockDarkOakStandingSign(BlockState blockstate) {
         super(blockstate);
     }
 
