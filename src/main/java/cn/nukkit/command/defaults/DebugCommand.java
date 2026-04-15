@@ -45,8 +45,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
-
 public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");

@@ -4,8 +4,6 @@ import cn.nukkit.level.generator.densityfunction.*;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
-import cn.nukkit.level.generator.stages.normal.sampler.CarvingSampler;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import lombok.Getter;
 
@@ -32,7 +30,6 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
 
         private NormalNoise surfaceNoise;
         private NormalNoise jagged;
-        private volatile CarvingSampler carver;
         private DensityFunction densityFunction;
         private DensityFunction continents;
         private DensityFunction erosion;
@@ -44,6 +41,10 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private DensityFunction jaggedness;
         private DensityFunction base3d;
         private DensityFunction slopedCheese;
+        private NormalNoise barrierNoise;
+        private NormalNoise fluidLevelFloodednessNoise;
+        private NormalNoise fluidLevelSpreadNoise;
+        private NormalNoise lavaNoise;
         private NormalNoise pillar;
         private NormalNoise pillarRareness;
         private NormalNoise pillarThickness;
@@ -65,11 +66,12 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private NormalNoise noodleRidgeA;
         private NormalNoise noodleRidgeB;
 
+        private DensityFunction caveDetector;
+
         public TerrainHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
             this.jagged = new NormalNoise(randomSourceProvider.identical(), -16, new float[]{1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f});
-            this.carver = new CarvingSampler(randomSourceProvider.getSeed());
             BiomeHolder noises = NormalObjectHolder.this.getBiomeHolder();
 
             NormalNoise shiftNoise = noises.getOffsetNoise();
@@ -88,6 +90,10 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             factor = DensityFactor.overworldFactor(continents, erosion, ridges, ridgesFolded);
             jaggedness = DensityJaggedness.overworldJaggedness(continents, erosion, ridges, ridgesFolded);
             base3d = DensityBase3dNoise.overworld(randomSourceProvider.identical());
+            barrierNoise = new NormalNoise(randomSourceProvider.fork(), -3, new float[]{1f, 1f, 1f});
+            fluidLevelFloodednessNoise = new NormalNoise(randomSourceProvider.fork(), -7, new float[]{1f, 1f, 0f, 1f});
+            fluidLevelSpreadNoise = new NormalNoise(randomSourceProvider.fork(), -5, new float[]{1f, 1f, 1f});
+            lavaNoise = new NormalNoise(randomSourceProvider.fork(), -1, new float[]{1f, 1f});
             pillar = new NormalNoise(randomSourceProvider.fork(), -7, new float[]{1f, 1f});
             pillarRareness = new NormalNoise(randomSourceProvider.fork(), -8, new float[]{1f});
             pillarThickness = new NormalNoise(randomSourceProvider.fork(), -8, new float[]{1f});
@@ -135,6 +141,7 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
                     noodleRidgeA,
                     noodleRidgeB
             );
+            caveDetector = OverworldCavesDensity.createCaveDetector(this);
         }
     }
 
