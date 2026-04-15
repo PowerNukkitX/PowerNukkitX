@@ -2,18 +2,16 @@ package cn.nukkit.level.generator.biome;
 
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.generator.biome.result.NetherBiomeResult;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
+import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.NukkitRandom;
 
 import java.util.Map;
 
-import static cn.nukkit.level.generator.biome.OverworldBiomePicker.XZSCALE;
-
 public class NetherBiomePicker extends BiomePicker<NetherBiomeResult> {
 
-    private final SimplexNoise temperatureNoise;
-    private final SimplexNoise humidityNoise;
+    private final NormalNoise temperatureNoise;
+    private final NormalNoise humidityNoise;
 
     private final static Vector3 BASALT_DELTAS = new Vector3(-0.5f, 0, 0.175f);
     private final static Vector3 CRIMSON_FOREST = new Vector3(0.4f, 0, 0);
@@ -31,14 +29,14 @@ public class NetherBiomePicker extends BiomePicker<NetherBiomeResult> {
 
     public NetherBiomePicker(NukkitRandom random) {
         super(random);
-        temperatureNoise = new SimplexNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
-        humidityNoise = new SimplexNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
+        temperatureNoise = new NormalNoise(random.fork(), -10 , new float[]{ 1.5f, 0, 1, 0, 0, 0 });
+        humidityNoise = new NormalNoise(random.fork(), -8 , new float[]{ 1, 1, 0, 0, 0, 0 });
     }
 
     @Override
     public NetherBiomeResult pick(int x, int y, int z) {
-        float scaledX = x * XZSCALE;
-        float scaledZ = z * XZSCALE;
+        float scaledX = x;
+        float scaledZ = z;
         float temperature = temperatureNoise.getValue(scaledX, y, scaledZ);
         float humidity = humidityNoise.getValue(scaledX, y, scaledZ);
         Vector3 point = new Vector3(temperature, humidity, 0);

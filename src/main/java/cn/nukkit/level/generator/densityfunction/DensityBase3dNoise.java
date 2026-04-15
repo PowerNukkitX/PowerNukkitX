@@ -49,6 +49,10 @@ public final class DensityBase3dNoise {
         return oldBlendedNoise(random, 0.25, 0.125, 80.0, 160.0, 8.0);
     }
 
+    public static DensityFunction nether(RandomSourceProvider random) {
+        return oldBlendedNoise(random, 0.25, 0.375, 80.0, 60.0, 8.0);
+    }
+
     private static List<Integer> descendingOctaves(int minInclusive, int maxInclusive) {
         return IntStream.rangeClosed(minInclusive, maxInclusive)
                 .boxed()
@@ -109,14 +113,14 @@ public final class DensityBase3dNoise {
                 double sampleZ = z * scaledXZ * frequency;
                 double sampleSmear = smearScale * frequency;
 
-                if (!useOnlyMin) {
+                if (!useOnlyMax) {
                     var sampler = minLimitNoise.getOctave(octave);
                     if (sampler != null) {
                         minValue += sampler.sample(sampleX, sampleY, sampleZ, sampleSmear, sampleY) / frequency;
                     }
                 }
 
-                if (!useOnlyMax) {
+                if (!useOnlyMin) {
                     var sampler = maxLimitNoise.getOctave(octave);
                     if (sampler != null) {
                         maxValue += sampler.sample(sampleX, sampleY, sampleZ, sampleSmear, sampleY) / frequency;
