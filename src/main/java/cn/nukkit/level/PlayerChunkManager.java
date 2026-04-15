@@ -145,13 +145,18 @@ public final class PlayerChunkManager {
     }
 
     @ApiStatus.Internal
-    public void addSendChunk(int x, int z) {
+    public synchronized void addSendChunk(int x, int z) {
         chunkSendQueue.enqueue(Level.chunkHash(x, z));
+    }
+
+    @ApiStatus.Internal
+    public synchronized boolean isSentChunk(long hash) {
+        return sentChunks.contains(hash);
     }
 
     private void updateChunkSendingQueue() {
         chunkSendQueue.clear();
-        //已经发送的区块不再二次发送
+        // Blocks that have already been sent will not be sent again
         Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
         for (Long v : difference) {
             chunkSendQueue.enqueue(v.longValue());

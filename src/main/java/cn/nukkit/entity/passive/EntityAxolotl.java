@@ -223,7 +223,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
             CompoundTag tag = new CompoundTag();
             tag.putInt("Variant", getVariant());
             bucket.setCompoundTag(tag);
-            player.getInventory().setItemInHand(bucket);
+            player.getInventory().setItemInMainHand(bucket);
             this.close();
         }
         return superResult;

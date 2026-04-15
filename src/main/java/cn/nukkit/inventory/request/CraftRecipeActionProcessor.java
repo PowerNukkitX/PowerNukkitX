@@ -24,6 +24,7 @@ import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackReques
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.SmithingTransformRecipe;
+import cn.nukkit.recipe.UserDataShapelessRecipe;
 import cn.nukkit.recipe.SmithingTrimRecipe;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.registry.Registries;
@@ -201,9 +202,19 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 return context.error();
             }
             if (recipe.getResults().size() == 1) {
-                // 若配方输出物品为1，客户端将不会发送CreateAction，此时我们直接在CraftRecipeAction输出物品到CREATED_OUTPUT
-                // 若配方输出物品为多个，客户端将会发送CreateAction，此时我们将在CreateActionProcessor里面输出物品到CREATED_OUTPUT
+                // If the recipe has a single output item, the client will not send a CreateAction; in this case, we will output the item directly to CREATED_OUTPUT in CraftRecipeAction
+                // If the recipe has multiple output items, the client will send a CreateAction; in this case, we will output the items to CREATED_OUTPUT within the CreateActionProcessor
                 var output = recipe.getResults().getFirst().clone();
+                if (recipe instanceof UserDataShapelessRecipe) {
+                    for (Item[] row : data) {
+                        for (Item inputItem : row) {
+                            if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
+                                output.setCompoundTag(inputItem.getCompoundTag());
+                                break;
+                            }
+                        }
+                    }
+                }
                 output.setCount(output.getCount() * numberOfRequestedCrafts);
                 var createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);

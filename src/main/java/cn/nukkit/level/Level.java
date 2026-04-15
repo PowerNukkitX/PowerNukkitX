@@ -652,10 +652,29 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if (getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
+        if (baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
+            try {
+                this.baseTickThread.join(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (baseTickThread.isAlive()) {
+                log.warn("Level {} tick thread did not stop in time, interrupting", getFolderName());
+                baseTickThread.interrupt();
+                try {
+                    baseTickThread.join(2000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (this.provider.get() != null) {
+                    remove();
+                    log.warn("Level {} tick thread did not stop gracefully, forcing level unload.", getFolderName());
+                }
+            }
+        } else {
+            remove();
         }
-        remove();
     }
 
     private void remove() {
@@ -948,14 +967,6 @@ public class Level implements Metadatable {
         }
 
         this.close();
-        if (force && getServer().getSettings().levelSettings().levelThread()) {
-            getServer().getScheduler().scheduleDelayedTask(() -> {
-                if (baseTickThread.isAlive()) {
-                    getServer().getLogger().critical(getName() + " failed to unload. Trying to stop the thread.");
-                    baseTickThread.interrupt();
-                }
-            }, 100);
-        }
         return true;
     }
 
@@ -964,7 +975,7 @@ public class Level implements Metadatable {
         if (this.chunkLoaders.containsKey(index)) {
             return this.chunkLoaders.get(index).entrySet()
                     .stream()
-                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().getUsedChunks().contains(index)))
+                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
                     .collect(HashMap::new, (m, e) -> {
                         m.put(e.getKey(), (Player) e.getValue());
                     }, HashMap::putAll);
@@ -1083,6 +1094,7 @@ public class Level implements Metadatable {
     }
 
     private void doTick(GameLoop gameLoop) {
+        if (getProvider() == null) return; // level is closing
         try {
             int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
             long levelTime = System.currentTimeMillis();
@@ -1115,8 +1127,8 @@ public class Level implements Metadatable {
     }
 
     public void doTick(int currentTick) {
+        if (getProvider() == null) return; // level is closing
         players.values().forEach(player -> player.getSession().tick());
-        requireProvider();
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
             updateBlockLight();
@@ -2971,7 +2983,7 @@ public class Level implements Metadatable {
             return null;
         }
 
-        boolean isPlayerInput = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT;
+        boolean isInteractionTrigger = data.triggerType == UseItemData.TriggerType.PLAYER_INPUT || data.triggerType == UseItemData.TriggerType.SIMULATION_TICK;
 
         if (player == null) {
             if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
@@ -2982,7 +2994,7 @@ public class Level implements Metadatable {
             }
         } else {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
-            if (isPlayerInput) {
+            if (isInteractionTrigger) {
                 //                                handle spawn protect
                 if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
                     ev.setCancelled();
@@ -3984,7 +3996,7 @@ public class Level implements Metadatable {
 
     private void sendChunk(int x, int z, long index, DataPacket packet) {
         for (Player player : this.chunkSendQueue.get(index).values()) {
-            if (player.isConnected() && player.getUsedChunks().contains(index)) {
+            if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(index)) {
                 player.sendChunk(x, z, packet);
             }
         }

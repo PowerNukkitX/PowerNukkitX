@@ -194,8 +194,8 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public int getWaterloggingLevel() {
-        return 2;
+    public boolean canBeFlowedInto() {
+        return true;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -29,5 +30,16 @@ public abstract class ItemFood extends Item {
     @Override
     public int getUsingTicks() {
         return 31;
+    }
+
+    @Override
+    public void whileUsing(Player player) {
+        int ticksUsed = player.getLevel().getTick() - player.getLastUseTick(this.getId());
+        if (ticksUsed >= getUsingTicks()) {
+            if (this.onUse(player, ticksUsed)) {
+                this.afterUse(player);
+                player.clearLastUsedItem();
+            }
+        }
     }
 }

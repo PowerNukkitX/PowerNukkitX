@@ -1,6 +1,6 @@
 package cn.nukkit.network.connection.netty.initializer;
 
-import cn.nukkit.compression.CompressionProvider;
+import cn.nukkit.network.compression.CompressionProvider;
 import cn.nukkit.network.connection.netty.codec.compression.CompressionCodec;
 import cn.nukkit.network.connection.netty.codec.compression.CompressionStrategy;
 import cn.nukkit.network.connection.netty.codec.compression.NoopCompression;
@@ -12,15 +12,12 @@ import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import cn.nukkit.network.connection.BedrockPeer;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.connection.netty.codec.FrameIdCodec;
 import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchDecoder;
 import cn.nukkit.network.connection.netty.codec.batch.BedrockBatchEncoder;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v1;
-import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v2;
 import cn.nukkit.network.connection.netty.codec.packet.BedrockPacketCodec_v3;
 
 @Slf4j

@@ -81,21 +81,21 @@ public class EnchantCommand extends VanillaCommand {
         for (Entity entity : entities) {
             Player player = (Player) entity;
             enchantment.setLevel(enchantLevel, false);
-            Item item = player.getInventory().getItemInHand();
+            Item item = player.getInventory().getItemInMainHand();
             if (item.isNull()) {
                 log.addError("commands.enchant.noItem").output();
                 continue;
             }
             if (item.getId() != ItemID.BOOK) {
                 item.addEnchantment(enchantment);
-                player.getInventory().setItemInHand(item);
+                player.getInventory().setItemInMainHand(item);
             } else {
                 Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
                 enchanted.addEnchantment(enchantment);
                 Item clone = item.clone();
                 clone.count--;
                 HumanInventory inventory = player.getInventory();
-                inventory.setItemInHand(clone);
+                inventory.setItemInMainHand(clone);
                 player.giveItem(enchanted);
             }
             log.addSuccess("commands.enchant.success", enchantment.getName()).output(true);

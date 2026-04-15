@@ -27,6 +27,6 @@ public class BlockMangroveWood extends BlockWood {
 
     @Override
     public WoodType getWoodType() {
-        throw new UnsupportedOperationException();
+        return WoodType.MANGROVE;
     }
 }

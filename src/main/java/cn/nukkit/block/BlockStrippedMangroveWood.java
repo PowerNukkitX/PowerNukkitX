@@ -27,6 +27,6 @@ public class BlockStrippedMangroveWood extends BlockWoodStripped {
 
     @Override
     public WoodType getWoodType() {
-        return WoodType.OAK;
+        return WoodType.MANGROVE;
     }
 }

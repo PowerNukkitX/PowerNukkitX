@@ -34,7 +34,7 @@ public class BlockBambooWallSign extends BlockWallSign {
 
     @Override
     public String getWallSignId() {
-        return BlockAcaciaWallSign.PROPERTIES.getIdentifier();
+        return BlockBambooWallSign.PROPERTIES.getIdentifier();
     }
 
     @Override

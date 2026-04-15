@@ -1,6 +1,5 @@
 package cn.nukkit.block.property.type;
 
-
 import cn.nukkit.utils.Utils;
 
 import java.util.Arrays;
@@ -75,5 +74,10 @@ public final class EnumPropertyType<T extends Enum<T>> extends BaseBlockProperty
         public String toString() {
             return "EnumPropertyValue(name=" + name + ", value=" + value + ")";
         }
+    }
+
+    @Override
+    public String toString() {
+        return "EnumPropertyType(name=" + name + ", enumclass=" + enumClass + ")";
     }
 }

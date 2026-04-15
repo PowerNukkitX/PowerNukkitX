@@ -615,6 +615,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         geometry.putCompound("bone_visibility", new CompoundTag());
         geometry.putString("culling", "");
         geometry.putString("culling_layer", "minecraft:culling_layer.undefined");
+        geometry.putString("culling_shape", "");
         geometry.putString("identifier", identifierOverride != null ? identifierOverride : "minecraft:geometry.full_block");
         geometry.putByte("ignoreGeometryForIsSolid", (byte) 1);
         geometry.putByte("needsLegacyTopRotation", (byte) 0);

@@ -8,18 +8,14 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.connection.BedrockSession;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.TrimData;
-import cn.nukkit.network.protocol.types.voxel.VoxelShape;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.registry.VoxelShapeRegistry;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class SpawnResponseHandler extends BedrockSessionPacketHandler {
@@ -107,10 +103,6 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
         server.addOnlinePlayer(player);
         server.onPlayerCompleteLoginSequence(player);
-
-        if (player.isOp() || player.hasPermission("nukkit.textcolor")) {
-            player.setRemoveFormat(false);
-        }
     }
 
     private void startGame() {

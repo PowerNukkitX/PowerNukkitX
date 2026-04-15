@@ -18,6 +18,8 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
         try {
             register("minecraft:empty", new VoxelShape(new VoxelCells(0, 0, 0, List.of()), List.of(0f), List.of(0f), List.of(0f)));
             register("minecraft:unit_cube", new VoxelShape(new VoxelCells(1, 1, 1, List.of(1)), List.of(0f, 1f), List.of(0f, 1f), List.of(0f, 1f)));
+
+            rebuildPacket();
         } catch (RegisterException e) {
             e.printStackTrace();
         }
@@ -34,11 +36,16 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
         VoxelShapesPacket pk = new VoxelShapesPacket();
 
         Map<String, Integer> nameMap = new HashMap<>();
-        for (String name : REGISTRY.keySet()) {
-            nameMap.put(name, nameMap.size());
+        List<VoxelShape> shapes = new ArrayList<>();
+        int i = 0;
+        for (Map.Entry<String, VoxelShape> entry : REGISTRY.entrySet()) {
+            if (!nameMap.containsKey(entry.getKey())) {
+                nameMap.put(entry.getKey(), i++);
+                shapes.add(entry.getValue());
+            }
         }
 
-        pk.setShapes(REGISTRY.values().stream().toList());
+        pk.setShapes(shapes);
         pk.setNameMap(nameMap);
         pk.setCustomShapeCount(REGISTRY.size() - 2);
 

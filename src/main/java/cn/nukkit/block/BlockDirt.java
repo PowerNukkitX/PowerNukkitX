@@ -59,7 +59,7 @@ public class BlockDirt extends BlockSolid implements Natural {
             HumanInventory inventory = player.getInventory();
             Item glassBottle = Item.get(Item.GLASS_BOTTLE);
             if(!player.isCreative()) {
-                 inventory.setItemInHand(glassBottle);
+                 inventory.setItemInMainHand(glassBottle);
             } else inventory.addItem(glassBottle);
             this.getLevel().addSound(this, Sound.BOTTLE_EMPTY);
             this.getLevel().setBlock(this, get(MUD));
