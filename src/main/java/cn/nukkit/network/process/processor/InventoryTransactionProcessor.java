@@ -45,9 +45,7 @@ import java.util.Objects;
 
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
-    Item lastUsedItem = null;
     private final java.util.Map<Long, Integer> lastEntityInteractTick = new java.util.HashMap<>();
-
 
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
@@ -64,14 +62,14 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_RELEASE -> {
                         int lastUseTick = player.getLastUseTick(releaseItemData.itemInHand.getId());
                         if (lastUseTick != -1) {
-                            Item item = player.getInventory().getItemInHand();
+                            Item item = player.getInventory().getItemInMainHand();
 
                             int ticksUsed = player.getLevel().getTick() - lastUseTick;
                             if (!item.onRelease(player, ticksUsed)) {
                                 player.getInventory().sendContents(player);
                             }
 
-                            player.removeLastUseTick(releaseItemData.itemInHand.getId());
+                            player.clearLastUsedItem();
                         } else {
                             player.getInventory().sendContents(player);
                         }
@@ -79,7 +77,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     case InventoryTransactionPacket.RELEASE_ITEM_ACTION_CONSUME -> log.debug("Unexpected release item action consume from {}", player.getName());
                 }
             } finally {
-                player.removeLastUseTick(releaseItemData.itemInHand.getId());
+                player.clearLastUsedItem();
             }
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_NORMAL) {
             if (pk.actions.length == 2 && pk.actions[0].getInventorySource().getType().equals(InventorySource.Type.WORLD_INTERACTION) &&
@@ -138,10 +136,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         if(player.getInventory().getHeldItemIndex() != useItemOnEntityData.hotbarSlot) {
             player.getInventory().equipItem(useItemOnEntityData.hotbarSlot);
         }
-        if (!useItemOnEntityData.itemInHand.equalsExact(player.getInventory().getItemInHand())) {
+        if (!useItemOnEntityData.itemInHand.equalsExact(player.getInventory().getItemInMainHand())) {
             player.getInventory().sendHeldItem(player);
         }
-        Item item = player.getInventory().getItemInHand();
+        Item item = player.getInventory().getItemInMainHand();
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
                 PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
@@ -176,10 +174,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         }
                     }
 
-                    if (forceSetSlot || item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
+                    if (forceSetSlot || item.isNull() || player.getInventory().getItemInMainHand().getId() == item.getId()) {
                         player.getInventory().setItem(useItemOnEntityData.hotbarSlot, item);
                     } else {
-                        logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
+                        logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInMainHand());
                     }
                 } else {
                     //Otherwise nametag still gets consumed on client side
@@ -259,10 +257,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                         player.getInventory().setItem(useItemOnEntityData.hotbarSlot, Item.AIR);
                     } else {
-                        if (item.isNull() || player.getInventory().getItemInHand().getId() == item.getId()) {
+                        if (item.isNull() || player.getInventory().getItemInMainHand().getId() == item.getId()) {
                             player.getInventory().setItem(useItemOnEntityData.hotbarSlot, item);
                         } else {
-                            logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
+                            logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInMainHand());
                         }
                     }
                 }
@@ -284,12 +282,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {
-                        Item i = player.getInventory().getItemInHand();
+                        Item i = player.getInventory().getItemInMainHand();
                         if (player.level.useItemOn(blockVector.asVector3(), i, face, useItemData, player) != null) {
                             return;
                         }
-                    } else if (player.getInventory().getItemInHand().equals(useItemData.itemInHand, true, false)) {
-                        Item i = player.getInventory().getItemInHand();
+                    } else if (player.getInventory().getItemInMainHand().equals(useItemData.itemInHand, true, false)) {
+                        Item i = player.getInventory().getItemInMainHand();
                         Item oldItem = i.clone();
                         //TODO: Implement adventure mode checks
                         if ((i = player.level.useItemOn(blockVector.asVector3(), i, face, useItemData, player)) != null) {
@@ -320,7 +318,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                     return;
                 }
                 player.resetInventory();
-                Item i = player.getInventory().getItemInHand();
+                Item i = player.getInventory().getItemInMainHand();
                 Item oldItem = i.clone();
                 if (player.isSurvival() || player.isAdventure()) {
                     if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), 7) && (i = player.level.useBreakOn(blockVector.asVector3(), face, i, player, true)) != null) {
@@ -354,7 +352,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
-                Item serverItemInHand = player.getInventory().getUnclonedItemInHand();
+                Item serverItemInHand = player.getInventory().getItemInMainHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
                 if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
@@ -365,7 +363,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
                 if (player.isCreative()) {
                     item = serverItemInHand;
-                } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
+                } else if (!serverItemInHand.equals(useItemDataItem)) {
                     player.getServer().getLogger().debug("Item received did not match item in hand."); //Client seems to send multiple packets with the same durability.
                     player.getInventory().sendHeldItem(player);
                     return;
@@ -384,38 +382,36 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 if (item.onClickAir(player, directionVector)) {
                     if (!player.isCreative()) {
-                        if (item.isNull() || Objects.equals(player.getInventory().getItemInHand().getId(), item.getId())) {
+                        if (item.isNull() || Objects.equals(player.getInventory().getItemInMainHand().getId(), item.getId())) {
                             player.getInventory().setItem(useItemData.hotbarSlot, item);
                         } else {
-                            logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInHand());
+                            logTriedToSetButHadInHand(playerHandle, item, player.getInventory().getItemInMainHand());
                         }
                     }
                     if (!player.isUsingItem(item.getId())) {
-                        lastUsedItem = item;
-                        player.setLastUseTick(item.getId(), player.getLevel().getTick());//set lastUsed tick
-                        if (lastUsedItem.getUsingTicks() <= 0) {
-                            if (lastUsedItem.onUse(player, 0)) {
-                                lastUsedItem.afterUse(player);
+                        player.setLastUsedItem(item);
+                        if (item.getUsingTicks() <= 0) {
+                            if (item.onUse(player, 0)) {
+                                item.afterUse(player);
                             }
-                            player.removeLastUseTick(item.getId());
-                            lastUsedItem = null;
+                            player.clearLastUsedItem();
                             return;
                         }
                         return;
                     }
 
+                    Item lastUsedItem = player.getLastUsedItem();
                     int ticksUsed = player.getLevel().getTick() - player.getLastUseTick(lastUsedItem.getId());
                     if (lastUsedItem.onUse(player, ticksUsed)) {
                         lastUsedItem.afterUse(player);
-                        player.removeLastUseTick(item.getId());
-                        lastUsedItem = null;
+                        player.clearLastUsedItem();
                     }
                 }
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_SPEAR_STAB -> {
                 Item item;
                 Item useItemDataItem = useItemData.itemInHand;
-                Item serverItemInHand = player.getInventory().getUnclonedItemInHand();
+                Item serverItemInHand = player.getInventory().getItemInMainHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
                 if(useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsInt("Damage"))) {
@@ -426,7 +422,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
 
                 if (player.isCreative()) {
                     item = serverItemInHand;
-                } else if (!player.getInventory().getItemInHand().equals(useItemDataItem)) {
+                } else if (!serverItemInHand.equals(useItemDataItem)) {
                     player.getServer().getLogger().debug("Item received did not match item in hand.");
                     player.getInventory().sendHeldItem(player);
                     return;

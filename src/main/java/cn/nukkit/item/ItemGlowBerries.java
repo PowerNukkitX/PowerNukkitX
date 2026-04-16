@@ -41,7 +41,7 @@ public class ItemGlowBerries extends ItemFood {
             level.addSound(target.down(), Sound.DIG_CAVE_VINES);
             if (player.isAdventure() || player.isSurvival()) {
                 --this.count;
-                player.getInventory().setItemInHand(this);
+                player.getInventory().setItemInMainHand(this);
             }
             return true;
         }

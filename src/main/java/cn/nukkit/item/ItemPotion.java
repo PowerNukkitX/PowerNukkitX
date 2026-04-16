@@ -104,7 +104,7 @@ public class ItemPotion extends Item {
 
         if (player.isAdventure() || player.isSurvival()) {
             --this.count;
-            player.getInventory().setItemInHand(this);
+            player.getInventory().setItemInMainHand(this);
             player.getInventory().addItem(new ItemGlassBottle());
         }
 

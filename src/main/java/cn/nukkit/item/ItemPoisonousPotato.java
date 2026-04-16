@@ -26,7 +26,7 @@ public class ItemPoisonousPotato extends ItemPotato {
         if (0.6F >= Math.random()) {
             player.addEffect(Effect.get(EffectType.POISON).setDuration(80));
         }
-        return true;
+        return super.onEaten(player);
     }
 
     @Override

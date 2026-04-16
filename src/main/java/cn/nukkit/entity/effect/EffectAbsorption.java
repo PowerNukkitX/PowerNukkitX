@@ -13,7 +13,7 @@ public class EffectAbsorption extends Effect {
     @Override
     public void add(Entity entity) {
         int absorption = (4 * this.getLevel());
-        if (absorption > entity.getAbsorption()){
+        if (absorption >= entity.getAbsorption()) {
             entity.setAbsorption(absorption);
         }
     }

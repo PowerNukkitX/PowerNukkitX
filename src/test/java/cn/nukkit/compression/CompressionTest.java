@@ -2,6 +2,10 @@ package cn.nukkit.compression;
 
 import cn.nukkit.GameMockExtension;
 import cn.nukkit.Server;
+import cn.nukkit.network.compression.CompressionProvider;
+import cn.nukkit.network.compression.LibDeflateThreadLocal;
+import cn.nukkit.network.compression.ZlibChooser;
+import cn.nukkit.network.compression.ZlibProvider;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;

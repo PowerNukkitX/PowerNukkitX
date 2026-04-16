@@ -822,6 +822,15 @@ public class Chunk implements IChunk {
                     log.warn("Block entity validation failed", e);
                 }
             }
+            // [ITEM_DEBUG] Log when a block entity is being removed as invalid
+            if (log.isDebugEnabled()) {
+                boolean valid;
+                try { valid = entity.isBlockEntityValid(); } catch (Exception ignored) { valid = false; }
+                log.debug("[ITEM_DEBUG] removeInvalidTile closing {} at {},{},{} (closed={}, valid={}). Caller: {}",
+                        entity.getClass().getSimpleName(), (int) entity.x, (int) entity.y, (int) entity.z,
+                        entity.closed, valid,
+                        Thread.currentThread().getStackTrace()[2]);
+            }
             entity.close();
         }
     }

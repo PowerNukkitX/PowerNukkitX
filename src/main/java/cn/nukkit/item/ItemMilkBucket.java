@@ -45,7 +45,7 @@ public class ItemMilkBucket extends ItemBucket {
         if (player.isAdventure() || player.isSurvival()) {
             --this.count;
             player.getInventory().addItem(Item.get(ItemID.BUCKET, 0, 1));
-            player.getInventory().setItemInHand(this);
+            player.getInventory().setItemInMainHand(this);
             player.getLevel().addSound(player, Sound.RANDOM_BURP);
         }
 

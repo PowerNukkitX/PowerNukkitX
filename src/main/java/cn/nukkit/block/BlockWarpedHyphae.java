@@ -21,6 +21,6 @@ public class BlockWarpedHyphae extends BlockStem {
 
     @Override
     public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
+        return BlockStrippedWarpedHyphae.PROPERTIES.getDefaultState();
     }
 }

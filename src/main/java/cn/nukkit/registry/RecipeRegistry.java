@@ -762,16 +762,30 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                 ingredients.add(parseDescription(input, inputParseType));
                             }
 
-                            this.register(new ShapelessRecipe(
-                                    recipeId,
-                                    uuid,
-                                    priority,
-                                    primaryResult.toItem(),
-                                    ingredients,
-                                    new RecipeUnlockingRequirement(
-                                            RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
-                                    )
-                            ));
+                            int type = ((Number) recipe.get("type")).intValue();
+                            if (type == RecipeType.USER_DATA_SHAPELESS_RECIPE.networkType) {
+                                this.register(new UserDataShapelessRecipe(
+                                        recipeId,
+                                        uuid,
+                                        priority,
+                                        primaryResult.toItem(),
+                                        ingredients,
+                                        new RecipeUnlockingRequirement(
+                                                RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                        )
+                                ));
+                            } else {
+                                this.register(new ShapelessRecipe(
+                                        recipeId,
+                                        uuid,
+                                        priority,
+                                        primaryResult.toItem(),
+                                        ingredients,
+                                        new RecipeUnlockingRequirement(
+                                                RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                        )
+                                ));
+                            }
                         }
                     }
                     case "furnace", "blast_furnace", "smoker", "campfire", "soul_campfire" -> {

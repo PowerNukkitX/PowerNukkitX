@@ -113,7 +113,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         for (Player p : entity.getLevel().getPlayers().values()) {
             if (p == null || !p.isOnline() || !p.isAlive()) continue;
 
-            var item = p.getInventory().getItemInHand();
+            var item = p.getInventory().getItemInMainHand();
             if (item == null || item.isNull()) continue;
 
             if (!temptItems.contains(item.getId())) continue;
@@ -369,7 +369,7 @@ public class TemptExecutor implements EntityControl, IBehaviorExecutor {
         for (Player p : entity.getLevel().getPlayers().values()) {
             if (p == null || !p.isOnline() || !p.isAlive()) continue;
 
-            var item = p.getInventory().getItemInHand();
+            var item = p.getInventory().getItemInMainHand();
             if (item.isNull() || !temptItems.contains(item.getId())) continue;
 
             double d2 = canTemptVertically ? entity.distanceSquared(p) : horizontalDistanceSquared(entity, p);
