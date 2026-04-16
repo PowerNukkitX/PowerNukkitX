@@ -78,23 +78,25 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
 
     @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock();
+        return withDirection(Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock());
     }
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        if (getOxidizationLevel().equals(oxidizationLevel)) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
+        if (getOxidizationLevel().equals(oxidizationLevel)) return true;
+        return getValidLevel().setBlock(this, withDirection(Block.get(getCopperId(isWaxed(), oxidizationLevel))));
     }
 
     @Override
     public boolean setWaxed(boolean waxed) {
-        if (isWaxed() == waxed) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
+        if (isWaxed() == waxed) return true;
+        return getValidLevel().setBlock(this, withDirection(Block.get(getCopperId(waxed, getOxidizationLevel()))));
+    }
+
+    private Block withDirection(Block newBlock) {
+        newBlock.setPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION,
+                getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
+        return newBlock;
     }
 
     @Override

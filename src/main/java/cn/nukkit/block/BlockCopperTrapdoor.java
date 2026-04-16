@@ -67,23 +67,26 @@ public class BlockCopperTrapdoor extends BlockTrapdoor implements Oxidizable, Wa
 
     @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock();
+        return withCurrentProperties(Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock());
     }
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        if (getOxidizationLevel().equals(oxidizationLevel)) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
+        if (getOxidizationLevel().equals(oxidizationLevel)) return true;
+        return getValidLevel().setBlock(this, withCurrentProperties(Block.get(getCopperId(isWaxed(), oxidizationLevel))));
     }
 
     @Override
     public boolean setWaxed(boolean waxed) {
-        if (isWaxed() == waxed) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
+        if (isWaxed() == waxed) return true;
+        return getValidLevel().setBlock(this, withCurrentProperties(Block.get(getCopperId(waxed, getOxidizationLevel()))));
+    }
+
+    private Block withCurrentProperties(Block newBlock) {
+        newBlock.setPropertyValue(CommonBlockProperties.DIRECTION, getPropertyValue(CommonBlockProperties.DIRECTION));
+        newBlock.setPropertyValue(CommonBlockProperties.OPEN_BIT, getPropertyValue(CommonBlockProperties.OPEN_BIT));
+        newBlock.setPropertyValue(CommonBlockProperties.UPSIDE_DOWN_BIT, getPropertyValue(CommonBlockProperties.UPSIDE_DOWN_BIT));
+        return newBlock;
     }
 
     @Override
