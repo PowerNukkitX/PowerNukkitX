@@ -18,13 +18,9 @@ public abstract class WaterFoliageFeature extends CountGenerateFeature {
     @Override
     public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
         IChunk chunk = context.getChunk();
-        int chunkX = chunk.getX();
-        int chunkZ = chunk.getZ();
         int randomX = random.nextInt(15);
         int randomZ = random.nextInt(15);
         int height = chunk.getHeightMap(randomX, randomZ);
-        int x = (chunkX << 4) + randomX;
-        int z = (chunkZ << 4) + randomZ;
         BlockState topBlockState = chunk.getBlockState(randomX, height, randomZ);
         if(topBlockState == STATE_STILL_WATER) {
             int depth = 0;
