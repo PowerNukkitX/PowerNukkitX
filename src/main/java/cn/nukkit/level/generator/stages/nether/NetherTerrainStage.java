@@ -30,8 +30,6 @@ public class NetherTerrainStage extends GenerateStage {
     private final static BlockState LAVA = BlockLava.PROPERTIES.getDefaultState();
 
     private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
-    private final ThreadLocal<DensityFunction.MutableFunctionContext> densityContext =
-            ThreadLocal.withInitial(DensityFunction.MutableFunctionContext::new);
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -42,7 +40,6 @@ public class NetherTerrainStage extends GenerateStage {
         int baseZ = chunkZ << 4;
         Level level = chunk.getLevel();
         NukkitRandom random = this.random.get();
-        DensityFunction.MutableFunctionContext densityContext = this.densityContext.get();
         random.setSeed(level.getSeed());
         NetherObjectHolder.TerrainHolder noises = ((NetherObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
         DensityFunction densityFunction = noises.getDensityFunction();
@@ -60,7 +57,7 @@ public class NetherTerrainStage extends GenerateStage {
                     }
                     chunk.setBlockState(x, 127, z, BEDROCK);
                     for (int y = 1; y < 127; ++y) {
-                        if (densityFunction.compute(densityContext.set(baseX | x, y, baseZ | z)) > 0) {
+                        if (densityFunction.compute(new DensityFunction.SinglePointContext(baseX | x, y, baseZ | z)) > 0) {
                             chunk.setBlockState(x, y, z, NETHERRACK);
                         } else if (y <= LAVA_LEVEL) {
                             chunk.setBlockState(x, y, z, LAVA);

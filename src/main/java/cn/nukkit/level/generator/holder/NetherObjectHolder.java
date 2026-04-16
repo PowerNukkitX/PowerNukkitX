@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.holder;
 
 import cn.nukkit.level.generator.densityfunction.DensityFunction;
 import cn.nukkit.level.generator.densityfunction.DensityBase3dNoise;
-import cn.nukkit.level.generator.densityfunction.NetherDensity;
+import cn.nukkit.level.generator.densityfunction.DensityNether;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class NetherObjectHolder extends RandomizedObjectHolder {
             this.netherStateNoise = new NormalNoise(getRandomSourceProvider().identical(), -4, new float[]{1.0f});
             this.netherwartNoise = new NormalNoise(getRandomSourceProvider().identical(), -3, new float[]{1.0f, 0.0f, 0.0f, 0.9f});
             this.base3dNoise = DensityBase3dNoise.nether(getRandomSourceProvider().identical());
-            this.densityFunction = NetherDensity.finalDensity(this.base3dNoise);
+            this.densityFunction = DensityNether.finalDensity(this.base3dNoise);
         }
     }
 
