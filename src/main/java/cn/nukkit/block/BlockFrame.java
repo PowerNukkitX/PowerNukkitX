@@ -267,7 +267,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                 nbt.put(e.getKey(), e.getValue());
             }
         }
-        level.setBlock(block, this, true, true);
+        level.setBlock(block, this, false, true);
         BlockFrame levelBlock = (BlockFrame) block.getLevelBlock();
         BlockEntityItemFrame frame = levelBlock.getBlockEntity();
         if (frame == null) {
