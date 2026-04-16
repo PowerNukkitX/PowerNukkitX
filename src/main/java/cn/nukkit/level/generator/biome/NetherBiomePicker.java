@@ -35,10 +35,8 @@ public class NetherBiomePicker extends BiomePicker<NetherBiomeResult> {
 
     @Override
     public NetherBiomeResult pick(int x, int y, int z) {
-        float scaledX = x;
-        float scaledZ = z;
-        float temperature = temperatureNoise.getValue(scaledX, y, scaledZ);
-        float humidity = humidityNoise.getValue(scaledX, y, scaledZ);
+        float temperature = temperatureNoise.getValue(x, y, z);
+        float humidity = humidityNoise.getValue(x, y, z);
         Vector3 point = new Vector3(temperature, humidity, 0);
         double distance = Float.MAX_VALUE;
         int biomeId = BiomeID.HELL;
