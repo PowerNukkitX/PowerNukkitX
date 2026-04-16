@@ -78,7 +78,7 @@ public class MineshaftPopulator extends Populator {
             IChunk chunk = level.getChunk(chunkX, chunkZ);
             if (chunk != null) {
                 int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-                MineshaftPieces.Type type = biome >= BiomeID.MESA && biome <= BiomeID.MESA_PLATEAU || biome >= BiomeID.MESA_BRYCE && biome <= BiomeID.MESA_PLATEAU_STONE ? MineshaftPieces.Type.MESA : MineshaftPieces.Type.NORMAL;
+                MineshaftPieces.Type type = isBadlandsBiome(biome) ? MineshaftPieces.Type.MESA : MineshaftPieces.Type.NORMAL;
 
                 MineshaftPieces.MineshaftRoom start = new MineshaftPieces.MineshaftRoom(0, this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2, type);
                 this.pieces.add(start);
@@ -95,6 +95,11 @@ public class MineshaftPopulator extends Populator {
                     this.moveBelowSeaLevel(64, this.random, 10);
                 }
             }
+        }
+
+        private static boolean isBadlandsBiome(int biome) {
+            return biome >= BiomeID.MESA && biome <= BiomeID.MESA_PLATEAU
+                    || biome >= BiomeID.MESA_BRYCE && biome <= BiomeID.MESA_PLATEAU_MUTATED;
         }
 
         @Override //\\ MineshaftStart::getType(void) // 3
