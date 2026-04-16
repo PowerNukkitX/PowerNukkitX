@@ -22,8 +22,6 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     public static final int CONTINENT_MID_INLAND = 5;
     public static final int CONTINENT_FAR_INLAND = 6;
 
-    public static final float XZSCALE = 0.25f;
-
     private final Level level;
 
     public OverworldBiomePicker(Level level) {
