@@ -12,6 +12,7 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
@@ -102,8 +103,8 @@ public class BundleInventory extends BaseInventory {
         );
 
         for (Player player : players) {
-            int id = SpecialWindowId.CONTAINER_ID_REGISTRY.getId();
-            if (id == -1 || !player.spawned) {
+            int id = ContainerId.CONTAINER_ID_REGISTRY;
+            if (!player.spawned) {
                 this.close(player);
                 continue;
             }

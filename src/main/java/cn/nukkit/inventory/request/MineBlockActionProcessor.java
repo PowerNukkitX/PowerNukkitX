@@ -2,11 +2,11 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.HumanInventory;
-import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.MineBlockAction;
@@ -41,7 +41,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
         }
 
         if (itemInHand.getDamage() != action.getPredictedDurability()) {
-            int id = SpecialWindowId.PLAYER.getId();
+            int id = ContainerId.INVENTORY;
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
             inventorySlotPacket.setContainerID(id);
             inventorySlotPacket.setSlot(action.getHotbarSlot());

@@ -103,7 +103,7 @@ public class WorkExecutor extends NearbyFlatRandomRoamExecutor {
             if (entity.getMemoryStorage().get(CoreMemoryTypes.LAST_REFILL_SHIFT) != shift) {
                 this.stayTick = 100;
                 this.walkTick = 200;
-                // TODO protocol  villager.getRecipes().getAll().forEach(tag -> tag.putInt("uses", 0));
+                villager.getRecipes().forEach(tag -> tag.toBuilder().putInt("uses", 0).build());
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_REFILL_SHIFT, shift);
             }
             if (stayTick < 100) setTarget(entity);

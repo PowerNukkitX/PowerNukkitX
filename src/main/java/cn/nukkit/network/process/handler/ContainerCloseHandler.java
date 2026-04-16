@@ -1,12 +1,11 @@
 package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
-import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
 
 /**
@@ -17,7 +16,7 @@ public class ContainerCloseHandler implements PacketHandler<ContainerClosePacket
     @Override
     public void handle(ContainerClosePacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-        if (!player.spawned || packet.getContainerID() == SpecialWindowId.PLAYER.getId() && !player.isInventoryOpen()) {
+        if (!player.spawned || packet.getContainerID() == ContainerId.INVENTORY && !player.isInventoryOpen()) {
             this.sendClose(player, packet);
             player.setClosingWindowId(Integer.MIN_VALUE);
             return;
@@ -25,7 +24,7 @@ public class ContainerCloseHandler implements PacketHandler<ContainerClosePacket
 
 
         if (player.getWindowIndex().containsKey(packet.getContainerID())) {
-            if (packet.getContainerID() == SpecialWindowId.PLAYER.getId()) {
+            if (packet.getContainerID() == ContainerId.INVENTORY) {
                 player.setClosingWindowId(packet.getContainerID());
                 player.getInventory().close(player);
                 player.setInventoryOpen(false);
@@ -35,7 +34,7 @@ public class ContainerCloseHandler implements PacketHandler<ContainerClosePacket
         }
 
         if (packet.getContainerID() == -1) {
-            player.addWindow(player.getCraftingGrid(), (byte) SpecialWindowId.NONE.getId());
+            player.addWindow(player.getCraftingGrid(), (byte) ContainerId.NONE);
         }
         sendClose(player, packet);
         player.setClosingWindowId(Integer.MIN_VALUE);

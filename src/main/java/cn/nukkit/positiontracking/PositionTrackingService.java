@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBServerBroadcastPacket;
 import org.jetbrains.annotations.NotNull;
@@ -106,7 +107,15 @@ public class PositionTrackingService implements Closeable {
             final PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
             packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.UPDATE);
             packet.setTrackingId(trackingHandler);
-            packet.setPositionTrackingData(NbtMap.EMPTY); // TODO protocol
+            packet.setPositionTrackingData(
+                    NbtMap.builder()
+                            .putByte("version", (byte) 1)
+                            .putString("id", String.format("0x%08x", trackingHandler))
+                            .putList("pos", NbtType.INT, Arrays.asList(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))
+                            .putByte("status", (byte) 0)
+                            .putInt("dim", player.getLevel().getDimension())
+                            .build()
+            );
             player.dataPacket(packet);
         } else {
             sendTrackingDestroy(player, trackingHandler);
@@ -153,7 +162,15 @@ public class PositionTrackingService implements Closeable {
         PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
         packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.DESTROY);
         packet.setTrackingId(trackingHandler);
-        packet.setPositionTrackingData(NbtMap.EMPTY); // TODO protocol
+        packet.setPositionTrackingData(
+                NbtMap.builder()
+                        .putByte("version", (byte) 1)
+                        .putString("id", String.format("0x%08x", trackingHandler))
+                        .putList("pos", NbtType.INT, Arrays.asList(0, 0, 0))
+                        .putByte("status", (byte) 2)
+                        .putInt("dim", 0)
+                        .build()
+        );
         return packet;
     }
 

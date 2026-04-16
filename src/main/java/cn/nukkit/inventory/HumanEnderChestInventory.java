@@ -9,6 +9,7 @@ import cn.nukkit.level.Sound;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
@@ -81,7 +82,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
     @Override
     public Map<Integer, ContainerEnumName> slotTypeMap() {
         Map<Integer, ContainerEnumName> map = super.slotTypeMap();
-        map.put(SpecialWindowId.CONTAINER_ID_REGISTRY.getId(), ContainerEnumName.ANVIL_INPUT_CONTAINER);
+        map.put(ContainerId.CONTAINER_ID_REGISTRY, ContainerEnumName.ANVIL_INPUT_CONTAINER);
         return map;
     }
 

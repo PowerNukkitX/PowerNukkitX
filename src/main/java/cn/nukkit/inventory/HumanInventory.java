@@ -19,6 +19,7 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.ArmorSlot;
 import org.cloudburstmc.protocol.bedrock.data.ArmorSlotAndDamagePair;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
@@ -517,7 +518,7 @@ public class HumanInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                final int id = SpecialWindowId.ARMOR.getId();
+                final int id = ContainerId.ARMOR;
                 final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
                 inventoryContentPacket.setInventoryId(id);
                 inventoryContentPacket.setSlots(Arrays.stream(armor).map(Item::toNetwork).toList());
@@ -605,7 +606,7 @@ public class HumanInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                final int id = SpecialWindowId.ARMOR.getId();
+                final int id = ContainerId.ARMOR;
                 final InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
                 inventorySlotPacket.setContainerID(id);
                 inventorySlotPacket.setSlot(index);
@@ -682,7 +683,7 @@ public class HumanInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                int id = SpecialWindowId.PLAYER.getId();
+                int id =  ContainerId.INVENTORY;
                 inventorySlotPacket.setContainerID(id);
                 inventorySlotPacket.setFullContainerName(
                         new FullContainerName(

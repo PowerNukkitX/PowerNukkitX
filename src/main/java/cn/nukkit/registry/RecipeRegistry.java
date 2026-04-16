@@ -466,9 +466,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public void rebuildPacket() {
-        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(64);
-        CraftingDataPacket pk = new CraftingDataPacket();
-
+        final CraftingDataPacket pk = new CraftingDataPacket();
         // TODO protocol stonecutter recipe
 
         for (Recipe netIdRecipe : this.getNetworkIdRecipeList()) {

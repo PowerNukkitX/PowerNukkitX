@@ -58,7 +58,6 @@ import cn.nukkit.inventory.EntityHandItem;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerCursorInventory;
-import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.inventory.fake.FakeInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
@@ -157,6 +156,7 @@ import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
@@ -173,6 +173,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.awt.*;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
@@ -403,7 +404,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.displayName = info.getIdentityClaims().extraData.displayName;
         this.clientChainData = info.getClientChainData();
         this.uuid = UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + this.getXUID()).getBytes(StandardCharsets.UTF_8));
-        this.rawUUID = /* TODO protocol */new byte[0];
+        final ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.putLong(this.uuid.getMostSignificantBits());
+        buffer.putLong(this.uuid.getLeastSignificantBits());
+        this.rawUUID = buffer.array();
         this.setSkin(info.getSkin());
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
         this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
@@ -1500,27 +1504,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
-        this.addWindow(this.getInventory(), (byte) SpecialWindowId.PLAYER.getId());
+        this.addWindow(this.getInventory(), (byte) ContainerId.INVENTORY);
         //addDefaultWindows when the player doesn't have a spawn yet,
         // so we need to manually open it to add the player to the viewer
         this.getInventory().open(this);
-        this.permanentWindows.add((byte) SpecialWindowId.PLAYER.getId());
+        this.permanentWindows.add((byte) ContainerId.INVENTORY);
 
-        this.addWindow(this.getCreativeOutputInventory(), (byte) SpecialWindowId.CREATIVE.getId());
+        this.addWindow(this.getCreativeOutputInventory(), (byte) ContainerId.CRAFTING_ADD_INGREDIENT);
         this.getCreativeOutputInventory().open(this);
-        this.permanentWindows.add((byte) SpecialWindowId.CREATIVE.getId());
+        this.permanentWindows.add((byte) ContainerId.CRAFTING_ADD_INGREDIENT);
 
-        this.addWindow(this.getOffhandInventory(), (byte) SpecialWindowId.OFFHAND.getId());
+        this.addWindow(this.getOffhandInventory(), (byte) ContainerId.OFFHAND);
         this.getOffhandInventory().open(this);
-        this.permanentWindows.add((byte) SpecialWindowId.OFFHAND.getId());
+        this.permanentWindows.add((byte) ContainerId.OFFHAND);
 
-        this.addWindow(this.getCraftingGrid(), (byte) SpecialWindowId.NONE.getId());
+        this.addWindow(this.getCraftingGrid(), (byte) ContainerId.NONE);
         this.getCraftingGrid().open(this);
-        this.permanentWindows.add((byte) SpecialWindowId.NONE.getId());
+        this.permanentWindows.add((byte) ContainerId.NONE);
 
-        this.addWindow(this.getCursorInventory(), (byte) SpecialWindowId.CURSOR.getId());
+        this.addWindow(this.getCursorInventory(), (byte) ContainerId.UI);
         this.getCursorInventory().open(this);
-        this.permanentWindows.add((byte) SpecialWindowId.CURSOR.getId());
+        this.permanentWindows.add((byte) ContainerId.UI);
     }
 
     @Override
@@ -2320,7 +2324,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return int
      */
     public int getPing() {
-        return /* TODO protocol (int) this.getSession().getPing()*/-1;
+        return -1;
     }
 
     public boolean sleepOn(Vector3 pos) {

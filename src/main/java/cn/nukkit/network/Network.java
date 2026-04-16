@@ -125,7 +125,6 @@ public class Network implements NetworkInterface {
                 .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
                 .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
-                // TODO protocol   .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, RakServerCookieMode.ACTIVE)
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
@@ -220,8 +219,7 @@ public class Network implements NetworkInterface {
      * @return the network latency
      */
     public int getNetworkLatency(Player player) {
-        var session = this.sessionMap.get(player.getRawSocketAddress());
-        return session == null ? -1 : -1/* TODO protocol (int) session.getPing()*/;
+        return -1;
     }
 
     /**

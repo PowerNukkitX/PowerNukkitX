@@ -5,7 +5,9 @@ import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.tags.ItemTags;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.DefaultDescriptor;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptor;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
@@ -42,9 +44,9 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             for (ItemDescriptorWithCount serverExpect : action.getIngredients()) {
                 boolean match = false;
                 if (serverExpect.getDescriptor() instanceof ItemTagDescriptor tagDescriptor) {
-                    match = this.match(tagDescriptor, clientInputItem);
+                    match = this.match(serverExpect, tagDescriptor, clientInputItem);
                 } else if (serverExpect.getDescriptor() instanceof DefaultDescriptor descriptor) {
-                    match = this.match(descriptor, clientInputItem);
+                    match = this.match(serverExpect, descriptor, clientInputItem);
                 }
                 if (match) {
                     success++;
@@ -81,7 +83,16 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
         return null;
     }
 
-    private boolean match(ItemDescriptor descriptor, Item item) {
-        return false; // TODO protocol
+    private boolean match(ItemDescriptorWithCount descriptorWithCount, ItemDescriptor descriptor, Item item) {
+        if (descriptor instanceof ItemTagDescriptor tagDescriptor) {
+            return item.getCount() >= descriptorWithCount.getCount() && ItemTags.getTagSet(item.getId()).contains(tagDescriptor.getItemTag());
+        } else if (descriptor instanceof DefaultDescriptor defaultDescriptor) {
+            final ItemData itemData = ItemData.builder()
+                    .definition(defaultDescriptor.getItemId())
+                    .damage(defaultDescriptor.getAuxValue())
+                    .build();
+            return Item.fromNetwork(itemData).equals(item, true, false);
+        }
+        return false;
     }
 }

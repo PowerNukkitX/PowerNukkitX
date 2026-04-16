@@ -21,10 +21,6 @@ import java.util.TreeMap;
 @UtilityClass
 public class ItemHelper {
 
-    public boolean match(ItemDescriptor itemDescriptor, Item item) {
-        return false; //TODO protocol
-    }
-
     public NbtMap write(Item item) {
         return write(item, null);
     }

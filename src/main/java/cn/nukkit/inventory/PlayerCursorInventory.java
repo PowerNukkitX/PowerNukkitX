@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
@@ -45,7 +46,7 @@ public class PlayerCursorInventory extends BaseInventory {
     @Override
     public void sendSlot(int index, Player... players) {
         final InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.setContainerID(SpecialWindowId.CURSOR.getId());
+        inventorySlotPacket.setContainerID(ContainerId.UI);
         inventorySlotPacket.setSlot(index);
         inventorySlotPacket.setItem(this.getUnclonedItem(index).toNetwork());
         inventorySlotPacket.setFullContainerName(
@@ -60,7 +61,7 @@ public class PlayerCursorInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         final InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-        inventorySlotPacket.setContainerID(SpecialWindowId.CURSOR.getId());
+        inventorySlotPacket.setContainerID(ContainerId.UI);
         inventorySlotPacket.setSlot(0);
         inventorySlotPacket.setItem(this.getUnclonedItem(0).toNetwork());
         inventorySlotPacket.setFullContainerName(

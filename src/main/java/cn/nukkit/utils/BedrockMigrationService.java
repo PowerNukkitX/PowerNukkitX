@@ -81,14 +81,6 @@ public class BedrockMigrationService {
         // Position
         List<Double> posRaw = tag.getList("Pos", NbtType.DOUBLE);
 
-        /*double x = 0, y = 100, z = 0;
-        TODO protocol
-        if (posRaw != null && posRaw.size() >= 3) {
-            x = ((Number) posRaw.get(0).parseValue()).doubleValue();
-            y = ((Number) posRaw.get(1).parseValue()).doubleValue();
-            z = ((Number) posRaw.get(2).parseValue()).doubleValue();
-        }*/
-
         final List<Double> motion = Arrays.asList(0.0, 0.0, 0.0);
         final List<Float> rotation = Arrays.asList(0f, 0f);
 

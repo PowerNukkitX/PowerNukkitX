@@ -5,6 +5,7 @@ import cn.nukkit.entity.IHuman;
 import cn.nukkit.item.Item;
 import com.google.common.collect.BiMap;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
 import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
@@ -64,7 +65,7 @@ public class HumanOffHandInventory extends BaseInventory {
         for (Player player : players) {
             if (player == this.getHolder()) {
                 final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-                inventoryContentPacket.setInventoryId(SpecialWindowId.OFFHAND.getId());
+                inventoryContentPacket.setInventoryId(ContainerId.OFFHAND);
                 inventoryContentPacket.getSlots().add(item.toNetwork());
                 inventoryContentPacket.setFullContainerName(
                         new FullContainerName(
@@ -92,7 +93,7 @@ public class HumanOffHandInventory extends BaseInventory {
         packet.setItem(item.toNetwork());
         packet.setSlot(slot);
         packet.setSelectedSlot(slot);
-        packet.setContainerId(SpecialWindowId.OFFHAND.getId());
+        packet.setContainerId(ContainerId.OFFHAND);
         return packet;
     }
 

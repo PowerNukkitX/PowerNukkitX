@@ -191,7 +191,6 @@ public class ClientSkinData {
                 return ImageData.EMPTY;
             }
             final byte[] decoded = DECODER.decode(imageBase64);
-            // TODO protocol check image size
             return ImageData.of(
                     imageWidth.intValue(),
                     imageHeight.intValue(),
