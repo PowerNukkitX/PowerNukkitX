@@ -36,8 +36,15 @@ public abstract class BlockCopperDoorBase extends BlockDoor implements Oxidizabl
     }
 
     @Override
+    public int onUpdate(int type) {
+        int result = Oxidizable.super.onUpdate(type);
+        if (result != 0) return result;
+        return super.onUpdate(type);
+    }
+
+    @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(player.isSneaking()) {
+        if (player != null && player.isSneaking()) {
             return Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
                     || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz);
         }

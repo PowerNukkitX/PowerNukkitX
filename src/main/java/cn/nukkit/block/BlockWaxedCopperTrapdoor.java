@@ -23,4 +23,9 @@ public class BlockWaxedCopperTrapdoor extends BlockCopperTrapdoor {
     public String getName() {
         return "Waxed Copper Trapdoor";
     }
+
+    @Override
+    public boolean isWaxed() {
+        return true;
+    }
 }

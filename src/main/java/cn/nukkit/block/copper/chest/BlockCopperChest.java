@@ -1,11 +1,12 @@
 package cn.nukkit.block.copper.chest;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.registry.Registries;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +35,20 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
     @Override
     public String getName() {
         return "Copper Chest";
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        return Oxidizable.super.onUpdate(type);
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
+        if (Waxable.super.onActivate(item, player, blockFace, fx, fy, fz)
+                || Oxidizable.super.onActivate(item, player, blockFace, fx, fy, fz)) {
+            return true;
+        }
+        return super.onActivate(item, player, blockFace, fx, fy, fz);
     }
 
     @Override
