@@ -28,8 +28,8 @@ public class NetherFortressPopulator extends Populator {
         Level level = chunk.getLevel();
         long seed = level.getSeed();
 
-        if (BastionRemnantPopulator.isNetherComplexStart(seed, chunkX, chunkZ, random)
-                && !BastionRemnantPopulator.shouldGenerateBastion(seed, chunkX, chunkZ, random)) {
+        if (NetherComplexPlacement.isNetherComplexStart(seed, chunkX, chunkZ, random)
+                && !NetherComplexPlacement.shouldGenerateBastion(seed, chunkX, chunkZ, random)) {
             random.setSeed(seed);
             int r1 = random.nextInt();
             int r2 = random.nextInt();
