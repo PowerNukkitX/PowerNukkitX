@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
@@ -112,11 +113,69 @@ public class StrongholdPopulator extends Populator {
                     }
 
                     this.calculateBoundingBox();
-                    this.moveBelowSeaLevel(64, this.random, 10);
+                    this.moveInsideHeights(this.random, level.getMinHeight(), level.getMaxHeight() - 1);
+                    this.pushBelowOceanFloorIfNeeded(level, chunkX, chunkZ);
                 } while (this.pieces.isEmpty() || start.portalRoomPiece == null);
 
                 StrongholdPopulator.this.discoveredStarts.add(this);
             }
+        }
+
+        private void pushBelowOceanFloorIfNeeded(BlockManager level, int chunkX, int chunkZ) {
+            Level world = level.getLevel();
+            int minHeight = world.getMinHeight();
+            int[][] samples = new int[][]{
+                    {8, 8}, {4, 4}, {4, 12}, {12, 4}, {12, 12}
+            };
+
+            boolean hasWaterSample = false;
+            int minOceanFloor = Integer.MAX_VALUE;
+
+            for (int[] sample : samples) {
+                int x = (chunkX << 4) + sample[0];
+                int z = (chunkZ << 4) + sample[1];
+                int y = world.getHeightMap(x, z);
+
+                if (y <= minHeight) {
+                    continue;
+                }
+
+                String topId = world.getBlockIdAt(x, y, z);
+                if (!isWater(topId)) {
+                    continue;
+                }
+
+                hasWaterSample = true;
+                int floorY = y;
+                while (floorY > minHeight && isWater(world.getBlockIdAt(x, floorY, z))) {
+                    floorY--;
+                }
+                minOceanFloor = Math.min(minOceanFloor, floorY);
+            }
+
+            if (!hasWaterSample || minOceanFloor == Integer.MAX_VALUE) {
+                return;
+            }
+
+            int targetTopY = minOceanFloor - 2;
+            if (this.boundingBox.y1 <= targetTopY) {
+                return;
+            }
+
+            int offset = targetTopY - this.boundingBox.y1;
+            int minOffset = minHeight - this.boundingBox.y0;
+            if (offset < minOffset) {
+                offset = minOffset;
+            }
+
+            this.boundingBox.move(0, offset, 0);
+            for (StructurePiece piece : this.pieces) {
+                piece.move(0, offset, 0);
+            }
+        }
+
+        private static boolean isWater(String id) {
+            return BlockID.WATER.equals(id) || BlockID.FLOWING_WATER.equals(id);
         }
 
         @Override //\\ StrongholdStart::getType(void) // 5
