@@ -20,17 +20,16 @@ public class NetherFortressPopulator extends Populator {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
+        if (!chunk.isNether()) {
+            return;
+        }
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        int gx = chunkX >> 4;
-        int gz = chunkZ >> 4;
         long seed = level.getSeed();
-        random.setSeed(gx ^ gz << 4 ^ seed);
-        random.nextInt();
-        if (random.nextBoundedInt(3) == (0x51d8e999 & 3) // salted
-                && chunkX == (gx << 4) + 4 + random.nextBoundedInt(8) && chunkZ == (gz << 4) + 4 + random.nextBoundedInt(8)) {
+
+        if (BastionRemnantPopulator.isNetherComplexStart(seed, chunkX, chunkZ, random)
+                && !BastionRemnantPopulator.shouldGenerateBastion(seed, chunkX, chunkZ, random)) {
             random.setSeed(seed);
             int r1 = random.nextInt();
             int r2 = random.nextInt();
