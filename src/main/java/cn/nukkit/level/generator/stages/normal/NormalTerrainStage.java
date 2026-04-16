@@ -50,7 +50,7 @@ public class NormalTerrainStage extends GenerateStage {
                 for (int index = yCount - 1; index >= 0; index--) {
                     if (densities[index] > 0.0) {
                         final int y = minY + index;
-                        chunk.setBlockState(x, y, z, y < 0 ? DEEPSLATE : STONE);
+                        chunk.setBlockState(x, y, z, shouldPlaceDeepslate(random, y) ? DEEPSLATE : STONE);
                     }
                 }
                 chunk.setBlockState(x, minY, z, BEDROCK);
@@ -69,6 +69,16 @@ public class NormalTerrainStage extends GenerateStage {
     @Override
     public String name() {
         return NAME;
+    }
+
+    private static boolean shouldPlaceDeepslate(NukkitRandom random, int y) {
+        if (y < 0) {
+            return true;
+        }
+        if (y > 8) {
+            return false;
+        }
+        return random.nextBoundedInt(9) >= y;
     }
 
     private static final class ColumnContextProvider implements DensityFunction.ContextProvider {
