@@ -10,12 +10,14 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 import java.util.Set;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
@@ -82,6 +84,10 @@ public class PopulatorRuinedPortal extends Populator {
             BlockManager manager = new BlockManager(level);
             structure.preparePlace(new Position(x, y, z), manager);
             for(Block block : manager.getBlocks()) {
+                if (block.isAir() && shouldFillAirWithWater(level, block)) {
+                    manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
+                    continue;
+                }
                 if(block instanceof BlockJigsaw) manager.setBlockStateAt(block, NETHERRACK);
                 if(level.getBlock(block) instanceof BlockFlowingWater) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
@@ -105,7 +111,7 @@ public class PopulatorRuinedPortal extends Populator {
                     manager.addHook(() -> {
                         Block worldBlock = level.getBlock(chestPos.getX(), chestPos.getY(), chestPos.getZ());
                         if (worldBlock instanceof BlockChest worldChest) {
-                            CHEST_POPULATOR.create(worldChest.getOrCreateBlockEntity().getInventory(), random);
+                            CHEST_POPULATOR.create(worldChest.getOrCreateBlockEntity().getInventory(), createChestLootRandom(level, chestPos));
                         }
                     });
                 }
@@ -199,6 +205,29 @@ public class PopulatorRuinedPortal extends Populator {
 
     private static boolean isWater(Block block) {
         return block instanceof BlockFlowingWater || block instanceof BlockWater;
+    }
+
+    private static boolean shouldFillAirWithWater(Level level, Block block) {
+        if (block.getFloorY() > SEA_LEVEL) {
+            return false;
+        }
+        if (isWater(level.getBlock(block))) {
+            return true;
+        }
+        for (BlockFace face : BlockFace.values()) {
+            if (isWater(level.getBlock(block.getSide(face)))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static RandomSourceProvider createChestLootRandom(Level level, BlockVector3 pos) {
+        long seed = level.getSeed();
+        seed ^= 0x9E3779B97F4A7C15L * pos.getX();
+        seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
+        seed ^= 0x165667B19E3779F9L * pos.getZ();
+        return new Xoroshiro128(seed);
     }
 
     private static boolean isOpaqueGround(Block block) {
