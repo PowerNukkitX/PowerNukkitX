@@ -87,7 +87,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     private static final int MAX_SPAWN_ATTEMPTS = 24;
 
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
-    private final Set<Long> spawnedEntities = new HashSet<>();
+    private Set<Long> spawnedEntities = new HashSet<>();
 
     private String entityId = EntityID.BREEZE;
     private int spawnRange;
@@ -172,6 +172,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         if (this.closed || this.level == null) {
             return false;
         }
+        Set<Long> spawnedEntities = getSpawnedEntities();
         if (!isBlockEntityValid()) {
             this.close();
         }
@@ -225,7 +226,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         }
 
         if (detectedPlayers.isEmpty()) {
-            if (this.spawnedEntities.isEmpty() && this.totalSpawnedThisCycle == 0) {
+            if (spawnedEntities.isEmpty() && this.totalSpawnedThisCycle == 0) {
                 setState(STATE_WAITING_FOR_PLAYERS, false);
             }
             this.scheduleUpdate();
@@ -240,7 +241,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         }
 
         double allowedTotalMobs = getAllowedTotalMobs(detectedPlayers.size());
-        if (this.totalSpawnedThisCycle >= allowedTotalMobs && this.spawnedEntities.isEmpty()) {
+        if (this.totalSpawnedThisCycle >= allowedTotalMobs && spawnedEntities.isEmpty()) {
             preparePendingReward();
             this.rewardStateEndsAt = currentTick + TRIAL_CHAMBER_WAITING_FOR_REWARD_TICKS;
             setState(STATE_WAITING_FOR_REWARD_EJECTION, true);
@@ -255,7 +256,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
         if (currentTick >= this.nextMobSpawnTick
                 && this.totalSpawnedThisCycle < allowedTotalMobs
-                && this.spawnedEntities.size() < getAllowedSimultaneousMobs(detectedPlayers.size())) {
+                && spawnedEntities.size() < getAllowedSimultaneousMobs(detectedPlayers.size())) {
             if (spawnTrialMob()) {
                 this.totalSpawnedThisCycle++;
                 this.level.addLevelSoundEvent(this, LevelSoundEvent.TRIAL_SPAWNER_SPAWN_MOB, -1, this.entityId, this.spawnBaby, false);
@@ -263,7 +264,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             this.nextMobSpawnTick = currentTick + this.ticksBetweenSpawn;
         }
 
-        if (this.totalSpawnedThisCycle >= allowedTotalMobs && this.spawnedEntities.isEmpty()) {
+        if (this.totalSpawnedThisCycle >= allowedTotalMobs && spawnedEntities.isEmpty()) {
             preparePendingReward();
             this.rewardStateEndsAt = currentTick + TRIAL_CHAMBER_WAITING_FOR_REWARD_TICKS;
             setState(STATE_WAITING_FOR_REWARD_EJECTION, true);
@@ -274,7 +275,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void cleanupTrackedEntities() {
-        this.spawnedEntities.removeIf(entityId -> {
+        Set<Long> spawnedEntities = getSpawnedEntities();
+        spawnedEntities.removeIf(entityId -> {
             Entity entity = this.level.getEntity(entityId);
             return entity == null || entity.isClosed() || !entity.isAlive();
         });
@@ -394,7 +396,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
             entity.namedTag.putBoolean("trial_spawner", true);
             entity.setPersistent(true);
             entity.spawnToAll();
-            this.spawnedEntities.add(entity.getId());
+            getSpawnedEntities().add(entity.getId());
             return true;
         }
         return false;
@@ -439,7 +441,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         this.cooldownEndsAt = 0;
         this.rewardStateEndsAt = 0;
         this.totalSpawnedThisCycle = 0;
-        this.spawnedEntities.clear();
+        getSpawnedEntities().clear();
         this.pendingReward = Item.AIR;
         this.nextMobSpawnTick = this.level.getTick() + this.ticksBetweenSpawn;
         this.nextOminousProjectileTick = this.level.getTick() + OMINOUS_PROJECTILE_INTERVAL_TICKS;
@@ -450,13 +452,13 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void despawnTrackedMobs() {
-        for (long entityId : new ArrayList<>(this.spawnedEntities)) {
+        for (long entityId : new ArrayList<>(getSpawnedEntities())) {
             Entity entity = this.level.getEntity(entityId);
             if (entity != null && !entity.isClosed()) {
                 entity.close();
             }
         }
-        this.spawnedEntities.clear();
+        getSpawnedEntities().clear();
     }
 
     private void preparePendingReward() {
@@ -568,7 +570,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     private List<Entity> collectOminousProjectileTargets(List<Player> detectedPlayers) {
         List<Entity> targets = new ArrayList<>(detectedPlayers);
         double maxDistanceSquared = this.requiredPlayerRange * this.requiredPlayerRange;
-        for (long spawnedEntityId : this.spawnedEntities) {
+        for (long spawnedEntityId : getSpawnedEntities()) {
             Entity entity = this.level.getEntity(spawnedEntityId);
             if (entity == null || entity.isClosed() || !entity.isAlive()) {
                 continue;
@@ -903,9 +905,16 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
         this.requiredPlayerRange = range;
     }
 
+    private Set<Long> getSpawnedEntities() {
+        if (this.spawnedEntities == null) {
+            this.spawnedEntities = new HashSet<>();
+        }
+        return this.spawnedEntities;
+    }
+
     @Override
     public void close() {
         super.close();
-        this.spawnedEntities.clear();
+        getSpawnedEntities().clear();
     }
 }
