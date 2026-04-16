@@ -98,9 +98,4 @@ public class BlockCopperChest extends BlockChest implements Waxable, Oxidizable 
             case OXIDIZED -> waxed ? WAXED_OXIDIZED_COPPER_CHEST : OXIDIZED_COPPER_CHEST;
         };
     }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(this.getBlockWithOxidizationLevel(this.getOxidizationLevel()), 0) };
-    }
 }
