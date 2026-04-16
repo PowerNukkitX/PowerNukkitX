@@ -44,8 +44,8 @@ public class OverworldBiomeResult extends BiomeResult {
                 } else if (humidity > 0.3f) {
                     biomeId = LUSH_CAVES;
                 }
-            } else if(depth > 1.1){
-                if (erosion > -1f && erosion < -0.375f) {
+            } else if (depth > 0.9f) {
+                if (erosion < -0.225f) {
                     biomeId = DEEP_DARK;
                 }
             }

@@ -15,7 +15,6 @@ import cn.nukkit.level.generator.stages.nether.NetherPopulatorStage;
 import cn.nukkit.level.generator.stages.nether.NetherTerrainStage;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.NukkitRandom;
-import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class Nether extends PopulatedGenerator implements BiomedGenerator {
 
     @Override
     public ObjectHolder createObjectHolder(Level level) {
-        return new NetherObjectHolder(new Xoroshiro128(level.getSeed()));
+        return new NetherObjectHolder(new NukkitRandom(level.getSeed()));
     }
 
     @Override
