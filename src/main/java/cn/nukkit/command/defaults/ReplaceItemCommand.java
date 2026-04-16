@@ -172,12 +172,12 @@ public class ReplaceItemCommand extends VanillaCommand {
             switch (slotType) {
                 case "slot.weapon.mainhand" -> {
                     if (entity instanceof Player player) {
-                        Item old = player.getInventory().getItemInHand();
+                        Item old = player.getInventory().getItemInMainHand();
                         if (oldItemHandling.equals("keep") && !old.isNull()) {
                             log.addError("commands.replaceitem.keepFailed", slotType, String.valueOf(slotId));
                             continue;
                         }
-                        if (player.getInventory().setItemInHand(item)) {
+                        if (player.getInventory().setItemInMainHand(item)) {
                             log.addSuccess("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getDisplayName());
                             successCount++;
                         } else {

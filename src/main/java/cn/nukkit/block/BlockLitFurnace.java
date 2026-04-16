@@ -109,7 +109,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
         if (player == null) {
             return false;
         }
-            Item itemInHand = player.getInventory().getItemInHand();
+            Item itemInHand = player.getInventory().getItemInMainHand();
             if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
                 return false;
             }

@@ -41,6 +41,7 @@ public class NetherPopulatorStage extends PopulatorStage {
             WarpedTwistingVinesPopulator.NAME,
             NetherBlackstonePopulator.NAME,
             NetherGravelPopulator.NAME,
+            BastionRemnantPopulator.NAME,
             NetherFortressPopulator.NAME,
             PopulatorRuinedPortal.NAME,
             NetherFossilPopulator.NAME

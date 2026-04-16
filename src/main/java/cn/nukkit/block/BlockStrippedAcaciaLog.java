@@ -25,8 +25,4 @@ public class BlockStrippedAcaciaLog extends BlockWoodStripped {
         return WoodType.ACACIA;
     }
 
-    @Override
-    public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
-    }
 }

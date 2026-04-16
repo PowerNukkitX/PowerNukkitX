@@ -68,7 +68,7 @@ public abstract class AbstractBlockShelf extends BlockTransparent implements Fac
                 BlockEntityShelf blockEntity = this.getOrCreateBlockEntity();
                 Inventory inventory = blockEntity.getInventory();
                 if (!player.isCreative()) {
-                    player.getInventory().setItemInHand(inventory.getItem(slot)); //Overwrites the players item. So no need to remove it.
+                    player.getInventory().setItemInMainHand(inventory.getItem(slot)); //Overwrites the players item. So no need to remove it.
                 }
                 inventory.setItem(slot, item);
                 blockEntity.setDirty();

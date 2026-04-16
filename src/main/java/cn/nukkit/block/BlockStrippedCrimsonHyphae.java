@@ -19,8 +19,4 @@ public class BlockStrippedCrimsonHyphae extends BlockStemStripped {
         super(blockstate);
     }
 
-    @Override
-    public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
-    }
 }

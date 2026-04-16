@@ -2108,6 +2108,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
      */
     public boolean onEaten(Player player) {
+        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
         return true;
     }
 
@@ -2134,11 +2135,9 @@ public abstract class Item implements Cloneable, ItemID {
 
         if (this.onEaten(player)) {
             player.getFoodData().addFood(this);
-            player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
 
             if (player.isAdventure() || player.isSurvival()) {
-                --this.count;
-                player.getInventory().setItemInHand(this);
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 handleUsingConvertsTo(player);
                 player.getLevel().addSound(player, Sound.RANDOM_BURP);
             }
@@ -2163,8 +2162,9 @@ public abstract class Item implements Cloneable, ItemID {
         if (container.isNull()) return;
         container.setCount(1);
 
-        if (this.count <= 0) {
-            player.getInventory().setItemInHand(container);
+        Item currentHand = player.getInventory().getItemInMainHand();
+        if (currentHand.isNull() || currentHand.getCount() <= 0) {
+            player.getInventory().setItemInMainHand(container);
             return;
         }
         if (player.getInventory().canAddItem(container)) {

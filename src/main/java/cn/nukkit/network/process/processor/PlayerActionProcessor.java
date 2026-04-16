@@ -217,12 +217,12 @@ public class PlayerActionProcessor extends DataPacketProcessor<PlayerActionPacke
                 }
             }
             case PlayerActionPacket.ACTION_START_SPIN_ATTACK -> {
-                if (!Objects.equals(player.getInventory().getItemInHand().getId(), ItemID.TRIDENT)) {
+                if (!Objects.equals(player.getInventory().getItemInMainHand().getId(), ItemID.TRIDENT)) {
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
                     break;
                 }
 
-                int riptideLevel = player.getInventory().getItemInHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
+                int riptideLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
                 if (riptideLevel < 1) {
                     player.sendPosition(player, player.yaw, player.pitch, MovePlayerPacket.MODE_RESET);
                     break;

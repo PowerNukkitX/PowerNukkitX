@@ -28,22 +28,4 @@ public abstract class Populator {
         if(!PLACEMENT_QUEUE.containsKey(chunkHash)) PLACEMENT_QUEUE.put(chunkHash, new BlockManager(level));
         return PLACEMENT_QUEUE.get(chunkHash);
     }
-
-    protected void writeOutsideChunkStructureData(IChunk current) {
-        CompoundTag chunkExtra = current.getExtraData();
-        if(!chunkExtra.containsCompound("outsideChunkStructureData")) {
-            chunkExtra.putCompound("outsideChunkStructureData", new CompoundTag());
-        }
-        CompoundTag outsideChunkStructureData = chunkExtra.getCompound("outsideChunkStructureData");
-        for(long chunkIdx : PLACEMENT_QUEUE.keySet()) {
-            String targetChunkKey = String.valueOf(chunkIdx);
-            BlockManager temp = new BlockManager(current.getLevel());
-            if(outsideChunkStructureData.containsList(targetChunkKey)) {
-                temp = BlockManager.fromTag(outsideChunkStructureData.getList(targetChunkKey, IntArrayTag.class), temp);
-            }
-            temp.merge(getChunkPlacementQueue(chunkIdx, current.getLevel()));
-            outsideChunkStructureData.put(targetChunkKey, temp.toTag());
-        }
-    }
-
 }

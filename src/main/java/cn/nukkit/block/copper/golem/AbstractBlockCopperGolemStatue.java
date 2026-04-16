@@ -5,6 +5,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.block.property.enums.OxidizationLevel;
 import cn.nukkit.blockentity.BlockEntityCopperGolemStatue;
+import cn.nukkit.blockentity.BlockEntityCopperGolemStatue.CopperPose;
 import cn.nukkit.blockentity.BlockEntityID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
@@ -52,7 +53,7 @@ public abstract class AbstractBlockCopperGolemStatue extends BlockTransparent im
                 return true;
             }
         }
-        if(player != null && player.getInventory().getItemInHand().isNull()) {
+        if(player != null && player.getInventory().getItemInMainHand().isNull()) {
             BlockEntityCopperGolemStatue blockEntity = this.getOrCreateBlockEntity();
             CopperPose[] poses = CopperPose.values();
             blockEntity.setPose(poses[(blockEntity.getPose().ordinal()+1)%poses.length]);

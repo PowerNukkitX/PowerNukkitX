@@ -24,7 +24,7 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
                 return;
             }
 
-            Item hand = player.getInventory().getItemInHand();
+            Item hand = player.getInventory().getItemInMainHand();
             if(!(hand instanceof ItemFood)) {
                 return;
             }

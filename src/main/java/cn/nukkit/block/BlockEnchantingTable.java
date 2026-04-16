@@ -117,7 +117,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         if (player == null) {
             return true;
         }
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item itemInHand = player.getInventory().getItemInMainHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull())) {
             return false;
         }

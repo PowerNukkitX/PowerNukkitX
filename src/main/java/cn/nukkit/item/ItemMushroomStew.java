@@ -38,6 +38,6 @@ public class ItemMushroomStew extends ItemFood {
     public boolean onEaten(Player player) {
         player.getInventory().addItem(new ItemBowl());
 
-        return true;
+        return super.onEaten(player);
     }
 }

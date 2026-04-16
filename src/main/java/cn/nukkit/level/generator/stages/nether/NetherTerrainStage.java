@@ -6,8 +6,8 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.level.generator.densityfunction.DensityFunction;
 import cn.nukkit.level.generator.holder.NetherObjectHolder;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
 
@@ -42,6 +42,7 @@ public class NetherTerrainStage extends GenerateStage {
         NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed());
         NetherObjectHolder.TerrainHolder noises = ((NetherObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
+        DensityFunction densityFunction = noises.getDensityFunction();
         try {
             for (int x = 0; x < 16; ++x) {
                 for (int z = 0; z < 16; ++z) {
@@ -56,7 +57,7 @@ public class NetherTerrainStage extends GenerateStage {
                     }
                     chunk.setBlockState(x, 127, z, BEDROCK);
                     for (int y = 1; y < 127; ++y) {
-                        if (getNoise(noises.getSurfaceNoise(), baseX | x, y, baseZ | z) > 0) {
+                        if (densityFunction.compute(new DensityFunction.SinglePointContext(baseX | x, y, baseZ | z)) > 0) {
                             chunk.setBlockState(x, y, z, NETHERRACK);
                         } else if (y <= LAVA_LEVEL) {
                             chunk.setBlockState(x, y, z, LAVA);
@@ -152,21 +153,6 @@ public class NetherTerrainStage extends GenerateStage {
             }
         }
         return false;
-    }
-
-    public float getNoise(SimplexNoise noise, int x, int y, int z) {
-        //Those "magic numbers" are vanilla numbers without a description.
-        float density = noise.getValue(x * 0.25f, y * 0.375f, z * 0.25f);
-        density -= 0.9375f;
-        density *= NukkitMath.remap(NukkitMath.clamp(y, 104, 128), 104, 108, 1, 0);
-        density += 0.9375f;
-        density -= 2.5f;
-        density *= NukkitMath.remap(NukkitMath.clamp(y, -8, 24), -8, 24, 0, 1);
-        density += 2.5f;
-        density *= 0.64f;
-        density = NukkitMath.clamp(density, -1, 1);
-        density = density / 2 - density * density * density / 24f;
-        return density;
     }
 
     @Override

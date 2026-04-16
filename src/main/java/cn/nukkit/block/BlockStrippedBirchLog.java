@@ -22,11 +22,6 @@ public class BlockStrippedBirchLog extends BlockWoodStripped {
     }
 
     @Override
-    public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
-    }
-
-    @Override
     public WoodType getWoodType() {
         return WoodType.BIRCH;
     }
