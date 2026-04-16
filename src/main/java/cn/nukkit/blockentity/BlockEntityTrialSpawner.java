@@ -169,6 +169,9 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (this.closed || this.level == null) {
+            return false;
+        }
         if (!isBlockEntityValid()) {
             this.close();
         }
@@ -653,6 +656,9 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private boolean isOminous() {
+        if (this.closed || this.level == null) {
+            return false;
+        }
         return this.getBlock() instanceof BlockTrialSpawner trialSpawner
                 && trialSpawner.getPropertyValue(CommonBlockProperties.OMINOUS);
     }
@@ -755,6 +761,9 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void setOminous(boolean ominous, boolean sendUpdate) {
+        if (this.closed || this.level == null) {
+            return;
+        }
         if (!(this.getBlock() instanceof BlockTrialSpawner block)) {
             return;
         }
@@ -790,6 +799,9 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void updateBlockState(boolean sendUpdate) {
+        if (this.closed || this.level == null) {
+            return;
+        }
         if (!(this.getBlock() instanceof BlockTrialSpawner block)) {
             return;
         }
@@ -871,6 +883,9 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     @Override
     public boolean isBlockEntityValid() {
+        if (this.level == null) {
+            return false;
+        }
         return Objects.equals(level.getBlockIdAt((int) x, (int) y, (int) z), Block.TRIAL_SPAWNER);
     }
 
