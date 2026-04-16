@@ -1,6 +1,8 @@
 package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.BlockDeepslate;
+import cn.nukkit.block.BlockBedrock;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.level.Level;
@@ -9,15 +11,18 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.densityfunction.DensityFunction;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
+import cn.nukkit.utils.random.NukkitRandom;
 
 public class NormalTerrainStage extends GenerateStage {
 
     private static final BlockState STONE = BlockStone.PROPERTIES.getDefaultState();
     private static final BlockState DEEPSLATE = BlockDeepslate.PROPERTIES.getDefaultState();
+    private static final BlockState BEDROCK = BlockBedrock.PROPERTIES.getDefaultState();
 
     public static final String NAME = "normal_terrain";
 
     public static final int SEA_LEVEL = 62;
+    private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -31,6 +36,8 @@ public class NormalTerrainStage extends GenerateStage {
         final int yCount = maxY - minY + 1;
         final int chunkBaseX = chunk.getX() << 4;
         final int chunkBaseZ = chunk.getZ() << 4;
+        final NukkitRandom random = this.random.get();
+        random.setSeed(level.getSeed() ^ Level.chunkHash(chunk.getX(), chunk.getZ()));
         final double[] densities = new double[yCount];
         final ColumnContextProvider columnContextProvider = new ColumnContextProvider(minY, yCount);
 
@@ -44,6 +51,14 @@ public class NormalTerrainStage extends GenerateStage {
                     if (densities[index] > 0.0) {
                         final int y = minY + index;
                         chunk.setBlockState(x, y, z, y < 0 ? DEEPSLATE : STONE);
+                    }
+                }
+                chunk.setBlockState(x, minY, z, BEDROCK);
+                for (int i = 0; i < random.nextBoundedInt(6); i++) {
+                    int y = minY + i;
+                    BlockState state = chunk.getBlockState(x, y, z);
+                    if (state != BlockAir.STATE) {
+                        chunk.setBlockState(x, y, z, BEDROCK);
                     }
                 }
             }
