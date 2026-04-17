@@ -10,6 +10,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.densityfunction.DensityCommon;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.entity.spawners.SpawnRule;
 import cn.nukkit.math.BlockVector3;
@@ -56,6 +57,7 @@ public class Chunk implements IChunk {
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
     //delay load block entity and entity
     protected final CompoundTag extraData;
+    private volatile DensityCommon.ChunkCache densityChunkCache;
     protected final StampedLock blockLock;
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
@@ -120,6 +122,24 @@ public class Chunk implements IChunk {
     public boolean isSectionEmpty(int fY) {
         ChunkSection section = this.getSection(fY - getDimensionData().getMinSectionY());
         return section == null || section.isEmpty();
+    }
+
+    public DensityCommon.ChunkCache getOrCreateDensityChunkCache() {
+        DensityCommon.ChunkCache cache = this.densityChunkCache;
+        if (cache == null) {
+            synchronized (this) {
+                cache = this.densityChunkCache;
+                if (cache == null) {
+                    cache = new DensityCommon.ChunkCache();
+                    this.densityChunkCache = cache;
+                }
+            }
+        }
+        return cache;
+    }
+
+    public void releaseDensityChunkCache() {
+        this.densityChunkCache = null;
     }
 
     @Override

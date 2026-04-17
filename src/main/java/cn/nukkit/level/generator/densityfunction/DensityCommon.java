@@ -1,12 +1,16 @@
 package cn.nukkit.level.generator.densityfunction;
 
+import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.Arrays;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Common Density functions for PowerNukkitX
@@ -14,8 +18,37 @@ import java.util.Map;
  * @since 2026/04/02
  */
 public final class DensityCommon {
-
     private DensityCommon() {
+    }
+
+    public static ChunkCache chunkCache(IChunk chunk) {
+        if (chunk instanceof Chunk concreteChunk) {
+            return concreteChunk.getOrCreateDensityChunkCache();
+        }
+        throw new IllegalStateException("Density chunk cache requires concrete Chunk, got: " + chunk.getClass().getName());
+    }
+
+    public static void releaseChunkCache(IChunk chunk) {
+        if (chunk instanceof Chunk concreteChunk) {
+            concreteChunk.releaseDensityChunkCache();
+        }
+    }
+
+    public interface ChunkCacheContext extends DensityFunction.FunctionContext {
+        ChunkCache densityChunkCache();
+    }
+
+    public static final class ChunkCache {
+        private final Map<Marker, Object> states = new IdentityHashMap<>();
+
+        @SuppressWarnings("unchecked")
+        private <T> T getOrCreate(Marker marker, Supplier<T> supplier) {
+            return (T) states.computeIfAbsent(marker, ignored -> supplier.get());
+        }
+
+        public void clear() {
+            states.clear();
+        }
     }
 
     public static DensityFunction interpolated(DensityFunction function) {
@@ -32,6 +65,10 @@ public final class DensityCommon {
 
     public static DensityFunction cacheOnce(DensityFunction function) {
         return Marker.create(Marker.Type.CACHE_ONCE, function);
+    }
+
+    public static DensityFunction cacheAllInCell(DensityFunction function) {
+        return Marker.create(Marker.Type.CACHE_ALL_IN_CELL, function);
     }
 
     public static DensityFunction noise(NormalNoise noise) {
@@ -536,41 +573,31 @@ public final class DensityCommon {
         }
     }
 
-    public static final class Marker implements DensityFunction {
-        private final Type type;
-        private final DensityFunction wrapped;
-        private final ThreadLocal<CacheState> cache;
+    public abstract static class Marker implements DensityFunction {
+        public enum Type {
+            INTERPOLATED,
+            FLAT_CACHE,
+            CACHE_2D,
+            CACHE_ONCE,
+            CACHE_ALL_IN_CELL
+        }
 
-        private Marker(Type type, DensityFunction wrapped) {
+        protected final DensityFunction wrapped;
+        private final Type type;
+
+        protected Marker(Type type, DensityFunction wrapped) {
             this.type = type;
             this.wrapped = wrapped;
-            this.cache = ThreadLocal.withInitial(() -> switch (type) {
-                case FLAT_CACHE, CACHE_2D -> new Cache2DState();
-                case CACHE_ONCE, CACHE_ALL_IN_CELL -> new Cache3DState();
-                case INTERPOLATED -> new InterpolatedState();
-            });
         }
 
         public static DensityFunction create(Type type, DensityFunction wrapped) {
             return switch (type) {
-                default -> new Marker(type, wrapped);
+                case INTERPOLATED -> new InterpolatedMarker(wrapped);
+                case FLAT_CACHE -> new FlatCacheMarker(wrapped);
+                case CACHE_2D -> new Cache2DMarker(wrapped);
+                case CACHE_ONCE -> new CacheOnceMarker(wrapped);
+                case CACHE_ALL_IN_CELL -> new CacheAllInCellMarker(wrapped);
             };
-        }
-
-        @Override
-        public double compute(FunctionContext context) {
-            return switch (type) {
-                case FLAT_CACHE, CACHE_2D -> compute2d(context);
-                case CACHE_ONCE, CACHE_ALL_IN_CELL -> compute3d(context);
-                case INTERPOLATED -> computeInterpolated(context);
-            };
-        }
-
-        @Override
-        public void fillArray(double[] output, ContextProvider contextProvider) {
-            for (int i = 0; i < output.length; i++) {
-                output[i] = compute(contextProvider.forIndex(i));
-            }
         }
 
         @Override
@@ -583,44 +610,171 @@ public final class DensityCommon {
             return wrapped.maxValue();
         }
 
-        private double compute2d(FunctionContext context) {
-            Cache2DState state = (Cache2DState) cache.get();
-            if (state.valid && state.blockX == context.blockX() && state.blockZ == context.blockZ()) {
-                return state.value;
+        @SuppressWarnings("unchecked")
+        protected final <S> S state(FunctionContext context, ThreadLocal<S> localState, Supplier<S> stateFactory) {
+            if (context instanceof ChunkCacheContext chunkCacheContext) {
+                return (S) chunkCacheContext.densityChunkCache().getOrCreate(this, stateFactory);
             }
+            return localState.get();
+        }
+    }
 
-            double value = wrapped.compute(context);
-            state.blockX = context.blockX();
-            state.blockZ = context.blockZ();
-            state.value = value;
-            state.valid = true;
-            return value;
+    private static final class Cache2DMarker extends Marker {
+        private final ThreadLocal<Cache2DState> state = ThreadLocal.withInitial(Cache2DState::new);
+
+        private Cache2DMarker(DensityFunction wrapped) {
+            super(Type.CACHE_2D, wrapped);
         }
 
-        private double compute3d(FunctionContext context) {
-            Cache3DState state = (Cache3DState) cache.get();
-            if (state.valid
-                    && state.blockX == context.blockX()
-                    && state.blockY == context.blockY()
-                    && state.blockZ == context.blockZ()) {
-                return state.value;
+        @Override
+        public double compute(FunctionContext context) {
+            Cache2DState s = state(context, state, Cache2DState::new);
+            long pos2d = (((long) context.blockX()) << 32) ^ (context.blockZ() & 0xFFFFFFFFL);
+            if (s.valid && s.lastPos2d == pos2d) {
+                return s.lastValue;
             }
-
-            double value = wrapped.compute(context);
-            state.blockX = context.blockX();
-            state.blockY = context.blockY();
-            state.blockZ = context.blockZ();
-            state.value = value;
-            state.valid = true;
-            return value;
+            s.valid = true;
+            s.lastPos2d = pos2d;
+            s.lastValue = wrapped.compute(context);
+            return s.lastValue;
         }
 
-        private double computeInterpolated(FunctionContext context) {
-            InterpolatedState state = (InterpolatedState) cache.get();
+        @Override
+        public void fillArray(double[] output, ContextProvider contextProvider) {
+            wrapped.fillArray(output, contextProvider);
+        }
+    }
+
+    private static final class FlatCacheMarker extends Marker {
+        private final ThreadLocal<Cache2DState> state = ThreadLocal.withInitial(Cache2DState::new);
+
+        private FlatCacheMarker(DensityFunction wrapped) {
+            super(Type.FLAT_CACHE, wrapped);
+        }
+
+        @Override
+        public double compute(FunctionContext context) {
+            Cache2DState s = state(context, state, Cache2DState::new);
+            long pos2d = (((long) context.blockX()) << 32) ^ (context.blockZ() & 0xFFFFFFFFL);
+            if (s.valid && s.lastPos2d == pos2d) {
+                return s.lastValue;
+            }
+            s.valid = true;
+            s.lastPos2d = pos2d;
+            s.lastValue = wrapped.compute(context);
+            return s.lastValue;
+        }
+
+        @Override
+        public void fillArray(double[] output, ContextProvider contextProvider) {
+            contextProvider.fillAllDirectly(output, this);
+        }
+    }
+
+    private static final class CacheOnceMarker extends Marker {
+        private final ThreadLocal<Cache3DState> state = ThreadLocal.withInitial(Cache3DState::new);
+
+        private CacheOnceMarker(DensityFunction wrapped) {
+            super(Type.CACHE_ONCE, wrapped);
+        }
+
+        @Override
+        public double compute(FunctionContext context) {
+            Cache3DState s = state(context, state, Cache3DState::new);
+            if (s.valid && s.blockX == context.blockX() && s.blockY == context.blockY() && s.blockZ == context.blockZ()) {
+                return s.value;
+            }
+            s.valid = true;
+            s.blockX = context.blockX();
+            s.blockY = context.blockY();
+            s.blockZ = context.blockZ();
+            s.value = wrapped.compute(context);
+            return s.value;
+        }
+
+        @Override
+        public void fillArray(double[] output, ContextProvider contextProvider) {
+            wrapped.fillArray(output, contextProvider);
+        }
+    }
+
+    private static final class CacheAllInCellMarker extends Marker {
+        private static final int CELL_X = 16;
+        private static final int CELL_Y = 384;
+        private static final int CELL_Z = 16;
+        private static final int CELL_VALUE_COUNT = CELL_X * CELL_Y * CELL_Z;
+        private final ThreadLocal<CacheAllInCellState> state = ThreadLocal.withInitial(CacheAllInCellState::new);
+
+        private CacheAllInCellMarker(DensityFunction wrapped) {
+            super(Type.CACHE_ALL_IN_CELL, wrapped);
+        }
+
+        @Override
+        public double compute(FunctionContext context) {
+            CacheAllInCellState s = state(context, state, CacheAllInCellState::new);
+            int blockX = context.blockX();
+            int blockY = context.blockY();
+            int blockZ = context.blockZ();
+            int cellX = Math.floorDiv(blockX, CELL_X);
+            int cellY = Math.floorDiv(blockY, CELL_Y);
+            int cellZ = Math.floorDiv(blockZ, CELL_Z);
+            long key = (((long) cellX & 0x1FFFFFL) << 42) | (((long) cellY & 0x1FFFFFL) << 21) | ((long) cellZ & 0x1FFFFFL);
+            CellValues values = s.cells.get(key);
+            if (values == null) {
+                values = new CellValues();
+                s.cells.put(key, values);
+            }
+
+            int localX = Math.floorMod(blockX, CELL_X);
+            int localY = Math.floorMod(blockY, CELL_Y);
+            int localZ = Math.floorMod(blockZ, CELL_Z);
+            int index = ((localY * CELL_X) + localX) * CELL_Z + localZ;
+            if (values.filled[index]) {
+                return values.values[index];
+            }
+
+            double computed = wrapped.compute(context);
+            values.values[index] = computed;
+            values.filled[index] = true;
+            s.filledValueCount++;
+            return computed;
+        }
+
+        @Override
+        public void fillArray(double[] output, ContextProvider contextProvider) {
+            contextProvider.fillAllDirectly(output, this);
+        }
+
+        private static final class CacheAllInCellState {
+            private long filledValueCount;
+            private final Map<Long, CellValues> cells = new LinkedHashMap<>(256, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Long, CellValues> eldest) {
+                    return size() > 1024;
+                }
+            };
+        }
+
+        private static final class CellValues {
+            private final double[] values = new double[CELL_VALUE_COUNT];
+            private final boolean[] filled = new boolean[CELL_VALUE_COUNT];
+        }
+    }
+
+    private static final class InterpolatedMarker extends Marker {
+        private final ThreadLocal<InterpolatedState> state = ThreadLocal.withInitial(InterpolatedState::new);
+
+        private InterpolatedMarker(DensityFunction wrapped) {
+            super(Type.INTERPOLATED, wrapped);
+        }
+
+        @Override
+        public double compute(FunctionContext context) {
+            InterpolatedState s = state(context, state, InterpolatedState::new);
             int cellX = Math.floorDiv(context.blockX(), 4) * 4;
             int cellY = Math.floorDiv(context.blockY(), 8) * 8;
             int cellZ = Math.floorDiv(context.blockZ(), 4) * 4;
-            InterpolatedCell cell = state.getOrCreateCell(cellX, cellY, cellZ, wrapped);
+            InterpolatedCell cell = s.getOrCreateCell(cellX, cellY, cellZ, wrapped);
 
             double xAlpha = Math.floorMod(context.blockX(), 4) / 4.0;
             double yAlpha = Math.floorMod(context.blockY(), 8) / 8.0;
@@ -635,29 +789,16 @@ public final class DensityCommon {
             return lerp(z0, z1, yAlpha);
         }
 
+        @Override
+        public void fillArray(double[] output, ContextProvider contextProvider) {
+            contextProvider.fillAllDirectly(output, this);
+        }
+
         private static double lerp(double first, double second, double alpha) {
             return first + alpha * (second - first);
         }
 
-        private sealed interface CacheState permits Cache2DState, Cache3DState, InterpolatedState {
-        }
-
-        private static final class Cache2DState implements CacheState {
-            private boolean valid;
-            private int blockX;
-            private int blockZ;
-            private double value;
-        }
-
-        private static final class Cache3DState implements CacheState {
-            private boolean valid;
-            private int blockX;
-            private int blockY;
-            private int blockZ;
-            private double value;
-        }
-
-        private static final class InterpolatedState implements CacheState {
+        private static final class InterpolatedState {
             private final MutableFunctionContext context = new MutableFunctionContext();
             private final Map<Long, InterpolatedCell> cells = new LinkedHashMap<>(256, 0.75f, true) {
                 @Override
@@ -667,7 +808,7 @@ public final class DensityCommon {
             };
 
             private InterpolatedCell getOrCreateCell(int cellX, int cellY, int cellZ, DensityFunction wrapped) {
-                long key = pack(cellX, cellY, cellZ);
+                long key = (((long) cellX & 0x1FFFFFL) << 42) | (((long) cellY & 0x1FFFFFL) << 21) | ((long) cellZ & 0x1FFFFFL);
                 InterpolatedCell cell = cells.get(key);
                 if (cell != null) {
                     return cell;
@@ -689,34 +830,33 @@ public final class DensityCommon {
                 cells.put(key, cell);
                 return cell;
             }
-
-            private static long pack(int cellX, int cellY, int cellZ) {
-                long x = ((long) cellX & 0x1FFFFFL) << 42;
-                long y = ((long) cellY & 0x1FFFFFL) << 21;
-                long z = (long) cellZ & 0x1FFFFFL;
-                return x | y | z;
-            }
         }
+    }
 
-        private record InterpolatedCell(
-                double d000,
-                double d100,
-                double d010,
-                double d110,
-                double d001,
-                double d101,
-                double d011,
-                double d111
-        ) {
-        }
+    private static final class Cache2DState {
+        private boolean valid;
+        private long lastPos2d;
+        private double lastValue;
+    }
 
-        public enum Type {
-            INTERPOLATED,
-            FLAT_CACHE,
-            CACHE_2D,
-            CACHE_ONCE,
-            CACHE_ALL_IN_CELL
-        }
+    private static final class Cache3DState {
+        private boolean valid;
+        private int blockX;
+        private int blockY;
+        private int blockZ;
+        private double value;
+    }
+
+    private record InterpolatedCell(
+            double d000,
+            double d100,
+            double d010,
+            double d110,
+            double d001,
+            double d101,
+            double d011,
+            double d111
+    ) {
     }
 
     interface ShiftNoise extends DensityFunction {

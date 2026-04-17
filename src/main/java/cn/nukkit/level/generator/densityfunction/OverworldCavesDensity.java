@@ -254,6 +254,59 @@ public final class OverworldCavesDensity {
         return DensityCommon.min(postProcessed, noodle(noodle, noodleThickness, noodleRidgeA, noodleRidgeB));
     }
 
+    public static DensityFunction preliminarySurfaceLevel(DensityFunction offset, DensityFunction factor) {
+        DensityFunction base = DensityCommon.add(
+                DensityCommon.yClampedGradient(-64, 320, 1.5, -1.5),
+                DensityCommon.cache2d(offset)
+        );
+        DensityFunction scaled = DensityCommon.mul(base, DensityCommon.cache2d(factor)).quarterNegative();
+        DensityFunction clamped = DensityCommon.add(
+                DensityCommon.constant(-0.703125),
+                DensityCommon.mul(DensityCommon.constant(4.0), scaled)
+        ).clamp(-64.0, 64.0);
+        return DensityCommon.add(
+                DensityCommon.constant(-0.390625),
+                DensityCommon.add(
+                        DensityCommon.constant(0.1171875),
+                        DensityCommon.mul(
+                                DensityCommon.yClampedGradient(-64, -40, 0.0, 1.0),
+                                DensityCommon.add(
+                                        DensityCommon.constant(-0.1171875),
+                                        DensityCommon.add(
+                                                DensityCommon.constant(-0.078125),
+                                                DensityCommon.mul(
+                                                        DensityCommon.yClampedGradient(240, 256, 1.0, 0.0),
+                                                        DensityCommon.add(
+                                                                DensityCommon.constant(0.078125),
+                                                                clamped
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    public static DensityFunction preliminarySurfaceLevelUpperBound(DensityFunction offset, DensityFunction factor) {
+        return DensityCommon.add(
+                DensityCommon.constant(128.0),
+                DensityCommon.mul(
+                        DensityCommon.constant(-128.0),
+                        DensityCommon.add(
+                                DensityCommon.mul(
+                                        DensityCommon.constant(0.2734375),
+                                        DensityCommon.cache2d(factor).invert()
+                                ),
+                                DensityCommon.mul(
+                                        DensityCommon.constant(-1.0),
+                                        DensityCommon.cache2d(offset)
+                                )
+                        )
+                )
+        ).clamp(-40.0, 320.0);
+    }
+
     private static DensityFunction underground(
             DensityFunction slopedCheese,
             DensityFunction spaghetti2d,
