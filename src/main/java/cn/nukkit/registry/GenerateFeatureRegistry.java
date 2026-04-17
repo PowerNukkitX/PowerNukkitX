@@ -132,7 +132,6 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(TaigaTreeFeature.NAME, TaigaTreeFeature.class);
             this.register(ScatterSweetBerryBushFeature.NAME, ScatterSweetBerryBushFeature.class);
             this.register(FireflyBushWaterClusterFeature.NAME, FireflyBushWaterClusterFeature.class);
-            this.register(CoralFeature.NAME, CoralFeature.class);
             this.register(CoralClawFeature.NAME, CoralClawFeature.class);
             this.register(CoralTreeFeature.NAME, CoralTreeFeature.class);
             this.register(CoralMushroomFeature.NAME, CoralMushroomFeature.class);

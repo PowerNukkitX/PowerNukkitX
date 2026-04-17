@@ -170,14 +170,14 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     @Override
     public boolean onUpdate() {
         if (this.closed || this.level == null) {
-            return false;
+            return true;
         }
         Set<Long> spawnedEntities = getSpawnedEntities();
         if (!isBlockEntityValid()) {
             this.close();
         }
         if (this.closed) {
-            return false;
+            return true;
         }
 
         cleanupTrackedEntities();
