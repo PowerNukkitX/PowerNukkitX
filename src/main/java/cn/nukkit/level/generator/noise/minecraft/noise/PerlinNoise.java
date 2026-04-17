@@ -39,10 +39,6 @@ public class PerlinNoise {
             }
         }
 
-        if (zeroOctaveIndex < octaves - 1) {
-            throw new IllegalArgumentException("Positive octaves are temporarily disabled");
-        }
-
         this.lowestFreqInputFactor = Math.pow(2.0D, -zeroOctaveIndex);
         this.lowestFreqValueFactor = Math.pow(2.0D, octaves - 1) / (Math.pow(2.0D, octaves) - 1.0D);
         this.maxValue = this.edgeValue(2.0D);

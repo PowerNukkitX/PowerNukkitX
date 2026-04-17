@@ -161,17 +161,27 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
 
         private NormalNoise surfaceNoise;
         private NormalNoise swampNoise;
+        private NormalNoise clayBandsOffsetNoise;
+        private NormalNoise badlandsPillarNoise;
+        private NormalNoise badlandsPillarRoofNoise;
+        private NormalNoise badlandsSurfaceNoise;
         private NormalNoise icebergPillarNoise;
         private NormalNoise icebergPillarRoofNoise;
         private NormalNoise icebergSurfaceNoise;
+        private cn.nukkit.block.BlockState[] clayBandsCache;
 
         public SurfaceOverwriteHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
             this.swampNoise = new NormalNoise(randomSourceProvider.identical(), -2, new float[]{1f});
+            this.clayBandsOffsetNoise = new NormalNoise(randomSourceProvider.identical(), -8, new float[]{1f});
+            this.badlandsPillarNoise = new NormalNoise(randomSourceProvider.identical(), -2, new float[]{1f, 1f, 1f});
+            this.badlandsPillarRoofNoise = new NormalNoise(randomSourceProvider.identical(), -8, new float[]{1f});
+            this.badlandsSurfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
             this.icebergPillarNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f, 1f});
             this.icebergPillarRoofNoise = new NormalNoise(randomSourceProvider.identical(), -3, new float[]{1f});
             this.icebergSurfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
+            this.clayBandsCache = new cn.nukkit.block.BlockState[192];
         }
     }
 

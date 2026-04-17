@@ -10,6 +10,8 @@ import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.NukkitRandom;
 
+import java.util.Arrays;
+
 import static cn.nukkit.level.biome.BiomeID.*;
 import static cn.nukkit.block.BlockID.FLOWING_WATER;
 import static cn.nukkit.block.BlockID.WATER;
@@ -55,21 +57,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                     case MESA,
                          MESA_BRYCE,
                          MESA_PLATEAU_STONE -> {
-                        if(y >= 256) {
-                            chunk.setBlockState(x, y, z, ORANGE_TERRACOTTA);
-                        } else if(y >= 74) {
-                            float noise = holder.getSurfaceNoise().getValue(lx * 0.25f, y, lz * 0.25f);
-                            if (isInRange(noise)) {
-                                chunk.setBlockState(x, y, z, HARDENED_CLAY);
-                            } else chunk.setBlockState(x, y, z, getClayBand(y));
-                        }
-                        for(int i = 74; i > 63; i--) {
-                            if(chunk.getBlockState(x, i, z) != BlockAir.STATE) {
-                                if(y > 63 && y < 74 ) {
-                                    chunk.setBlockState(x, i, z, ORANGE_TERRACOTTA);
-                                } else chunk.setBlockState(x, i, z, getClayBand(i));
-                            }
-                        }
+                        applyClayBandsDepth(chunk, holder, level, x, z, lx, lz, y);
                     }
                 }
                 switch (biomeId) {
@@ -104,6 +92,9 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                          DEEP_FROZEN_OCEAN,
                          LEGACY_FROZEN_OCEAN -> {
                         frozenOceanExtension(chunk, holder, level, x, z, lx, lz, y);
+                    }
+                    case MESA_BRYCE -> {
+                        erodedBadlandsExtension(chunk, holder, level, x, z, lx, lz, y);
                     }
                 }
             }
@@ -163,15 +154,95 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
         }
     }
 
-    private static final BlockState[] CLAYBAND = new BlockState[] {
-            WHITE_TERRACOTTA,
-            ORANGE_TERRACOTTA,
-            HARDENED_CLAY,
-            YELLOW_TERRACOTTA,
-            BROWN_TERRACOTTA,
-            RED_TERRACOTTA,
-            LIGHT_GRAY_TERRACOTTA
-    };
+    private void erodedBadlandsExtension(
+            IChunk chunk,
+            NormalObjectHolder.SurfaceOverwriteHolder holder,
+            Level level,
+            int localX,
+            int localZ,
+            int worldX,
+            int worldZ,
+            int height
+    ) {
+        double pillarBuffer = Math.min(
+                Math.abs(holder.getBadlandsSurfaceNoise().getValue(worldX, 0.0, worldZ) * 8.25),
+                holder.getBadlandsPillarNoise().getValue(worldX * 0.2, 0.0, worldZ * 0.2) * 15.0
+        );
+        if (pillarBuffer <= 0.0) {
+            return;
+        }
+
+        double pillarFloor = Math.abs(holder.getBadlandsPillarRoofNoise().getValue(worldX * 0.75, 0.0, worldZ * 0.75) * 1.5);
+        double extensionTop = 64.0 + Math.min(pillarBuffer * pillarBuffer * 2.5, Math.ceil(pillarFloor * 50.0) + 24.0);
+        int startY = (int) Math.floor(extensionTop);
+        if (height > startY) {
+            return;
+        }
+
+        for (int y = startY; y >= level.getMinHeight(); y--) {
+            BlockState state = chunk.getBlockState(localX, y, localZ);
+            if (isWaterState(state)) {
+                return;
+            }
+            if (state.toBlock().isSolid()) {
+                break;
+            }
+        }
+
+        for (int y = startY; y >= level.getMinHeight(); y--) {
+            BlockState state = chunk.getBlockState(localX, y, localZ);
+            if (state != BlockAir.STATE) {
+                break;
+            }
+            chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ));
+        }
+    }
+
+    private void applyClayBandsDepth(
+            IChunk chunk,
+            NormalObjectHolder.SurfaceOverwriteHolder holder,
+            Level level,
+            int localX,
+            int localZ,
+            int worldX,
+            int worldZ,
+            int surfaceY
+    ) {
+        if (surfaceY >= 256) {
+            chunk.setBlockState(localX, surfaceY, localZ, ORANGE_TERRACOTTA);
+        } else if (surfaceY >= 74) {
+            chunk.setBlockState(localX, surfaceY, localZ, getClayBand(holder, level, worldX, surfaceY, worldZ));
+        }
+
+        for (int y = 74; y > 63; y--) {
+            if (chunk.getBlockState(localX, y, localZ) == BlockAir.STATE) {
+                continue;
+            }
+            if (surfaceY > 63 && surfaceY < 74) {
+                chunk.setBlockState(localX, y, localZ, ORANGE_TERRACOTTA);
+            } else {
+                chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ));
+            }
+        }
+
+        // Continue the terracotta bands below the surface, not only at the top.
+        int depth = 4 + (int) Math.floor(Math.abs(holder.getSurfaceNoise().getValue(worldX * 0.25f, 0.0, worldZ * 0.25f)) * 3.0);
+        int minY = Math.max(level.getMinHeight(), surfaceY - depth);
+        for (int y = surfaceY - 1; y >= minY; y--) {
+            BlockState state = chunk.getBlockState(localX, y, localZ);
+            if (state == BlockAir.STATE || isWaterState(state)) {
+                break;
+            }
+            if (!state.toBlock().isSolid()) {
+                break;
+            }
+            chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ));
+        }
+    }
+
+    private boolean isWaterState(BlockState state) {
+        return state.toBlock() instanceof BlockFlowingWater;
+    }
 
     private boolean isInRange(float noise) {
         return (noise >= -0.909 && noise <= -0.5454) ||
@@ -179,8 +250,57 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                 (noise >= 0.5454 && noise <= 0.909);
     }
 
-    public BlockState getClayBand(int y) {
-        return CLAYBAND[ Math.abs((y * 1103515245 + 12345) >> 16) % CLAYBAND.length];
+    public BlockState getClayBand(NormalObjectHolder.SurfaceOverwriteHolder holder, Level level, int worldX, int y, int worldZ) {
+        BlockState[] bands = holder.getClayBandsCache();
+        if (bands[0] == null) {
+            synchronized (bands) {
+                if (bands[0] == null) {
+                    generateBands(level.getSeed(), bands);
+                }
+            }
+        }
+        int offset = Math.round(holder.getClayBandsOffsetNoise().getValue(worldX, 0.0, worldZ) * 4.0f);
+        return bands[(y + offset + bands.length) % bands.length];
+    }
+
+    private static void generateBands(long seed, BlockState[] bands) {
+        NukkitRandom random = new NukkitRandom(seed ^ "clay_bands".hashCode());
+        Arrays.fill(bands, HARDENED_CLAY);
+
+        for (int i = 0; i < bands.length; i++) {
+            i += random.nextBoundedInt(5) + 1;
+            if (i < bands.length) {
+                bands[i] = ORANGE_TERRACOTTA;
+            }
+        }
+
+        makeBands(random, bands, 1, YELLOW_TERRACOTTA);
+        makeBands(random, bands, 2, BROWN_TERRACOTTA);
+        makeBands(random, bands, 1, RED_TERRACOTTA);
+
+        int whiteBandCount = random.nextInt(9, 15);
+        int count = 0;
+        for (int start = 0; count < whiteBandCount && start < bands.length; start += random.nextBoundedInt(16) + 4) {
+            bands[start] = WHITE_TERRACOTTA;
+            if (start - 1 > 0 && random.nextBoolean()) {
+                bands[start - 1] = LIGHT_GRAY_TERRACOTTA;
+            }
+            if (start + 1 < bands.length && random.nextBoolean()) {
+                bands[start + 1] = LIGHT_GRAY_TERRACOTTA;
+            }
+            count++;
+        }
+    }
+
+    private static void makeBands(NukkitRandom random, BlockState[] bands, int baseWidth, BlockState state) {
+        int bandCount = random.nextInt(6, 15);
+        for (int i = 0; i < bandCount; i++) {
+            int width = baseWidth + random.nextBoundedInt(3);
+            int start = random.nextBoundedInt(bands.length - 1);
+            for (int p = 0; start + p < bands.length && p < width; p++) {
+                bands[start + p] = state;
+            }
+        }
     }
 
     @Override
