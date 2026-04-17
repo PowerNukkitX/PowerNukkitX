@@ -304,7 +304,9 @@ public class ObjectMangroveTree extends TreeGenerator {
 
     private static void placeWithWaterlogging(BlockManager level, Vector3 pos, BlockState state, Block previousBlock) {
         level.setBlockStateAt(pos, state);
-        if (isWater(previousBlock.getId())) {
+        String id = previousBlock.getId();
+        if (BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)) {
             level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), 1, STILL_WATER);
         }
     }
