@@ -36,7 +36,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(DioriteOreUpperGenerationFeature.NAME, DioriteOreUpperGenerationFeature.class);
             this.register(DioriteOreLowerGenerationFeature.NAME, DioriteOreLowerGenerationFeature.class);
             this.register(AndesiteOreUpperGenerationFeature.NAME, AndesiteOreUpperGenerationFeature.class);
-            this.register(AndesiteOreLowerGenerationFeature.NAME, AndesiteOreUpperGenerationFeature.class);
+            this.register(AndesiteOreLowerGenerationFeature.NAME, AndesiteOreLowerGenerationFeature.class);
             this.register(TuffOreGenerationFeature.NAME, TuffOreGenerationFeature.class);
             this.register(CoalOreUpperGenerationFeature.NAME, CoalOreUpperGenerationFeature.class);
             this.register(CoalOreLowerGenerationFeature.NAME, CoalOreLowerGenerationFeature.class);
