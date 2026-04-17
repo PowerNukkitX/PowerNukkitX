@@ -265,6 +265,18 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.EXPOSED_LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.WEATHERED_LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.COPPER_BULB);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_BULB);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_BULB);
+        randomTickBlocks.add(BlockID.COPPER_DOOR);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_DOOR);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_DOOR);
+        randomTickBlocks.add(BlockID.COPPER_TRAPDOOR);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_TRAPDOOR);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_TRAPDOOR);
+        randomTickBlocks.add(BlockID.CHISELED_COPPER);
+        randomTickBlocks.add(BlockID.EXPOSED_CHISELED_COPPER);
+        randomTickBlocks.add(BlockID.WEATHERED_CHISELED_COPPER);
         randomTickBlocks.add(BlockID.BUDDING_AMETHYST);
         randomTickBlocks.add(BlockID.POINTED_DRIPSTONE);
         randomTickBlocks.add(BlockID.CAVE_VINES);
