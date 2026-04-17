@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchants;
@@ -26,7 +27,7 @@ public final class EnchantmentHelper {
 
     public static final int ENCH_RECIPEID = 100000;
     private static final AtomicInteger ENCH_RECIPE_NETID = new AtomicInteger(ENCH_RECIPEID);
-    public static final ConcurrentHashMap<Integer, ItemEnchantOption> RECIPE_MAP = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Integer, ItemEnchantOptionWithEntry> RECIPE_MAP = new ConcurrentHashMap<>();
 
     public static List<ItemEnchantOption> getEnchantOptions(Position tablePos, Item input, int seed) {
         if (input == null || input.hasEnchantments()) {
@@ -133,12 +134,14 @@ public final class EnchantmentHelper {
                 Collections.emptyList()
         );
         final int enchantNetId = ENCH_RECIPE_NETID.getAndIncrement();
-        return new ItemEnchantOption(
+        final ItemEnchantOption option = new ItemEnchantOption(
                 requiredXpLevel,
                 itemEnchants,
                 getRandomOptionName(random),
                 enchantNetId
         );
+        RECIPE_MAP.put(enchantNetId, new ItemEnchantOptionWithEntry(option, entry));
+        return option;
     }
 
     private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {
@@ -199,5 +202,11 @@ public final class EnchantmentHelper {
         }
 
         return list;
+    }
+
+    @Value
+    public static class ItemEnchantOptionWithEntry {
+        ItemEnchantOption option;
+        int entry;
     }
 }

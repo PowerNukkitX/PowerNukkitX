@@ -5876,4 +5876,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.removeLastUseTick(this.lastUsedItem.getId());
         this.lastUsedItem = null;
     }
+
+    public void sendFogStack() {
+        final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
+        playerFogPacket.getFogStack().addAll(this.getFogStack());
+        this.session.sendPacketImmediately(playerFogPacket);
+    }
 }

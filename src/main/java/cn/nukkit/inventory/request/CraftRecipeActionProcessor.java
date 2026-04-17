@@ -73,11 +73,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public ActionResponse handle(CraftRecipeAction action, Player player, ItemStackRequestContext context) {
         Inventory inventory = player.getTopWindow().orElseGet(player::getCraftingGrid);
         if (action.getRecipeNetworkId() >= EnchantmentHelper.ENCH_RECIPEID) {  //handle ench recipe
-            ItemEnchantOption enchantOptionData = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetworkId());
-            if (enchantOptionData == null) {
+            EnchantmentHelper.ItemEnchantOptionWithEntry enchantOptionWithEntry = EnchantmentHelper.RECIPE_MAP.get(action.getRecipeNetworkId());
+            if (enchantOptionWithEntry == null) {
                 log.error("Can't find enchant recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
             }
+            final ItemEnchantOption enchantOptionData = enchantOptionWithEntry.getOption();
             Item first = inventory.getItem(0);
             if (first.isNull()) {
                 log.error("Can't find enchant input!");
@@ -96,7 +97,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             Server.getInstance().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 if ((player.getGamemode() & 0x01) == 0) {
-                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (/* TODO protocol ench index 0 */0 + 1));
+                    player.setExperience(player.getExperience(), player.getExperienceLevel() - (enchantOptionWithEntry.getEntry() + 1));
                 }
                 player.getCreativeOutputInventory().setItem(item);
                 EnchantmentHelper.RECIPE_MAP.remove(action.getRecipeNetworkId());
