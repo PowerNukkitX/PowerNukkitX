@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWaxedWeatheredCopperTrapdoor extends BlockCopperTrapdoor {
@@ -17,5 +18,20 @@ public class BlockWaxedWeatheredCopperTrapdoor extends BlockCopperTrapdoor {
 
     public BlockWaxedWeatheredCopperTrapdoor(BlockState blockstate) {
         super(blockstate);
+    }
+
+    @Override
+    public String getName() {
+        return "Waxed Weathered Copper Trapdoor";
+    }
+
+    @Override
+    public @NotNull OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.WEATHERED;
+    }
+
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

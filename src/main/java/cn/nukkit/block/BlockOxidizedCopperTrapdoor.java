@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.block.property.CommonBlockProperties;
+import cn.nukkit.block.property.enums.OxidizationLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockOxidizedCopperTrapdoor extends BlockCopperTrapdoor {
@@ -22,5 +23,10 @@ public class BlockOxidizedCopperTrapdoor extends BlockCopperTrapdoor {
     @Override
     public String getName() {
         return "Oxidized Copper Trapdoor";
+    }
+
+    @Override
+    public @NotNull OxidizationLevel getOxidizationLevel() {
+        return OxidizationLevel.OXIDIZED;
     }
 }

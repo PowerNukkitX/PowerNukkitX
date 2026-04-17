@@ -87,29 +87,47 @@ public class BlockLightningRod extends BlockTransparent implements Faceable, Wax
     }
 
     @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace face, float fx, float fy, float fz) {
+        return Waxable.super.onActivate(item, player, face, fx, fy, fz)
+                || Oxidizable.super.onActivate(item, player, face, fx, fy, fz);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        return Oxidizable.super.onUpdate(type);
+    }
+
+    @Override
     public @NotNull OxidizationLevel getOxidizationLevel() {
         return OxidizationLevel.UNAFFECTED;
     }
 
     @Override
     public Block getBlockWithOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        return Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock();
+        return withFacing(Registries.BLOCK.getBlockProperties(getCopperId(isWaxed(), oxidizationLevel)).getDefaultState().toBlock());
     }
 
     @Override
     public boolean setOxidizationLevel(@NotNull OxidizationLevel oxidizationLevel) {
-        if (getOxidizationLevel().equals(oxidizationLevel)) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
+        if (getOxidizationLevel().equals(oxidizationLevel)) return true;
+        return getValidLevel().setBlock(this, withFacing(Block.get(getCopperId(isWaxed(), oxidizationLevel))));
     }
 
     @Override
     public boolean setWaxed(boolean waxed) {
-        if (isWaxed() == waxed) {
-            return true;
-        }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
+        if (isWaxed() == waxed) return true;
+        return getValidLevel().setBlock(this, withFacing(Block.get(getCopperId(waxed, getOxidizationLevel()))));
+    }
+
+    private Block withFacing(Block newBlock) {
+        newBlock.setPropertyValue(CommonBlockProperties.FACING_DIRECTION,
+                getPropertyValue(CommonBlockProperties.FACING_DIRECTION));
+        return newBlock;
     }
 
     @Override
