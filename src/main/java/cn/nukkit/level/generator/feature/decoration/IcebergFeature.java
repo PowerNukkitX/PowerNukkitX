@@ -123,10 +123,6 @@ public class IcebergFeature extends GenerateFeature {
         int z = originZ + nextIntExclusive(8) - nextIntExclusive(8);
         int y = SEA_LEVEL - 2;
 
-        if (y > SEA_LEVEL - 1) {
-            return;
-        }
-
         String originState = getId(manager, x, y, z);
         String belowState = getId(manager, x, y - 1, z);
         if (!isWaterState(originState) && !isWaterState(belowState)) {

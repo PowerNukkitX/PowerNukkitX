@@ -204,7 +204,7 @@ public class PopulatorRuinedPortal extends Populator {
     }
 
     private static boolean isWater(Block block) {
-        return block instanceof BlockFlowingWater || block instanceof BlockWater;
+        return block instanceof BlockFlowingWater;
     }
 
     private static boolean shouldFillAirWithWater(Level level, Block block) {
