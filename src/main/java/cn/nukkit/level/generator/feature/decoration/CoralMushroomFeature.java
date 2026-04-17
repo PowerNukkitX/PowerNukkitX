@@ -40,7 +40,7 @@ public class CoralMushroomFeature extends AbstractCoralFeature {
                             && (iz != 0 && iz != length || iy != 0 && iy != height)
                             && (ix != 0 && ix != width || iz != 0 && iz != length)
                             && (ix == 0 || ix == width || iy == 0 || iy == height || iz == 0 || iz == length)
-                            && !(random.nextFloat() < 0.1f)) {
+                            && (random.nextFloat() >= 0.1f)) {
                         placeCoralBlock(chunk, random, px, py, pz, coralState);
                     }
                 }

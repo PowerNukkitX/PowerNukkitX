@@ -65,8 +65,8 @@ public class IceSpikeFeature extends GenerateFeature {
                     float dx = Math.abs(xo) - 0.25F;
                     for (int zo = -newWidth; zo <= newWidth; zo++) {
                         float dz = Math.abs(zo) - 0.25F;
-                        if ((xo == 0 && zo == 0 || !(dx * dx + dz * dz > scale * scale))
-                                && (xo != -newWidth && xo != newWidth && zo != -newWidth && zo != newWidth || !(random.nextFloat() > 0.75F))) {
+                        if ((xo == 0 && zo == 0 || dx * dx + dz * dz <= scale * scale)
+                                && (xo != -newWidth && xo != newWidth && zo != -newWidth && zo != newWidth || random.nextFloat() <= 0.75F)) {
                             int px = originX + xo;
                             int py = originY + yOff;
                             int pz = originZ + zo;
