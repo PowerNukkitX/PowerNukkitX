@@ -10,20 +10,20 @@ import java.util.UUID;
 
 
 public class StonecutterRecipe extends CraftingRecipe {
-    public StonecutterRecipe(Item result, Item ingredient) {
-        this(null, 10, result, ingredient);
+    public StonecutterRecipe(Item result, Item ingredient, int netId) {
+        this(null, netId, 10, result, ingredient);
     }
 
-    public StonecutterRecipe(String recipeId, int priority, Item result, Item ingredient) {
-        this(recipeId, null, priority, result, ingredient);
+    public StonecutterRecipe(String recipeId, int netId, int priority, Item result, Item ingredient) {
+        this(recipeId, null, netId, priority, result, ingredient);
     }
 
-    public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient) {
-        this(recipeId, null, priority, result, ingredient, null);
+    public StonecutterRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, Item ingredient) {
+        this(recipeId, uuid, netId, priority, result, ingredient, null);
     }
 
-    public StonecutterRecipe(String recipeId, UUID uuid, int priority, Item result, Item ingredient, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, priority, recipeUnlockingRequirement);
+    public StonecutterRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, Item ingredient, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeIdWithItem(List.of(result), List.of(ingredient), RecipeType.STONECUTTER) : recipeId, netId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredient.getCount() < 1) {

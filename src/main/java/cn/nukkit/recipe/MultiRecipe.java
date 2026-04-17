@@ -2,7 +2,6 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.registry.RecipeRegistry;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,9 +13,11 @@ import java.util.UUID;
 public class MultiRecipe implements Recipe {
 
     private final UUID id;
+    private final int netId;
 
-    public MultiRecipe(UUID id) {
+    public MultiRecipe(UUID id, int netId) {
         this.id = id;
+        this.netId = netId;
     }
 
     @Override
@@ -48,10 +49,14 @@ public class MultiRecipe implements Recipe {
         return this.id;
     }
 
+    public int getNetId() {
+        return netId;
+    }
+
     public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.MultiRecipe toNetwork() {
         return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.MultiRecipe.of(
                 this.id,
-                RecipeRegistry.RECIPE_NET_ID_COUNTER++
+                this.netId
         );
     }
 }

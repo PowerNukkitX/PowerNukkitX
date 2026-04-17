@@ -28,8 +28,8 @@ public class ShapedRecipe extends CraftingRecipe {
     private final int col;
     private final boolean mirror;
 
-    public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
-        this(null, 1, primaryResult, shape, ingredients, extraResults);
+    public ShapedRecipe(Item primaryResult, int netId, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+        this(null, netId, 1, primaryResult, shape, ingredients, extraResults);
     }
 
     /**
@@ -47,23 +47,23 @@ public class ShapedRecipe extends CraftingRecipe {
      *                      <p>
      *                      Note: Recipes do not need to be square. Do NOT add padding for empty rows/columns.
      */
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
-        this(recipeId, priority, primaryResult, shape,
+    public ShapedRecipe(String recipeId, int netId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+        this(recipeId, netId, priority, primaryResult, shape,
                 Maps.transformEntries(ingredients, (Maps.EntryTransformer<Character, Item, ItemDescriptor>) (k, v) -> new DefaultDescriptor(v)),
                 extraResults);
     }
 
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
-        this(recipeId, null, priority, primaryResult, shape, ingredients, extraResults, false);
+    public ShapedRecipe(String recipeId, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults) {
+        this(recipeId, null, netId, priority, primaryResult, shape, ingredients, extraResults, false);
     }
 
-    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
-        this(recipeId, uuid, priority, primaryResult, shape, ingredients, extraResults, mirror, null);
+    public ShapedRecipe(String recipeId, UUID uuid, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
+        this(recipeId, uuid, netId, priority, primaryResult, shape, ingredients, extraResults, mirror, null);
     }
 
-    public ShapedRecipe(String recipeId, UUID uuid, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
+    public ShapedRecipe(String recipeId, UUID uuid, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
                         Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, priority, recipeUnlockingRequirement);
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, netId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.mirror = mirror;
 
@@ -318,7 +318,7 @@ public class ShapedRecipe extends CraftingRecipe {
                 this.getUUID(),
                 "crafting_table",
                 this.getPriority(),
-                RecipeRegistry.RECIPE_NET_ID_COUNTER++,
+                this.getNetId(),
                 this.isMirror(),
                 this.getRequirement()
         );

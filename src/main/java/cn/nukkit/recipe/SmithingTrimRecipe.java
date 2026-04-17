@@ -1,7 +1,7 @@
 package cn.nukkit.recipe;
 
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import cn.nukkit.registry.RecipeRegistry;
+import lombok.Getter;
 
 /**
  * The type Smithing recipe for trim equipment.
@@ -10,9 +10,12 @@ import cn.nukkit.registry.RecipeRegistry;
  */
 public class SmithingTrimRecipe extends BaseRecipe {
     private final String tag;
+    @Getter
+    private final int netId;
 
-    public SmithingTrimRecipe(String id, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template, String tag) {
+    public SmithingTrimRecipe(String id, int netId, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template, String tag) {
         super(id);
+        this.netId = netId;
         results.clear();
         ingredients.add(template);
         ingredients.add(base);
@@ -41,7 +44,7 @@ public class SmithingTrimRecipe extends BaseRecipe {
                 this.getIngredients().get(1).toNetwork(),
                 this.getIngredients().getLast().toNetwork(),
                 "smithing_table",
-                RecipeRegistry.RECIPE_NET_ID_COUNTER++
+                this.netId
         );
     }
 }

@@ -13,24 +13,24 @@ import java.util.List;
 import java.util.UUID;
 
 public class ShapelessRecipe extends CraftingRecipe {
-    public ShapelessRecipe(Item result, Collection<Item> ingredients) {
-        this(null, 10, result, ingredients);
+    public ShapelessRecipe(Item result, int netId, Collection<Item> ingredients) {
+        this(null, netId, 10, result, ingredients);
     }
 
-    public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
-        this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
+    public ShapelessRecipe(String recipeId, int netId, int priority, Item result, Collection<Item> ingredients) {
+        this(recipeId, netId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
     }
 
-    public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
-        this(recipeId, null, priority, result, ingredients);
+    public ShapelessRecipe(String recipeId, int netId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, null, netId, priority, result, ingredients);
     }
 
-    public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients) {
-        this(recipeId, uuid, priority, result, ingredients, null);
+    public ShapelessRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, List<ItemDescriptor> ingredients) {
+        this(recipeId, uuid, netId, priority, result, ingredients, null);
     }
 
-    public ShapelessRecipe(String recipeId, UUID uuid, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, priority, recipeUnlockingRequirement);
+    public ShapelessRecipe(String recipeId, UUID uuid, int netId, int priority, Item result, List<ItemDescriptor> ingredients, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(List.of(result), ingredients, RecipeType.SHAPELESS) : recipeId, netId, priority, recipeUnlockingRequirement);
         this.uuid = uuid;
         this.results.add(result.clone());
         if (ingredients.size() > 9) {
@@ -78,7 +78,7 @@ public class ShapelessRecipe extends CraftingRecipe {
                 this.getUUID(),
                 this.getRecipeIdTag(),
                 this.getPriority(),
-                RecipeRegistry.RECIPE_NET_ID_COUNTER++,
+                this.getNetId(),
                 this.getRequirement()
         );
     }
