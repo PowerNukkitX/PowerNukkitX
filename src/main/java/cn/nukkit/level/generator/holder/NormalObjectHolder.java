@@ -87,7 +87,6 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private DensityFunction veinGap;
         private DensityFunction preliminarySurfaceDensity;
         private DensityFunction preliminarySurfaceUpperBound;
-        private DensityFunction fullNoiseValue;
         private MultiMaterial multiMaterial;
         private final ThreadLocal<Aquifer> aquifer = new ThreadLocal<>();
 
@@ -174,15 +173,14 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             veinToggle = DensityOreVeins.overworldVeinToggle(veinToggleNoise);
             veinRidged = DensityOreVeins.overworldVeinRidged(veinANoise, veinBNoise);
             veinGap = DensityOreVeins.overworldVeinGap(oreGapNoise);
-            fullNoiseValue = DensityCommon.cacheAllInCell(densityFunction);
             OreVeinifier oreVeinifier = new OreVeinifier(veinToggle, veinRidged, veinGap, randomSourceProvider.nextLong());
             List<MaterialFiller> builder = new ArrayList<>();
             builder.add(context -> {
                 Aquifer currentAquifer = aquifer.get();
-                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, fullNoiseValue.compute(context));
+                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, densityFunction.compute(context));
             });
             builder.add(oreVeinifier::calculate);
-            builder.add(context -> fullNoiseValue.compute(context) > 0.0d ? stone : null);
+            builder.add(context -> densityFunction.compute(context) > 0.0d ? stone : null);
             multiMaterial = new MultiMaterial(builder.toArray(new MaterialFiller[0]));
             caveDetector = OverworldCavesDensity.createCaveDetector(this);
         }

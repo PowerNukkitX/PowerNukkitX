@@ -2,11 +2,6 @@ package cn.nukkit.level.generator.densityfunction;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 
-/**
- * @author Codex
- * @since 2026/04/17
- * @implNote Based on vanilla overworld noise_router vein_* functions
- */
 public final class DensityOreVeins {
 
     private static final DensityFunction Y = new DensityFunction.SimpleFunction() {

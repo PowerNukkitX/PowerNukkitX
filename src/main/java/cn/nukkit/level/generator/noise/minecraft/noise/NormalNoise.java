@@ -2,9 +2,6 @@ package cn.nukkit.level.generator.noise.minecraft.noise;
 
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NormalNoise {
 
     private static final double INPUT_FACTOR = 1.0181268882175227D;
@@ -14,13 +11,13 @@ public class NormalNoise {
     private final double maxValue;
 
     public NormalNoise(RandomSourceProvider random, int firstOctave, float[] amplitudes) {
-        List<Double> octaveAmplitudes = new ArrayList<>(amplitudes.length);
+        double[] octaveAmplitudes = new double[amplitudes.length];
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
 
         for (int i = 0; i < amplitudes.length; i++) {
             double amplitude = amplitudes[i];
-            octaveAmplitudes.add(amplitude);
+            octaveAmplitudes[i] = amplitude;
             if (amplitude != 0.0D) {
                 min = Math.min(min, i);
                 max = Math.max(max, i);

@@ -646,7 +646,10 @@ public final class DensityCommon {
     }
 
     private static final class FlatCacheMarker extends Marker {
-        private final ThreadLocal<Cache2DState> state = ThreadLocal.withInitial(Cache2DState::new);
+        private static final int QUART_SIZE = 4;
+        private static final int CHUNK_SIZE_BLOCKS = 16;
+        private static final int GRID_SIZE_XZ = (CHUNK_SIZE_BLOCKS / QUART_SIZE) + 1; // 5
+        private final ThreadLocal<FlatCacheState> state = ThreadLocal.withInitial(FlatCacheState::new);
 
         private FlatCacheMarker(DensityFunction wrapped) {
             super(Type.FLAT_CACHE, wrapped);
@@ -654,21 +657,65 @@ public final class DensityCommon {
 
         @Override
         public double compute(FunctionContext context) {
-            Cache2DState s = state(context, state, Cache2DState::new);
-            long pos2d = (((long) context.blockX()) << 32) ^ (context.blockZ() & 0xFFFFFFFFL);
-            if (s.valid && s.lastPos2d == pos2d) {
-                return s.lastValue;
+            FlatCacheState s = state(context, state, FlatCacheState::new);
+            int blockX = context.blockX();
+            int blockZ = context.blockZ();
+            int chunkX = Math.floorDiv(blockX, CHUNK_SIZE_BLOCKS);
+            int chunkZ = Math.floorDiv(blockZ, CHUNK_SIZE_BLOCKS);
+            FlatCacheCell cell = s.getOrCreateCell(chunkX, chunkZ, wrapped);
+
+            int quartX = Math.floorDiv(blockX, QUART_SIZE);
+            int quartZ = Math.floorDiv(blockZ, QUART_SIZE);
+            int localQuartX = quartX - cell.firstQuartX;
+            int localQuartZ = quartZ - cell.firstQuartZ;
+            if (localQuartX >= 0 && localQuartZ >= 0 && localQuartX < GRID_SIZE_XZ && localQuartZ < GRID_SIZE_XZ) {
+                return cell.values[localQuartX + localQuartZ * GRID_SIZE_XZ];
             }
-            s.valid = true;
-            s.lastPos2d = pos2d;
-            s.lastValue = wrapped.compute(context);
-            return s.lastValue;
+            return wrapped.compute(context);
         }
 
         @Override
         public void fillArray(double[] output, ContextProvider contextProvider) {
             contextProvider.fillAllDirectly(output, this);
         }
+    }
+
+    private static final class FlatCacheState {
+        private final Map<Long, FlatCacheCell> cells = new LinkedHashMap<>(64, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<Long, FlatCacheCell> eldest) {
+                return size() > 128;
+            }
+        };
+
+        private FlatCacheCell getOrCreateCell(int chunkX, int chunkZ, DensityFunction wrapped) {
+            long key = (((long) chunkX) << 32) ^ (chunkZ & 0xFFFFFFFFL);
+            FlatCacheCell cell = cells.get(key);
+            if (cell != null) {
+                return cell;
+            }
+
+            int firstBlockX = chunkX << 4;
+            int firstBlockZ = chunkZ << 4;
+            int firstQuartX = Math.floorDiv(firstBlockX, FlatCacheMarker.QUART_SIZE);
+            int firstQuartZ = Math.floorDiv(firstBlockZ, FlatCacheMarker.QUART_SIZE);
+            double[] values = new double[FlatCacheMarker.GRID_SIZE_XZ * FlatCacheMarker.GRID_SIZE_XZ];
+            for (int x = 0; x < FlatCacheMarker.GRID_SIZE_XZ; x++) {
+                int blockX = (firstQuartX + x) << 2;
+                for (int z = 0; z < FlatCacheMarker.GRID_SIZE_XZ; z++) {
+                    int blockZ = (firstQuartZ + z) << 2;
+                    values[x + z * FlatCacheMarker.GRID_SIZE_XZ] =
+                            wrapped.compute(new DensityFunction.SinglePointContext(blockX, 0, blockZ));
+                }
+            }
+
+            cell = new FlatCacheCell(firstQuartX, firstQuartZ, values);
+            cells.put(key, cell);
+            return cell;
+        }
+    }
+
+    private record FlatCacheCell(int firstQuartX, int firstQuartZ, double[] values) {
     }
 
     private static final class CacheOnceMarker extends Marker {
