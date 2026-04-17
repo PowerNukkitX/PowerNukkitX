@@ -159,6 +159,7 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
+import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageOnly;
@@ -5620,64 +5621,68 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
     }
 
-    /* TODO protocol public List<Integer> sendDebugShape(DebugShape... shape) {
+    public List<Integer> sendDebugShape(ShapeDataPayload... shapes) {
         List<Integer> ids = new ArrayList<>();
 
-        for (DebugShape s : shape) {
-            int id = shapeIds.getAndIncrement();
-            s.networkId = id;
+        for (ShapeDataPayload shapeDataPayload : shapes) {
+            int id = this.shapeIds.getAndIncrement();
+            shapeDataPayload.setNetworkId(id);
             ids.add(id);
         }
 
-        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
-        pk.shapes = Arrays.stream(shape).toList();
-        this.dataPacket(pk);
+        final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
+        packet.getShapes().addAll(Arrays.stream(shapes).toList());
+        this.dataPacket(packet);
 
         return ids;
     }
 
-    public int sendDebugShape(DebugShape shape) {
-        int id = shapeIds.getAndIncrement();
-        shape.networkId = id;
+    public int sendDebugShape(ShapeDataPayload shape) {
+        final int id = this.shapeIds.getAndIncrement();
+        shape.setNetworkId(id);
 
-        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
-        pk.shapes = Collections.singletonList(shape);
-        this.dataPacket(pk);
+        final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
+        packet.getShapes().add(shape);
 
+        this.dataPacket(packet);
         return id;
     }
 
-    public void updateDebugShape(int id, DebugShape shape) {
-        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
-        shape.networkId = id;
-        pk.shapes = Collections.singletonList(shape);
-        this.dataPacket(pk);
+    public void updateDebugShape(int id, ShapeDataPayload shape) {
+        shape.setNetworkId(id);
+
+        final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
+        packet.getShapes().add(shape);
+
+        this.dataPacket(packet);
     }
 
     public void removeDebugShape(int id) {
-        DebugShape shape = new DebugShape();
-        shape.networkId = id;
+        final ShapeDataPayload shape = new ShapeDataPayload();
+        shape.setNetworkId(id);
 
-        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
-        pk.shapes = Collections.singletonList(shape);
-        this.dataPacket(pk);
+        final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
+        packet.getShapes().add(shape);
+
+        this.dataPacket(packet);
     }
 
     public void clearDebugShapes() {
-        List<DebugShape> shapes = new ArrayList<>();
+        List<ShapeDataPayload> shapes = new ArrayList<>();
 
         for (int i = 0; i < shapeIds.get(); i++) {
-            DebugShape shape = new DebugShape();
-            shape.networkId = i;
+            final ShapeDataPayload shape = new ShapeDataPayload();
+            shape.setNetworkId(i);
             shapes.add(shape);
         }
 
-        ServerScriptDebugDrawerPacket pk = new ServerScriptDebugDrawerPacket();
-        pk.shapes = shapes;
-        this.dataPacket(pk);
+        final PrimitiveShapesPacket packet = new PrimitiveShapesPacket();
+        packet.getShapes().addAll(shapes);
+
+        this.dataPacket(packet);
 
         shapeIds.set(0);
-    }*/
+    }
 
     /**
      * Returns a copy of the active client input lock flags.

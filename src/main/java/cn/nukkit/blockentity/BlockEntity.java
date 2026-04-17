@@ -103,6 +103,9 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
         this.namedTag = nbt;
+        if (namedTag.getString("id") == null || namedTag.getString("id").isEmpty()) {
+            log.warn("Tried to create a block entity with an invalid id, {}", this.getClass().getSimpleName());
+        }
         this.name = this.namedTag.getString("id");
         this.id = BlockEntity.count++;
         this.x = this.namedTag.getInt("x");
