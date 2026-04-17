@@ -9,6 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -266,7 +267,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
                 nbt.put(e.getKey(), e.getValue());
             }
         }
-        level.setBlock(block, this, true, true);
+        level.setBlock(block, this, false, true);
         BlockFrame levelBlock = (BlockFrame) block.getLevelBlock();
         BlockEntityItemFrame frame = levelBlock.getBlockEntity();
         if (frame == null) {
@@ -304,8 +305,11 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
         } else {
             // [ITEM_DEBUG] Log when getDrops cannot find block entity or drop chance fails
             if (itemFrame == null) {
-                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getDrops: blockEntity is NULL, item will be lost!",
-                        getFloorX(), getFloorY(), getFloorZ());
+                IChunk dbgChunk = (this.level != null)
+                        ? this.level.getChunk(getFloorX() >> 4, getFloorZ() >> 4, false) : null;
+                log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getDrops: blockEntity is NULL (chunk={}), item will be lost!",
+                        getFloorX(), getFloorY(), getFloorZ(),
+                        dbgChunk == null ? "NOT_LOADED" : "loaded_but_no_BE_in_tileList");
             } else {
                 log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getDrops: drop chance failed (chance={}), item {} destroyed",
                         getFloorX(), getFloorY(), getFloorZ(), itemFrame.getItemDropChance(),
