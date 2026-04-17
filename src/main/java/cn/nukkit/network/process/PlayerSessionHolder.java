@@ -129,6 +129,7 @@ public class PlayerSessionHolder {
         this.player.sendData(this.player);
         this.player.syncInventory();
         this.player.syncCreativeContent();
+        this.player.sendAttributes();
 
         final TrimDataPacket trimDataPacket = new TrimDataPacket();
         trimDataPacket.getTrimMaterialList().addAll(TrimData.trimMaterials);
