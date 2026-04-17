@@ -475,11 +475,11 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public void rebuildPacket() {
         final CraftingDataPacket pk = new CraftingDataPacket();
-        // TODO protocol stonecutter recipe
 
         for (Recipe netIdRecipe : this.getNetworkIdRecipeMap().values()) {
             switch (netIdRecipe) {
                 case ShapelessRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
+                case StonecutterRecipe recipe ->  pk.getCraftingEntries().add(recipe.toNetwork());
                 case ShapedRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
                 case MultiRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
                 case SmithingTransformRecipe recipe -> pk.getCraftingEntries().add(recipe.toNetwork());
