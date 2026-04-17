@@ -60,18 +60,14 @@ public class IcebergFeature extends GenerateFeature {
         int shapeEllipseC = 3 + nextIntExclusive(3);
         boolean isEllipse = nukkitRandom.nextDouble() > 0.7;
 
-        int overWaterHeight = isEllipse ? nextIntExclusive(10) + 8 : nextIntExclusive(20) + 6;
-        if (!isEllipse && nukkitRandom.nextDouble() > 0.72) {
-            overWaterHeight += nextIntExclusive(12) + 6;
+        final int maxWidthRoundIceberg = 11;
+        int overWaterHeight = isEllipse ? nextIntExclusive(6) + 6 : nextIntExclusive(15) + 3;
+        if (!isEllipse && nukkitRandom.nextDouble() > 0.9) {
+            overWaterHeight += nextIntExclusive(19) + 7;
         }
-        if (!isEllipse && nukkitRandom.nextDouble() > 0.93) {
-            overWaterHeight += nextIntExclusive(18) + 8;
-        }
-
-        int underWaterHeight = Math.min(overWaterHeight + nextIntExclusive(14), 30);
-        int width = Math.max(4, (int) Math.round(overWaterHeight * (0.48 + nukkitRandom.nextDouble() * 0.18))
-                + nextIntExclusive(4) - nextIntExclusive(3));
-        int a = isEllipse ? shapeEllipseA : width;
+        int underWaterHeight = Math.min(overWaterHeight + nextIntExclusive(11), 18);
+        int width = Math.min(overWaterHeight + nextIntExclusive(7) - nextIntExclusive(5), maxWidthRoundIceberg);
+        int a = isEllipse ? shapeEllipseA : maxWidthRoundIceberg;
 
         BlockManager manager = new BlockManager(level);
         Set<Long> localIceberg = new HashSet<>();

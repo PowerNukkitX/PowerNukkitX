@@ -2,12 +2,17 @@ package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.*;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
+import cn.nukkit.tags.BlockTags;
+import cn.nukkit.utils.random.NukkitRandom;
 
 import static cn.nukkit.level.biome.BiomeID.*;
+import static cn.nukkit.block.BlockID.FLOWING_WATER;
+import static cn.nukkit.block.BlockID.WATER;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -31,7 +36,9 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
     protected static final BlockState RED_TERRACOTTA = BlockRedTerracotta.PROPERTIES.getDefaultState();
     protected static final BlockState LIGHT_GRAY_TERRACOTTA = BlockLightGrayTerracotta.PROPERTIES.getDefaultState();
     protected static final BlockState SNOW_LAYER = BlockSnowLayer.PROPERTIES.getDefaultState();
+    protected static final BlockState SNOW_BLOCK = BlockSnow.PROPERTIES.getDefaultState();
     protected static final BlockState ICE = BlockIce.PROPERTIES.getDefaultState();
+    protected static final BlockState PACKED_ICE = BlockPackedIce.PROPERTIES.getDefaultState();
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -93,7 +100,65 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                             }
                         }
                     }
+                    case FROZEN_OCEAN,
+                         DEEP_FROZEN_OCEAN,
+                         LEGACY_FROZEN_OCEAN -> {
+                        frozenOceanExtension(chunk, holder, level, x, z, lx, lz, y);
+                    }
                 }
+            }
+        }
+    }
+
+    private void frozenOceanExtension(
+            IChunk chunk,
+            NormalObjectHolder.SurfaceOverwriteHolder holder,
+            Level level,
+            int localX,
+            int localZ,
+            int worldX,
+            int worldZ,
+            int height
+    ) {
+        double iceberg = Math.min(
+                Math.abs(holder.getIcebergSurfaceNoise().getValue(worldX, 0.0, worldZ) * 8.25),
+                holder.getIcebergPillarNoise().getValue(worldX * 1.28, 0.0, worldZ * 1.28) * 15.0
+        );
+        if (iceberg <= 1.8) {
+            return;
+        }
+
+        double icebergRoof = Math.abs(holder.getIcebergPillarRoofNoise().getValue(worldX * 1.17, 0.0, worldZ * 1.17) * 1.5);
+        double top = Math.min(iceberg * iceberg * 1.2, Math.ceil(icebergRoof * 40.0) + 14.0);
+        if (top <= 2.0) {
+            return;
+        }
+
+        double extensionBottom = SEA_LEVEL - top - 7.0;
+        double extensionTop = top + SEA_LEVEL;
+
+        NukkitRandom random = new NukkitRandom(level.getSeed()
+                ^ Level.chunkHash(chunk.getX(), chunk.getZ())
+                ^ ((long) worldX)
+                ^ ((long) worldZ));
+
+        int maxSnowDepth = 2 + random.nextBoundedInt(4);
+        int minSnowHeight = SEA_LEVEL + 18 + random.nextBoundedInt(10);
+        int snowDepth = 0;
+
+        for (int y = Math.max(height, (int) extensionTop + 1); y >= level.getMinHeight(); y--) {
+            BlockState state = chunk.getBlockState(localX, y, localZ);
+            boolean place = (state == BlockAir.STATE && y < (int) extensionTop && random.nextDouble() > 0.01)
+                    || (state.toBlock() instanceof BlockFlowingWater && y > (int) extensionBottom && y <= SEA_LEVEL && random.nextDouble() > 0.15);
+            if (!place) {
+                continue;
+            }
+
+            if (snowDepth <= maxSnowDepth && y > minSnowHeight) {
+                chunk.setBlockState(localX, y, localZ, SNOW_BLOCK);
+                snowDepth++;
+            } else {
+                chunk.setBlockState(localX, y, localZ, PACKED_ICE);
             }
         }
     }

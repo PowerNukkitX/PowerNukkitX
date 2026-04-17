@@ -161,11 +161,17 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
 
         private NormalNoise surfaceNoise;
         private NormalNoise swampNoise;
+        private NormalNoise icebergPillarNoise;
+        private NormalNoise icebergPillarRoofNoise;
+        private NormalNoise icebergSurfaceNoise;
 
         public SurfaceOverwriteHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
             this.swampNoise = new NormalNoise(randomSourceProvider.identical(), -2, new float[]{1f});
+            this.icebergPillarNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f, 1f});
+            this.icebergPillarRoofNoise = new NormalNoise(randomSourceProvider.identical(), -3, new float[]{1f});
+            this.icebergSurfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
         }
     }
 
