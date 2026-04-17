@@ -123,13 +123,7 @@ public class MineshaftPieces {
         }
 
         protected BlockState getWoodBlock() {
-            switch (this.type) {
-                case NORMAL:
-                default:
-                    return OAK_LOG;
-                case MESA:
-                    return DARK_OAK_LOG;
-            }
+            return this.type == Type.MESA ? DARK_OAK_LOG : OAK_LOG;
         }
 
         //\\ MineshaftPiece::_isSupportingBox(int,int,BlockSource *,int,int)

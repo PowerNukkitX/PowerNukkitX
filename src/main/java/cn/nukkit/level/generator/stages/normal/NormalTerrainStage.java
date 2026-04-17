@@ -84,7 +84,6 @@ public class NormalTerrainStage extends GenerateStage {
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         unsafeChunk.setBlockState(x, minY, z, BEDROCK, 0);
-                        final int columnIndex = (z << 4) | x;
                         final int bedrockDepth = random.nextBoundedInt(6);
                         for (int i = 0; i < bedrockDepth; i++) {
                             final int y = minY + i;

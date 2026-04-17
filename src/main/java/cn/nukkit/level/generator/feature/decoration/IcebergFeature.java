@@ -125,12 +125,12 @@ public class IcebergFeature extends GenerateFeature {
             return;
         }
 
-        boolean foundPackedIce = false;
-        if (getId(manager, x + 1, y, z).equals(PACKED_ICE)) foundPackedIce = true;
-        if (getId(manager, x - 1, y, z).equals(PACKED_ICE)) foundPackedIce = true;
-        if (getId(manager, x, y, z + 1).equals(PACKED_ICE)) foundPackedIce = true;
-        if (getId(manager, x, y, z - 1).equals(PACKED_ICE)) foundPackedIce = true;
-        if (getId(manager, x, y + 1, z).equals(PACKED_ICE)) foundPackedIce = true;
+        boolean foundPackedIce =
+                getId(manager, x + 1, y, z).equals(PACKED_ICE)
+                        || getId(manager, x - 1, y, z).equals(PACKED_ICE)
+                        || getId(manager, x, y, z + 1).equals(PACKED_ICE)
+                        || getId(manager, x, y, z - 1).equals(PACKED_ICE)
+                        || getId(manager, x, y + 1, z).equals(PACKED_ICE);
 
         if (!foundPackedIce) {
             return;

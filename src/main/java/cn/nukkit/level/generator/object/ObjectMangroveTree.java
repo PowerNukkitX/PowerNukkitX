@@ -275,7 +275,8 @@ public class ObjectMangroveTree extends TreeGenerator {
     private static boolean canPlaceLogInto(Block block) {
         String id = block.getId();
         return block.isAir()
-                || isWater(id)
+                || BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)
                 || BlockID.MANGROVE_LEAVES.equals(id)
                 || BlockID.VINE.equals(id)
                 || BlockID.MANGROVE_PROPAGULE.equals(id);
@@ -283,14 +284,16 @@ public class ObjectMangroveTree extends TreeGenerator {
 
     private static boolean canPlaceLeafInto(String id) {
         return BlockID.AIR.equals(id)
-                || isWater(id)
+                || BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)
                 || BlockID.VINE.equals(id)
                 || BlockID.MANGROVE_PROPAGULE.equals(id);
     }
 
     private static boolean canPlaceRootInto(String id) {
         return BlockID.AIR.equals(id)
-                || isWater(id)
+                || BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)
                 || BlockID.MUD.equals(id)
                 || BlockID.MANGROVE_ROOTS.equals(id)
                 || BlockID.MUDDY_MANGROVE_ROOTS.equals(id)
@@ -298,9 +301,6 @@ public class ObjectMangroveTree extends TreeGenerator {
                 || BlockID.VINE.equals(id);
     }
 
-    private static boolean isWater(String id) {
-        return BlockID.WATER.equals(id) || BlockID.FLOWING_WATER.equals(id);
-    }
 
     private static void placeWithWaterlogging(BlockManager level, Vector3 pos, BlockState state, Block previousBlock) {
         level.setBlockStateAt(pos, state);
