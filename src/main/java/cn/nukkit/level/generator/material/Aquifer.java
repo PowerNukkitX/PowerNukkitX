@@ -50,7 +50,6 @@ public final class Aquifer {
     private final int gridSizeX;
     private final int gridSizeZ;
     private final long randomSeed;
-    private final int fallbackSurfaceLevel;
     private final int preliminarySurfaceLowerBound;
     private final int preliminarySurfaceCellHeight;
     private final CachedPointContext cachedPointContext;
@@ -102,7 +101,6 @@ public final class Aquifer {
                 return size() > 64;
             }
         };
-        this.fallbackSurfaceLevel = globalFluidPicker.computeFluid(0, 0, 0).fluidLevel();
         this.minY = minBlockY;
         this.maxY = minBlockY + yBlockSize - 1;
 
@@ -340,7 +338,7 @@ public final class Aquifer {
 
             double amplitude = 2.0;
             double noiseValue;
-            if (!(gradient < -amplitude) && !(gradient > amplitude)) {
+            if (gradient >= -amplitude && gradient <= amplitude) {
                 double currentNoiseValue = barrierNoiseValue[0];
                 if (Double.isNaN(currentNoiseValue)) {
                     double barrierNoise = this.barrierNoise.compute(context);
