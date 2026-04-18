@@ -106,7 +106,11 @@ public class BlockManager {
     }
 
     public Block getCachedBlock(int x, int y, int z) {
-        return this.caches.getOrDefault(hashXYZ(x, y, z, 0), BlockAir.STATE.toBlock(new Position(x, y, z, level)));
+        return getCachedBlock(x, y, z, BlockAir.STATE.toBlock(new Position(x, y, z, level)));
+    }
+
+    public Block getCachedBlock(int x, int y, int z, Block fallback) {
+        return this.caches.getOrDefault(hashXYZ(x, y, z, 0), fallback);
     }
 
     public void setBlockStateAt(Vector3 blockVector3, BlockState blockState) {
