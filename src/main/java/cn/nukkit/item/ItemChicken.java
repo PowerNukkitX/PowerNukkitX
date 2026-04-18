@@ -29,7 +29,7 @@ public class ItemChicken extends ItemFood {
             player.addEffect(Effect.get(EffectType.HUNGER).setDuration(30 * 20));
         }
 
-        return true;
+        return super.onEaten(player);
     }
 
 }

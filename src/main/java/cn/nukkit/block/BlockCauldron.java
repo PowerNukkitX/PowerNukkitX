@@ -215,7 +215,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                 if (player.isSurvival() || player.isAdventure()) {
                     item.setCount(item.getCount() - 1);
-                    player.getInventory().setItemInHand(item);
+                    player.getInventory().setItemInMainHand(item);
                 }
 
                 BlockColor color = new ItemDye(item.getDamage()).getDyeColor().getLeatherColor();
@@ -247,7 +247,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     NbtMapBuilder compoundTag = item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder();
                     compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
                     item.setCompoundTag(compoundTag.build());
-                    player.getInventory().setItemInHand(item);
+                    player.getInventory().setItemInMainHand(item);
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                     this.level.setBlock(this, this, true, true);
                     this.level.addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
@@ -263,7 +263,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                     compoundTag = NbtHelper.remove(compoundTag, "customColor");
                     item.setCompoundTag(compoundTag);
-                    player.getInventory().setItemInHand(item);
+                    player.getInventory().setItemInMainHand(item);
 
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                     this.level.setBlock(this, this, true, true);
@@ -328,11 +328,11 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                 boolean consumeBottle = player.isSurvival() || player.isAdventure();
                 if (consumeBottle && item.getCount() == 1) {
-                    player.getInventory().setItemInHand(potion);
+                    player.getInventory().setItemInMainHand(potion);
                 } else if (item.getCount() > 1) {
                     if (consumeBottle) {
                         item.setCount(item.getCount() - 1);
-                        player.getInventory().setItemInHand(item);
+                        player.getInventory().setItemInMainHand(item);
                     }
 
                     if (player.getInventory().canAddItem(potion)) {
@@ -357,11 +357,11 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 banner.removePattern(banner.getPatternsSize() - 1);
                 boolean consumeBanner = player.isSurvival() || player.isAdventure();
                 if (consumeBanner && item.getCount() < item.getMaxStackSize()) {
-                    player.getInventory().setItemInHand(banner);
+                    player.getInventory().setItemInMainHand(banner);
                 } else {
                     if (consumeBanner) {
                         item.setCount(item.getCount() - 1);
-                        player.getInventory().setItemInHand(item);
+                        player.getInventory().setItemInMainHand(item);
                     }
 
                     if (player.getInventory().canAddItem(banner)) {
@@ -384,7 +384,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
                     if (player.isSurvival() || player.isAdventure()) {
                         item.setCount(item.getCount() - 1);
-                        player.getInventory().setItemInHand(item);
+                        player.getInventory().setItemInMainHand(item);
                     }
 
                     color = ((ItemDye) item).getDyeColor().getColor();
@@ -490,7 +490,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     protected void replaceBucket(Item oldBucket, Player player, Item newBucket) {
         if (player.isSurvival() || player.isAdventure()) {
             if (oldBucket.getCount() == 1) {
-                player.getInventory().setItemInHand(newBucket);
+                player.getInventory().setItemInMainHand(newBucket);
             } else {
                 oldBucket.setCount(oldBucket.getCount() - 1);
                 if (player.getInventory().canAddItem(newBucket)) {
@@ -505,10 +505,10 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
     private void consumePotion(Item item, Player player) {
         if (player.isSurvival() || player.isAdventure()) {
             if (item.getCount() == 1) {
-                player.getInventory().setItemInHand(new ItemBlock(new BlockAir()));
+                player.getInventory().setItemInMainHand(new ItemBlock(new BlockAir()));
             } else if (item.getCount() > 1) {
                 item.setCount(item.getCount() - 1);
-                player.getInventory().setItemInHand(item);
+                player.getInventory().setItemInMainHand(item);
 
                 Item bottle = new ItemGlassBottle();
                 if (player.getInventory().canAddItem(bottle)) {

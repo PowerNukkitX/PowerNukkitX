@@ -98,6 +98,12 @@ public class EntityXpOrb extends Entity {
         return false;
     }
 
+    // xp orbs use their own despawn system, so they should be persistent to prevent them from being unloaded when far away from players
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
     @Override
     public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;

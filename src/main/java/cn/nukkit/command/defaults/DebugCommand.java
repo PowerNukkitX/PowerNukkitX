@@ -106,7 +106,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     @Override
     public int execute(CommandSender sender, String label, Map.Entry<String, ParamList> result, CommandLogger log) {
         return switch (result.getKey()) {
-           /* case "structure" -> handleStructure(sender, result.getValue(), log);
+            case "structure" -> handleStructure(sender, result.getValue(), log);
             case "entity" -> handleEntity(result.getValue(), log);
             case "rendermap" -> handleRenderMap(sender, result.getValue(), log);
             case "biome" -> handleBiome(sender, result.getValue());
@@ -115,7 +115,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "item" -> handleItem(sender, result.getValue());
             case "reload" -> handleReload(sender, result.getValue(), log);
             case "ddui" -> exampleDDUI(sender);
-            case "toggle" -> handleToggle(sender, result.getValue(), log);*/
+            case "toggle" -> handleToggle(sender, result.getValue(), log);
             default -> 0;
         };
     }
@@ -151,17 +151,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             log.addError("Structure " + structureName + " not found").output();
             return 0;
         }
-        final BlockManager manager = new BlockManager(player.getLevel());
-        structure.preparePlace(loc, manager);
-        for (Block block : manager.getBlocks()) {
-            if (block.getId().equalsIgnoreCase(BlockID.AIR) && player.getLevel().getBlock(block.getLocation()) instanceof BlockFlowingWater) {
-                manager.setBlockStateAt(block.getPosition(), BlockFlowingWater.PROPERTIES.getBlockState());
-            }
-            if (block instanceof BlockFlowingLava && player.getLevel().getBlock(block.up()) instanceof BlockFlowingWater) {
-                manager.setBlockStateAt(block, BlockObsidian.PROPERTIES.getBlockState());
-            }
-        }
-        manager.applySubChunkUpdate();
+
+        structure.place(loc);
         log.addSuccess("Placed structure " + structureName + " at " + loc).output();
         return 1;
     }
@@ -196,12 +187,12 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         }
 
         Player player = sender.asPlayer();
-        if (player.getInventory().getItemInHand() instanceof ItemFilledMap map) {
+        if (player.getInventory().getItemInMainHand() instanceof ItemFilledMap map) {
             player.getLevel().getScheduler().scheduleAsyncTask(InternalPlugin.INSTANCE, new AsyncTask() {
                 @Override
                 public void onRun() {
                     map.renderMap(player.getLevel(), player.getFloorX() - 64, player.getFloorZ() - 64, zoom);
-                    player.getInventory().setItemInHand(map);
+                    player.getInventory().setItemInMainHand(map);
                     map.sendImage(player);
                     player.sendMessage("Successfully rendered the map in your hand");
                 }
@@ -213,20 +204,20 @@ public class DebugCommand extends TestCommand implements CoreCommand {
     }
 
     private int handleBiome(CommandSender sender, ParamList list) {
-        /*if (!sender.isPlayer()) return 0;
+        if (!sender.isPlayer()) return 0;
         Location loc = sender.getLocation();
 
         if (!list.hasResult(1)) {
-            var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ())).second();
-            sender.sendMessage(biome.getId() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+            var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+            sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
             return 1;
         }
 
         switch (list.getResult(1).toString()) {
             case "parameter" -> {
-                Pair<Short, BiomeDefinitionData> biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                sender.sendMessage("Scale: " + biome.second().getScale());
-                sender.sendMessage("Depth: " + biome.second().getDepth());
+                BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                sender.sendMessage("Scale: " + biome.data.scale);
+                sender.sendMessage("Depth: " + biome.data.depth);
             }
             case "pick" -> {
                 BiomePicker picker = loc.getLevel().getBiomePicker();
@@ -239,22 +230,23 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage("Erosion: " + res.getErosion());
                     sender.sendMessage("Weirdness: " + res.getWeirdness());
                     sender.sendMessage("Peaks: " + res.getPv());
-                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4))) / 128f));
-                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).first());
+                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4)))  / 128f));
+                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
                 }
             }
             case "features" -> {
-                Pair<Short, BiomeDefinitionData> definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                BiomeDefinitionData biome = definition.second();
-                BiomeDefinitionChunkGenData chunkGenDataOptional = biome.getChunkGenData();
-                if (chunkGenDataOptional != null) {
-                    List<BiomeConsolidatedFeatureData> features = chunkGenDataOptional.getConsolidatedFeatures();
-                    if (features != null) {
-                        sender.sendMessage("§eFeatures of " + definition.first() + " [" + features.size() + "]");
+                BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                BiomeDefinitionData biome = definition.data;
+                OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
+                if (chunkGenDataOptional.isPresent()) {
+                    OptionalValue<BiomeConsolidatedFeatureData[]> featuresOpt = chunkGenDataOptional.get().consolidatedFeatures;
+                    if (featuresOpt.isPresent()) {
+                        BiomeConsolidatedFeatureData[] features = featuresOpt.get();
+                        sender.sendMessage("§eFeatures of " + definition.getName() + " [" + features.length + "]");
                         for (BiomeConsolidatedFeatureData f : features) {
-                            String id = Registries.BIOME.getFromBiomeStringList(f.getIdentifier());
-                            String name = Registries.BIOME.getFromBiomeStringList(f.getFeature());
-                            int order = f.getScatter().getEvalOrder().ordinal();
+                            String id = Registries.BIOME.getFromBiomeStringList(f.identifier);
+                            String name = Registries.BIOME.getFromBiomeStringList(f.feature);
+                            int order = f.scatter.evalOrder;
                             boolean registered = Registries.GENERATE_FEATURE.has(name) || Registries.GENERATE_FEATURE.has(id);
                             sender.sendMessage((registered ? "§a" : "§c") + name + " (" + id + ") §e[" + order + "]");
                         }
@@ -332,19 +324,19 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         Player player = sender.asPlayer();
 
         switch (list.getResult(1).toString()) {
-            case "nbt" -> player.sendMessage(player.getInventory().getItemInHand().getNamedTag().toString());
+            case "nbt" -> player.sendMessage(player.getInventory().getItemInMainHand().getNamedTag().toString());
             case "bundle" -> {
-                Item item = player.getInventory().getItemInHand();
+                Item item = player.getInventory().getItemInMainHand();
                 if (item instanceof ItemBundle bundle)
                     for (Item it : bundle.getInventory().getContents().values())
                         player.sendMessage(it.toString());
             }
             case "meta" -> {
-                Item item = player.getInventory().getItemInHand();
+                Item item = player.getInventory().getItemInMainHand();
                 player.sendMessage(item.getId() + "#" + item.getDamage());
             }
             case "data" -> {
-                Item item = player.getInventory().getItemInHand();
+                Item item = player.getInventory().getItemInMainHand();
                 NbtMap nbt = ItemHelper.write(item);
                 player.sendMessage(nbt.toString());
             }

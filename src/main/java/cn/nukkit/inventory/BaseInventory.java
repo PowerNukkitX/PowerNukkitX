@@ -74,17 +74,23 @@ public abstract class BaseInventory implements Inventory {
     @NotNull
     @Override
     public Item getItem(int index) {
-        return this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
+        synchronized (this.slots) {
+            return this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
+        }
     }
 
     @Override
     public Item getUnclonedItem(int index) {
-        return this.slots.getOrDefault(index, Item.AIR);
+        synchronized (this.slots) {
+            return this.slots.getOrDefault(index, Item.AIR);
+        }
     }
 
     @Override
     public Map<Integer, Item> getContents() {
-        return new HashMap<>(this.slots);
+        synchronized (this.slots) {
+            return new HashMap<>(this.slots);
+        }
     }
 
     @Override
@@ -109,8 +115,10 @@ public abstract class BaseInventory implements Inventory {
 
         for (int i = 0; i < this.size; ++i) {
             if (!items.containsKey(i)) {
-                if (this.slots.containsKey(i)) {
-                    this.clear(i);
+                synchronized (this.slots) {
+                    if (this.slots.containsKey(i)) {
+                        this.clear(i);
+                    }
                 }
             } else {
                 if (!this.setItem(i, items.get(i))) {
@@ -122,7 +130,9 @@ public abstract class BaseInventory implements Inventory {
 
     @ApiStatus.Internal
     public void setItemInternal(int index, Item item) {
-        this.slots.put(index, item);
+        synchronized (this.slots) {
+            this.slots.put(index, item);
+        }
     }
 
     public boolean setItem(int index, Item item, boolean send) {
@@ -165,8 +175,11 @@ public abstract class BaseInventory implements Inventory {
             blockEntity.setDirty();
         }
 
-        Item old = this.getUnclonedItem(index);
-        this.slots.put(index, item);
+        Item old;
+        synchronized (this.slots) {
+            old = this.slots.getOrDefault(index, Item.AIR);
+            this.slots.put(index, item);
+        }
         this.onSlotChange(index, old, send);
 
         return true;
@@ -241,13 +254,17 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void decreaseCount(int slot) {
-        Item item = this.getUnclonedItem(slot);
-
-        if (item.getCount() > 0) {
-            item = item.clone();
-            item.count--;
-            this.setItem(slot, item);
+        Item item;
+        synchronized (this.slots) {
+            item = this.slots.getOrDefault(slot, Item.AIR);
+            if (item.getCount() > 0) {
+                item = item.clone();
+            } else {
+                return;
+            }
         }
+        item.count--;
+        this.setItem(slot, item);
     }
 
     @Override
@@ -284,17 +301,14 @@ public abstract class BaseInventory implements Inventory {
             }
         }
 
-        //使用FastUtils的IntArrayList提高性能
         IntList emptySlots = new IntArrayList(this.getSize());
 
         for (int i = 0; i < this.getSize(); ++i) {
-            //获取未克隆Item对象
-            Item item = this.getUnclonedItem(i);
+            Item item = this.getItem(i);
             if (item.isNull() || item.getCount() <= 0) {
                 emptySlots.add(i);
             }
 
-            //使用迭代器而不是新建一个ArrayList
             for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
                 Item slot = iterator.next();
                 if (slot.equals(item)) {
@@ -303,8 +317,6 @@ public abstract class BaseInventory implements Inventory {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
                         if (amount > 0) {
-                            //在需要clone时再clone
-                            item = item.clone();
                             slot.setCount(slot.getCount() - amount);
                             item.setCount(item.getCount() + amount);
                             this.setItem(i, item);
@@ -351,7 +363,7 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (int i = 0; i < this.size; ++i) {
-            Item item = this.getUnclonedItem(i);
+            Item item = this.getItem(i);
             if (item.isNull() || item.getCount() <= 0) {
                 continue;
             }
@@ -359,7 +371,6 @@ public abstract class BaseInventory implements Inventory {
             for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
                 Item slot = iterator.next();
                 if (slot.equals(item, item.hasMeta(), item.getCompoundTag() != null)) {
-                    item = item.clone();
                     int amount = Math.min(item.getCount(), slot.getCount());
                     slot.setCount(slot.getCount() - amount);
                     item.setCount(item.getCount() - amount);
@@ -381,42 +392,44 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (this.slots.containsKey(index)) {
-            Item item = Item.AIR;
-            Item old = this.slots.get(index);
-            InventoryHolder holder = this.getHolder();
-            if (holder instanceof Entity) {
-                int held = -1;
-                ContainerEnumName type = ContainerEnumName.INVENTORY_CONTAINER;
+        synchronized (this.slots) {
+            if (this.slots.containsKey(index)) {
+                Item item = Item.AIR;
+                Item old = this.slots.get(index);
+                InventoryHolder holder = this.getHolder();
+                if (holder instanceof Entity) {
+                    int held = -1;
+                    ContainerEnumName type = ContainerEnumName.INVENTORY_CONTAINER;
 
-                if (holder instanceof Player p) {
-                    if (p.getOffhandInventory() == this) {
-                        type = ContainerEnumName.OFFHAND_CONTAINER;
-                    } else if (this instanceof HumanInventory) {
-                        held = ((HumanInventory) this).getHeldItemIndex();
-                        try {
-                            type = this.getContainerEnumName(index);
-                        } catch (Throwable ignored) {
+                    if (holder instanceof Player p) {
+                        if (p.getOffhandInventory() == this) {
+                            type = ContainerEnumName.OFFHAND_CONTAINER;
+                        } else if (this instanceof HumanInventory) {
+                            held = ((HumanInventory) this).getHeldItemIndex();
+                            try {
+                                type = this.getContainerEnumName(index);
+                            } catch (Throwable ignored) {
+                            }
                         }
                     }
+
+                    EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index, type, held);
+                    Server.getInstance().getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        this.sendSlot(index, this.getViewers());
+                        return false;
+                    }
+                    item = ev.getNewItem();
                 }
 
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index, type, held);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    this.sendSlot(index, this.getViewers());
-                    return false;
+                if (!item.isNull()) {
+                    this.slots.put(index, item.clone());
+                } else {
+                    this.slots.remove(index);
                 }
-                item = ev.getNewItem();
-            }
 
-            if (!item.isNull()) {
-                this.slots.put(index, item.clone());
-            } else {
-                this.slots.remove(index);
+                this.onSlotChange(index, old, send);
             }
-
-            this.onSlotChange(index, old, send);
         }
 
         return true;
@@ -539,13 +552,15 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean isFull() {
-        if (this.slots.size() < this.getSize()) {
-            return false;
-        }
-
-        for (Item item : this.slots.values()) {
-            if (item == null || item.isNull() || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
+        synchronized (this.slots) {
+            if (this.slots.size() < this.getSize()) {
                 return false;
+            }
+
+            for (Item item : this.slots.values()) {
+                if (item == null || item.isNull() || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
+                    return false;
+                }
             }
         }
 
@@ -558,9 +573,11 @@ public abstract class BaseInventory implements Inventory {
             return false;
         }
 
-        for (Item item : this.slots.values()) {
-            if (item != null && !item.isNull()) {
-                return false;
+        synchronized (this.slots) {
+            for (Item item : this.slots.values()) {
+                if (item != null && !item.isNull()) {
+                    return false;
+                }
             }
         }
 
@@ -576,7 +593,10 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
-        int space = (this.getSize() - this.slots.size()) * maxStackSize;
+        int space;
+        synchronized (this.slots) {
+            space = (this.getSize() - this.slots.size()) * maxStackSize;
+        }
 
         for (Item slot : this.getContents().values()) {
             if (slot.isNull()) {
@@ -652,6 +672,8 @@ public abstract class BaseInventory implements Inventory {
     }
 
     public boolean isValidSlot(int index) {
-        return index >= 0 && index < this.slots.size();
+        synchronized (this.slots) {
+            return index >= 0 && index < this.slots.size();
+        }
     }
 }

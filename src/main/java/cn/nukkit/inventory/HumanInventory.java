@@ -141,7 +141,21 @@ public class HumanInventory extends BaseInventory {
         }
     }
 
+    /**
+     * @deprecated Use {@link #getItemInMainHand()} instead.
+     * This method is kept for backward compatibility and now directly delegates to the main hand item.
+     */
+    @Deprecated
     public Item getItemInHand() {
+        return getItemInMainHand();
+    }
+
+    /**
+     * Returns the item currently held in the player's main hand.
+     *
+     * @return the item in the main hand
+     */
+    public Item getItemInMainHand() {
         return this.getItem(this.getHeldItemIndex());
     }
 
@@ -164,16 +178,98 @@ public class HumanInventory extends BaseInventory {
         return this.getItem(this.getHeldItemIndex());
     }
 
+    /**
+     * @deprecated Use {@link #getUnclonedItemInMainHand()} instead.
+     * This method is kept for backward compatibility and now directly delegates to the main hand item.
+     */
+    @Deprecated
     public Item getUnclonedItemInHand() {
+        return getUnclonedItemInMainHand();
+    }
+
+    public Item getUnclonedItemInMainHand() {
         return this.getUnclonedItem(this.getHeldItemIndex());
     }
 
+    /**
+     * Returns the item currently held in the player's off hand.
+     *
+     * @return the item in the off hand
+     */
+    public Item getItemInOffhand() {
+        return this.getHolder().getOffhandInventory().getItem(0);
+    }
+
+    public Item getUnclonedItemInOffhand() {
+        return this.getHolder().getOffhandInventory().getUnclonedItem(0);
+    }
+
+    /**
+     * @deprecated Use {@link #setItemInMainHand(Item)} instead.
+     * This method is kept for backward compatibility and delegates to the main hand setter.
+     */
+    @Deprecated
     public boolean setItemInHand(Item item) {
+        return this.setItemInMainHand(item);
+    }
+
+    /**
+     * @param item the item to set in hand
+     * @param send whether to sync the change to the client
+     * @deprecated Use {@link #setItemInMainHand(Item, boolean)} instead.
+     * This method is kept for backward compatibility and delegates to the main hand setter.
+     */
+    @Deprecated
+    public boolean setItemInHand(Item item, boolean send) {
+        return this.setItemInMainHand(item, send);
+    }
+
+    /**
+     * Sets the item in the player's main hand.
+     *
+     * @param item the item to set
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInMainHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
     }
 
-    public boolean setItemInHand(Item item, boolean send) {
+    /**
+     * Sets the item in the player's main hand.
+     *
+     * @param item the item to set
+     * @param send whether to sync the change to the client
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInMainHand(Item item, boolean send) {
         return this.setItem(this.getHeldItemIndex(), item, send);
+    }
+
+    /**
+     * Sets the item in the player's off hand.
+     * <p>
+     * Convenience wrapper for {@code getOffhandInventory().setItem(0, item)}.
+     * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
+     *
+     * @param item the item to set
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInOffhand(Item item) {
+        return this.getHolder().getOffhandInventory().setItem(0, item);
+    }
+
+    /**
+     * Sets the item in the player's off hand.
+     * <p>
+     * Convenience wrapper for {@code getOffhandInventory().setItem(0, item, bool)}.
+     * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
+     *
+     * @param item the item to set
+     * @param send whether to sync the change to the client
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInOffhand(Item item, boolean send) {
+        return this.getHolder().getOffhandInventory().setItem(0, item, send);
     }
 
     public void setHeldItemSlot(int slot) {
@@ -191,7 +287,7 @@ public class HumanInventory extends BaseInventory {
     }
 
     public void sendHeldItem(Player... players) {
-        Item item = this.getItemInHand();
+        Item item = this.getItemInMainHand();
 
         final MobEquipmentPacket pk = new MobEquipmentPacket();
         pk.setItem(item.toNetwork());
@@ -228,7 +324,11 @@ public class HumanInventory extends BaseInventory {
             }
         } else {
             super.onSlotChange(index, before, send);
-            if (index == getHeldItemIndex() && !before.equals(this.slots.get(index))) {
+            Item current;
+            synchronized (this.slots) {
+                current = this.slots.get(index);
+            }
+            if (index == getHeldItemIndex() && !before.equals(current)) {
                 equipItem(index);
             }
         }
@@ -420,46 +520,51 @@ public class HumanInventory extends BaseInventory {
             }
             item = ev.getNewItem();
         }
-        Item old = this.getItem(index);
-        this.slots.put(index, item.clone());
+        Item old;
+        synchronized (this.slots) {
+            old = this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
+            this.slots.put(index, item.clone());
+        }
         this.onSlotChange(index, old, send);
         return true;
     }
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (this.slots.containsKey(index)) {
-            Item item = Item.AIR;
-            Item old = this.slots.get(index);
-            if (index >= ARMORS_INDEX && index < this.size) {
-                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    int rel = index - ARMORS_INDEX; // 0..3
-                    this.sendArmorSlot(rel, this.getViewers());
-                    this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
+        synchronized (this.slots) {
+            if (this.slots.containsKey(index)) {
+                Item item = Item.AIR;
+                Item old = this.slots.get(index);
+                if (index >= ARMORS_INDEX && index < this.size) {
+                    EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder().getEntity(), old, item, index);
+                    Server.getInstance().getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        int rel = index - ARMORS_INDEX; // 0..3
+                        this.sendArmorSlot(rel, this.getViewers());
+                        this.sendArmorSlot(rel, this.getHolder().getEntity().getViewers().values());
+                        return false;
+                    }
+                    item = ev.getNewItem();
+                } else if (index < ARMORS_INDEX) {
+                    EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getContainerEnumName(index), this.getHeldItemIndex());
+                    Server.getInstance().getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        this.sendSlot(index, this.getViewers());
+                        return false;
+                    }
+                    item = ev.getNewItem();
+                } else {
                     return false;
                 }
-                item = ev.getNewItem();
-            } else if (index < ARMORS_INDEX) {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getContainerEnumName(index), this.getHeldItemIndex());
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    this.sendSlot(index, this.getViewers());
-                    return false;
+
+                if (!item.isNull()) {
+                    this.slots.put(index, item.clone());
+                } else {
+                    this.slots.remove(index);
                 }
-                item = ev.getNewItem();
-            } else {
-                return false;
-            }
 
-            if (!item.isNull()) {
-                this.slots.put(index, item.clone());
-            } else {
-                this.slots.remove(index);
+                this.onSlotChange(index, old, send);
             }
-
-            this.onSlotChange(index, old, send);
         }
 
         return true;

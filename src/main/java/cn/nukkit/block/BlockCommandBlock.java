@@ -104,7 +104,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
 
-        Item itemInHand = player.getInventory().getItemInHand();
+        Item itemInHand = player.getInventory().getItemInMainHand();
         if (player.isSneaking() && !(itemInHand.isTool() || itemInHand.isNull()) || !Server.getInstance().getSettings().gameplaySettings().enableCommandBlocks()) {
             return false;
         }

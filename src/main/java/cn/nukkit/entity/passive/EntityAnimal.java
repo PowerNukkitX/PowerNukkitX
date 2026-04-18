@@ -43,7 +43,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
         getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FEED_TIME, getLevel().getTick());
         sendBreedingAnimation(item);
         item.count--;
-        return player.getInventory().setItemInHand(item);
+        return player.getInventory().setItemInMainHand(item);
     }
 
     /**

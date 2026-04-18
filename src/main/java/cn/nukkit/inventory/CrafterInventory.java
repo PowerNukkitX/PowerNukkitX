@@ -66,8 +66,9 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
                     setItem(slot, clone);
                 } else {
                     toAdd.count--;
-                    getUnclonedItem(slot).count++;
-                    sendSlot(slot, getViewers());
+                    Item existing = getItem(slot);
+                    existing.count++;
+                    setItem(slot, existing);
                 }
             } else {
                 itemSlots.add(toAdd);

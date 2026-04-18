@@ -32,6 +32,7 @@ import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.mob.EntityBoss;
+import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -245,7 +246,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Whether to remove the color character in the chat of the changed player as §c §1
      */
-    protected boolean removeFormat = true;
     protected String displayName;
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
     protected Vector3 sleeping = null;
@@ -444,11 +444,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             double miningTimeRequired;
 
             if (this.breakingBlock instanceof CustomBlock customBlock) {
-                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInHand(), this);
-            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInHand(), this);
+                miningTimeRequired = customBlock.breakTime(this.inventory.getItemInMainHand(), this);
+            } else miningTimeRequired = this.breakingBlock.calculateBreakTime(this.inventory.getItemInMainHand(), this);
 
             if (miningTimeRequired > 0) {
-                Item hand = this.inventory.getItemInHand();
+                Item hand = this.inventory.getItemInMainHand();
                 boolean hasCustomDigger = hand != null && !hand.isNull() && hand.getCustomItemComponent("minecraft:digger") != null;
                 boolean useServerSideBreakVisuals = this.breakingBlock instanceof CustomBlock || hasCustomDigger;
 
@@ -505,7 +505,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         Block target = this.level.getBlock(pos);
-        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInHand(), target, face,
+        PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
                 target.isAir() ? Action.LEFT_CLICK_AIR : Action.LEFT_CLICK_BLOCK);
         this.getServer().getPluginManager().callEvent(playerInteractEvent);
         playerHandle.setInteract();
@@ -518,7 +518,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        target.onTouch(pos, this.getInventory().getItemInHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
+        target.onTouch(pos, this.getInventory().getItemInMainHand(), face, 0, 0, 0, this, playerInteractEvent.getAction());
 
         Block block = target.getSide(face);
         if (block.getId().equals(Block.FIRE) || block.getId().equals(BlockID.SOUL_FIRE)) {
@@ -533,7 +533,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (this.isSurvival() || this.isAdventure()) {
                 this.getFoodData().exhaust(0.005);
                 if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
-                    inventory.setItemInHand(i);
+                    inventory.setItemInMainHand(i);
                     inventory.sendHeldItem(this.getViewers().values());
                 }
             }
@@ -549,7 +549,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.breakingBlockTime = currentBreak;
             this.blockBreakProgress = 0;
 
-            Item hand = this.inventory.getItemInHand();
+            Item hand = this.inventory.getItemInMainHand();
             double miningTimeRequired = target instanceof CustomBlock customBlock ? customBlock.breakTime(hand, this) : target.calculateBreakTime(hand, this);
             int breakTime = (int) Math.ceil(miningTimeRequired * 20);
 
@@ -590,7 +590,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        Item handItem = this.getInventory().getItemInHand();
+        Item handItem = this.getInventory().getItemInMainHand();
         Item clone = handItem.clone();
 
         boolean canInteract = this.canInteract(blockPos.add(0.5, 0.5, 0.5), this.isCreative() ? 13 : 7);
@@ -603,7 +603,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
 
                 if (Objects.equals(clone.getId(), handItem.getId()) || handItem.isNull()) {
-                    inventory.setItemInHand(handItem, false);
+                    inventory.setItemInMainHand(handItem, false);
                 } else {
                     log.debug("Tried to set item {} but {} had item {} in their hand slot", handItem.getId(), this.getName(), clone.getId());
                 }
@@ -1767,25 +1767,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Retrieves {@link #removeFormat}
+     * Checks if the player has permission to use text colors in chat and signs.
      *
-     * @return boolean
+     * @return True if the player has the "nukkit.textcolor" permission, false otherwise.
      */
-    public boolean getRemoveFormat() {
-        return removeFormat;
-    }
-
-    /**
-     * Set {@link #removeFormat} to the specified value
-     *
-     * @param remove Whether remove the formatting character
-     */
-    public void setRemoveFormat(boolean remove) {
-        this.removeFormat = remove;
-    }
-
-    public void setRemoveFormat() {
-        this.setRemoveFormat(true);
+    public boolean canUseTextColor() {
+        return this.hasPermission("nukkit.textcolor");
     }
 
     /**
@@ -2177,6 +2164,27 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return lastUseItemMap.getOrDefault(itemId, -1);
     }
 
+    public Item getLastUsedItem() {
+        return lastUsedItem;
+    }
+
+    public void setLastUsedItem(Item item) {
+        if (item == null) {
+            log.warn("Tried to set last used item to null for player {}", this.getName());
+            return;
+        }
+        this.lastUsedItem = item;
+        this.setLastUseTick(item.getId(), this.getLevel().getTick());
+    }
+
+    public void clearLastUsedItem() {
+        if (this.lastUsedItem == null) {
+            return;
+        }
+        this.removeLastUseTick(this.lastUsedItem.getId());
+        this.lastUsedItem = null;
+    }
+
     /**
      * Get the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
      */
@@ -2200,14 +2208,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         level = level == null ? this.level : level;
         long index = Level.chunkHash(x, z);
         if (level.unregisterChunkLoader(this, x, z, false)) {
-            if (playerChunkManager.getUsedChunks().contains(index)) {
+            boolean wasTracked;
+            synchronized (playerChunkManager) {
+                wasTracked = playerChunkManager.getUsedChunks().remove(index);
+            }
+            if (wasTracked) {
                 for (Entity entity : level.getChunkEntities(x, z).values()) {
                     if (entity != this) {
                         entity.despawnFrom(this);
                     }
-                }
-                synchronized (playerChunkManager.getUsedChunks()) {
-                    playerChunkManager.getUsedChunks().remove(index);
                 }
             }
         }
@@ -2252,7 +2261,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         this.chunkLoadCount++;
-        synchronized (playerChunkManager.getUsedChunks()) {
+        synchronized (playerChunkManager) {
             this.playerChunkManager.getUsedChunks().add(Level.chunkHash(x, z));
         }
         this.dataPacket(packet);
@@ -2629,6 +2638,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.getAttributeList().addAll(
                 Arrays.asList(
                         Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0).toNetwork(),
+                        Attribute.getAttribute(Attribute.ABSORPTION).setValue(this.getAbsorption()).toNetwork(),
                         Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(this.getFoodData().getFood()).toNetwork(),
                         Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(this.getMovementSpeed()).toNetwork(),
                         Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(this.getExperienceLevel()).toNetwork(),
@@ -2703,18 +2713,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.checkNearEntities();
             }
 
-            Item itemInHand = this.getInventory().getItemInHand();
+            Item itemInHand = this.getInventory().getItemInMainHand();
             if (!itemInHand.isNull() && this.isUsingItem(itemInHand.getId())) {
                 itemInHand.whileUsing(this);
             }
 
             this.entityBaseTick(tickDiff);
-
-            if (this.getServer().getDifficulty() == 0 || this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
-                if (this.getHealthCurrent() < this.getHealthMax() && this.ticksLived % 20 == 0) {
-                    this.heal(1);
-                }
-            }
 
             if (this.isOnFire() && this.lastUpdate % 10 == 0) {
                 if (this.isCreative() && !this.isInsideOfFire()) {
@@ -2925,7 +2929,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         this.resetInventory();
 
-        if (this.removeFormat) {
+        if (!this.canUseTextColor()) {
             message = TextFormat.clean(message, true);
         }
 
@@ -3428,8 +3432,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         resetInventory();
         for (var inv : this.windows.keySet()) {
             if (this.permanentWindows.contains(windows.get(inv))) {
-                int windowId = this.getWindowId(inv);
-                playerHandle.setClosingWindowId(windowId);
+                playerHandle.setClosingWindowId(Integer.MIN_VALUE);
                 inv.close(this);
                 updateTrackingPositions(true);
             }
@@ -3464,7 +3467,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.stopFishing(false);
             }
         }
-        // Close the temporary windows first, so they have chance to change all inventories before being disposed
+
+        // Close temporary windows through the normal window-removal path before saving/teardown.
+        // Otherwise shared inventories keep stale viewers after reconnects or UI transitions.
+        this.removeAllWindows(false);
+
         if (ev != null && ev.getAutoSave() && namedTag != null) {
             this.save();
         }
@@ -3517,28 +3524,30 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         assert this.session != null;
     }
 
-    public synchronized void unloadAllUsedChunk() {
-        //save player data
-        //unload chunk for the player
-        LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
-        try {
-            while (iterator.hasNext()) {
-                long l = iterator.nextLong();
-                int chunkX = Level.getHashX(l);
-                int chunkZ = Level.getHashZ(l);
-                if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
-                    for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                        if (entity != this) {
-                            entity.despawnFrom(this);
+    public void unloadAllUsedChunk() {
+        synchronized (playerChunkManager) {
+            //save player data
+            //unload chunk for the player
+            LongIterator iterator = this.playerChunkManager.getUsedChunks().iterator();
+            try {
+                while (iterator.hasNext()) {
+                    long l = iterator.nextLong();
+                    int chunkX = Level.getHashX(l);
+                    int chunkZ = Level.getHashZ(l);
+                    if (level.unregisterChunkLoader(this, chunkX, chunkZ, false)) {
+                        for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
+                            if (entity != this) {
+                                entity.despawnFrom(this);
+                            }
                         }
+                        iterator.remove();
                     }
-                    iterator.remove();
                 }
+            } catch (Exception e) {
+                getServer().getLogger().error("Failed to unload all used chunks.", e);
+            } finally {
+                this.playerChunkManager.getUsedChunks().clear();
             }
-        } catch (Exception e) {
-            getServer().getLogger().error("Failed to unload all used chunks.", e);
-        } finally {
-            this.playerChunkManager.getUsedChunks().clear();
         }
     }
 
@@ -3582,7 +3591,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         saveNBT();
 
-        if (this.level != null) {
+        if (this.level != null && this.level.getProvider() != null) {
             this.namedTag = this.namedTag.toBuilder().putString("Level", this.level.getName()).build();
 
             final NbtMapBuilder achievementsBuilder = NbtMap.builder();
@@ -3854,7 +3863,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         super.setHealthCurrent(health);
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getHealthMax() + 1 : this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.setRuntimeID(this.getId());
@@ -3868,7 +3877,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         super.setHealthMax(maxHealth);
 
         Attribute attribute = this.attributes.computeIfAbsent(Attribute.HEALTH, Attribute::getAttribute);
-        attribute.setMaxValue(this.getAbsorption() % 2 != 0 ? this.getHealthMax() + 1 : this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
+        attribute.setMaxValue(this.getHealthMax()).setValue(health > 0 ? (health < getHealthMax() ? health : getHealthMax()) : 0);
         if (this.spawned) {
             UpdateAttributesPacket pk = new UpdateAttributesPacket();
             pk.setRuntimeID(this.getId());
@@ -4066,10 +4075,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public void setAbsorption(float absorption) {
-        if (absorption != this.absorption) {
-            this.absorption = absorption;
-            Attribute attribute = this.attributes.computeIfAbsent(Attribute.ABSORPTION, Attribute::getAttribute);
-            attribute.setValue(absorption);
+        super.setAbsorption(absorption);
+
+        Attribute attribute = this.attributes.get(Attribute.ABSORPTION);
+        if (attribute != null) {
             this.syncAttribute(attribute);
         }
     }
@@ -4649,8 +4658,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void removeWindow(Inventory inventory) {
         Preconditions.checkNotNull(inventory);
         if (!this.permanentWindows.contains(windows.get(inventory))) {
-            int windowId = this.getWindowId(inventory);
-            playerHandle.setClosingWindowId(windowId);
+            playerHandle.setClosingWindowId(Integer.MIN_VALUE);
             inventory.close(this);
             this.windows.remove(inventory);
             updateTrackingPositions(true);
@@ -4831,13 +4839,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             packet.setDimensionType(Dimension.from(spawn.getLevel().getDimension()));
             this.dataPacket(packet);
 
-            // Remove old chunks
-            for (long index : new ArrayList<>(playerChunkManager.getUsedChunks())) {
+            // Remove old chunks; snapshot under lock so tick() can't mutate sentChunks
+            // while we iterate, then clear any residual entries afterward.
+            long[] oldChunks;
+            synchronized (playerChunkManager) {
+                oldChunks = playerChunkManager.getUsedChunks().toLongArray();
+            }
+            for (long index : oldChunks) {
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
                 this.unloadChunk(chunkX, chunkZ, oldLevel);
             }
-            playerChunkManager.getUsedChunks().clear();
+            synchronized (playerChunkManager) {
+                playerChunkManager.getUsedChunks().clear();
+            }
 
             SetTimePacket setTime = new SetTimePacket();
             setTime.setTime(level.getTime());
@@ -5088,7 +5103,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         itemsWithMending.add(inventory.getSize() + i);
                     }
                 }
-                if (inventory.getItemInHand().hasEnchantment(Enchantment.ID_MENDING)) {
+                if (inventory.getItemInMainHand().hasEnchantment(Enchantment.ID_MENDING)) {
                     itemsWithMending.add(inventory.getHeldItemIndex());
                 }
                 if (!itemsWithMending.isEmpty()) {

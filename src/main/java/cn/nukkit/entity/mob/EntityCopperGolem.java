@@ -221,7 +221,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                 this.setFlower(false);
                 this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
                 if (player.getGamemode() != Player.CREATIVE)
-                    player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
+                    player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.POPPY));
             }
         } else if (item instanceof ItemHoneycomb) {
@@ -232,10 +232,9 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                 getLevel().addSound(this, Sound.COPPER_WAX_ON);
                 Server.broadcastPacket(getViewers().values(), new WaxOnParticle(getVector3()).encode()[0]);
             }
-        } else if (item.isAxe()) {
-            if (isWaxed()) {
-                if (player.getGamemode() != Player.CREATIVE)
-                    player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
+        } else if(item.isAxe()) {
+            if(isWaxed()) {
+                if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
                 setWaxed(false);
                 getLevel().addSound(this, Sound.SCRAPE);
                 Server.broadcastPacket(getViewers().values(), new WaxOffParticle(this).encode()[0]);

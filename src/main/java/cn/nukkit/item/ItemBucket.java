@@ -203,11 +203,11 @@ public class ItemBucket extends Item {
 
                     if (player.isSurvival()) {
                         if (this.getCount() - 1 <= 0) {
-                            player.getInventory().setItemInHand(ev.getItem());
+                            player.getInventory().setItemInMainHand(ev.getItem());
                         } else {
                             Item clone = this.clone();
                             clone.setCount(this.getCount() - 1);
-                            player.getInventory().setItemInHand(clone);
+                            player.getInventory().setItemInMainHand(clone);
                             if (player.getInventory().canAddItem(ev.getItem())) {
                                 player.getInventory().addItem(ev.getItem());
                             } else {
@@ -276,7 +276,7 @@ public class ItemBucket extends Item {
             } else if (nether) {//handle the logic that the player can't use water bucket in nether
                 if (!player.isCreative()) {
                     this.setDamage(0); // Empty bucket
-                    player.getInventory().setItemInHand(this);
+                    player.getInventory().setItemInMainHand(this);
                 }
                 player.getLevel().addLevelSoundEvent(target, SoundEvent.FIZZ);
                 player.getLevel().addParticle(new ExplodeParticle(target.add(0.5, 1, 0.5)));
@@ -312,11 +312,11 @@ public class ItemBucket extends Item {
     private void updateBucketItem(Player player, PlayerBucketEmptyEvent ev) {
         if (player.isSurvival()) {
             if (this.getCount() - 1 <= 0) {
-                player.getInventory().setItemInHand(ev.getItem());
+                player.getInventory().setItemInMainHand(ev.getItem());
             } else {
                 Item clone = this.clone();
                 clone.setCount(this.getCount() - 1);
-                player.getInventory().setItemInHand(clone);
+                player.getInventory().setItemInMainHand(clone);
                 if (player.getInventory().canAddItem(ev.getItem())) {
                     player.getInventory().addItem(ev.getItem());
                 } else {

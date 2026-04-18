@@ -19,6 +19,8 @@ public enum WoodType {
 
     CHERRY("Cherry"),
 
+    MANGROVE("Mangrove"),
+
     PALE_OAK("Pale Oak");
 
     @Getter

@@ -23,10 +23,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class ItemSpear extends ItemTool {
 
-    @Getter
-    public float minimumSpeed = 0.13f;
-    public int minimumLungeFood = 6;
-    public int baseLungeExhaust = 4;
+    public float MINIMUM_SPEED = 0.13f;
+    public int MINIMUM_LUNGE_FOOD = 6;
+    public int BASE_LUNGE_EXHAUST = 4;
 
     public ItemSpear(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -49,7 +48,7 @@ public abstract class ItemSpear extends ItemTool {
 
         applyLunge(player);
 
-        if (movementSpeed < getMinimumSpeed() || !player.isSprinting()) {
+        if (movementSpeed < MINIMUM_SPEED || !player.isSprinting()) {
             SoundEvent missSound = getMissSound();
             if (missSound != null) {
                 player.getLevel().addLevelSoundEvent(player.getPosition(), missSound);
@@ -133,7 +132,7 @@ public abstract class ItemSpear extends ItemTool {
 
             player.setMotion(player.getMotion().add(dir));
             player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
-            player.getFoodData().exhaust(baseLungeExhaust * lungeLevel);
+            player.getFoodData().exhaust(BASE_LUNGE_EXHAUST * lungeLevel);
         }
     }
 
@@ -145,7 +144,7 @@ public abstract class ItemSpear extends ItemTool {
             return false;
         }
 
-        if ((playerGamemode == Player.SURVIVAL || playerGamemode == Player.ADVENTURE) && player.getFoodData().getFood() < minimumLungeFood) {
+        if ((playerGamemode == Player.SURVIVAL || playerGamemode == Player.ADVENTURE) && player.getFoodData().getFood() < MINIMUM_LUNGE_FOOD) {
             return false;
         }
         return enchantmentLevel > 0;
@@ -172,7 +171,7 @@ public abstract class ItemSpear extends ItemTool {
         player.setItemCoolDown(5, this.getIdentifier());
         float playerSpeed = player.getMovementSpeed();
 
-        if (playerSpeed < minimumSpeed) {
+        if (playerSpeed < MINIMUM_SPEED) {
             return;
         }
 

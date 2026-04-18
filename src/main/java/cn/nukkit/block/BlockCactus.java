@@ -134,10 +134,12 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
                     Block block3 = b.east();
                     if (!block0.isAir() || !block1.isAir() || !block2.isAir() || !block3.isAir()) {
                         this.setAge(getMinAge());
+                        this.getLevel().setBlock(this, this, false, false);
                         return 1;
                     }
                 } else if(y == 3) {
                     this.setAge(getMinAge());
+                    this.getLevel().setBlock(this, this, false, false);
                     return 1;
                 }
                 BlockGrowEvent event = new BlockGrowEvent(b, Block.get(cactusFlower ? BlockID.CACTUS_FLOWER : BlockID.CACTUS));
@@ -148,6 +150,7 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
                 break;
             }
             this.setAge(getMinAge());
+            this.getLevel().setBlock(this, this, false, false);
         }
 
         return 0;

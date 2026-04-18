@@ -25,6 +25,11 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
         super(chunk, nbt);
     }
 
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+    }
+
     public int getRollingAmplitude() {
         return !this.entityDataMap.containsKey(ActorDataTypes.HURT) ? 0 : this.getDataProperty(ActorDataTypes.HURT);
     }
@@ -67,6 +72,11 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
     @Override
     public boolean canDoInteraction() {
         return passengers.isEmpty();
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return true;
     }
 
     @Override

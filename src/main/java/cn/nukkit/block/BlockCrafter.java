@@ -18,6 +18,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.recipe.MultiRecipe;
 import cn.nukkit.recipe.Recipe;
+import cn.nukkit.recipe.UserDataShapelessRecipe;
 import cn.nukkit.utils.RedstoneComponent;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
@@ -175,7 +176,20 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
         CraftItemEvent event = new CraftItemEvent(blockEntity, getBlockEntity().getInventory().getInput().getFlatItems(), recipe, 1);
         getLevel().getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
+        if(event.isCancelled()) return false;
+
+        if (recipe instanceof UserDataShapelessRecipe) {
+            Inventory inv = blockEntity.getInventory();
+            for (int i = 0; i < inv.getSize(); i++) {
+                Item inputItem = inv.getItem(i);
+                if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
+                    for (Item result : recipe.getResults()) {
+                        result.setCompoundTag(inputItem.getCompoundTag());
+                    }
+                    break;
+                }
+            }
+        }
 
         for (Item target : recipe.getResults()) {
             final BlockFace facing = getBlockFace();
@@ -193,8 +207,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
 
             Block side = this.getSide(facing);
 
-            if (this.level.getBlockEntityIfLoaded(side) instanceof InventoryHolder) {
-                InventoryHolder invHolder = (InventoryHolder) this.level.getBlockEntityIfLoaded(side);
+            if (this.level.getBlockEntityIfLoaded(side) instanceof InventoryHolder invHolder) {
                 Inventory targetInv = invHolder.getInventory();
 
                 if (targetInv.canAddItem(target)) {

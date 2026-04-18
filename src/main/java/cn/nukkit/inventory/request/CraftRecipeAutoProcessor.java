@@ -75,6 +75,14 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
             }
             if (recipe.getResults().size() == 1) {
                 Item output = recipe.getResults().getFirst().clone();
+                if (recipe instanceof UserDataShapelessRecipe) {
+                    for (Item inputItem : eventItems) {
+                        if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
+                            output.setCompoundTag(inputItem.getCompoundTag());
+                            break;
+                        }
+                    }
+                }
                 output.setCount(output.getCount() * action.getTimesCrafted());
                 CreativeOutputInventory createdOutput = player.getCreativeOutputInventory();
                 createdOutput.setItem(0, output.clone().autoAssignStackNetworkId(), false);

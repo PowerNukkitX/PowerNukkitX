@@ -676,6 +676,7 @@ public record CustomBlockDefinition(String identifier, NbtMap nbt, @Nullable Blo
                 .putCompound("bone_visibility", NbtMap.EMPTY)
                 .putString("culling", "")
                 .putString("culling_layer", "minecraft:culling_layer.undefined")
+                .putString("culling_shape", "")
                 .putString("identifier", identifierOverride != null ? identifierOverride : "minecraft:geometry.full_block")
                 .putByte("ignoreGeometryForIsSolid", (byte) 1)
                 .putByte("needsLegacyTopRotation", (byte) 0)

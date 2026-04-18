@@ -360,7 +360,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             pk.setPosition(Vector3f.from(this.x, this.y, this.z));
             pk.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
             pk.setRotation(Vector3f.from(this.pitch, this.yaw, this.yaw));
-            pk.setCarriedItem(this.getInventory().getItemInHand().toNetwork());
+            pk.setCarriedItem(this.getInventory().getItemInMainHand().toNetwork());
             player.dataPacket(pk);
 
             this.inventory.sendArmorContents(player);
@@ -410,11 +410,11 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
-        Item shield = getInventory().getItemInHand();
+        Item shield = getInventory().getItemInMainHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
-            getInventory().setItemInHand(shield);
+            getInventory().setItemInMainHand(shield);
         } else if (shieldOffhand instanceof ItemShield) {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
@@ -464,7 +464,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     public Item getItemInHand() {
-        return getInventory().getItemInHand();
+        return getInventory().getItemInMainHand();
     }
 
     public Item getItemInOffhand() {
@@ -472,7 +472,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     public boolean setItemInHand(Item item) {
-        return getInventory().setItemInHand(item);
+        return getInventory().setItemInMainHand(item);
     }
 
     public boolean setItemInHand(Item item, boolean send) {

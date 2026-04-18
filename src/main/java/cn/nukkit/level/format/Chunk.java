@@ -470,12 +470,11 @@ public class Chunk implements IChunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         this.tiles.put(blockEntity.getId(), blockEntity);
         int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
-        BlockEntity entity = this.tileList.get(index);
-        if (this.tileList.containsKey(index) && !entity.equals(blockEntity)) {
-            this.tiles.remove(entity.getId());
-            entity.close();
+        BlockEntity existing = this.tileList.put(index, blockEntity);
+        if (existing != null && !existing.equals(blockEntity)) {
+            this.tiles.remove(existing.getId());
+            existing.close();
         }
-        this.tileList.put(index, blockEntity);
         if (this.isInit) {
             this.setChanged();
         }
@@ -486,7 +485,7 @@ public class Chunk implements IChunk {
         if (this.tiles != null) {
             this.tiles.remove(blockEntity.getId());
             int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
-            this.tileList.remove(index);
+            this.tileList.remove(index, blockEntity);
             if (this.isInit) {
                 this.setChanged();
             }
@@ -824,6 +823,15 @@ public class Chunk implements IChunk {
                     e.addSuppressed(e2);
                     log.warn("Block entity validation failed", e);
                 }
+            }
+            // [ITEM_DEBUG] Log when a block entity is being removed as invalid
+            if (log.isDebugEnabled()) {
+                boolean valid;
+                try { valid = entity.isBlockEntityValid(); } catch (Exception ignored) { valid = false; }
+                log.debug("[ITEM_DEBUG] removeInvalidTile closing {} at {},{},{} (closed={}, valid={}). Caller: {}",
+                        entity.getClass().getSimpleName(), (int) entity.x, (int) entity.y, (int) entity.z,
+                        entity.closed, valid,
+                        Thread.currentThread().getStackTrace()[2]);
             }
             entity.close();
         }

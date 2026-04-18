@@ -186,7 +186,7 @@ public class EntityHuman extends EntityHumanType {
             addPlayerPacket.setPosition(this.getPosition().toNetwork());
             addPlayerPacket.setVelocity(this.getMotionVector());
             addPlayerPacket.setRotation(this.getRotationVector());
-            addPlayerPacket.setCarriedItem(this.getInventory().getItemInHand().toNetwork());
+            addPlayerPacket.setCarriedItem(this.getInventory().getItemInMainHand().toNetwork());
             addPlayerPacket.setDeviceId("");
             addPlayerPacket.setBuildPlatform(BuildPlatform.UNKNOWN);
             addPlayerPacket.setPlayerGameType(GameType.SURVIVAL);
@@ -242,11 +242,11 @@ public class EntityHuman extends EntityHumanType {
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         super.onBlock(entity, event, animate);
-        Item shield = getInventory().getItemInHand();
+        Item shield = getInventory().getItemInMainHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield instanceof ItemShield) {
             shield = damageArmor(shield, entity, event);
-            getInventory().setItemInHand(shield);
+            getInventory().setItemInMainHand(shield);
         } else if (shieldOffhand instanceof ItemShield) {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);

@@ -138,19 +138,25 @@ import java.util.regex.Pattern;
 /**
  * Represents the main server singleton for PowerNukkitX.
  * <p>
- * This class is instantiated in {@link Nukkit} and can be accessed via {@link cn.nukkit.Server#getInstance()}.
- * The constructor performs various initialization tasks, including configuration loading, thread and thread pool creation,
- * plugin startup, and registration of recipes, blocks, entities, items, and more.
+ * This class is instantiated in {@link Nukkit} and can be accessed via
+ * {@link cn.nukkit.Server#getInstance()}.
+ * The constructor performs various initialization tasks, including
+ * configuration loading, thread and thread pool creation,
+ * plugin startup, and registration of recipes, blocks, entities, items, and
+ * more.
  *
- * <p>Key responsibilities include:
+ * <p>
+ * Key responsibilities include:
  * <ul>
- *   <li>Managing server lifecycle and configuration</li>
- *   <li>Handling plugins, commands, and events</li>
- *   <li>Managing players, levels, and networking</li>
- *   <li>Providing access to server-wide utilities and managers</li>
+ * <li>Managing server lifecycle and configuration</li>
+ * <li>Handling plugins, commands, and events</li>
+ * <li>Managing players, levels, and networking</li>
+ * <li>Providing access to server-wide utilities and managers</li>
  * </ul>
  *
- * <p>Note: This class is a singleton and should be accessed via {@link #getInstance()}.
+ * <p>
+ * Note: This class is a singleton and should be accessed via
+ * {@link #getInstance()}.
  *
  * @author MagicDroidX
  * @author Box
@@ -176,15 +182,17 @@ public class Server {
      */
     private int tickCounter;
     private long nextTick;
-    private final float[] tickAverage = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
-    private final float[] useAverage = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private final float[] tickAverage = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20 };
+    private final float[] useAverage = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private float maxTick = 20;
     private float maxUse = 0;
     private int sendUsageTicker = 0;
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
     /**
-     * FJP thread pool responsible for terrain generation, data compression and other computing tasks
+     * FJP thread pool responsible for terrain generation, data compression and
+     * other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
     private SimpleCommandMap commandMap;
@@ -225,8 +233,8 @@ public class Server {
     private static volatile String DP_DEFAULT_GROUP_UUID = "00000000-0000-0000-0000-000000000000";
     private static final int DP_MAX_STRING_BYTES = 32767;
     private static final double DP_NUMBER_ABS_MAX = 9_223_372_036_854_775_807d;
-    private static final Pattern DP_UUID_CANON =
-            Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+    private static final Pattern DP_UUID_CANON = Pattern
+            .compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     private final Map<Integer, Level> levels = new HashMap<>() {
         @Override
@@ -269,10 +277,12 @@ public class Server {
 
     private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
 
-    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage, WizardConfig wizardConfig) {
+    Server(final String filePath, String dataPath, String pluginPath, String predefinedLanguage,
+            WizardConfig wizardConfig) {
         Preconditions.checkState(instance == null, "Already initialized!");
         launchTime = System.currentTimeMillis();
-        currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in Server#isPrimaryThread()
+        currentThread = Thread.currentThread(); // Saves the current thread instance as a reference, used in
+                                                // Server#isPrimaryThread()
         instance = this;
 
         this.filePath = filePath;
@@ -303,13 +313,15 @@ public class Server {
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
 
-        while (convertLegacyConfiguration()) { /* repeat until all legacy configurations are converted */ }
+        while (convertLegacyConfiguration()) {
+            /* repeat until all legacy configurations are converted */ }
 
         File config = new File(this.dataPath + "pnx.yml");
         String chooseLanguage;
 
         if (!config.exists()) {
-            // Config doesn't exist - use wizard config if provided, otherwise use predefined or default
+            // Config doesn't exist - use wizard config if provided, otherwise use
+            // predefined or default
             if (wizardConfig != null) {
                 chooseLanguage = wizardConfig.getLanguage();
                 log.info("Using language from setup wizard: {}", chooseLanguage);
@@ -355,14 +367,16 @@ public class Server {
             }
         }
         this.settings.save();
-        while (updateConfiguration()) { /* repeat until all configuration updates are applied */ }
+        while (updateConfiguration()) {
+            /* repeat until all configuration updates are applied */ }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
         levelArray = Level.EMPTY_ARRAY;
 
-        org.apache.logging.log4j.Level targetLevel = org.apache.logging.log4j.Level.getLevel(this.settings.debugSettings().level());
+        org.apache.logging.log4j.Level targetLevel = org.apache.logging.log4j.Level
+                .getLevel(this.settings.debugSettings().level());
         org.apache.logging.log4j.Level currentLevel = Nukkit.getLogLevel();
         if (targetLevel != null && targetLevel.intLevel() > currentLevel.intLevel()) {
             Nukkit.setLogLevel(targetLevel);
@@ -434,7 +448,10 @@ public class Server {
             this.settings.gameplaySettings().difficulty(3);
         }
 
-        log.info(this.getLanguage().tr("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.RESET + " (" + TextFormat.YELLOW + this.getGitCommit() + TextFormat.RESET + ")" + TextFormat.RESET, this.getApiVersion()));
+        log.info(this.getLanguage().tr(
+                "nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.RESET
+                        + " (" + TextFormat.YELLOW + this.getGitCommit() + TextFormat.RESET + ")" + TextFormat.RESET,
+                this.getApiVersion()));
         log.info(this.getLanguage().tr("nukkit.server.license"));
         this.consoleSender = new ConsoleCommandSender();
 
@@ -516,7 +533,7 @@ public class Server {
                 log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
         }
 
-        if (useTerra) {//load terra
+        if (useTerra) {// load terra
             PNXPlatform instance = PNXPlatform.getInstance();
         }
 
@@ -545,8 +562,7 @@ public class Server {
         }
         this.resourcePackManager = new ResourcePackManager(
                 new ZippedResourcePackLoader(new File(Nukkit.DATA_PATH, "resource_packs")),
-                new JarPluginResourcePackLoader(new File(this.pluginPath))
-        );
+                new JarPluginResourcePackLoader(new File(this.pluginPath)));
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
@@ -555,7 +571,8 @@ public class Server {
 
         try {
             log.debug("Loading position tracking service");
-            this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
+            this.positionTrackingService = new PositionTrackingService(
+                    new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
         } catch (IOException e) {
             log.error("Failed to start the Position Tracking DB service!", e);
         }
@@ -563,7 +580,7 @@ public class Server {
 
         this.serverID = UUID.randomUUID();
         this.pluginManager.loadPlugins(this.pluginPath);
-        {//trim
+        {// trim
             Registries.POTION.trim();
             Registries.ENTITY.trim();
             Registries.BLOCKENTITY.trim();
@@ -621,7 +638,7 @@ public class Server {
         }
 
         if (!Boolean.parseBoolean(System.getProperty("disableWatchdog", "false"))) {
-            this.watchdog = new Watchdog(this, 60000);//60s
+            this.watchdog = new Watchdog(this, 60000);// 60s
             this.watchdog.start();
         }
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
@@ -670,15 +687,18 @@ public class Server {
     private void loadLevels() {
         File file = new File(this.getDataPath() + "/worlds");
         Preconditions.checkState(file.isDirectory(), "worlds isn't directory");
-        //load all world from `worlds` folder
-        for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
-            LevelConfig levelConfig = getLevelConfig(f.getName());
-            if (levelConfig != null && !levelConfig.enable()) {
-                continue;
-            }
 
-            if (!this.loadLevel(f.getName())) {
-                this.generateLevel(f.getName(), null);
+        if (this.settings.levelSettings().loadAllLevels()) {
+            // load all levels from `worlds` folder
+            for (var f : Objects.requireNonNull(file.listFiles(File::isDirectory))) {
+                LevelConfig levelConfig = getLevelConfig(f.getName());
+                if (levelConfig != null && !levelConfig.enable()) {
+                    continue;
+                }
+
+                if (!this.loadLevel(f.getName())) {
+                    this.generateLevel(f.getName(), null);
+                }
             }
         }
 
@@ -691,13 +711,19 @@ public class Server {
             }
 
             if (!this.loadLevel(levelFolder)) {
-                //default world doesn't exist
-                //generate the default world
+                // default world doesn't exist
+                // generate the default world
                 HashMap<Integer, LevelConfig.GeneratorConfig> generatorConfig = new HashMap<>();
                 long seed = LevelConfig.GeneratorConfig.randomSeed();
-                generatorConfig.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
-                generatorConfig.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
-                generatorConfig.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(0,
+                        new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                                DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(1,
+                        new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                                DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+                generatorConfig.put(2,
+                        new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                                DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
                 LevelConfig levelConfig = new LevelConfig("leveldb", true, generatorConfig);
                 this.generateLevel(levelFolder, levelConfig);
             }
@@ -714,9 +740,11 @@ public class Server {
         ServerReloadEvent serverReloadEvent = new ServerReloadEvent();
         getPluginManager().callEvent(serverReloadEvent);
 
-        if (serverReloadEvent.isCancelled()) return;
+        if (serverReloadEvent.isCancelled())
+            return;
 
-        // Set network to starting to prevent new players from joining during the reload process
+        // Set network to starting to prevent new players from joining during the reload
+        // process
         this.network.setState(NetworkState.STARTING);
 
         log.info("Reloading server...");
@@ -854,17 +882,17 @@ public class Server {
             log.debug("Stopping network interfaces");
             network.shutdown();
             playerDataDB.close();
-            //close watchdog and metrics
+            // close watchdog and metrics
             if (this.watchdog != null) {
                 this.watchdog.running = false;
             }
             NukkitMetrics.closeNow(this);
-            //close threadPool
+            // close threadPool
             try (ForkJoinPool pool = ForkJoinPool.commonPool()) {
                 pool.shutdownNow();
             }
             this.computeThreadPool.shutdownNow();
-            //todo other things
+            // todo other things
         } catch (Exception e) {
             log.error("Exception happened while shutting down, exiting the process", e);
             System.exit(1);
@@ -881,8 +909,11 @@ public class Server {
         this.tickCounter = 0;
 
         log.info(this.getLanguage().tr("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
-        log.info(this.getLanguage().tr("nukkit.server.networkStart", TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()), TextFormat.YELLOW + String.valueOf(this.getPort())));
-        log.info(this.getLanguage().tr("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
+        log.info(this.getLanguage().tr("nukkit.server.networkStart",
+                TextFormat.YELLOW + (this.getIp().isEmpty() ? "*" : this.getIp()),
+                TextFormat.YELLOW + String.valueOf(this.getPort())));
+        log.info(this.getLanguage().tr("nukkit.server.startFinished",
+                String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
         ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
         getPluginManager().callEvent(serverStartedEvent);
@@ -914,7 +945,7 @@ public class Server {
                     if (next - 0.1 > current) {
                         long allocated = next - current - 1;
                         if (allocated > 0) {
-                            //noinspection BusyWait
+                            // noinspection BusyWait
                             Thread.sleep(allocated, 900000);
                         }
                     }
@@ -929,7 +960,7 @@ public class Server {
 
     private void checkTickUpdates(int currentTick) {
         if (getSettings().levelSettings().alwaysTickPlayers()) {
-            for (Player p : this.players.values()) {
+            for (Player p : new ArrayList<>(this.players.values())) {
                 p.onUpdate(currentTick);
             }
         }
@@ -944,7 +975,7 @@ public class Server {
 
                 try {
                     long levelTime = System.currentTimeMillis();
-                    //Ensures that the server won't try to tick a level without providers.
+                    // Ensures that the server won't try to tick a level without providers.
                     if (level.getProvider().getLevel() == null) {
                         log.warn("Tried to tick Level {} without a provider!", level.getName());
                         continue;
@@ -963,15 +994,19 @@ public class Server {
                             if (r > baseTickRate) {
                                 level.tickRateCounter = level.getTickRate();
                             }
-                            log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(), level.getTickRate());
+                            log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
+                                    level.getTickRate());
                         } else if (tickMs >= 50) {
                             int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
                             if (level.getTickRate() == baseTickRate) {
                                 level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
-                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickMs / level.getTickRate()) >= 50 && level.getTickRate() < autoTickRateLimit) {
+                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
+                                        NukkitMath.round(tickMs, 2), level.getTickRate());
+                            } else if ((tickMs / level.getTickRate()) >= 50
+                                    && level.getTickRate() < autoTickRateLimit) {
                                 level.setTickRate(level.getTickRate() + 1);
-                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(), NukkitMath.round(tickMs, 2), level.getTickRate());
+                                log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
+                                        NukkitMath.round(tickMs, 2), level.getTickRate());
                             }
                             level.tickRateCounter = level.getTickRate();
                         }
@@ -1163,7 +1198,8 @@ public class Server {
     }
 
     /**
-     * Set the server to busy status, which prevents related code from detecting the server as unresponsive.
+     * Set the server to busy status, which prevents related code from detecting the
+     * server as unresponsive.
      * Remember to clear this setting after use.
      *
      * @param busyTime milliseconds
@@ -1259,8 +1295,10 @@ public class Server {
     }
 
     /**
-     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
-     * The permission corresponds to a {@link CommandSender Sender} set in {@code PluginManager#permSubs}.
+     * Get the sender to broadcast a message from the specified permission name,
+     * multiple permissions can be specified, split by <b> ; </b><br>
+     * The permission corresponds to a {@link CommandSender Sender} set in
+     * {@code PluginManager#permSubs}.
      *
      * @param message     Message content
      * @param permissions Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
@@ -1310,11 +1348,13 @@ public class Server {
      *
      * @param sender      Command sender
      * @param commandLine A command
-     * @return Returns 0 for failed execution, greater than or equal to 1 for successful execution
+     * @return Returns 0 for failed execution, greater than or equal to 1 for
+     *         successful execution
      * @throws ServerException Server exception
      */
     public int executeCommand(CommandSender sender, String commandLine) throws ServerException {
-        // First, we need to check if this command is on the main thread or not, if not, merge it in the main thread.
+        // First, we need to check if this command is on the main thread or not, if not,
+        // merge it in the main thread.
         if (!this.isPrimaryThread()) {
             this.scheduler.scheduleTask(null, () -> executeCommand(sender, commandLine));
             return 1;
@@ -1364,7 +1404,8 @@ public class Server {
             }
         } else {
             for (var cmd : commands) {
-                server.executeCommand(server.getConsoleSender(), "execute as " + "\"" + sender.getName() + "\" run " + cmd);
+                server.executeCommand(server.getConsoleSender(),
+                        "execute as " + "\"" + sender.getName() + "\" run " + cmd);
             }
         }
 
@@ -1569,7 +1610,8 @@ public class Server {
     }
 
     /**
-     * Update {@link PlayerListPacket} data packets (i.e., player list data) for specified players
+     * Update {@link PlayerListPacket} data packets (i.e., player list data) for
+     * specified players
      *
      * @param uuid       the uuid
      * @param entityId   entity id
@@ -1657,7 +1699,8 @@ public class Server {
     }
 
     /**
-     * Get all unique player UUIDs that have connected to the server during the current uptime.
+     * Get all unique player UUIDs that have connected to the server during the
+     * current uptime.
      *
      * @return Set of UUIDs
      */
@@ -1690,7 +1733,7 @@ public class Server {
         }
 
         if (uuidBytes.length != 16) {
-            log.warn("Invalid uuid in name lookup database detected! Removing");
+            log.debug("Invalid uuid in name lookup database detected! Removing");
             playerDataDB.delete(nameBytes);
             return Optional.empty();
         }
@@ -1700,7 +1743,8 @@ public class Server {
     }
 
     /**
-     * Update the UUID of the specified player name in the database, or add it if it does not exist.
+     * Update the UUID of the specified player name in the database, or add it if it
+     * does not exist.
      *
      * @param info the player info
      */
@@ -1777,7 +1821,7 @@ public class Server {
     public NbtMap getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
-            log.warn("Invalid uuid in name lookup database detected! Removing");
+            log.debug("Invalid uuid in name lookup database detected! Removing");
             playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
             return null;
         }
@@ -1787,7 +1831,7 @@ public class Server {
     public boolean hasOfflinePlayerData(String name) {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
-            log.warn("Invalid uuid in name lookup database detected! Removing");
+            log.debug("Invalid uuid in name lookup database detected! Removing");
             playerDataDB.delete(name.getBytes(StandardCharsets.UTF_8));
             return false;
         }
@@ -1906,7 +1950,8 @@ public class Server {
                     this.onCancel();
                 }
 
-                //doing it like this ensures that the player data will be saved in a server shutdown
+                // doing it like this ensures that the player data will be saved in a server
+                // shutdown
                 @Override
                 public void onCancel() {
                     if (!hasRun.getAndSet(true)) {
@@ -1940,7 +1985,8 @@ public class Server {
     }
 
     /**
-     * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
+     * Get an online player from the player name, this method is a fuzzy match and
+     * will be returned as long as the player name has the name prefix.
      *
      * @param name player name
      * @return Player instance object, failed to get null
@@ -1966,7 +2012,8 @@ public class Server {
     }
 
     /**
-     * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
+     * Get an online player from a player name, this method is an exact match and
+     * returns when the player name string is identical.
      *
      * @param name player name
      * @return Player instance object, failed to get null
@@ -1983,7 +2030,8 @@ public class Server {
     }
 
     /**
-     * Specify a partial player name and return all players with or equal to that name.
+     * Specify a partial player name and return all players with or equal to that
+     * name.
      *
      * @param partialName partial name
      * @return All players matched, if not matched then an empty array
@@ -1993,7 +2041,7 @@ public class Server {
         List<Player> matchedPlayer = new ArrayList<>();
         for (Player player : this.getOnlinePlayers().values()) {
             if (player.getName().toLowerCase(Locale.ENGLISH).equals(partialName)) {
-                return new Player[]{player};
+                return new Player[] { player };
             } else if (player.getName().toLowerCase(Locale.ENGLISH).contains(partialName)) {
                 matchedPlayer.add(player);
             }
@@ -2028,9 +2076,12 @@ public class Server {
     }
 
     /**
-     * Deletes all player data (both UUID mapping and player data) for the specified player name.
-     * This method handles the LevelDB structure used by PowerNukkitX where player data is stored
-     * in two separate databases: one for name-to-UUID mapping and another for actual player data.
+     * Deletes all player data (both UUID mapping and player data) for the specified
+     * player name.
+     * This method handles the LevelDB structure used by PowerNukkitX where player
+     * data is stored
+     * in two separate databases: one for name-to-UUID mapping and another for
+     * actual player data.
      *
      * @param name The player name to delete it (case-insensitive)
      */
@@ -2044,8 +2095,8 @@ public class Server {
                 UUID uuid = new UUID(buffer.getLong(), buffer.getLong());
                 String uuidStr = uuid.toString();
 
-                playerDataDB.delete(uuidBytes);  // Delete from player data DB
-                playerDataDB.delete(nameBytes);   // Delete name-to-UUID mapping
+                playerDataDB.delete(uuidBytes); // Delete from player data DB
+                playerDataDB.delete(nameBytes); // Delete name-to-UUID mapping
 
                 log.info("{} player data deleted (UUID: {})", name, uuidStr);
             } else {
@@ -2087,7 +2138,6 @@ public class Server {
             log.error("Error deleting player data for UUID {}", uuid, e);
         }
     }
-
 
     // endregion
 
@@ -2274,7 +2324,8 @@ public class Server {
      */
     public boolean unloadLevel(Level level, boolean forceUnload) {
         if (level == this.getDefaultLevel() && !forceUnload) {
-            throw new IllegalStateException("The default level cannot be unloaded while running, please switch levels.");
+            throw new IllegalStateException(
+                    "The default level cannot be unloaded while running, please switch levels.");
         }
         return level.unload(forceUnload);
 
@@ -2307,7 +2358,7 @@ public class Server {
                 throw new RuntimeException(e);
             }
         } else {
-            //verify the provider
+            // verify the provider
             Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
             if (provider == null) {
                 log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "Unknown provider"));
@@ -2316,9 +2367,12 @@ public class Server {
             Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
             long seed = System.currentTimeMillis();
 
-            map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
-            map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
-            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true, DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
+            map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
             levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             try {
                 config.createNewFile();
@@ -2338,7 +2392,8 @@ public class Server {
      */
     public boolean loadLevel(String levelFolderName) {
         LevelConfig levelConfig = getLevelConfig(levelFolderName);
-        if (levelConfig == null) return false;
+        if (levelConfig == null)
+            return false;
 
         String path;
         if (levelFolderName.contains("/") || levelFolderName.contains("\\")) {
@@ -2355,14 +2410,16 @@ public class Server {
 
         Map<Integer, LevelConfig.GeneratorConfig> generators = levelConfig.generators();
         for (var entry : generators.entrySet()) {
-            String levelName = levelFolderName + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
+            String levelName = levelFolderName
+                    + (generators.size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
             if (this.isLevelLoaded(levelName)) {
                 return true;
             }
             Level level;
             try {
                 if (provider == null) {
-                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName, "the level does not exist"));
+                    log.error(this.getLanguage().tr("nukkit.level.loadError", levelFolderName,
+                            "the level does not exist"));
                     return false;
                 }
                 level = new Level(this, levelName, pathS, generators.size(), provider, entry.getValue());
@@ -2431,8 +2488,10 @@ public class Server {
             var provider = LevelProviderManager.getProviderByName(levelConfig.format());
             Level level;
             try {
-                provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class).invoke(null, path, name, generatorConfig);
-                String levelName = name + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
+                provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class)
+                        .invoke(null, path, name, generatorConfig);
+                String levelName = name
+                        + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
                 if (this.isLevelLoaded(levelName)) {
                     log.warn("level {} has already been loaded!", levelName);
                     continue;
@@ -2601,7 +2660,8 @@ public class Server {
      * Get game mode string from gamemode id.
      *
      * @param mode   gamemode id
-     * @param direct If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
+     * @param direct If true, the string is returned directly, and if false, the
+     *               hard-coded string representing the game mode is returned.
      * @return Gamemode string
      */
     public static String getGamemodeString(int mode, boolean direct) {
@@ -2617,7 +2677,8 @@ public class Server {
     /**
      * Get gamemode from string
      *
-     * @param gamemodeString A string representing the game mode, e.g., 0 for survival...
+     * @param gamemodeString A string representing the game mode, e.g., 0 for
+     *                       survival...
      * @return gamemode id
      */
     public static int getGamemodeFromString(String gamemodeString) {
@@ -2633,7 +2694,8 @@ public class Server {
     /**
      * Get game difficulty from string
      *
-     * @param difficultyString A string representing the game difficulty, e.g., 0,peaceful...
+     * @param difficultyString A string representing the game difficulty, e.g.,
+     *                         0,peaceful...
      * @return game difficulty id
      */
     public static int getDifficultyFromString(String difficultyString) {
@@ -2662,8 +2724,10 @@ public class Server {
      */
     public void setDifficulty(int difficulty) {
         int value = difficulty;
-        if (value < 0) value = 0;
-        if (value > 3) value = 3;
+        if (value < 0)
+            value = 0;
+        if (value > 3)
+            value = 3;
         this.settings.gameplaySettings().difficulty(value);
     }
 
@@ -2754,7 +2818,8 @@ public class Server {
     }
 
     /**
-     * @return Whether to force the use of the server resource pack while allowing the loading of the client resource pack
+     * @return Whether to force the use of the server resource pack while allowing
+     *         the loading of the client resource pack
      */
     public boolean getForceResourcesAllowOwnPacks() {
         return this.settings.gameplaySettings().allowClientPacks();
@@ -2808,7 +2873,7 @@ public class Server {
     public boolean canLogPacket(Class<? extends BedrockPacket> clazz) {
         if (!this.getSettings().debugSettings().mode()) // ignored mode
             return !this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
-        else //allow mode
+        else // allow mode
             return this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
     }
 
@@ -2829,7 +2894,7 @@ public class Server {
      * preclude the same assumption.
      *
      * @return true if the current thread matches the expected primary thread,
-     * false otherwise
+     *         false otherwise
      */
     public final boolean isPrimaryThread() {
         return (Thread.currentThread() == currentThread);
@@ -2854,11 +2919,10 @@ public class Server {
     public List<Experiment> getExperiments() {
         return experiments;
     }
+  
+  
 
-
-    /**
-     * Allow plugins to override the default DP group UUID (e.g., when migrating from BDS).
-     */
+    /** Allow plugins to override the default DP group UUID (e.g., when migrating from BDS). */
     public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
         if (uuid == null || !DP_UUID_CANON.matcher(uuid).matches()) {
             log.warn("DynamicProperties default group UUID rejected: '{}'", uuid);
@@ -2934,13 +2998,15 @@ public class Server {
      * @param value the double int value of the DynamicProperty
      */
     public Server setDynamicProperty(String key, Double value) {
-        if (value == null) return removeDynamicProperty(key);
+        if (value == null)
+            return removeDynamicProperty(key);
         if (!isFiniteAndInRange(value)) {
             log.warn("DynamicProperty '{}' rejected: out of numeric bounds or non-finite (value={})", key, value);
             return this;
         }
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
+        if (provider == null)
+            return this;
 
         NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
                 .toBuilder()
@@ -2977,9 +3043,11 @@ public class Server {
      * @param bool the bool value of the DynamicProperty
      */
     public Server setDynamicProperty(String key, Boolean bool) {
-        if (bool == null) return removeDynamicProperty(key);
+        if (bool == null)
+            return removeDynamicProperty(key);
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
+        if (provider == null)
+            return this;
 
         NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
                 .toBuilder()
@@ -2996,13 +3064,15 @@ public class Server {
      * @param string the string value of the DynamicProperty
      */
     public Server setDynamicProperty(String key, String string) {
-        if (string == null) return removeDynamicProperty(key);
+        if (string == null)
+            return removeDynamicProperty(key);
         if (!fitsUtf8Limit(string)) {
             log.warn("DynamicProperty '{}' rejected: string exceeds {} UTF-8 bytes", key, DP_MAX_STRING_BYTES);
             return this;
         }
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
+        if (provider == null)
+            return this;
 
         NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
                 .toBuilder()
@@ -3019,15 +3089,19 @@ public class Server {
      * @param vec3 the vec3 value of the DynamicProperty
      */
     public Server setVec3DynamicProperty(String key, Vector3 vec3) {
-        if (vec3 == null) return removeDynamicProperty(key);
+        if (vec3 == null)
+            return removeDynamicProperty(key);
         if (!isFiniteAndInRange(vec3.x) || !isFiniteAndInRange(vec3.y) || !isFiniteAndInRange(vec3.z)) {
-            log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, vec3.x, vec3.y, vec3.z);
+            log.warn(
+                    "DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})",
+                    key, vec3.x, vec3.y, vec3.z);
             return this;
         }
         final List<Float> list = Arrays.asList((float) vec3.x, (float) vec3.y, (float) vec3.z);
 
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null) return this;
+        if (provider == null)
+            return this;
 
         NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
                 .toBuilder()
@@ -3041,10 +3115,12 @@ public class Server {
      * Set a Vec3 DynamicProperty.
      *
      * @param key the key id of the DynamicProperty
-     * @param xyz a map with keys "x","y","z" and numeric values, e.g. {x: 400, y: 60, z: 300}
+     * @param xyz a map with keys "x","y","z" and numeric values, e.g. {x: 400, y:
+     *            60, z: 300}
      */
     public Server setVec3DynamicProperty(String key, Map<String, Number> xyz) {
-        if (xyz == null) return removeDynamicProperty(key);
+        if (xyz == null)
+            return removeDynamicProperty(key);
 
         Number nx = xyz.get("x"), ny = xyz.get("y"), nz = xyz.get("z");
         if (nx == null || ny == null || nz == null) {
@@ -3104,7 +3180,8 @@ public class Server {
      */
     public Integer getIntDynamicProperty(String key) {
         Double d = getDoubleDynamicProperty(key);
-        if (d == null) return null;
+        if (d == null)
+            return null;
         return (int) Math.floor(d);
     }
 
@@ -3128,7 +3205,8 @@ public class Server {
      */
     public Float getFloatDynamicProperty(String key) {
         Double d = getDoubleDynamicProperty(key);
-        if (d == null) return null;
+        if (d == null)
+            return null;
         return d.floatValue();
     }
 
@@ -3228,17 +3306,20 @@ public class Server {
     }
 
     private static boolean fitsUtf8Limit(String s) {
-        if (s == null) return false;
+        if (s == null)
+            return false;
         int byteCount = s.getBytes(StandardCharsets.UTF_8).length;
         return byteCount <= DP_MAX_STRING_BYTES;
     }
 
     private LevelDBProvider getWorldDynamicPropertiesProvider() {
         Level level = this.getDefaultLevel();
-        if (level == null) return null;
+        if (level == null)
+            return null;
 
         LevelProvider provider = level.getProvider();
-        if (!(provider instanceof LevelDBProvider ldb)) return null;
+        if (!(provider instanceof LevelDBProvider ldb))
+            return null;
 
         return ldb;
     }

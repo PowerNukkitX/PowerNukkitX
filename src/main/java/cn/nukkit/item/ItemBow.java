@@ -162,7 +162,7 @@ public class ItemBow extends ItemTool {
                             player.getLevel().addSound(player, Sound.RANDOM_BREAK);
                             this.count--;
                         }
-                        player.getInventory().setItemInHand(this);
+                        player.getInventory().setItemInMainHand(this);
                     }
                 }
             }

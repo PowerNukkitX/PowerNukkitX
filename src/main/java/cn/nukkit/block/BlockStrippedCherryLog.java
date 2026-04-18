@@ -26,12 +26,7 @@ public class BlockStrippedCherryLog extends BlockWoodStripped {
     }
 
     @Override
-    public BlockState getStrippedState() {
-        return BlockStrippedAcaciaLog.PROPERTIES.getDefaultState();
-    }
-
-    @Override
     public WoodType getWoodType() {
-        throw new UnsupportedOperationException();
+        return WoodType.CHERRY;
     }
 }

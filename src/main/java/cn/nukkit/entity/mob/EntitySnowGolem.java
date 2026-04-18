@@ -88,7 +88,7 @@ public class EntitySnowGolem extends EntityGolem {
                 this.setSheared(true);
                 this.level.addLevelSoundEvent(this, SoundEvent.SHEAR);
                 if (player.getGamemode() != Player.CREATIVE)
-                    player.getInventory().getItemInHand().setDamage(item.getDamage() + 1);
+                    player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
                 this.level.dropItem(this.add(0, this.getEyeHeight(), 0), Item.get(Block.CARVED_PUMPKIN));
             }
         }

@@ -89,7 +89,7 @@ public class ItemCrossbow extends ItemTool {
                             if (this.getDamage() >= 385) {
                                 --this.count;
                             }
-                            player.getInventory().setItemInHand(this);
+                            player.getInventory().setItemInMainHand(this);
                         }
                     }
 
@@ -168,7 +168,7 @@ public class ItemCrossbow extends ItemTool {
 
     public void removeChargedItem(Player player) {
         this.setCompoundTag(NbtHelper.remove(this.getNamedTag(), "chargedItem"));
-        player.getInventory().setItemInHand(this);
+        player.getInventory().setItemInMainHand(this);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class ItemCrossbow extends ItemTool {
                     .build()
             );
             this.setCompoundTag(tag.build());
-            player.getInventory().setItemInHand(this);
+            player.getInventory().setItemInMainHand(this);
             player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
         }
     }

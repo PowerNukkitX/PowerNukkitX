@@ -778,7 +778,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this.getDataFlag(ActorFlags.BLOCKING)) {
             if (this instanceof InventoryHolder holder) {
                 if (holder.getInventory() instanceof HumanInventory inventory) {
-                    return inventory.getItemInHand() instanceof ItemShield;
+                    return inventory.getItemInMainHand() instanceof ItemShield
+                            || inventory.getItemInOffhand() instanceof ItemShield;
                 }
             }
         }

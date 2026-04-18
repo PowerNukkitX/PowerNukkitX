@@ -393,6 +393,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     @Override
+    public boolean isPersistent() {
+        return true;
+    }
+
+    @Override
     public float getHeight() {
         if (isSleeping()) return getWidthR();
         return getHeightR();
@@ -440,11 +445,6 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public String getOriginalName() {
         return "VillagerV2";
-    }
-
-    @Override
-    public boolean isPersistent() {
-        return true;
     }
 
     @Override

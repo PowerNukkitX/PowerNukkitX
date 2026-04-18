@@ -109,7 +109,7 @@ public class ItemTrident extends ItemTool {
                 player.getLevel().addSound(player, Sound.ITEM_TRIDENT_THROW);
                 if (!player.isCreative()) {
                     this.count--;
-                    player.getInventory().setItemInHand(this);
+                    player.getInventory().setItemInMainHand(this);
                 }
             }
         }

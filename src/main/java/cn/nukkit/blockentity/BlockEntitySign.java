@@ -292,7 +292,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             signChangeEvent.setCancelled();
         }
 
-        if (player.getRemoveFormat()) {
+        if (!player.canUseTextColor()) {
             for (int i = 0; i < lines.length; i++) {
                 lines[i] = TextFormat.clean(lines[i]);
             }

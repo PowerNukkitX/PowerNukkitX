@@ -87,9 +87,9 @@ public class ItemChestBoat extends Item {
         }
 
         if (player.isSurvival() || player.isAdventure()) {
-            Item item = player.getInventory().getItemInHand();
+            Item item = player.getInventory().getItemInMainHand();
             item.setCount(item.getCount() - 1);
-            player.getInventory().setItemInHand(item);
+            player.getInventory().setItemInMainHand(item);
         }
 
         boat.spawnToAll();

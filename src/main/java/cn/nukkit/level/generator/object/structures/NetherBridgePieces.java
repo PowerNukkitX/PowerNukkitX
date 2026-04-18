@@ -1355,7 +1355,7 @@ public class NetherBridgePieces {
 
     protected static class ChestPopulator extends RandomizableContainer {
         public ChestPopulator() {
-            RandomizableContainer.PoolBuilder pool1 = new PoolBuilder()
+            PoolBuilder pool1 = new PoolBuilder()
                     .register(new ItemEntry(Item.DIAMOND, 0, 3, 5))
                     .register(new ItemEntry(Item.IRON_INGOT, 0, 5, 5))
                     .register(new ItemEntry(Item.GOLD_INGOT, 0, 3, 15))

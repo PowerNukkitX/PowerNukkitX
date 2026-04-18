@@ -158,7 +158,7 @@ public class EntityIronGolem extends EntityGolem {
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item instanceof ItemIronIngot && getHealthCurrent() <= getHealthMax() * 0.75f) {
             this.level.addSound(this, Sound.MOB_IRONGOLEM_REPAIR);
-            if (player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInHand().decrement(1);
+            if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInMainHand().decrement(1);
             heal(25);
         }
         return super.onInteract(player, item);

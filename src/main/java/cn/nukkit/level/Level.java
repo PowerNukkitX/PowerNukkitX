@@ -257,6 +257,18 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.EXPOSED_LIGHTNING_ROD);
         randomTickBlocks.add(BlockID.WEATHERED_LIGHTNING_ROD);
+        randomTickBlocks.add(BlockID.COPPER_BULB);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_BULB);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_BULB);
+        randomTickBlocks.add(BlockID.COPPER_DOOR);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_DOOR);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_DOOR);
+        randomTickBlocks.add(BlockID.COPPER_TRAPDOOR);
+        randomTickBlocks.add(BlockID.EXPOSED_COPPER_TRAPDOOR);
+        randomTickBlocks.add(BlockID.WEATHERED_COPPER_TRAPDOOR);
+        randomTickBlocks.add(BlockID.CHISELED_COPPER);
+        randomTickBlocks.add(BlockID.EXPOSED_CHISELED_COPPER);
+        randomTickBlocks.add(BlockID.WEATHERED_CHISELED_COPPER);
         randomTickBlocks.add(BlockID.BUDDING_AMETHYST);
         randomTickBlocks.add(BlockID.POINTED_DRIPSTONE);
         randomTickBlocks.add(BlockID.CAVE_VINES);
@@ -644,10 +656,29 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if (getServer().getSettings().levelSettings().levelThread() && baseTickThread.isAlive()) {
+        if (baseTickThread.isAlive()) {
             this.baseTickGameLoop.stop();
+            try {
+                this.baseTickThread.join(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (baseTickThread.isAlive()) {
+                log.warn("Level {} tick thread did not stop in time, interrupting", getFolderName());
+                baseTickThread.interrupt();
+                try {
+                    baseTickThread.join(2000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (this.provider.get() != null) {
+                    remove();
+                    log.warn("Level {} tick thread did not stop gracefully, forcing level unload.", getFolderName());
+                }
+            }
+        } else {
+            remove();
         }
-        remove();
     }
 
     private void remove() {
@@ -930,14 +961,6 @@ public class Level implements Metadatable {
         }
 
         this.close();
-        if (force && getServer().getSettings().levelSettings().levelThread()) {
-            getServer().getScheduler().scheduleDelayedTask(() -> {
-                if (baseTickThread.isAlive()) {
-                    getServer().getLogger().critical(getName() + " failed to unload. Trying to stop the thread.");
-                    baseTickThread.interrupt();
-                }
-            }, 100);
-        }
         return true;
     }
 
@@ -946,7 +969,7 @@ public class Level implements Metadatable {
         if (this.chunkLoaders.containsKey(index)) {
             return this.chunkLoaders.get(index).entrySet()
                     .stream()
-                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().getUsedChunks().contains(index)))
+                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
                     .collect(HashMap::new, (m, e) -> {
                         m.put(e.getKey(), (Player) e.getValue());
                     }, HashMap::putAll);
@@ -1065,6 +1088,7 @@ public class Level implements Metadatable {
     }
 
     private void doTick(GameLoop gameLoop) {
+        if (getProvider() == null) return; // level is closing
         try {
             int baseTickRate = getServer().getSettings().levelSettings().baseTickRate();
             long levelTime = System.currentTimeMillis();
@@ -1097,7 +1121,7 @@ public class Level implements Metadatable {
     }
 
     public void doTick(int currentTick) {
-        requireProvider();
+        if (getProvider() == null) return; // level is closing
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
             updateBlockLight();
@@ -2948,7 +2972,7 @@ public class Level implements Metadatable {
             return null;
         }
 
-        boolean isPlayerInput = data.getTriggerType() == ItemUseTransaction.TriggerType.PLAYER_INPUT;
+        boolean isInteractionTrigger = data.triggerType == ItemUseTransaction.TriggerType.PLAYER_INPUT || data.triggerType == ItemUseTransaction.TriggerType.SIMULATION_TICK;
 
         if (player == null) {
             if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {
@@ -2959,7 +2983,7 @@ public class Level implements Metadatable {
             }
         } else {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, target.isAir() ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
-            if (isPlayerInput) {
+            if (isInteractionTrigger) {
                 //                                handle spawn protect
                 if (player.getGamemode() > 2 || (!player.isOp() && isInSpawnRadius(target))) {
                     ev.setCancelled();
@@ -3955,7 +3979,7 @@ public class Level implements Metadatable {
 
     private void sendChunk(int x, int z, long index, BedrockPacket packet) {
         for (Player player : this.chunkSendQueue.get(index).values()) {
-            if (player.isConnected() && player.getUsedChunks().contains(index)) {
+            if (player.isConnected() && player.getPlayerChunkManager().isSentChunk(index)) {
                 player.sendChunk(x, z, packet);
             }
         }

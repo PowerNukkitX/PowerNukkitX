@@ -111,7 +111,7 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
                         Item itemClone = item.clone();
                         if (!player.isCreative()) {
                             itemClone.setCount(itemClone.getCount() - 1);
-                            player.getInventory().setItemInHand(itemClone);
+                            player.getInventory().setItemInMainHand(itemClone);
                         }
                         itemClone.setCount(1);
                         blockEntity.setBook(itemClone, index);
