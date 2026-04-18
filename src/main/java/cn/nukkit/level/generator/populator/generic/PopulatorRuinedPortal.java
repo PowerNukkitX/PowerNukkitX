@@ -208,7 +208,7 @@ public class PopulatorRuinedPortal extends Populator {
     }
 
     private static boolean shouldFillAirWithWater(Level level, Block block) {
-        if (block.getFloorY() > SEA_LEVEL) {
+        if (block.getFloorY() >= SEA_LEVEL) {
             return false;
         }
         if (isWater(level.getBlock(block))) {
