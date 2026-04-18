@@ -11,6 +11,8 @@ import cn.nukkit.level.generator.densityfunction.DensityCommon;
 import cn.nukkit.level.generator.densityfunction.DensityFunction;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.NukkitRandom;
+import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -135,6 +137,7 @@ public final class Aquifer {
         this.skipSamplingAboveY = fromGridY(skipSamplingAboveGridY, 11) - 1;
     }
 
+    public static final ThreadLocal<RandomSourceProvider> RANDOM = ThreadLocal.withInitial(Xoroshiro128::new);
     public @Nullable BlockState computeSubstance(DensityFunction.FunctionContext context, double density) {
         if (density > 0.0) {
             this.shouldScheduleFluidUpdate = false;
@@ -182,7 +185,7 @@ public final class Aquifer {
                     if (existingLocation != Long.MAX_VALUE) {
                         location = existingLocation;
                     } else {
-                        NukkitRandom random = new NukkitRandom(mixSeed(this.randomSeed, spacedGridX, spacedGridY, spacedGridZ));
+                        RandomSourceProvider random = RANDOM.get().setSeed(mixSeed(this.randomSeed, spacedGridX, spacedGridY, spacedGridZ));
                         location = pack(
                                 fromGridX(spacedGridX, random.nextInt(X_RANGE)),
                                 fromGridY(spacedGridY, random.nextInt(Y_RANGE)),

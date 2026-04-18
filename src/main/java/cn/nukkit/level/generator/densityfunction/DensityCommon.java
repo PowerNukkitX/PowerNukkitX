@@ -629,7 +629,9 @@ public final class DensityCommon {
         @Override
         public double compute(FunctionContext context) {
             Cache2DState s = state(context, state, Cache2DState::new);
-            long pos2d = (((long) context.blockX()) << 32) ^ (context.blockZ() & 0xFFFFFFFFL);
+            int blockX = context.blockX();
+            int blockZ = context.blockZ();
+            long pos2d = (((long) blockX) << 32) ^ (blockZ & 0xFFFFFFFFL);
             if (s.valid && s.lastPos2d == pos2d) {
                 return s.lastValue;
             }
@@ -649,6 +651,7 @@ public final class DensityCommon {
         private static final int QUART_SIZE = 4;
         private static final int CHUNK_SIZE_BLOCKS = 16;
         private static final int GRID_SIZE_XZ = (CHUNK_SIZE_BLOCKS / QUART_SIZE) + 1; // 5
+        private static final int QUART_MASK = QUART_SIZE - 1;
         private final ThreadLocal<FlatCacheState> state = ThreadLocal.withInitial(FlatCacheState::new);
 
         private FlatCacheMarker(DensityFunction wrapped) {
@@ -660,15 +663,13 @@ public final class DensityCommon {
             FlatCacheState s = state(context, state, FlatCacheState::new);
             int blockX = context.blockX();
             int blockZ = context.blockZ();
-            int chunkX = Math.floorDiv(blockX, CHUNK_SIZE_BLOCKS);
-            int chunkZ = Math.floorDiv(blockZ, CHUNK_SIZE_BLOCKS);
+            int chunkX = blockX >> 4;
+            int chunkZ = blockZ >> 4;
             FlatCacheCell cell = s.getOrCreateCell(chunkX, chunkZ, wrapped);
-
-            int quartX = Math.floorDiv(blockX, QUART_SIZE);
-            int quartZ = Math.floorDiv(blockZ, QUART_SIZE);
-            int localQuartX = quartX - cell.firstQuartX;
-            int localQuartZ = quartZ - cell.firstQuartZ;
-            if (localQuartX >= 0 && localQuartZ >= 0 && localQuartX < GRID_SIZE_XZ && localQuartZ < GRID_SIZE_XZ) {
+            int localQuartX = (blockX >> 2) - cell.firstQuartX;
+            int localQuartZ = (blockZ >> 2) - cell.firstQuartZ;
+            // Same-chunk lookups always map to a 4x4 quart area [0..3], cached in the 5x5 grid.
+            if ((localQuartX & ~QUART_MASK) == 0 && (localQuartZ & ~QUART_MASK) == 0) {
                 return cell.values[localQuartX + localQuartZ * GRID_SIZE_XZ];
             }
             return wrapped.compute(context);
@@ -681,6 +682,7 @@ public final class DensityCommon {
     }
 
     private static final class FlatCacheState {
+        private final DensityFunction.MutableFunctionContext context = new DensityFunction.MutableFunctionContext();
         private final Map<Long, FlatCacheCell> cells = new LinkedHashMap<>(64, 0.75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<Long, FlatCacheCell> eldest) {
@@ -695,17 +697,15 @@ public final class DensityCommon {
                 return cell;
             }
 
-            int firstBlockX = chunkX << 4;
-            int firstBlockZ = chunkZ << 4;
-            int firstQuartX = Math.floorDiv(firstBlockX, FlatCacheMarker.QUART_SIZE);
-            int firstQuartZ = Math.floorDiv(firstBlockZ, FlatCacheMarker.QUART_SIZE);
+            int firstQuartX = chunkX << 2;
+            int firstQuartZ = chunkZ << 2;
             double[] values = new double[FlatCacheMarker.GRID_SIZE_XZ * FlatCacheMarker.GRID_SIZE_XZ];
             for (int x = 0; x < FlatCacheMarker.GRID_SIZE_XZ; x++) {
                 int blockX = (firstQuartX + x) << 2;
                 for (int z = 0; z < FlatCacheMarker.GRID_SIZE_XZ; z++) {
                     int blockZ = (firstQuartZ + z) << 2;
                     values[x + z * FlatCacheMarker.GRID_SIZE_XZ] =
-                            wrapped.compute(new DensityFunction.SinglePointContext(blockX, 0, blockZ));
+                            wrapped.compute(context.set(blockX, 0, blockZ));
                 }
             }
 
@@ -728,13 +728,16 @@ public final class DensityCommon {
         @Override
         public double compute(FunctionContext context) {
             Cache3DState s = state(context, state, Cache3DState::new);
-            if (s.valid && s.blockX == context.blockX() && s.blockY == context.blockY() && s.blockZ == context.blockZ()) {
+            int blockX = context.blockX();
+            int blockY = context.blockY();
+            int blockZ = context.blockZ();
+            if (s.valid && s.blockX == blockX && s.blockY == blockY && s.blockZ == blockZ) {
                 return s.value;
             }
             s.valid = true;
-            s.blockX = context.blockX();
-            s.blockY = context.blockY();
-            s.blockZ = context.blockZ();
+            s.blockX = blockX;
+            s.blockY = blockY;
+            s.blockZ = blockZ;
             s.value = wrapped.compute(context);
             return s.value;
         }
@@ -746,10 +749,11 @@ public final class DensityCommon {
     }
 
     private static final class CacheAllInCellMarker extends Marker {
-        private static final int CELL_X = 16;
-        private static final int CELL_Y = 384;
-        private static final int CELL_Z = 16;
-        private static final int CELL_VALUE_COUNT = CELL_X * CELL_Y * CELL_Z;
+        private static final int CELL_SIZE_XZ = 4;
+        private static final int CELL_SIZE_Y = 8;
+        private static final int CELL_XZ_MASK = CELL_SIZE_XZ - 1;
+        private static final int CELL_Y_MASK = CELL_SIZE_Y - 1;
+        private static final int CELL_VALUE_COUNT = CELL_SIZE_XZ * CELL_SIZE_Y * CELL_SIZE_XZ;
         private final ThreadLocal<CacheAllInCellState> state = ThreadLocal.withInitial(CacheAllInCellState::new);
 
         private CacheAllInCellMarker(DensityFunction wrapped) {
@@ -762,28 +766,23 @@ public final class DensityCommon {
             int blockX = context.blockX();
             int blockY = context.blockY();
             int blockZ = context.blockZ();
-            int cellX = Math.floorDiv(blockX, CELL_X);
-            int cellY = Math.floorDiv(blockY, CELL_Y);
-            int cellZ = Math.floorDiv(blockZ, CELL_Z);
-            long key = (((long) cellX & 0x1FFFFFL) << 42) | (((long) cellY & 0x1FFFFFL) << 21) | ((long) cellZ & 0x1FFFFFL);
-            CellValues values = s.cells.get(key);
-            if (values == null) {
-                values = new CellValues();
-                s.cells.put(key, values);
-            }
+            int cellX = blockX >> 2;
+            int cellY = blockY >> 3;
+            int cellZ = blockZ >> 2;
+            CellValues values = s.getOrCreateCell(cellX, cellY, cellZ);
 
-            int localX = Math.floorMod(blockX, CELL_X);
-            int localY = Math.floorMod(blockY, CELL_Y);
-            int localZ = Math.floorMod(blockZ, CELL_Z);
-            int index = ((localY * CELL_X) + localX) * CELL_Z + localZ;
-            if (values.filled[index]) {
+            int index = ((blockY & CELL_Y_MASK) << 4)
+                    | ((blockZ & CELL_XZ_MASK) << 2)
+                    | (blockX & CELL_XZ_MASK);
+            int bitWord = index >>> 6;
+            long bitMask = 1L << (index & 63);
+            if ((values.filledBits[bitWord] & bitMask) != 0L) {
                 return values.values[index];
             }
 
             double computed = wrapped.compute(context);
             values.values[index] = computed;
-            values.filled[index] = true;
-            s.filledValueCount++;
+            values.filledBits[bitWord] |= bitMask;
             return computed;
         }
 
@@ -793,22 +792,40 @@ public final class DensityCommon {
         }
 
         private static final class CacheAllInCellState {
-            private long filledValueCount;
             private final Map<Long, CellValues> cells = new LinkedHashMap<>(256, 0.75f, true) {
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<Long, CellValues> eldest) {
                     return size() > 1024;
                 }
             };
+
+            private CellValues getOrCreateCell(int cellX, int cellY, int cellZ) {
+                long key = (((long) cellX & 0x1FFFFFL) << 42)
+                        | (((long) cellY & 0x1FFFFFL) << 21)
+                        | ((long) cellZ & 0x1FFFFFL);
+                CellValues values = cells.get(key);
+                if (values != null) {
+                    return values;
+                }
+                values = new CellValues();
+                cells.put(key, values);
+                return values;
+            }
         }
 
         private static final class CellValues {
             private final double[] values = new double[CELL_VALUE_COUNT];
-            private final boolean[] filled = new boolean[CELL_VALUE_COUNT];
+            private final long[] filledBits = new long[(CELL_VALUE_COUNT + 63) >>> 6];
         }
     }
 
     private static final class InterpolatedMarker extends Marker {
+        private static final int CELL_SIZE_XZ = 4;
+        private static final int CELL_SIZE_Y = 8;
+        private static final int CELL_XZ_MASK = CELL_SIZE_XZ - 1;
+        private static final int CELL_Y_MASK = CELL_SIZE_Y - 1;
+        private static final double INV_CELL_SIZE_XZ = 1.0 / CELL_SIZE_XZ;
+        private static final double INV_CELL_SIZE_Y = 1.0 / CELL_SIZE_Y;
         private final ThreadLocal<InterpolatedState> state = ThreadLocal.withInitial(InterpolatedState::new);
 
         private InterpolatedMarker(DensityFunction wrapped) {
@@ -818,22 +835,25 @@ public final class DensityCommon {
         @Override
         public double compute(FunctionContext context) {
             InterpolatedState s = state(context, state, InterpolatedState::new);
-            int cellX = Math.floorDiv(context.blockX(), 4) * 4;
-            int cellY = Math.floorDiv(context.blockY(), 8) * 8;
-            int cellZ = Math.floorDiv(context.blockZ(), 4) * 4;
+            int blockX = context.blockX();
+            int blockY = context.blockY();
+            int blockZ = context.blockZ();
+            int cellX = (blockX >> 2) << 2;
+            int cellY = (blockY >> 3) << 3;
+            int cellZ = (blockZ >> 2) << 2;
             InterpolatedCell cell = s.getOrCreateCell(cellX, cellY, cellZ, wrapped);
 
-            double xAlpha = Math.floorMod(context.blockX(), 4) / 4.0;
-            double yAlpha = Math.floorMod(context.blockY(), 8) / 8.0;
-            double zAlpha = Math.floorMod(context.blockZ(), 4) / 4.0;
+            double xAlpha = (blockX & CELL_XZ_MASK) * INV_CELL_SIZE_XZ;
+            double yAlpha = (blockY & CELL_Y_MASK) * INV_CELL_SIZE_Y;
+            double zAlpha = (blockZ & CELL_XZ_MASK) * INV_CELL_SIZE_XZ;
 
-            double x00 = lerp(cell.d000, cell.d100, xAlpha);
-            double x10 = lerp(cell.d010, cell.d110, xAlpha);
-            double x01 = lerp(cell.d001, cell.d101, xAlpha);
-            double x11 = lerp(cell.d011, cell.d111, xAlpha);
-            double z0 = lerp(x00, x10, zAlpha);
-            double z1 = lerp(x01, x11, zAlpha);
-            return lerp(z0, z1, yAlpha);
+            double valueXZ00 = lerp(cell.d000, cell.d010, yAlpha);
+            double valueXZ10 = lerp(cell.d100, cell.d110, yAlpha);
+            double valueXZ01 = lerp(cell.d001, cell.d011, yAlpha);
+            double valueXZ11 = lerp(cell.d101, cell.d111, yAlpha);
+            double valueZ0 = lerp(valueXZ00, valueXZ10, xAlpha);
+            double valueZ1 = lerp(valueXZ01, valueXZ11, xAlpha);
+            return lerp(valueZ0, valueZ1, zAlpha);
         }
 
         @Override
@@ -861,16 +881,16 @@ public final class DensityCommon {
                     return cell;
                 }
 
-                int nextX = cellX + 4;
-                int nextY = cellY + 8;
-                int nextZ = cellZ + 4;
+                int nextX = cellX + CELL_SIZE_XZ;
+                int nextY = cellY + CELL_SIZE_Y;
+                int nextZ = cellZ + CELL_SIZE_XZ;
                 cell = new InterpolatedCell(
                         wrapped.compute(context.set(cellX, cellY, cellZ)),
                         wrapped.compute(context.set(nextX, cellY, cellZ)),
-                        wrapped.compute(context.set(cellX, cellY, nextZ)),
-                        wrapped.compute(context.set(nextX, cellY, nextZ)),
                         wrapped.compute(context.set(cellX, nextY, cellZ)),
                         wrapped.compute(context.set(nextX, nextY, cellZ)),
+                        wrapped.compute(context.set(cellX, cellY, nextZ)),
+                        wrapped.compute(context.set(nextX, cellY, nextZ)),
                         wrapped.compute(context.set(cellX, nextY, nextZ)),
                         wrapped.compute(context.set(nextX, nextY, nextZ))
                 );

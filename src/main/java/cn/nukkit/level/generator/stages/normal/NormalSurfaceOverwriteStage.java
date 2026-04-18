@@ -4,6 +4,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.format.UnsafeChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
@@ -47,62 +48,64 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
         IChunk chunk = context.getChunk();
         Level level = chunk.getLevel();
         NormalObjectHolder.SurfaceOverwriteHolder holder = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getSurfaceOverwriteHolder();
-        for(int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                int lx = x + (chunk.getX() << 4);
-                int lz = z + (chunk.getZ() << 4);
-                int y = chunk.getHeightMap(x, z);
-                int biomeId = chunk.getBiomeId(x, y, z);
-                switch (biomeId) {
-                    case MESA,
-                         MESA_BRYCE,
-                         MESA_PLATEAU_STONE -> {
-                        applyClayBandsDepth(chunk, holder, level, x, z, lx, lz, y);
-                    }
-                }
-                switch (biomeId) {
-                    case SWAMPLAND -> {
-                        if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
-                            if(y == SEA_LEVEL) chunk.setBlockState(x, y, z, WATER);
-                    }
-                    case MANGROVE_SWAMP -> {
-                        if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
-                            if(y >= SEA_LEVEL -2 && y <= SEA_LEVEL) chunk.setBlockState(x, y, z, WATER);
-                    }
-                    case MESA_PLATEAU_STONE -> {
-                        if(y > 97) {
-                            float noise = holder.getSurfaceNoise().getValue(lx * 0.25f, y, lz * 0.25f);
-                            if (isInRange(noise)) {
-                                chunk.setBlockState(x, y, z, COARSE_DIRT);
-                            } else chunk.setBlockState(x, y, z, GRASS);
+        chunk.batchProcess(unsafeChunk -> {
+            for(int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int lx = x + (unsafeChunk.getX() << 4);
+                    int lz = z + (unsafeChunk.getZ() << 4);
+                    int y = unsafeChunk.getHeightMap(x, z);
+                    int biomeId = unsafeChunk.getBiomeId(x, y, z);
+                    switch (biomeId) {
+                        case MESA,
+                             MESA_BRYCE,
+                             MESA_PLATEAU_STONE -> {
+                            applyClayBandsDepth(unsafeChunk, holder, level, x, z, lx, lz, y);
                         }
                     }
-                    case ICE_PLAINS -> {
-                        Block support = chunk.getBlockState(x, y, z).toBlock();
-                        if(support.isSolid()) {
-                            BlockState state = chunk.getBlockState(x, y+1, z);
-                            if(state.equals(BlockAir.STATE)) {
-                                chunk.setBlockState(x, y+1, z, SNOW_LAYER);
-                            } else {
-                                chunk.getAndSetBlockState(x, y+1, z, SNOW_LAYER, 1);
+                    switch (biomeId) {
+                        case SWAMPLAND -> {
+                            if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
+                                if(y == SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
+                        }
+                        case MANGROVE_SWAMP -> {
+                            if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
+                                if(y >= SEA_LEVEL -2 && y <= SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
+                        }
+                        case MESA_PLATEAU_STONE -> {
+                            if(y > 97) {
+                                float noise = holder.getSurfaceNoise().getValue(lx * 0.25f, y, lz * 0.25f);
+                                if (isInRange(noise)) {
+                                    unsafeChunk.setBlockState(x, y, z, COARSE_DIRT, 0);
+                                } else unsafeChunk.setBlockState(x, y, z, GRASS, 0);
                             }
                         }
-                    }
-                    case FROZEN_OCEAN,
-                         DEEP_FROZEN_OCEAN,
-                         LEGACY_FROZEN_OCEAN -> {
-                        frozenOceanExtension(chunk, holder, level, x, z, lx, lz, y);
-                    }
-                    case MESA_BRYCE -> {
-                        erodedBadlandsExtension(chunk, holder, level, x, z, lx, lz, y);
+                        case ICE_PLAINS -> {
+                            Block support = unsafeChunk.getBlockState(x, y, z).toBlock();
+                            if(support.isSolid()) {
+                                BlockState state = unsafeChunk.getBlockState(x, y+1, z);
+                                if(state.equals(BlockAir.STATE)) {
+                                    unsafeChunk.setBlockState(x, y+1, z, SNOW_LAYER, 0);
+                                } else {
+                                    unsafeChunk.getAndSetBlockState(x, y+1, z, SNOW_LAYER, 1);
+                                }
+                            }
+                        }
+                        case FROZEN_OCEAN,
+                             DEEP_FROZEN_OCEAN,
+                             LEGACY_FROZEN_OCEAN -> {
+                            frozenOceanExtension(unsafeChunk, holder, level, x, z, lx, lz, y);
+                        }
+                        case MESA_BRYCE -> {
+                            erodedBadlandsExtension(unsafeChunk, holder, level, x, z, lx, lz, y);
+                        }
                     }
                 }
             }
-        }
+        });
     }
 
     private void frozenOceanExtension(
-            IChunk chunk,
+            UnsafeChunk chunk,
             NormalObjectHolder.SurfaceOverwriteHolder holder,
             Level level,
             int localX,
@@ -146,16 +149,16 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
             }
 
             if (snowDepth <= maxSnowDepth && y > minSnowHeight) {
-                chunk.setBlockState(localX, y, localZ, SNOW_BLOCK);
+                chunk.setBlockState(localX, y, localZ, SNOW_BLOCK, 0);
                 snowDepth++;
             } else {
-                chunk.setBlockState(localX, y, localZ, PACKED_ICE);
+                chunk.setBlockState(localX, y, localZ, PACKED_ICE, 0);
             }
         }
     }
 
     private void erodedBadlandsExtension(
-            IChunk chunk,
+            UnsafeChunk chunk,
             NormalObjectHolder.SurfaceOverwriteHolder holder,
             Level level,
             int localX,
@@ -194,12 +197,12 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
             if (state != BlockAir.STATE) {
                 break;
             }
-            chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ));
+            chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ), 0);
         }
     }
 
     private void applyClayBandsDepth(
-            IChunk chunk,
+            UnsafeChunk chunk,
             NormalObjectHolder.SurfaceOverwriteHolder holder,
             Level level,
             int localX,
@@ -209,9 +212,9 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
             int surfaceY
     ) {
         if (surfaceY >= 256) {
-            chunk.setBlockState(localX, surfaceY, localZ, ORANGE_TERRACOTTA);
+            chunk.setBlockState(localX, surfaceY, localZ, ORANGE_TERRACOTTA, 0);
         } else if (surfaceY >= 74) {
-            chunk.setBlockState(localX, surfaceY, localZ, getClayBand(holder, level, worldX, surfaceY, worldZ));
+            chunk.setBlockState(localX, surfaceY, localZ, getClayBand(holder, level, worldX, surfaceY, worldZ), 0);
         }
 
         for (int y = 74; y > 63; y--) {
@@ -219,9 +222,9 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                 continue;
             }
             if (surfaceY > 63 && surfaceY < 74) {
-                chunk.setBlockState(localX, y, localZ, ORANGE_TERRACOTTA);
+                chunk.setBlockState(localX, y, localZ, ORANGE_TERRACOTTA, 0);
             } else {
-                chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ));
+                chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ), 0);
             }
         }
 
@@ -236,7 +239,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
             if (!state.toBlock().isSolid()) {
                 break;
             }
-            chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ));
+            chunk.setBlockState(localX, y, localZ, getClayBand(holder, level, worldX, y, worldZ), 0);
         }
     }
 

@@ -44,8 +44,13 @@ public final class OreVeinifier {
     }
 
     public @Nullable BlockState calculate(DensityFunction.FunctionContext context) {
-        double oreVeininessNoiseValue = this.veinToggle.compute(context);
         int y = context.blockY();
+        // Outside both copper and iron vein bands, no vein material can ever be placed.
+        if (y < VeinType.IRON.minY || y > VeinType.COPPER.maxY) {
+            return null;
+        }
+
+        double oreVeininessNoiseValue = this.veinToggle.compute(context);
         VeinType veinType = oreVeininessNoiseValue > 0.0 ? VeinType.COPPER : VeinType.IRON;
         double veininessRidged = Math.abs(oreVeininessNoiseValue);
         int distanceFromTop = veinType.maxY - y;

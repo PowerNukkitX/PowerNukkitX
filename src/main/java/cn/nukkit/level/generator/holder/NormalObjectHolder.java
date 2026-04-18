@@ -175,12 +175,13 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             veinGap = DensityOreVeins.overworldVeinGap(oreGapNoise);
             OreVeinifier oreVeinifier = new OreVeinifier(veinToggle, veinRidged, veinGap, randomSourceProvider.nextLong());
             List<MaterialFiller> builder = new ArrayList<>();
+            DensityFunction wrapped = DensityCommon.cacheAllInCell(densityFunction);
             builder.add(context -> {
                 Aquifer currentAquifer = aquifer.get();
-                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, densityFunction.compute(context));
+                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, wrapped.compute(context));
             });
             builder.add(oreVeinifier::calculate);
-            builder.add(context -> densityFunction.compute(context) > 0.0d ? stone : null);
+            builder.add(context -> wrapped.compute(context) > 0.0d ? stone : null);
             multiMaterial = new MultiMaterial(builder.toArray(new MaterialFiller[0]));
             caveDetector = OverworldCavesDensity.createCaveDetector(this);
         }
