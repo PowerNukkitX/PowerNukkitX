@@ -199,7 +199,7 @@ public abstract class VillageStructure extends JigsawStructure {
     }
 
     protected boolean shouldShiftHousesToTerrain() {
-        return false;
+        return true;
     }
 
     protected BlockState getHouseSupportState() {
@@ -332,7 +332,7 @@ public abstract class VillageStructure extends JigsawStructure {
                 || structureName.contains("_accessory_");
     }
 
-    protected void fillPieceSupports(BlockManager blockManager, cn.nukkit.block.BlockState supportState) {
+    protected void fillPieceSupports(BlockManager blockManager, BlockState supportState) {
         Level level = blockManager.getLevel();
         Block globalLowestBlock = null;
         Map<Long, Integer> supportedColumns = new HashMap<>();

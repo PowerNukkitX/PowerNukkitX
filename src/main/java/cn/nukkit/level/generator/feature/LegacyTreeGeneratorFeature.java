@@ -73,7 +73,6 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
                 }
             }
         }
-        writeOutsideChunkStructureData(chunk);
-        manager.applySubChunkUpdate();
+        queueObject(chunk, manager);
     }
 }

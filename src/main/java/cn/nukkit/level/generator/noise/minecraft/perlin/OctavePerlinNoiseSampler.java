@@ -39,7 +39,10 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
     public static Pair<Integer, List<Double>> makeAmplitudes(List<Integer> octaves) {
         Quad<Integer, Integer, Integer, List<Integer>> processedOctaves = processOctaves(octaves);
         int start = processedOctaves.getFirst();
-        List<Double> octavePlaces = new ArrayList<>();
+        List<Double> octavePlaces = new ArrayList<>(processedOctaves.getThird());
+        for (int i = 0; i < processedOctaves.getThird(); i++) {
+            octavePlaces.add(0.0D);
+        }
         for(int octave : processedOctaves.getFourth()) {
             octavePlaces.set(octave + start, 1.0D);
         }
@@ -173,8 +176,8 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
                         useDefaultY ? -sampler.originY : MathHelper.maintainPrecision(y * persistence),
                         MathHelper.maintainPrecision(z * persistence),
                         yAmplification * persistence,
-                        minY * persistence);
-                noise += this.amplitudes.get(idx) * sample * lacunarity;
+                        minY * persistence) * lacunarity;
+                noise += (this.amplitudes != null ? this.amplitudes.get(idx) : 1.0D) * sample;
             }
             persistence /= 2.0D;
             lacunarity *= 2.0D;
