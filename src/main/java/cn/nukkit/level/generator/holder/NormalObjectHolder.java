@@ -1,11 +1,22 @@
 package cn.nukkit.level.generator.holder;
 
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockStone;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.densityfunction.*;
+import cn.nukkit.level.generator.material.MaterialFiller;
+import cn.nukkit.level.generator.material.Aquifer;
+import cn.nukkit.level.generator.material.MultiMaterial;
+import cn.nukkit.level.generator.material.OreVeinifier;
 import cn.nukkit.level.generator.noise.f.SimplexF;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class NormalObjectHolder extends RandomizedObjectHolder {
@@ -65,8 +76,19 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private NormalNoise noodleThickness;
         private NormalNoise noodleRidgeA;
         private NormalNoise noodleRidgeB;
+        private NormalNoise veinToggleNoise;
+        private NormalNoise veinANoise;
+        private NormalNoise veinBNoise;
+        private NormalNoise oreGapNoise;
 
         private DensityFunction caveDetector;
+        private DensityFunction veinToggle;
+        private DensityFunction veinRidged;
+        private DensityFunction veinGap;
+        private DensityFunction preliminarySurfaceDensity;
+        private DensityFunction preliminarySurfaceUpperBound;
+        private MultiMaterial multiMaterial;
+        private final ThreadLocal<Aquifer> aquifer = new ThreadLocal<>();
 
         public TerrainHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
@@ -114,6 +136,10 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             noodleThickness = new NormalNoise(randomSourceProvider.fork(), -8, new float[]{1f});
             noodleRidgeA = new NormalNoise(randomSourceProvider.fork(), -7, new float[]{1f});
             noodleRidgeB = new NormalNoise(randomSourceProvider.fork(), -7, new float[]{1f});
+            veinToggleNoise = new NormalNoise(randomSourceProvider.fork(), -8, new float[]{1f});
+            veinANoise = new NormalNoise(randomSourceProvider.fork(), -7, new float[]{1f});
+            veinBNoise = new NormalNoise(randomSourceProvider.fork(), -7, new float[]{1f});
+            oreGapNoise = new NormalNoise(randomSourceProvider.fork(), -5, new float[]{1f});
 
             slopedCheese = DensitySlopedCheese.overworldSlopedCheese(
                     depth, jaggedness, factor, base3d, jaggedNoise
@@ -141,7 +167,50 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
                     noodleRidgeA,
                     noodleRidgeB
             );
+            preliminarySurfaceDensity = OverworldCavesDensity.preliminarySurfaceLevel(offset, factor);
+            preliminarySurfaceUpperBound = OverworldCavesDensity.preliminarySurfaceLevelUpperBound(offset, factor);
+            BlockState stone = BlockStone.PROPERTIES.getDefaultState();
+            veinToggle = DensityOreVeins.overworldVeinToggle(veinToggleNoise);
+            veinRidged = DensityOreVeins.overworldVeinRidged(veinANoise, veinBNoise);
+            veinGap = DensityOreVeins.overworldVeinGap(oreGapNoise);
+            OreVeinifier oreVeinifier = new OreVeinifier(veinToggle, veinRidged, veinGap, randomSourceProvider.nextLong());
+            List<MaterialFiller> builder = new ArrayList<>();
+            DensityFunction wrapped = DensityCommon.cacheAllInCell(densityFunction);
+            builder.add(context -> {
+                Aquifer currentAquifer = aquifer.get();
+                return currentAquifer == null ? null : currentAquifer.computeSubstance(context, wrapped.compute(context));
+            });
+            builder.add(oreVeinifier::calculate);
+            builder.add(context -> wrapped.compute(context) > 0.0d ? stone : null);
+            multiMaterial = new MultiMaterial(builder.toArray(new MaterialFiller[0]));
             caveDetector = OverworldCavesDensity.createCaveDetector(this);
+        }
+
+        public void beginAquifer(IChunk chunk, Level level, DensityCommon.ChunkCache chunkCache, int minY, int yBlockSize, int seaLevel) {
+            aquifer.set(
+                    new Aquifer(
+                            chunk,
+                            level,
+                            chunkCache,
+                            DensityCommon.noise(barrierNoise, 1.0, 0.5),
+                            DensityCommon.noise(fluidLevelFloodednessNoise, 1.0, 0.67),
+                            DensityCommon.noise(fluidLevelSpreadNoise, 1.0, 0.7142857142857143),
+                            DensityCommon.noise(lavaNoise, 1.0, 1.0),
+                            erosion,
+                            depth,
+                            preliminarySurfaceDensity,
+                            preliminarySurfaceUpperBound,
+                            -64,
+                            8,
+                            minY,
+                            yBlockSize,
+                            Aquifer.overworldFluidPicker(seaLevel)
+                    )
+            );
+        }
+
+        public void endAquifer() {
+            aquifer.remove();
         }
     }
 
@@ -161,11 +230,27 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
 
         private NormalNoise surfaceNoise;
         private NormalNoise swampNoise;
+        private NormalNoise clayBandsOffsetNoise;
+        private NormalNoise badlandsPillarNoise;
+        private NormalNoise badlandsPillarRoofNoise;
+        private NormalNoise badlandsSurfaceNoise;
+        private NormalNoise icebergPillarNoise;
+        private NormalNoise icebergPillarRoofNoise;
+        private NormalNoise icebergSurfaceNoise;
+        private cn.nukkit.block.BlockState[] clayBandsCache;
 
         public SurfaceOverwriteHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
             this.surfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
             this.swampNoise = new NormalNoise(randomSourceProvider.identical(), -2, new float[]{1f});
+            this.clayBandsOffsetNoise = new NormalNoise(randomSourceProvider.identical(), -8, new float[]{1f});
+            this.badlandsPillarNoise = new NormalNoise(randomSourceProvider.identical(), -2, new float[]{1f, 1f, 1f});
+            this.badlandsPillarRoofNoise = new NormalNoise(randomSourceProvider.identical(), -8, new float[]{1f});
+            this.badlandsSurfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
+            this.icebergPillarNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f, 1f});
+            this.icebergPillarRoofNoise = new NormalNoise(randomSourceProvider.identical(), -3, new float[]{1f});
+            this.icebergSurfaceNoise = new NormalNoise(randomSourceProvider.identical(), -6, new float[]{1f, 1f, 1f});
+            this.clayBandsCache = new cn.nukkit.block.BlockState[192];
         }
     }
 

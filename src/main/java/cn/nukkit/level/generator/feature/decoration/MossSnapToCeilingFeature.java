@@ -60,16 +60,29 @@ public class MossSnapToCeilingFeature extends GenerateFeature {
                                                 if (random.nextFloat() < 0.1f) {
                                                     float rnd = random.nextFloat();
                                                     if (rnd < 0.003f) {
-                                                        manager.setBlockStateAt(x, yy - 1, z, SPORE);
-                                                    } else {
-                                                        int i = random.nextInt(0, 4);
-                                                        int org = i;
-                                                        while (i > 0) {
-                                                            i--;
-                                                            int yyy = yy - (org - i);
-                                                            manager.setBlockStateAt(x, yyy, z, random.nextFloat() > 0.3 ? VINE : BERRY_BODY);
+                                                        if (chunk.getBlockState(x, yy - 1, z) == BlockAir.STATE) {
+                                                            manager.setBlockStateAt(x, yy - 1, z, SPORE);
                                                         }
-                                                        manager.setBlockStateAt(x, (yy - org) - 1, z, random.nextFloat() > 0.3 ? VINE : BERRY_HEAD);
+                                                    } else {
+                                                        int targetBodyLength = random.nextInt(0, 4);
+                                                        int lastPlacedY = yy;
+                                                        boolean placedAnyBody = false;
+                                                        for (int seg = 0; seg < targetBodyLength; seg++) {
+                                                            int bodyY = yy - 1 - seg;
+                                                            if (chunk.getBlockState(x, bodyY, z) != BlockAir.STATE) {
+                                                                break;
+                                                            }
+                                                            manager.setBlockStateAt(x, bodyY, z, random.nextFloat() > 0.3 ? VINE : BERRY_BODY);
+                                                            lastPlacedY = bodyY;
+                                                            placedAnyBody = true;
+                                                        }
+                                                        int headY = lastPlacedY - 1;
+                                                        if (chunk.getBlockState(x, headY, z) == BlockAir.STATE) {
+                                                            manager.setBlockStateAt(x, headY, z, random.nextFloat() > 0.3 ? VINE : BERRY_HEAD);
+                                                        } else if (placedAnyBody) {
+                                                            // Wenn kein Platz fuer einen separaten Kopf ist, ersetze das letzte Segment durch den Kopf.
+                                                            manager.setBlockStateAt(x, lastPlacedY, z, random.nextFloat() > 0.3 ? VINE : BERRY_HEAD);
+                                                        }
                                                     }
                                                 }
                                             }

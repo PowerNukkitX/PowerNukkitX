@@ -35,10 +35,12 @@ public class MineshaftPieces {
 
     private static final BlockState OAK_PLANKS = BlockOakPlanks.PROPERTIES.getDefaultState();
     private static final BlockState DARK_OAK_PLANKS = BlockDarkOakPlanks.PROPERTIES.getDefaultState();
+    private static final BlockState OAK_LOG = BlockOakLog.PROPERTIES.getDefaultState();
+    private static final BlockState DARK_OAK_LOG = BlockDarkOakLog.PROPERTIES.getDefaultState();
     private static final BlockState OAK_FENCE = BlockOakFence.PROPERTIES.getDefaultState();
     private static final BlockState DARK_OAK_FENCE = BlockDarkOakFence.PROPERTIES.getDefaultState();
+    private static final BlockState IRON_CHAIN = BlockIronChain.PROPERTIES.getDefaultState();
     private static final BlockState COBWEB = BlockWeb.PROPERTIES.getDefaultState();
-    private static final BlockState DIRT = BlockDirt.PROPERTIES.getDefaultState();
     private static final BlockState SPAWNER = BlockMobSpawner.PROPERTIES.getDefaultState();
     private static final BlockState TORCH__N = BlockTorch.PROPERTIES.getBlockState(TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.NORTH));
     private static final BlockState TORCH__S = BlockTorch.PROPERTIES.getBlockState(TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.SOUTH));
@@ -120,6 +122,10 @@ public class MineshaftPieces {
             }
         }
 
+        protected BlockState getWoodBlock() {
+            return this.type == Type.MESA ? DARK_OAK_LOG : OAK_LOG;
+        }
+
         //\\ MineshaftPiece::_isSupportingBox(int,int,BlockSource *,int,int)
         protected boolean isSupportingBox(BlockManager level, BoundingBox boundingBox, int x0, int x1, int y, int z) {
             for (int x = x0; x <= x1; ++x) {
@@ -128,6 +134,21 @@ public class MineshaftPieces {
                 }
             }
             return true;
+        }
+
+        protected void setPlanksBlock(BlockManager level, BoundingBox boundingBox, BlockState planks, int x, int y, int z) {
+            if (!this.isInterior(level, x, y, z, boundingBox)) {
+                return;
+            }
+            int worldX = this.getWorldX(x, z);
+            int worldY = this.getWorldY(y);
+            int worldZ = this.getWorldZ(x, z);
+            if (boundingBox.isInside(new BlockVector3(worldX, worldY, worldZ))) {
+                Block existing = level.getBlockAt(worldX, worldY, worldZ);
+                if (!existing.isSolid(BlockFace.UP)) {
+                    level.setBlockStateAt(worldX, worldY, worldZ, planks);
+                }
+            }
         }
     }
 
@@ -220,7 +241,6 @@ public class MineshaftPieces {
                 return false;
             }
 
-            this.generateBox(level, boundingBox, this.boundingBox.x0, this.boundingBox.y0, this.boundingBox.z0, this.boundingBox.x1, this.boundingBox.y0, this.boundingBox.z1, DIRT, BlockAir.STATE, true);
             this.generateBox(level, boundingBox, this.boundingBox.x0, this.boundingBox.y0 + 1, this.boundingBox.z0, this.boundingBox.x1, Math.min(this.boundingBox.y0 + 3, this.boundingBox.y1), this.boundingBox.z1, BlockAir.STATE, BlockAir.STATE, false);
 
             for (BoundingBox childEntranceBox : this.childEntranceBoxes) {
@@ -438,7 +458,7 @@ public class MineshaftPieces {
 
             int z1 = this.numSections * 5 - 1;
             this.generateBox(level, boundingBox, 0, 0, 0, 2, 1, z1, BlockAir.STATE, BlockAir.STATE, false);
-            this.generateMaybeBox(level, boundingBox, random, 50, 0, 2, 0, 2, 2, z1, BlockAir.STATE, BlockAir.STATE, false, false);
+            this.generateMaybeBox(level, boundingBox, random, 80, 0, 2, 0, 2, 2, z1, BlockAir.STATE, BlockAir.STATE, false, false);
             if (this.spiderCorridor) {
                 this.generateMaybeBox(level, boundingBox, random, 60, 0, 0, 0, 2, 1, z1, COBWEB, BlockAir.STATE, false, true);
             }
@@ -485,11 +505,12 @@ public class MineshaftPieces {
             BlockState planks = this.getPlanksBlock();
             for (int x = 0; x <= 2; ++x) {
                 for (int z = 0; z <= z1; ++z) {
-                    BlockState block = this.getBlock(level, x, -1, z, boundingBox);
-                    if (block.equals(BlockAir.STATE) && this.isInterior(level, x, -1, z, boundingBox)) {
-                        this.placeBlock(level, planks, x, -1, z, boundingBox);
-                    }
+                    this.setPlanksBlock(level, boundingBox, planks, x, -1, z);
                 }
+            }
+            this.placeDoubleLowerOrUpperSupport(level, boundingBox, 0, -1, 2);
+            if (this.numSections > 1) {
+                this.placeDoubleLowerOrUpperSupport(level, boundingBox, 0, -1, z1 - 2);
             }
 
             if (this.hasRails) {
@@ -527,8 +548,87 @@ public class MineshaftPieces {
         //\\ MineshaftCorridor::_placeCobWeb(BlockSource *,BoundingBox const &,Random &,float,int,int,int)
         private void placeCobWeb(BlockManager level, BoundingBox boundingBox, RandomSourceProvider random, int probability, int x, int y, int z) {
             if (this.isInterior(level, x, y, z, boundingBox)) {
-                this.maybeGenerateBlock(level, boundingBox, random, probability, x, y, z, COBWEB);
+                int worldX = this.getWorldX(x, z);
+                int worldY = this.getWorldY(y);
+                int worldZ = this.getWorldZ(x, z);
+                if (hasSturdyNeighbours(level, boundingBox, worldX, worldY, worldZ, 2)) {
+                    this.maybeGenerateBlock(level, boundingBox, random, probability, x, y, z, COBWEB);
+                }
             }
+        }
+
+        private boolean hasSturdyNeighbours(BlockManager level, BoundingBox boundingBox, int x, int y, int z, int required) {
+            int sturdy = 0;
+            for (BlockFace face : new BlockFace[]{BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST}) {
+                int nx = x + face.getXOffset();
+                int ny = y + face.getYOffset();
+                int nz = z + face.getZOffset();
+                if (boundingBox.isInside(new BlockVector3(nx, ny, nz))) {
+                    Block neighbour = level.getBlockAt(nx, ny, nz);
+                    if (neighbour.isSolid(face.getOpposite())) {
+                        if (++sturdy >= required) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void placeDoubleLowerOrUpperSupport(BlockManager level, BoundingBox boundingBox, int x, int y, int z) {
+            BlockState planks = this.getPlanksBlock();
+            BlockState wood = this.getWoodBlock();
+
+            if (this.getBlock(level, x, y, z, boundingBox).getIdentifier().equals(planks.getIdentifier())) {
+                this.fillPillarDownOrChainUp(level, wood, x, y, z, boundingBox);
+            }
+            if (this.getBlock(level, x + 2, y, z, boundingBox).getIdentifier().equals(planks.getIdentifier())) {
+                this.fillPillarDownOrChainUp(level, wood, x + 2, y, z, boundingBox);
+            }
+        }
+
+        private void fillPillarDownOrChainUp(BlockManager level, BlockState pillarState, int x, int y, int z, BoundingBox boundingBox) {
+            int worldX = this.getWorldX(x, z);
+            int worldY = this.getWorldY(y);
+            int worldZ = this.getWorldZ(x, z);
+            if (!boundingBox.isInside(new BlockVector3(worldX, worldY, worldZ))) {
+                return;
+            }
+
+            for (int distance = 1; distance <= 20 && worldY - distance > level.getMinHeight() + 1; distance++) {
+                int ny = worldY - distance;
+                Block current = level.getBlockAt(worldX, ny, worldZ);
+                if (!isReplaceableSupportMaterial(current)) {
+                    if (current.isSolid(BlockFace.UP)) {
+                        for (int py = ny + 1; py < worldY; py++) {
+                            level.setBlockStateAt(worldX, py, worldZ, pillarState);
+                        }
+                    }
+                    return;
+                }
+                if (current.getId().equals(Block.LAVA) || current.getId().equals(Block.FLOWING_LAVA)) {
+                    return;
+                }
+            }
+
+            for (int distance = 1; distance <= 50 && worldY + distance < level.getMaxHeight(); distance++) {
+                int ny = worldY + distance;
+                Block current = level.getBlockAt(worldX, ny, worldZ);
+                if (!isReplaceableSupportMaterial(current)) {
+                    if (current.isSolid(BlockFace.DOWN) && !(current instanceof BlockFallable)) {
+                        level.setBlockStateAt(worldX, worldY + 1, worldZ, this.getFenceBlock());
+                        for (int py = worldY + 2; py < ny; py++) {
+                            level.setBlockStateAt(worldX, py, worldZ, IRON_CHAIN);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
+        private boolean isReplaceableSupportMaterial(Block block) {
+            String id = block.getId();
+            return id.equals(Block.AIR) || id.equals(Block.WATER) || id.equals(Block.FLOWING_WATER) || id.equals(Block.LAVA) || id.equals(Block.FLOWING_LAVA);
         }
     }
 
@@ -660,11 +760,9 @@ public class MineshaftPieces {
             this.placeSupportPillar(level, boundingBox, this.boundingBox.x1 - 1, this.boundingBox.y0, this.boundingBox.z1 - 1, this.boundingBox.y1);
 
             BlockState planks = this.getPlanksBlock();
-            for (int x = this.boundingBox.x0; x <= this.boundingBox.x1; ++x) {
-                for (int z = this.boundingBox.z0; z <= this.boundingBox.z1; ++z) {
-                    if (this.getBlock(level, x, this.boundingBox.y0 - 1, z, boundingBox).equals(BlockAir.STATE) && this.isInterior(level, x, this.boundingBox.y0 - 1, z, boundingBox)) {
-                        this.placeBlock(level, planks, x, this.boundingBox.y0 - 1, z, boundingBox);
-                    }
+            for (int x = 0; x < this.boundingBox.getXSpan(); ++x) {
+                for (int z = 0; z < this.boundingBox.getZSpan(); ++z) {
+                    this.setPlanksBlock(level, boundingBox, planks, x, -1, z);
                 }
             }
 

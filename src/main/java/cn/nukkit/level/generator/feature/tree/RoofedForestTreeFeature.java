@@ -12,9 +12,11 @@ public class RoofedForestTreeFeature extends ObjectGeneratorFeature {
 
     public static final String NAME = "minecraft:roofed_forest_tree_feature_rules";
 
+    private final static ObjectGenerator GENERATOR = new ObjectDarkOakTree();
+
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return new ObjectDarkOakTree();
+        return GENERATOR;
     }
 
     @Override

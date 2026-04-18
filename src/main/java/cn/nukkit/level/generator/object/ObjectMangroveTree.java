@@ -18,6 +18,7 @@ public class ObjectMangroveTree extends TreeGenerator {
     private static final BlockState MUDDY_ROOTS = BlockMuddyMangroveRoots.PROPERTIES.getDefaultState();
     private static final BlockState MANGROVE_LEAVES = BlockMangroveLeaves.PROPERTIES.getDefaultState();
     private static final BlockState MOSS_CARPET = BlockMossCarpet.PROPERTIES.getDefaultState();
+    private static final BlockState STILL_WATER = BlockWater.PROPERTIES.getDefaultState();
     private static final BlockState PROPAGULE = BlockMangrovePropagule.PROPERTIES.getBlockState(
             CommonBlockProperties.HANGING.createValue(true),
             CommonBlockProperties.PROPAGULE_STAGE.createValue(4)
@@ -35,7 +36,11 @@ public class ObjectMangroveTree extends TreeGenerator {
 
         for (int i = 0; i < trunkHeight; i++) {
             Vector3 p = position.add(0, trunkBase + i, 0);
-            level.setBlockStateAt(p, LOG);
+            Block target = level.getBlockIfCachedOrLoaded(p);
+            if (!canPlaceLogInto(target)) {
+                return false;
+            }
+            placeWithWaterlogging(level, p, LOG, target);
         }
 
         int roots = 3 + rand.nextInt(2);
@@ -60,14 +65,31 @@ public class ObjectMangroveTree extends TreeGenerator {
                 int cz = (int) Math.round(position.z + i * dz);
 
                 Block currentBlock = level.getBlockIfCachedOrLoaded(cx, cy, cz);
+                String currentId = currentBlock.getId();
 
-                if (currentBlock.getId().equals(Block.STONE)) {
+                if (BlockID.MANGROVE_LOG.equals(currentId) || BlockID.MANGROVE_WOOD.equals(currentId)) {
+                    dy -= rootDroop;
+                    mag = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    dx /= mag;
+                    dy /= mag;
+                    dz /= mag;
+                    continue;
+                }
+                if (BlockID.STONE.equals(currentId) || BlockID.DEEPSLATE.equals(currentId) || BlockID.TUFF.equals(currentId)) {
+                    dy -= rootDroop;
+                    mag = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    dx /= mag;
+                    dy /= mag;
+                    dz /= mag;
+                    continue;
+                }
+
+                if (!canPlaceRootInto(currentId)) {
                     break;
-                } else if (currentBlock.getId().equals(Block.MUD)) {
-                    level.setBlockStateAt(currentBlock, MUDDY_ROOTS);
-                    maybePlaceMossCarpet(level, currentBlock, rand);
                 } else {
-                    level.setBlockStateAt(currentBlock, ROOTS);
+                    boolean muddyContext = BlockID.MUD.equals(currentId)
+                            || BlockID.MUDDY_MANGROVE_ROOTS.equals(currentId);
+                    placeWithWaterlogging(level, currentBlock, muddyContext ? MUDDY_ROOTS : ROOTS, currentBlock);
                     maybePlaceMossCarpet(level, currentBlock, rand);
                 }
 
@@ -106,7 +128,12 @@ public class ObjectMangroveTree extends TreeGenerator {
                     int by = (int) Math.round(origin.y + l * dy);
                     int bz = (int) Math.round(origin.z + l * dz);
 
-                    level.setBlockStateAt(new Vector3(bx, by, bz), LOG);
+                    Vector3 branchPos = new Vector3(bx, by, bz);
+                    Block target = level.getBlockIfCachedOrLoaded(branchPos);
+                    if (!canPlaceLogInto(target)) {
+                        break;
+                    }
+                    placeWithWaterlogging(level, branchPos, LOG, target);
                 }
 
                 branchAngle += GOLDEN_ANGLE;
@@ -137,14 +164,18 @@ public class ObjectMangroveTree extends TreeGenerator {
                 int bz = (int) Math.round(origin.z + l * dz);
 
                 placeLeafCluster(level, new Vector3(bx, by, bz), rand);
-                level.setBlockStateAt(new Vector3(bx, by, bz), LOG);
+                Vector3 logPos = new Vector3(bx, by, bz);
+                Block target = level.getBlockIfCachedOrLoaded(logPos);
+                if (canPlaceLogInto(target)) {
+                    placeWithWaterlogging(level, logPos, LOG, target);
+                }
 
                 if (withBeenest) {
                     withBeenest = false;
                     int faceIdx = rand.nextInt(BlockFace.getHorizontals().length - 1);
                     BlockFace face = BlockFace.getHorizontals()[faceIdx];
-                    Block target = level.getBlockIfCachedOrLoaded(bx, by - 1, bz).getSide(face);
-                    level.setBlockStateAt(target, BlockBeeNest.PROPERTIES.getBlockState(
+                    Block beeNestTarget = level.getBlockIfCachedOrLoaded(bx, by - 1, bz).getSide(face);
+                    level.setBlockStateAt(beeNestTarget, BlockBeeNest.PROPERTIES.getBlockState(
                             CommonBlockProperties.DIRECTION.createValue(faceIdx),
                             CommonBlockProperties.HONEY_LEVEL.createValue(rand.nextInt(0, 4)))
                     );
@@ -163,7 +194,12 @@ public class ObjectMangroveTree extends TreeGenerator {
     }
 
     public void placeLeafCluster(BlockManager level, Vector3 pos, RandomSourceProvider random) {
-        level.setBlockStateAt(pos, MANGROVE_LEAVES);
+        Block center = level.getBlockIfCachedOrLoaded(pos);
+        if (canPlaceLeafInto(center.getId())) {
+            placeWithWaterlogging(level, pos, MANGROVE_LEAVES, center);
+        } else {
+            return;
+        }
 
         if (random.nextInt(15) == 0) {
             Vector3 p = pos.add(0, -1, 0);
@@ -180,8 +216,9 @@ public class ObjectMangroveTree extends TreeGenerator {
 
             for (int[] o : offsets) {
                 Vector3 p = pos.add(o[0], o[1], o[2]);
-                if (level.getBlockIfCachedOrLoaded(p).isAir()) {
-                    level.setBlockStateAt(p, MANGROVE_LEAVES);
+                Block target = level.getBlockIfCachedOrLoaded(p);
+                if (canPlaceLeafInto(target.getId())) {
+                    placeWithWaterlogging(level, p, MANGROVE_LEAVES, target);
                 }
             }
         }
@@ -232,6 +269,45 @@ public class ObjectMangroveTree extends TreeGenerator {
             } else {
                 break;
             }
+        }
+    }
+
+    private static boolean canPlaceLogInto(Block block) {
+        String id = block.getId();
+        return block.isAir()
+                || BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)
+                || BlockID.MANGROVE_LEAVES.equals(id)
+                || BlockID.VINE.equals(id)
+                || BlockID.MANGROVE_PROPAGULE.equals(id);
+    }
+
+    private static boolean canPlaceLeafInto(String id) {
+        return BlockID.AIR.equals(id)
+                || BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)
+                || BlockID.VINE.equals(id)
+                || BlockID.MANGROVE_PROPAGULE.equals(id);
+    }
+
+    private static boolean canPlaceRootInto(String id) {
+        return BlockID.AIR.equals(id)
+                || BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)
+                || BlockID.MUD.equals(id)
+                || BlockID.MANGROVE_ROOTS.equals(id)
+                || BlockID.MUDDY_MANGROVE_ROOTS.equals(id)
+                || BlockID.MANGROVE_LEAVES.equals(id)
+                || BlockID.VINE.equals(id);
+    }
+
+
+    private static void placeWithWaterlogging(BlockManager level, Vector3 pos, BlockState state, Block previousBlock) {
+        level.setBlockStateAt(pos, state);
+        String id = previousBlock.getId();
+        if (BlockID.WATER.equals(id)
+                || BlockID.FLOWING_WATER.equals(id)) {
+            level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), 1, STILL_WATER);
         }
     }
 }
