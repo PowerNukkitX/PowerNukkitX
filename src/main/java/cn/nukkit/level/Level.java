@@ -2972,7 +2972,7 @@ public class Level implements Metadatable {
             return null;
         }
 
-        boolean isInteractionTrigger = data.triggerType == ItemUseTransaction.TriggerType.PLAYER_INPUT || data.triggerType == ItemUseTransaction.TriggerType.SIMULATION_TICK;
+        boolean isInteractionTrigger = data.getTriggerType() == ItemUseTransaction.TriggerType.PLAYER_INPUT || data.getTriggerType() == ItemUseTransaction.TriggerType.SIMULATION_TICK;
 
         if (player == null) {
             if (!target.isAir() && target.canBeActivated() && target.onActivate(item, null, face, fx, fy, fz)) {

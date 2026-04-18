@@ -80,28 +80,24 @@ public final class PlayerHandle {
         return player.spawnThreshold;
     }
 
-        public int getMessageCounter() {
-            return player.messageLimitCounter;
-        }
+    public int getMessageCounter() {
+        return player.messageLimitCounter;
+    }
 
-        public void setMessageCounter(int messageCounter) {
-            player.messageLimitCounter = messageCounter;
-        }
+    public void setMessageCounter(int messageCounter) {
+        player.messageLimitCounter = messageCounter;
+    }
 
-        public void setConnected(boolean connected) {
-            player.connected.set(connected);
-        }
+    public void setConnected(boolean connected) {
+        player.connected.set(connected);
+    }
 
-        public void setSocketAddress(InetSocketAddress socketAddress) {
-            player.socketAddress = socketAddress;
-        }
+    public void setSocketAddress(InetSocketAddress socketAddress) {
+        player.socketAddress = socketAddress;
+    }
 
-        public boolean isRemoveFormat() {
-            return player.removeFormat;
-        }
-
-        public String getUsername() {
-            return player.getName();
+    public String getUsername() {
+        return player.getName();
     }
 
     public String getDisplayName() {

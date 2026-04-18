@@ -47,6 +47,7 @@ import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
+import org.cloudburstmc.protocol.bedrock.packet.CompletedUsingItemPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -2118,7 +2119,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
      */
     public boolean onEaten(Player player) {
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
+        player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.EAT);
         return true;
     }
 

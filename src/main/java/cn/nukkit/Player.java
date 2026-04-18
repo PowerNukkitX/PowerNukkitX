@@ -2177,14 +2177,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setLastUseTick(item.getId(), this.getLevel().getTick());
     }
 
-    public void clearLastUsedItem() {
-        if (this.lastUsedItem == null) {
-            return;
-        }
-        this.removeLastUseTick(this.lastUsedItem.getId());
-        this.lastUsedItem = null;
-    }
-
     /**
      * Get the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
      */

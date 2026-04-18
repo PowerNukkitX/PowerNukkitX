@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.CraftItemEvent;
 import cn.nukkit.inventory.CreativeOutputInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.recipe.UserDataShapelessRecipe;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
 import lombok.extern.slf4j.Slf4j;

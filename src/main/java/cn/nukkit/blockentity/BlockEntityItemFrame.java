@@ -11,6 +11,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.ItemHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
@@ -36,7 +37,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!namedTag.containsKey("Item")) {
             // [ITEM_DEBUG] Log when a frame loads without an Item tag (new or corrupted)
             log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: no 'Item' tag present, initializing to AIR. namedTag keys: {}",
-                    (int) x, (int) y, (int) z, namedTag.getTags().keySet());
+                    (int) x, (int) y, (int) z, namedTag.keySet());
             builder.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         } else {
             // [ITEM_DEBUG] Log what item is loaded from NBT
@@ -98,7 +99,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                     setChanged, caller);
         }
 
-        this.namedTag.putCompound("Item", ItemHelper.write(item));
+        this.namedTag = this.namedTag.toBuilder().putCompound("Item", ItemHelper.write(item)).build();
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);

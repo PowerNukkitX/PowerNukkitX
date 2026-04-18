@@ -1,12 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockFlowingLava;
-import cn.nukkit.block.BlockFlowingWater;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockObsidian;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
@@ -26,7 +21,6 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.biome.BiomePicker;
 import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
-import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.StructureAPI;
@@ -209,15 +203,16 @@ public class DebugCommand extends TestCommand implements CoreCommand {
 
         if (!list.hasResult(1)) {
             var biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-            sender.sendMessage(biome.getName() + " " + Arrays.toString(biome.getTags().toArray(String[]::new)));
+            var name = Registries.BIOME.getFromBiomeStringList(biome.key());
+            sender.sendMessage(name + " " + Arrays.toString(Registries.BIOME.getTags(name).toArray(String[]::new)));
             return 1;
         }
 
         switch (list.getResult(1).toString()) {
             case "parameter" -> {
-                BiomeDefinition biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                sender.sendMessage("Scale: " + biome.data.scale);
-                sender.sendMessage("Depth: " + biome.data.depth);
+                BiomeDefinitionData biome = Registries.BIOME.get(loc.level.getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ())).second();
+                sender.sendMessage("Scale: " + biome.getScale());
+                sender.sendMessage("Depth: " + biome.getDepth());
             }
             case "pick" -> {
                 BiomePicker picker = loc.getLevel().getBiomePicker();
@@ -230,23 +225,23 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                     sender.sendMessage("Erosion: " + res.getErosion());
                     sender.sendMessage("Weirdness: " + res.getWeirdness());
                     sender.sendMessage("Peaks: " + res.getPv());
-                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4)))  / 128f));
-                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.get(res.getBiomeId()).getName());
+                    sender.sendMessage("Depths: " + ((loc.getFloorY() - sender.getLocation().getChunk().getHeightMap(player.getFloorX() - (player.getChunkX() << 4), player.getFloorZ() - (player.getChunkZ() << 4))) / 128f));
+                    sender.sendMessage("§ePicked biome: " + Registries.BIOME.getFromBiomeStringList(Registries.BIOME.get(res.getBiomeId()).key()));
                 }
             }
             case "features" -> {
-                BiomeDefinition definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
-                BiomeDefinitionData biome = definition.data;
-                OptionalValue<BiomeDefinitionChunkGenData> chunkGenDataOptional = biome.chunkGenData;
-                if (chunkGenDataOptional.isPresent()) {
-                    OptionalValue<BiomeConsolidatedFeatureData[]> featuresOpt = chunkGenDataOptional.get().consolidatedFeatures;
-                    if (featuresOpt.isPresent()) {
-                        BiomeConsolidatedFeatureData[] features = featuresOpt.get();
-                        sender.sendMessage("§eFeatures of " + definition.getName() + " [" + features.length + "]");
+                Pair<Short, BiomeDefinitionData> definition = Registries.BIOME.get(loc.getLevel().getBiomeId(loc.getFloorX(), loc.getFloorY(), loc.getFloorZ()));
+                BiomeDefinitionData biome = definition.second();
+                final String biomeName = Registries.BIOME.getFromBiomeStringList(definition.key());
+                BiomeDefinitionChunkGenData chunkGenData = biome.getChunkGenData();
+                if (chunkGenData != null) {
+                    final List<BiomeConsolidatedFeatureData> features = chunkGenData.getConsolidatedFeatures();
+                    if (features != null) {
+                        sender.sendMessage("§eFeatures of " + biomeName + " [" + features.size() + "]");
                         for (BiomeConsolidatedFeatureData f : features) {
-                            String id = Registries.BIOME.getFromBiomeStringList(f.identifier);
-                            String name = Registries.BIOME.getFromBiomeStringList(f.feature);
-                            int order = f.scatter.evalOrder;
+                            String id = Registries.BIOME.getFromBiomeStringList(f.getIdentifier());
+                            String name = Registries.BIOME.getFromBiomeStringList(f.getFeature());
+                            int order = f.getScatter().getEvalOrder().ordinal();
                             boolean registered = Registries.GENERATE_FEATURE.has(name) || Registries.GENERATE_FEATURE.has(id);
                             sender.sendMessage((registered ? "§a" : "§c") + name + " (" + id + ") §e[" + order + "]");
                         }
@@ -315,7 +310,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
                         }
                     }
             }
-        }*/
+        }
         return 1;
     }
 

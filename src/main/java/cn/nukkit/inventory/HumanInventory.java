@@ -142,15 +142,6 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * @deprecated Use {@link #getItemInMainHand()} instead.
-     * This method is kept for backward compatibility and now directly delegates to the main hand item.
-     */
-    @Deprecated
-    public Item getItemInHand() {
-        return getItemInMainHand();
-    }
-
-    /**
      * Returns the item currently held in the player's main hand.
      *
      * @return the item in the main hand
@@ -167,15 +158,6 @@ public class HumanInventory extends BaseInventory {
      */
     public boolean setItemInMainHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
-    }
-
-    /**
-     * Returns the item currently held in the player's main hand.
-     *
-     * @return the item in the main hand
-     */
-    public Item getItemInMainHand() {
-        return this.getItem(this.getHeldItemIndex());
     }
 
     /**
@@ -222,16 +204,6 @@ public class HumanInventory extends BaseInventory {
     @Deprecated
     public boolean setItemInHand(Item item, boolean send) {
         return this.setItemInMainHand(item, send);
-    }
-
-    /**
-     * Sets the item in the player's main hand.
-     *
-     * @param item the item to set
-     * @return true if the item was successfully set
-     */
-    public boolean setItemInMainHand(Item item) {
-        return this.setItem(this.getHeldItemIndex(), item);
     }
 
     /**
