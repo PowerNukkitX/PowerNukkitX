@@ -27,6 +27,8 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
 public class OceanRuinPopulator extends Populator {
 
     public static final String NAME = "normal_ocean_ruin";
@@ -160,7 +162,10 @@ public class OceanRuinPopulator extends Populator {
                 }
             }
             for(Block block : manager.getBlocks()) {
-                if(block instanceof BlockAir) manager.unsetBlockStateAt(block);
+                if(block instanceof BlockAir) {
+                    manager.unsetBlockStateAt(block);
+                    continue;
+                }
                 if(block instanceof BlockStructureBlock) {
                     manager.setBlockStateAt(block, BlockChest.PROPERTIES.getDefaultState());
                     manager.addHook(() -> {
@@ -174,8 +179,10 @@ public class OceanRuinPopulator extends Populator {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
                 }
-                //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
-                manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
+                if(block.getFloorY() <= SEA_LEVEL) {
+                    //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
+                    manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
+                }
             }
             queueObject(chunk, manager);
         }
