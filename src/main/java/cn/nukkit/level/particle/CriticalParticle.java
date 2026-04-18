@@ -1,6 +1,7 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 /**
  * @author xtypr
@@ -12,6 +13,6 @@ public class CriticalParticle extends GenericParticle {
     }
 
     public CriticalParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_CRIT, scale);
+        super(pos, ParticleType.CRIT, scale);
     }
 }

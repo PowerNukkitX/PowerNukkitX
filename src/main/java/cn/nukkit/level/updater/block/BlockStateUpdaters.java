@@ -2,8 +2,8 @@ package cn.nukkit.level.updater.block;
 
 import cn.nukkit.level.updater.Updater;
 import cn.nukkit.level.updater.util.tagupdater.CompoundTagUpdaterContext;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.experimental.UtilityClass;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class BlockStateUpdaters {
         LATEST_VERSION = context.getLatestVersion();
     }
 
-    public static CompoundTag updateBlockState(CompoundTag tag, int version) {
+    public static NbtMap updateBlockState(NbtMap tag, int version) {
         return CONTEXT.update(tag, version);
     }
 

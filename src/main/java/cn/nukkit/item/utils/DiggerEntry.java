@@ -1,7 +1,8 @@
 package cn.nukkit.item.utils;
 
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Identifier;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -10,11 +11,12 @@ import java.util.function.Consumer;
 
 public final class DiggerEntry {
     private Integer speed;
-    private String  blockId;
+    private String blockId;
     private final Set<String> tags = new LinkedHashSet<>();
-    private final CompoundTag states = new CompoundTag();
+    private final NbtMapBuilder states = NbtMap.builder();
 
-    private DiggerEntry() {}
+    private DiggerEntry() {
+    }
 
     public static DiggerEntry block(String blockId, int speed) {
         DiggerEntry e = new DiggerEntry();
@@ -61,31 +63,31 @@ public final class DiggerEntry {
 
     public DiggerEntry addAllStone() {
         return addTags(
-            "stone",
-            "is_pickaxe_item_destructible"
+                "stone",
+                "is_pickaxe_item_destructible"
         );
     }
 
     public DiggerEntry addAllWooden() {
         return addTags(
-            "wood",
-            "is_axe_item_destructible"
+                "wood",
+                "is_axe_item_destructible"
         );
     }
 
     public DiggerEntry addAllSand() {
         return addTags(
-            "sand",
-            "dirt",
-            "gravel",
-            "is_shovel_item_destructible"
+                "sand",
+                "dirt",
+                "gravel",
+                "is_shovel_item_destructible"
         );
     }
 
     public DiggerEntry addAllMetal() {
         return addTags(
-            "metal",
-            "diamond_tier_destructible"
+                "metal",
+                "diamond_tier_destructible"
         );
     }
 
@@ -110,20 +112,21 @@ public final class DiggerEntry {
         return this;
     }
 
-    public DiggerEntry states(Consumer<CompoundTag> builder) {
-        if (builder != null) builder.accept(states);
+    public DiggerEntry states(Consumer<NbtMap> builder) {
+        if (builder != null) builder.accept(states.build());
         return this;
     }
 
-    public CompoundTag toNbt() {
-        CompoundTag block = new CompoundTag()
+    public NbtMap toNbt() {
+        NbtMap block = NbtMap.builder()
                 .putString("name", blockId == null ? "" : blockId)
-                .putCompound("states", states.isEmpty() ? new CompoundTag() : states.copy())
-                .putString("tags", buildTagsExpression());
-
-        return new CompoundTag()
+                .putCompound("states", states.isEmpty() ? NbtMap.EMPTY : states.build())
+                .putString("tags", buildTagsExpression())
+                .build();
+        return NbtMap.builder()
                 .putCompound("block", block)
-                .putInt("speed", speed != null ? speed : 0);
+                .putInt("speed", speed != null ? speed : 0)
+                .build();
     }
 
     private String buildTagsExpression() {

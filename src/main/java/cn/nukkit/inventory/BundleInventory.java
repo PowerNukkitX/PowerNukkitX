@@ -4,15 +4,20 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
 import cn.nukkit.math.AtomicIntIncrementSupplier;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.InternalApi;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,17 +27,21 @@ public class BundleInventory extends BaseInventory {
     private static final AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
 
     public BundleInventory(ItemBundle holder) {
-        super(holder, InventoryType.NONE, 64);
+        super(holder, ContainerType.NONE, 64);
         this.holder = holder;
-        CompoundTag tag = holder.getOrCreateNamedTag();
-        tag.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
-        if (!tag.containsList("storage_item_component_content")) {
-            tag.putList("storage_item_component_content", new ListTag<CompoundTag>());
+        NbtMapBuilder tagBuilder = holder.getOrCreateNamedTag().toBuilder();
+        tagBuilder.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
+        if (!tagBuilder.containsKey("storage_item_component_content")) {
+            tagBuilder.putList("storage_item_component_content", NbtType.COMPOUND, new ObjectArrayList<>());
         }
 
-        ListTag<CompoundTag> list = tag.getList("storage_item_component_content", CompoundTag.class);
-        for (CompoundTag compound : list.getAll()) {
-            Item item = NBTIO.getItemHelper(compound);
+        final NbtMap tag = tagBuilder.build();
+
+        holder.setNamedTag(tag);
+
+        List<NbtMap> list = tag.getList("storage_item_component_content", NbtType.COMPOUND);
+        for (NbtMap compound : list) {
+            Item item = ItemHelper.read(compound);
             this.setItemInternal(compound.getByte("Slot"), item);
         }
     }
@@ -41,13 +50,14 @@ public class BundleInventory extends BaseInventory {
     public boolean setItem(int index, Item item) {
         return super.setItem(index, item, true);
     }
+
     @Override
     public boolean setItem(int index, Item item, boolean send) {
-        if(getWeight() + getWeight(item) > MAX_FILL) {
+        if (getWeight() + getWeight(item) > MAX_FILL) {
             log.warn("Tried to overfill bundle!");
             return false;
         }
-        if(super.setItem(index, item, send)) {
+        if (super.setItem(index, item, send)) {
             getHolder().saveNBT();
             return true;
         }
@@ -61,21 +71,21 @@ public class BundleInventory extends BaseInventory {
 
     @Override
     public boolean clear(int index, boolean send) {
-        if(super.clear(index, send)) {
+        if (super.clear(index, send)) {
             getHolder().saveNBT();
             return true;
         } else return false;
     }
 
     protected int getWeight(Item item) {
-        if(item instanceof ItemBundle bundle) {
+        if (item instanceof ItemBundle bundle) {
             return ((BundleInventory) bundle.getInventory()).getWeight() + 4;
-        } else return (MAX_FILL/item.getMaxStackSize()) * item.getCount();
+        } else return (MAX_FILL / item.getMaxStackSize()) * item.getCount();
     }
 
     public int getWeight() {
         int weight = 0;
-        for(Item item : getContents().values()) {
+        for (Item item : getContents().values()) {
             weight += getWeight(item);
         }
         return weight;
@@ -83,30 +93,31 @@ public class BundleInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player... players) {
-        InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
-        pk.storageItem = getHolder();
-        pk.fullContainerName = new FullContainerName(ContainerSlotType.DYNAMIC_CONTAINER, getHolder().getBundleId());
-        for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getUnclonedItem(i);
+        final InventoryContentPacket pk = new InventoryContentPacket();
+        for (int i = 0; i < this.getSize(); i++) {
+            pk.getSlots().add(this.getUnclonedItem(i).toNetwork());
         }
+        pk.setStorageItem(this.getHolder().toNetwork());
+        pk.setFullContainerName(
+                new FullContainerName(ContainerEnumName.DYNAMIC_CONTAINER, this.getHolder().getBundleId())
+        );
 
         for (Player player : players) {
-            int id = SpecialWindowId.CONTAINER_ID_REGISTRY.getId();
-            if (id == -1 || !player.spawned) {
+            int id = ContainerId.CONTAINER_ID_REGISTRY;
+            if (!player.spawned) {
                 this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
+            pk.setInventoryId(id);
             player.dataPacket(pk);
         }
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        for(int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.DYNAMIC_CONTAINER);
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        for (int i = 0; i < getSize(); i++) {
+            map.put(i, ContainerEnumName.DYNAMIC_CONTAINER);
         }
         return map;
     }

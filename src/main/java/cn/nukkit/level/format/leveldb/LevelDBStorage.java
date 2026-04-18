@@ -3,20 +3,21 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.util.LevelDBKeyUtil;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.iq80.leveldb.impl.Iq80DBFactory;
-import cn.nukkit.level.util.LevelDBKeyUtil;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.ByteOrder;
 import java.nio.file.Path;
 
 public final class LevelDBStorage {
@@ -68,21 +69,23 @@ public final class LevelDBStorage {
         }
     }
 
-    public CompoundTag readWorldDynamicProperties() {
+    public NbtMap readWorldDynamicProperties() {
         try {
             byte[] bytes = this.db.get(LevelDBKeyUtil.WORLD_DYNAMIC_PROPERTIES.getGlobalKey());
             if (bytes == null) return null;
-            return NBTIO.read(bytes, ByteOrder.LITTLE_ENDIAN);
+            return (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(bytes)).readTag();
         } catch (Exception e) {
             return null;
         }
     }
 
-    public void writeWorldDynamicProperties(CompoundTag tag) {
+    public void writeWorldDynamicProperties(NbtMap tag) {
         try (WriteBatch writeBatch = this.db.createWriteBatch()) {
             byte[] key = LevelDBKeyUtil.WORLD_DYNAMIC_PROPERTIES.getGlobalKey();
-            CompoundTag safe = (tag == null) ? new CompoundTag() : tag;
-            writeBatch.put(key, NBTIO.write(safe, ByteOrder.LITTLE_ENDIAN));
+            NbtMap safe = (tag == null) ? NbtMap.EMPTY : tag;
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            NbtUtils.createWriterLE(outputStream).writeTag(safe);
+            writeBatch.put(key, outputStream.toByteArray());
 
             WriteOptions writeOptions = new WriteOptions().sync(false);
             this.db.write(writeBatch, writeOptions);

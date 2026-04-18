@@ -5,7 +5,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;
@@ -54,12 +56,15 @@ public class BlockSponge extends BlockSolid {
         if ((block instanceof BlockFlowingWater || block.getLevelBlockAround().stream().anyMatch(b -> b instanceof BlockFlowingWater)) && performWaterAbsorb(block)) {
             level.setBlock(block, new BlockWetSponge(), true, true);
 
-            LevelEventPacket packet = new LevelEventPacket();
-            packet.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK;
-            packet.x = (float) block.getX() + 0.5f;
-            packet.y = (float) block.getY() + 1f;
-            packet.z = (float) block.getZ() + 0.5f;
-            packet.data = Block.get(BlockID.FLOWING_WATER).blockstate.blockStateHash();
+            final LevelEventPacket packet = new LevelEventPacket();
+            packet.setType(LevelEvent.PARTICLE_DESTROY_BLOCK);
+            packet.setPosition(
+                    Vector3f.from(
+                            (float) block.getX() + 0.5f,
+                            (float) block.getY() + 1f,
+                            (float) block.getZ() + 0.5f
+                    )
+            );
 
             for (int i = 0; i < 4; i++) {
                 level.addChunkPacket(getChunkX(), getChunkZ(), packet);

@@ -1,8 +1,12 @@
 package cn.nukkit.entity.data.property;
 
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Peng_Lx
@@ -45,14 +49,13 @@ public class EnumEntityProperty extends EntityProperty {
     }
 
     @Override
-    public void populateTag(CompoundTag tag) {
-        tag.putInt("type", 3);
-        ListTag<StringTag> enumList = new ListTag<>();
-        for (String enumValue : getEnums()) {
-            enumList.add(new StringTag(enumValue));
-        }
-        tag.putList("enum", enumList);
-        tag.putBoolean("clientSync", isClientSync());
+    public NbtMap populateTag(NbtMap tag) {
+        NbtMapBuilder builder = tag.toBuilder();
+        builder.putInt("type", 3);
+        final List<String> enumList = new ObjectArrayList<>(Arrays.stream(this.getEnums()).toList());
+        builder.putList("enum", NbtType.STRING, enumList);
+        builder.putBoolean("clientSync", isClientSync());
+        return builder.build();
     }
 
     @Override

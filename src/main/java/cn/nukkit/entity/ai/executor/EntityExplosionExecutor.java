@@ -3,16 +3,15 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.HugeExplodeSeedParticle;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.Nullable;
-
-import static cn.nukkit.entity.data.EntityDataTypes.FUSE_TIME;
 
 
 public class EntityExplosionExecutor implements IBehaviorExecutor {
@@ -43,8 +42,8 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
         currentTick++;
         if (explodeTime > currentTick) {
             entity.level.addSound(entity, Sound.RANDOM_FUSE);
-            entity.setDataProperty(FUSE_TIME, currentTick);
-            entity.setDataFlag(EntityFlag.IGNITED, true);
+            entity.setDataProperty(ActorDataTypes.FUSE_TIME, currentTick);
+            entity.setDataFlag(ActorFlags.IGNITED, true);
             return true;
         } else {
             explode(entity);
@@ -54,13 +53,13 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.IGNITED, false);
+        entity.setDataFlag(ActorFlags.IGNITED, false);
         currentTick = 0;
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.IGNITED, false);
+        entity.setDataFlag(ActorFlags.IGNITED, false);
         currentTick = 0;
     }
 

@@ -1,7 +1,6 @@
 package cn.nukkit.scoreboard.storage;
 
 import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.Scoreboard;
@@ -13,6 +12,7 @@ import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.MapParsingUtils;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.ObjectiveSortOrder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -120,7 +120,7 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
             line.put("name", switch (e.getScorer().getScorerType()) {
                 case PLAYER -> ((PlayerScorer) e.getScorer()).getUuid().toString();
                 case ENTITY -> ((EntityScorer) e.getScorer()).getEntityUuid().toString();
-                case FAKE -> ((FakeScorer) e.getScorer()).getFakeName();
+                case FAKE_PLAYER -> ((FakeScorer) e.getScorer()).getFakeName();
                 default -> null;
             });
             lines.add(line);
@@ -135,13 +135,13 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         String objectiveName = Objects.toString(map.get("objectiveName"), null);
         String displayName = Objects.toString(map.get("displayName"), objectiveName);
         String criteriaName = Objects.toString(map.get("criteriaName"), "dummy");
-        String sortRaw = Objects.toString(map.get("sortOrder"), SortOrder.ASCENDING.name());
+        String sortRaw = Objects.toString(map.get("sortOrder"), ObjectiveSortOrder.ASCENDING.name());
 
-        SortOrder sortOrder;
+        ObjectiveSortOrder sortOrder;
         try {
-            sortOrder = SortOrder.valueOf(sortRaw);
+            sortOrder = ObjectiveSortOrder.valueOf(sortRaw);
         } catch (Exception e) {
-            sortOrder = SortOrder.ASCENDING;
+            sortOrder = ObjectiveSortOrder.ASCENDING;
         }
 
         if (objectiveName == null) return null;

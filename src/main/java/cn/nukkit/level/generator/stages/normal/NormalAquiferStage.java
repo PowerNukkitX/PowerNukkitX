@@ -218,7 +218,7 @@ public class NormalAquiferStage extends GenerateStage {
         if (definition == null) {
             return false;
         }
-        var tags = definition.getTags();
+        var tags = Registries.BIOME.getTags(biomeId);
         return tags.contains(BiomeTags.OCEAN) || tags.contains(BiomeTags.RIVER);
     }
 

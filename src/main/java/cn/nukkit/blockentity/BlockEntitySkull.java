@@ -1,40 +1,44 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockHead;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.NbtHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 /**
  * @author Snake1999
  * @since 2016/2/3
  */
 public class BlockEntitySkull extends BlockEntitySpawnable {
-    public BlockEntitySkull(IChunk chunk, CompoundTag nbt) {
+    public BlockEntitySkull(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
-    
+
     private boolean mouthMoving;
-    
+
     private int mouthTickCount;
 
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("SkullType")) {
-            namedTag.putByte("SkullType", 0);
+        NbtMapBuilder builder = this.namedTag.toBuilder();
+        if (!namedTag.containsKey("SkullType")) {
+            builder.putByte("SkullType", (byte) 0);
         }
-        if (!namedTag.contains("Rot")) {
-            namedTag.putByte("Rot", 0);
+        if (!namedTag.containsKey("Rot")) {
+            builder.putByte("Rot", (byte) 0);
         }
 
-        if (namedTag.containsByte("MouthMoving")) {
+        this.namedTag = builder.build();
+
+        if (namedTag.containsKey("MouthMoving")) {
             mouthMoving = namedTag.getBoolean("MouthMoving");
         }
 
-        if (namedTag.containsInt("MouthTickCount")) {
+        if (namedTag.containsKey("MouthTickCount")) {
             mouthTickCount = NukkitMath.clamp(namedTag.getInt("MouthTickCount"), 0, 60);
         }
     }
@@ -93,10 +97,11 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag
+        this.namedTag = this.namedTag.toBuilder()
                 .putBoolean("MouthMoving", this.mouthMoving)
                 .putInt("MouthTickCount", mouthTickCount)
-                .remove("Creator");
+                .build();
+        this.namedTag = NbtHelper.remove(this.namedTag, "Creator");
     }
 
     @Override
@@ -105,12 +110,12 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
-                .put("SkullType", this.namedTag.get("SkullType"))
-                .put("Rot", this.namedTag.get("Rot"))
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder()
+                .putByte("SkullType", (Byte) this.namedTag.get("SkullType"))
+                .putByte("Rot", (Byte) this.namedTag.get("Rot"))
                 .putBoolean("MouthMoving", this.mouthMoving)
-                .putInt("MouthTickCount", mouthTickCount);
+                .putInt("MouthTickCount", mouthTickCount)
+                .build();
     }
-
 }

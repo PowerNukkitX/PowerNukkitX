@@ -2,13 +2,10 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.network.connection.BedrockPeer;
-import cn.nukkit.network.connection.BedrockPong;
-import cn.nukkit.network.connection.BedrockSession;
-import cn.nukkit.network.connection.netty.initializer.BedrockServerInitializer;
 import cn.nukkit.event.server.ServerBotnetAttackEvent;
+import cn.nukkit.network.process.NetworkPacketHandler;
 import cn.nukkit.network.process.NetworkState;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.network.query.codec.QueryPacketCodec;
 import cn.nukkit.network.query.handler.QueryPacketHandler;
 import cn.nukkit.network.security.BotnetDetector;
@@ -36,7 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
-import org.cloudburstmc.netty.channel.raknet.config.RakServerCookieMode;
+import org.cloudburstmc.protocol.bedrock.BedrockPong;
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockServerInitializer;
 import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
@@ -61,13 +61,14 @@ public class Network implements NetworkInterface {
     private final Server server;
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
     private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
-    private final Map<InetSocketAddress, BedrockSession> sessionMap = new ConcurrentHashMap<>();
+    private final Map<InetSocketAddress, BedrockServerSession> sessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, LocalDateTime> blockIpMap = new ConcurrentHashMap<>();
     private final RakServerChannel channel;
     @Getter(onMethod_ = {@Override})
     private final BotnetDetector botnetDetector;
     private BedrockPong pong;
-    @Getter @Setter
+    @Getter
+    @Setter
     private NetworkState state = NetworkState.STARTING;
 
     public Network(Server server) {
@@ -104,6 +105,8 @@ public class Network implements NetworkInterface {
         }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
 
+        final BedrockCodec codec = NetworkConstants.CODEC;
+
         this.pong = new BedrockPong()
                 .edition("MCPE")
                 .motd(server.getMotd())
@@ -113,16 +116,15 @@ public class Network implements NetworkInterface {
                 .serverId(UUID.randomUUID().getMostSignificantBits())
                 .gameType(Server.getGamemodeString(server.getDefaultGamemode(), true))
                 .nintendoLimited(false)
-                .protocolVersion(ProtocolInfo.CURRENT_PROTOCOL)
+                .protocolVersion(codec.getProtocolVersion())
                 .ipv4Port(server.getPort())
                 .ipv6Port(server.getPort());
 
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
-                .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[] {11})
+                .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
-                .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, RakServerCookieMode.ACTIVE)
                 .group(eventloopgroup)
                 .childHandler(new BedrockServerInitializer() {
                     @Override
@@ -134,35 +136,24 @@ public class Network implements NetworkInterface {
                     }
 
                     @Override
-                    protected BedrockPeer createPeer(Channel channel) {
-                        return super.createPeer(channel);
-                    }
-
-                    @Override
-                    public BedrockSession createSession0(BedrockPeer peer, int subClientId) {
-                        BedrockSession session = new BedrockSession(peer, subClientId);
-                        InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
-
-                        if (Network.this.getState() == NetworkState.STARTING ||  Network.this.getState() == NetworkState.STOPPING) {
-                            return session;
+                    protected void initSession(BedrockServerSession session) {
+                        final InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
+                        if (Network.this.getState() == NetworkState.STARTING || Network.this.getState() == NetworkState.STOPPING) {
+                            return;
                         }
-
                         if (isAddressBlocked(address)) {
                             session.close("Your IP address has been blocked by this server!");
                             onSessionDisconnect(address);
                         } else {
+                            session.setCodec(NetworkConstants.CODEC);
+                            session.setPacketHandler(new NetworkPacketHandler(server, new PlayerSessionHolder(session)));
                             Network.this.sessionMap.put(address, session);
                         }
-                        return session;
                     }
-
-                    @Override
-                    protected void initSession(BedrockSession session) {}
                 })
                 .bind(bindAddress)
                 .awaitUninterruptibly()
                 .channel();
-        this.pong.channel(channel);
     }
 
     record NetWorkStatisticData(long upload, long download) {
@@ -228,8 +219,7 @@ public class Network implements NetworkInterface {
      * @return the network latency
      */
     public int getNetworkLatency(Player player) {
-        var session = this.sessionMap.get(player.getRawSocketAddress());
-        return session == null ? -1 : (int) session.getPing();
+        return -1;
     }
 
     /**
@@ -266,7 +256,7 @@ public class Network implements NetworkInterface {
      * @param address the address of session
      * @return the session
      */
-    public BedrockSession getSession(InetSocketAddress address) {
+    public BedrockServerSession getSession(InetSocketAddress address) {
         return this.sessionMap.get(address);
     }
 
@@ -279,7 +269,8 @@ public class Network implements NetworkInterface {
      * @param newAddress the new address,usually the IP of the proxy
      * @param newSession original session
      */
-    public void replaceSessionAddress(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockSession newSession) {
+    @Override
+    public void replaceSessionAddress(InetSocketAddress oldAddress, InetSocketAddress newAddress, BedrockServerSession newSession) {
         if (!this.sessionMap.containsKey(oldAddress))
             return;
 
@@ -316,12 +307,6 @@ public class Network implements NetworkInterface {
                 }
             });
         }
-
-        for (BedrockSession session : this.sessionMap.values()) {
-            if (session.isConnected() && session.getPlayer() == null) {
-                session.tick();
-            }
-        }
     }
 
     /**
@@ -338,14 +323,21 @@ public class Network implements NetworkInterface {
         return pong;
     }
 
+    @Override
+    public void updatePong(BedrockPong pong) {
+        this.pong = pong;
+        this.channel.config().setAdvertisement(this.pong.toByteBuf());
+    }
+
     /**
      * Retrieves RakNet advertisement.
+     *
      * @return Byte buffer
      */
     private ByteBuf getAdvertisement() {
-        if (state == NetworkState.STARTING || state == NetworkState.STOPPING) {
+        if (this.state == NetworkState.STARTING || this.state == NetworkState.STOPPING) {
             return Unpooled.EMPTY_BUFFER;
         }
-        return pong.toByteBuf();
+        return this.pong.toByteBuf();
     }
 }

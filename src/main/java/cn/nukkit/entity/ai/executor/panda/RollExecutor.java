@@ -1,11 +1,10 @@
 package cn.nukkit.entity.ai.executor.panda;
 
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.executor.EntityControl;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 public class RollExecutor implements EntityControl, IBehaviorExecutor {
 
@@ -20,7 +19,7 @@ public class RollExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public void onStart(EntityIntelligent entity) {
         ticks = 40;
-        entity.setDataFlag(EntityFlag.ROLLING);
+        entity.setDataFlag(ActorFlags.ROLLING);
         entity.setMovementSpeed(0.3f);
         Vector3 target = entity.getDirectionVector().add(entity.x, entity.y, entity.z).multiply(10);
         setLookTarget(entity, target);
@@ -38,7 +37,7 @@ public class RollExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     public void stop(EntityIntelligent entity) {
-        entity.setDataFlag(EntityFlag.ROLLING, false);
+        entity.setDataFlag(ActorFlags.ROLLING, false);
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         removeLookTarget(entity);
         removeRouteTarget(entity);

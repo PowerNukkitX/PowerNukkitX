@@ -8,10 +8,12 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 
 public abstract class ContainerInventory extends BaseInventory {
-    public ContainerInventory(InventoryHolder holder, InventoryType type, int size) {
+    public ContainerInventory(InventoryHolder holder, ContainerType type, int size) {
         super(holder, type, size);
     }
 
@@ -24,15 +26,13 @@ public abstract class ContainerInventory extends BaseInventory {
     public void onOpen(Player who) {
         if (!who.getAdventureSettings().get(AdventureSettings.Type.OPEN_CONTAINERS)) return;
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
-        if(holder instanceof Entity entity) {
-            pk.entityId = entity.getId();
+        final InventoryHolder holder = this.getHolder();
+        final ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setContainerType(this.getType());
+        pk.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
+        if (holder instanceof Entity entity) {
+            pk.setTargetActorID(entity.getId());
         }
         who.dataPacket(pk);
 

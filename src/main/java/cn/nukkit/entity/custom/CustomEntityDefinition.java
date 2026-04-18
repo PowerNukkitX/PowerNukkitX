@@ -141,7 +141,7 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
          * <p>
          * This stores a fixed health definition (no range).
          *
-         * @param value max health value (>= 1)
+         * @param maxHealth max health value (>= 1)
          */
         public SimpleBuilder health(int maxHealth) {
             return withObject(

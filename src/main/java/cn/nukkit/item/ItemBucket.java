@@ -22,9 +22,9 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.UpdateBlockPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Identifier;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateBlockPacket;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -278,7 +278,7 @@ public class ItemBucket extends Item {
                     this.setDamage(0); // Empty bucket
                     player.getInventory().setItemInMainHand(this);
                 }
-                player.getLevel().addLevelSoundEvent(target, LevelSoundEvent.FIZZ);
+                player.getLevel().addLevelSoundEvent(target, SoundEvent.FIZZ);
                 player.getLevel().addParticle(new ExplodeParticle(target.add(0.5, 1, 0.5)));
             } else {
                 player.getLevel().sendBlocks(new Player[]{player}, new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
@@ -353,7 +353,7 @@ public class ItemBucket extends Item {
 
             if (fishEntity instanceof EntityVariant variant
                     && this.getNamedTag() != null
-                    && this.getNamedTag().containsInt("Variant")) {
+                    && this.getNamedTag().containsKey("Variant")) {
                 variant.setVariant(getNamedTag().getInt("Variant"));
             }
 

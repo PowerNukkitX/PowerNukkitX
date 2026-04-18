@@ -24,7 +24,6 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -32,9 +31,12 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +55,7 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
         return ELDER_GUARDIAN;
     }
 
-    public EntityElderGuardian(IChunk chunk, CompoundTag nbt) {
+    public EntityElderGuardian(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -92,7 +94,7 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
     protected void initEntity() {
         super.initEntity();
         this.diffHandDamage = new float[]{5f, 8f, 12f};
-        this.setDataFlag(EntityFlag.ELDER, true);
+        this.setDataFlag(ActorFlags.ELDER, true);
     }
 
     @Override
@@ -150,11 +152,11 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
+        if (source.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
             return false;
         }
-        if(super.attack(source)) {
-            if(source instanceof EntityDamageByEntityEvent e) {
+        if (super.attack(source)) {
+            if (source instanceof EntityDamageByEntityEvent e) {
                 e.getDamager().attack(new EntityDamageByEntityEvent(this, source.getEntity(), EntityDamageEvent.DamageCause.THORNS, getServer().getDifficulty() == 3 ? 2 : 3));
             }
             return true;
@@ -168,11 +170,9 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
             for (Player p : this.getViewers().values()) {
                 if (p.locallyInitialized && p.getGamemode() % 2 == 0 && p.distance(this) < 50 && !p.hasEffect(EffectType.MINING_FATIGUE)) {
                     p.addEffect(Effect.get(EffectType.MINING_FATIGUE).setAmplifier(2).setDuration(6000));
-                    LevelEventPacket pk = new LevelEventPacket();
-                    pk.evid = LevelEventPacket.EVENT_PARTICLE_SOUND_GUARDIAN_GHOST;
-                    pk.x = (float) this.x;
-                    pk.y = (float) this.y;
-                    pk.z = (float) this.z;
+                    final LevelEventPacket pk = new LevelEventPacket();
+                    pk.setType(LevelEvent.PARTICLE_SOUND_GUARDIAN_GHOST);
+                    pk.setPosition(Vector3f.from(this.x, this.y, this.z));
                     p.dataPacket(pk);
                 }
             }

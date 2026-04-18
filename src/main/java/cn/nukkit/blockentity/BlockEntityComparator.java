@@ -2,7 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockRedstoneComparator;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author CreeperFace
@@ -11,15 +11,15 @@ public class BlockEntityComparator extends BlockEntity {
 
     private int outputSignal;
 
-    public BlockEntityComparator(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityComparator(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("OutputSignal")) {
-            namedTag.putInt("OutputSignal", 0);
+        if (!namedTag.containsKey("OutputSignal")) {
+            this.namedTag = namedTag.toBuilder().putInt("OutputSignal", 0).build();
         }
 
         this.outputSignal = namedTag.getInt("OutputSignal");
@@ -41,6 +41,6 @@ public class BlockEntityComparator extends BlockEntity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putInt("OutputSignal", this.outputSignal);
+        this.namedTag = this.namedTag.toBuilder().putInt("OutputSignal", this.outputSignal).build();
     }
 }

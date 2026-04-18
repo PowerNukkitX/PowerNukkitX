@@ -2,14 +2,14 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.SwapAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
 
@@ -27,12 +27,12 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
 
     @Override
     public ActionResponse handle(SwapAction action, Player player, ItemStackRequestContext context) {
-        FullContainerName sourceContainerName = action.getSource().getContainerName();
-        FullContainerName destinationContainerName = action.getDestination().getContainerName();
-        Integer dynamicSrc = sourceContainerName.getDynamicId();
-        Integer dynamicDst = destinationContainerName.getDynamicId();
-        ContainerSlotType sourceSlotType = sourceContainerName.getContainer();
-        ContainerSlotType destinationSlotType = destinationContainerName.getContainer();
+        FullContainerName sourceContainerName = action.getSource().getFullContainerName();
+        FullContainerName destinationContainerName = action.getDestination().getFullContainerName();
+        Integer dynamicSrc = sourceContainerName.getDynamicID();
+        Integer dynamicDst = destinationContainerName.getDynamicID();
+        ContainerEnumName sourceSlotType = sourceContainerName.getContainerName();
+        ContainerEnumName destinationSlotType = destinationContainerName.getContainerName();
 
         Inventory source = NetworkMapping.getInventory(player, sourceSlotType, dynamicSrc);
         Inventory destination = NetworkMapping.getInventory(player, destinationSlotType, dynamicDst);
@@ -52,30 +52,32 @@ public class SwapActionProcessor implements ItemStackRequestActionProcessor<Swap
         source.setItem(sourceSlot, destinationItem, false);
         destination.setItem(destinationSlot, sourceItem, false);
         return context.success(List.of(
-                new ItemStackResponseContainer(
-                        source.getSlotType(sourceSlot),
+                new ItemStackResponseContainerInfo(
+                        source.getContainerEnumName(sourceSlot),
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         source.toNetworkSlot(sourceSlot),
                                         source.toNetworkSlot(sourceSlot),
                                         destinationItem.getCount(),
                                         destinationItem.getNetId(),
                                         destinationItem.getCustomName(),
-                                        destinationItem.getDamage()
+                                        destinationItem.getDamage(),
+                                        ""
                                 )
                         ),
                         sourceContainerName
                 ),
-                new ItemStackResponseContainer(
-                        destination.getSlotType(destinationSlot),
+                new ItemStackResponseContainerInfo(
+                        destination.getContainerEnumName(destinationSlot),
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         destination.toNetworkSlot(destinationSlot),
                                         destination.toNetworkSlot(destinationSlot),
                                         sourceItem.getCount(),
                                         sourceItem.getNetId(),
                                         sourceItem.getCustomName(),
-                                        sourceItem.getDamage()
+                                        sourceItem.getDamage(),
+                                        ""
                                 )
                         ),
                         destinationContainerName

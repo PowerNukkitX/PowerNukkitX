@@ -4,11 +4,12 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.item.Item;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 
 public class CampfireInventory extends ContainerInventory {
     public CampfireInventory(BlockEntityCampfire campfire) {
-        super(campfire, InventoryType.NONE, 4);
+        super(campfire, ContainerType.NONE, 4);
     }
 
     @Override

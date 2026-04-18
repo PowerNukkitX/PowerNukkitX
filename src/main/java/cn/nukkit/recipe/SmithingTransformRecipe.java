@@ -20,6 +20,7 @@ package cn.nukkit.recipe;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,8 +31,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SmithingTransformRecipe extends BaseRecipe {
 
-    public SmithingTransformRecipe(@NotNull String recipeId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {
+    @Getter
+    private final int netId;
+
+    public SmithingTransformRecipe(@NotNull String recipeId, int netId, Item result, ItemDescriptor base, ItemDescriptor addition, ItemDescriptor template) {
         super(recipeId);
+        this.netId = netId;
         this.ingredients.add(base);
         this.ingredients.add(addition);
         this.ingredients.add(template);
@@ -62,5 +67,17 @@ public class SmithingTransformRecipe extends BaseRecipe {
 
     public ItemDescriptor getTemplate() {
         return ingredients.get(2);
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTransformRecipe toNetwork() {
+        return org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.SmithingTransformRecipe.of(
+                this.getRecipeId(),
+                this.getTemplate().toNetwork(),
+                this.getBase().toNetwork(),
+                this.getAddition().toNetwork(),
+                this.getResult().toNetwork(),
+                "smithing_table",
+                this.netId
+        );
     }
 }

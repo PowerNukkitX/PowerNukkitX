@@ -5,12 +5,13 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
-    public BlockEntityGlowItemFrame(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityGlowItemFrame(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -20,32 +21,32 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
     }
 
     public boolean hasName() {
-        return namedTag.contains("CustomName");
+        return namedTag.containsKey("CustomName");
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        if (!this.namedTag.contains("Item")) {
+    public NbtMap getSpawnCompound() {
+        if (!this.namedTag.containsKey("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
-        CompoundTag tag = super.getSpawnCompound();
+        NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
 
         if (!item.isNull()) {
-            CompoundTag itemTag = NBTIO.putItemHelper(item);
+            NbtMapBuilder builder = ItemHelper.write(item,null).toBuilder();
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
-                itemTag.remove("id");
-                itemTag.putShort("Damage", networkDamage);
-                itemTag.putString("Name", namespacedId);
+                builder.remove("id");
+                builder.putShort("Damage", (short) networkDamage);
+                builder.putString("Name", namespacedId);
             }
             if (item.isBlock()) {
-                itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+                builder.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
-            tag.putCompound("Item", itemTag)
-                    .putByte("ItemRotation", this.getItemRotation());
+            tag.putCompound("Item", builder.build())
+                    .putByte("ItemRotation", (byte) this.getItemRotation());
         }
-        return tag;
+        return tag.build();
     }
 }

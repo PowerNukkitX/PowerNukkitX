@@ -7,10 +7,10 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
 import cn.nukkit.inventory.EntityHandItem;
-import cn.nukkit.inventory.HumanOffHandInventory;
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.inventory.HumanInventory;
+import cn.nukkit.inventory.HumanOffHandInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
@@ -18,8 +18,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
     protected HumanEnderChestInventory enderChestInventory;
     protected HumanOffHandInventory offhandInventory;
 
-    public EntityHumanType(IChunk chunk, CompoundTag nbt) {
+    public EntityHumanType(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

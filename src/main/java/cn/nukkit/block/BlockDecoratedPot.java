@@ -7,21 +7,19 @@ import cn.nukkit.blockentity.BlockEntityDecoratedPot;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.Faceable;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -30,7 +28,8 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
     public static final BlockProperties PROPERTIES = new BlockProperties(DECORATED_POT, CommonBlockProperties.DIRECTION);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -48,16 +47,13 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        CompoundTag nbt = new CompoundTag();
+        NbtMapBuilder nbt = NbtMap.builder();
 
         nbt.putString("id", BlockEntity.DECORATED_POT);
-        nbt.putByte("isMovable", 1);
+        nbt.putByte("isMovable", (byte) 1);
 
         if (item.getNamedTag() != null) {
-            Map<String, Tag> customData = item.getNamedTag().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getNamedTag());
         }
 
         nbt.putInt("x", (int) this.x);
@@ -65,16 +61,18 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         nbt.putInt("z", (int) this.y);
 
         this.setBlockFace(player.getDirection().getOpposite());
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityDecoratedPot> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityDecoratedPot> getBlockEntityClass() {
         return BlockEntityDecoratedPot.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.DECORATED_POT;
     }
 
@@ -114,10 +112,10 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         }
 
         BlockEntityDecoratedPot blockEntity = getBlockEntity();
-        ListTag<StringTag> sherds = blockEntity == null ? null : blockEntity.namedTag.getList("sherds", StringTag.class);
+        List<String> sherds = blockEntity == null ? null : blockEntity.namedTag.getList("sherds", NbtType.STRING);
         var drops = new ArrayList<Item>(4);
         for (int i = 0; i < 4; i++) {
-            String id = sherds != null && i < sherds.size() ? sherds.get(i).data : ItemID.BRICK;
+            String id = sherds != null && i < sherds.size() ? sherds.get(i) : ItemID.BRICK;
             drops.add(Item.get(id));
         }
         return drops.toArray(Item[]::new);
@@ -125,8 +123,8 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
 
     @Override
     public boolean onBreak(Item item) {
-        if(super.onBreak(item)) {
-            level.addLevelSoundEvent(this.add(Vector3.HALF), LevelSoundEvent.BREAK_DECORATED_POT);
+        if (super.onBreak(item)) {
+            level.addLevelSoundEvent(this.add(Vector3.HALF), SoundEvent.BREAK_DECORATED_POT);
             return true;
         } else return false;
     }

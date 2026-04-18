@@ -1,19 +1,18 @@
 package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.inventory.HumanInventory;
-import cn.nukkit.inventory.SpecialWindowId;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.MineBlockAction;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.MineBlockAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -42,32 +41,38 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
         }
 
         if (itemInHand.getDamage() != action.getPredictedDurability()) {
+            int id = ContainerId.INVENTORY;
             InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
-            int id = SpecialWindowId.PLAYER.getId();
-            inventorySlotPacket.inventoryId = id;
-            inventorySlotPacket.item = itemInHand;
-            inventorySlotPacket.slot = action.getHotbarSlot();
-            inventorySlotPacket.fullContainerName = new FullContainerName(
-                    ContainerSlotType.HOTBAR,
-                    id
+            inventorySlotPacket.setContainerID(id);
+            inventorySlotPacket.setSlot(action.getHotbarSlot());
+            inventorySlotPacket.setItem(itemInHand.toNetwork());
+            inventorySlotPacket.setFullContainerName(
+                    new FullContainerName(
+                            ContainerEnumName.HOTBAR_CONTAINER,
+                            id
+                    )
             );
             player.dataPacket(inventorySlotPacket);
         }
-        var itemStackResponseSlot = new ItemStackResponseContainer(
-                inventory.getSlotType(heldItemIndex),
-                Lists.newArrayList(
-                        new ItemStackResponseSlot(
-                                inventory.toNetworkSlot(heldItemIndex),
-                                inventory.toNetworkSlot(heldItemIndex),
-                                itemInHand.getCount(),
-                                itemInHand.getNetId(),
-                                itemInHand.getCustomName(),
-                                itemInHand.getDamage())),
-                new FullContainerName(
-                        inventory.getSlotType(heldItemIndex),
-                        0 // I don't know the purpose of the dynamicId yet, this is why I leave it at 0
-                          // for the MineBlockAction
-                ));
+        var itemStackResponseSlot =
+                new ItemStackResponseContainerInfo(
+                        inventory.getContainerEnumName(heldItemIndex),
+                        Lists.newArrayList(
+                                new ItemStackResponseSlotInfo(
+                                        inventory.toNetworkSlot(heldItemIndex),
+                                        inventory.toNetworkSlot(heldItemIndex),
+                                        itemInHand.getCount(),
+                                        itemInHand.getNetId(),
+                                        itemInHand.getCustomName(),
+                                        itemInHand.getDamage(),
+                                        ""
+                                )
+                        ),
+                        new FullContainerName(
+                                inventory.getContainerEnumName(heldItemIndex),
+                                null
+                        )
+                );
         return context.success(List.of(itemStackResponseSlot));
     }
 }

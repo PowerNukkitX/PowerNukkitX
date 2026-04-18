@@ -1,19 +1,23 @@
 package cn.nukkit.item.utils;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import java.util.*;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public final class RepairEntry {
     private static final short EXPR_VERSION = 13;
 
     private final List<String> itemIds = new ArrayList<>();
-    private Float  numericAmount;
+    private Float numericAmount;
     private String amountExpression;
 
-    private RepairEntry() {}
+    private RepairEntry() {
+    }
 
     public static RepairEntry set(String... ids) {
         RepairEntry e = new RepairEntry();
@@ -39,24 +43,26 @@ public final class RepairEntry {
         return this;
     }
 
-    public CompoundTag toNbt() {
+    public NbtMap toNbt() {
         if (itemIds.isEmpty()) {
-            return new CompoundTag().putList("items", new ListTag<>());
+            return NbtMap.builder().putList("items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
         }
 
-        ListTag<CompoundTag> itemsList = new ListTag<>();
+        final List<NbtMap> itemsList = new ObjectArrayList<>();
         for (String id : itemIds) {
-            itemsList.add(new CompoundTag().putString("name", id));
+            itemsList.add(NbtMap.builder().putString("name", id).build());
         }
 
-        CompoundTag entry = new CompoundTag().putList("items", itemsList);
+        NbtMap entry = NbtMap.builder().putList("items", NbtType.COMPOUND, itemsList).build();
 
         if (amountExpression != null && !amountExpression.isBlank()) {
-            entry.putCompound("repair_amount", new CompoundTag()
+            entry = entry.toBuilder().putCompound("repair_amount", NbtMap.builder()
                     .putString("expression", amountExpression)
-                    .putShort("version", EXPR_VERSION));
+                    .putShort("version", EXPR_VERSION)
+                    .build()
+            ).build();
         } else if (numericAmount != null) {
-            entry.putFloat("repair_amount", numericAmount);
+            entry = entry.toBuilder().putFloat("repair_amount", numericAmount).build();
         }
         return entry;
     }

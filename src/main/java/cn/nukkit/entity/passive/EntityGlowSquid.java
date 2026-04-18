@@ -4,12 +4,11 @@ import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.Set;
-
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
 
@@ -18,7 +17,7 @@ public class EntityGlowSquid extends EntityAnimal implements EntitySwimmable {
         return GLOW_SQUID;
     }
 
-    public EntityGlowSquid(IChunk chunk, CompoundTag nbt) {
+    public EntityGlowSquid(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

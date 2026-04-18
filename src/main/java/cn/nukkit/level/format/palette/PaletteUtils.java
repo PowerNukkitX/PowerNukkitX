@@ -1,12 +1,10 @@
 package cn.nukkit.level.format.palette;
 
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.HashUtils;
 import cn.nukkit.utils.SemVersion;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
+import org.cloudburstmc.nbt.NBTInputStream;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -18,22 +16,19 @@ import java.io.UncheckedIOException;
  */
 public class PaletteUtils {
     public static Pair<Integer, SemVersion> fastReadBlockHash(NBTInputStream input, ByteBuf byteBuf) {
-        try {
+        /*try {
             byteBuf.markReaderIndex();
             int typeId = input.readUnsignedByte();
             input.skipBytes(input.readUnsignedShort()); //Skip Root tag name
             return deserialize(input, byteBuf, typeId, 16);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
-        }
+        }*/
+        return null;
     }
 
-    private static Pair<Integer, SemVersion> deserialize(NBTInputStream input,
-                                                         ByteBuf byteBuf,
-                                                         int type,
-                                                         int maxDepth
-    ) throws IOException {
-        if (maxDepth < 0) {
+    private static Pair<Integer, SemVersion> deserialize(NBTInputStream input, ByteBuf byteBuf, int type, int maxDepth) throws IOException {
+        /*if (maxDepth < 0) {
             throw new IllegalArgumentException("NBT compound is too deeply nested");
         }
         switch (type) {
@@ -79,7 +74,7 @@ public class PaletteUtils {
                 }
             }
             case Tag.TAG_Int_Array -> input.skipBytes(input.readInt() * 4);
-        }
+        }*/
         return null;
     }
 

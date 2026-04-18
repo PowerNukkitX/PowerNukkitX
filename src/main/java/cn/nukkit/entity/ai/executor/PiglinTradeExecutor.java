@@ -2,8 +2,6 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.inventory.InventorySlice;
@@ -12,6 +10,7 @@ import cn.nukkit.item.ItemGoldIngot;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -50,7 +49,7 @@ public class PiglinTradeExecutor implements EntityControl, IBehaviorExecutor {
     public void onStart(EntityIntelligent entity) {
         tick = -1;
         removeLookTarget(entity);
-        entity.setDataFlag(EntityFlag.ADMIRING);
+        entity.setDataFlag(ActorFlags.ADMIRING);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class PiglinTradeExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setMovementSpeed(entity.getMovementSpeedDefault());
         entity.setEnablePitch(false);
-        entity.setDataFlag(EntityFlag.ADMIRING, false);
+        entity.setDataFlag(ActorFlags.ADMIRING, false);
     }
 
     public Item getDrop() {

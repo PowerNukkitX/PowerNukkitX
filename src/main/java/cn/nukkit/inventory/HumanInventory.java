@@ -11,24 +11,29 @@ import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemFilledMap;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
-import cn.nukkit.network.protocol.PlayerArmorDamagePacket;
-import cn.nukkit.network.protocol.types.inventory.ArmorSlot;
-import cn.nukkit.network.protocol.types.inventory.ArmorSlotAndDamagePair;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.ArmorSlot;
+import org.cloudburstmc.protocol.bedrock.data.ArmorSlotAndDamagePair;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
+import org.cloudburstmc.protocol.bedrock.packet.InventoryContentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobArmorEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerArmorDamagePacket;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,26 +54,26 @@ public class HumanInventory extends BaseInventory {
     public static final int ARMORS_INDEX = 36;
 
     public HumanInventory(IHuman human) {
-        super(human, InventoryType.INVENTORY, 40);
+        super(human, ContainerType.INVENTORY, 40);
     }//9+27+4
 
     protected InventorySlice armorInventory;
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < 9; i++) {
-            map.put(i, ContainerSlotType.HOTBAR);
+            map.put(i, ContainerEnumName.HOTBAR_CONTAINER);
         }
         for (int i = 9; i < 36; i++) {
-            map.put(i, ContainerSlotType.INVENTORY);
+            map.put(i, ContainerEnumName.INVENTORY_CONTAINER);
         }
         armorInventory = new InventorySlice(this, HumanInventory.ARMORS_INDEX, this.getSize()) {
             {
-                HashMap<Integer, ContainerSlotType> map = new HashMap<>();
+                HashMap<Integer, ContainerEnumName> map = new HashMap<>();
                 BiMap<Integer, Integer> biMap = HashBiMap.create();
                 for (int i = 0; i < 4; i++) {
-                    map.put(i, ContainerSlotType.ARMOR);
+                    map.put(i, ContainerEnumName.ARMOR_CONTAINER);
                     biMap.put(i, i);
                 }
                 this.setNetworkMapping(map, biMap);
@@ -97,7 +102,7 @@ public class HumanInventory extends BaseInventory {
                 this.sendContents(this.getViewers());
                 return false;
             }
-            if(this.getItem(slot) instanceof ItemFilledMap map) {
+            if (this.getItem(slot) instanceof ItemFilledMap map) {
                 map.sendImage(player, 1);
             }
 
@@ -137,21 +142,22 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * @deprecated Use {@link #getItemInMainHand()} instead.
-     * This method is kept for backward compatibility and now directly delegates to the main hand item.
-     */
-    @Deprecated
-    public Item getItemInHand() {
-        return getItemInMainHand();
-    }
-
-    /**
      * Returns the item currently held in the player's main hand.
      *
      * @return the item in the main hand
      */
     public Item getItemInMainHand() {
         return this.getItem(this.getHeldItemIndex());
+    }
+
+    /**
+     * Sets the item in the player's main hand.
+     *
+     * @param item the item to set
+     * @return true if the item was successfully set
+     */
+    public boolean setItemInMainHand(Item item) {
+        return this.setItem(this.getHeldItemIndex(), item);
     }
 
     /**
@@ -190,25 +196,14 @@ public class HumanInventory extends BaseInventory {
     }
 
     /**
-     * @deprecated Use {@link #setItemInMainHand(Item, boolean)} instead.
-     * This method is kept for backward compatibility and delegates to the main hand setter.
-     *
      * @param item the item to set in hand
      * @param send whether to sync the change to the client
+     * @deprecated Use {@link #setItemInMainHand(Item, boolean)} instead.
+     * This method is kept for backward compatibility and delegates to the main hand setter.
      */
     @Deprecated
     public boolean setItemInHand(Item item, boolean send) {
         return this.setItemInMainHand(item, send);
-    }
-
-    /**
-     * Sets the item in the player's main hand.
-     *
-     * @param item the item to set
-     * @return true if the item was successfully set
-     */
-    public boolean setItemInMainHand(Item item) {
-        return this.setItem(this.getHeldItemIndex(), item);
     }
 
     /**
@@ -227,6 +222,7 @@ public class HumanInventory extends BaseInventory {
      * <p>
      * Convenience wrapper for {@code getOffhandInventory().setItem(0, item)}.
      * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
+     *
      * @param item the item to set
      * @return true if the item was successfully set
      */
@@ -239,6 +235,7 @@ public class HumanInventory extends BaseInventory {
      * <p>
      * Convenience wrapper for {@code getOffhandInventory().setItem(0, item, bool)}.
      * The offhand uses a dedicated inventory, so direct access can be used if more control is needed.
+     *
      * @param item the item to set
      * @param send whether to sync the change to the client
      * @return true if the item was successfully set
@@ -264,14 +261,15 @@ public class HumanInventory extends BaseInventory {
     public void sendHeldItem(Player... players) {
         Item item = this.getItemInMainHand();
 
-        MobEquipmentPacket pk = new MobEquipmentPacket();
-        pk.item = item;
-        pk.inventorySlot = pk.hotbarSlot = this.getHeldItemIndex();
+        final MobEquipmentPacket pk = new MobEquipmentPacket();
+        pk.setItem(item.toNetwork());
+        pk.setSlot(this.getHeldItemIndex());
+        pk.setSelectedSlot(this.getHeldItemIndex());
 
         for (Player player : players) {
-            pk.eid = this.getHolder().getEntity().getId();
+            pk.setTargetRuntimeID(this.getHolder().getEntity().getId());
             if (player.equals(this.getHolder())) {
-                pk.eid = player.getId();
+                pk.setTargetRuntimeID(player.getId());
                 this.sendSlot(this.getHeldItemIndex(), player);
             }
 
@@ -481,12 +479,12 @@ public class HumanInventory extends BaseInventory {
             item = ev.getNewItem();
         } else {
             EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(
-                this.getHolder().getEntity(),
-                this.getItem(index),
-                item,
-                index,
-                this.getSlotType(index),
-                this.getHeldItemIndex());
+                    this.getHolder().getEntity(),
+                    this.getItem(index),
+                    item,
+                    index,
+                    this.getContainerEnumName(index),
+                    this.getHeldItemIndex());
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -520,7 +518,7 @@ public class HumanInventory extends BaseInventory {
                     }
                     item = ev.getNewItem();
                 } else if (index < ARMORS_INDEX) {
-                    EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getSlotType(index), this.getHeldItemIndex());
+                    EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder().getEntity(), old, item, index, this.getContainerEnumName(index), this.getHeldItemIndex());
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (ev.isCancelled()) {
                         this.sendSlot(index, this.getViewers());
@@ -587,23 +585,29 @@ public class HumanInventory extends BaseInventory {
     public void sendArmorContents(Player[] players) {
         Item[] armor = this.getArmorContents();
 
-        MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-        pk.eid = this.getHolder().getEntity().getId();
-        pk.slots = armor;
+        final MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
+        pk.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        pk.setHead(this.getArmorContents()[0].toNetwork());
+        pk.setTorso(this.getArmorContents()[1].toNetwork());
+        pk.setLegs(this.getArmorContents()[2].toNetwork());
+        pk.setFeet(this.getArmorContents()[3].toNetwork());
+        pk.setBody(ItemData.AIR);
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                InventoryContentPacket pk1 = new InventoryContentPacket();
-                int id = SpecialWindowId.ARMOR.getId();
-                pk1.inventoryId = id;
-                pk1.slots = armor;
-                pk1.fullContainerName = new FullContainerName(
-                        ContainerSlotType.ARMOR,
-                        id
+                final int id = ContainerId.ARMOR;
+                final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
+                inventoryContentPacket.setInventoryId(id);
+                inventoryContentPacket.setSlots(Arrays.stream(armor).map(Item::toNetwork).toList());
+                inventoryContentPacket.setFullContainerName(
+                        new FullContainerName(
+                                ContainerEnumName.ARMOR_CONTAINER,
+                                null
+                        )
                 );
-                player.dataPacket(pk1);
+                player.dataPacket(inventoryContentPacket);
 
-                PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
+                final PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 for (int i = 0; i < 4; ++i) {
                     Item item = armor[i];
                     short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
@@ -643,7 +647,7 @@ public class HumanInventory extends BaseInventory {
     /**
      * Send armor slot.
      *
-     * @param index  the index 0~3 {@link PlayerArmorDamagePacket.PlayerArmorDamageFlag}
+     * @param index  the index 0~3
      * @param player the player
      */
     public void sendArmorSlot(int index, Player player) {
@@ -653,7 +657,7 @@ public class HumanInventory extends BaseInventory {
     /**
      * Send armor slot.
      *
-     * @param index   the index 0~3 {@link PlayerArmorDamagePacket.PlayerArmorDamageFlag}
+     * @param index   the index 0~3
      * @param players the players
      */
     public void sendArmorSlot(int index, Collection<Player> players) {
@@ -663,36 +667,42 @@ public class HumanInventory extends BaseInventory {
     /**
      * Send armor slot.
      *
-     * @param index   the index 0~3 {@link PlayerArmorDamagePacket.PlayerArmorDamageFlag}
+     * @param index   the index 0~3
      * @param players the players
      */
     public void sendArmorSlot(int index, Player[] players) {
         Item[] armor = this.getArmorContents();
 
-        MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-        pk.eid = this.getHolder().getEntity().getId();
-        pk.slots = armor;
+        final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
+        mobArmorEquipmentPacket.setTargetRuntimeID(this.getHolder().getEntity().getId());
+        mobArmorEquipmentPacket.setHead(armor[0].toNetwork());
+        mobArmorEquipmentPacket.setTorso(armor[1].toNetwork());
+        mobArmorEquipmentPacket.setLegs(armor[2].toNetwork());
+        mobArmorEquipmentPacket.setFeet(armor[3].toNetwork());
+        mobArmorEquipmentPacket.setBody(ItemData.AIR);
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                InventorySlotPacket pk1 = new InventorySlotPacket();
-                int id = SpecialWindowId.ARMOR.getId();
-                pk1.inventoryId = id;
-                pk1.slot = index;
-                pk1.item = this.getItem(ARMORS_INDEX + index);
-                pk1.fullContainerName = new FullContainerName(
-                        ContainerSlotType.ARMOR,
-                        id
+                final int id = ContainerId.ARMOR;
+                final InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+                inventorySlotPacket.setContainerID(id);
+                inventorySlotPacket.setSlot(index);
+                inventorySlotPacket.setItem(this.getItem(ARMORS_INDEX + index).toNetwork());
+                inventorySlotPacket.setFullContainerName(
+                        new FullContainerName(
+                                ContainerEnumName.ARMOR_CONTAINER,
+                                null
+                        )
                 );
-                player.dataPacket(pk1);
+                player.dataPacket(inventorySlotPacket);
 
-                PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
+                final PlayerArmorDamagePacket playerArmorDamagePacket = new PlayerArmorDamagePacket();
                 Item item = armor[index];
                 short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
-                pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(index), dmg));
-                player.dataPacket(pk2);
+                playerArmorDamagePacket.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(index), dmg));
+                player.dataPacket(playerArmorDamagePacket);
             } else {
-                player.dataPacket(pk);
+                player.dataPacket(mobArmorEquipmentPacket);
             }
         }
     }
@@ -709,11 +719,10 @@ public class HumanInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player... players) {
-        InventoryContentPacket pk = new InventoryContentPacket();
+        InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
         int inventoryAndHotBarSize = this.getSize() - 4;
-        pk.slots = new Item[inventoryAndHotBarSize];
         for (int i = 0; i < inventoryAndHotBarSize; ++i) {
-            pk.slots[i] = this.getUnclonedItem(i);
+            inventoryContentPacket.getSlots().add(this.getUnclonedItem(i).toNetwork());
         }
 
         for (Player player : players) {
@@ -722,12 +731,14 @@ public class HumanInventory extends BaseInventory {
                 if (this.getHolder() != player) this.close(player);
                 continue;
             }
-            pk.inventoryId = id;
-            pk.fullContainerName = new FullContainerName(
-                    this.getSlotType(id),
-                    id
+            inventoryContentPacket.setInventoryId(id);
+            inventoryContentPacket.setFullContainerName(
+                    new FullContainerName(
+                            this.getContainerEnumName(id),
+                            null
+                    )
             );
-            player.dataPacket(pk);
+            player.dataPacket(inventoryContentPacket);
         }
     }
 
@@ -743,31 +754,35 @@ public class HumanInventory extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Player... players) {
-        InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = index;
-        pk.item = this.getItem(index).clone();
+        final InventorySlotPacket inventorySlotPacket = new InventorySlotPacket();
+        inventorySlotPacket.setSlot(index);
+        inventorySlotPacket.setItem(this.getItem(index).clone().toNetwork());
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
-                int id = SpecialWindowId.PLAYER.getId();
-                pk.inventoryId = id;
-                pk.fullContainerName = new FullContainerName(
-                        this.getSlotType(index),
-                        id
+                int id =  ContainerId.INVENTORY;
+                inventorySlotPacket.setContainerID(id);
+                inventorySlotPacket.setFullContainerName(
+                        new FullContainerName(
+                                this.getContainerEnumName(index),
+                                null
+                        )
                 );
-                player.dataPacket(pk);
+                player.dataPacket(inventorySlotPacket);
             } else {
                 int id = player.getWindowId(this);
                 if (id == -1) {
                     this.close(player);
                     continue;
                 }
-                pk.inventoryId = id;
-                pk.fullContainerName = new FullContainerName(
-                        this.getSlotType(index),
-                        id
+                inventorySlotPacket.setContainerID(id);
+                inventorySlotPacket.setFullContainerName(
+                        new FullContainerName(
+                                this.getContainerEnumName(index),
+                                null
+                        )
                 );
-                player.dataPacket(pk);
+                player.dataPacket(inventorySlotPacket);
             }
         }
     }
@@ -781,23 +796,21 @@ public class HumanInventory extends BaseInventory {
     public void onOpen(Player who) {
         super.onOpen(who);
         if (who.spawned) {
-            ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.windowId = who.getWindowId(this);
-            pk.type = this.getType().getNetworkType();
-            pk.x = who.getFloorX();
-            pk.y = who.getFloorY();
-            pk.z = who.getFloorZ();
-            pk.entityId = who.getId();
+            final ContainerOpenPacket pk = new ContainerOpenPacket();
+            pk.setContainerID((byte) who.getWindowId(this));
+            pk.setContainerType(this.getType());
+            pk.setPosition(Vector3i.from(who.getFloorX(), who.getFloorY(), who.getFloorZ()));
+            pk.setTargetActorID(who.getId());
             who.dataPacket(pk);
         }
     }
 
     @Override
     public void onClose(Player who) {
-        ContainerClosePacket pk = new ContainerClosePacket();
-        pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        pk.type = getType();
+        final ContainerClosePacket pk = new ContainerClosePacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
+        pk.setContainerType(this.getType());
         who.dataPacket(pk);
         // player can never stop viewing their own inventory
         if (who != holder) {
@@ -806,6 +819,6 @@ public class HumanInventory extends BaseInventory {
     }
 
     private static ArmorSlot armorSlotOfIndex(int index) {
-        return ArmorSlot.from(index * 2);
+        return ArmorSlot.from(index);
     }
 }

@@ -14,8 +14,9 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +111,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
                 index++;
             }
 
-            beehive.namedTag.putByte("ShouldSpawnBees", (byte) 0);
+            beehive.namedTag = beehive.namedTag.toBuilder().putByte("ShouldSpawnBees", (byte) 0).build();
             beehive.scheduleUpdate();
         }
 
@@ -169,9 +170,9 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             if (beehive != null) {
                 beehive.saveNBT();
                 if (!beehive.isHoneyEmpty() || !beehive.isEmpty()) {
-                    CompoundTag copy = beehive.namedTag.copy();
-                    copy.putByte("HoneyLevel", getHoneyLevel());
-                    item.setCustomBlockData(copy);
+                    NbtMapBuilder copy = beehive.namedTag.toBuilder();
+                    copy.putByte("HoneyLevel", (byte) getHoneyLevel());
+                    item.setCustomBlockData(copy.build());
                 }
             }
         }

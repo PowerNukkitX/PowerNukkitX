@@ -1,8 +1,8 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Server;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.positiontracking.NamedPosition;
+import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -46,11 +46,11 @@ public class ItemLodestoneCompass extends Item {
     }
 
     public void setTrackingHandle(int trackingHandle) {
-        CompoundTag tag = getNamedTag();
+        NbtMap tag = getNamedTag();
         if (tag == null) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         }
-        tag.putInt("trackingHandle", trackingHandle);
+        tag = tag.toBuilder().putInt("trackingHandle", trackingHandle).build();
         setNamedTag(tag);
     }
 }

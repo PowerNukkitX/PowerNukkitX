@@ -1,10 +1,10 @@
 package cn.nukkit.tags;
 
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
-import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -89,10 +89,11 @@ public final class BiomeTags {
     private static final Object2ObjectOpenHashMap<String, Set<String>> TAG_2_BIOMES = new Object2ObjectOpenHashMap<>();
 
     static {
-        Set<BiomeDefinition> biomeDefinitions = Registries.BIOME.getBiomeDefinitions();
-        HashMap<String, Set<String>> tmpMap = new HashMap<>();
+        Set<Pair<Short, BiomeDefinitionData>> biomeDefinitions = Registries.BIOME.getBiomeDefinitions();
+        HashMap<String, List<String>> tmpMap = new HashMap<>();
         for (var biome : biomeDefinitions) {
-            tmpMap.put(biome.getName(), new HashSet<>(biome.getTags()));
+            final String biomeName = Registries.BIOME.getFromBiomeStringList(biome.first());
+            tmpMap.put(biomeName, Registries.BIOME.getTags(biomeName));
         }
         for (var e : tmpMap.entrySet()) {
             for (var biomeTag : e.getValue()) {
@@ -107,19 +108,17 @@ public final class BiomeTags {
     }
 
     public static boolean containTag(int biomeId, String tag) {
-        return Registries.BIOME.get(biomeId).getTags().contains(tag);
+        return Registries.BIOME.get(biomeId).second().getTags().contains(tag);
     }
 
     public static boolean containTag(String biomeName, String tag) {
-        return Registries.BIOME.get(biomeName).getTags().contains(tag);
+        return Registries.BIOME.get(biomeName).second().getTags().contains(tag);
     }
 
     @UnmodifiableView
     @NotNull
     public static Set<String> getTagSet(String biomeName) {
-        BiomeDefinition biomeDefinition = Registries.BIOME.get(biomeName);
-        Preconditions.checkNotNull(biomeDefinition);
-        return biomeDefinition.getTags();
+        return new ObjectOpenHashSet<>(Registries.BIOME.getTags(biomeName));
     }
 
     @UnmodifiableView
@@ -128,9 +127,9 @@ public final class BiomeTags {
         return Collections.unmodifiableSet(TAG_2_BIOMES.getOrDefault(tag, Set.of()));
     }
 
-    public static void register(BiomeDefinition definition) {
-        String name = definition.getName();
-        Set<String> tags = definition.getTags();
+    public static void register(Pair<Short, BiomeDefinitionData> definition) {
+        String name = Registries.BIOME.getFromBiomeStringList(definition.first());
+        List<String> tags = Registries.BIOME.getTags(name);
         for (var tag : tags) {
             var itemSet = TAG_2_BIOMES.get(tag);
             if (itemSet != null) itemSet.add(name);

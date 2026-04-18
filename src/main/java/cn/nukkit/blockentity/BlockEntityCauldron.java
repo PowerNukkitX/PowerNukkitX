@@ -1,25 +1,26 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.block.BlockCauldron;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.RequiredArgsConstructor;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace (Nukkit Project)
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
-    public BlockEntityCauldron(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityCauldron(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -27,28 +28,31 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         int potionId;
-        if (!namedTag.contains("PotionId")) {
-            namedTag.putShort("PotionId", 0xffff);
+        NbtMapBuilder builder = this.namedTag.toBuilder();
+        if (!builder.containsKey("PotionId")) {
+            builder.putShort("PotionId", (short) 0xffff);
         }
         potionId = namedTag.getShort("PotionId");
         int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
         if (namedTag.getBoolean("SplashPotion")) {
             potionType = PotionType.SPLASH.potionTypeData;
-            namedTag.remove("SplashPotion");
+            builder.remove("SplashPotion");
         }
 
-        if (!namedTag.contains("PotionType")) {
-            namedTag.putShort("PotionType", potionType);
+        if (!builder.containsKey("PotionType")) {
+            builder.putShort("PotionType", (short) potionType);
         }
+        this.namedTag = builder.build();
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        namedTag.putShort("PotionId", getPotionId());
         int potionId = namedTag.getShort("PotionId");
         int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
-        namedTag.putShort("PotionType", potionType);
+        this.namedTag = namedTag.toBuilder().putShort("PotionId", (short) getPotionId())
+                .putShort("PotionType", (short) potionType)
+                .build();
     }
 
     public int getPotionId() {
@@ -56,7 +60,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public void setPotionId(int potionId) {
-        namedTag.putShort("PotionId", potionId);
+        this.namedTag = namedTag.toBuilder().putShort("PotionId", (short) potionId).build();
         this.spawnToAll();
     }
 
@@ -65,7 +69,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public void setPotionType(int potionType) {
-        this.namedTag.putShort("PotionType", (short) (potionType & 0xFFFF));
+        this.namedTag = this.namedTag.toBuilder().putShort("PotionType", (short) (potionType & 0xFFFF)).build();
     }
 
     public int getPotionType() {
@@ -99,7 +103,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public boolean isCustomColor() {
-        return namedTag.contains("CustomColor");
+        return namedTag.containsKey("CustomColor");
     }
 
     public void setCustomColor(BlockColor color) {
@@ -109,13 +113,13 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public void setCustomColor(int r, int g, int b) {
         int color = (r << 16 | g << 8 | b) & 0xffffff;
 
-        namedTag.putInt("CustomColor", color);
+        this.namedTag = namedTag.toBuilder().putInt("CustomColor", color).build();
 
         spawnToAll();
     }
 
     public void clearCustomColor() {
-        namedTag.remove("CustomColor");
+        namedTag = NbtHelper.remove(namedTag, "CustomColor");
         spawnToAll();
     }
 
@@ -144,16 +148,16 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag compoundTag = super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder compoundTag = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable())
-                .putList("Items", new ListTag<>())
-                .putShort("PotionId", (short) namedTag.getShort("PotionId"))
-                .putShort("PotionType", (short) namedTag.getShort("PotionType"));
-        if (namedTag.contains("CustomColor")) {
+                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+                .putShort("PotionId", namedTag.getShort("PotionId"))
+                .putShort("PotionType", namedTag.getShort("PotionType"));
+        if (namedTag.containsKey("CustomColor")) {
             compoundTag.putInt("CustomColor", namedTag.getInt("CustomColor") << 8 >> 8);
         }
-        return compoundTag;
+        return compoundTag.build();
     }
 
     @RequiredArgsConstructor

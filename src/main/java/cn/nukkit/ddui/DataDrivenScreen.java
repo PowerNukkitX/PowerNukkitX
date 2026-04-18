@@ -4,10 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.ddui.element.LayoutElement;
 import cn.nukkit.ddui.properties.DataDrivenProperty;
 import cn.nukkit.ddui.properties.ObjectProperty;
-import cn.nukkit.network.protocol.ClientboundDataDrivenUICloseScreenPacket;
-import cn.nukkit.network.protocol.ClientboundDataDrivenUIShowScreenPacket;
-import cn.nukkit.network.protocol.ClientboundDataStorePacket;
-import cn.nukkit.network.protocol.types.ddui.DataStoreChange;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStoreChange;
+import org.cloudburstmc.protocol.bedrock.packet.ClientboundDataDrivenUICloseScreenPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ClientboundDataDrivenUIShowScreenPacket;
+import org.cloudburstmc.protocol.bedrock.packet.ClientboundDataStorePacket;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 /**
  * Abstract base for all data-driven UI screens.
+ *
  * @author xRookieFight
  * @since 06/03/2026
  */
@@ -39,14 +41,16 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
 
     public void show(Player player) {
         String dataStore = getIdentifier().split(":")[0];
-        DataStoreChange change = new DataStoreChange(
-                dataStore, getProperty(), 1,
-                toPropertyValue());
+        final DataStoreChange change = new DataStoreChange();
+        change.setDataStoreName(dataStore);
+        change.setProperty(this.getProperty());
+        change.setUpdateCount(1);
+        change.setTheNewPropertyValue(this.toPropertyValue());
 
-        ClientboundDataStorePacket data = new ClientboundDataStorePacket();
-        data.setUpdates(List.of(change));
+        final ClientboundDataStorePacket data = new ClientboundDataStorePacket();
+        data.getUpdates().add(change);
 
-        ClientboundDataDrivenUIShowScreenPacket show = new ClientboundDataDrivenUIShowScreenPacket();
+        final ClientboundDataDrivenUIShowScreenPacket show = new ClientboundDataDrivenUIShowScreenPacket();
         show.setScreenId(getIdentifier());
         show.setFormId(0);
         player.sendDataPackets(data, show);
@@ -59,7 +63,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
         viewers.remove(player);
         ACTIVE_SCREENS.remove(player);
 
-        ClientboundDataDrivenUICloseScreenPacket packet = new ClientboundDataDrivenUICloseScreenPacket();
+        final ClientboundDataDrivenUICloseScreenPacket packet = new ClientboundDataDrivenUICloseScreenPacket();
         packet.setFormId(0);
         player.dataPacket(packet);
     }

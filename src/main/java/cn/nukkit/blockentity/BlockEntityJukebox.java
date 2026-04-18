@@ -4,10 +4,11 @@ import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMusicDisc;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlaySoundPacket;
-import cn.nukkit.network.protocol.StopSoundPacket;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.packet.PlaySoundPacket;
+import org.cloudburstmc.protocol.bedrock.packet.StopSoundPacket;
 
 import java.util.Objects;
 
@@ -18,15 +19,15 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     private Item recordItem;
 
-    public BlockEntityJukebox(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityJukebox(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (namedTag.contains("RecordItem")) {
-            this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
+        if (namedTag.containsKey("RecordItem")) {
+            this.recordItem = ItemHelper.read(namedTag.getCompound("RecordItem"));
         } else {
             this.recordItem = Item.AIR;
         }
@@ -46,16 +47,14 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         return recordItem;
     }
 
-    
+
     public void play() {
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
-            PlaySoundPacket packet = new PlaySoundPacket();
-            packet.name = itemRecord.getSoundId();
-            packet.volume = 1;
-            packet.pitch = 1;
-            packet.x = this.getFloorX();
-            packet.y = this.getFloorY();
-            packet.z = this.getFloorZ();
+            final PlaySoundPacket packet = new PlaySoundPacket();
+            packet.setName(itemRecord.getSoundId());
+            packet.setPosition(Vector3f.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
+            packet.setVolume(1f);
+            packet.setPitch(1f);
             this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, packet);
         }
     }
@@ -63,9 +62,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     //TODO: Transfer the stop sound to the new sound method
     public void stop() {
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
-            StopSoundPacket packet = new StopSoundPacket();
-            packet.name = itemRecord.getSoundId();
-            packet.stopAll = false;
+            final StopSoundPacket packet = new StopSoundPacket();
+            packet.setSoundName(itemRecord.getSoundId());
             this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, packet);
         }
     }
@@ -81,13 +79,13 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+        this.namedTag = this.namedTag.toBuilder().putCompound("RecordItem", ItemHelper.write(this.recordItem, null)).build();
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
-                .putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder()
+                .putCompound("RecordItem", ItemHelper.write(this.recordItem, null)).build();
     }
 
     @Override

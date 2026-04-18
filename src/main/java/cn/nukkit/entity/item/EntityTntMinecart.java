@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.item.Item;
@@ -15,9 +14,11 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.MinecartType;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -28,13 +29,14 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityTntMinecart extends EntityMinecartAbstract implements EntityExplosive {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return TNT_MINECART;
     }
-    
+
     private int fuse;
 
-    public EntityTntMinecart(IChunk chunk, CompoundTag nbt) {
+    public EntityTntMinecart(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         super.setDisplayBlock(Block.get(BlockID.TNT), false);
     }
@@ -43,12 +45,12 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     public void initEntity() {
         super.initEntity();
 
-        if (namedTag.contains("TNTFuse")) {
+        if (namedTag.containsKey("TNTFuse")) {
             fuse = namedTag.getByte("TNTFuse");
         } else {
             fuse = 80;
         }
-        this.setDataFlag(EntityFlag.CHARGED, false);
+        this.setDataFlag(ActorFlags.CHARGED, false);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
             lastUpdate = currentTick;
 
             if (fuse % 5 == 0) {
-                setDataProperty(FUSE_TIME, fuse);
+                setDataProperty(ActorDataTypes.FUSE_TIME, fuse);
             }
 
             fuse -= tickDiff;
@@ -156,11 +158,10 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     @Override
     public void saveNBT() {
         super.saveNBT();
-
-        super.namedTag.putInt("TNTFuse", this.fuse);
+        this.namedTag = super.namedTag.toBuilder().putInt("TNTFuse", this.fuse).build();
     }
 
-    
+
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);
@@ -174,7 +175,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }
 }

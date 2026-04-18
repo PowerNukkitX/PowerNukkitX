@@ -19,7 +19,7 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -42,7 +42,7 @@ public class EntityLightningBolt extends Entity implements EntityLightningStrike
     public int liveTime;
     protected boolean isEffect = true;
 
-    public EntityLightningBolt(IChunk chunk, CompoundTag nbt) {
+    public EntityLightningBolt(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

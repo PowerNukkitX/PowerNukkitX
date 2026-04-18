@@ -2,14 +2,11 @@ package cn.nukkit.level.generator.feature.decoration;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockClosedEyeblossom;
-import cn.nukkit.block.BlockFern;
-import cn.nukkit.block.BlockShortGrass;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
-import cn.nukkit.utils.random.NukkitRandom;
 
 public class EyeBlossomFeature extends SurfaceGenerateFeature {
 
@@ -40,6 +37,6 @@ public class EyeBlossomFeature extends SurfaceGenerateFeature {
     @Override
     public boolean isSupportValid(Block support) {
         return support.hasTag(BlockTags.DIRT) &&
-                Registries.BIOME.get(support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ())).getTags().contains(BiomeTags.PALE_GARDEN);
+                Registries.BIOME.get(support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ())).second().getTags().contains(BiomeTags.PALE_GARDEN);
     }
 }

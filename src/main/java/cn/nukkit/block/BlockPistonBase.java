@@ -17,11 +17,12 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -107,9 +108,11 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         }
         this.level.setBlock(block, this, false, true);
         var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
+                .toBuilder()
                 .putInt("facing", this.getBlockFace().getIndex())
                 .putBoolean("Sticky", this.sticky)
-                .putBoolean("powered", isGettingPower());
+                .putBoolean("powered", isGettingPower())
+                .build();
         var piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isGettingPower();
         this.checkState(piston.powered);
@@ -245,7 +248,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
 
         var oldPosList = new ArrayList<Vector3>();
         var blockEntityHolderList = new ArrayList<BlockEntityHolder<?>>();
-        var nbtList = new ArrayList<CompoundTag>();
+        var nbtList = new ArrayList<NbtMap>();
         if (canMove && (this.sticky || extending)) {
             var destroyBlocks = calculator.getBlocksToDestroy();
             //Destroy the blocks that need to be destroyed.
@@ -264,7 +267,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 var newPos = blockToMove.getSidePos(moveDirection);
                 //Remove water and other substances from the location.
                 level.setBlock(newPos, 1, Block.get(AIR), true, false);
-                CompoundTag nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK)
+                NbtMapBuilder nbt = BlockEntity.getDefaultCompound(newPos, BlockEntity.MOVING_BLOCK).toBuilder()
                         .putBoolean("expanding", extending)
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
@@ -276,13 +279,13 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 //Moveable Block Entity
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
-                    nbt.putCompound("movingEntity", new CompoundTag(blockEntity.namedTag.getTags()));
+                    nbt.putCompound("movingEntity", blockEntity.namedTag);
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);
 
                 blockEntityHolderList.add((BlockEntityHolder<?>) Block.get(MOVING_BLOCK, Position.fromObject(newPos, this.level)));
-                nbtList.add(nbt);
+                nbtList.add(nbt.build());
             }
         }
         BlockEntityPistonArm blockEntity = this.getBlockEntity();

@@ -8,7 +8,7 @@ import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +30,8 @@ public abstract class BlockBrushable extends BlockFallable implements BlockEntit
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         int progress = getPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS);
-        if(progress < 3) {
-            setPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS, progress+1);
+        if (progress < 3) {
+            setPropertyValue(CommonBlockProperties.BRUSHED_PROGRESS, progress + 1);
             getLevel().addSound(this, getHitSound());
             getLevel().setBlock(this, this, false, true);
         } else {
@@ -44,8 +44,8 @@ public abstract class BlockBrushable extends BlockFallable implements BlockEntit
     }
 
     @Override
-    protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
-        customNbt.putBoolean("BreakOnGround", true);
+    protected EntityFallingBlock createFallingEntity(NbtMap customNbt) {
+        customNbt = customNbt.toBuilder().putBoolean("BreakOnGround", true).build();
         return super.createFallingEntity(customNbt);
     }
 

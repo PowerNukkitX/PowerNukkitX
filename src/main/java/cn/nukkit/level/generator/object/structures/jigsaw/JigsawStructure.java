@@ -16,8 +16,8 @@ import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
 import java.util.HashSet;
 import java.util.ArrayList;

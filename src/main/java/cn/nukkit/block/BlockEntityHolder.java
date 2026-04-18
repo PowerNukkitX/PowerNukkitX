@@ -7,8 +7,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.LevelException;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -42,23 +42,22 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         return createBlockEntity(null);
     }
 
-    default @NotNull E createBlockEntity(@Nullable CompoundTag initialData, @Nullable Object... args) {
+    default @NotNull E createBlockEntity(@Nullable NbtMap initialData, @Nullable Object... args) {
         String typeName = getBlockEntityType();
         IChunk chunk = getChunk();
         if (chunk == null) {
             throw new LevelException("Undefined Level or chunk reference");
         }
         if (initialData == null) {
-            initialData = new CompoundTag();
-        } else {
-            initialData = initialData.copy();
+            initialData = NbtMap.EMPTY;
         }
         BlockEntity created = BlockEntity.createBlockEntity(typeName, chunk,
-                initialData
+                initialData.toBuilder()
                         .putString("id", typeName)
                         .putInt("x", getFloorX())
                         .putInt("y", getFloorY())
-                        .putInt("z", getFloorZ()),
+                        .putInt("z", getFloorZ())
+                        .build(),
                 args);
 
         Class<? extends E> entityClass = getBlockEntityClass();
@@ -114,7 +113,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     @Nullable
     static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
-            @NotNull H holder, boolean direct, boolean update, @Nullable CompoundTag initialData,
+            @NotNull H holder, boolean direct, boolean update, @Nullable NbtMap initialData,
             @Nullable Object... args) {
         Block block = holder.getBlock();
         Level level = block.getLevel();

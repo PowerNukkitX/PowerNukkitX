@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -11,7 +10,8 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.types.PlayerAbility;
+import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public class TeleportCommand extends VanillaCommand {
 
     @Override
     public boolean testPermissionSilent(CommandSender target) {
-        if (target.isPlayer() && target.asPlayer().getAdventureSettings().get(PlayerAbility.TELEPORT))
+        if (target.isPlayer() && target.asPlayer().getAdventureSettings().get(AbilitiesIndex.TELEPORT))
             return true;
         return super.testPermissionSilent(target);
     }

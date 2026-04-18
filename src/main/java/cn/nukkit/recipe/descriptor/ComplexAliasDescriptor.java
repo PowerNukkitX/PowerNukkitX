@@ -2,6 +2,7 @@ package cn.nukkit.recipe.descriptor;
 
 import cn.nukkit.item.Item;
 import lombok.Value;
+import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 
 @Value
 public class ComplexAliasDescriptor implements ItemDescriptor {
@@ -25,5 +26,12 @@ public class ComplexAliasDescriptor implements ItemDescriptor {
     @Override
     public int getCount() {
         return 0;
+    }
+
+    @Override
+    public ItemDescriptorWithCount toNetwork() {
+        final org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ComplexAliasDescriptor descriptor =
+                new org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ComplexAliasDescriptor(this.name);
+        return new ItemDescriptorWithCount(descriptor, this.getCount());
     }
 }

@@ -36,8 +36,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
     }
     
 
-    public EntityCow(IChunk chunk, CompoundTag nbt) {
+    public EntityCow(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -187,7 +187,7 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(namedTag.contains("variant")) {
+        if(namedTag.containsKey("variant")) {
             setVariant(Variant.get(namedTag.getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 

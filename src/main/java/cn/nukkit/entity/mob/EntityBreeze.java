@@ -25,8 +25,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public class EntityBreeze extends EntityMob {
         return Set.of("breeze", "monster", "mob");
     }
 
-    public EntityBreeze(IChunk chunk, CompoundTag nbt) {
+    public EntityBreeze(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

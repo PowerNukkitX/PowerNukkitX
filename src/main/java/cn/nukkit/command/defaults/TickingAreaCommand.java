@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
@@ -12,6 +11,7 @@ import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;

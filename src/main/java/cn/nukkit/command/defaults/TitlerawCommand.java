@@ -3,12 +3,12 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class TitlerawCommand extends VanillaCommand {
         this.commandParameters.put("set", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("titleLocation", new CommandEnum("TitleSet", "title", "subtitle", "actionbar")),
-                CommandParameter.newType("titleJson", CommandParamType.RAWTEXT)
+                CommandParameter.newType("titleJson", CommandParamType.JSON)
         });
         this.commandParameters.put("times", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),

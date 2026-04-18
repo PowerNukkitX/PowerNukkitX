@@ -19,12 +19,11 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class IglooPopulator extends Populator {
@@ -48,7 +47,7 @@ public class IglooPopulator extends Populator {
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
-        if ((biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA|| biome == BiomeID.SNOWY_SLOPES)
+        if ((biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA || biome == BiomeID.SNOWY_SLOPES)
                 && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
                 && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
             boolean hasLaboratory = random.nextBoolean();
@@ -90,55 +89,43 @@ public class IglooPopulator extends Populator {
 
                 BOTTOM.preparePlace(new Position(vec.x, vec.y, vec.z, level), object);
                 object.addHook(() -> {
-                    CompoundTag nbt = new CompoundTag()
-                            .putList("Pos", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag( vec.x + 2.5))
-                                    .add(new DoubleTag(vec.y + 1))
-                                    .add(new DoubleTag(vec.z + 1.5)))
-                            .putList("Motion", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
-                                    .add(new FloatTag(new Random().nextFloat() * 360))
-                                    .add(new FloatTag(0)));
+                    final NbtMap nbt = NbtMap.builder()
+                            .putList("Pos", NbtType.DOUBLE, Arrays.asList(vec.x + 2.5, vec.y + 1.0, vec.z + 1.5))
+                            .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                            .putList("Rotation", NbtType.FLOAT, Arrays.asList(new Random().nextFloat() * 360, 0f))
+                            .build();
                     EntityVillagerV2 entity = (EntityVillagerV2) Entity.createEntity(Entity.VILLAGER_V2, chunk, nbt);
                     entity.setProfession(random.nextInt(Profession.getProfessions().size()), true);
-                    CompoundTag nbt2 = new CompoundTag()
-                            .putList("Pos", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag( vec.x + 4.5))
-                                    .add(new DoubleTag(vec.y + 1))
-                                    .add(new DoubleTag(vec.z + 1.5)))
-                            .putList("Motion", new ListTag<DoubleTag>()
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<FloatTag>()
-                                    .add(new FloatTag(new Random().nextFloat() * 360))
-                                    .add(new FloatTag(0)));
+                    final NbtMap nbt2 = NbtMap.builder()
+                            .putList("Pos", NbtType.DOUBLE, Arrays.asList(vec.x + 4.5, vec.y + 1.0, vec.z + 1.5))
+                            .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                            .putList("Rotation", NbtType.FLOAT, Arrays.asList(new Random().nextFloat() * 360, 0f))
+                            .build();
                     EntityZombieVillagerV2 entity2 = (EntityZombieVillagerV2) Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, nbt2);
                     entity2.spawnToAll();
                 });
-            } else object.setBlockStateAt(new BlockVector3(vec.x +3, vec.y, vec.z+5), BlockSnow.PROPERTIES.getDefaultState());
-            for(Block block : object.getBlocks()) {
-                if(block instanceof BlockStructureBlock) object.setBlockStateAt(block, BlockAir.STATE);
-                if(block instanceof BlockIce) object.setBlockStateAt(block, BlockPackedIce.PROPERTIES.getDefaultState());
-                if(block instanceof BlockBrewingStand stand) {
+            } else
+                object.setBlockStateAt(new BlockVector3(vec.x + 3, vec.y, vec.z + 5), BlockSnow.PROPERTIES.getDefaultState());
+            for (Block block : object.getBlocks()) {
+                if (block instanceof BlockStructureBlock) object.setBlockStateAt(block, BlockAir.STATE);
+                if (block instanceof BlockIce)
+                    object.setBlockStateAt(block, BlockPackedIce.PROPERTIES.getDefaultState());
+                if (block instanceof BlockBrewingStand stand) {
                     object.addHook(() -> {
                         stand.getOrCreateBlockEntity().getInventory().setResult(2, ItemSplashPotion.get(ItemPotion.SPLASH_POTION, PotionType.WEAKNESS.id()));
                     });
                 }
-                if(block instanceof BlockChest chest) {
+                if (block instanceof BlockChest chest) {
                     object.addHook(() -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
-                if(block instanceof BlockBed bed) {
+                if (block instanceof BlockBed bed) {
                     object.addHook(() -> {
-                        bed.createBlockEntity(new CompoundTag().putByte("color", 14));
+                        bed.createBlockEntity(NbtMap.builder().putByte("color", (byte) 14).build());
                     });
                 }
-                if(block instanceof BlockFlowerPot pot) {
+                if (block instanceof BlockFlowerPot pot) {
                     object.addHook(() -> {
                         pot.setFlower(Item.get(Block.CACTUS));
                     });

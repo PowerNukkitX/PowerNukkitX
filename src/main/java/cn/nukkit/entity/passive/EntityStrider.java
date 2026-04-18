@@ -15,16 +15,7 @@ import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomSoundEvaluator;
 import cn.nukkit.entity.ai.evaluator.RiderItemControllableEvaluator;
-import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
-import cn.nukkit.entity.ai.executor.BreedingExecutor;
-import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.FollowRiderExecutor;
-import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
-import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
-import cn.nukkit.entity.ai.executor.PlaySoundExecutor;
-import cn.nukkit.entity.ai.executor.StriderMoveToLavaExecutor;
-import cn.nukkit.entity.ai.executor.TemptExecutor;
+import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -36,7 +27,6 @@ import cn.nukkit.entity.components.BoostableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.entity.components.RideableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -45,11 +35,12 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,11 +54,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityStrider extends EntityAnimal implements EntityWalkable {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return STRIDER;
     }
 
-    public EntityStrider(IChunk chunk, CompoundTag nbt) {
+    public EntityStrider(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -228,10 +220,10 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     public @Nullable BreedableComponent getComponentBreedable() {
         return new BreedableComponent(
                 Set.of(
-                    BlockID.WARPED_FUNGUS
+                        BlockID.WARPED_FUNGUS
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.STRIDER, EntityID.STRIDER)
+                        new BreedableComponent.BreedsWith(EntityID.STRIDER, EntityID.STRIDER)
                 ),
                 false
         );
@@ -243,7 +235,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(BlockID.WARPED_FUNGUS)
+                        new AgeableComponent.FeedItem(BlockID.WARPED_FUNGUS)
                 ),
                 null,
                 null,
@@ -254,15 +246,15 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     @Override
     public @Nullable BoostableComponent getComponentBoostable() {
         return new BoostableComponent(
-            1.35f,
-            16.0f,
-            List.of(
-                    new BoostableComponent.BoostItem(
-                        ItemID.WARPED_FUNGUS_ON_A_STICK,
-                        1,
-                        ItemID.FISHING_ROD
-                    )
-            )
+                1.35f,
+                16.0f,
+                List.of(
+                        new BoostableComponent.BoostItem(
+                                ItemID.WARPED_FUNGUS_ON_A_STICK,
+                                1,
+                                ItemID.FISHING_ROD
+                        )
+                )
         );
     }
 
@@ -290,7 +282,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     public void setRideableType(SpawnRiderType type) {
         this.jockeyType = (type == null ? SpawnRiderType.NORMAL : type);
         if (this.namedTag != null) {
-            this.namedTag.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
+            this.namedTag = this.namedTag.toBuilder().putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId()).build();
         }
     }
 
@@ -300,7 +292,8 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
         if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+            if (this.namedTag != null)
+                this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
             return;
         }
 
@@ -320,18 +313,19 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
         rider.spawnToAll();
         this.mountEntity(rider, true);
 
-        if (this.namedTag != null) this.namedTag.putBoolean(NBT_RIDER_SPAWNED, true);
+        if (this.namedTag != null)
+            this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
+        final NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
 
         if (this.jockeyType == SpawnRiderType.PIGLIN_JOCKEY) {
             Item stick = Item.get(Item.WARPED_FUNGUS_ON_A_STICK, 0, 1);
-            nbt.put("Mainhand", NBTIO.putItemHelper(stick));
+            nbt.putCompound("Mainhand", ItemHelper.write(stick));
         }
 
-        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
+        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt.build());
         if (rider == null) return null;
         return rider;
     }
@@ -341,12 +335,12 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     private boolean isShaking() {
-        return this.getDataFlag(EntityFlag.SHAKING);
+        return this.getDataFlag(ActorFlags.SHAKING);
     }
 
     private void setShaking(boolean shaking) {
         if (isShaking() == shaking) return;
-        this.setDataFlag(EntityFlag.SHAKING, shaking);
+        this.setDataFlag(ActorFlags.SHAKING, shaking);
     }
 
     private void tickColdState() {
@@ -394,12 +388,12 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag != null && this.namedTag.contains(NBT_RIDEABLE_TYPE)) {
+        if (this.namedTag != null && this.namedTag.containsKey(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.namedTag.getInt(NBT_RIDEABLE_TYPE));
         } else {
             this.jockeyType = rollInitialRideableType();
             if (this.namedTag != null) {
-                this.namedTag.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
+                this.namedTag = this.namedTag.toBuilder().putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId()).build();
             }
         }
 
@@ -458,7 +452,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
 
         if (!item.isNull()) {
             if (item.getId() == Item.SADDLE && !this.isSaddled()) {
-                getLevel().addLevelSoundEvent(this, LevelSoundEvent.SADDLE, -1, getIdentifier(), false, false);
+                getLevel().addLevelSoundEvent(this, SoundEvent.SADDLE, -1, getIdentifier(), false, false);
                 setSaddle(true);
                 setRideableType(SpawnRiderType.PLAYER);
                 return true;
@@ -484,8 +478,8 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.WARPED_FUNGUS_ON_A_STICK,
-        BlockID.WARPED_FUNGUS
+            ItemID.WARPED_FUNGUS_ON_A_STICK,
+            BlockID.WARPED_FUNGUS
     );
 
     @Override
@@ -493,100 +487,100 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                2, 1
+                        ),
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                1, 1, 1200
+                        )
                 ),
                 Set.of(
-                    new Behavior(
-                        new PlaySoundExecutor(Sound.MOB_STRIDER_IDLE), new RandomSoundEvaluator(), 8,1),
-                    new Behavior(
-                        new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true),
-                            all(
-                                e -> e.isBaby(),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.STAY_NEARBY)
-                            ),
-                        9, 1
-                    ),
-                    new Behavior(
-                        new FollowRiderExecutor(),
-                            new RiderItemControllableEvaluator(),
-                        8, 1
-                    ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.25f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        7, 1
-                    ),
-                    new Behavior(
-                        new StriderMoveToLavaExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getMovementSpeedDefault() * 3.0f),
-                            all(
-                                e -> !(e.getRider() instanceof Player),
-                                e -> !((EntityStrider) e).isWarm(),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
-                                e -> ((EntityStrider) e).shouldReturnToLavaNow()
-                            ),
-                        6, 1
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
-                            all(
-                                e -> e.passengers.isEmpty(),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                            ),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.2f, false, true, false, 10, 2.0f, new TemptExecutor.TemptSound("tempt", 2.0f, 5.0f), TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                e -> {
-                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                    return p != null && !e.isPassenger(p);
-                                },
-                                e -> e.passengers == null || e.passengers.isEmpty()
-                            ),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
+                        new Behavior(
+                                new PlaySoundExecutor(Sound.MOB_STRIDER_IDLE), new RandomSoundEvaluator(), 8, 1),
+                        new Behavior(
+                                new MoveToTargetExecutor(CoreMemoryTypes.STAY_NEARBY, this.getMovementSpeedDefault() * 1.10f, true),
+                                all(
+                                        e -> e.isBaby(),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.STAY_NEARBY)
+                                ),
+                                9, 1
+                        ),
+                        new Behavior(
+                                new FollowRiderExecutor(),
+                                new RiderItemControllableEvaluator(),
+                                8, 1
+                        ),
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.25f),
+                                all(
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                7, 1
+                        ),
+                        new Behavior(
+                                new StriderMoveToLavaExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getMovementSpeedDefault() * 3.0f),
+                                all(
+                                        e -> !(e.getRider() instanceof Player),
+                                        e -> !((EntityStrider) e).isWarm(),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
+                                        e -> ((EntityStrider) e).shouldReturnToLavaNow()
+                                ),
+                                6, 1
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault() * 1.25f, 18, 8, true, 80, true, 10),
+                                all(
+                                        e -> e.passengers.isEmpty(),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                                ),
+                                5, 1
+                        ),
+                        new Behavior(
+                                new TemptExecutor(1.2f, false, true, false, 10, 2.0f, new TemptExecutor.TemptSound("tempt", 2.0f, 5.0f), TEMPT_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ProbabilityEvaluator(4, 10),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                        e -> {
+                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                            return p != null && !e.isPassenger(p);
+                                        },
+                                        e -> e.passengers == null || e.passengers.isEmpty()
+                                ),
+                                1, 1, 100
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(this.getMovementSpeedDefault(), 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1, 1
+                        )
                 ),
                 Set.of(
-                    new FollowEntitySensor(6f, 2f),
-                    new StriderLavaSensor(24, 200),
-                    new NearestPlayerSensor(8, 0, 20)
+                        new FollowEntitySensor(6f, 2f),
+                        new StriderLavaSensor(24, 200),
+                        new NearestPlayerSensor(8, 0, 20)
                 ),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true)
+                        new WalkController(),
+                        new LookController(true, true)
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

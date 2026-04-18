@@ -14,10 +14,10 @@ import cn.nukkit.level.generator.object.structures.utils.LiquidUpdater;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
+import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -123,7 +123,7 @@ public class NetherBridgePieces {
             super(genDepth);
         }
 
-        public NetherBridgePiece(CompoundTag tag) {
+        public NetherBridgePiece(NbtMap tag) {
             super(tag);
         }
 
@@ -132,8 +132,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
             //NOOP
+            return tag;
         }
 
         private int updatePieceWeight(List<PieceWeight> weights) {
@@ -288,7 +289,7 @@ public class NetherBridgePieces {
             }
         }
 
-        public StartPiece(CompoundTag tag) {
+        public StartPiece(NbtMap tag) {
             super(tag);
             this.pendingChildren = Lists.newArrayList();
         }
@@ -307,7 +308,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public BridgeStraight(CompoundTag tag) {
+        public BridgeStraight(NbtMap tag) {
             super(tag);
         }
 
@@ -370,7 +371,7 @@ public class NetherBridgePieces {
             this.selfSeed = random.nextInt();
         }
 
-        public BridgeEndFiller(CompoundTag tag) {
+        public BridgeEndFiller(NbtMap tag) {
             super(tag);
             this.selfSeed = tag.getInt("Seed");
         }
@@ -387,9 +388,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Seed", this.selfSeed);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putInt("Seed", this.selfSeed).build();
         }
 
         @Override
@@ -433,7 +434,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public BridgeCrossing(CompoundTag tag) {
+        public BridgeCrossing(NbtMap tag) {
             super(tag);
         }
 
@@ -505,7 +506,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public RoomCrossing(CompoundTag tag) {
+        public RoomCrossing(NbtMap tag) {
             super(tag);
         }
 
@@ -566,7 +567,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public StairsRoom(CompoundTag tag) {
+        public StairsRoom(NbtMap tag) {
             super(tag);
         }
 
@@ -628,7 +629,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public MonsterThrone(CompoundTag tag) {
+        public MonsterThrone(NbtMap tag) {
             super(tag);
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
@@ -645,9 +646,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Mob", this.hasPlacedSpawner);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Mob", this.hasPlacedSpawner).build();
         }
 
         @Override
@@ -717,7 +718,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleEntrance(CompoundTag tag) {
+        public CastleEntrance(NbtMap tag) {
             super(tag);
         }
 
@@ -823,7 +824,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleStalkRoom(CompoundTag tag) {
+        public CastleStalkRoom(NbtMap tag) {
             super(tag);
         }
 
@@ -965,7 +966,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleSmallCorridorPiece(CompoundTag tag) {
+        public CastleSmallCorridorPiece(NbtMap tag) {
             super(tag);
         }
 
@@ -1015,7 +1016,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleSmallCorridorCrossingPiece(CompoundTag tag) {
+        public CastleSmallCorridorCrossingPiece(NbtMap tag) {
             super(tag);
         }
 
@@ -1068,7 +1069,7 @@ public class NetherBridgePieces {
             this.isNeedingChest = (random.nextBoundedInt(3) == 0);
         }
 
-        public CastleSmallCorridorRightTurnPiece(CompoundTag tag) {
+        public CastleSmallCorridorRightTurnPiece(NbtMap tag) {
             super(tag);
             this.isNeedingChest = tag.getBoolean("Chest");
         }
@@ -1085,9 +1086,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Chest", this.isNeedingChest);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Chest", this.isNeedingChest).build();
         }
 
         @Override
@@ -1111,7 +1112,7 @@ public class NetherBridgePieces {
                 this.isNeedingChest = false;
 
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()-2])), 1, 2, 3, boundingBox);
+                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex() - 2])), 1, 2, 3, boundingBox);
 
                 BlockVector3 vec = new BlockVector3(this.getWorldX(1, 3), this.getWorldY(2), this.getWorldZ(1, 3));
                 if (boundingBox.isInside(vec)) {
@@ -1150,7 +1151,7 @@ public class NetherBridgePieces {
             this.isNeedingChest = (random.nextBoundedInt(3) == 0);
         }
 
-        public CastleSmallCorridorLeftTurnPiece(CompoundTag tag) {
+        public CastleSmallCorridorLeftTurnPiece(NbtMap tag) {
             super(tag);
             this.isNeedingChest = tag.getBoolean("Chest");
         }
@@ -1169,9 +1170,9 @@ public class NetherBridgePieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Chest", this.isNeedingChest);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag=super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Chest", this.isNeedingChest).build();
         }
 
         @Override
@@ -1195,7 +1196,7 @@ public class NetherBridgePieces {
                 this.isNeedingChest = false;
 
                 BlockFace orientation = this.getOrientation();
-                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex()-2])), 3, 2, 3, boundingBox);
+                this.placeBlock(level, BlockChest.PROPERTIES.getBlockState(MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.values()[(orientation == null ? BlockFace.NORTH : orientation).getOpposite().getIndex() - 2])), 3, 2, 3, boundingBox);
 
                 BlockVector3 vec = new BlockVector3(this.getWorldX(3, 3), this.getWorldY(2), this.getWorldZ(3, 3));
                 if (boundingBox.isInside(vec)) {
@@ -1231,7 +1232,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleCorridorStairsPiece(CompoundTag tag) {
+        public CastleCorridorStairsPiece(NbtMap tag) {
             super(tag);
         }
 
@@ -1291,7 +1292,7 @@ public class NetherBridgePieces {
             this.boundingBox = boundingBox;
         }
 
-        public CastleCorridorTBalconyPiece(CompoundTag tag) {
+        public CastleCorridorTBalconyPiece(NbtMap tag) {
             super(tag);
         }
 
@@ -1361,7 +1362,7 @@ public class NetherBridgePieces {
                     .register(new ItemEntry(Item.GOLDEN_SWORD, 5))
                     .register(new ItemEntry(Item.GOLDEN_CHESTPLATE, 5))
                     .register(new ItemEntry(Item.FLINT_AND_STEEL, 5))
-                    .register(new ItemEntry(Block.NETHER_WART , 0, 7, 3, 5))
+                    .register(new ItemEntry(Block.NETHER_WART, 0, 7, 3, 5))
                     .register(new ItemEntry(Item.SADDLE, 10))
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 8))
                     .register(new ItemEntry(Item.IRON_HORSE_ARMOR, 5))

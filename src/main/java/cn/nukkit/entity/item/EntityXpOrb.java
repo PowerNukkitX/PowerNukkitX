@@ -6,8 +6,9 @@ import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -19,7 +20,8 @@ import java.util.Set;
  */
 public class EntityXpOrb extends Entity {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return XP_ORB;
     }
 
@@ -32,7 +34,7 @@ public class EntityXpOrb extends Entity {
     private int pickupDelay;
     private int exp;
 
-    public EntityXpOrb(IChunk chunk, CompoundTag nbt) {
+    public EntityXpOrb(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -65,7 +67,6 @@ public class EntityXpOrb extends Entity {
         return result;
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -115,16 +116,16 @@ public class EntityXpOrb extends Entity {
         setHealthMax(5);
         setHealthCurrent(5);
 
-        if (namedTag.contains("Health")) {
+        if (namedTag.containsKey("Health")) {
             this.setHealthCurrent(namedTag.getShort("Health"));
         }
-        if (namedTag.contains("Age")) {
+        if (namedTag.containsKey("Age")) {
             this.age = namedTag.getShort("Age");
         }
-        if (namedTag.contains("PickupDelay")) {
+        if (namedTag.containsKey("PickupDelay")) {
             this.pickupDelay = namedTag.getShort("PickupDelay");
         }
-        if (namedTag.contains("Value")) {
+        if (namedTag.containsKey("Value")) {
             this.exp = namedTag.getShort("Value");
         }
 
@@ -132,7 +133,7 @@ public class EntityXpOrb extends Entity {
             this.exp = 1;
         }
 
-        this.entityDataMap.put(VALUE, this.exp);
+        this.entityDataMap.put(ActorDataTypes.VALUE, this.exp);
 
         //call event item spawn event
     }
@@ -246,10 +247,12 @@ public class EntityXpOrb extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putShort("Health", (int) getHealthCurrent());
-        this.namedTag.putShort("Age", age);
-        this.namedTag.putShort("PickupDelay", pickupDelay);
-        this.namedTag.putShort("Value", exp);
+        this.namedTag = this.namedTag.toBuilder()
+                .putShort("Health", (short) getHealthCurrent())
+                .putShort("Age", (short) age)
+                .putShort("PickupDelay", (short) pickupDelay)
+                .putShort("Value", (short) exp)
+                .build();
     }
 
     public int getExp() {

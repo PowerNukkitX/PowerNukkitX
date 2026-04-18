@@ -1,11 +1,10 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-
-
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.MobEquipmentPacket;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +20,7 @@ public class EntityEquipmentInventory extends BaseInventory {
      * @throws ClassCastException if the entity does not implements {@link InventoryHolder}
      */
     public EntityEquipmentInventory(InventoryHolder holder) {
-        super(holder, InventoryType.INVENTORY, 9 + 27);
+        super(holder, ContainerType.INVENTORY, 9 + 27);
         this.entity = (Entity) holder;
     }
 
@@ -44,11 +43,12 @@ public class EntityEquipmentInventory extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Player player) {
-        MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
-        mobEquipmentPacket.eid = this.entity.getId();
-        mobEquipmentPacket.inventorySlot = mobEquipmentPacket.hotbarSlot = index;//todo check inventorySlot and hotbarSlot for MobEquipmentPacket
-        mobEquipmentPacket.item = this.getItem(index);
-        player.dataPacket(mobEquipmentPacket);
+        final MobEquipmentPacket packet = new MobEquipmentPacket();
+        packet.setTargetRuntimeID(this.entity.getId());
+        packet.setSlot(index);
+        packet.setSelectedSlot(index);
+        packet.setItem(this.getItem(index).toNetwork());
+        player.dataPacket(packet);
     }
 
     @Override

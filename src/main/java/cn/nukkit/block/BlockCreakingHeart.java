@@ -10,8 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,7 +142,7 @@ public class BlockCreakingHeart extends BlockSolid implements RedstoneComponent,
     }
 
     @Override
-    public @NotNull BlockEntityCreakingHeart createBlockEntity(@Nullable CompoundTag initialData, @Nullable Object... args) {
+    public @NotNull BlockEntityCreakingHeart createBlockEntity(@Nullable NbtMap initialData, @Nullable Object... args) {
         var be = BlockEntityHolder.super.createBlockEntity(initialData, args);
         testAxis();
         return be;

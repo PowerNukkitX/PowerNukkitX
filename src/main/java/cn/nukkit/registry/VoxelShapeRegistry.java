@@ -1,23 +1,54 @@
 package cn.nukkit.registry;
 
 import cn.nukkit.block.customblock.data.voxel.VoxelBox;
-import cn.nukkit.network.protocol.VoxelShapesPacket;
-import cn.nukkit.network.protocol.types.voxel.VoxelCells;
-import cn.nukkit.network.protocol.types.voxel.VoxelShape;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.VoxelShapes;
+import org.cloudburstmc.protocol.bedrock.packet.VoxelShapesPacket;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, VoxelShape> {
-    private static final Object2ObjectOpenHashMap<String, VoxelShape> REGISTRY = new Object2ObjectOpenHashMap<>();
-    @Getter private static VoxelShapesPacket PACKET = new VoxelShapesPacket();
+public final class VoxelShapeRegistry implements IRegistry<String, VoxelShapes.SerializableVoxelShape, VoxelShapes.SerializableVoxelShape> {
+    private static final Object2ObjectOpenHashMap<String, VoxelShapes.SerializableVoxelShape> REGISTRY = new Object2ObjectOpenHashMap<>();
+    @Getter
+    private static VoxelShapesPacket PACKET = new VoxelShapesPacket();
+
+    private static VoxelShapes.SerializableVoxelShape EMPTY_SHAPE;
 
     @Override
     public void init() {
         try {
-            register("minecraft:empty", new VoxelShape(new VoxelCells(0, 0, 0, List.of()), List.of(0f), List.of(0f), List.of(0f)));
-            register("minecraft:unit_cube", new VoxelShape(new VoxelCells(1, 1, 1, List.of(1)), List.of(0f, 1f), List.of(0f, 1f), List.of(0f, 1f)));
+            final VoxelShapes.SerializableCells emptyCells = new VoxelShapes.SerializableCells();
+            emptyCells.setXSize(0);
+            emptyCells.setYSize(0);
+            emptyCells.setZSize(0);
+            EMPTY_SHAPE = new VoxelShapes.SerializableVoxelShape();
+            EMPTY_SHAPE.setCells(emptyCells);
+            EMPTY_SHAPE.getXCoordinates().add(0f);
+            EMPTY_SHAPE.getYCoordinates().add(0f);
+            EMPTY_SHAPE.getZCoordinates().add(0f);
+
+            final VoxelShapes.SerializableCells unitCubeShapeCells = new VoxelShapes.SerializableCells();
+            unitCubeShapeCells.setXSize(1);
+            unitCubeShapeCells.setYSize(1);
+            unitCubeShapeCells.setZSize(1);
+            final VoxelShapes.SerializableVoxelShape unitCubeShape = new VoxelShapes.SerializableVoxelShape();
+            unitCubeShape.setCells(unitCubeShapeCells);
+            unitCubeShape.getXCoordinates().add(0f);
+            unitCubeShape.getXCoordinates().add(1f);
+            unitCubeShape.getYCoordinates().add(0f);
+            unitCubeShape.getYCoordinates().add(1f);
+            unitCubeShape.getZCoordinates().add(0f);
+            unitCubeShape.getZCoordinates().add(1f);
+
+            register("minecraft:empty", EMPTY_SHAPE);
+            register("minecraft:unit_cube", unitCubeShape);
 
             rebuildPacket();
         } catch (RegisterException e) {
@@ -35,26 +66,23 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
     public void rebuildPacket() {
         VoxelShapesPacket pk = new VoxelShapesPacket();
 
-        Map<String, Integer> nameMap = new HashMap<>();
-        List<VoxelShape> shapes = new ArrayList<>();
-        int i = 0;
-        for (Map.Entry<String, VoxelShape> entry : REGISTRY.entrySet()) {
-            if (!nameMap.containsKey(entry.getKey())) {
-                nameMap.put(entry.getKey(), i++);
-                shapes.add(entry.getValue());
-            }
+        Map<String, VoxelShapes.RegistryHandle> nameMap = new HashMap<>();
+        for (String name : REGISTRY.keySet()) {
+            final VoxelShapes.RegistryHandle handle = new VoxelShapes.RegistryHandle();
+            handle.setValue(nameMap.size());
+            nameMap.put(name, handle);
         }
 
-        pk.setShapes(shapes);
-        pk.setNameMap(nameMap);
+        pk.getShapes().addAll(REGISTRY.values().stream().toList());
+        pk.getNameMap().putAll(nameMap);
         pk.setCustomShapeCount(REGISTRY.size() - 2);
 
         PACKET = pk;
     }
 
-    private VoxelShape convertBoxesToShape(List<VoxelBox> boxes) {
+    private VoxelShapes.SerializableVoxelShape convertBoxesToShape(List<VoxelBox> boxes) {
         if (boxes.isEmpty()) {
-            return new VoxelShape(new VoxelCells(0, 0, 0, List.of()), List.of(0f), List.of(0f), List.of(0f));
+            return EMPTY_SHAPE;
         }
 
         // 1. Generate unique normalized axis boundaries
@@ -88,7 +116,18 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
             bitmask.add(b & 0xFF);
         }
 
-        return new VoxelShape(new VoxelCells(resX, resY, resZ, bitmask), xCoords, yCoords, zCoords);
+
+        final VoxelShapes.SerializableCells cells = new VoxelShapes.SerializableCells();
+        cells.setXSize(resX);
+        cells.setYSize(resY);
+        cells.setZSize(resZ);
+        cells.getStorage().addAll(bitmask);
+        final VoxelShapes.SerializableVoxelShape shape = new VoxelShapes.SerializableVoxelShape();
+        shape.getXCoordinates().addAll(xCoords);
+        shape.getYCoordinates().addAll(yCoords);
+        shape.getZCoordinates().addAll(zCoords);
+
+        return shape;
     }
 
     private List<Float> getAxisBoundaries(List<VoxelBox> boxes, int axis) {
@@ -112,7 +151,7 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
     }
 
     @Override
-    public VoxelShape get(String key) {
+    public VoxelShapes.SerializableVoxelShape get(String key) {
         return REGISTRY.get(key);
     }
 
@@ -127,13 +166,13 @@ public final class VoxelShapeRegistry implements IRegistry<String, VoxelShape, V
     }
 
     @Override
-    public void register(String key, VoxelShape value) throws RegisterException {
+    public void register(String key, VoxelShapes.SerializableVoxelShape value) throws RegisterException {
         if (REGISTRY.putIfAbsent(key, value) != null) {
             throw new RegisterException("The VoxelShape " + key + " has already been registered!");
         }
     }
 
-    public Object2ObjectOpenHashMap<String, VoxelShape> getAll() {
+    public Object2ObjectOpenHashMap<String, VoxelShapes.SerializableVoxelShape> getAll() {
         return new Object2ObjectOpenHashMap<>(REGISTRY);
     }
 }

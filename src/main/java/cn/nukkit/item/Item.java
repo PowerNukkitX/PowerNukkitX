@@ -20,39 +20,42 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.LongTag;
-import cn.nukkit.nbt.tag.ShortTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.CompletedUsingItemPacket;
 import cn.nukkit.plugin.PluginManager;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.ItemTags;
-import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.JSONUtils;
+import cn.nukkit.utils.NbtHelper;
+import cn.nukkit.utils.RuntimeBlockDefinition;
 import cn.nukkit.utils.TextFormat;
-import static cn.nukkit.utils.Utils.dynamic;
 import com.google.gson.annotations.SerializedName;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
+import org.cloudburstmc.protocol.bedrock.packet.CompletedUsingItemPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +64,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.StringJoiner;
+
+import static cn.nukkit.utils.Utils.dynamic;
 
 
 /**
@@ -81,13 +86,15 @@ public abstract class Item implements Cloneable, ItemID {
     protected Block block = null;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
-    private CompoundTag cachedNBT;
+    private NbtMap cachedNBT;
     private static int STACK_NETWORK_ID_COUNTER = 1;
+
     private static String DP_DEFAULT_GROUP_UUID() {
         return Server.getDefaultDynamicPropertiesGroupUUID();
     }
-    private static final int    DP_MAX_STRING_BYTES = Server.getDynamicPropertiesMaxStringBytes();
-    private static final double DP_NUMBER_ABS_MAX   = Server.getDynamicPropertiesNumberAbsMax();
+
+    private static final int DP_MAX_STRING_BYTES = Server.getDynamicPropertiesMaxStringBytes();
+    private static final double DP_NUMBER_ABS_MAX = Server.getDynamicPropertiesNumberAbsMax();
     private static final String DP_ROOT = Server.getDynamicPropertyRoot();
 
     public static final int WEARABLE_TIER_LEATHER = 1;
@@ -235,8 +242,8 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        CompoundTag tag = this.getNamedTag();
-        return tag.contains("BlockEntityTag") && tag.get("BlockEntityTag") instanceof CompoundTag;
+        NbtMap tag = this.getNamedTag();
+        return tag.containsKey("BlockEntityTag") && tag.get("BlockEntityTag") instanceof NbtMap;
 
     }
 
@@ -244,44 +251,39 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasCompoundTag()) {
             return this;
         }
-        CompoundTag tag = this.getNamedTag();
+        NbtMap tag = this.getNamedTag();
 
-        if (tag.contains("BlockEntityTag") && tag.get("BlockEntityTag") instanceof CompoundTag) {
-            tag.remove("BlockEntityTag");
-            this.setNamedTag(tag);
+        if (tag.containsKey("BlockEntityTag") && tag.get("BlockEntityTag") instanceof NbtMap) {
+            this.setNamedTag(NbtHelper.remove(tag, "BlockEntityTag"));
         }
 
         return this;
     }
 
-    public Item setCustomBlockData(CompoundTag compoundTag) {
-        CompoundTag tags = compoundTag.copy();
+    public Item setCustomBlockData(NbtMap compoundTag) {
+        NbtMapBuilder tags = compoundTag.toBuilder();
 
-        CompoundTag tag;
+        NbtMap tag;
         if (!this.hasCompoundTag()) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         } else {
             tag = this.getNamedTag();
         }
 
-        tag.putCompound("BlockEntityTag", tags);
-        this.setNamedTag(tag);
+        this.setNamedTag(tag.toBuilder().putCompound("BlockEntityTag", tags.build()).build());
 
         return this;
     }
 
-    public CompoundTag getCustomBlockData() {
+    public NbtMap getCustomBlockData() {
         if (!this.hasCompoundTag()) {
             return null;
         }
 
-        CompoundTag tag = this.getNamedTag();
+        NbtMap tag = this.getNamedTag();
 
-        if (tag.contains("BlockEntityTag")) {
-            Tag bet = tag.get("BlockEntityTag");
-            if (bet instanceof CompoundTag) {
-                return (CompoundTag) bet;
-            }
+        if (tag.containsKey("BlockEntityTag")) {
+            return tag.getCompound("BlockEntityTag");
         }
 
         return null;
@@ -306,14 +308,14 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        CompoundTag tag = this.getNamedTag();
+        NbtMap tag = this.getNamedTag();
 
-        if (tag.contains("ench")) {
-            Tag enchTag = tag.get("ench");
-            return enchTag instanceof ListTag;
-        } else if (tag.contains("custom_ench")) {
-            Tag enchTag = tag.get("custom_ench");
-            return enchTag instanceof ListTag;
+        if (tag.containsKey("ench")) {
+            Object enchTag = tag.get("ench");
+            return enchTag instanceof List<?>;
+        } else if (tag.containsKey("custom_ench")) {
+            Object enchTag = tag.get("custom_ench");
+            return enchTag instanceof List<?>;
         }
 
         return false;
@@ -330,7 +332,7 @@ public abstract class Item implements Cloneable, ItemID {
             return 0;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
+        for (NbtMap entry : this.getNamedTag().getList("ench", NbtType.COMPOUND)) {
             if (entry.getShort("id") == id) {
                 return entry.getShort("lvl");
             }
@@ -349,7 +351,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasEnchantments()) {
             return 0;
         }
-        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+        for (NbtMap entry : this.getNamedTag().getList("custom_ench", NbtType.COMPOUND)) {
             if (entry.getString("id").equals(id)) {
                 return entry.getShort("lvl");
             }
@@ -365,7 +367,7 @@ public abstract class Item implements Cloneable, ItemID {
             return null;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("custom_ench", CompoundTag.class).getAll()) {
+        for (NbtMap entry : this.getNamedTag().getList("custom_ench", NbtType.COMPOUND)) {
             if (entry.getString("id").equals(id)) {
                 Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
                 if (e != null) {
@@ -420,7 +422,7 @@ public abstract class Item implements Cloneable, ItemID {
             return null;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
+        for (NbtMap entry : this.getNamedTag().getList("ench", NbtType.COMPOUND)) {
             if (entry.getShort("id") == id) {
                 Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
                 if (e != null) {
@@ -454,84 +456,91 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void addEnchantment(Enchantment... enchantments) {
-        CompoundTag tag;
+        NbtMap tag;
         if (!this.hasCompoundTag()) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         } else {
             tag = this.getNamedTag();
         }
 
-        ListTag<CompoundTag> ench;
-        if (!tag.contains("ench")) {
-            ench = new ListTag<>();
-            tag.putList("ench", ench);
+        List<NbtMap> ench;
+        if (!tag.containsKey("ench")) {
+            ench = new ObjectArrayList<>();
+            tag = tag.toBuilder().putList("ench", NbtType.COMPOUND, ench).build();
         } else {
-            ench = tag.getList("ench", CompoundTag.class);
+            ench = new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND));
         }
-        ListTag<CompoundTag> custom_ench;
-        if (!tag.contains("custom_ench")) {
-            custom_ench = new ListTag<>();
-            tag.putList("custom_ench", custom_ench);
+        List<NbtMap> custom_ench;
+        if (!tag.containsKey("custom_ench")) {
+            custom_ench = new ObjectArrayList<>();
+            tag = tag.toBuilder().putList("custom_ench", NbtType.COMPOUND, custom_ench).build();
         } else {
-            custom_ench = tag.getList("custom_ench", CompoundTag.class);
+            custom_ench = new ObjectArrayList<>(tag.getList("custom_ench", NbtType.COMPOUND));
         }
 
         for (Enchantment enchantment : enchantments) {
             boolean found = false;
             if (enchantment.getIdentifier() == null) {
                 for (int k = 0; k < ench.size(); k++) {
-                    CompoundTag entry = ench.get(k);
+                    NbtMap entry = ench.get(k);
                     if (entry.getShort("id") == enchantment.getId()) {
-                        ench.add(k, new CompoundTag()
-                                .putShort("id", enchantment.getId())
-                                .putShort("lvl", enchantment.getLevel())
+                        ench.add(k, NbtMap.builder()
+                                .putShort("id", (short) enchantment.getId())
+                                .putShort("lvl", (short) enchantment.getLevel())
+                                .build()
                         );
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    ench.add(new CompoundTag()
-                            .putShort("id", enchantment.getId())
-                            .putShort("lvl", enchantment.getLevel())
+                    ench.add(NbtMap.builder()
+                            .putShort("id", (short) enchantment.getId())
+                            .putShort("lvl", (short) enchantment.getLevel())
+                            .build()
                     );
                 }
             } else {
                 for (int k = 0; k < custom_ench.size(); k++) {
-                    CompoundTag entry = custom_ench.get(k);
+                    NbtMap entry = custom_ench.get(k);
                     if (entry.getString("id").equals(enchantment.getIdentifier().toString())) {
-                        custom_ench.add(k, new CompoundTag()
+                        custom_ench.add(k, NbtMap.builder()
                                 .putString("id", enchantment.getIdentifier().toString())
-                                .putShort("lvl", enchantment.getLevel())
+                                .putShort("lvl", (short) enchantment.getLevel())
+                                .build()
                         );
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    custom_ench.add(new CompoundTag()
+                    custom_ench.add(NbtMap.builder()
                             .putString("id", enchantment.getIdentifier().toString())
-                            .putShort("lvl", enchantment.getLevel())
+                            .putShort("lvl", (short) enchantment.getLevel())
+                            .build()
                     );
                 }
             }
         }
         if (custom_ench.size() != 0) {
             var customName = setCustomEnchantDisplay(custom_ench);
-            if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
-                tag.getCompound("display").putString("Name", customName);
+            if (tag.containsKey("display") && tag.get("display") instanceof NbtMap displayTag) {
+                tag = tag.toBuilder().putCompound("display",
+                        displayTag.toBuilder().putString("Name", customName).build()
+                ).build();
             } else {
-                tag.putCompound("display", new CompoundTag()
+                tag = tag.toBuilder().putCompound("display", NbtMap.builder()
                         .putString("Name", customName)
-                );
+                        .build()
+                ).build();
             }
         }
         this.setNamedTag(tag);
     }
 
-    private String setCustomEnchantDisplay(ListTag<CompoundTag> custom_ench) {
+    private String setCustomEnchantDisplay(List<NbtMap> custom_ench) {
         StringJoiner joiner = new StringJoiner("\n", String.valueOf(TextFormat.RESET) + TextFormat.AQUA + idConvertToName() + "\n", "");
-        for (var ench : custom_ench.getAll()) {
+        for (var ench : custom_ench) {
             var enchantment = Enchantment.getEnchantment(ench.getString("id")).setLevel(ench.getShort("lvl"));
             joiner.add(enchantment.getLore());
         }
@@ -549,8 +558,8 @@ public abstract class Item implements Cloneable, ItemID {
         }
         List<Enchantment> enchantments = new ArrayList<>();
 
-        ListTag<CompoundTag> ench = this.getNamedTag().getList("ench", CompoundTag.class);
-        for (CompoundTag entry : ench.getAll()) {
+        List<NbtMap> ench = new ObjectArrayList<>(this.getNamedTag().getList("ench", NbtType.COMPOUND));
+        for (NbtMap entry : ench) {
             Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
             if (e != null) {
                 e.setLevel(entry.getShort("lvl"), false);
@@ -558,8 +567,8 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
         //custom ench
-        ListTag<CompoundTag> custom_ench = this.getNamedTag().getList("custom_ench", CompoundTag.class);
-        for (CompoundTag entry : custom_ench.getAll()) {
+        List<NbtMap> custom_ench = new ObjectArrayList<>(this.getNamedTag().getList("custom_ench", NbtType.COMPOUND));
+        for (NbtMap entry : custom_ench) {
             Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
             if (e != null) {
                 e.setLevel(entry.getShort("lvl"), false);
@@ -590,22 +599,24 @@ public abstract class Item implements Cloneable, ItemID {
     public void removeEnchantment(int id) {
         if (!this.hasCompoundTag()) return;
 
-        CompoundTag tag = this.getNamedTag();
-        if (!tag.contains("ench")) {
+        NbtMap tag = this.getNamedTag();
+        if (!tag.containsKey("ench")) {
             this.setNamedTag(tag);
             return;
         }
 
-        ListTag<CompoundTag> ench = tag.getList("ench", CompoundTag.class);
+        List<NbtMap> ench = new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND));
         for (int i = ench.size() - 1; i >= 0; i--) {
-            CompoundTag entry = ench.get(i);
+            NbtMap entry = ench.get(i);
             if (entry.getShort("id") == (short) id) {
                 ench.remove(i);
             }
         }
 
-        if (ench.size() == 0) {
-            tag.remove("ench");
+        if (ench.isEmpty()) {
+            NbtMapBuilder builder = tag.toBuilder();
+            builder.remove("ench");
+            tag = builder.build();
         }
 
         this.setNamedTag(tag);
@@ -627,17 +638,17 @@ public abstract class Item implements Cloneable, ItemID {
     public void removeEnchantment(@NotNull String id) {
         if (!this.hasCompoundTag()) return;
 
-        CompoundTag tag = this.getNamedTag();
-        if (!tag.contains("custom_ench")) {
+        NbtMap tag = this.getNamedTag();
+        if (!tag.containsKey("custom_ench")) {
             this.setNamedTag(tag);
             return;
         }
 
-        ListTag<CompoundTag> custom = tag.getList("custom_ench", CompoundTag.class);
+        List<NbtMap> custom = new ObjectArrayList<>(tag.getList("custom_ench", NbtType.COMPOUND));
         boolean removed = false;
 
         for (int i = custom.size() - 1; i >= 0; i--) {
-            CompoundTag entry = custom.get(i);
+            NbtMap entry = custom.get(i);
             if (id.equals(entry.getString("id"))) {
                 custom.remove(i);
                 removed = true;
@@ -645,14 +656,21 @@ public abstract class Item implements Cloneable, ItemID {
         }
 
         if (removed) {
-            if (custom.size() == 0) {
-                tag.remove("custom_ench");
+            if (custom.isEmpty()) {
+                tag = NbtHelper.remove(tag, "custom_ench");
             } else {
                 String customName = setCustomEnchantDisplay(custom);
-                if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
-                    tag.getCompound("display").putString("Name", customName);
+                if (tag.containsKey("display") && tag.get("display") instanceof NbtMap displayTag) {
+                    tag = tag.toBuilder().putCompound("display",
+                            displayTag.toBuilder().putString("Name", customName).build()
+                    ).build();
                 } else {
-                    tag.putCompound("display", new CompoundTag().putString("Name", customName));
+                    tag = tag.toBuilder()
+                            .putCompound("display",
+                                    NbtMap.builder()
+                                            .putString("Name", customName)
+                                            .build()
+                            ).build();
                 }
             }
         }
@@ -663,19 +681,19 @@ public abstract class Item implements Cloneable, ItemID {
     public void removeAllEnchantments() {
         if (!this.hasCompoundTag()) return;
 
-        CompoundTag tag = this.getNamedTag();
-        tag.remove("ench");
-        tag.remove("custom_ench");
-        this.setNamedTag(tag);
+        NbtMapBuilder builder = this.getNamedTag().toBuilder();
+        builder.remove("ench");
+        builder.remove("custom_ench");
+        this.setNamedTag(builder.build());
     }
 
     public int getRepairCost() {
         if (this.hasCompoundTag()) {
-            CompoundTag tag = this.getNamedTag();
-            if (tag.contains("RepairCost")) {
-                Tag repairCost = tag.get("RepairCost");
-                if (repairCost instanceof IntTag) {
-                    return ((IntTag) repairCost).data;
+            NbtMap tag = this.getNamedTag();
+            if (tag.containsKey("RepairCost")) {
+                Object repairCost = tag.get("RepairCost");
+                if (repairCost instanceof Integer repairCostAsInt) {
+                    return repairCostAsInt;
                 }
             }
         }
@@ -684,16 +702,18 @@ public abstract class Item implements Cloneable, ItemID {
 
     public Item setRepairCost(int cost) {
         if (cost <= 0 && this.hasCompoundTag()) {
-            return this.setNamedTag(this.getNamedTag().remove("RepairCost"));
+            final NbtMapBuilder builder = this.getNamedTag().toBuilder();
+            builder.remove("RepairCost");
+            return this.setNamedTag(builder.build());
         }
 
-        CompoundTag tag;
+        NbtMap tag;
         if (!this.hasCompoundTag()) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         } else {
             tag = this.getNamedTag();
         }
-        return this.setNamedTag(tag.putInt("RepairCost", cost));
+        return this.setNamedTag(tag.toBuilder().putInt("RepairCost", cost).build());
     }
 
     public boolean hasCustomName() {
@@ -701,10 +721,10 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        CompoundTag tag = this.getNamedTag();
-        if (tag.contains("display")) {
-            Tag tag1 = tag.get("display");
-            return tag1 instanceof CompoundTag && ((CompoundTag) tag1).contains("Name") && ((CompoundTag) tag1).get("Name") instanceof StringTag;
+        NbtMap tag = this.getNamedTag();
+        if (tag.containsKey("display")) {
+            Object tag1 = tag.get("display");
+            return tag1 instanceof NbtMap && ((NbtMap) tag1).containsKey("Name") && ((NbtMap) tag1).get("Name") instanceof String;
         }
 
         return false;
@@ -715,11 +735,11 @@ public abstract class Item implements Cloneable, ItemID {
             return "";
         }
 
-        CompoundTag tag = this.getNamedTag();
-        if (tag.contains("display")) {
-            Tag tag1 = tag.get("display");
-            if (tag1 instanceof CompoundTag && ((CompoundTag) tag1).contains("Name") && ((CompoundTag) tag1).get("Name") instanceof StringTag) {
-                return ((CompoundTag) tag1).getString("Name");
+        NbtMap tag = this.getNamedTag();
+        if (tag.containsKey("display")) {
+            Object tag1 = tag.get("display");
+            if (tag1 instanceof NbtMap && ((NbtMap) tag1).containsKey("Name") && ((NbtMap) tag1).get("Name") instanceof String) {
+                return ((NbtMap) tag1).getString("Name");
             }
         }
 
@@ -739,18 +759,20 @@ public abstract class Item implements Cloneable, ItemID {
             this.clearCustomName();
         }
 
-        CompoundTag tag;
+        NbtMap tag;
         if (!this.hasCompoundTag()) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         } else {
             tag = this.getNamedTag();
         }
-        if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
-            tag.getCompound("display").putString("Name", name);
+        if (tag.containsKey("display") && tag.get("display") instanceof NbtMap displayTag) {
+            tag = tag.toBuilder().putCompound("display",
+                    displayTag.toBuilder().putString("Name", name).build()
+            ).build();
         } else {
-            tag.putCompound("display", new CompoundTag()
-                    .putString("Name", name)
-            );
+            tag = tag.toBuilder().putCompound("display",
+                    NbtMap.builder().putString("Name", name).build()
+            ).build();
         }
         this.setNamedTag(tag);
         return this;
@@ -768,12 +790,12 @@ public abstract class Item implements Cloneable, ItemID {
             return this;
         }
 
-        CompoundTag tag = this.getNamedTag();
+        NbtMap tag = this.getNamedTag();
 
-        if (tag.contains("display") && tag.get("display") instanceof CompoundTag) {
-            tag.getCompound("display").remove("Name");
-            if (tag.getCompound("display").isEmpty()) {
-                tag.remove("display");
+        if (tag.containsKey("display") && tag.get("display") instanceof NbtMap display) {
+            display = NbtHelper.remove(display, "Name");
+            if (display.isEmpty()) {
+                tag = NbtHelper.remove(tag, "display");
             }
 
             this.setNamedTag(tag);
@@ -790,17 +812,11 @@ public abstract class Item implements Cloneable, ItemID {
      * @return
      */
     public String[] getLore() {
-        Tag tag = this.getNamedTagEntry("display");
+        Object tag = this.getNamedTagEntry("display");
         ArrayList<String> lines = new ArrayList<>();
 
-        if (tag instanceof CompoundTag nbt) {
-            ListTag<StringTag> lore = nbt.getList("Lore", StringTag.class);
-
-            if (lore.size() > 0) {
-                for (StringTag stringTag : lore.getAll()) {
-                    lines.add(stringTag.data);
-                }
-            }
+        if (tag instanceof NbtMap nbt) {
+            lines.addAll(nbt.getList("Lore", NbtType.STRING));
         }
 
         return lines.toArray(EmptyArrays.EMPTY_STRINGS);
@@ -815,23 +831,16 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the lore
      */
     public Item setLore(String... lines) {
-        CompoundTag tag;
+        NbtMap tag;
         if (!this.hasCompoundTag()) {
-            tag = new CompoundTag();
+            tag = NbtMap.EMPTY;
         } else {
             tag = this.getNamedTag();
         }
-        ListTag<StringTag> lore = new ListTag<>();
+        List<String> lore = new ObjectArrayList<>();
+        lore.addAll(Arrays.asList(lines));
 
-        for (String line : lines) {
-            lore.add(new StringTag(line));
-        }
-
-        if (!tag.contains("display")) {
-            tag.putCompound("display", new CompoundTag().putList("Lore", lore));
-        } else {
-            tag.getCompound("display").putList("Lore", lore);
-        }
+        tag = tag.toBuilder().putCompound("display", NbtMap.builder().putList("Lore", NbtType.STRING, lore).build()).build();
 
         this.setNamedTag(tag);
         return this;
@@ -844,11 +853,11 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public Item removeDynamicProperty(String key) {
         if (!this.hasCompoundTag()) return this;
-        CompoundTag root = this.getNamedTag();
-        CompoundTag dyn  = root.getCompound(DP_ROOT);
+        NbtMap root = this.getNamedTag();
+        NbtMap dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return this;
-        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID());
-        if (group == null || !group.contains(key)) return this;
+        NbtMap group = dyn.getCompound(DP_DEFAULT_GROUP_UUID());
+        if (group == null || !group.containsKey(key)) return this;
 
         group.remove(key);
         this.setNamedTag(root);
@@ -861,11 +870,11 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public Item clearDynamicProperties() {
         if (!this.hasCompoundTag()) return this;
-        CompoundTag root = this.getNamedTag();
-        CompoundTag dyn  = root.getCompound(DP_ROOT);
+        NbtMap root = this.getNamedTag();
+        NbtMap dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return this;
 
-        dyn.putCompound(DP_DEFAULT_GROUP_UUID(), new CompoundTag());
+        dyn = dyn.toBuilder().putCompound(DP_DEFAULT_GROUP_UUID(), NbtMap.EMPTY).build();
         this.setNamedTag(root);
         return this;
     }
@@ -873,7 +882,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Set a double int DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key   the key id of the DynamicProperty
      * @param value the double int value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, Double value) {
@@ -882,8 +891,7 @@ public abstract class Item implements Cloneable, ItemID {
             log.warn("DynamicProperty '{}' rejected: out of numeric bounds or non-finite (value={})", key, value);
             return this;
         }
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putDouble(key, value);
+        NbtMap g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID()).toBuilder().putDouble(key, value).build();
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
         return this;
     }
@@ -891,7 +899,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Set a int DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, Integer value) {
@@ -901,7 +909,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Set a int DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key   the key id of the DynamicProperty
      * @param value the int value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, Float value) {
@@ -911,13 +919,12 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Set a boolean DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key  the key id of the DynamicProperty
      * @param bool the bool value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, Boolean bool) {
         if (bool == null) return removeDynamicProperty(key);
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putBoolean(key, bool);
+        NbtMap g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID()).toBuilder().putBoolean(key, bool).build();
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
         return this;
     }
@@ -925,7 +932,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Set a string DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key    the key id of the DynamicProperty
      * @param string the string value of the DynamicProperty
      */
     public Item setDynamicProperty(String key, String string) {
@@ -934,8 +941,7 @@ public abstract class Item implements Cloneable, ItemID {
             log.warn("DynamicProperty '{}' rejected: string exceeds {} UTF-8 bytes", key, DP_MAX_STRING_BYTES);
             return this;
         }
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putString(key, string);
+        NbtMap g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID()).toBuilder().putString(key, string).build();
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
         return this;
     }
@@ -943,7 +949,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Set a Vec3 DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key  the key id of the DynamicProperty
      * @param vec3 the vec3 value of the DynamicProperty
      */
     public Item setVec3DynamicProperty(String key, Vector3 vec3) {
@@ -952,12 +958,8 @@ public abstract class Item implements Cloneable, ItemID {
             log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, vec3.x, vec3.y, vec3.z);
             return this;
         }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) vec3.x));
-        list.add(new FloatTag((float) vec3.y));
-        list.add(new FloatTag((float) vec3.z));
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putList(key, list);
+        final List<Float> list = Arrays.asList((float) vec3.x, (float) vec3.y, (float) vec3.z);
+        NbtMap g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID()).toBuilder().putList(key, NbtType.FLOAT, list).build();
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
         return this;
     }
@@ -980,12 +982,8 @@ public abstract class Item implements Cloneable, ItemID {
             log.warn("DynamicProperty '{}' rejected: vec3 has component(s) out of bounds or non-finite (x={}, y={}, z={})", key, x, y, z);
             return this;
         }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) x));
-        list.add(new FloatTag((float) y));
-        list.add(new FloatTag((float) z));
-        CompoundTag g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        g.putList(key, list);
+        final List<Float> list = Arrays.asList((float) x, (float) y, (float) z);
+        NbtMap g = ensureDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID()).toBuilder().putList(key, NbtType.FLOAT, list).build();
         saveDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID(), g);
         return this;
     }
@@ -997,19 +995,22 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the double int value or null if not available.
      */
     public Double getDoubleDynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
+        Object t = findDynamicPropertyTagInConfiguredGroup(key);
         if (t == null) return null;
 
         return switch (t) {
-            case DoubleTag d -> d.data;
-            case FloatTag  f -> (double) f.data;
-            case IntTag    i -> (double) i.data;
-            case LongTag   l -> (double) l.data;
-            case ShortTag  s -> (double) s.data;
-            case ByteTag   b -> (double) b.data;
-            case StringTag s -> {
-                try { yield Double.parseDouble(s.data.trim()); }
-                catch (NumberFormatException ignored) { yield null; }
+            case Double d -> d;
+            case Float f -> (double) f;
+            case Integer i -> (double) i;
+            case Long l -> (double) l;
+            case Short s -> (double) s;
+            case Byte b -> (double) b;
+            case String s -> {
+                try {
+                    yield Double.parseDouble(s.trim());
+                } catch (NumberFormatException ignored) {
+                    yield null;
+                }
             }
             default -> null;
         };
@@ -1018,7 +1019,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Get a double int DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
      * @return the double int value or defaultValue if not available.
      */
@@ -1042,7 +1043,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Get a int DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
      * @return the int value or defaultValue if not available.
      */
@@ -1066,7 +1067,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Get a float DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
      * @return the float value or defaultValue if not available.
      */
@@ -1082,14 +1083,14 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the bool value or false if not available.
      */
     public Boolean getBoolDynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
+        Object t = findDynamicPropertyTagInConfiguredGroup(key);
         if (t == null) return null;
-        if (t instanceof ByteTag)   return ((ByteTag) t).data != 0;
+        if (t instanceof Byte) return ((Byte) t) != 0;
         Double d = getDoubleDynamicProperty(key);
         if (d != null) return d != 0.0;
-        if (t instanceof StringTag) {
-            String s = ((StringTag) t).data.trim().toLowerCase();
-            if ("true".equals(s) || "1".equals(s))  return true;
+        if (t instanceof String) {
+            String s = ((String) t).trim().toLowerCase();
+            if ("true".equals(s) || "1".equals(s)) return true;
             if ("false".equals(s) || "0".equals(s)) return false;
         }
         return null;
@@ -1098,7 +1099,7 @@ public abstract class Item implements Cloneable, ItemID {
     /**
      * Get a boolean DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
      * @return the bool value or defaultValue if not available.
      */
@@ -1114,25 +1115,15 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the bool value or null if not available.
      */
     public String getStringDynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
+        Object t = findDynamicPropertyTagInConfiguredGroup(key);
         if (t == null) return null;
-
-        return switch (t) {
-            case StringTag s -> s.data;
-            case DoubleTag d -> String.valueOf(d.data);
-            case FloatTag  f -> String.valueOf(f.data);
-            case IntTag    i -> String.valueOf(i.data);
-            case LongTag   l -> String.valueOf(l.data);
-            case ShortTag  s -> String.valueOf(s.data);
-            case ByteTag   b -> String.valueOf(b.data);
-            default -> null;
-        };
+        return String.valueOf(t);
     }
 
     /**
      * Get a string DynamicProperty.
      *
-     * @param key the key id of the DynamicProperty
+     * @param key          the key id of the DynamicProperty
      * @param defaultValue the default value to be returned if null.
      * @return the string value or defaultValue if not available.
      */
@@ -1148,18 +1139,17 @@ public abstract class Item implements Cloneable, ItemID {
      * @return the bool value or null if not available.
      */
     public Vector3 getVec3DynamicProperty(String key) {
-        Tag t = findDynamicPropertyTagInConfiguredGroup(key);
+        Object t = findDynamicPropertyTagInConfiguredGroup(key);
         if (t == null) return null;
 
-        if (t instanceof ListTag<?> list &&
-            list.size() == 3 &&
-            list.get(0) instanceof FloatTag fx &&
-            list.get(1) instanceof FloatTag fy &&
-            list.get(2) instanceof FloatTag fz) {
-
-            float x = fx.data;
-            float y = fy.data;
-            float z = fz.data;
+        if (t instanceof List<?> list &&
+                list.size() == 3 &&
+                list.get(0) instanceof Float fx &&
+                list.get(1) instanceof Float fy &&
+                list.get(2) instanceof Float fz) {
+            float x = fx;
+            float y = fy;
+            float z = fz;
             return new Vector3(x, y, z);
         }
         return null;
@@ -1176,58 +1166,57 @@ public abstract class Item implements Cloneable, ItemID {
         return byteCount <= DP_MAX_STRING_BYTES;
     }
 
-    private CompoundTag ensureDynamicPropertiesGroup(String groupId) {
-        CompoundTag root  = this.getOrCreateNamedTag();
-        CompoundTag dyn   = root.getCompound(DP_ROOT);
-        CompoundTag group = (dyn != null) ? dyn.getCompound(groupId) : null;
-        if (group == null) group = new CompoundTag();
+    private NbtMap ensureDynamicPropertiesGroup(String groupId) {
+        NbtMap root = this.getOrCreateNamedTag();
+        NbtMap dyn = root.getCompound(DP_ROOT);
+        NbtMap group = (dyn != null) ? dyn.getCompound(groupId) : null;
+        if (group == null) group = NbtMap.EMPTY;
         return group;
     }
 
-    private CompoundTag getDynamicPropertiesGroup(String groupId) {
-        CompoundTag root = this.getNamedTag();
-        if (root == null || !root.contains(DP_ROOT)) return null;
-        CompoundTag dyn = root.getCompound(DP_ROOT);
+    private NbtMap getDynamicPropertiesGroup(String groupId) {
+        NbtMap root = this.getNamedTag();
+        if (root == null || !root.containsKey(DP_ROOT)) return null;
+        NbtMap dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return null;
         return dyn.getCompound(groupId);
     }
 
-    private void saveDynamicPropertiesGroup(String groupId, CompoundTag group) {
-        CompoundTag root = this.getOrCreateNamedTag();
-        CompoundTag dyn  = root.getCompound(DP_ROOT);
-        if (!root.contains(DP_ROOT) || dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
+    private void saveDynamicPropertiesGroup(String groupId, NbtMap group) {
+        NbtMap root = this.getOrCreateNamedTag();
+        NbtMap dyn = root.getCompound(DP_ROOT);
+        if (!root.containsKey(DP_ROOT) || dyn == null) {
+            dyn = NbtMap.EMPTY;
         }
-
-        dyn.putCompound(groupId, group);
+        NbtMapBuilder dynBuilder = dyn.toBuilder().putCompound(groupId, group);
+        root = root.toBuilder().putCompound(DP_ROOT, dynBuilder.build()).build();
         this.setNamedTag(root);
     }
 
-    private Tag findDynamicPropertyTagInConfiguredGroup(String key) {
-        CompoundTag group = getDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
-        if (group == null || !group.contains(key)) return null;
+    private Object findDynamicPropertyTagInConfiguredGroup(String key) {
+        NbtMap group = getDynamicPropertiesGroup(DP_DEFAULT_GROUP_UUID());
+        if (group == null || !group.containsKey(key)) return null;
         return group.get(key);
     }
     // Dynamic Properties Helpers end
 
-    public Tag getNamedTagEntry(String name) {
-        CompoundTag tag = this.getNamedTag();
+    public Object getNamedTagEntry(String name) {
+        NbtMap tag = this.getNamedTag();
         if (tag != null) {
-            return tag.contains(name) ? tag.get(name) : null;
+            return tag.containsKey(name) ? tag.get(name) : null;
         }
 
         return null;
     }
 
-    public Item setNamedTag(@Nullable CompoundTag tag) {
+    public Item setNamedTag(@Nullable NbtMap tag) {
         this.cachedNBT = tag;
         this.tags = writeCompoundTag(tag);
         return this;
     }
 
     @Nullable
-    public CompoundTag getNamedTag() {
+    public NbtMap getNamedTag() {
         if (!this.hasCompoundTag()) {
             return null;
         }
@@ -1238,7 +1227,7 @@ public abstract class Item implements Cloneable, ItemID {
         return this.cachedNBT;
     }
 
-    public Item setCompoundTag(@Nullable CompoundTag tag) {
+    public Item setCompoundTag(@Nullable NbtMap tag) {
         return setNamedTag(tag);
     }
 
@@ -1259,9 +1248,10 @@ public abstract class Item implements Cloneable, ItemID {
         } else return false;
     }
 
-    public CompoundTag getOrCreateNamedTag() {
+    public NbtMap getOrCreateNamedTag() {
         if (!hasCompoundTag()) {
-            setNamedTag(new CompoundTag());
+            setNamedTag(NbtMap.EMPTY);
+            cachedNBT = NbtMap.EMPTY;
             return cachedNBT;
         }
         return getNamedTag();
@@ -1273,25 +1263,30 @@ public abstract class Item implements Cloneable, ItemID {
         return this;
     }
 
-    public static CompoundTag parseCompoundTag(byte[] tag) {
+    public static NbtMap parseCompoundTag(byte[] tag) {
         if (tag == null || tag.length == 0) return null;
-        try {
-            return NBTIO.read(tag, ByteOrder.LITTLE_ENDIAN);
+        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(tag);
+             final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+            return (NbtMap) nbtInputStream.readTag();
         } catch (IOException e) {
-            try {
-                return NBTIO.read(tag, ByteOrder.BIG_ENDIAN);
+            try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(tag);
+                 final NBTInputStream nbtInputStream = NbtUtils.createReader(inputStream)) {
+                return (NbtMap) nbtInputStream.readTag();
             } catch (IOException ee) {
                 throw new UncheckedIOException(ee);
             }
         }
     }
 
-    public byte[] writeCompoundTag(CompoundTag tag) {
+    public byte[] writeCompoundTag(NbtMap tag) {
         if (tag == null) {
             return EmptyArrays.EMPTY_BYTES;
         }
-        try {
-            return NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN);
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+            nbtOutputStream.writeTag(tag);
+            nbtOutputStream.close();
+            return outputStream.toByteArray();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -1351,10 +1346,10 @@ public abstract class Item implements Cloneable, ItemID {
      * @return true if item has a string tag
      */
     public boolean hasTag(final String itemTag) {
-        CompoundTag customTags = getCustomItemComponent("minecraft:tags");
+        NbtMap customTags = getCustomItemComponent("minecraft:tags");
         if (customTags != null) {
-            ListTag<StringTag> list = customTags.getList("tags", StringTag.class);
-            if (list != null && list.getAll().stream().anyMatch(s -> itemTag.equals(s.data))) {
+            List<String> list = customTags.getList("tags", NbtType.STRING);
+            if (list != null && list.stream().anyMatch(s -> itemTag.equals(s))) {
                 return true;
             }
         }
@@ -1513,7 +1508,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Called after {@link #onUse(Player, int)},It will only be called when onUse returns true
      */
     public void afterUse(Player player) {
-        CompoundTag c = getCustomItemComponent("minecraft:cooldown");
+        NbtMap c = getCustomItemComponent("minecraft:cooldown");
         if (c != null) {
             String categoryId = c.getString("category");
             int duration = Math.max(0, Math.round(c.getFloat("duration") * 20f));
@@ -1538,7 +1533,7 @@ public abstract class Item implements Cloneable, ItemID {
                 " (" + this.id
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
-                + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
+                + (this.hasCompoundTag() ? " tags:0x" + ByteBufUtil.hexDump(this.getCompoundTag()) : "");
     }
 
     /**
@@ -1639,33 +1634,33 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        CompoundTag thisTags = this.getNamedTag();
-        CompoundTag otherTags = item.getNamedTag();
+        NbtMap thisTags = this.getNamedTag();
+        NbtMap otherTags = item.getNamedTag();
         if (thisTags.equals(otherTags)) {
             return true;
         }
 
-        if (!thisTags.contains("ench") || !otherTags.contains("ench")
-                || !(thisTags.get("ench") instanceof ListTag)
-                || !(otherTags.get("ench") instanceof ListTag)
-                || thisTags.getList("ench").size() != otherTags.getList("ench").size()) {
+        if (!thisTags.containsKey("ench") || !otherTags.containsKey("ench")
+                || !(thisTags.get("ench") instanceof List<?>)
+                || !(otherTags.get("ench") instanceof List<?>)
+                || thisTags.getList("ench", NbtType.COMPOUND).size() != otherTags.getList("ench", NbtType.COMPOUND).size()) {
             return false;
         }
 
-        ListTag<CompoundTag> thisEnchantmentTags = thisTags.getList("ench", CompoundTag.class);
-        ListTag<CompoundTag> otherEnchantmentTags = otherTags.getList("ench", CompoundTag.class);
+        List<NbtMap> thisEnchantmentTags = thisTags.getList("ench", NbtType.COMPOUND);
+        List<NbtMap> otherEnchantmentTags = otherTags.getList("ench", NbtType.COMPOUND);
 
         int size = thisEnchantmentTags.size();
         Int2IntMap enchantments = new Int2IntArrayMap(size);
         enchantments.defaultReturnValue(Integer.MIN_VALUE);
 
         for (int i = 0; i < size; i++) {
-            CompoundTag tag = thisEnchantmentTags.get(i);
+            NbtMap tag = thisEnchantmentTags.get(i);
             enchantments.put(tag.getShort("id"), tag.getShort("lvl"));
         }
 
         for (int i = 0; i < size; i++) {
-            CompoundTag tag = otherEnchantmentTags.get(i);
+            NbtMap tag = otherEnchantmentTags.get(i);
             if (enchantments.get(tag.getShort("id")) != tag.getShort("lvl")) {
                 return false;
             }
@@ -1694,9 +1689,10 @@ public abstract class Item implements Cloneable, ItemID {
      * Controls what block types this block may be placed on.
      */
     public void addCanPlaceOn(Block block) {
-        CompoundTag tag = getOrCreateNamedTag();
-        ListTag<StringTag> canPlaceOn = tag.getList("CanPlaceOn", StringTag.class);
-        tag.putList("CanPlaceOn", canPlaceOn.add(new StringTag(block.toItem().getId())));
+        NbtMap tag = getOrCreateNamedTag();
+        List<String> canPlaceOn = tag.getList("CanPlaceOn", NbtType.STRING);
+        canPlaceOn.add(block.toItem().getId());
+        tag = tag.toBuilder().putList("CanPlaceOn", NbtType.STRING, canPlaceOn).build();
         this.setCompoundTag(tag);
     }
 
@@ -1707,27 +1703,34 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setCanPlaceOn(Block[] blocks) {
-        CompoundTag tag = getOrCreateNamedTag();
-        ListTag<StringTag> canPlaceOn = new ListTag<>();
+        NbtMap tag = getOrCreateNamedTag();
+        List<String> canPlaceOn = new ObjectArrayList<>();
         for (Block block : blocks) {
-            canPlaceOn.add(new StringTag(block.toItem().getId()));
+            canPlaceOn.add(block.toItem().getId());
         }
-        tag.putList("CanPlaceOn", canPlaceOn);
+        tag = tag.toBuilder().putList("CanPlaceOn", NbtType.STRING, canPlaceOn).build();
         this.setCompoundTag(tag);
     }
 
-    public ListTag<StringTag> getCanPlaceOn() {
-        CompoundTag tag = getOrCreateNamedTag();
-        return tag.getList("CanPlaceOn", StringTag.class);
+    public void setCanPlaceOn(List<String> canPlaceOn) {
+        NbtMap tag = getOrCreateNamedTag();
+        tag = tag.toBuilder().putList("CanPlaceOn", NbtType.STRING, canPlaceOn).build();
+        this.setCompoundTag(tag);
+    }
+
+    public List<String> getCanPlaceOn() {
+        NbtMap tag = getOrCreateNamedTag();
+        return tag.getList("CanPlaceOn", NbtType.STRING);
     }
 
     /**
      * Controls the types of blocks this block can break (in Adventure Mode). This effect does not change its normal breaking speed or loot.
      */
     public void addCanDestroy(Block block) {
-        CompoundTag tag = getOrCreateNamedTag();
-        ListTag<StringTag> canDestroy = tag.getList("CanDestroy", StringTag.class);
-        tag.putList("CanDestroy", canDestroy.add(new StringTag(block.toItem().getId())));
+        NbtMap tag = getOrCreateNamedTag();
+        List<String> canDestroy = tag.getList("CanDestroy", NbtType.STRING);
+        canDestroy.add(block.toItem().getId());
+        tag = tag.toBuilder().putList("CanDestroy", NbtType.STRING, canDestroy).build();
         this.setCompoundTag(tag);
     }
 
@@ -1738,18 +1741,24 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setCanDestroy(Block[] blocks) {
-        CompoundTag tag = getOrCreateNamedTag();
-        ListTag<StringTag> canDestroy = new ListTag<>();
+        NbtMap tag = getOrCreateNamedTag();
+        List<String> canDestroy = new ObjectArrayList<>();
         for (Block block : blocks) {
-            canDestroy.add(new StringTag(block.toItem().getId()));
+            canDestroy.add(block.toItem().getId());
         }
-        tag.putList("CanDestroy", canDestroy);
+        tag = tag.toBuilder().putList("CanDestroy", NbtType.STRING, canDestroy).build();
         this.setCompoundTag(tag);
     }
 
-    public ListTag<StringTag> getCanDestroy() {
-        CompoundTag tag = getOrCreateNamedTag();
-        return tag.getList("CanDestroy", StringTag.class);
+    public void setCanDestroyOn(List<String> canDestroy) {
+        NbtMap tag = getOrCreateNamedTag();
+        tag = tag.toBuilder().putList("CanDestroy", NbtType.STRING, canDestroy).build();
+        this.setCompoundTag(tag);
+    }
+
+    public List<String> getCanDestroy() {
+        NbtMap tag = getOrCreateNamedTag();
+        return tag.getList("CanDestroy", NbtType.STRING);
     }
 
     /**
@@ -1764,13 +1773,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setItemLockMode(ItemLockMode mode) {
-        CompoundTag tag = getOrCreateNamedTag();
+        NbtMapBuilder builder = getOrCreateNamedTag().toBuilder();
         if (mode == ItemLockMode.NONE) {
-            tag.remove("minecraft:item_lock");
+            builder.remove("minecraft:item_lock");
         } else {
-            tag.putByte("minecraft:item_lock", mode.ordinal());
+            builder = builder.putByte("minecraft:item_lock", (byte) mode.ordinal());
         }
-        this.setCompoundTag(tag);
+        this.setCompoundTag(builder.build());
     }
 
     /**
@@ -1779,21 +1788,21 @@ public abstract class Item implements Cloneable, ItemID {
      * @return ItemLockMode
      */
     public ItemLockMode getItemLockMode() {
-        CompoundTag tag = getOrCreateNamedTag();
-        if (tag.contains("minecraft:item_lock")) {
+        NbtMap tag = getOrCreateNamedTag();
+        if (tag.containsKey("minecraft:item_lock")) {
             return ItemLockMode.values()[tag.getByte("minecraft:item_lock")];
         }
         return ItemLockMode.NONE;
     }
 
     public void setKeepOnDeath(boolean keepOnDeath) {
-        CompoundTag tag = getOrCreateNamedTag();
+        NbtMapBuilder builder = getOrCreateNamedTag().toBuilder();
         if (keepOnDeath) {
-            tag.putByte("minecraft:keep_on_death", 1);
+            builder = builder.putByte("minecraft:keep_on_death", (byte) 1);
         } else {
-            tag.remove("minecraft:keep_on_death");
+            builder.remove("minecraft:keep_on_death");
         }
-        this.setCompoundTag(tag);
+        this.setCompoundTag(builder.build());
     }
 
     /**
@@ -1802,8 +1811,8 @@ public abstract class Item implements Cloneable, ItemID {
      * @return if item does not drop on death
      */
     public boolean keepOnDeath() {
-        CompoundTag tag = getOrCreateNamedTag();
-        return tag.contains("minecraft:keep_on_death");
+        NbtMap tag = getOrCreateNamedTag();
+        return tag.containsKey("minecraft:keep_on_death");
     }
 
     protected static BlockState getItemBlockState(final String id, final Integer aux) {
@@ -1848,7 +1857,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
 
-
     /////////////////////////////
     // Generic Item Components
     /////////////////////////////
@@ -1866,7 +1874,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the maximum number of items to be stacked
      */
     public int getMaxStackSize() {
-        CompoundTag c = getCustomItemComponent("minecraft:max_stack_size");
+        NbtMap c = getCustomItemComponent("minecraft:max_stack_size");
         if (c != null) {
             return c.getByte("value") & 0xFF;
         }
@@ -1878,7 +1886,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Get the burn time of a burnable item
      */
     public final Integer getFuelTime() {
-        CompoundTag c = getCustomItemComponent("minecraft:fuel");
+        NbtMap c = getCustomItemComponent("minecraft:fuel");
         if (c != null) {
             float seconds = c.getFloat("duration");
             return Math.round(seconds * 20);
@@ -1925,7 +1933,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getUseDuration() {
-        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        NbtMap c = getCustomItemComponent("minecraft:use_modifiers");
         if (c != null) {
             return c.getFloat("use_duration");
         }
@@ -1938,7 +1946,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getMovimentModifier() {
-        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        NbtMap c = getCustomItemComponent("minecraft:use_modifiers");
         if (c != null) {
             return c.getFloat("movement_modifier");
         }
@@ -1975,7 +1983,7 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-    /** 
+    /**
      * Returns the block that this item’s block_placer would place, or null if none.
      */
     public @Nullable Block getBlockPlacerTargetBlock() {
@@ -1989,7 +1997,7 @@ public abstract class Item implements Cloneable, ItemID {
         return (b == null || b.isAir()) ? null : b;
     }
 
-    /** 
+    /**
      * Convenience: whether item has minecraft:block_placer.
      */
     public boolean hasBlockPlacer() {
@@ -2019,18 +2027,18 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if item never despawns
      */
     public boolean shouldDespawn() {
-        CompoundTag p = getCustomItemProperties();
-        if (p != null && p.contains("should_despawn")) {
+        NbtMap p = getCustomItemProperties();
+        if (p != null && p.containsKey("should_despawn")) {
             return p.getBoolean("should_despawn");
         }
         return true;
     }
 
 
-
     /////////////////////////////
     // Item Food/Edible Methods
-    /////////////////////////////
+
+    /// //////////////////////////
     public boolean isEdible() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) {
@@ -2040,12 +2048,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public int getNutrition() {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
+        NbtMap c = getCustomItemComponent("minecraft:food");
         if (c != null) {
             return c.getInt("nutrition");
         }
         return getFoodRestore();
     }
+
     /**
      * @deprecated Use {@link #getNutrition()} instead.
      */
@@ -2055,7 +2064,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getSaturation() {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
+        NbtMap c = getCustomItemComponent("minecraft:food");
         if (c != null) {
             int itemNutrition = getNutrition();
             float itemSaturationModifier = c.getFloat("saturation_modifier");
@@ -2063,6 +2072,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
         return getSaturationRestore();
     }
+
     /**
      * @deprecated Use {@link #getSaturation()} instead.
      */
@@ -2072,7 +2082,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public float getSaturationModifier() {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
+        NbtMap c = getCustomItemComponent("minecraft:food");
         if (c != null) {
             return c.getFloat("saturation_modifier");
         }
@@ -2080,12 +2090,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean canAlwaysEat() {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
+        NbtMap c = getCustomItemComponent("minecraft:food");
         if (c != null) {
             return c.getBoolean("can_always_eat");
         }
         return !isRequiresHunger();
     }
+
     /**
      * @deprecated Use {@link #canAlwaysEat()} instead.
      */
@@ -2096,7 +2107,7 @@ public abstract class Item implements Cloneable, ItemID {
 
 
     public int getEatingTicks() {
-        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
+        NbtMap c = getCustomItemComponent("minecraft:use_modifiers");
         if (c != null) {
             float seconds = c.getFloat("use_duration");
             return Math.max(0, Math.round(seconds * 20f));
@@ -2108,7 +2119,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Used for additional behaviour in Food like: Chorus, Suspicious Stew and etc.
      */
     public boolean onEaten(Player player) {
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
+        player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.EAT);
         return true;
     }
 
@@ -2135,6 +2146,7 @@ public abstract class Item implements Cloneable, ItemID {
 
         if (this.onEaten(player)) {
             player.getFoodData().addFood(this);
+            player.completeUsingItem(this.getRuntimeId(), ItemUseMethod.EAT);
 
             if (player.isAdventure() || player.isSurvival()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
@@ -2149,11 +2161,11 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private void handleUsingConvertsTo(Player player) {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
+        NbtMap c = getCustomItemComponent("minecraft:food");
         if (c == null) return;
 
-        Tag tag = c.get("using_converts_to");
-        if (!(tag instanceof StringTag)) return;
+        Object tag = c.get("using_converts_to");
+        if (!(tag instanceof String)) return;
 
         String id = c.getString("using_converts_to");
         if (id == null || id.isBlank()) return;
@@ -2175,8 +2187,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
 
-
-
     /////////////////////////////
     // Item Armor Methods
     /////////////////////////////
@@ -2193,15 +2203,15 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public @NotNull ItemArmorType getWearableType() {
-        CompoundTag c = getCustomItemComponent("minecraft:wearable");
+        NbtMap c = getCustomItemComponent("minecraft:wearable");
         if (c != null) {
             ItemArmorType t = ItemArmorType.get(c.getString("slot"));
             return t != null ? t : ItemArmorType.NONE;
         }
-        if (this.isHelmet())     return ItemArmorType.HEAD;
+        if (this.isHelmet()) return ItemArmorType.HEAD;
         if (this.isChestplate()) return ItemArmorType.CHEST;
-        if (this.isLeggings())   return ItemArmorType.LEGS;
-        if (this.isBoots())      return ItemArmorType.FEET;
+        if (this.isLeggings()) return ItemArmorType.LEGS;
+        if (this.isBoots()) return ItemArmorType.FEET;
         return ItemArmorType.NONE;
     }
 
@@ -2252,9 +2262,11 @@ public abstract class Item implements Cloneable, ItemID {
 
     /**
      * Triggers when the player uses an item.
+     *
      * @param player The player using item
      */
-    public void whileUsing(Player player) {}
+    public void whileUsing(Player player) {
+    }
 
     /**
      * Define the Armor Toughness of an item
@@ -2275,13 +2287,13 @@ public abstract class Item implements Cloneable, ItemID {
         if (setEquipped(inv, this)) {
             inv.setItem(inv.getHeldItemIndex(), old);
             Sound s = switch (getTier()) {
-                case WEARABLE_TIER_CHAIN     -> Sound.ARMOR_EQUIP_CHAIN;
-                case WEARABLE_TIER_DIAMOND   -> Sound.ARMOR_EQUIP_DIAMOND;
-                case WEARABLE_TIER_GOLD      -> Sound.ARMOR_EQUIP_GOLD;
-                case WEARABLE_TIER_IRON      -> Sound.ARMOR_EQUIP_IRON;
-                case WEARABLE_TIER_LEATHER   -> Sound.ARMOR_EQUIP_LEATHER;
+                case WEARABLE_TIER_CHAIN -> Sound.ARMOR_EQUIP_CHAIN;
+                case WEARABLE_TIER_DIAMOND -> Sound.ARMOR_EQUIP_DIAMOND;
+                case WEARABLE_TIER_GOLD -> Sound.ARMOR_EQUIP_GOLD;
+                case WEARABLE_TIER_IRON -> Sound.ARMOR_EQUIP_IRON;
+                case WEARABLE_TIER_LEATHER -> Sound.ARMOR_EQUIP_LEATHER;
                 case WEARABLE_TIER_NETHERITE -> Sound.ARMOR_EQUIP_NETHERITE;
-                default                      -> Sound.ARMOR_EQUIP_GENERIC;
+                default -> Sound.ARMOR_EQUIP_GENERIC;
             };
             level.addSound(player, s);
         }
@@ -2291,21 +2303,21 @@ public abstract class Item implements Cloneable, ItemID {
 
     private Item getEquipped(HumanInventory inv) {
         return switch (getWearableType()) {
-            case HEAD  -> inv.getHelmet();
+            case HEAD -> inv.getHelmet();
             case CHEST -> inv.getChestplate();
-            case LEGS  -> inv.getLeggings();
-            case FEET  -> inv.getBoots();
-            case NONE  -> Item.AIR;
+            case LEGS -> inv.getLeggings();
+            case FEET -> inv.getBoots();
+            case NONE -> Item.AIR;
         };
     }
 
     private boolean setEquipped(HumanInventory inv, Item item) {
         return switch (getWearableType()) {
-            case HEAD  -> inv.setHelmet(item);
+            case HEAD -> inv.setHelmet(item);
             case CHEST -> inv.setChestplate(item);
-            case LEGS  -> inv.setLeggings(item);
-            case FEET  -> inv.setBoots(item);
-            case NONE  -> false;
+            case LEGS -> inv.setLeggings(item);
+            case FEET -> inv.setBoots(item);
+            case NONE -> false;
         };
     }
 
@@ -2314,10 +2326,11 @@ public abstract class Item implements Cloneable, ItemID {
         Server server = Server.getInstance();
         if (server == null) return; // unit tests sometimes have invalid server instance
         PluginManager pluginManager = server.getPluginManager();
-        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
-        if(!event.isCancelled()) {
+        if (pluginManager != null)
+            pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
+        if (!event.isCancelled()) {
             setDamageRaw(event.getNewDurability());
-            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
+            this.setNamedTag(this.getOrCreateNamedTag().toBuilder().putInt("Damage", event.getNewDurability()).build());
         }
     }
 
@@ -2341,7 +2354,7 @@ public abstract class Item implements Cloneable, ItemID {
     public boolean isTool() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) {
-        return isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears();
+            return isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears();
         }
         return false;
     }
@@ -2350,12 +2363,12 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the attackdamage of an item
      */
     public int getAttackDamage() {
-        CompoundTag c = getCustomItemComponent("minecraft:damage");
-        if (c != null && c.contains("value")) {
+        NbtMap c = getCustomItemComponent("minecraft:damage");
+        if (c != null && c.containsKey("value")) {
             return c.getByte("value") & 0xFF;
         }
-        CompoundTag p = getCustomItemProperties();
-        if (p != null && p.contains("damage")) {
+        NbtMap p = getCustomItemProperties();
+        if (p != null && p.containsKey("damage")) {
             return p.getInt("damage");
         }
         return 1;
@@ -2428,6 +2441,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (this instanceof ItemShield) return true;
         return false;
     }
+
     /**
      * Define if the item is a Bow
      */
@@ -2437,6 +2451,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (this instanceof ItemBow) return true;
         return false;
     }
+
     /**
      * Define if the item is a Crossbow
      */
@@ -2446,6 +2461,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (this instanceof ItemCrossbow) return true;
         return false;
     }
+
     /**
      * Define if the item is a Trident
      */
@@ -2455,6 +2471,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (this instanceof ItemTrident) return true;
         return false;
     }
+
     /**
      * Define if the item is a Mace
      */
@@ -2481,32 +2498,32 @@ public abstract class Item implements Cloneable, ItemID {
         return false;
     }
 
-    /** 
+    /**
      * Returns the digger speed based on the block Id or tags it contains, also adds efficience bonus if enabled
      */
     @Nullable
     public Integer getDiggerSpeed(@Nullable Block block) {
         if (block == null) return null;
 
-        CompoundTag digger = getCustomItemComponent("minecraft:digger");
+        NbtMap digger = getCustomItemComponent("minecraft:digger");
         if (digger == null) return null;
 
-        ListTag<CompoundTag> rules = digger.getList("destroy_speeds", CompoundTag.class);
+        List<NbtMap> rules = digger.getList("destroy_speeds", NbtType.COMPOUND);
         if (rules == null || rules.size() == 0) return null;
 
         final String blockId = block.getId();
 
-        for (CompoundTag rule : rules.getAll()) {
-            CompoundTag blk = rule.getCompound("block");
+        for (NbtMap rule : rules) {
+            NbtMap blk = rule.getCompound("block");
 
-            String name = blk.contains("name") ? blk.getString("name") : "";
+            String name = blk.containsKey("name") ? blk.getString("name") : "";
             if (!name.isEmpty() && name.equals(blockId)) return rule.getInt("speed");
         }
 
-        for (CompoundTag rule : rules.getAll()) {
-            CompoundTag blk = rule.getCompound("block");
+        for (NbtMap rule : rules) {
+            NbtMap blk = rule.getCompound("block");
 
-            String tagsExpr = blk.contains("tags") ? blk.getString("tags") : "";
+            String tagsExpr = blk.containsKey("tags") ? blk.getString("tags") : "";
             if (tagsExpr.isEmpty()) continue;
 
             boolean matched = anyTagMatches(block, tagsExpr);
@@ -2516,7 +2533,7 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
-    /** 
+    /**
      * Supports: query.any_tag('wood') or query.any_tag('wood','logs')
      */
     private boolean anyTagMatches(Block block, String expr) {
@@ -2533,7 +2550,8 @@ public abstract class Item implements Cloneable, ItemID {
                     String tag = s.substring(1, s.length() - 1).trim();
                     if (!tag.isEmpty()) {
                         if (block.hasTag(tag)) return true;
-                        if (block.getTags() != null && java.util.Arrays.asList(block.getTags()).contains(tag)) return true;
+                        if (block.getTags() != null && java.util.Arrays.asList(block.getTags()).contains(tag))
+                            return true;
                     }
                 }
             }
@@ -2547,11 +2565,11 @@ public abstract class Item implements Cloneable, ItemID {
         }
 
         if (block.getToolType() == ItemTool.TYPE_PICKAXE && this.isPickaxe() ||
-            block.getToolType() == ItemTool.TYPE_SHOVEL && this.isShovel() ||
-            block.getToolType() == ItemTool.TYPE_AXE && this.isAxe() ||
-            block.getToolType() == ItemTool.TYPE_HOE && this.isHoe() ||
-            block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
-            block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
+                block.getToolType() == ItemTool.TYPE_SHOVEL && this.isShovel() ||
+                block.getToolType() == ItemTool.TYPE_AXE && this.isAxe() ||
+                block.getToolType() == ItemTool.TYPE_HOE && this.isHoe() ||
+                block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
+                block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
         ) {
             this.incDamage(1);
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
@@ -2571,10 +2589,11 @@ public abstract class Item implements Cloneable, ItemID {
         Server server = Server.getInstance();
         if (server == null) return; // unit tests sometimes have invalid server instance
         PluginManager pluginManager = server.getPluginManager();
-        if(pluginManager != null) pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
-        if(!event.isCancelled()) {
+        if (pluginManager != null)
+            pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
+        if (!event.isCancelled()) {
             setDamageRaw(event.getNewDurability());
-            this.getOrCreateNamedTag().putInt("Damage", event.getNewDurability());
+            this.setNamedTag(this.getOrCreateNamedTag().toBuilder().putInt("Damage", event.getNewDurability()).build());
         }
     }
 
@@ -2609,21 +2628,21 @@ public abstract class Item implements Cloneable, ItemID {
         return this instanceof CustomItem;
     }
 
-    private CompoundTag customComponents() {
+    private NbtMap customComponents() {
         CustomItemDefinition def = getCustomDefinition();
         return def == null ? null : def.getComponents();
     }
 
-    private CompoundTag getCustomItemProperties() {
-        CompoundTag comps = customComponents();
+    private NbtMap getCustomItemProperties() {
+        NbtMap comps = customComponents();
         if (comps == null) return null;
-        return comps.contains("item_properties") ? comps.getCompound("item_properties") : null;
+        return comps.containsKey("item_properties") ? comps.getCompound("item_properties") : null;
     }
 
-    public CompoundTag getCustomItemComponent(String key) {
-        CompoundTag comps = customComponents();
+    public NbtMap getCustomItemComponent(String key) {
+        NbtMap comps = customComponents();
         if (comps == null) return null;
-        if (comps.contains(key)) {
+        if (comps.containsKey(key)) {
             return comps.getCompound(key);
         }
         return null;
@@ -2635,5 +2654,47 @@ public abstract class Item implements Cloneable, ItemID {
             return ItemRegistry.getCustomItemDefinitionByIdStatic(((Item) customItem).getId());
         }
         return null;
+    }
+
+    public ItemData toNetwork() {
+        final boolean hasNbt = this.getNamedTag() != null;
+        if (this.getNetId() == 0 && !this.getIdentifier().equals(Item.AIR.getIdentifier())) {
+            this.autoAssignStackNetworkId();
+        }
+
+        return ItemData.builder()
+                .definition(this.getItemDefinition())
+                .damage(this.getDamage())
+                .count(this.getCount())
+                .tag(this.getNamedTag())
+                .canPlace(!hasNbt ? new String[0] : this.getCanPlaceOn().toArray(String[]::new))
+                .canBreak(!hasNbt ? new String[0] : this.getCanDestroy().toArray(String[]::new))
+                .blockDefinition(new RuntimeBlockDefinition(this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId()))
+                .usingNetId(true)
+                .netId(this.getNetId())
+                .build();
+    }
+
+    public static Item fromNetwork(ItemData itemData) {
+        final ItemDefinition definition = itemData.getDefinition();
+        final Item item = Item.get(definition.getIdentifier(), itemData.getDamage(), itemData.getCount());
+        item.setNamedTag(itemData.getTag());
+        item.setCanPlaceOn(Arrays.stream(itemData.getCanPlace()).toList());
+        item.setCanDestroyOn(Arrays.stream(itemData.getCanBreak()).toList());
+        if (itemData.getBlockDefinition() != null) {
+            item.setBlockUnsafe(Block.get(Registries.BLOCKSTATE.get(itemData.getBlockDefinition().getRuntimeId())));
+        }
+        item.setNetId(itemData.getNetId());
+        return item;
+    }
+
+    public ItemDefinition getItemDefinition() {
+        return new SimpleItemDefinition(
+                this.identifier.toString(),
+                this.getRuntimeId(),
+                this.customComponents() != null ? ItemVersion.DATA_DRIVEN : ItemVersion.NONE,
+                this.customComponents() != null,
+                this.customComponents()
+        );
     }
 }

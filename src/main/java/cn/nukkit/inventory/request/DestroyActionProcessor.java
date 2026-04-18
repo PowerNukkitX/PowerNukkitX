@@ -2,14 +2,14 @@ package cn.nukkit.inventory.request;
 
 import cn.nukkit.Player;
 import cn.nukkit.inventory.BeaconInventory;
-import cn.nukkit.network.protocol.types.inventory.FullContainerName;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.action.DestroyAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestActionType;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseSlot;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DestroyAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
 
@@ -35,9 +35,9 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             return null;
         }
 
-        FullContainerName containerName = action.getSource().getContainerName();
-        Integer dynamicId = containerName.getDynamicId();
-        ContainerSlotType container = containerName.getContainer();
+        FullContainerName containerName = action.getSource().getFullContainerName();
+        Integer dynamicId = containerName.getDynamicID();
+        ContainerEnumName container = containerName.getContainerName();
         var sourceInventory = NetworkMapping.getInventory(player, container, dynamicId);
         if (player.getGamemode() != Player.CREATIVE && !(sourceInventory instanceof BeaconInventory)) {
             log.warn("only creative mode can destroy item");
@@ -66,16 +66,17 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             item = sourceInventory.getItem(slot);
         }
         return context.success(List.of(
-                new ItemStackResponseContainer(
-                        sourceInventory.getSlotType(slot),
+                new ItemStackResponseContainerInfo(
+                        sourceInventory.getContainerEnumName(slot),
                         Lists.newArrayList(
-                                new ItemStackResponseSlot(
+                                new ItemStackResponseSlotInfo(
                                         sourceInventory.toNetworkSlot(slot),
                                         sourceInventory.toNetworkSlot(slot),
                                         item.getCount(),
                                         item.getNetId(),
                                         item.getCustomName(),
-                                        item.getDamage()
+                                        item.getDamage(),
+                                        ""
                                 )
                         ),
                         containerName

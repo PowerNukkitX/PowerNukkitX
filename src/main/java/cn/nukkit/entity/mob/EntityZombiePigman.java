@@ -26,15 +26,14 @@ import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +52,7 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     }
 
 
-    public EntityZombiePigman(IChunk chunk, CompoundTag nbt) {
+    public EntityZombiePigman(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -139,13 +138,13 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
 
     @Override
     public boolean isPreventingSleep(Player player) {
-        return this.getDataFlag(EntityFlag.ANGRY);
+        return this.getDataFlag(ActorFlags.ANGRY);
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
         burn(this);
-        if(currentTick%20 == 0) {
+        if (currentTick % 20 == 0) {
             EntityZombie.pickupItems(this);
         }
         return super.onUpdate(currentTick);
@@ -155,7 +154,7 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     public Integer getExperienceDrops() {
         return isBaby() ? 7 : 5;
     }
-    
+
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         int looting = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
@@ -201,7 +200,7 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
+        if (source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             return false;
         }
         return super.attack(source);

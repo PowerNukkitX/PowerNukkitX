@@ -6,8 +6,10 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -170,8 +172,8 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
     }
 
     @Override
-    public InventoryType getType() {
-        return InventoryType.COMMAND_BLOCK;
+    public ContainerType getType() {
+        return ContainerType.COMMAND_BLOCK;
     }
 
     @Override
@@ -183,16 +185,14 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
     public void onOpen(Player who) {
         if (who.isOp() && who.isCreative()) {
             this.viewers.add(who);
-            ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.windowId = who.getWindowId(this);
-            pk.type = getType().getNetworkType();
+            final ContainerOpenPacket pk = new ContainerOpenPacket();
+            pk.setContainerID((byte) who.getWindowId(this));
+            pk.setContainerType(this.getType());
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Vector3 vector3) {
-                pk.x = vector3.getFloorX();
-                pk.y = vector3.getFloorY();
-                pk.z = vector3.getFloorZ();
+                pk.setPosition(Vector3i.from(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ()));
             } else {
-                pk.x = pk.y = pk.z = 0;
+                pk.setPosition(Vector3i.ZERO);
             }
             who.dataPacket(pk);
         }
@@ -200,7 +200,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public boolean open(Player who) {
-        if(who.getWindowId(this)!=-1){//todo hack, ContainerClosePacket no longer triggers for command block and struct block, finding the correct way to close them
+        if (who.getWindowId(this) != -1) {//todo hack, ContainerClosePacket no longer triggers for command block and struct block, finding the correct way to close them
             who.removeWindow(this);
         }
 
@@ -221,10 +221,10 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public void onClose(Player who) {
-        ContainerClosePacket pk = new ContainerClosePacket();
-        pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        pk.type = getType();
+        final ContainerClosePacket pk = new ContainerClosePacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
+        pk.setContainerType(this.getType());
         who.dataPacket(pk);
         this.viewers.remove(who);
     }

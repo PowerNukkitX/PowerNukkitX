@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.enums.NetherReactorState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.MathHelper;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * This entity allows to manipulate the save state of a nether reactor core, but changing it
@@ -20,7 +20,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     private NetherReactorState reactorState;
     private int progress;
 
-    public BlockEntityNetherReactor(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityNetherReactor(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -49,13 +49,13 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         reactorState = NetherReactorState.READY;
-        if (namedTag.containsShort("Progress")) {
+        if (namedTag.containsKey("Progress")) {
             progress = (short) namedTag.getShort("Progress");
         }
 
-        if (namedTag.containsByte("HasFinished") && namedTag.getBoolean("HasFinished")) {
+        if (namedTag.containsKey("HasFinished") && namedTag.getBoolean("HasFinished")) {
             reactorState = NetherReactorState.FINISHED;
-        } else if (namedTag.containsByte("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
+        } else if (namedTag.containsKey("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
             reactorState = NetherReactorState.INITIALIZED;
         } else {
             reactorState = NetherReactorState.READY;
@@ -66,17 +66,20 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         NetherReactorState reactorState = getReactorState();
-        namedTag.putShort("Progress", getProgress());
-        namedTag.putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED);
-        namedTag.putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
+        this.namedTag = this.namedTag.toBuilder()
+                .putShort("Progress", (short) getProgress())
+                .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
+                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED)
+                .build();
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public NbtMap getSpawnCompound() {
         NetherReactorState reactorState = getReactorState();
-        return super.getSpawnCompound()
-                .putShort("Progress", getProgress())
+        return super.getSpawnCompound().toBuilder()
+                .putShort("Progress", (short) getProgress())
                 .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
-                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
+                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED)
+                .build();
     }
 }

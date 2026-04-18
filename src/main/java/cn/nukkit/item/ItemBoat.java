@@ -7,11 +7,11 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Identifier;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.Arrays;
 
 /**
  * @author yescallop
@@ -102,21 +102,19 @@ public class ItemBoat extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP) return false;
-        if(block instanceof BlockFlowingWater) block = block.up();
+        if (block instanceof BlockFlowingWater) block = block.up();
         EntityBoat boat = (EntityBoat) Entity.createEntity(Entity.BOAT,
-                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
-                        .putList("Pos", new ListTag<DoubleTag>()
-                                .add(new DoubleTag(block.getX() + 0.5))
-                                .add(new DoubleTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
-                                .add(new DoubleTag(block.getZ() + 0.5)))
-                        .putList("Motion", new ListTag<DoubleTag>()
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0)))
-                        .putList("Rotation", new ListTag<FloatTag>()
-                                .add(new FloatTag((float) ((player.yaw + 90f) % 360)))
-                                .add(new FloatTag(0)))
+                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), NbtMap.builder()
+                        .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                        block.getX() + 0.5,
+                                        block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0),
+                                        block.getZ() + 0.5
+                                )
+                        )
+                        .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                        .putList("Rotation", NbtType.FLOAT, Arrays.asList((float) ((player.yaw + 90f) % 360), 0f))
                         .putInt("Variant", getBoatId())
+                        .build()
         );
 
         if (boat == null) {

@@ -4,8 +4,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 public class WitherDashExecutor extends MoveToTargetExecutor {
 
@@ -20,18 +20,18 @@ public class WitherDashExecutor extends MoveToTargetExecutor {
     public void onStart(EntityIntelligent entity) {
         super.onStart(entity);
         entity.getMemoryStorage().put(CoreMemoryTypes.LAST_ATTACK_DASH, entity.getLevel().getTick());
-        entity.setDataFlag(EntityFlag.CAN_DASH);
+        entity.setDataFlag(ActorFlags.CAN_DASH);
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
         super.onStop(entity);
-        entity.setDataFlag(EntityFlag.CAN_DASH, false);
+        entity.setDataFlag(ActorFlags.CAN_DASH, false);
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         super.onInterrupt(entity);
-        entity.setDataFlag(EntityFlag.CAN_DASH, false);
+        entity.setDataFlag(ActorFlags.CAN_DASH, false);
     }
 }

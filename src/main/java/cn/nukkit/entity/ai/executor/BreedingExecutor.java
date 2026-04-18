@@ -8,19 +8,21 @@ import cn.nukkit.entity.EntityMarkVariant;
 import cn.nukkit.entity.EntityVariant;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.components.BreedableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.property.BooleanEntityProperty;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.data.property.FloatEntityProperty;
 import cn.nukkit.entity.data.property.IntEntityProperty;
 import cn.nukkit.entity.passive.EntityAnimal;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -50,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
  *     1
  * );
  * }</pre>
- * 
+ *
  * @author Curse
  */
 public class BreedingExecutor implements IBehaviorExecutor {
@@ -280,7 +282,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
         int spawned = 0;
 
         for (int i = 0; i < babiesToSpawn; i++) {
-            CompoundTag nbt = Entity.getDefaultNBT(parent1.getLocation());
+            NbtMap nbt = Entity.getDefaultNBT(parent1.getLocation());
 
             if (shouldWriteGenetics(b1, b2, parent1, parent2)) {
                 writeBabyGeneticsNBT(nbt, b1, b2, parent1, parent2);
@@ -298,7 +300,8 @@ public class BreedingExecutor implements IBehaviorExecutor {
 
             try {
                 applyPropertyInheritance(baby, b1, b2, parent1, parent2);
-            } catch (Throwable t) { }
+            } catch (Throwable t) {
+            }
 
             if (resolvedInheritTamed(b1, b2)) {
                 tryInheritTamed(baby, parent1, parent2);
@@ -313,8 +316,8 @@ public class BreedingExecutor implements IBehaviorExecutor {
     }
 
     protected void finishBreeding(EntityIntelligent parent1, EntityIntelligent parent2, int time) {
-        parent1.setDataFlag(EntityFlag.IN_LOVE, false);
-        parent2.setDataFlag(EntityFlag.IN_LOVE, false);
+        parent1.setDataFlag(ActorFlags.IN_LOVE, false);
+        parent2.setDataFlag(ActorFlags.IN_LOVE, false);
 
         parent1.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
         parent2.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_SPOUSE);
@@ -361,13 +364,13 @@ public class BreedingExecutor implements IBehaviorExecutor {
         if (bw == null) return null;
 
         return bw.stream()
-            .filter(Objects::nonNull)
-            .filter(it -> it.mateType() != null)
-            .filter(it -> it.mateType().equals(mateId))
-            .map(BreedableComponent.BreedsWith::babyType)
-            .filter(b -> b != null && !b.isEmpty())
-            .findFirst()
-            .orElse(null);
+                .filter(Objects::nonNull)
+                .filter(it -> it.mateType() != null)
+                .filter(it -> it.mateType().equals(mateId))
+                .map(BreedableComponent.BreedsWith::babyType)
+                .filter(b -> b != null && !b.isEmpty())
+                .findFirst()
+                .orElse(null);
     }
 
     // Genetics / attributes blending (written to baby NBT)
@@ -382,23 +385,23 @@ public class BreedingExecutor implements IBehaviorExecutor {
         return false;
     }
 
-    protected void writeBabyGeneticsNBT(CompoundTag nbt, BreedableComponent b1, BreedableComponent b2, EntityIntelligent p1, EntityIntelligent p2) {
+    protected void writeBabyGeneticsNBT(NbtMap nbt, BreedableComponent b1, BreedableComponent b2, EntityIntelligent p1, EntityIntelligent p2) {
         Set<String> common = new LinkedHashSet<>(b1.resolvedBlendAttributes());
         common.retainAll(b2.resolvedBlendAttributes());
 
         if (common.isEmpty()) return;
 
-        ListTag<CompoundTag> list = null;
+        List<NbtMap> list = null;
 
         for (String name : common) {
             Attribute attr = blendOneAttribute(name, p1, p2);
             if (attr == null) continue;
 
-            if (list == null) list = new ListTag<>();
+            if (list == null) list = new ObjectArrayList<>();
             list.add(Attribute.toNBT(attr));
         }
 
-        if (list != null) nbt.putList("Attributes", list);
+        if (list != null) nbt = nbt.toBuilder().putList("Attributes", NbtType.COMPOUND, list).build();
     }
 
     @Nullable
@@ -547,7 +550,11 @@ public class BreedingExecutor implements IBehaviorExecutor {
         if (deny != null) {
             if (deny.minVariant() != null) mn = deny.minVariant();
             if (deny.maxVariant() != null) mx = deny.maxVariant();
-            if (mn > mx) { int t = mn; mn = mx; mx = t; }
+            if (mn > mx) {
+                int t = mn;
+                mn = mx;
+                mx = t;
+            }
         }
 
         // 1) Count candidates that pass range AND differ from current
@@ -584,9 +591,9 @@ public class BreedingExecutor implements IBehaviorExecutor {
     }
 
     protected void applyBabyColor(EntityIntelligent baby,
-                                BreedableComponent b1, BreedableComponent b2,
-                                EntityIntelligent p1, EntityIntelligent p2,
-                                @Nullable BreedableComponent.MutationFactor mut) {
+                                  BreedableComponent b1, BreedableComponent b2,
+                                  EntityIntelligent p1, EntityIntelligent p2,
+                                  @Nullable BreedableComponent.MutationFactor mut) {
         if (!(baby instanceof EntityColor babyColor)) return;
         if (!(p1 instanceof EntityColor c1)) return;
         if (!(p2 instanceof EntityColor c2)) return;
@@ -620,7 +627,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
 
             if (color2A != null && color2B != null) {
                 if (combine) {
-                    int out2 = BreedableComponent.combineParentColorsOrRandom( color2A.getWoolData(), color2B.getWoolData(), ThreadLocalRandom.current());
+                    int out2 = BreedableComponent.combineParentColorsOrRandom(color2A.getWoolData(), color2B.getWoolData(), ThreadLocalRandom.current());
                     babyColor.setColor2(DyeColor.getByWoolData(out2));
                 } else {
                     babyColor.setColor2(ThreadLocalRandom.current().nextBoolean() ? color2A : color2B);

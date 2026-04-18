@@ -15,10 +15,10 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
+import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -45,7 +45,8 @@ public class StrongholdPieces {
     private static final BlockState OAK_FENCE = BlockOakFence.PROPERTIES.getDefaultState();
     private static final BlockState OAK_PLANKS = BlockOakPlanks.PROPERTIES.getDefaultState();
     private static final BlockState OAK_DOOR = BlockWoodenDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
-    private static final BlockState OAK_DOOR_U = BlockWoodenDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));    private static final BlockState IRON_DOOR = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
+    private static final BlockState OAK_DOOR_U = BlockWoodenDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
+    private static final BlockState IRON_DOOR = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST));
     private static final BlockState IRON_DOOR_U = BlockIronDoor.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue(MinecraftCardinalDirection.EAST), CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
     private static final BlockState IRON_BARS = BlockIronBars.PROPERTIES.getDefaultState();
     private static final BlockState TORCH = BlockTorch.PROPERTIES.getBlockState(CommonBlockProperties.TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.TOP));
@@ -254,7 +255,7 @@ public class StrongholdPieces {
             this.entryDoor = SmallDoorType.OPENING;
         }
 
-        public StrongholdPiece(CompoundTag tag) {
+        public StrongholdPiece(NbtMap tag) {
             super(tag);
             this.entryDoor = SmallDoorType.OPENING;
             this.entryDoor = SmallDoorType.valueOf(tag.getString("EntryDoor"));
@@ -270,8 +271,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            tag.putString("EntryDoor", this.entryDoor.name());
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            return tag.toBuilder().putString("EntryDoor", this.entryDoor.name()).build();
         }
 
         //\\ StrongholdPiece::generateSmallDoor(BlockSource *,Random &,BoundingBox const &,StrongholdPiece::SmallDoorType,int,int,int)
@@ -412,7 +413,7 @@ public class StrongholdPieces {
             this.steps = orientation != BlockFace.NORTH && orientation != BlockFace.SOUTH ? boundingBox.getXSpan() : boundingBox.getZSpan();
         }
 
-        public FillerCorridor(CompoundTag tag) {
+        public FillerCorridor(NbtMap tag) {
             super(tag);
             this.steps = tag.getInt("Steps");
         }
@@ -441,9 +442,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Steps", this.steps);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putInt("Steps", this.steps).build();
         }
 
         @Override
@@ -494,7 +495,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public StairsDown(CompoundTag tag) {
+        public StairsDown(NbtMap tag) {
             super(tag);
             this.isSource = tag.getBoolean("Source");
         }
@@ -511,9 +512,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Source", this.isSource);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Source", this.isSource).build();
         }
 
         @Override
@@ -579,7 +580,7 @@ public class StrongholdPieces {
             this.rightChild = random.nextInt(2) == 0;
         }
 
-        public Straight(CompoundTag tag) {
+        public Straight(NbtMap tag) {
             super(tag);
             this.leftChild = tag.getBoolean("Left");
             this.rightChild = tag.getBoolean("Right");
@@ -596,10 +597,11 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Left", this.leftChild);
-            tag.putBoolean("Right", this.rightChild);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Left", this.leftChild)
+                    .putBoolean("Right", this.rightChild)
+                    .build();
         }
 
         @Override
@@ -647,7 +649,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public ChestCorridor(CompoundTag tag) {
+        public ChestCorridor(NbtMap tag) {
             super(tag);
             this.hasPlacedChest = tag.getBoolean("Chest");
         }
@@ -663,9 +665,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Chest", this.hasPlacedChest);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Chest", this.hasPlacedChest).build();
         }
 
         @Override
@@ -696,7 +698,7 @@ public class StrongholdPieces {
                 BlockManager chest = new BlockManager(level.getLevel());
                 this.placeBlock(chest, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
                 level.merge(chest);
-                for(Block block : chest.getBlocks()) {
+                for (Block block : chest.getBlocks()) {
                     level.addHook(() -> {
                         CORRIDOR.create(((BlockEntityHolder<BlockEntityChest>) block).getOrCreateBlockEntity().getInventory(), random);
                     });
@@ -716,7 +718,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public StraightStairsDown(CompoundTag tag) {
+        public StraightStairsDown(NbtMap tag) {
             super(tag);
         }
 
@@ -764,7 +766,7 @@ public class StrongholdPieces {
             super(genDepth);
         }
 
-        public Turn(CompoundTag tag) {
+        public Turn(NbtMap tag) {
             super(tag);
         }
     }
@@ -778,7 +780,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public LeftTurn(CompoundTag tag) {
+        public LeftTurn(NbtMap tag) {
             super(tag);
         }
 
@@ -827,7 +829,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public RightTurn(CompoundTag tag) {
+        public RightTurn(NbtMap tag) {
             super(tag);
         }
 
@@ -879,7 +881,7 @@ public class StrongholdPieces {
             this.type = random.nextInt(5);
         }
 
-        public RoomCrossing(CompoundTag tag) {
+        public RoomCrossing(NbtMap tag) {
             super(tag);
             this.type = tag.getInt("Type");
         }
@@ -895,9 +897,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Type", this.type);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putInt("Type", this.type).build();
         }
 
         @Override
@@ -1036,7 +1038,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public PrisonHall(CompoundTag tag) {
+        public PrisonHall(NbtMap tag) {
             super(tag);
         }
 
@@ -1099,7 +1101,7 @@ public class StrongholdPieces {
             this.isTall = boundingBox.getYSpan() > 6;
         }
 
-        public Library(CompoundTag tag) {
+        public Library(NbtMap tag) {
             super(tag);
             this.isTall = tag.getBoolean("Tall");
         }
@@ -1122,9 +1124,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Tall", this.isTall);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            tag = super.addAdditionalSaveData(tag);
+            return tag.toBuilder().putBoolean("Tall", this.isTall).build();
         }
 
         @Override
@@ -1265,7 +1267,7 @@ public class StrongholdPieces {
             this.rightHigh = random.nextInt(3) > 0;
         }
 
-        public FiveCrossing(CompoundTag tag) {
+        public FiveCrossing(NbtMap tag) {
             super(tag);
             this.leftLow = tag.getBoolean("leftLow");
             this.leftHigh = tag.getBoolean("leftHigh");
@@ -1284,12 +1286,12 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("leftLow", this.leftLow);
-            tag.putBoolean("leftHigh", this.leftHigh);
-            tag.putBoolean("rightLow", this.rightLow);
-            tag.putBoolean("rightHigh", this.rightHigh);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            return super.addAdditionalSaveData(tag).toBuilder().putBoolean("leftLow", this.leftLow)
+                    .putBoolean("leftHigh", this.leftHigh)
+                    .putBoolean("rightLow", this.rightLow)
+                    .putBoolean("rightHigh", this.rightHigh)
+                    .build();
         }
 
         @Override
@@ -1369,7 +1371,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public PortalRoom(CompoundTag tag) {
+        public PortalRoom(NbtMap tag) {
             super(tag);
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
@@ -1385,9 +1387,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Mob", this.hasPlacedSpawner);
+        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+            return super.addAdditionalSaveData(tag).toBuilder().putBoolean("Mob", this.hasPlacedSpawner).build();
         }
 
         @Override
@@ -1523,7 +1524,7 @@ public class StrongholdPieces {
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Item.MUSIC_DISC_OTHERSIDE, 5))
-                    .register(new ItemEntry(Item.ENCHANTED_BOOK,0,1, 1, 6, getTreasure()));
+                    .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 6, getTreasure()));
 
             this.pools.put(pool1.build(), new RollEntry(3, 2, pool1.getTotalWeight()));
 

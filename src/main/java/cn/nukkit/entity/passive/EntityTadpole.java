@@ -13,7 +13,7 @@ import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +25,7 @@ public class EntityTadpole extends EntityAnimal implements EntitySwimmable {
     @NotNull public String getIdentifier() {
         return TADPOLE;
     }
-    public EntityTadpole(IChunk chunk, CompoundTag nbt) {
+    public EntityTadpole(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

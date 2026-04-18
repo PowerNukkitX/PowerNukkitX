@@ -35,8 +35,8 @@ import cn.nukkit.item.ItemTrident;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -45,11 +45,12 @@ import java.util.Set;
 public class EntityDrowned extends EntityZombie implements EntitySwimmable, EntityWalkable, EntitySmite {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return DROWNED;
     }
 
-    public EntityDrowned(IChunk chunk, CompoundTag nbt) {
+    public EntityDrowned(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -114,7 +115,7 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
 
     @Override
     public double getFloatingForceFactor() {
-        if(any(
+        if (any(
                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
@@ -133,12 +134,12 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
         super.initEntity();
         getMemoryStorage().put(CoreMemoryTypes.ENABLE_DIVE_FORCE, true);
         int random = Utils.rand(0, 10000);
-        if(random < 85) {
+        if (random < 85) {
             setItemInHand(Item.get(Item.FISHING_ROD));
-        } else if(random < 1585 && !wasTransformed()) {
+        } else if (random < 1585 && !wasTransformed()) {
             setItemInHand(Item.get(Item.TRIDENT));
         }
-        if(Utils.rand(0, 100) < 3) {
+        if (Utils.rand(0, 100) < 3) {
             setItemInOffhand(Item.get(Item.NAUTILUS_SHELL));
         }
     }
@@ -156,10 +157,10 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     @Override
     public Item[] getDrops(@NotNull Item weapon) {
         Item trident = Item.AIR;
-        if(getItemInHand() instanceof ItemTrident) {
+        if (getItemInHand() instanceof ItemTrident) {
             int lootingLevel = weapon.getEnchantmentLevel(Enchantment.ID_LOOTING);
 
-            if(Utils.rand(0,100) < Math.min(37, 25+ lootingLevel)) {
+            if (Utils.rand(0, 100) < Math.min(37, 25 + lootingLevel)) {
                 trident = Item.get(Item.TRIDENT);
             }
         }
@@ -185,7 +186,7 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     }
 
     public boolean wasTransformed() {
-        if(this.namedTag.contains("Transformed")) {
+        if (this.namedTag.containsKey("Transformed")) {
             return this.namedTag.getBoolean("Transformed");
         }
         return false;

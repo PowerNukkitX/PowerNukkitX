@@ -1,6 +1,7 @@
 package cn.nukkit.lang;
 
-import cn.nukkit.network.protocol.types.CommandOutputMessage;
+
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +9,14 @@ import java.util.List;
 /**
  * Container for command output messages, supporting multiple messages and success count tracking.
  * <p>
- * This class is used to encapsulate the payload of a {@link cn.nukkit.network.protocol.CommandOutputPacket},
+ * This class is used to encapsulate the payload of a {@link org.cloudburstmc.protocol.bedrock.packet.CommandOutputPacket},
  * allowing the server to send multiple command output messages in a single response. It also tracks the number
  * of successful command executions associated with the output.
  * </p>
  *
  * <h2>Features:</h2>
  * <ul>
- *   <li>Stores a list of {@link CommandOutputMessage} objects representing command output lines.</li>
+ *   <li>Stores a list of {@link org.cloudburstmc.protocol.bedrock.data.command.CommandOutputMessage} objects representing command output lines.</li>
  *   <li>Tracks the number of successful command executions.</li>
  *   <li>Provides constructors for single or multiple messages.</li>
  *   <li>Supports cloning for safe reuse or modification.</li>

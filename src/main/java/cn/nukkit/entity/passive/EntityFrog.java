@@ -24,7 +24,7 @@ import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +38,7 @@ public class EntityFrog extends EntityAnimal implements EntityWalkable, EntityVa
         return FROG;
     }
 
-    public EntityFrog(IChunk chunk, CompoundTag nbt) {
+    public EntityFrog(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

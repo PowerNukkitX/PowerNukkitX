@@ -1,7 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 /**
  * 可坐下实体接口<p>
@@ -15,6 +15,6 @@ public interface EntityCanSit extends EntityComponent {
 
     default void setSitting(boolean sitting) {
         getMemoryStorage().put(CoreMemoryTypes.IS_SITTING, sitting);
-        asEntity().setDataFlag(EntityFlag.SITTING, sitting);
+        asEntity().setDataFlag(ActorFlags.SITTING, sitting);
     }
 }

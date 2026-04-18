@@ -1,6 +1,5 @@
 package cn.nukkit.entity.projectile;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
@@ -14,7 +13,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -27,7 +26,7 @@ public class EntityFireball extends EntitySmallFireball implements EntityExplosi
         return FIREBALL;
     }
 
-    public EntityFireball(IChunk chunk, CompoundTag nbt) {
+    public EntityFireball(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

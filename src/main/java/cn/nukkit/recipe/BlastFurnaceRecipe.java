@@ -29,4 +29,9 @@ public class BlastFurnaceRecipe extends SmeltingRecipe {
     public RecipeType getType() {
         return RecipeType.BLAST_FURNACE;
     }
+
+    @Override
+    public String getRecipeIdTag() {
+        return "blast_furnace";
+    }
 }

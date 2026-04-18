@@ -1,16 +1,15 @@
 package cn.nukkit.level;
 
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.connection.util.HandleByteBuf;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.GameRuleData;
 
 import javax.annotation.Nonnull;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -159,70 +158,30 @@ public class GameRules {
     }
 
     // TODO: This needs to be moved out since there is not a separate compound tag in the LevelDB format for Game Rules.
-    public CompoundTag writeNBT() {
-        CompoundTag nbt = new CompoundTag();
-
+    public NbtMap writeNBT() {
+        NbtMapBuilder nbt = NbtMap.builder();
         for (Entry<GameRule, Value<?>> entry : gameRules.entrySet()) {
             nbt.putString(entry.getKey().getName(), entry.getValue().value.toString());
         }
-
-        return nbt;
+        return nbt.build();
     }
 
-    public void readNBT(CompoundTag nbt) {
+    public void readNBT(NbtMap nbt) {
         Preconditions.checkNotNull(nbt);
-        for (String key : nbt.getTags().keySet()) {
+        for (String key : nbt.keySet()) {
             Optional<GameRule> gameRule = GameRule.parseString(key);
             if (!gameRule.isPresent()) {
                 continue;
             }
-
             setGameRule(gameRule.get(), nbt.getString(key));
         }
     }
 
     public enum Type {
-        UNKNOWN {
-            @Override
-            void write(HandleByteBuf pk, Value<?> value) {
-            }
-            @Override
-            void writeStartGame(HandleByteBuf pk, Value<?> value) {
-            }
-        },
-        BOOLEAN {
-            @Override
-            void write(HandleByteBuf pk, Value<?> value) {
-                pk.writeBoolean(value.getValueAsBoolean());
-            }
-            @Override
-            void writeStartGame(HandleByteBuf pk, Value<?> value) {
-                write(pk, value);
-            }
-        },
-        INTEGER {
-            @Override
-            void write(HandleByteBuf pk, Value<?> value) {
-                pk.writeIntLE(value.getValueAsInteger());
-            }
-            @Override
-            void writeStartGame(HandleByteBuf pk, Value<?> value) {
-                pk.writeVarInt(value.getValueAsInteger());
-            }
-        },
-        FLOAT {
-            @Override
-            void write(HandleByteBuf pk, Value<?> value) {
-                pk.writeFloatLE(value.getValueAsFloat());
-            }
-            @Override
-            void writeStartGame(HandleByteBuf pk, Value<?> value) {
-                write(pk, value);
-            }
-        };
-
-        abstract void write(HandleByteBuf pk, Value<?> value);
-        abstract void writeStartGame(HandleByteBuf pk, Value<?> value);
+        UNKNOWN,
+        BOOLEAN,
+        INTEGER,
+        FLOAT
     }
 
     public static class Value<T> {
@@ -262,11 +221,11 @@ public class GameRules {
             return this.type;
         }
 
-        public Tag getTag() {
+        public Object getTag() {
             return switch (this.type) {
-                case BOOLEAN -> new ByteTag(getValueAsBoolean() ? 1 : 0);
-                case INTEGER -> new IntTag(getValueAsInteger());
-                case FLOAT -> new FloatTag(getValueAsFloat());
+                case BOOLEAN -> getValueAsBoolean() ? (byte) 1 : 0;
+                case INTEGER -> getValueAsInteger();
+                case FLOAT -> getValueAsFloat();
                 case UNKNOWN -> throw new IllegalArgumentException("unknown type");
             };
         }
@@ -291,17 +250,19 @@ public class GameRules {
             }
             return (Float) value;
         }
+    }
 
-        public void write(HandleByteBuf stream) {
-            stream.writeBoolean(this.canBeChanged);
-            stream.writeUnsignedVarInt(type.ordinal());
-            type.write(stream, this);
+    public List<GameRuleData<?>> toNetwork() {
+        final List<GameRuleData<?>> rulesList = new ObjectArrayList<>();
+        for (Entry<GameRule, Value<?>> entry : this.gameRules.entrySet()) {
+            final GameRule gameRule = entry.getKey();
+            rulesList.add(
+                    new GameRuleData<>(
+                            gameRule.getName(),
+                            entry.getValue().value
+                    )
+            );
         }
-
-        public void writeStartGame(HandleByteBuf stream) {
-            stream.writeBoolean(this.canBeChanged);
-            stream.writeUnsignedVarInt(type.ordinal());
-            type.writeStartGame(stream, this);
-        }
+        return rulesList;
     }
 }

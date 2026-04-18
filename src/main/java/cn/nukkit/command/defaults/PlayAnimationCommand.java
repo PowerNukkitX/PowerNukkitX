@@ -1,12 +1,12 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.network.protocol.AnimateEntityPacket;
+import cn.nukkit.entity.EntityAnimation;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class PlayAnimationCommand extends VanillaCommand {
             log.addNoTargetMatch().output();
             return 0;
         }
-        var animationBuilder = AnimateEntityPacket.Animation.builder();
+        var animationBuilder = EntityAnimation.builder();
         String animation = list.getResult(1);
         animationBuilder.animation(animation);
         //optional

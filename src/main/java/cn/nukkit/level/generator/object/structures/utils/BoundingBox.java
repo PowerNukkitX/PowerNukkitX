@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.object.structures.utils;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.nbt.tag.IntArrayTag;
 import com.google.common.base.MoreObjects;
 
 public class BoundingBox implements AxisAlignedBB {
@@ -138,8 +137,8 @@ public class BoundingBox implements AxisAlignedBB {
         return this.z1 - this.z0 + 1;
     }
 
-    public IntArrayTag createTag() {
-        return new IntArrayTag(new int[]{this.x0, this.y0, this.z0, this.x1, this.y1, this.z1});
+    public int[] createTag() {
+        return new int[]{this.x0, this.y0, this.z0, this.x1, this.y1, this.z1};
     }
 
     @Override

@@ -4,15 +4,15 @@ import cn.nukkit.Server;
 import cn.nukkit.block.BlockCrafter;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.ShapedRecipe;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -24,14 +24,14 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     private int disabledSlots = 0;
 
     public CrafterInventory(BlockEntityCrafter crafter) {
-        super(crafter, InventoryType.CRAFTER, 9);
+        super(crafter, ContainerType.CRAFTER, 9);
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map.put(i, ContainerSlotType.CRAFTER_BLOCK_CONTAINER);
+            map.put(i, ContainerEnumName.CRAFTER_LEVEL_ENTITY_CONTAINER);
         }
     }
 

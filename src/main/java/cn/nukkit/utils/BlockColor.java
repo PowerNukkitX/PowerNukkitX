@@ -1,8 +1,8 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.ItemRegistry;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -18,11 +18,12 @@ import java.util.Arrays;
  */
 public class BlockColor implements Cloneable {
 
-    private static final CompoundTag tint_tag;
+    private static final NbtMap tint_tag;
 
     static {
-        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/unknown/tint_map.nbt")) {
-            tint_tag = NBTIO.readCompressed(stream);
+        try (var stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/unknown/tint_map.nbt");
+             var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
+            tint_tag = (NbtMap) nbtInputStream.readTag();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -225,14 +226,14 @@ public class BlockColor implements Cloneable {
     }
 
     public void applyTint(int biomeId) {
-        if(tint != Tint.NONE) {
+        if (tint != Tint.NONE) {
             try {
                 String hexString = tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture);
-                red =  Integer.parseInt(hexString.substring(0,2), 16);
-                green = Integer.parseInt(hexString.substring(2,4), 16);
-                blue = Integer.parseInt(hexString.substring(4,6), 16);
-                alpha = Integer.parseInt(hexString.substring(6,8), 16);
-            }catch (Exception e) {
+                red = Integer.parseInt(hexString.substring(0, 2), 16);
+                green = Integer.parseInt(hexString.substring(2, 4), 16);
+                blue = Integer.parseInt(hexString.substring(4, 6), 16);
+                alpha = Integer.parseInt(hexString.substring(6, 8), 16);
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println(tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture));
             }

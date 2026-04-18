@@ -2,6 +2,7 @@ package cn.nukkit.level.particle;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.math.Vector3;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 /**
  * @author xtypr
@@ -9,6 +10,6 @@ import cn.nukkit.math.Vector3;
  */
 public class TerrainParticle extends GenericParticle {
     public TerrainParticle(Vector3 pos, Block block) {
-        super(pos, Particle.TYPE_TERRAIN, block.getRuntimeId());
+        super(pos, ParticleType.TERRAIN, block.getRuntimeId());
     }
 }

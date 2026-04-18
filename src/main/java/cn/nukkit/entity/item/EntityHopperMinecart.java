@@ -18,12 +18,16 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.MinecartType;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
@@ -31,6 +35,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     public @NotNull String getIdentifier() {
         return HOPPER_MINECART;
     }
+
     private final BlockVector3 temporalVector = new BlockVector3();
     public int transferCooldown;
 
@@ -38,7 +43,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     private boolean disabled;
     private AxisAlignedBB pickupArea;
 
-    public EntityHopperMinecart(IChunk chunk, CompoundTag nbt) {
+    public EntityHopperMinecart(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         setDisplayBlock(Block.get(Block.HOPPER), false);
     }
@@ -123,7 +128,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
-    public boolean mountEntity(Entity entity, EntityLink.Type mode) {
+    public boolean mountEntity(Entity entity, ActorLinkType mode) {
         return false;
     }
 
@@ -141,16 +146,16 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void initEntity() {
         this.inventory = new MinecartHopperInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+        if (this.namedTag.containsKey("Items") && this.namedTag.get("Items") instanceof List<?>) {
+           List<NbtMap> inventoryList = this.namedTag.getList("Items", NbtType.COMPOUND);
+            for (NbtMap item : inventoryList) {
+                this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
 
-        this.entityDataMap.put(CONTAINER_TYPE, 11);
-        this.entityDataMap.put(CONTAINER_SIZE, this.inventory.getSize());
-        this.entityDataMap .put(CONTAINER_STRENGTH_MODIFIER, 0);
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 11);
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
 
         this.updatePickupArea();
 
@@ -182,15 +187,17 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList("Items",new ListTag<CompoundTag>());
+        final List<NbtMap> itemsSerialized = new ObjectArrayList<>();
         if (this.inventory != null) {
             for (int slot = 0; slot < 5; ++slot) {
                 Item item = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
-                    this.namedTag.getList("Items", CompoundTag.class)
-                            .add(NBTIO.putItemHelper(item, slot));
+                    itemsSerialized.add(ItemHelper.write(item, slot));
                 }
             }
         }
+        this.namedTag = this.namedTag.toBuilder()
+                .putList("Items", NbtType.COMPOUND, itemsSerialized)
+                .build();
     }
 }

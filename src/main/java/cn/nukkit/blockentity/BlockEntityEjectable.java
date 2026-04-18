@@ -5,16 +5,21 @@ import cn.nukkit.inventory.EjectableInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 
-public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityInventoryHolder{
+import java.util.List;
+
+public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
 
     protected EjectableInventory inventory;
 
 
-    public BlockEntityEjectable(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityEjectable(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -27,8 +32,8 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         super.loadNBT();
         this.inventory = createInventory();
 
-        if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        if (!this.namedTag.containsKey("Items") || !(this.namedTag.get("Items") instanceof List)) {
+            this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.LIST, new ObjectArrayList<>()).build();
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -41,7 +46,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
+        List<NbtMap> list = this.namedTag.getList("Items", NbtType.COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -56,25 +61,27 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         if (i < 0) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
+            NbtMap data = this.namedTag.getList("Items", NbtType.COMPOUND).get(i);
+            return ItemHelper.read(data);
         }
     }
 
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        CompoundTag d = NBTIO.putItemHelper(item, index);
+        NbtMap d = ItemHelper.write(item, index);
 
+        final List<NbtMap> items = new ObjectArrayList<>(this.namedTag.getList("Items", NbtType.COMPOUND));
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
-                this.namedTag.getList("Items").getAll().remove(i);
+                items.remove(i);
             }
         } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
+            items.add(d);
         } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
+            items.add(i, d);
         }
+        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, items).build();
     }
 
     @Override
@@ -83,20 +90,20 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag c = super.getSpawnCompound();
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder c = super.getSpawnCompound().toBuilder();
 
         if (this.hasName()) {
             c.put("CustomName", this.namedTag.get("CustomName"));
         }
 
-        return c;
+        return c.build();
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -109,17 +116,17 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.namedTag.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
     }
 
     @Override

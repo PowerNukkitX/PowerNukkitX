@@ -24,12 +24,12 @@ package cn.nukkit.entity;
 public interface EntityAgeable {
     /*
     default boolean isBaby() {
-        return ((Entity) this).getDataFlag(EntityFlag.BABY);
+        return ((Entity) this).getDataFlag(ActorFlags.BABY);
     }
 
     default void setBaby(boolean flag) {
         var entity = (Entity) this;
-        entity.setDataFlag(EntityFlag.BABY, flag);
+        entity.setDataFlag(ActorFlags.BABY, flag);
         entity.setScale(flag ? 0.5f : 1f);
     }
      */

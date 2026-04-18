@@ -2,18 +2,21 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddPlayerPacket;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
-
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
+import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
+import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -25,9 +28,9 @@ import java.util.UUID;
 public class EntityHuman extends EntityHumanType {
     protected UUID uuid;
     protected byte[] rawUUID;
-    protected Skin skin;
+    protected SerializedSkin skin;
 
-    public EntityHuman(IChunk chunk, CompoundTag nbt) {
+    public EntityHuman(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -76,11 +79,11 @@ public class EntityHuman extends EntityHumanType {
         return 1.62f;
     }
 
-    public Skin getSkin() {
+    public SerializedSkin getSkin() {
         return skin;
     }
 
-    public void setSkin(Skin skin) {
+    public void setSkin(SerializedSkin skin) {
         this.skin = skin;
     }
 
@@ -170,38 +173,41 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (this instanceof Player)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getLoginChainData().getXUID(), ((Player) this).getLocatorBarColor(), new Player[]{player});
+                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getXUID(), ((Player) this).getLocatorBarColor(), new Player[]{player});
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
-            AddPlayerPacket pk = new AddPlayerPacket();
-            pk.uuid = this.getUniqueId();
-            pk.username = this.getName();
-            pk.entityUniqueId = this.getId();
-            pk.entityRuntimeId = this.getId();
-            pk.x = (float) this.x;
-            pk.y = (float) this.y;
-            pk.z = (float) this.z;
-            pk.speedX = (float) this.motionX;
-            pk.speedY = (float) this.motionY;
-            pk.speedZ = (float) this.motionZ;
-            pk.yaw = (float) this.yaw;
-            pk.pitch = (float) this.pitch;
-            pk.item = this.getInventory().getItemInMainHand();
-            pk.entityData = this.entityDataMap;
-            player.dataPacket(pk);
+            final AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
+            addPlayerPacket.setActorData(this.entityDataMap);
+            addPlayerPacket.setUuid(this.getUniqueId());
+            addPlayerPacket.setPlayerName(this.getName());
+            addPlayerPacket.setTargetActorID(this.getId());
+            addPlayerPacket.setTargetRuntimeID(this.getId());
+            addPlayerPacket.setPosition(this.getPosition().toNetwork());
+            addPlayerPacket.setVelocity(this.getMotionVector());
+            addPlayerPacket.setRotation(this.getRotationVector());
+            addPlayerPacket.setCarriedItem(this.getInventory().getItemInMainHand().toNetwork());
+            addPlayerPacket.setDeviceId("");
+            addPlayerPacket.setBuildPlatform(BuildPlatform.UNKNOWN);
+            addPlayerPacket.setPlayerGameType(GameType.SURVIVAL);
+            player.dataPacket(addPlayerPacket);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
 
             if (this.riding != null) {
-                SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-                pkk.vehicleUniqueId = this.riding.getId();
-                pkk.riderUniqueId = this.getId();
-                pkk.type = EntityLink.Type.RIDER;
-                pkk.immediate = 1;
-
-                player.dataPacket(pkk);
+                final SetActorLinkPacket setActorLinkPacket = new SetActorLinkPacket();
+                setActorLinkPacket.setLink(
+                        new ActorLink(
+                                this.riding.getId(),
+                                this.getId(),
+                                ActorLinkType.RIDING,
+                                true,
+                                false,
+                                0f
+                        )
+                );
+                player.dataPacket(setActorLinkPacket);
             }
 
             if (!(this instanceof Player)) {
@@ -213,10 +219,9 @@ public class EntityHuman extends EntityHumanType {
     @Override
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
-
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
-            player.dataPacket(pk);
+            final RemoveActorPacket packet = new RemoveActorPacket();
+            packet.setTargetActorID(this.getId());
+            player.dataPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }
@@ -246,5 +251,13 @@ public class EntityHuman extends EntityHumanType {
             shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
+    }
+
+    protected Vector3f getMotionVector() {
+        return Vector3f.from(this.motionX, this.motionY, this.motionZ);
+    }
+
+    protected Vector3f getRotationVector() {
+        return Vector3f.from(this.pitch, this.yaw, this.headYaw);
     }
 }

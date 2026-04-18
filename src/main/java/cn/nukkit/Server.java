@@ -8,7 +8,6 @@ import cn.nukkit.command.PluginIdentifiableCommand;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.command.defaults.WorldCommand;
 import cn.nukkit.command.function.FunctionManager;
-import cn.nukkit.network.compression.ZlibChooser;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.config.updater.ConfigUpdater;
@@ -16,7 +15,6 @@ import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
@@ -52,26 +50,10 @@ import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
 import cn.nukkit.metadata.PlayerMetadataStore;
 import cn.nukkit.metrics.NukkitMetrics;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.LongTag;
-import cn.nukkit.nbt.tag.ShortTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.Network;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.network.NetworkInterface;
 import cn.nukkit.network.process.NetworkState;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.types.ExperimentEntry;
-import cn.nukkit.network.protocol.types.PlayerInfo;
-import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
@@ -86,8 +68,8 @@ import cn.nukkit.plugin.service.ServiceManager;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.registry.RecipeRegistry;
-import cn.nukkit.registry.RegistryCache;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.registry.RegistryCache;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.resourcepacks.loader.JarPluginResourcePackLoader;
 import cn.nukkit.resourcepacks.loader.ZippedResourcePackLoader;
@@ -105,8 +87,20 @@ import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.cloudburstmc.nbt.NBTInputStream;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
+import org.cloudburstmc.protocol.bedrock.data.Experiment;
+import org.cloudburstmc.protocol.bedrock.data.PlayerListPacketType;
+import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerListPacket;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
@@ -117,6 +111,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -127,7 +123,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
@@ -278,7 +273,7 @@ public class Server {
     private Level defaultLevel = null;
     private boolean allowNether;
     private boolean allowTheEnd;
-    private List<ExperimentEntry> experiments;
+    private List<Experiment> experiments;
 
     private final BedrockMigrationService migrationService = new BedrockMigrationService(this);
 
@@ -376,10 +371,7 @@ public class Server {
             /* repeat until all configuration updates are applied */ }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
-        NBTIO.MAX_NBT_DEPTH = Math.max(1, this.settings.performanceSettings().nbtMaxDepth());
-
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()),
-                new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
         levelArray = Level.EMPTY_ARRAY;
 
@@ -413,8 +405,6 @@ public class Server {
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
 
-        ZlibChooser.setProvider(settings.networkSettings().zlibProvider());
-
         this.serverAuthoritativeMovementMode = switch (this.settings.gameplaySettings().serverAuthoritativeMovement()) {
             case "client-auth" -> 0;
             case "server-auth" -> 1;
@@ -428,7 +418,7 @@ public class Server {
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
-            experiments.add(new ExperimentEntry(experiment, true));
+            experiments.add(new Experiment(experiment, true));
 
         this.entityMetadata = new EntityMetadataStore();
         this.playerMetadata = new PlayerMetadataStore();
@@ -478,14 +468,12 @@ public class Server {
             registryCache = cache;
         }
 
-        {// init
+        {//init
             CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
             CompletableFuture<Void> itemF = CompletableFuture.runAsync(Registries.ITEM::init, computeThreadPool);
             CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
-            CompletableFuture<Void> packetF = CompletableFuture.runAsync(Registries.PACKET::init, computeThreadPool);
             CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
-            CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init,
-                    computeThreadPool);
+            CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
             CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(
                     registryCache != null
                             ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
@@ -497,17 +485,13 @@ public class Server {
                             : Registries.BIOME::init,
                     computeThreadPool);
             CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, computeThreadPool);
-            CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init,
-                    computeThreadPool);
-            CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init,
-                    computeThreadPool);
-            CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init,
-                    computeThreadPool);
-            CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init,
-                    computeThreadPool);
+            CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, computeThreadPool);
+            CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
+            CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
+            CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
             CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
-            CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init,
-                    computeThreadPool);
+            CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
+            CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
 
             CompletableFuture<Void> blockStateF = blockF.thenRunAsync(
                     registryCache != null
@@ -527,9 +511,9 @@ public class Server {
                             : Registries.RECIPE::init,
                     computeThreadPool);
 
-            CompletableFuture.allOf(potionF, packetF, entityF, blockEntityF, itemRtIdF, biomeF,
+            CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
                     fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, effectF,
-                    creativeF, recipeF, voxelF).join();
+                    creativeF, recipeF, voxelF, disconnectF).join();
 
             if (settings.performanceSettings().registryCacheEnabled() && registryCache == null) {
                 RegistryCache.save(registryCachePath);
@@ -546,8 +530,7 @@ public class Server {
         if (settings.gameplaySettings().enableEducation()) {
             Education.enable();
             if (settings.baseSettings().waterdogpe())
-                log.info(
-                        "You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
+                log.info("You have Education and WaterdogPE enabled at the same time. Make sure to enable Education on WaterdogPE as well.");
         }
 
         if (useTerra) {// load terra
@@ -599,7 +582,6 @@ public class Server {
         this.pluginManager.loadPlugins(this.pluginPath);
         {// trim
             Registries.POTION.trim();
-            Registries.PACKET.trim();
             Registries.ENTITY.trim();
             Registries.BLOCKENTITY.trim();
             Registries.BLOCKSTATE.trim();
@@ -649,8 +631,7 @@ public class Server {
         EntityProperty.buildEntityProperty();
         EntityProperty.buildPlayerProperty();
 
-        if (settings.gameplaySettings().enableEducation())
-            Education.registerCreative();
+        if (settings.gameplaySettings().enableEducation()) Education.registerCreative();
 
         if (settings.miscSettings().installSpark()) {
             SparkInstaller.initSpark(this);
@@ -797,7 +778,6 @@ public class Server {
         log.info("Reloading registries...");
         {
             Registries.POTION.reload();
-            Registries.PACKET.reload();
             Registries.ENTITY.reload();
             Registries.BLOCKENTITY.reload();
             Registries.BLOCKSTATE.reload();
@@ -823,7 +803,6 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.STARTUP);
         {
             Registries.POTION.trim();
-            Registries.PACKET.trim();
             Registries.ENTITY.trim();
             Registries.BLOCKENTITY.trim();
             Registries.BLOCKSTATE.trim();
@@ -890,9 +869,7 @@ public class Server {
             for (Level level : this.levelArray) {
                 this.unloadLevel(level, true);
                 while (level.isThreadRunning())
-                    Thread.sleep(10); // TODO: This is just a workaround, we need to apply proper thread
-                                      // synchronization to ensure the level thread is stopped before proceeding with
-                                      // the shutdown process.
+                    Thread.sleep(10); // TODO: This is just a workaround, we need to apply proper thread synchronization to ensure the level thread is stopped before proceeding with the shutdown process.
             }
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
@@ -942,7 +919,7 @@ public class Server {
         getPluginManager().callEvent(serverStartedEvent);
 
         this.network.setState(NetworkState.STARTED);
-        this.network.getPong().update(this.network);
+        this.network.updatePong(this.network.getPong());
 
         this.tickProcessor();
         this.forceShutdown();
@@ -989,7 +966,7 @@ public class Server {
         }
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
-        // Do level ticks if level threading is disabled
+        //Do level ticks if level threading is disabled
         if (!this.getSettings().levelSettings().levelThread()) {
             for (Level level : this.getLevels().values()) {
                 if (level.getTickRate() > baseTickRate && --level.tickRateCounter > 0) {
@@ -1324,9 +1301,7 @@ public class Server {
      * {@code PluginManager#permSubs}.
      *
      * @param message     Message content
-     * @param permissions Permissions name, need to register first through
-     *                    {@link PluginManager#subscribeToPermission
-     *                    subscribeToPermission}
+     * @param permissions Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
      * @return Number of {@link CommandSender senders} who received the message
      */
     public int broadcast(String message, String permissions) {
@@ -1475,9 +1450,9 @@ public class Server {
     // region networking
 
     /**
-     * @see #broadcastPacket(Player[], DataPacket)
+     * @see #broadcastPacket(Player[], BedrockPacket)
      */
-    public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
+    public static void broadcastPacket(Collection<Player> players, BedrockPacket packet) {
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -1489,7 +1464,7 @@ public class Server {
      * @param players All players receiving the data packet
      * @param packet  The data packet
      */
-    public static void broadcastPacket(Player[] players, DataPacket packet) {
+    public static void broadcastPacket(Player[] players, BedrockPacket packet) {
         for (Player player : players) {
             player.dataPacket(packet);
         }
@@ -1579,9 +1554,8 @@ public class Server {
     @ApiStatus.Internal
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(),
-                player.getLoginChainData().getXUID(), player.getLocatorBarColor());
-        this.getNetwork().getPong().playerCount(playerList.size()).update(this.getNetwork());
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getXUID(), player.getLocatorBarColor());
+        this.getNetwork().updatePong(this.getNetwork().getPong().playerCount(playerList.size()));
     }
 
     @ApiStatus.Internal
@@ -1589,45 +1563,49 @@ public class Server {
         if (this.playerList.containsKey(player.getUniqueId())) {
             this.playerList.remove(player.getUniqueId());
 
-            PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_REMOVE;
-            pk.entries = new PlayerListPacket.Entry[] { new PlayerListPacket.Entry(player.getUniqueId()) };
+            final PlayerListPacket pk = new PlayerListPacket();
+            pk.setAction(PlayerListPacketType.REMOVE);
+            pk.getEntries().add(
+                    new PlayerListPacket.Entry(
+                            player.getUniqueId()
+                    )
+            );
 
             Server.broadcastPacket(this.playerList.values(), pk);
-            this.getNetwork().getPong().playerCount(playerList.size()).update(this.getNetwork());
+            this.getNetwork().updatePong(this.getNetwork().getPong().playerCount(playerList.size()));
         }
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
      */
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, this.playerList.values());
     }
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, players);
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Color color, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, players);
     }
 
@@ -1642,20 +1620,27 @@ public class Server {
      * @param xboxUserId xbox user id
      * @param players    players to send packet
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color,
-            Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[] {
-                new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId, color) };
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color, Player[] players) {
+        final PlayerListPacket pk = new PlayerListPacket();
+        pk.setAction(PlayerListPacketType.ADD);
+
+        final PlayerListPacket.Entry entry = new PlayerListPacket.Entry(uuid);
+        entry.setTargetActorID(entityId);
+        entry.setPlayerName(name);
+        entry.setXblXUID(xboxUserId);
+        entry.setPlatformChatId("");
+        entry.setBuildPlatform(BuildPlatform.UNKNOWN);
+        entry.setSkin(skin);
+        entry.setPlayerColor(color);
+
+        pk.getEntries().add(entry);
         Server.broadcastPacket(players, pk);
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color,
-            Collection<Player> players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color, Collection<Player> players) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 
@@ -1669,9 +1654,9 @@ public class Server {
      * @param players player array
      */
     public void removePlayerListData(UUID uuid, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[] { new PlayerListPacket.Entry(uuid) };
+        final PlayerListPacket pk = new PlayerListPacket();
+        pk.setAction(PlayerListPacketType.REMOVE);
+        pk.getEntries().add(new PlayerListPacket.Entry(uuid));
         Server.broadcastPacket(players, pk);
     }
 
@@ -1682,9 +1667,9 @@ public class Server {
      */
 
     public void removePlayerListData(UUID uuid, Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[] { new PlayerListPacket.Entry(uuid) };
+        final PlayerListPacket pk = new PlayerListPacket();
+        pk.setAction(PlayerListPacketType.REMOVE);
+        pk.getEntries().add(new PlayerListPacket.Entry(uuid));
         player.dataPacket(pk);
     }
 
@@ -1698,18 +1683,18 @@ public class Server {
      * @param player The player
      */
     public void sendFullPlayerListData(Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = this.playerList.values().stream()
-                .map(p -> new PlayerListPacket.Entry(
-                        p.getUniqueId(),
-                        p.getId(),
-                        p.getDisplayName(),
-                        p.getSkin(),
-                        p.getLoginChainData().getXUID(),
-                        p.getLocatorBarColor()))
-                .toArray(PlayerListPacket.Entry[]::new);
-
+        final PlayerListPacket pk = new PlayerListPacket();
+        pk.setAction(PlayerListPacketType.ADD);
+        for (Player value : this.playerList.values()) {
+            final PlayerListPacket.Entry entry = new PlayerListPacket.Entry(value.getUniqueId());
+            entry.setTargetActorID(value.getId());
+            entry.setPlayerName(value.getName());
+            entry.setXblXUID(value.getXUID());
+            entry.setPlatformChatId("");
+            entry.setBuildPlatform(BuildPlatform.UNKNOWN);
+            entry.setSkin(value.getSkin());
+            entry.setPlayerColor(value.getLocatorBarColor());
+        }
         player.dataPacket(pk);
     }
 
@@ -1763,9 +1748,9 @@ public class Server {
      *
      * @param info the player info
      */
-    void updateName(PlayerInfo info) {
-        var uniqueId = info.getUniqueId();
-        var name = info.getUsername();
+    void updateName(Player.PlayerInfo info) {
+        var uniqueId = info.getIdentityClaims().extraData.identity;
+        var name = info.getIdentityClaims().extraData.displayName;
 
         byte[] nameBytes = name.toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8);
 
@@ -1778,7 +1763,7 @@ public class Server {
             playerDataDB.put(nameBytes, array);
         }
         boolean xboxAuthEnabled = this.settings.baseSettings().xboxAuth();
-        if (info instanceof XboxLivePlayerInfo || !xboxAuthEnabled) {
+        if (!xboxAuthEnabled) {
             playerDataDB.put(nameBytes, array);
         }
     }
@@ -1814,7 +1799,7 @@ public class Server {
      *
      * @see #getOfflinePlayerData(UUID, boolean)
      */
-    public CompoundTag getOfflinePlayerData(UUID uuid) {
+    public NbtMap getOfflinePlayerData(UUID uuid) {
         return getOfflinePlayerData(uuid, false);
     }
 
@@ -1823,17 +1808,17 @@ public class Server {
      *
      * @param uuid   UUID of the player to get data from
      * @param create If player data does not exist, whether to create.
-     * @return {@link CompoundTag}
+     * @return {@link NbtMap}
      */
-    public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
+    public NbtMap getOfflinePlayerData(UUID uuid, boolean create) {
         return getOfflinePlayerDataInternal(uuid, create);
     }
 
-    public CompoundTag getOfflinePlayerData(String name) {
+    public NbtMap getOfflinePlayerData(String name) {
         return getOfflinePlayerData(name, false);
     }
 
-    public CompoundTag getOfflinePlayerData(String name, boolean create) {
+    public NbtMap getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
             log.debug("Invalid uuid in name lookup database detected! Removing");
@@ -1861,25 +1846,28 @@ public class Server {
         return bytes != null;
     }
 
-    private CompoundTag getOfflinePlayerDataInternal(UUID uuid, boolean create) {
+    private NbtMap getOfflinePlayerDataInternal(UUID uuid, boolean create) {
         if (uuid == null) {
             log.error("UUID is empty, cannot query player data");
             return null;
         }
         try {
-            ByteBuffer buffer = ByteBuffer.allocate(16);
+            ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
             buffer.putLong(uuid.getMostSignificantBits());
             buffer.putLong(uuid.getLeastSignificantBits());
             byte[] bytes = playerDataDB.get(buffer.array());
             if (bytes != null) {
-                return NBTIO.readCompressed(bytes);
+                try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                     final NBTInputStream nbtInputStream = NbtUtils.createGZIPReader(inputStream)) {
+                    return (NbtMap) nbtInputStream.readTag();
+                }
             }
 
             if (migrationService.hasBedrockData(uuid)) {
-                CompoundTag migrated = migrationService.migrate(uuid);
+                NbtMap migrated = migrationService.migrate(uuid);
 
                 if (migrated != null) {
-                    migrated.putBoolean("BedrockMigrated", true);
+                    migrated = migrated.toBuilder().putBoolean("BedrockMigrated", true).build();
                     saveOfflinePlayerData(uuid, migrated, true);
                     return migrated;
                 }
@@ -1887,7 +1875,7 @@ public class Server {
         } catch (IOException e) {
             log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
         }
-        CompoundTag migrated = migrationService.migrate(uuid);
+        NbtMap migrated = migrationService.migrate(uuid);
 
         if (migrated != null) {
             saveOfflinePlayerData(uuid, migrated, true);
@@ -1898,29 +1886,22 @@ public class Server {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
             Position spawn = this.getDefaultLevel().getSafeSpawn();
-            CompoundTag nbt = new CompoundTag()
+            final NbtMap nbt = NbtMap.builder()
                     .putLong("firstPlayed", System.currentTimeMillis() / 1000)
                     .putLong("lastPlayed", System.currentTimeMillis() / 1000)
-                    .putList("Pos", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(spawn.x))
-                            .add(new DoubleTag(spawn.y))
-                            .add(new DoubleTag(spawn.z)))
+                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(spawn.x, spawn.y, spawn.z))
                     .putString("Level", this.getDefaultLevel().getName())
-                    .putList("Inventory", new ListTag<>())
-                    .putCompound("Achievements", new CompoundTag())
+                    .putList("Inventory", NbtType.COMPOUND, new ObjectArrayList<>())
+                    .putCompound("Achievements", NbtMap.EMPTY)
                     .putInt("playerGameType", this.getGamemode())
-                    .putList("Motion", new ListTag<DoubleTag>()
-                            .add(new DoubleTag(0))
-                            .add(new DoubleTag(0))
-                            .add(new DoubleTag(0)))
-                    .putList("Rotation", new ListTag<FloatTag>()
-                            .add(new FloatTag(0))
-                            .add(new FloatTag(0)))
+                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                    .putList("Rotation", NbtType.FLOAT, Arrays.asList(0.0f, 0.0f))
                     .putFloat("FallDistance", 0)
-                    .putShort("Fire", 0)
-                    .putShort("Air", 300)
+                    .putShort("Fire", (short) 0)
+                    .putShort("Air", (short) 300)
                     .putBoolean("OnGround", true)
-                    .putBoolean("Invulnerable", false);
+                    .putBoolean("Invulnerable", false)
+                    .build();
 
             this.saveOfflinePlayerData(uuid, nbt, true);
             return nbt;
@@ -1931,23 +1912,23 @@ public class Server {
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     * @see #saveOfflinePlayerData(String, NbtMap, boolean)
      */
-    public void saveOfflinePlayerData(UUID uuid, CompoundTag tag) {
+    public void saveOfflinePlayerData(UUID uuid, NbtMap tag) {
         this.saveOfflinePlayerData(uuid, tag, false);
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     * @see #saveOfflinePlayerData(String, NbtMap, boolean)
      */
-    public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
+    public void saveOfflinePlayerData(UUID uuid, NbtMap tag, boolean async) {
         this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     * @see #saveOfflinePlayerData(String, NbtMap, boolean)
      */
-    public void saveOfflinePlayerData(String name, CompoundTag tag) {
+    public void saveOfflinePlayerData(String name, NbtMap tag) {
         this.saveOfflinePlayerData(name, tag, false);
     }
 
@@ -1958,7 +1939,7 @@ public class Server {
      * @param tag        nbt data
      * @param async      Whether to save asynchronously
      */
-    public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
+    public void saveOfflinePlayerData(String nameOrUUid, NbtMap tag, boolean async) {
         UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
         if (this.getSettings().playerSettings().savePlayerData()) {
             this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
@@ -1981,23 +1962,26 @@ public class Server {
         }
     }
 
-    private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
+    private void saveOfflinePlayerDataInternal(NbtMap tag, UUID uuid) {
         try {
-            cleanupOfflinePlayerData(tag);
-            byte[] bytes = NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN);
-            ByteBuffer buffer = ByteBuffer.allocate(16);
-            buffer.putLong(uuid.getMostSignificantBits());
-            buffer.putLong(uuid.getLeastSignificantBits());
-            playerDataDB.put(buffer.array(), bytes);
+            tag = cleanupOfflinePlayerData(tag);
+            try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                 final NBTOutputStream nbtOutputStream = NbtUtils.createGZIPWriter(outputStream)) {
+                nbtOutputStream.writeTag(tag);
+                nbtOutputStream.close();
+                byte[] bytes = outputStream.toByteArray();
+                ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
+                buffer.putLong(uuid.getMostSignificantBits());
+                buffer.putLong(uuid.getLeastSignificantBits());
+                playerDataDB.put(buffer.array(), bytes);
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private void cleanupOfflinePlayerData(CompoundTag tag) {
-        tag.remove("Colors");
-        tag.remove("PieceTintColors");
-        tag.remove("Skin");
+    private NbtMap cleanupOfflinePlayerData(NbtMap tag) {
+        return NbtHelper.remove(tag, "Colors", "PieceTintColors", "Skin");
     }
 
     /**
@@ -2183,7 +2167,7 @@ public class Server {
     }
 
     public String getVersion() {
-        return ProtocolInfo.MINECRAFT_VERSION;
+        return NetworkConstants.CODEC.getMinecraftVersion();
     }
 
     public String getApiVersion() {
@@ -2248,7 +2232,7 @@ public class Server {
      * @param player the player
      */
     public void sendRecipeList(Player player) {
-        player.getSession().sendRawPacket(ProtocolInfo.CRAFTING_DATA_PACKET, Registries.RECIPE.getCraftingPacket());
+        player.getSession().sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
     }
 
     /**
@@ -2544,7 +2528,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(true);
             player.getAdventureSettings().update();
-            player.getSession().syncAvailableCommands();
+            player.syncAvailableCommands();
         }
         this.operators.save(true);
     }
@@ -2556,7 +2540,7 @@ public class Server {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(false);
             player.getAdventureSettings().update();
-            player.getSession().syncAvailableCommands();
+            player.syncAvailableCommands();
         }
         this.operators.save();
     }
@@ -2606,7 +2590,7 @@ public class Server {
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
-        this.getNetwork().getPong().maximumPlayerCount(maxPlayers).update(this.getNetwork());
+        this.getNetwork().updatePong(this.getNetwork().getPong().maximumPlayerCount(maxPlayers));
     }
 
     /**
@@ -2785,7 +2769,7 @@ public class Server {
      */
     public void setDefaultGamemode(int defaultGamemode) {
         this.defaultGamemode = defaultGamemode;
-        this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)).update(this.getNetwork());
+        this.getNetwork().updatePong(this.getNetwork().getPong().gameType(Server.getGamemodeString(defaultGamemode, true)));
     }
 
     /**
@@ -2802,7 +2786,7 @@ public class Server {
      */
     public void setMotd(String motd) {
         this.settings.baseSettings().motd(motd);
-        this.getNetwork().getPong().motd(motd).update(this.getNetwork());
+        this.getNetwork().updatePong(this.getNetwork().getPong().motd(motd));
     }
 
     /**
@@ -2823,7 +2807,7 @@ public class Server {
      */
     public void setSubMotd(String subMotd) {
         this.settings.baseSettings().subMotd(subMotd);
-        this.getNetwork().getPong().subMotd(subMotd).update(this.getNetwork());
+        this.getNetwork().updatePong(this.getNetwork().getPong().subMotd(subMotd));
     }
 
     /**
@@ -2886,7 +2870,7 @@ public class Server {
         return this.allowTheEnd;
     }
 
-    public boolean canLogPacket(Class<? extends DataPacket> clazz) {
+    public boolean canLogPacket(Class<? extends BedrockPacket> clazz) {
         if (!this.getSettings().debugSettings().mode()) // ignored mode
             return !this.getSettings().debugSettings().packetList().contains(clazz.getSimpleName());
         else // allow mode
@@ -2932,14 +2916,13 @@ public class Server {
         return settings.gameplaySettings().allowVibrantVisuals();
     }
 
-    public List<ExperimentEntry> getExperiments() {
+    public List<Experiment> getExperiments() {
         return experiments;
     }
+  
+  
 
-    /**
-     * Allow plugins to override the default DP group UUID (e.g., when migrating
-     * from BDS).
-     */
+    /** Allow plugins to override the default DP group UUID (e.g., when migrating from BDS). */
     public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
         if (uuid == null || !DP_UUID_CANON.matcher(uuid).matches()) {
             log.warn("DynamicProperties default group UUID rejected: '{}'", uuid);
@@ -2971,20 +2954,16 @@ public class Server {
      */
     public Server removeDynamicProperty(String key) {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return this;
+        if (provider == null) return this;
 
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null)
-            return this;
+        NbtMap root = provider.getWorldDynamicProperties();
+        if (root == null) return this;
 
-        if (!root.contains(DP_ROOT))
-            return this;
-        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.containsKey(DP_ROOT)) return this;
+        NbtMap dyn = root.getCompound(DP_ROOT);
 
-        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
-        if (group == null || !group.contains(key))
-            return this;
+        NbtMap group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.containsKey(key)) return this;
 
         group.remove(key);
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, group);
@@ -2996,19 +2975,16 @@ public class Server {
      */
     public Server clearDynamicProperties() {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return this;
+        if (provider == null) return this;
 
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null)
-            root = new CompoundTag();
+        NbtMap root = provider.getWorldDynamicProperties();
+        if (root == null) root = NbtMap.EMPTY;
 
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null)
-            dyn = new CompoundTag();
+        NbtMap dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) dyn = NbtMap.EMPTY;
 
-        dyn.putCompound(DP_DEFAULT_GROUP_UUID, new CompoundTag());
-        root.putCompound(DP_ROOT, dyn);
+        dyn = dyn.toBuilder().putCompound(DP_DEFAULT_GROUP_UUID, NbtMap.EMPTY).build();
+        root = root.toBuilder().putCompound(DP_ROOT, dyn).build();
 
         provider.setWorldDynamicProperties(root);
         provider.setWorldDynamicPropertiesDirty(true);
@@ -3032,8 +3008,10 @@ public class Server {
         if (provider == null)
             return this;
 
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        g.putDouble(key, value);
+        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .toBuilder()
+                .putDouble(key, value)
+                .build();
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3071,8 +3049,10 @@ public class Server {
         if (provider == null)
             return this;
 
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        g.putBoolean(key, bool);
+        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .toBuilder()
+                .putBoolean(key, bool)
+                .build();
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3094,8 +3074,10 @@ public class Server {
         if (provider == null)
             return this;
 
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        g.putString(key, string);
+        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .toBuilder()
+                .putString(key, string)
+                .build();
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3115,17 +3097,16 @@ public class Server {
                     key, vec3.x, vec3.y, vec3.z);
             return this;
         }
-        ListTag<FloatTag> list = new ListTag<>();
-        list.add(new FloatTag((float) vec3.x));
-        list.add(new FloatTag((float) vec3.y));
-        list.add(new FloatTag((float) vec3.z));
+        final List<Float> list = Arrays.asList((float) vec3.x, (float) vec3.y, (float) vec3.z);
 
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
         if (provider == null)
             return this;
 
-        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        g.putList(key, list);
+        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .toBuilder()
+                .putList(key, NbtType.FLOAT, list)
+                .build();
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3158,26 +3139,25 @@ public class Server {
      * @return the double int value or null if not available.
      */
     public Double getDoubleDynamicProperty(String key) {
-        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null)
-            return null;
-
-        return switch (t) {
-            case DoubleTag d -> d.data;
-            case FloatTag f -> (double) f.data;
-            case IntTag i -> (double) i.data;
-            case LongTag l -> (double) l.data;
-            case ShortTag s -> (double) s.data;
-            case ByteTag b -> (double) b.data;
-            case StringTag s -> {
+        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        switch (t) {
+            case null -> {
+                return null;
+            }
+            case Number number -> {
+                return number.doubleValue();
+            }
+            case String s -> {
                 try {
-                    yield Double.parseDouble(s.data.trim());
-                } catch (NumberFormatException ignored) {
-                    yield null;
+                    return Double.parseDouble(s);
+                } catch (NumberFormatException e) {
+                    return null;
                 }
             }
-            default -> null;
-        };
+            default -> {
+            }
+        }
+        return null;
     }
 
     /**
@@ -3249,20 +3229,15 @@ public class Server {
      * @return the bool value or false if not available.
      */
     public Boolean getBoolDynamicProperty(String key) {
-        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null)
-            return null;
-        if (t instanceof ByteTag)
-            return ((ByteTag) t).data != 0;
+        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+        if (t instanceof Number) return ((Number) t).byteValue() != 0;
         Double d = getDoubleDynamicProperty(key);
-        if (d != null)
-            return d != 0.0;
-        if (t instanceof StringTag) {
-            String s = ((StringTag) t).data.trim().toLowerCase();
-            if ("true".equals(s) || "1".equals(s))
-                return true;
-            if ("false".equals(s) || "0".equals(s))
-                return false;
+        if (d != null) return d != 0.0;
+        if (t instanceof String string) {
+            String s = string.trim().toLowerCase();
+            if ("true".equals(s) || "1".equals(s)) return true;
+            if ("false".equals(s) || "0".equals(s)) return false;
         }
         return null;
     }
@@ -3286,19 +3261,11 @@ public class Server {
      * @return the bool value or null if not available.
      */
     public String getStringDynamicProperty(String key) {
-        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null)
-            return null;
-
+        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
         return switch (t) {
-            case StringTag s -> s.data;
-            case DoubleTag d -> String.valueOf(d.data);
-            case FloatTag f -> String.valueOf(f.data);
-            case IntTag i -> String.valueOf(i.data);
-            case LongTag l -> String.valueOf(l.data);
-            case ShortTag s -> String.valueOf(s.data);
-            case ByteTag b -> String.valueOf(b.data);
-            default -> null;
+            case Number number -> String.valueOf(number);
+            case String s -> s;
+            case null, default -> null;
         };
     }
 
@@ -3321,20 +3288,14 @@ public class Server {
      * @return the bool value or null if not available.
      */
     public Vector3 getVec3DynamicProperty(String key) {
-        Tag t = findWorldDynamicPropertyTagInConfiguredGroup(key);
-        if (t == null)
-            return null;
-
-        if (t instanceof ListTag<?> list &&
+        Object t = findWorldDynamicPropertyTagInConfiguredGroup(key);
+        if (t == null) return null;
+        if (t instanceof List<?> list &&
                 list.size() == 3 &&
-                list.get(0) instanceof FloatTag fx &&
-                list.get(1) instanceof FloatTag fy &&
-                list.get(2) instanceof FloatTag fz) {
-
-            float x = fx.data;
-            float y = fy.data;
-            float z = fz.data;
-            return new Vector3(x, y, z);
+                list.get(0) instanceof Float fx &&
+                list.get(1) instanceof Float fy &&
+                list.get(2) instanceof Float fz) {
+            return new Vector3(fx, fy, fz);
         }
         return null;
     }
@@ -3363,63 +3324,58 @@ public class Server {
         return ldb;
     }
 
-    private CompoundTag ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null)
-            root = new CompoundTag();
+    private NbtMap ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        NbtMap root = provider.getWorldDynamicProperties();
+        if (root == null) root = NbtMap.EMPTY;
 
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (!root.contains(DP_ROOT) || dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
+        NbtMap dyn = root.getCompound(DP_ROOT);
+        if (!root.containsKey(DP_ROOT) || dyn == null) {
+            dyn = NbtMap.EMPTY;
+            root = root.toBuilder().putCompound(DP_ROOT, dyn).build();
         }
 
-        CompoundTag group = dyn.getCompound(groupId);
-        if (group == null)
-            group = new CompoundTag();
+        NbtMap group = dyn.getCompound(groupId);
+        if (group == null) group = NbtMap.EMPTY;
 
-        dyn.putCompound(groupId, group);
+        dyn = dyn.toBuilder().putCompound(groupId, group).build();
         provider.setWorldDynamicProperties(root);
         return group;
     }
 
-    private CompoundTag getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null || !root.contains(DP_ROOT))
-            return null;
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (dyn == null)
-            return null;
+
+    private NbtMap getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        NbtMap root = provider.getWorldDynamicProperties();
+        if (root == null || !root.containsKey(DP_ROOT)) return null;
+        NbtMap dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) return null;
         return dyn.getCompound(groupId);
     }
 
-    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, CompoundTag group) {
-        CompoundTag root = provider.getWorldDynamicProperties();
-        if (root == null)
-            root = new CompoundTag();
+    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, NbtMap group) {
+        NbtMap root = provider.getWorldDynamicProperties();
+        if (root == null) root = NbtMap.EMPTY;
 
-        CompoundTag dyn = root.getCompound(DP_ROOT);
-        if (!root.contains(DP_ROOT) || dyn == null) {
-            dyn = new CompoundTag();
-            root.putCompound(DP_ROOT, dyn);
+        NbtMap dyn = root.getCompound(DP_ROOT);
+        if (!root.containsKey(DP_ROOT) || dyn == null) {
+            dyn = NbtMap.EMPTY;
+            root = root.toBuilder().putCompound(DP_ROOT, dyn).build();
         }
 
-        dyn.putCompound(groupId, group);
+        dyn = dyn.toBuilder().putCompound(groupId, group).build();
         provider.setWorldDynamicProperties(root);
         provider.setWorldDynamicPropertiesDirty(true);
     }
 
-    private Tag findWorldDynamicPropertyTagInConfiguredGroup(String key) {
+    private Object findWorldDynamicPropertyTagInConfiguredGroup(String key) {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
-        if (provider == null)
-            return null;
+        if (provider == null) return null;
 
-        CompoundTag group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        if (group == null || !group.contains(key))
-            return null;
+        NbtMap group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.containsKey(key)) return null;
         return group.get(key);
     }
     // Dynamic Properties Helpers end
+
 
     // TODO: It will block NukkitConsole and cannot be turned off.
     private class ConsoleThread extends Thread implements InterruptibleThread {

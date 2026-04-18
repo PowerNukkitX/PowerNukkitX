@@ -8,28 +8,31 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public final class CustomBlockUtils {
 
-    private CustomBlockUtils() {}
+    private CustomBlockUtils() {
+    }
 
     public static @Nullable AxisAlignedBB getBoundingBox(CustomBlockDefinition def, Block block) {
-        CompoundTag components = def.getComponents();
-        if (!components.contains("minecraft:collision_box")) return null;
-        CompoundTag collision = components.getCompound("minecraft:collision_box");
-        if (!collision.contains("boxes")) return null;
-        ListTag<CompoundTag> boxes = collision.getList("boxes", CompoundTag.class);
-        if (boxes.size() == 0) return null;
+        NbtMap components = def.getComponents();
+        if (!components.containsKey("minecraft:collision_box")) return null;
+        NbtMap collision = components.getCompound("minecraft:collision_box");
+        if (!collision.containsKey("boxes")) return null;
+        List<NbtMap> boxes = collision.getList("boxes", NbtType.COMPOUND);
+        if (boxes.isEmpty()) return null;
 
         RotationResult rotation = getRotation(block);
 
         float[] mergedBounds = null;
         for (int i = 0; i < boxes.size(); i++) {
-            CompoundTag boxTag = boxes.get(i);
+            NbtMap boxTag = boxes.get(i);
 
             float minXpx = boxTag.getFloat("minX");
             float minYpx = boxTag.getFloat("minY");
@@ -46,8 +49,8 @@ public final class CustomBlockUtils {
             float maxY = maxYpx / 16f;
             float maxZ = maxZpx / 16f;
 
-            float[] normOrigin = new float[]{ minX, minY, minZ };
-            float[] normSize   = new float[]{ maxX - minX, maxY - minY, maxZ - minZ };
+            float[] normOrigin = new float[]{minX, minY, minZ};
+            float[] normSize = new float[]{maxX - minX, maxY - minY, maxZ - minZ};
 
             Vector3f[] corners = buildAndRotateBoxCorners(
                     normOrigin,
@@ -137,8 +140,8 @@ public final class CustomBlockUtils {
             switch (facing) {
                 case NORTH -> rotY = 0f;
                 case SOUTH -> rotY = 180f;
-                case EAST  -> rotY = -90f;
-                case WEST  -> rotY = 90f;
+                case EAST -> rotY = -90f;
+                case WEST -> rotY = 90f;
                 case UP -> {
                     rotX = 270f;
                     if (hasCardinal) {
@@ -167,8 +170,8 @@ public final class CustomBlockUtils {
             switch (cardinal) {
                 case NORTH -> rotY = 0f;
                 case SOUTH -> rotY = 180f;
-                case EAST  -> rotY = -90f;
-                case WEST  -> rotY = 90f;
+                case EAST -> rotY = -90f;
+                case WEST -> rotY = 90f;
             }
         }
         // else: default rotY = 0 (north)
@@ -179,6 +182,7 @@ public final class CustomBlockUtils {
     private static class RotationResult {
         final float rotX, rotY;
         final boolean isVerticalRotated;
+
         RotationResult(float rotX, float rotY, boolean isVerticalRotated) {
             this.rotX = rotX;
             this.rotY = rotY;
@@ -227,7 +231,7 @@ public final class CustomBlockUtils {
             maxY = Math.max(maxY, v.y);
             maxZ = Math.max(maxZ, v.z);
         }
-        return new float[]{ minX, minY, minZ, maxX, maxY, maxZ };
+        return new float[]{minX, minY, minZ, maxX, maxY, maxZ};
     }
 
     // Rotates a point (relative to block center) by angleX, angleY, angleZ (in degrees)

@@ -7,11 +7,11 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityHopperMinecart;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Rail;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.Arrays;
 
 public class ItemHopperMinecart extends Item {
     public ItemHopperMinecart() {
@@ -40,18 +40,15 @@ public class ItemHopperMinecart extends Item {
                 adjacent = 0.5D;
             }
             EntityHopperMinecart minecart = (EntityHopperMinecart) Entity.createEntity(Entity.HOPPER_MINECART,
-                    level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag()
-                            .putList("Pos", new ListTag<>()
-                                    .add(new DoubleTag(target.getX() + 0.5))
-                                    .add(new DoubleTag(target.getY() + 0.0625D + adjacent))
-                                    .add(new DoubleTag(target.getZ() + 0.5)))
-                            .putList("Motion", new ListTag<>()
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0)))
-                            .putList("Rotation", new ListTag<>()
-                                    .add(new FloatTag(0))
-                                    .add(new FloatTag(0)))
+                    level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4),  NbtMap.builder()
+                            .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                            target.getX() + 0.5,
+                                            target.getY() + 0.0625D + adjacent,
+                                            target.getZ() + 0.5
+                                    )
+                            ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
+                            ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
+                            ).build()
             );
 
             if (minecart == null) {

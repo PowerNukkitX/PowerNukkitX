@@ -2,14 +2,17 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -40,12 +43,12 @@ public class EntityAreaEffectCloud extends Entity {
     protected int nextApply;
     private int lastAge;
 
-    public EntityAreaEffectCloud(IChunk chunk, CompoundTag nbt) {
+    public EntityAreaEffectCloud(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     public int getWaitTime() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_WAITING, 0);
+        return this.getDataProperty(ActorDataTypes.DATA_WAITING, 0);
     }
 
     public void setWaitTime(int waitTime) {
@@ -53,11 +56,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setWaitTime(int waitTime, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_WAITING, waitTime, send);
+        this.setDataProperty(ActorDataTypes.DATA_WAITING, waitTime, send);
     }
 
     public int getPotionId() {
-        return this.getDataProperty(AUX_VALUE_DATA);
+        return this.getDataProperty(ActorDataTypes.AUX_VALUE_DATA);
     }
 
     public void setPotionId(int potionId) {
@@ -65,7 +68,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPotionId(int potionId, boolean send) {
-        this.setDataProperty(AUX_VALUE_DATA, potionId & 0xFFFF, send);
+        this.setDataProperty(ActorDataTypes.AUX_VALUE_DATA, potionId & 0xFFFF, send);
     }
 
     public void recalculatePotionColor() {
@@ -76,7 +79,7 @@ public class EntityAreaEffectCloud extends Entity {
         int[] color = new int[4];
         int count = 0;
 
-        if (namedTag.contains("ParticleColor")) {
+        if (namedTag.containsKey("ParticleColor")) {
             int effectColor = namedTag.getInt("ParticleColor");
             color[0] = (effectColor & 0xFF000000) >> 24;
             color[1] = (effectColor & 0x00FF0000) >> 16;
@@ -110,7 +113,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public int getPotionColor() {
-        return this.getDataProperty(EFFECT_COLOR);
+        return this.getDataProperty(ActorDataTypes.EFFECT_COLOR);
     }
 
     public void setPotionColor(int argp) {
@@ -122,11 +125,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPotionColor(int argp, boolean send) {
-        this.setDataProperty(EFFECT_COLOR, argp, send);
+        this.setDataProperty(ActorDataTypes.EFFECT_COLOR, argp, send);
     }
 
     public int getPickupCount() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_PICKUP_COUNT);
+        return this.getDataProperty(ActorDataTypes.DATA_PICKUP_COUNT);
     }
 
     public void setPickupCount(int pickupCount) {
@@ -134,11 +137,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setPickupCount(int pickupCount, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_PICKUP_COUNT, pickupCount, send);
+        this.setDataProperty(ActorDataTypes.DATA_PICKUP_COUNT, pickupCount, send);
     }
 
     public float getRadiusChangeOnPickup() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP);
+        return this.getDataProperty(ActorDataTypes.DATA_CHANGE_ON_PICKUP);
     }
 
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup) {
@@ -146,11 +149,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP, radiusChangeOnPickup, send);
+        this.setDataProperty(ActorDataTypes.DATA_CHANGE_ON_PICKUP, radiusChangeOnPickup, send);
     }
 
     public float getRadiusPerTick() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_CHANGE_RATE);
+        return this.getDataProperty(ActorDataTypes.DATA_CHANGE_RATE);
     }
 
     public void setRadiusPerTick(float radiusPerTick) {
@@ -158,11 +161,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setRadiusPerTick(float radiusPerTick, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_CHANGE_RATE, radiusPerTick, send);
+        this.setDataProperty(ActorDataTypes.DATA_CHANGE_RATE, radiusPerTick, send);
     }
 
     public long getSpawnTime() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_SPAWN_TIME);
+        return this.getDataProperty(ActorDataTypes.DATA_SPAWN_TIME_deprecated);
     }
 
     public void setSpawnTime(long spawnTime) {
@@ -170,11 +173,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setSpawnTime(long spawnTime, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_SPAWN_TIME, spawnTime, send);
+        this.setDataProperty(ActorDataTypes.DATA_SPAWN_TIME_deprecated, spawnTime, send);
     }
 
     public int getDuration() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_DURATION);
+        return this.getDataProperty(ActorDataTypes.DATA_DURATION);
     }
 
     public void setDuration(int duration) {
@@ -182,11 +185,11 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setDuration(int duration, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_DURATION, duration, send);
+        this.setDataProperty(ActorDataTypes.DATA_DURATION, duration, send);
     }
 
     public float getRadius() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_RADIUS);
+        return this.getDataProperty(ActorDataTypes.DATA_RADIUS);
     }
 
     public void setRadius(float radius) {
@@ -194,7 +197,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setRadius(float radius, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_RADIUS, radius, send);
+        this.setDataProperty(ActorDataTypes.DATA_RADIUS, radius, send);
     }
 
     public void setHeight(float height) {
@@ -202,8 +205,8 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
 
-    public int getParticleId() {
-        return this.getDataProperty(AREA_EFFECT_CLOUD_PARTICLE);
+    public ParticleType getParticleId() {
+        return this.getDataProperty(ActorDataTypes.DATA_PARTICLE);
     }
 
     public void setParticleId(int particleId) {
@@ -211,20 +214,20 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setParticleId(int particleId, boolean send) {
-        this.setDataProperty(AREA_EFFECT_CLOUD_PARTICLE, particleId, send);
+        this.setDataProperty(ActorDataTypes.DATA_PARTICLE, particleId, send);
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
         this.invulnerable = true;
-        this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
-        this.setDataFlag(EntityFlag.NO_AI, true);
+        this.setDataFlag(ActorFlags.FIRE_IMMUNE, true);
+        this.setDataFlag(ActorFlags.NO_AI, true);
         this.setSpawnTime(this.level.getCurrentTick(), false);
         this.setPickupCount(0, false);
 
         cloudEffects = new ArrayList<>(1);
-        for (CompoundTag effectTag : namedTag.getList("mobEffects", CompoundTag.class).getAll()) {
+        for (NbtMap effectTag : namedTag.getList("mobEffects", NbtType.COMPOUND)) {
             Effect effect = Effect.get(effectTag.getByte("Id"))
                     .setAmbient(effectTag.getBoolean("Ambient"))
                     .setAmplifier(effectTag.getByte("Amplifier"))
@@ -232,7 +235,7 @@ public class EntityAreaEffectCloud extends Entity {
                     .setDuration(effectTag.getInt("Duration"));
             cloudEffects.add(effect);
         }
-        if(namedTag.contains("PotionId")) {
+        if (namedTag.containsKey("PotionId")) {
             this.setParticleId(32, false);
             int displayedPotionId = namedTag.getShort("PotionId");
             setPotionId(displayedPotionId, false);
@@ -241,52 +244,52 @@ public class EntityAreaEffectCloud extends Entity {
             setDragonBreath();
         }
 
-        if (namedTag.contains("Duration")) {
+        if (namedTag.containsKey("Duration")) {
             setDuration(namedTag.getInt("Duration"), false);
         } else {
             setDuration(600, false);
         }
-        if (namedTag.contains("DurationOnUse")) {
+        if (namedTag.containsKey("DurationOnUse")) {
             durationOnUse = namedTag.getInt("DurationOnUse");
         } else {
             durationOnUse = 0;
         }
-        if (namedTag.contains("ReapplicationDelay")) {
+        if (namedTag.containsKey("ReapplicationDelay")) {
             reapplicationDelay = namedTag.getInt("ReapplicationDelay");
         } else {
             reapplicationDelay = 0;
         }
-        if (namedTag.contains("InitialRadius")) {
+        if (namedTag.containsKey("InitialRadius")) {
             initialRadius = namedTag.getFloat("InitialRadius");
         } else {
             initialRadius = 3.0F;
         }
-        if (namedTag.contains("Radius")) {
+        if (namedTag.containsKey("Radius")) {
             setRadius(namedTag.getFloat("Radius"), false);
         } else {
             setRadius(initialRadius, false);
         }
-        if (namedTag.contains("RadiusChangeOnPickup")) {
+        if (namedTag.containsKey("RadiusChangeOnPickup")) {
             setRadiusChangeOnPickup(namedTag.getFloat("RadiusChangeOnPickup"), false);
         } else {
             setRadiusChangeOnPickup(-0.5F, false);
         }
-        if (namedTag.contains("RadiusOnUse")) {
+        if (namedTag.containsKey("RadiusOnUse")) {
             radiusOnUse = namedTag.getFloat("RadiusOnUse");
         } else {
             radiusOnUse = -0.5F;
         }
-        if (namedTag.contains("RadiusPerTick")) {
+        if (namedTag.containsKey("RadiusPerTick")) {
             setRadiusPerTick(namedTag.getFloat("RadiusPerTick"), false);
         } else {
             setRadiusPerTick(-0.005F, false);
         }
-        if (namedTag.contains("WaitTime")) {
+        if (namedTag.containsKey("WaitTime")) {
             setWaitTime(namedTag.getInt("WaitTime"), false);
         } else {
             setWaitTime(10, false);
         }
-        if (namedTag.contains("Height")) {
+        if (namedTag.containsKey("Height")) {
             setHeight(namedTag.getFloat("Height"));
         } else {
             setHeight(0.3F + (getRadius() / 2F));
@@ -304,27 +307,30 @@ public class EntityAreaEffectCloud extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        ListTag<CompoundTag> effectsTag = new ListTag<>();
+        List<NbtMap> effectsTag = new ObjectArrayList<>();
         for (Effect effect : cloudEffects) {
-            effectsTag.add(new CompoundTag().putByte("Id", effect.getId())
+            effectsTag.add(NbtMap.builder().putByte("Id", effect.getId().byteValue())
                     .putBoolean("Ambient", effect.isAmbient())
-                    .putByte("Amplifier", effect.getAmplifier())
+                    .putByte("Amplifier", (byte) effect.getAmplifier())
                     .putBoolean("DisplayOnScreenTextureAnimation", effect.isVisible())
                     .putInt("Duration", effect.getDuration())
+                    .build()
             );
         }
-        namedTag.putList("mobEffects", effectsTag);
-        namedTag.putInt("ParticleColor", getPotionColor());
-        namedTag.putInt("Duration", getDuration());
-        namedTag.putInt("DurationOnUse", durationOnUse);
-        namedTag.putInt("ReapplicationDelay", reapplicationDelay);
-        namedTag.putFloat("Radius", getRadius());
-        namedTag.putFloat("RadiusChangeOnPickup", getRadiusChangeOnPickup());
-        namedTag.putFloat("RadiusOnUse", radiusOnUse);
-        namedTag.putFloat("RadiusPerTick", getRadiusPerTick());
-        namedTag.putInt("WaitTime", getWaitTime());
-        namedTag.putFloat("InitialRadius", initialRadius);
-        namedTag.putInt("PotionId", getPotionId());
+        this.namedTag = this.namedTag.toBuilder()
+                .putList("mobEffects", NbtType.COMPOUND, effectsTag)
+                .putInt("ParticleColor", getPotionColor())
+                .putInt("Duration", getDuration())
+                .putInt("DurationOnUse", durationOnUse)
+                .putInt("ReapplicationDelay", reapplicationDelay)
+                .putFloat("Radius", getRadius())
+                .putFloat("RadiusChangeOnPickup", getRadiusChangeOnPickup())
+                .putFloat("RadiusOnUse", radiusOnUse)
+                .putFloat("RadiusPerTick", getRadiusPerTick())
+                .putInt("WaitTime", getWaitTime())
+                .putFloat("InitialRadius", initialRadius)
+                .putInt("PotionId", getPotionId())
+                .build();
     }
 
     @Override
@@ -379,8 +385,8 @@ public class EntityAreaEffectCloud extends Entity {
 
         float height = getHeight();
         boundingBox.setBounds(x - radius, y - height, z - radius, x + radius, y + height, z + radius);
-        this.setDataProperty(HEIGHT, height, false);
-        this.setDataProperty(WIDTH, radius, false);
+        this.setDataProperty(ActorDataTypes.HEIGHT, height, false);
+        this.setDataProperty(ActorDataTypes.WIDTH, radius, false);
 
         return true;
     }
@@ -426,7 +432,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public boolean isDragonBreath() {
-        return getParticleId() == 49;
+        return getParticleId().equals(ParticleType.DRAGON_BREATH);
     }
 
 }

@@ -8,11 +8,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemComparator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.RedstoneComponent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
@@ -127,14 +129,14 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
 
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        if(isNotActivate(player)) return false;
+        if (isNotActivate(player)) return false;
         if (getMode() == Mode.SUBTRACT) {
             setMode(Mode.COMPARE);
         } else {
             setMode(Mode.SUBTRACT);
         }
 
-        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_ACTIVATE_BLOCK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEvent.ACTIVATE_BLOCK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
         this.level.setBlock(this, this, true, false);
         this.level.updateComparatorOutputLevelSelective(this, true);
         //bug?
@@ -196,7 +198,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         }
 
         try {
-            createBlockEntity(new CompoundTag().putList("Items", new ListTag<>()));
+            createBlockEntity(NbtMap.builder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build());
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
             level.setBlock(layer0, 0, layer0, true);

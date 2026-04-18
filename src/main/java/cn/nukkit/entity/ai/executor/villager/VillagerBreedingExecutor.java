@@ -9,7 +9,8 @@ import cn.nukkit.entity.ai.executor.BreedingExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.level.Location;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 import java.util.Arrays;
 
@@ -148,16 +149,16 @@ public class VillagerBreedingExecutor extends BreedingExecutor {
     }
 
     protected void sendInLoveParticles(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.LOVE_PARTICLES;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.LOVE_HEARTS);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
     protected void sendAngryParticles(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.VILLAGER_ANGRY;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.VILLAGER_ANGRY);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

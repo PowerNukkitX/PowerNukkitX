@@ -4,12 +4,18 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
 import cn.nukkit.utils.random.NukkitRandom;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Value;
+import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchants;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -19,7 +25,11 @@ import java.util.stream.Collectors;
 public final class EnchantmentHelper {
     private static final int MAX_BOOKSHELF_COUNT = 15;
 
-    public static List<PlayerEnchantOptionsPacket.EnchantOptionData> getEnchantOptions(Position tablePos, Item input, int seed) {
+    public static final int ENCH_RECIPEID = 100000;
+    private static final AtomicInteger ENCH_RECIPE_NETID = new AtomicInteger(ENCH_RECIPEID);
+    public static final ConcurrentHashMap<Integer, ItemEnchantOptionWithEntry> RECIPE_MAP = new ConcurrentHashMap<>();
+
+    public static List<ItemEnchantOption> getEnchantOptions(Position tablePos, Item input, int seed) {
         if (input == null || input.hasEnchantments()) {
             return Collections.emptyList();
         }
@@ -73,7 +83,7 @@ public final class EnchantmentHelper {
         return bookshelfCount;
     }
 
-    private static PlayerEnchantOptionsPacket.EnchantOptionData createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
+    private static ItemEnchantOption createEnchantOption(NukkitRandom random, Item inputItem, int requiredXpLevel, int entry) {
         int enchantingPower = requiredXpLevel;
         int enchantability = inputItem.getEnchantAbility();
         enchantingPower += random.nextInt(enchantability >> 2) + random.nextInt(enchantability >> 2) + 1;
@@ -108,12 +118,30 @@ public final class EnchantmentHelper {
                 enchantingPower /= 2;
             }
         }
-        if(inputItem.getId().equals(Item.BOOK)) {
-            if(resultEnchantments.size() > 1) {
-                resultEnchantments.remove(random.nextInt(resultEnchantments.size()-1));
+        if (inputItem.getId().equals(Item.BOOK)) {
+            if (resultEnchantments.size() > 1) {
+                resultEnchantments.remove(random.nextInt(resultEnchantments.size() - 1));
             }
         }
-        return new PlayerEnchantOptionsPacket.EnchantOptionData(requiredXpLevel, getRandomOptionName(random), resultEnchantments, entry);
+        final List<EnchantmentInstance> instances = new ObjectArrayList<>();
+        for (Enchantment enchantment : resultEnchantments) {
+            instances.add(new EnchantmentInstance(enchantment.getId(), enchantment.getLevel()));
+        }
+        final ItemEnchants itemEnchants = new ItemEnchants(
+                0,
+                instances,
+                Collections.emptyList(),
+                Collections.emptyList()
+        );
+        final int enchantNetId = ENCH_RECIPE_NETID.getAndIncrement();
+        final ItemEnchantOption option = new ItemEnchantOption(
+                requiredXpLevel,
+                itemEnchants,
+                getRandomOptionName(random),
+                enchantNetId
+        );
+        RECIPE_MAP.put(enchantNetId, new ItemEnchantOptionWithEntry(option, entry));
+        return option;
     }
 
     private static List<Enchantment> getAvailableEnchantments(int enchantingPower, Item item) {
@@ -174,5 +202,11 @@ public final class EnchantmentHelper {
         }
 
         return list;
+    }
+
+    @Value
+    public static class ItemEnchantOptionWithEntry {
+        ItemEnchantOption option;
+        int entry;
     }
 }

@@ -133,4 +133,9 @@ public class Vector2f {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }
 
+
+    public static Vector2f fromNetwork(org.cloudburstmc.math.vector.Vector2f vector2f) {
+        return new Vector2f(vector2f.getX(), vector2f.getY());
+    }
+
 }

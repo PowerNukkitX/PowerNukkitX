@@ -1,8 +1,18 @@
 package cn.nukkit.command.data;
 
-import cn.nukkit.network.protocol.types.PermissionLevel;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.RequiredArgsConstructor;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOverloadData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents the metadata and configuration for a command in PowerNukkitX.
@@ -42,10 +52,12 @@ import java.util.*;
  * @see CommandEnum
  * @see CommandOverload
  * @see Flag
- * @see PermissionLevel
+ * @see CommandPermissionLevel
  * @see ChainedSubCommandData
  */
+@RequiredArgsConstructor
 public class CommandData implements Cloneable {
+    private final String name;
     /**
      * The description of the command, used for help and localization.
      */
@@ -65,7 +77,7 @@ public class CommandData implements Cloneable {
     /**
      * The required permission level to execute the command.
      */
-    public PermissionLevel permission = PermissionLevel.ANY;
+    public CommandPermissionLevel permission = CommandPermissionLevel.ANY;
     /**
      * The list of chained subcommands for advanced command structures.
      */
@@ -83,7 +95,7 @@ public class CommandData implements Cloneable {
         try {
             return (CommandData) super.clone();
         } catch (Exception e) {
-            return new CommandData();
+            return new CommandData(this.name);
         }
     }
 
@@ -96,31 +108,57 @@ public class CommandData implements Cloneable {
      * @author PowerNukkitX Project Team
      */
     public enum Flag {
-        /** No special behavior. */
+        /**
+         * No special behavior.
+         */
         NONE(0x00),
-        /** Used for test usage. */
+        /**
+         * Used for test usage.
+         */
         TEST_USAGE(0x01),
-        /** Hidden from command blocks. */
+        /**
+         * Hidden from command blocks.
+         */
         HIDDEN_FROM_COMMAND_BLOCK(0x02),
-        /** Hidden from players. */
+        /**
+         * Hidden from players.
+         */
         HIDDEN_FROM_PLAYER(0x04),
-        /** Hidden from all sources. */
+        /**
+         * Hidden from all sources.
+         */
         HIDDEN(0x06),
-        /** Hidden from automation systems. */
+        /**
+         * Hidden from automation systems.
+         */
         HIDDEN_FROM_AUTOMATION(0x08),
-        /** Command is removed. */
+        /**
+         * Command is removed.
+         */
         REMOVED(0xe),
-        /** Local synchronization required. */
+        /**
+         * Local synchronization required.
+         */
         LOCAL_SYNC(0x10),
-        /** Execution is disallowed. */
+        /**
+         * Execution is disallowed.
+         */
         EXECUTE_DISALLOWED(0x20),
-        /** Message type flag. */
+        /**
+         * Message type flag.
+         */
         MESSAGE_TYPE(0x40),
-        /** Not a cheat command. */
+        /**
+         * Not a cheat command.
+         */
         NOT_CHEAT(0x80),
-        /** Command executes asynchronously. */
+        /**
+         * Command executes asynchronously.
+         */
         ASYNC(0x100),
-        /** Editor-specific command. */
+        /**
+         * Editor-specific command.
+         */
         EDITOR(0x200);
 
         /**
@@ -131,5 +169,39 @@ public class CommandData implements Cloneable {
         Flag(int bit) {
             this.bit = bit;
         }
+    }
+
+    public org.cloudburstmc.protocol.bedrock.data.command.CommandData toNetwork() {
+        final Set<org.cloudburstmc.protocol.bedrock.data.command.CommandData.Flag> flags = new ObjectOpenHashSet<>();
+        for (Flag flag : this.flags) {
+            flags.add(org.cloudburstmc.protocol.bedrock.data.command.CommandData.Flag.valueOf(flag.name()));
+        }
+        final List<org.cloudburstmc.protocol.bedrock.data.command.ChainedSubCommandData> subCommands = new ObjectArrayList<>();
+        for (ChainedSubCommandData subcommand : this.subcommands) {
+            subCommands.add(subcommand.toNetwork());
+        }
+        final List<CommandOverloadData> overloadDataList = new ObjectArrayList<>();
+        for (Map.Entry<String, CommandOverload> entry : this.overloads.entrySet()) {
+            final CommandOverload value = entry.getValue();
+            final List<CommandParamData> params = new ObjectArrayList<>();
+            for (CommandParameter parameter : value.input.parameters) {
+                params.add(parameter.toNetwork());
+            }
+            overloadDataList.add(
+                    new CommandOverloadData(
+                            value.chaining,
+                            params.toArray(CommandParamData[]::new)
+                    )
+            );
+        }
+        return new org.cloudburstmc.protocol.bedrock.data.command.CommandData(
+                this.name,
+                this.description,
+                flags,
+                this.permission,
+                this.aliases == null ? null : this.aliases.toNetwork(),
+                subCommands,
+                overloadDataList.toArray(CommandOverloadData[]::new)
+        );
     }
 }

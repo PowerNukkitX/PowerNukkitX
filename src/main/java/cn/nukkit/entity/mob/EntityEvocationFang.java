@@ -4,15 +4,16 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityWalkable;
-import cn.nukkit.entity.data.EntityDataTypes;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,12 +25,13 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     @Setter
     private EntityEvocationIllager evocationIllager;
 
-    public EntityEvocationFang(IChunk chunk, CompoundTag nbt) {
+    public EntityEvocationFang(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return EntityID.EVOCATION_FANG;
     }
 
@@ -37,9 +39,9 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     protected void initEntity() {
         this.setHealthMax(1);
         super.initEntity();
-        getLevel().addLevelSoundEvent(this, LevelSoundEvent.FANG, -1, EntityID.EVOCATION_FANG, false, false);
-        for(Entity entity : getLevel().getCollidingEntities(getBoundingBox())) {
-            if(attackTarget(entity)) {
+        getLevel().addLevelSoundEvent(this, SoundEvent.FANG, -1, EntityID.EVOCATION_FANG, false, false);
+        for (Entity entity : getLevel().getCollidingEntities(getBoundingBox())) {
+            if (attackTarget(entity)) {
                 EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(this, entity, EntityDamageEvent.DamageCause.MAGIC, 6);
                 entity.attack(event);
             }
@@ -49,18 +51,17 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     @Override
     public void spawnTo(Player player) {
         super.spawnTo(player);
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = this.getId();
-        pk.data = 0;
-        pk.event = EntityEventPacket.ARM_SWING;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(this.getId());
+        pk.setType(ActorEvent.START_ATTACKING);
         player.dataPacket(pk);
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
         int ticks = 18 - ticksLived;
-        setDataProperty(EntityDataTypes.DATA_LIFETIME_TICKS, ticks);
-        if(ticks == -1) close();
+        setDataProperty(ActorDataTypes.DATA_LIFETIME_TICKS, ticks);
+        if (ticks == -1) close();
         return super.onUpdate(currentTick);
     }
 

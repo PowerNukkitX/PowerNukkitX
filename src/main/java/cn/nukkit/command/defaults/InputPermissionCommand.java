@@ -2,12 +2,12 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.types.ClientInputLocksFlag;
+import org.cloudburstmc.protocol.bedrock.data.ClientInputLockComponent;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.List;
 import java.util.Map;
@@ -68,18 +68,18 @@ public class InputPermissionCommand extends VanillaCommand {
 
         String permission = list.get(2).get();
 
-        ClientInputLocksFlag flag = switch (permission.toLowerCase()) {
-            case "camera" -> ClientInputLocksFlag.CAMERA;
-            case "movement" -> ClientInputLocksFlag.MOVEMENT;
-            case "jump" -> ClientInputLocksFlag.JUMP;
-            case "sneak" -> ClientInputLocksFlag.SNEAK;
-            case "mount" -> ClientInputLocksFlag.MOUNT;
-            case "dismount" -> ClientInputLocksFlag.DISMOUNT;
-            case "lateral_movement" -> ClientInputLocksFlag.LATERAL_MOVEMENT;
-            case "move_forward" -> ClientInputLocksFlag.MOVE_FORWARD;
-            case "move_backward" -> ClientInputLocksFlag.MOVE_BACKWARD;
-            case "move_left" -> ClientInputLocksFlag.MOVE_LEFT;
-            case "move_right" -> ClientInputLocksFlag.MOVE_RIGHT;
+        ClientInputLockComponent flag = switch (permission.toLowerCase()) {
+            case "camera" -> ClientInputLockComponent.CAMERA;
+            case "movement" -> ClientInputLockComponent.MOVEMENT;
+            case "jump" -> ClientInputLockComponent.JUMP;
+            case "sneak" -> ClientInputLockComponent.SNEAK;
+            case "mount" -> ClientInputLockComponent.MOUNT;
+            case "dismount" -> ClientInputLockComponent.DISMOUNT;
+            case "lateral_movement" -> ClientInputLockComponent.LATERAL_MOVEMENT;
+            case "move_forward" -> ClientInputLockComponent.MOVE_FORWARD;
+            case "move_backward" -> ClientInputLockComponent.MOVE_BACKWARD;
+            case "move_left" -> ClientInputLockComponent.MOVE_LEFT;
+            case "move_right" -> ClientInputLockComponent.MOVE_RIGHT;
             default -> null;
         };
 

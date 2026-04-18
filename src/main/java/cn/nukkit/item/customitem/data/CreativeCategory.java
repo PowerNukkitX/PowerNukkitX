@@ -1,6 +1,7 @@
 package cn.nukkit.item.customitem.data;
 
-import cn.nukkit.network.protocol.types.inventory.creative.CreativeItemCategory;
+
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
 
 /**
  * Controls the creative tab category for custom items, such as Construction, Nature, etc.

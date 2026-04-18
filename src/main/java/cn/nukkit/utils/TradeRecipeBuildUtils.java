@@ -1,21 +1,22 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class TradeRecipeBuildUtils {
-    private final CompoundTag recipe;
+    private NbtMap recipe;
     private final int size;
 
     public static final int TRADE_RECIPEID = 10000;
-    public static final ConcurrentHashMap<Integer, CompoundTag> RECIPE_MAP = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Integer, NbtMap> RECIPE_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger TRADE_RECIPE_NETID = new AtomicInteger(TRADE_RECIPEID);
 
-    public TradeRecipeBuildUtils(CompoundTag tag, int size) {
+    public TradeRecipeBuildUtils(NbtMap tag, int size) {
         this.recipe = tag;
         this.size = size;
     }
@@ -26,30 +27,32 @@ public class TradeRecipeBuildUtils {
      * @return recipe builder
      */
     public static TradeRecipeBuildUtils of(Item buyA, Item output) {
-        var cmp = new CompoundTag()
-                .putCompound("buyA", new CompoundTag()
-                        .putByte("Count", buyA.getCount())
-                        .putShort("Damage", buyA.getDamage())
-                        .putString("Name", buyA.getId())
-                        .putBoolean("WasPickedUp", false)) // Is it a dropped item?
+        final NbtMapBuilder buyABuilder = NbtMap.builder()
+                .putByte("Count", (byte) buyA.getCount())
+                .putShort("Damage", (short) buyA.getDamage())
+                .putString("Name", buyA.getId())
+                .putBoolean("WasPickedUp", false);  // Is it a dropped item?
+        if (buyA.hasCompoundTag()) {
+            buyABuilder.putCompound("tag", buyA.getNamedTag());
+        }
+        final NbtMapBuilder outputBuilder = NbtMap.builder()
+                .putByte("Count", (byte) output.getCount())
+                .putShort("Damage", (short) output.getDamage())
+                .putString("Name", output.getId())
+                .putBoolean("WasPickedUp", false);
+        if (output.hasCompoundTag()) {
+            outputBuilder.putCompound("tag", output.getNamedTag());
+        }
+        var cmp = NbtMap.builder()
+                .putCompound("buyA", buyABuilder.build())
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountB", 0)
                 .putInt("demand", 0) // Unknown
                 .putInt("netId", TRADE_RECIPE_NETID.getAndIncrement())
                 .putFloat("priceMultiplierB", 0)
-                .putCompound("sell", new CompoundTag()
-                        .putByte("Count", output.getCount())
-                        .putShort("Damage", output.getDamage())
-                        .putString("Name", output.getId())
-                        .putBoolean("WasPickedUp", false))
+                .putCompound("sell", outputBuilder.build())
                 .putInt("uses", 0); // Unknown
-        if (buyA.hasCompoundTag()) {
-            cmp.getCompound("buyA").putCompound("tag", buyA.getNamedTag());
-        }
-        if (output.hasCompoundTag()) {
-            cmp.getCompound("sell").putCompound("tag", output.getNamedTag());
-        }
-        return new TradeRecipeBuildUtils(cmp, 2);
+        return new TradeRecipeBuildUtils(cmp.build(), 2);
     }
 
     /**
@@ -59,44 +62,47 @@ public class TradeRecipeBuildUtils {
      * @return Recipe builder
      */
     public static TradeRecipeBuildUtils of(Item buyA, Item buyB, Item output) {
-        var cmp = new CompoundTag()
-                .putCompound("buyA", new CompoundTag()
-                        .putByte("Count", buyA.getCount())
-                        .putShort("Damage", buyA.getDamage())
-                        .putString("Name", buyA.getId())
-                        .putBoolean("WasPickedUp", false)) // Is it a dropped item?
-                .putCompound("buyB", new CompoundTag()
-                        .putByte("Count", buyB.getCount())
-                        .putShort("Damage", buyB.getDamage())
-                        .putString("Name", buyB.getId())
-                        .putBoolean("WasPickedUp", false))
+        final NbtMapBuilder buyABuilder = NbtMap.builder()
+                .putByte("Count", (byte) buyA.getCount())
+                .putShort("Damage", (short) buyA.getDamage())
+                .putString("Name", buyA.getId())
+                .putBoolean("WasPickedUp", false);
+        if (buyA.hasCompoundTag()) {
+            buyABuilder.putCompound("tag", buyA.getNamedTag());
+        }
+        final NbtMapBuilder buyBBuilder = NbtMap.builder()
+                .putByte("Count", (byte) buyB.getCount())
+                .putShort("Damage", (short) buyB.getDamage())
+                .putString("Name", buyB.getId())
+                .putBoolean("WasPickedUp", false);
+        if (buyB.hasCompoundTag()) {
+            buyBBuilder.putCompound("tag", buyB.getNamedTag());
+        }
+        final NbtMapBuilder outputBuilder = NbtMap.builder()
+                .putByte("Count", (byte) output.getCount())
+                .putShort("Damage", (short) output.getDamage())
+                .putString("Name", output.getId())
+                .putBoolean("WasPickedUp", false);
+        if (output.hasCompoundTag()) {
+            outputBuilder.putCompound("tag", output.getNamedTag());
+        }
+        var cmp = NbtMap.builder()
+                .putCompound("buyA", buyABuilder.build())
+                .putCompound("buyB", buyBBuilder.build())
                 .putInt("buyCountA", buyA.getCount())
                 .putInt("buyCountA", buyB.getCount())
                 .putInt("demand", 0) // Unknown
                 .putInt("netId", TRADE_RECIPE_NETID.getAndIncrement())
-                .putCompound("sell", new CompoundTag()
-                        .putByte("Count", output.getCount())
-                        .putShort("Damage", output.getDamage())
-                        .putString("Name", output.getId())
-                        .putBoolean("WasPickedUp", false))
+                .putCompound("sell", outputBuilder.build())
                 .putInt("uses", 0); // Unknown
-        if (buyA.hasCompoundTag()) {
-            cmp.getCompound("buyA").putCompound("tag", buyA.getNamedTag());
-        }
-        if (buyB.hasCompoundTag()) {
-            cmp.getCompound("buyB").putCompound("tag", buyB.getNamedTag());
-        }
-        if (output.hasCompoundTag()) {
-            cmp.getCompound("sell").putCompound("tag", output.getNamedTag());
-        }
-        return new TradeRecipeBuildUtils(cmp, 3);
+        return new TradeRecipeBuildUtils(cmp.build(), 3);
     }
 
     /**
      * @param maxUses Set the maximum number of transactions for this trading recipe
      */
     public TradeRecipeBuildUtils setMaxUses(int maxUses) {
-        recipe.putInt("maxUses", maxUses); // Maximum number of transactions
+        this.recipe = recipe.toBuilder().putInt("maxUses", maxUses).build(); // Maximum number of transactions
         return this;
     }
 
@@ -104,7 +110,7 @@ public class TradeRecipeBuildUtils {
      * @param priceMultiplierA Set the price increase factor for this trade recipe (first traded item)
      */
     public TradeRecipeBuildUtils setPriceMultiplierA(float priceMultiplierA) {
-        recipe.putFloat("priceMultiplierA", priceMultiplierA); // Price increase?
+        this.recipe = recipe.toBuilder().putFloat("priceMultiplierA", priceMultiplierA).build(); // Price increase?
         return this;
     }
 
@@ -113,7 +119,7 @@ public class TradeRecipeBuildUtils {
      */
     public TradeRecipeBuildUtils setPriceMultiplierB(float priceMultiplierB) {
         if (size == 3) {
-            recipe.putFloat("priceMultiplierB", priceMultiplierB); // Price increase?
+            this.recipe = recipe.toBuilder().putFloat("priceMultiplierB", priceMultiplierB).build(); // Price increase?
             return this;
         }
         return this;
@@ -123,7 +129,7 @@ public class TradeRecipeBuildUtils {
      * @param rewardExp Set the experience points awarded to players for this transaction recipe.
      */
     public TradeRecipeBuildUtils setRewardExp(Byte rewardExp) {
-        recipe.putByte("rewardExp", rewardExp);
+        this.recipe = recipe.toBuilder().putByte("rewardExp", rewardExp).build();
         return this;
     }
 
@@ -131,7 +137,7 @@ public class TradeRecipeBuildUtils {
      * @param tier The transaction level required for this recipe starts at 1.
      */
     public TradeRecipeBuildUtils setTier(int tier) {
-        recipe.putInt("tier", --tier); // Village resident level required
+        this.recipe = recipe.toBuilder().putInt("tier", --tier).build(); // Village resident level required
         return this;
     }
 
@@ -139,11 +145,11 @@ public class TradeRecipeBuildUtils {
      * @param traderExp Set the experience granted to villagers by this trade recipe.
      */
     public TradeRecipeBuildUtils setTraderExp(int traderExp) {
-        recipe.putInt("traderExp", traderExp); // Experience gained by villagers
+        this.recipe = recipe.toBuilder().putInt("traderExp", traderExp).build(); // Experience gained by villagers
         return this;
     }
 
-    public CompoundTag build() {
+    public NbtMap build() {
         RECIPE_MAP.put(recipe.getInt("netId"), recipe);
         return recipe;
     }

@@ -6,7 +6,6 @@ import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.scoreboard.ScoreboardObjectiveChangeEvent;
-import cn.nukkit.network.protocol.UpdateSoftEnumPacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.IScoreboard;
@@ -14,6 +13,7 @@ import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.scoreboard.storage.IScoreboardStorage;
 import lombok.Getter;
+import org.cloudburstmc.protocol.bedrock.data.command.SoftEnumUpdateType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -40,7 +40,7 @@ public class ScoreboardManager implements IScoreboardManager{
             return false;
         }
         scoreboards.put(scoreboard.getObjectiveName(), scoreboard);
-        CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.ADD, scoreboard.getObjectiveName());
+        CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(SoftEnumUpdateType.ADD, scoreboard.getObjectiveName());
         return true;
     }
 
@@ -59,7 +59,7 @@ public class ScoreboardManager implements IScoreboardManager{
             return false;
         }
        scoreboards.remove(objectiveName);
-       CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(UpdateSoftEnumPacket.Type.REMOVE, objectiveName);
+       CommandEnum.SCOREBOARD_OBJECTIVES.updateSoftEnum(SoftEnumUpdateType.REMOVE, objectiveName);
        viewers.forEach(viewer -> viewer.removeScoreboard(removed));
        display.forEach((slot, scoreboard) -> {
            if (scoreboard != null && scoreboard.getObjectiveName().equals(objectiveName)) {

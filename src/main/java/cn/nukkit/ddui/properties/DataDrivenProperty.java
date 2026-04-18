@@ -1,10 +1,10 @@
 package cn.nukkit.ddui.properties;
 
 import cn.nukkit.Player;
-import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
 import cn.nukkit.ddui.DataDrivenScreen;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.ddui.DataStorePropertyValueType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
  */
 public abstract class DataDrivenProperty<T, K> {
 
-    public abstract DataStorePropertyType getType();
+    public abstract DataStorePropertyValueType getType();
 
     @Getter
     protected final ObjectProperty parent;

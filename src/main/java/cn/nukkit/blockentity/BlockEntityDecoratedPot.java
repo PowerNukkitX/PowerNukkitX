@@ -5,12 +5,13 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
 
 public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
-    public BlockEntityDecoratedPot(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityDecoratedPot(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -22,20 +23,20 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.contains("Item")) {
-            namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
+        if (!namedTag.containsKey("Item")) {
+            this.namedTag = namedTag.toBuilder().putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null)).build();
         }
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
-                .putList("sherds", namedTag.getList("sherds"));
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder()
+                .putList("sherds", NbtType.STRING, namedTag.getList("sherds", NbtType.STRING))
+                .build();
     }
 
     public Item getItem() {
-        CompoundTag NBTTag = this.namedTag.getCompound("Item");
-        return NBTIO.getItemHelper(NBTTag);
+        return ItemHelper.read(this.namedTag.getCompound("Item"));
     }
 
     public void setItem(Item item) {
@@ -43,7 +44,7 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+        this.namedTag = this.namedTag.toBuilder().putCompound("Item", ItemHelper.write(item, null)).build();
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);

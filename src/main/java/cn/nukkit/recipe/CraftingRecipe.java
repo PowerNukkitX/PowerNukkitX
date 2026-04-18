@@ -1,6 +1,6 @@
 package cn.nukkit.recipe;
 
-import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
+import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 
 import java.util.UUID;
 
@@ -10,11 +10,13 @@ import java.util.UUID;
 public abstract class CraftingRecipe extends BaseRecipe {
     protected UUID uuid;
     private final int priority;
+    private final int netId;
     protected final RecipeUnlockingRequirement recipeUnlockingRequirement;
 
-    protected CraftingRecipe(String id, int priority, RecipeUnlockingRequirement recipeUnlockingRequirement) {
+    protected CraftingRecipe(String id, int netId, int priority, RecipeUnlockingRequirement recipeUnlockingRequirement) {
         super(id);
         this.priority = priority;
+        this.netId = netId;
         this.recipeUnlockingRequirement = recipeUnlockingRequirement == null ? new RecipeUnlockingRequirement(RecipeUnlockingRequirement.UnlockingContext.NONE) : recipeUnlockingRequirement;
     }
 
@@ -40,5 +42,9 @@ public abstract class CraftingRecipe extends BaseRecipe {
 
     public RecipeUnlockingRequirement getRequirement() {
         return recipeUnlockingRequirement;
+    }
+
+    public int getNetId() {
+        return netId;
     }
 }

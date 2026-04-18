@@ -6,12 +6,11 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.Set;
-
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable, EntitySmite {
     @Override
@@ -20,7 +19,7 @@ public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable,
     }
     
 
-    public EntityZombieVillagerV2(IChunk chunk, CompoundTag nbt) {
+    public EntityZombieVillagerV2(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

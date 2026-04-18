@@ -2,11 +2,13 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.NbtHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 
 public class BlockEntityEnderChest extends BlockEntitySpawnable implements BlockEntityNameable {
 
-    public BlockEntityEnderChest(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityEnderChest(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -17,13 +19,13 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag spawnCompound = super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder spawnCompound = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable());
         if (this.hasName()) {
             spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
         }
-        return spawnCompound;
+        return spawnCompound.build();
     }
 
     @Override
@@ -33,16 +35,16 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
 
     @Override
     public boolean hasName() {
-        return this.namedTag.contains("CustomName");
+        return this.namedTag.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag.remove("CustomName");
+            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
             return;
         }
 
-        this.namedTag.putString("CustomName", name);
+        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
     }
 }

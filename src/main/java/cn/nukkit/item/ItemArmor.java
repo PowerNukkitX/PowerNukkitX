@@ -1,8 +1,5 @@
 package cn.nukkit.item;
 
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.Tag;
-
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -54,7 +51,7 @@ abstract public class ItemArmor extends Item {
 
     @Override
     public boolean isUnbreakable() {
-        Tag tag = this.getNamedTagEntry("Unbreakable");
-        return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
+        final Object tag = this.getNamedTagEntry("Unbreakable");
+        return tag instanceof Byte b && b > 0;
     }
 }

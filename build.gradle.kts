@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.bundles.compress)
     implementation(libs.bundles.terminal)
     implementation(libs.okaeri)
+    implementation(libs.bedrock.connection)
 
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
@@ -82,6 +83,7 @@ configurations.all {
 
 tasks.withType<JavaCompile>().configureEach {
     options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000"))
 }
 
 java {

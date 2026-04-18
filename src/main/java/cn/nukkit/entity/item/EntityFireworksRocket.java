@@ -3,7 +3,6 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityDataType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
@@ -13,14 +12,18 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,7 +42,7 @@ public class EntityFireworksRocket extends Entity {
     private Item firework;
     private boolean hadCollision;
 
-    public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
+    public EntityFireworksRocket(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
 
         this.fireworkAge = 0;
@@ -50,36 +53,40 @@ public class EntityFireworksRocket extends Entity {
         this.motionZ = rand.nextGaussian() * 0.001D;
         this.motionY = 0.05D;
 
-        if (nbt.contains("FireworkItem")) {
-            firework = NBTIO.getItemHelper(nbt.getCompound("FireworkItem"));
+        if (nbt.containsKey("FireworkItem")) {
+            firework = ItemHelper.read(nbt.getCompound("FireworkItem"));
         } else {
             firework = new ItemFireworkRocket();
         }
 
-        if (!firework.hasCompoundTag() || !firework.getNamedTag().contains("Fireworks")) {
-            CompoundTag tag = firework.getNamedTag();
+        if (!firework.hasCompoundTag() || !firework.getNamedTag().containsKey("Fireworks")) {
+            NbtMap tag = firework.getNamedTag();
             if (tag == null) {
-                tag = new CompoundTag();
+                tag = NbtMap.EMPTY;
             }
 
-            CompoundTag ex = new CompoundTag()
+            NbtMap ex = NbtMap.builder()
                     .putByteArray("FireworkColor", new byte[]{(byte) DyeColor.BLACK.getDyeData()})
                     .putByteArray("FireworkFade", new byte[]{})
                     .putBoolean("FireworkFlicker", false)
                     .putBoolean("FireworkTrail", false)
-                    .putByte("FireworkType", ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
+                    .putByte("FireworkType", (byte) ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal())
+                    .build();
 
-            tag.putCompound("Fireworks", new CompoundTag()
-                    .putList("Explosions", new ListTag<CompoundTag>().add(ex))
-                    .putByte("Flight", 1)
-            );
+            final List<NbtMap> explosions = new ObjectArrayList<>();
+            explosions.add(ex);
+            tag = tag.toBuilder().putCompound("Fireworks", NbtMap.builder()
+                    .putList("Explosions", NbtType.COMPOUND, explosions)
+                    .putByte("Flight", (byte) 1)
+                    .build()
+            ).build();
 
             firework.setNamedTag(tag);
         }
 
-        this.setDataProperty(new EntityDataType<>(0, "HORSE_FLAGS", 16), firework.getNamedTag());
-        this.setDataProperty(DISPLAY_OFFSET, new Vector3f(0, 1, 0));
-        this.setDataProperty(CUSTOM_DISPLAY, -1);
+        this.setDataProperty(ActorDataTypes.HORSE_FLAGS, 16);
+        this.setDataProperty(ActorDataTypes.DISPLAY_OFFSET, new Vector3f(0, 1, 0));
+        this.setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) -1);
     }
 
 
@@ -131,12 +138,11 @@ public class EntityFireworksRocket extends Entity {
 
             hasUpdate = true;
             if (this.fireworkAge >= this.lifetime) {
-                EntityEventPacket pk = new EntityEventPacket();
-                pk.data = 0;
-                pk.event = EntityEventPacket.FIREWORK_EXPLOSION;
-                pk.eid = this.getId();
+                final ActorEventPacket pk = new ActorEventPacket();
+                pk.setTargetRuntimeID(this.getId());
+                pk.setType(ActorEvent.FIREWORKS_EXPLODE);
 
-                level.addLevelSoundEvent(this, LevelSoundEvent.LARGE_BLAST, -1, getNetworkId());
+                level.addLevelSoundEvent(this, SoundEvent.LARGE_BLAST, -1, getNetworkId());
                 Server.broadcastPacket(getViewers().values(), pk);
 
                 this.kill();
@@ -158,7 +164,7 @@ public class EntityFireworksRocket extends Entity {
 
     public void setFirework(Item item) {
         this.firework = item;
-        this.setDataProperty(new EntityDataType<>(0, "HORSE_FLAGS", 16), item.getNamedTag());
+        this.setDataProperty(ActorDataTypes.HORSE_FLAGS, 16);
     }
 
     @Override

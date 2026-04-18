@@ -2,8 +2,9 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -16,7 +17,7 @@ public class InventorySlice implements Inventory {
     private final Inventory rawInv;
     private int startSlot;
     private int endSlot;
-    private Map<Integer, ContainerSlotType> slotTypeMap;
+    private Map<Integer, ContainerEnumName> slotTypeMap;
     private BiMap<Integer, Integer> networkSlotMap;
 
     public InventorySlice(@NotNull Inventory rawInv, int startSlot, int endSlot) {
@@ -26,10 +27,10 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public ContainerSlotType getSlotType(int nativeSlot) {
+    public ContainerEnumName getContainerEnumName(int nativeSlot) {
         if (slotTypeMap != null) {
             return slotTypeMap.get(nativeSlot);
-        } else return rawInv.getSlotType(nativeSlot);
+        } else return rawInv.getContainerEnumName(nativeSlot);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class InventorySlice implements Inventory {
         } else return rawInv.fromNetworkSlot(networkSlot);
     }
 
-    public void setNetworkMapping(Map<Integer, ContainerSlotType> map, BiMap<Integer, Integer> biMap) {
+    public void setNetworkMapping(Map<Integer, ContainerEnumName> map, BiMap<Integer, Integer> biMap) {
         slotTypeMap = map;
         networkSlotMap = biMap;
     }
@@ -312,7 +313,7 @@ public class InventorySlice implements Inventory {
     }
 
     @Override
-    public InventoryType getType() {
+    public ContainerType getType() {
         return rawInv.getType();
     }
 

@@ -10,16 +10,26 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
-import cn.nukkit.network.protocol.types.StructureMirror;
-import cn.nukkit.network.protocol.types.Rotation;
+import cn.nukkit.utils.ItemHelper;
+import cn.nukkit.utils.NbtHelper;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
+import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -35,8 +45,8 @@ public class Structure extends AbstractStructure {
     public static final BlockState STRUCTURE_VOID_DEFAULT_STATE = BlockStructureVoid.PROPERTIES.getDefaultState();
 
     private final BlockState[][][][] blockStates;
-    private final Map<Vector3, CompoundTag> blockEntities;
-    private final List<CompoundTag> entities;
+    private final Map<Vector3, NbtMap> blockEntities;
+    private final List<NbtMap> entities;
     private final int sizeX;
     private final int sizeY;
     private final int sizeZ;
@@ -45,8 +55,8 @@ public class Structure extends AbstractStructure {
     private final int z;
 
     public Structure(BlockState[][][][] blockStates,
-                     Map<Vector3, CompoundTag> blockEntities,
-                     List<CompoundTag> entities,
+                     Map<Vector3, NbtMap> blockEntities,
+                     List<NbtMap> entities,
                      int sizeX, int sizeY, int sizeZ,
                      int x, int y, int z) {
         this.blockStates = blockStates;
@@ -59,6 +69,7 @@ public class Structure extends AbstractStructure {
         this.y = y;
         this.z = z;
     }
+
     /**
      * @see #create(Level, int, int, int, int, int, int, boolean)
      */
@@ -81,8 +92,8 @@ public class Structure extends AbstractStructure {
      */
     public static Structure create(Level dimension, int x, int y, int z, int sizeX, int sizeY, int sizeZ, boolean saveEntities) {
         BlockState[][][][] blockStates = new BlockState[2][sizeX][sizeY][sizeZ];
-        Map<Vector3, CompoundTag> blockEntities = new HashMap<>();
-        List<CompoundTag> entities = new ArrayList<>();
+        Map<Vector3, NbtMap> blockEntities = new HashMap<>();
+        List<NbtMap> entities = new ArrayList<>();
 
         for (int lx = 0; lx < sizeX; lx++) {
             for (int ly = 0; ly < sizeY; ly++) {
@@ -96,7 +107,7 @@ public class Structure extends AbstractStructure {
                         // the old position data is not useful anymore. However, we still save it
                         // to follow the vanilla behavior for best compatibility.
                         blockEntity.saveNBT();
-                        blockEntities.put(new Vector3(lx, ly, lz), blockEntity.getCleanedNBT().putString("id", blockEntity.getSaveId()));
+                        blockEntities.put(new Vector3(lx, ly, lz), blockEntity.getCleanedNBT().toBuilder().putString("id", blockEntity.getSaveId()).build());
                     }
                 }
             }
@@ -128,27 +139,27 @@ public class Structure extends AbstractStructure {
      * @param nbt the nbt data to load
      * @return the loaded structure
      */
-    public static Structure fromNbt(CompoundTag nbt) {
+    public static Structure fromNbt(NbtMap nbt) {
         Preconditions.checkNotNull(nbt, "nbt cannot be null");
         Preconditions.checkArgument(nbt.getInt("format_version") == FORMAT_VERSION, "format_version should be " + FORMAT_VERSION);
-        Preconditions.checkArgument(nbt.getList("size", IntTag.class).size() == 3, "size of size list should be 3");
+        Preconditions.checkArgument(nbt.getList("size", NbtType.INT).size() == 3, "size of size list should be 3");
 
-        ListTag<IntTag> size = nbt.getList("size", IntTag.class);
-        int sizeX = size.get(0).getData();
-        int sizeY = size.get(1).getData();
-        int sizeZ = size.get(2).getData();
-        CompoundTag structureNBT = nbt.getCompound("structure");
-        ListTag<ListTag> blockIndices = structureNBT.getList("block_indices", ListTag.class);
+        List<Integer> size = nbt.getList("size", NbtType.INT);
+        int sizeX = size.get(0);
+        int sizeY = size.get(1);
+        int sizeZ = size.get(2);
+        NbtMap structureNBT = nbt.getCompound("structure");
+        List<NbtList> blockIndices = structureNBT.getList("block_indices", NbtType.LIST);
 
         Preconditions.checkArgument(blockIndices.size() == 2, "block_indices should have 2 layer");
         Preconditions.checkArgument(blockIndices.get(0).size() == sizeX * sizeY * sizeZ, "size of layer0 incorrect, it should be" + sizeX * sizeY * sizeZ);
         Preconditions.checkArgument(blockIndices.get(1).size() == sizeX * sizeY * sizeZ, "size of layer1 incorrect, it should be" + sizeX * sizeY * sizeZ);
 
-        List<IntTag> layer0 = blockIndices.get(0).getAll();
-        List<IntTag> layer1 = blockIndices.get(1).getAll();
-        CompoundTag palette = structureNBT.getCompound("palette").getCompound("default");
-        CompoundTag blockEntityNBT = palette.getCompound("block_position_data");
-        List<BlockState> blockPalette = palette.getList("block_palette", CompoundTag.class).getAll().stream().map(NBTIO::getBlockStateHelper).toList();
+        List<Integer> layer0 = blockIndices.get(0);
+        List<Integer> layer1 = blockIndices.get(1);
+        NbtMap palette = structureNBT.getCompound("palette").getCompound("default");
+        NbtMap blockEntityNBT = palette.getCompound("block_position_data");
+        List<BlockState> blockPalette = palette.getList("block_palette", NbtType.COMPOUND).stream().map(ItemHelper::getBlockStateHelper).toList();
         //replace null block states with unknown state
         blockPalette = blockPalette.stream().map(bs -> bs == null ? STATE_UNKNOWN : bs).toList();
 
@@ -156,40 +167,40 @@ public class Structure extends AbstractStructure {
         for (int lx = 0; lx < sizeX; lx++) {
             for (int ly = 0; ly < sizeY; ly++) {
                 for (int lz = 0; lz < sizeZ; lz++) {
-                    if (layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
+                    if (layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)) == -1) {
                         blockStates[0][lx][ly][lz] = STATE_AIR;
                     } else {
-                        blockStates[0][lx][ly][lz] = blockPalette.get(layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
+                        blockStates[0][lx][ly][lz] = blockPalette.get(layer0.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)));
                     }
-                    if (layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData() == -1) {
+                    if (layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)) == -1) {
                         blockStates[1][lx][ly][lz] = STATE_AIR;
                     } else {
-                        blockStates[1][lx][ly][lz] = blockPalette.get(layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)).getData());
+                        blockStates[1][lx][ly][lz] = blockPalette.get(layer1.get(indexFormPos(sizeX, sizeY, sizeZ, lx, ly, lz)));
                     }
                 }
             }
         }
 
-        Map<Vector3, CompoundTag> blockEntities = new HashMap<>();
-        for (var index : blockEntityNBT.getTags().keySet()) {
+        Map<Vector3, NbtMap> blockEntities = new HashMap<>();
+        for (var index : blockEntityNBT.keySet()) {
             blockEntities.put(
                     posFromIndex(sizeX, sizeY, sizeZ, Integer.parseInt(index)),
                     blockEntityNBT.getCompound(index)
             );
         }
 
-        Preconditions.checkArgument(nbt.getList("structure_world_origin", IntTag.class).size() == 3, "size of structure_world_origin list should be 3");
+        Preconditions.checkArgument(nbt.getList("structure_world_origin", NbtType.INT).size() == 3, "size of structure_world_origin list should be 3");
 
-        ListTag<IntTag> origin = nbt.getList("structure_world_origin", IntTag.class);
+        List<Integer> origin = nbt.getList("structure_world_origin", NbtType.INT);
         return new Structure(
                 blockStates, blockEntities,
-                structureNBT.getList("entities", CompoundTag.class).getAll(),
+                new ObjectArrayList<>(structureNBT.getList("entities", NbtType.COMPOUND)),
                 sizeX, sizeY, sizeZ,
-                origin.get(0).getData(), origin.get(1).getData(), origin.get(2).getData()
+                origin.get(0), origin.get(1), origin.get(2)
         );
     }
 
-    public static CompletableFuture<Structure> fromNbtAsync(CompoundTag nbt) {
+    public static CompletableFuture<Structure> fromNbtAsync(NbtMap nbt) {
         return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
     }
 
@@ -223,8 +234,8 @@ public class Structure extends AbstractStructure {
                     BlockState l1 = blockStates[1][lx][ly][lz];
                     if (l0.equals(STRUCTURE_VOID_DEFAULT_STATE)) l0 = STATE_AIR;
                     if (l1.equals(STRUCTURE_VOID_DEFAULT_STATE)) l1 = STATE_AIR;
-                    if(l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
-                    if(l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
+                    if (l0 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 0, l0);
+                    if (l1 != STATE_STRUCTURE_VOID) blockManager.setBlockStateAt(x + lx, y + ly, z + lz, 1, l1);
 
                 }
             }
@@ -245,35 +256,26 @@ public class Structure extends AbstractStructure {
                 blockEntity.getLevel().removeBlockEntity(blockEntity);
             }
 
-            CompoundTag oldNbt = entry.getValue().getCompound("block_entity_data");
+            NbtMapBuilder oldNbt = entry.getValue().getCompound("block_entity_data").toBuilder();
             oldNbt.putInt("x", newPosX);
             oldNbt.putInt("y", newPosY);
             oldNbt.putInt("z", newPosZ);
+            final NbtMap oldNbt1 = oldNbt.build();
 
-            BlockEntity.createBlockEntity(oldNbt.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), oldNbt);
+            BlockEntity.createBlockEntity(oldNbt1.getString("id"), new Position(newPosX, newPosY, newPosZ, pos.getLevel()), oldNbt1);
         }
 
-        if(!includeEntities) {
+        if (!includeEntities) {
             return;
         }
 
         for (var nbt : entities) {
-            CompoundTag entityNbt = new CompoundTag(new HashMap<>(nbt.getTags()));
+            NbtMapBuilder entityNbt = nbt.toBuilder();
 
             List<Double> posList = new ArrayList<>();
 
-            if(entityNbt.getList("Pos").get(0).getId() == Tag.TAG_Double) {
-                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(0).getData());
-                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(1).getData());
-                posList.add(entityNbt.getList("Pos", DoubleTag.class).get(2).getData());
-            } else if(entityNbt.getList("Pos").get(0).getId() == Tag.TAG_Float) {
-                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(0).getData());
-                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(1).getData());
-                posList.add((double) entityNbt.getList("Pos", FloatTag.class).get(2).getData());
-            } else {
-                log.error("Unknown Pos tag type: {}", entityNbt.getList("Pos").get(0).getId());
-                continue;
-            }
+            nbt.listenForList("Pos", NbtType.DOUBLE, posList::addAll);
+            nbt.listenForList("Pos", NbtType.FLOAT, floats -> posList.addAll(floats.stream().map(Float::doubleValue).toList()));
 
             double origX = posList.get(0);
             double origY = posList.get(1);
@@ -287,25 +289,17 @@ public class Structure extends AbstractStructure {
             double newY = relY + y;
             double newZ = relZ + z;
 
-            entityNbt.putList("Pos", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(newX))
-                    .add(new DoubleTag(newY))
-                    .add(new DoubleTag(newZ))
-            ).putList("Motion", new ListTag<DoubleTag>()
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0))
-                    .add(new DoubleTag(0)));
+            entityNbt.putList("Pos", NbtType.DOUBLE, Arrays.asList(newX, newY, newZ))
+                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0));
 
-            if(!entityNbt.contains("Rotation")) {
-                entityNbt.putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(0))
-                        .add(new FloatTag(0)));
+            if (!entityNbt.containsKey("Rotation")) {
+                entityNbt.putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f));
             }
 
             Entity e = Entity.createEntity(
-                    entityNbt.getString("identifier"),
+                    nbt.getString("identifier"),
                     new Position(newX, newY, newZ, pos.getLevel()).getChunk(),
-                    entityNbt
+                    entityNbt.build()
             );
             if (e != null) {
                 e.spawnToAll();
@@ -318,21 +312,21 @@ public class Structure extends AbstractStructure {
      *
      * @return the nbt data of the structure
      */
-    public CompoundTag toNBT() {
-        CompoundTag nbt = new CompoundTag();
+    public NbtMap toNBT() {
+        NbtMapBuilder nbt = NbtMap.builder();
 
         // Set format version
         nbt.putInt("format_version", FORMAT_VERSION);
 
         // Set size
-        ListTag<IntTag> sizeList = new ListTag<>();
-        sizeList.add(new IntTag(this.sizeX));
-        sizeList.add(new IntTag(this.sizeY));
-        sizeList.add(new IntTag(this.sizeZ));
-        nbt.putList("size", sizeList);
+        List<Integer> sizeList = new IntArrayList();
+        sizeList.add(this.sizeX);
+        sizeList.add(this.sizeY);
+        sizeList.add(this.sizeZ);
+        nbt.putList("size", NbtType.INT, sizeList);
 
         // Create structure NBT
-        CompoundTag structureNBT = new CompoundTag();
+        NbtMapBuilder structureNBT = NbtMap.builder();
 
         // Create block palette from blockStates
         Map<BlockState, Integer> blockStateToIndex = new HashMap<>();
@@ -355,84 +349,79 @@ public class Structure extends AbstractStructure {
         }
 
         // Create block_indices
-        ListTag<ListTag> blockIndices = new ListTag<>();
+        List<NbtList> blockIndices = new ObjectArrayList<>();
 
         // Layer 0
-        ListTag<IntTag> layer0List = new ListTag<>();
+        List<Integer> layer0List = new IntArrayList();
         for (int x = 0; x < this.sizeX; x++) {
             for (int y = 0; y < this.sizeY; y++) {
                 for (int z = 0; z < this.sizeZ; z++) {
                     BlockState state = this.blockStates[0][x][y][z];
                     if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                        layer0List.add(new IntTag(-1));
+                        layer0List.add(-1);
                     } else {
-                        layer0List.add(new IntTag(blockStateToIndex.get(state)));
+                        layer0List.add(blockStateToIndex.get(state));
                     }
                 }
             }
         }
-        blockIndices.add(layer0List);
+        blockIndices.add(new NbtList<>(NbtType.INT, layer0List));
 
         // Layer 1
-        ListTag<IntTag> layer1List = new ListTag<>();
+        List<Integer> layer1List = new ObjectArrayList<>();
         for (int x = 0; x < this.sizeX; x++) {
             for (int y = 0; y < this.sizeY; y++) {
                 for (int z = 0; z < this.sizeZ; z++) {
                     BlockState state = this.blockStates[1][x][y][z];
                     if (state == null || state.equals(STRUCTURE_VOID_DEFAULT_STATE)) {
-                        layer1List.add(new IntTag(-1));
+                        layer1List.add(-1);
                     } else {
-                        layer1List.add(new IntTag(blockStateToIndex.get(state)));
+                        layer1List.add(blockStateToIndex.get(state));
                     }
                 }
             }
         }
-        blockIndices.add(layer1List);
+        blockIndices.add(new NbtList<>(NbtType.INT, layer1List));
 
-        structureNBT.putList("block_indices", blockIndices);
+        structureNBT.putList("block_indices", NbtType.LIST, blockIndices);
 
         // Create palette
-        CompoundTag paletteCompound = new CompoundTag();
-        CompoundTag defaultPalette = new CompoundTag();
+        NbtMapBuilder paletteCompound = NbtMap.builder();
+        NbtMapBuilder defaultPalette = NbtMap.builder();
 
         // Create block_palette
-        ListTag<CompoundTag> blockPaletteList = new ListTag<>();
+        List<NbtMap> blockPaletteList = new ObjectArrayList<>();
         for (BlockState state : uniqueBlockStates) {
-            CompoundTag blockStateTag = new CompoundTag(new HashMap(state.getBlockStateTag().getTags()));            // Remove version field if it exists to match expected format
-            blockStateTag.remove("version");
+            NbtMap blockStateTag = state.getBlockStateTag();            // Remove version field if it exists to match expected format
+            blockStateTag = NbtHelper.remove(blockStateTag, "version");
             blockPaletteList.add(blockStateTag);
         }
-        defaultPalette.putList("block_palette", blockPaletteList);
+        defaultPalette.putList("block_palette", NbtType.COMPOUND, blockPaletteList);
 
         // Create block_position_data for block entities
-        CompoundTag blockEntityNBT = new CompoundTag();
-        for (Map.Entry<Vector3, CompoundTag> entry : this.blockEntities.entrySet()) {
+        NbtMapBuilder blockEntityNBT = NbtMap.builder();
+        for (Map.Entry<Vector3, NbtMap> entry : this.blockEntities.entrySet()) {
             Vector3 pos = entry.getKey();
             int index = indexFormPos(this.sizeX, this.sizeY, this.sizeZ, (int) pos.x, (int) pos.y, (int) pos.z);
             blockEntityNBT.putCompound(String.valueOf(index), entry.getValue());
         }
-        defaultPalette.putCompound("block_position_data", blockEntityNBT);
+        defaultPalette.putCompound("block_position_data", blockEntityNBT.build());
 
-        paletteCompound.putCompound("default", defaultPalette);
-        structureNBT.putCompound("palette", paletteCompound);
+        paletteCompound.putCompound("default", defaultPalette.build());
+        structureNBT.putCompound("palette", paletteCompound.build());
 
         // Add entities
-        ListTag<CompoundTag> entitiesList = new ListTag<>();
-        for (CompoundTag entity : this.entities) {
-            entitiesList.add(entity);
-        }
-        structureNBT.putList("entities", entitiesList);
+        List<NbtMap> entitiesList = new ObjectArrayList<>();
+        entitiesList.addAll(this.entities);
+        structureNBT.putList("entities", NbtType.COMPOUND, entitiesList);
 
-        nbt.putCompound("structure", structureNBT);
+        nbt.putCompound("structure", structureNBT.build());
 
         // Set structure_world_origin (using 0, 0, 0)
-        ListTag<IntTag> originList = new ListTag<>();
-        originList.add(new IntTag(0));
-        originList.add(new IntTag(0));
-        originList.add(new IntTag(0));
-        nbt.putList("structure_world_origin", originList);
+        List<Integer> originList = Arrays.asList(0, 0, 0);
+        nbt.putList("structure_world_origin", NbtType.INT, originList);
 
-        return nbt;
+        return nbt.build();
     }
 
     /**
@@ -450,7 +439,7 @@ public class Structure extends AbstractStructure {
         int newSizeZ = (rotation == Rotation.ROTATE_180) ? sizeZ : sizeX;
 
         BlockState[][][][] rotatedStates = new BlockState[2][newSizeX][sizeY][newSizeZ];
-        Map<Vector3, CompoundTag> rotatedBlockEntities = new HashMap<>();
+        Map<Vector3, NbtMap> rotatedBlockEntities = new HashMap<>();
 
         for (int layer = 0; layer < 2; layer++) {
             for (int x = 0; x < sizeX; x++) {
@@ -507,7 +496,7 @@ public class Structure extends AbstractStructure {
             rotatedBlockEntities.put(new Vector3(rx, y, rz), entry.getValue());
         }
 
-        List<CompoundTag> rotatedEntities = new ArrayList<>(entities);
+        List<NbtMap> rotatedEntities = new ArrayList<>(entities);
 
         return new Structure(rotatedStates, rotatedBlockEntities, rotatedEntities,
                 newSizeX, sizeY, newSizeZ, x, y, z);
@@ -519,13 +508,13 @@ public class Structure extends AbstractStructure {
      * @param mirror the mirror operation to apply
      * @return a new mirrored Structure instance
      */
-    public Structure mirror(StructureMirror mirror) {
-        if (mirror == StructureMirror.NONE) {
+    public Structure mirror(Mirror mirror) {
+        if (mirror == Mirror.NONE) {
             return this;
         }
 
         BlockState[][][][] mirroredStates = new BlockState[2][sizeX][sizeY][sizeZ];
-        Map<Vector3, CompoundTag> mirroredBlockEntities = new HashMap<>();
+        Map<Vector3, NbtMap> mirroredBlockEntities = new HashMap<>();
 
         for (int layer = 0; layer < 2; layer++) {
             for (int x = 0; x < sizeX; x++) {
@@ -574,7 +563,7 @@ public class Structure extends AbstractStructure {
             mirroredBlockEntities.put(new Vector3(mx, y, mz), entry.getValue());
         }
 
-        List<CompoundTag> mirroredEntities = new ArrayList<>(entities);
+        List<NbtMap> mirroredEntities = new ArrayList<>(entities);
 
         return new Structure(mirroredStates, mirroredBlockEntities, mirroredEntities,
                 sizeX, sizeY, sizeZ, x, y, z);

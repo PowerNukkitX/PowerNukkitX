@@ -1,6 +1,6 @@
 package cn.nukkit.item.utils;
 
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 public final class ShooterAmmo {
@@ -17,17 +17,27 @@ public final class ShooterAmmo {
         return new ShooterAmmo(itemId);
     }
 
-    public ShooterAmmo useOffhand(boolean v) { this.useOffhand = v; return this; }
+    public ShooterAmmo useOffhand(boolean v) {
+        this.useOffhand = v;
+        return this;
+    }
 
-    public ShooterAmmo searchInventory(boolean v) { this.searchInventory = v; return this; }
+    public ShooterAmmo searchInventory(boolean v) {
+        this.searchInventory = v;
+        return this;
+    }
 
-    public ShooterAmmo useInCreative(boolean v) { this.useInCreative = v; return this; }
+    public ShooterAmmo useInCreative(boolean v) {
+        this.useInCreative = v;
+        return this;
+    }
 
-    public CompoundTag toNbt() {
-        return new CompoundTag()
-                .putCompound("item", new CompoundTag().putString("name", itemId))
-                .putByte("use_offhand",      (byte) (useOffhand ? 1 : 0))
+    public NbtMap toNbt() {
+        return NbtMap.builder()
+                .putCompound("item", NbtMap.builder().putString("name", itemId).build())
+                .putByte("use_offhand", (byte) (useOffhand ? 1 : 0))
                 .putByte("search_inventory", (byte) (searchInventory ? 1 : 0))
-                .putByte("use_in_creative",  (byte) (useInCreative ? 1 : 0));
+                .putByte("use_in_creative", (byte) (useInCreative ? 1 : 0))
+                .build();
     }
 }

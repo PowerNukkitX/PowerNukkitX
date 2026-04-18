@@ -2,13 +2,14 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginDescription;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -40,7 +41,7 @@ public class VersionCommand extends Command implements CoreCommand {
                     sender.getServer().getNukkitVersion() + " (" + sender.getServer().getGitCommit() + ")",
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
-                    String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
+                    String.valueOf(NetworkConstants.CODEC.getProtocolVersion())));
         } else {
             StringBuilder pluginName = new StringBuilder();
             for (String arg : args) pluginName.append(arg).append(" ");

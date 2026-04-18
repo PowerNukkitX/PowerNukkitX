@@ -1,5 +1,7 @@
 package cn.nukkit.command.data;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,4 +39,11 @@ public class CommandDataVersions {
     //size 1
     public List<CommandData> versions = new ArrayList<>();
 
+    public List<org.cloudburstmc.protocol.bedrock.data.command.CommandData> toNetwork() {
+        final List<org.cloudburstmc.protocol.bedrock.data.command.CommandData> list = new ObjectArrayList<>();
+        for (CommandData version : this.versions) {
+            list.add(version.toNetwork());
+        }
+        return list;
+    }
 }

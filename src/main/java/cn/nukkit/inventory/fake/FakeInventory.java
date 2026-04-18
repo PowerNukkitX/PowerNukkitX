@@ -1,11 +1,7 @@
 package cn.nukkit.inventory.fake;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityFakeInventory;
-import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.inventory.ItemStackRequestActionEvent;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.InputInventory;
@@ -13,20 +9,19 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.request.NetworkMapping;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
-import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequestSlotData;
-import cn.nukkit.network.protocol.types.itemstack.request.action.DropAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.ItemStackRequestAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.SwapAction;
-import cn.nukkit.network.protocol.types.itemstack.request.action.TransferItemStackRequestAction;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequestSlotInfo;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.DropAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.SwapAction;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.TransferItemStackRequestAction;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerClosePacket;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,39 +54,40 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         this.title = title;
         this.fakeInventoryType = fakeInventoryType;
         this.fakeBlock = fakeInventoryType.builder != null ? fakeInventoryType.builder.create(this) : fakeInventoryType.fakeBlock;
-        this.defaultItemHandler = (a, b, c, d, e) -> {};
+        this.defaultItemHandler = (a, b, c, d, e) -> {
+        };
 
         switch (fakeInventoryType) {
             case ENTITY -> {
-                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                Map<Integer, ContainerEnumName> map = super.slotTypeMap();
                 for (int i = 0; i < getSize(); i++) {
-                    map.put(i, ContainerSlotType.LEVEL_ENTITY);
+                    map.put(i, ContainerEnumName.LEVEL_ENTITY_CONTAINER);
                 }
             }
             case CHEST, DOUBLE_CHEST, HOPPER, DISPENSER, DROPPER, ENDER_CHEST -> {
-                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                Map<Integer, ContainerEnumName> map = super.slotTypeMap();
                 for (int i = 0; i < getSize(); i++) {
-                    map.put(i, ContainerSlotType.LEVEL_ENTITY);
+                    map.put(i, ContainerEnumName.LEVEL_ENTITY_CONTAINER);
                 }
             }
             case FURNACE -> {
-                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-                map.put(0, ContainerSlotType.FURNACE_INGREDIENT);
-                map.put(1, ContainerSlotType.FURNACE_FUEL);
-                map.put(2, ContainerSlotType.FURNACE_RESULT);
+                Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+                map.put(0, ContainerEnumName.FURNACE_INGREDIENT_CONTAINER);
+                map.put(1, ContainerEnumName.FURNACE_FUEL_CONTAINER);
+                map.put(2, ContainerEnumName.FURNACE_RESULT_CONTAINER);
             }
             case BREWING_STAND -> {
-                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-                map.put(0, ContainerSlotType.BREWING_INPUT);
-                map.put(1, ContainerSlotType.BREWING_RESULT);
-                map.put(2, ContainerSlotType.BREWING_RESULT);
-                map.put(3, ContainerSlotType.BREWING_RESULT);
-                map.put(4, ContainerSlotType.BREWING_FUEL);
+                Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+                map.put(0, ContainerEnumName.BREWING_STAND_INPUT_CONTAINER);
+                map.put(1, ContainerEnumName.BREWING_STAND_RESULT_CONTAINER);
+                map.put(2, ContainerEnumName.BREWING_STAND_RESULT_CONTAINER);
+                map.put(3, ContainerEnumName.BREWING_STAND_RESULT_CONTAINER);
+                map.put(4, ContainerEnumName.BREWING_STAND_FUEL_CONTAINER);
             }
             case SHULKER_BOX -> {
-                Map<Integer, ContainerSlotType> map = super.slotTypeMap();
+                Map<Integer, ContainerEnumName> map = super.slotTypeMap();
                 for (int i = 0; i < getSize(); i++) {
-                    map.put(i, ContainerSlotType.SHULKER_BOX);
+                    map.put(i, ContainerEnumName.SHULKER_BOX_CONTAINER);
                 }
             }
             case WORKBENCH -> {
@@ -99,9 +95,9 @@ public class FakeInventory extends BaseInventory implements InputInventory {
                 for (int i = 0; i < getSize(); i++) {
                     map.put(i, 32 + i);
                 }
-                Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+                Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
                 for (int i = 0; i < getSize(); i++) {
-                    map2.put(i, ContainerSlotType.CRAFTING_INPUT);
+                    map2.put(i, ContainerEnumName.CRAFTING_INPUT_CONTAINER);
                 }
             }
         }
@@ -146,22 +142,22 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     }
 
     private void sendOpenContainerPacket(Player player, int x, int y, int z, long entityId) {
-        ContainerOpenPacket packet = new ContainerOpenPacket();
-        packet.windowId = player.getWindowId(this);
-        packet.type = this.getType().getNetworkType();
-        packet.x = x;
-        packet.y = y;
-        packet.z = z;
-        if (entityId != 0) packet.entityId = entityId;
+        final ContainerOpenPacket packet = new ContainerOpenPacket();
+        packet.setContainerID((byte) player.getWindowId(this));
+        packet.setContainerType(this.getType());
+        packet.setPosition(Vector3i.from(x, y, z));
+        if (entityId != 0) {
+            packet.setTargetActorID(entityId);
+        }
         player.dataPacket(packet);
     }
 
     @Override
     public void onClose(Player player) {
-        ContainerClosePacket packet = new ContainerClosePacket();
-        packet.windowId = player.getWindowId(this);
-        packet.wasServerInitiated = player.getClosingWindowId() != packet.windowId;
-        packet.type = getType();
+        final ContainerClosePacket packet = new ContainerClosePacket();
+        packet.setContainerID((byte) player.getWindowId(this));
+        packet.setServerInitiatedClose(player.getClosingWindowId() != packet.getContainerID());
+        packet.setContainerType(this.getType());
         player.dataPacket(packet);
 
         if (this.fakeBlock != null) {
@@ -206,29 +202,29 @@ public class FakeInventory extends BaseInventory implements InputInventory {
     @ApiStatus.Internal
     public void handle(ItemStackRequestActionEvent event) {
         ItemStackRequestAction action = event.getAction();
-        ItemStackRequestSlotData source = null;
-        ItemStackRequestSlotData destination = null;
+        ItemStackRequestSlotInfo source = null;
+        ItemStackRequestSlotInfo destination = null;
         if (action instanceof TransferItemStackRequestAction transferItemStackRequestAction) {
             source = transferItemStackRequestAction.getSource();
             destination = transferItemStackRequestAction.getDestination();
         } else if (action instanceof SwapAction swapAction) {
             source = swapAction.getSource();
             destination = swapAction.getDestination();
-        } else if(action instanceof DropAction dropAction) {
+        } else if (action instanceof DropAction dropAction) {
             source = dropAction.getSource();
         }
         if (source != null) {
-            ContainerSlotType sourceSlotType = source.getContainerName().getContainer();
-            Integer dynamicSrc = source.getContainerName().getDynamicId();
+            ContainerEnumName sourceSlotType = source.getFullContainerName().getContainerName();
+            Integer dynamicSrc = source.getFullContainerName().getDynamicID();
             Inventory sourceI = NetworkMapping.getInventory(event.getPlayer(), sourceSlotType, dynamicSrc);
             int sourceSlot = sourceI.fromNetworkSlot(source.getSlot());
             Item sourItem = sourceI.getItem(sourceSlot);
             if (sourceI.equals(this)) {
                 ItemHandler handler = this.handlers.getOrDefault(sourceSlot, this.defaultItemHandler);
                 handler.handle(this, sourceSlot, sourItem, Item.AIR, event);
-            } else if(destination != null) {
-                ContainerSlotType destinationSlotType = destination.getContainerName().getContainer();
-                Integer dynamicDst = source.getContainerName().getDynamicId();
+            } else if (destination != null) {
+                ContainerEnumName destinationSlotType = destination.getFullContainerName().getContainerName();
+                Integer dynamicDst = source.getFullContainerName().getDynamicID();
                 Inventory destinationI = NetworkMapping.getInventory(event.getPlayer(), destinationSlotType, dynamicDst);
                 int destinationSlot = destinationI.fromNetworkSlot(destination.getSlot());
                 Item destItem = destinationI.getItem(destinationSlot);

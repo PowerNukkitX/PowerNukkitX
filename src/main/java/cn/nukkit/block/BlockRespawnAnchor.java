@@ -29,7 +29,6 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.utils.TextFormat;
 import org.jetbrains.annotations.NotNull;
 
@@ -98,7 +97,7 @@ public class BlockRespawnAnchor extends Block {
         if (Objects.equals(player.getSpawn().left(), this)) {
             return false;
         }
-        player.setSpawn(this, SpawnPointType.BLOCK);
+        player.setSpawn(this, Player.SpawnPointType.BLOCK);
         getLevel().addSound(this, Sound.RESPAWN_ANCHOR_SET_SPAWN);
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.respawn_anchor.respawnSet"));
         return true;

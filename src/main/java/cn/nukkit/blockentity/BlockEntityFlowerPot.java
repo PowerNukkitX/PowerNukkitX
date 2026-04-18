@@ -2,14 +2,16 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
 
 /**
  * @author Snake1999
  * @since 2016/2/4
  */
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
-    public BlockEntityFlowerPot(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityFlowerPot(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -21,11 +23,11 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag tag = super.getSpawnCompound()
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder tag = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable());
-        if (namedTag.containsCompound("PlantBlock"))
+        if (namedTag.containsKey("PlantBlock", NbtType.COMPOUND))
             tag.putCompound("PlantBlock", namedTag.getCompound("PlantBlock"));
-        return tag;
+        return tag.build();
     }
 }

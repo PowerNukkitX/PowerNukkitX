@@ -1,10 +1,9 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,9 +29,9 @@ public abstract class ItemCustomTool extends ItemTool implements CustomItem {
     @Deprecated
     public final Integer getSpeed() {
         var nbt = Registries.ITEM.getCustomItemDefinition().get(this.getId()).nbt();
-        if (nbt == null || !nbt.getCompound("components").contains("minecraft:digger")) return null;
+        if (nbt == null || !nbt.getCompound("components").containsKey("minecraft:digger")) return null;
         return nbt.getCompound("components")
                 .getCompound("minecraft:digger")
-                .getList("destroy_speeds", CompoundTag.class).get(0).getInt("speed");
+                .getList("destroy_speeds", NbtType.COMPOUND).getFirst().getInt("speed");
     }
 }

@@ -2,8 +2,8 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.*;
 
@@ -51,10 +51,10 @@ public class ChunkConversion {
         return new BlockData(blocks, biomes, heightMap);
     }
 
-    private static List<CompoundTag> cloneBlockEntities(IChunk chunk) {
-        List<CompoundTag> blockEntities = new ArrayList<>();
+    private static List<NbtMap> cloneBlockEntities(IChunk chunk) {
+        List<NbtMap> blockEntities = new ArrayList<>();
         for (BlockEntity be : chunk.getBlockEntities().values()) {
-            blockEntities.add(be.namedTag.copy());
+            blockEntities.add(be.namedTag);
         }
         return blockEntities;
     }
@@ -72,9 +72,9 @@ public class ChunkConversion {
         }
     }
 
-    private static void restoreBlockEntities(IChunk chunk, List<CompoundTag> tags) {
+    private static void restoreBlockEntities(IChunk chunk, List<NbtMap> tags) {
         chunk.getBlockEntities().clear();
-        for (CompoundTag tag : tags) {
+        for (NbtMap tag : tags) {
             BlockEntity be = BlockEntity.createBlockEntity(tag.getString("id"), chunk, tag);
             if (be != null) {
                 chunk.addBlockEntity(be);

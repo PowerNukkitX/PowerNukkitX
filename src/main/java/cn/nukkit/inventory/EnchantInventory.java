@@ -6,9 +6,11 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.event.player.PlayerEnchantOptionsRequestEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.EnchantmentHelper;
-import cn.nukkit.network.protocol.PlayerEnchantOptionsPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerEnchantOptionsPacket;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +21,7 @@ import java.util.Map;
  */
 public class EnchantInventory extends ContainerInventory implements BlockEntityInventoryNameable, CraftTypeInventory, SoleInventory {
     public EnchantInventory(BlockEntityEnchantTable table) {
-        super(table, InventoryType.ENCHANTMENT, 2);
+        super(table, ContainerType.ENCHANTMENT, 2);
     }
 
     @Override
@@ -31,10 +33,10 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
     }
 
     @Override
-    public Map<Integer, ContainerSlotType> slotTypeMap() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(0, ContainerSlotType.ENCHANTING_INPUT);
-        map.put(1, ContainerSlotType.ENCHANTING_MATERIAL);
+    public Map<Integer, ContainerEnumName> slotTypeMap() {
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        map.put(0, ContainerEnumName.ENCHANTING_INPUT_CONTAINER);
+        map.put(1, ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER);
         return map;
     }
 
@@ -43,12 +45,12 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
         if (index == 0) {
             if (before.isNull()) {
                 for (final Player viewer : this.getViewers()) {
-                    List<PlayerEnchantOptionsPacket.EnchantOptionData> options = EnchantmentHelper.getEnchantOptions(this.getHolder(), this.getFirst(), viewer.getEnchantmentSeed());
+                    List<ItemEnchantOption> options = EnchantmentHelper.getEnchantOptions(this.getHolder(), this.getFirst(), viewer.getEnchantmentSeed());
 
                     PlayerEnchantOptionsRequestEvent event = new PlayerEnchantOptionsRequestEvent(viewer, this, options);
                     if (!event.isCancelled() && !event.getOptions().isEmpty()) {
-                        PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
-                        pk.options = event.getOptions();
+                        final PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
+                        pk.getOptions().addAll(event.getOptions());
                         viewer.dataPacket(pk);
                     }
                 }

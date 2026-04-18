@@ -3,17 +3,19 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockCraftingTable;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import cn.nukkit.recipe.Input;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 
 import java.util.List;
 import java.util.Map;
 
 public class CraftingTableInventory extends BaseInventory implements CraftTypeInventory, InputInventory {
     public CraftingTableInventory(BlockCraftingTable table) {
-        super(table, InventoryType.WORKBENCH, 9);
+        super(table, ContainerType.WORKBENCH, 9);
     }
 
     @Override
@@ -23,23 +25,20 @@ public class CraftingTableInventory extends BaseInventory implements CraftTypeIn
             map.put(i, 32 + i);
         }
 
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
+        Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
         for (int i = 0; i < getSize(); i++) {
-            map2.put(i, ContainerSlotType.CRAFTING_INPUT);
-            map2.put(i+32, ContainerSlotType.CRAFTING_INPUT);
+            map2.put(i, ContainerEnumName.CRAFTING_INPUT_CONTAINER);
+            map2.put(i + 32, ContainerEnumName.CRAFTING_INPUT_CONTAINER);
         }
     }
 
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
+        final ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.setContainerID((byte) who.getWindowId(this));
+        pk.setContainerType(this.getType());
+        pk.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
         who.dataPacket(pk);
         this.sendContents(who);
     }

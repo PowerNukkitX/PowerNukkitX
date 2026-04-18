@@ -3,7 +3,6 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -20,15 +19,15 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.ItemHelper;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -70,11 +69,11 @@ public class EntityThrownTrident extends SlenderProjectile {
     private int riptideLevel;
     private int impalingLevel;
 
-    public EntityThrownTrident(IChunk chunk, CompoundTag nbt) {
+    public EntityThrownTrident(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityThrownTrident(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityThrownTrident(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -105,19 +104,19 @@ public class EntityThrownTrident extends SlenderProjectile {
 
         this.closeOnCollide = false;
 
-        this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
-        this.favoredSlot = namedTag.contains(TAG_FAVORED_SLOT) ? namedTag.getInt(TAG_FAVORED_SLOT) : -1;
-        this.player = !namedTag.contains(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
+        this.pickupMode = namedTag.containsKey(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
+        this.favoredSlot = namedTag.containsKey(TAG_FAVORED_SLOT) ? namedTag.getInt(TAG_FAVORED_SLOT) : -1;
+        this.player = !namedTag.containsKey(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
 
-        if (namedTag.contains(TAG_CREATIVE)) {
+        if (namedTag.containsKey(TAG_CREATIVE)) {
             if (pickupMode == PICKUP_ANY && namedTag.getBoolean(TAG_CREATIVE)) {
                 pickupMode = PICKUP_CREATIVE;
             }
             namedTag.remove(TAG_CREATIVE);
         }
 
-        if (namedTag.contains(TAG_TRIDENT)) {
-            this.trident = NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT));
+        if (namedTag.containsKey(TAG_TRIDENT)) {
+            this.trident = ItemHelper.read(namedTag.getCompound(TAG_TRIDENT));
             this.loyaltyLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_LOYALTY);
             this.hasChanneling = this.trident.hasEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
             this.riptideLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
@@ -130,16 +129,16 @@ public class EntityThrownTrident extends SlenderProjectile {
             this.impalingLevel = 0;
         }
 
-        if (namedTag.contains("CollisionPos")) {
-            ListTag<DoubleTag> collisionPosList = this.namedTag.getList("CollisionPos", DoubleTag.class);
-            collisionPos = new Vector3(collisionPosList.get(0).data, collisionPosList.get(1).data, collisionPosList.get(2).data);
+        if (namedTag.containsKey("CollisionPos")) {
+            List<Double> collisionPosList = this.namedTag.getList("CollisionPos", NbtType.DOUBLE);
+            collisionPos = new Vector3(collisionPosList.get(0), collisionPosList.get(1), collisionPosList.get(2));
         } else {
             collisionPos = defaultCollisionPos.clone();
         }
 
-        if (namedTag.contains("StuckToBlockPos")) {
-            ListTag<IntTag> stuckToBlockPosList = this.namedTag.getList("StuckToBlockPos", IntTag.class);
-            stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0).data, stuckToBlockPosList.get(1).data, stuckToBlockPosList.get(2).data);
+        if (namedTag.containsKey("StuckToBlockPos")) {
+            List<Integer> stuckToBlockPosList = this.namedTag.getList("StuckToBlockPos", NbtType.INT);
+            stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0), stuckToBlockPosList.get(1), stuckToBlockPosList.get(2));
         } else {
             stuckToBlockPos = defaultStuckToBlockPos.clone();
         }
@@ -149,20 +148,24 @@ public class EntityThrownTrident extends SlenderProjectile {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.put(TAG_TRIDENT, NBTIO.putItemHelper(this.trident));
-        this.namedTag.putByte(TAG_PICKUP, this.pickupMode);
-        this.namedTag.putList("CollisionPos", new ListTag<DoubleTag>()
-                .add(new DoubleTag(this.collisionPos.x))
-                .add(new DoubleTag(this.collisionPos.y))
-                .add(new DoubleTag(this.collisionPos.z))
-        );
-        this.namedTag.putList("StuckToBlockPos", new ListTag<IntTag>()
-                .add(new IntTag(this.stuckToBlockPos.x))
-                .add(new IntTag(this.stuckToBlockPos.y))
-                .add(new IntTag(this.stuckToBlockPos.z))
-        );
-        this.namedTag.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
-        this.namedTag.putBoolean(TAG_PLAYER, this.player);
+        this.namedTag = this.namedTag.toBuilder()
+                .putCompound(TAG_TRIDENT, ItemHelper.write(this.trident, null))
+                .putByte(TAG_PICKUP, (byte) this.pickupMode)
+                .putList("CollisionPos", NbtType.DOUBLE, Arrays.asList(
+                                this.collisionPos.x,
+                                this.collisionPos.y,
+                                this.collisionPos.z
+                        )
+                )
+                .putList("StuckToBlockPos", NbtType.INT, Arrays.asList(
+                                this.stuckToBlockPos.x,
+                                this.stuckToBlockPos.y,
+                                this.stuckToBlockPos.z
+                        )
+                )
+                .putInt(TAG_FAVORED_SLOT, this.favoredSlot)
+                .putBoolean(TAG_PLAYER, this.player)
+                .build();
     }
 
     public Item getItem() {
@@ -182,11 +185,11 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     public boolean isCritical() {
-        return this.getDataFlag(EntityFlag.CRITICAL);
+        return this.getDataFlag(ActorFlags.CRITICAL);
     }
 
     public void setCritical(boolean value) {
-        this.setDataFlag(EntityFlag.CRITICAL, value);
+        this.setDataFlag(ActorFlags.CRITICAL, value);
     }
 
     @Override
@@ -239,26 +242,6 @@ public class EntityThrownTrident extends SlenderProjectile {
         }
 
         return hasUpdate;
-    }
-
-    @Override
-    public void spawnTo(Player player) {
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = Registries.ENTITY.getEntityNetworkId(THROWN_TRIDENT);
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
-        pk.entityData = this.entityDataMap;
-        player.dataPacket(pk);
-
-        super.spawnTo(player);
     }
 
 
@@ -423,16 +406,16 @@ public class EntityThrownTrident extends SlenderProjectile {
     }
 
     public boolean getTridentRope() {
-        return this.getDataFlag(EntityFlag.RETURN_TRIDENT);
+        return this.getDataFlag(ActorFlags.RETURN_TRIDENT);
     }
 
     public void setTridentRope(boolean tridentRope) {
         if (tridentRope) {
-            this.setDataProperty(OWNER_EID, this.shootingEntity.getId());
+            this.setDataProperty(ActorDataTypes.OWNER, this.shootingEntity.getId());
         } else {
-            this.setDataProperty(OWNER_EID, -1);
+            this.setDataProperty(ActorDataTypes.OWNER, -1);
         }
-        this.setDataFlag(EntityFlag.RETURN_TRIDENT, tridentRope);
+        this.setDataFlag(ActorFlags.RETURN_TRIDENT, tridentRope);
     }
 
     public boolean canReturnToShooter() {

@@ -13,15 +13,15 @@ import java.util.UUID;
 
 /**
  * @author Buddelbubi
- * @since 2025/11/19
  * @see <a href="https://github.com/KoshakMineDEV/Lumi/blob/master/src/main/java/cn/nukkit/recipe/impl/special/DecoratedPotRecipe.java">...</a>
+ * @since 2025/11/19
  */
 public class DecoratedPotRecipe extends MultiRecipe {
 
     public static final UUID RECIPE_UUID = UUID.fromString("685a742a-c42e-4a4e-88ea-5eb83fc98e5b");
 
-    public DecoratedPotRecipe() {
-        super(RECIPE_UUID);
+    public DecoratedPotRecipe(int netId) {
+        super(RECIPE_UUID, netId);
     }
 
     @Override

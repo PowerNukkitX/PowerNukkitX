@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -18,10 +17,10 @@ import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.BreedingExecutor;
-import cn.nukkit.entity.ai.executor.RideableTameExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.LoveTimeoutExecutor;
+import cn.nukkit.entity.ai.executor.RideableTameExecutor;
 import cn.nukkit.entity.ai.executor.TemptExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -42,24 +41,28 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class EntityLlama extends EntityAnimal implements EntityWalkable, InventoryHolder {
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return LLAMA;
     }
 
-    public EntityLlama(IChunk chunk, CompoundTag nbt) {
+    public EntityLlama(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -88,50 +91,50 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
 
         boolean controllable = this.isTamed();
         return new RideableComponent(
-            0,
-            controllable,
-            RideableComponent.DismountMode.DEFAULT,
-            Set.of("player"),
-            "action.interact.ride.horse",
-            0.0f,
-            false,
-            false,
-            1,
-            List.of(new RideableComponent.Seat(
-                0, 1,
-                new Vector3f(0.0f, 1.17f, -0.3f),
-                null, null, null, null
-            ))
+                0,
+                controllable,
+                RideableComponent.DismountMode.DEFAULT,
+                Set.of("player"),
+                "action.interact.ride.horse",
+                0.0f,
+                false,
+                false,
+                1,
+                List.of(new RideableComponent.Seat(
+                        0, 1,
+                        new Vector3f(0.0f, 1.17f, -0.3f),
+                        null, null, null, null
+                ))
         );
     }
 
     @Override
     public @Nullable EquippableComponent getComponentEquippable() {
         return new EquippableComponent(List.of(
-                    new EquippableComponent.Slot(
+                new EquippableComponent.Slot(
                         1,
                         EquippableComponent.Type.CARPET,
                         Set.of(
-                            BlockID.WHITE_CARPET,
-                            BlockID.ORANGE_CARPET,
-                            BlockID.MAGENTA_CARPET,
-                            BlockID.LIGHT_BLUE_CARPET,
-                            BlockID.YELLOW_CARPET,
-                            BlockID.LIME_CARPET,
-                            BlockID.PINK_CARPET,
-                            BlockID.GRAY_CARPET,
-                            BlockID.LIGHT_GRAY_CARPET,
-                            BlockID.CYAN_CARPET,
-                            BlockID.PURPLE_CARPET,
-                            BlockID.BLUE_CARPET,
-                            BlockID.BROWN_CARPET,
-                            BlockID.GREEN_CARPET,
-                            BlockID.RED_CARPET,
-                            BlockID.BLACK_CARPET
+                                BlockID.WHITE_CARPET,
+                                BlockID.ORANGE_CARPET,
+                                BlockID.MAGENTA_CARPET,
+                                BlockID.LIGHT_BLUE_CARPET,
+                                BlockID.YELLOW_CARPET,
+                                BlockID.LIME_CARPET,
+                                BlockID.PINK_CARPET,
+                                BlockID.GRAY_CARPET,
+                                BlockID.LIGHT_GRAY_CARPET,
+                                BlockID.CYAN_CARPET,
+                                BlockID.PURPLE_CARPET,
+                                BlockID.BLUE_CARPET,
+                                BlockID.BROWN_CARPET,
+                                BlockID.GREEN_CARPET,
+                                BlockID.RED_CARPET,
+                                BlockID.BLACK_CARPET
                         ),
                         null
-                    )
-                ));
+                )
+        ));
     }
 
     @Override
@@ -150,14 +153,14 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
                 null,
                 null,
                 BreedableComponent.blendAttributesOf(
-                    Attribute.HEALTH
+                        Attribute.HEALTH
                 ),
                 null,
                 Set.of(
-                    BlockID.HAY_BLOCK
+                        BlockID.HAY_BLOCK
                 ),
                 List.of(
-                    new BreedableComponent.BreedsWith(EntityID.LLAMA, EntityID.LLAMA)
+                        new BreedableComponent.BreedsWith(EntityID.LLAMA, EntityID.LLAMA)
                 ),
                 null,
                 null,
@@ -176,8 +179,8 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     public HealableComponent getComponentHealable() {
         return new HealableComponent(
                 List.of(
-                    new HealableComponent.Item(BlockID.WHEAT, 2),
-                    new HealableComponent.Item(BlockID.HAY_BLOCK, 10)
+                        new HealableComponent.Item(BlockID.WHEAT, 2),
+                        new HealableComponent.Item(BlockID.HAY_BLOCK, 10)
                 )
         );
     }
@@ -188,8 +191,8 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
-                    new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.9f)
+                        new AgeableComponent.FeedItem(BlockID.WHEAT, 0.016667f),
+                        new AgeableComponent.FeedItem(BlockID.HAY_BLOCK, 0.9f)
                 ),
                 null,
                 null,
@@ -219,7 +222,9 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         return Set.of("llama", "mob");
     }
 
-    /** This sync inventories when entity have more than one (with or without chest for instance) */
+    /**
+     * This sync inventories when entity have more than one (with or without chest for instance)
+     */
     protected void syncEquippableInventories() {
         ensureInventories();
         HorseInventory<EntityLlama> src = getInventory();
@@ -241,11 +246,11 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
 
     @Override
     public void updateInventoryFlags() {
-        this.setDataProperty(Entity.CONTAINER_TYPE, 12);
-        this.setDataProperty(Entity.CONTAINER_SIZE, 16);
-        this.setDataProperty(Entity.CONTAINER_STRENGTH_MODIFIER, 3);
-        this.setDataProperty(Entity.STRENGTH, this.llamaStrength);
-        this.setDataProperty(Entity.STRENGTH_MAX, 5);
+        this.setDataProperty(ActorDataTypes.CONTAINER_TYPE, (byte) 12);
+        this.setDataProperty(ActorDataTypes.CONTAINER_SIZE, 16);
+        this.setDataProperty(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 3);
+        this.setDataProperty(ActorDataTypes.STRENGTH, this.llamaStrength);
+        this.setDataProperty(ActorDataTypes.STRENGTH_MAX, 5);
     }
 
     @Override
@@ -258,18 +263,18 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     public void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.contains("LlamaStrength")) {
+        if (this.namedTag.containsKey("LlamaStrength")) {
             this.llamaStrength = this.namedTag.getInt("LlamaStrength");
         } else {
             this.llamaStrength = ThreadLocalRandom.current().nextInt(1, 6);
-            this.namedTag.putInt("LlamaStrength", this.llamaStrength);
+            this.namedTag = this.namedTag.toBuilder().putInt("LlamaStrength", this.llamaStrength).build();
         }
 
         // Load items
         ensureInventories();
-        if (namedTag.containsList("Inventory")) {
+        if (namedTag.containsKey("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(namedTag.getList("Inventory", CompoundTag.class));
+            inv.load(new ObjectArrayList<>(namedTag.getList("Inventory", NbtType.COMPOUND)));
             syncEquippableInventories();
         }
     }
@@ -280,8 +285,9 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
 
         var inv = isChested() ? invChested : invNoChest;
         syncEquippableInventories();
-        namedTag.putBoolean("Chested", isChested());
-        namedTag.putList("Inventory", inv.save(isChested()));
+        this.namedTag = namedTag.toBuilder().putBoolean("Chested", isChested())
+                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()))
+                .build();
     }
 
     @Override
@@ -337,7 +343,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        BlockID.HAY_BLOCK
+            BlockID.HAY_BLOCK
     );
 
     @Override
@@ -345,81 +351,81 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.25f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+                        new Behavior(
+                                new LoveTimeoutExecutor(20 * 30),
+                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new BreedingExecutor(16, 200, 0.25f),
+                                all(
+                                        e -> !e.isBaby(),
+                                        e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                                ),
+                                2, 1
+                        ),
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                1, 1, 1200
+                        )
                 ),
                 Set.of(
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
-                            all(
-                                e -> !e.isTamed(),
-                                e -> e.passengers.isEmpty(),
-                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
-                            ),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
-                            all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
-                                e -> !this.hasOwner(false)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.2f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                e -> {
-                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                    return p != null && !e.isPassenger(p);
-                                },
-                                e -> e.passengers == null || e.passengers.isEmpty()
-                            ),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
-                        1, 1
-                    )
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.55f, 18, 8, true, 80, true, 10),
+                                all(
+                                        e -> !e.isTamed(),
+                                        e -> e.passengers.isEmpty(),
+                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 80)
+                                ),
+                                5, 1
+                        ),
+                        new Behavior(
+                                new RideableTameExecutor(0.4f, 12, 40, true, 100, true, 10, 35),
+                                all(
+                                        new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RIDER_NAME),
+                                        e -> !this.hasOwner(false)
+                                ),
+                                4, 1
+                        ),
+                        new Behavior(
+                                new TemptExecutor(1.2f, TEMPT_ITEMS),
+                                all(
+                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                                ),
+                                3, 1
+                        ),
+                        new Behavior(
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ProbabilityEvaluator(4, 10),
+                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                        e -> {
+                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                            return p != null && !e.isPassenger(p);
+                                        },
+                                        e -> e.passengers == null || e.passengers.isEmpty()
+                                ),
+                                1, 1, 100
+                        ),
+                        new Behavior(
+                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
+                                (entity -> true),
+                                1, 1
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20)),
+                        new NearestPlayerSensor(8, 0, 20)),
                 Set.of(
-                    new WalkController(),
-                    new LookController(true, true),
-                    new FluctuateController()
+                        new WalkController(),
+                        new LookController(true, true),
+                        new FluctuateController()
                 ),
                 new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
                 this

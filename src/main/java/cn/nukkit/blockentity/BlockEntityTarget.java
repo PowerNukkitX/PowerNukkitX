@@ -3,7 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author joserobjr
@@ -13,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntityTarget extends BlockEntity {
 
 
-    public BlockEntityTarget(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityTarget(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -23,7 +23,7 @@ public class BlockEntityTarget extends BlockEntity {
     }
 
     public void setActivePower(int power) {
-        namedTag.putInt("activePower", power);
+        this.namedTag = namedTag.toBuilder().putInt("activePower", power).build();
     }
 
     public int getActivePower() {

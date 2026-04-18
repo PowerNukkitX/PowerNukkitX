@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntityConduit;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -30,17 +30,20 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
     }
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
     @Override
-    @NotNull public Class<? extends BlockEntityConduit> getBlockEntityClass() {
+    @NotNull
+    public Class<? extends BlockEntityConduit> getBlockEntityClass() {
         return BlockEntityConduit.class;
     }
 
     @Override
-    @NotNull public String getBlockEntityType() {
+    @NotNull
+    public String getBlockEntityType() {
         return BlockEntity.CONDUIT;
     }
 
@@ -66,7 +69,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         }
 
         BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(this, false, true,
-                new CompoundTag().putBoolean("IsMovable", true));
+                NbtMap.builder().putBoolean("IsMovable", true).build());
         if (conduit != null) {
             conduit.scheduleUpdate();
             return true;
@@ -87,31 +90,31 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public double getMinX() {
-        return x + (5.0/16);
+        return x + (5.0 / 16);
     }
 
     @Override
     public double getMinY() {
-        return y + (5.0/16);
+        return y + (5.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (5.0/16);
+        return z + (5.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (11.0/16);
+        return x + (11.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (11.0/16);
+        return y + (11.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (11.0/16);
+        return z + (11.0 / 16);
     }
 }

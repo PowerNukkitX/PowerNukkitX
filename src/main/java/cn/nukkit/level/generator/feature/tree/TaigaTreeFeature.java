@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.block.BlockSnowLayer;
-import cn.nukkit.block.BlockSpruceLeaves;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
@@ -11,10 +10,9 @@ import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class TaigaTreeFeature extends GriddedFeature {
 
@@ -33,7 +31,7 @@ public class TaigaTreeFeature extends GriddedFeature {
     }
 
     @Override
-    public boolean canSpawnHere(BiomeDefinition definition) {
+    public boolean canSpawnHere(BiomeDefinitionData definition) {
         return definition.getTags().contains(BiomeTags.TAIGA);
     }
 

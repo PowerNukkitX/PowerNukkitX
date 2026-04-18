@@ -3,24 +3,25 @@ package cn.nukkit.inventory;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.Range;
 
 import java.util.Map;
 
 public class BrewingInventory extends ContainerInventory implements BlockEntityInventoryNameable {
     public BrewingInventory(BlockEntityBrewingStand brewingStand) {
-        super(brewingStand, InventoryType.BREWING_STAND, 5);//1 INPUT, 3 POTION, 1 fuel
+        super(brewingStand, ContainerType.BREWING_STAND, 5);//1 INPUT, 3 POTION, 1 fuel
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(0, ContainerSlotType.BREWING_INPUT);
-        map.put(1, ContainerSlotType.BREWING_RESULT);
-        map.put(2, ContainerSlotType.BREWING_RESULT);
-        map.put(3, ContainerSlotType.BREWING_RESULT);
-        map.put(4, ContainerSlotType.BREWING_FUEL);
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        map.put(0, ContainerEnumName.BREWING_STAND_INPUT_CONTAINER);
+        map.put(1, ContainerEnumName.BREWING_STAND_RESULT_CONTAINER);
+        map.put(2, ContainerEnumName.BREWING_STAND_RESULT_CONTAINER);
+        map.put(3, ContainerEnumName.BREWING_STAND_RESULT_CONTAINER);
+        map.put(4, ContainerEnumName.BREWING_STAND_FUEL_CONTAINER);
     }
 
     @Override

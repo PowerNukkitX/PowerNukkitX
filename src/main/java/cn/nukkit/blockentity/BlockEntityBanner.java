@@ -2,23 +2,25 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.utils.DyeColor;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.List;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
     public int color;
 
-    public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityBanner(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("color")) {
-            this.namedTag.putByte("color", 0);
+        if (!this.namedTag.containsKey("color")) {
+            this.namedTag = this.namedTag.toBuilder().putByte("color", (byte) 0).build();
         }
 
         this.color = this.namedTag.getByte("color");
@@ -32,7 +34,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("color", this.color);
+        this.namedTag = this.namedTag.toBuilder().putByte("color", (byte) this.color).build();
     }
 
     @Override
@@ -45,7 +47,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     public void setBaseColor(DyeColor color) {
-        this.namedTag.putInt("Base", color.getDyeData() & 0x0f);
+        this.namedTag = this.namedTag.toBuilder().putInt("Base", color.getDyeData() & 0x0f).build();
     }
 
     public int getType() {
@@ -53,32 +55,33 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     public void setType(int type) {
-        this.namedTag.putInt("Type", type);
+        this.namedTag = this.namedTag.toBuilder().putInt("Type", type).build();
     }
 
     public void addPattern(BannerPattern pattern) {
-        ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        patterns.add(new CompoundTag().
+        List<NbtMap> patterns = this.namedTag.getList("Patterns", NbtType.COMPOUND);
+        patterns.add(NbtMap.builder().
                 putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getCode()));
-        this.namedTag.putList("Patterns", patterns);
+                putString("Pattern", pattern.type().getCode())
+                .build());
+        this.namedTag = this.namedTag.toBuilder().putList("Patterns", NbtType.COMPOUND, patterns).build();
     }
 
     public BannerPattern getPattern(int index) {
-        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns").size() > index && index >= 0 ?
-                this.namedTag.getList("Patterns", CompoundTag.class).get(index) :
-                new CompoundTag());
+        return BannerPattern.fromCompoundTag(this.namedTag.getList("Patterns", NbtType.COMPOUND).size() > index && index >= 0 ?
+                this.namedTag.getList("Patterns", NbtType.COMPOUND).get(index) :
+                NbtMap.EMPTY);
     }
 
     public void removePattern(int index) {
-        ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
+        List<NbtMap> patterns = this.namedTag.getList("Patterns", NbtType.COMPOUND);
         if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
     }
 
     public int getPatternsSize() {
-        return this.namedTag.getList("Patterns").size();
+        return this.namedTag.getList("Patterns", NbtType.COMPOUND).size();
     }
 
     @Override
@@ -89,19 +92,20 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
-        if(!isBlockEntityValid()) {
+        if (!isBlockEntityValid()) {
             close();
         }
         return !closed;
     }
 
-    @Override   
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound()
+    @Override
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder()
                 .putInt("Base", getBaseColor())
-                .putList("Patterns", this.namedTag.getList("Patterns"))
+                .putList("Patterns", NbtType.COMPOUND, this.namedTag.getList("Patterns", NbtType.COMPOUND))
                 .putInt("Type", getType())
-                .putByte("color", this.color);
+                .putByte("color", (byte) this.color)
+                .build();
     }
 
     public DyeColor getDyeColor() {

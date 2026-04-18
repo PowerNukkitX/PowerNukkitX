@@ -3,13 +3,13 @@ package cn.nukkit.entity.ai.executor.evocation;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.entity.passive.EntitySheep;
 import cn.nukkit.level.Sound;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
 import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 
@@ -43,8 +43,8 @@ public class ColorConversionExecutor extends FangLineExecutor {
     protected void startSpell(EntityIntelligent entity) {
         tick = 0;
         entity.level.addSound(entity, Sound.MOB_EVOCATION_ILLAGER_PREPARE_WOLOLO);
-        entity.setDataProperty(EntityDataTypes.EVOKER_SPELL_CASTING_COLOR, BlockColor.ORANGE_BLOCK_COLOR.getARGB());
+        entity.setDataProperty(ActorDataTypes.DATA_SPELL_CASTING_COLOR, BlockColor.ORANGE_BLOCK_COLOR.getARGB());
         entity.getMemoryStorage().put(LAST_MAGIC, EntityEvocationIllager.SPELL.COLOR_CONVERSION);
-        entity.setDataFlag(EntityFlag.CASTING);
+        entity.setDataFlag(ActorFlags.CASTING);
     }
 }

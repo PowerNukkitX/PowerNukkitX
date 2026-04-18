@@ -22,10 +22,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
@@ -33,8 +29,11 @@ import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -230,7 +229,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     /**
      * Handles ticking logic for custom blocks using either RANDOM or SCHEDULED tick types.
-     * 
+     * <p>
      * To enable ticking, configure the block with:
      * <pre>{@code
      *     .blockTick(60, 60, true)
@@ -315,8 +314,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
             return def.getComponents()
-                      .getCompound("minecraft:destructible_by_explosion")
-                      .getInt("explosion_resistance");
+                    .getCompound("minecraft:destructible_by_explosion")
+                    .getInt("explosion_resistance");
         }
         return 1;
     }
@@ -357,8 +356,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public double getFrictionFactor() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag comp = def.getComponents().getCompound("minecraft:friction");
-            if (comp != null && comp.contains("value")) {
+            NbtMap comp = def.getComponents().getCompound("minecraft:friction");
+            if (comp != null && comp.containsKey("value")) {
                 return comp.getFloat("value");
             }
         }
@@ -392,8 +391,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public int getLightLevel() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag light = def.getComponents().getCompound("minecraft:light_emission");
-            if (light != null && light.contains("emission")) {
+            NbtMap light = def.getComponents().getCompound("minecraft:light_emission");
+            if (light != null && light.containsKey("emission")) {
                 return light.getByte("emission");
             }
         }
@@ -533,10 +532,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean canBeActivated() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag components = def.getComponents();
-            if (components != null && components.contains("minecraft:custom_components")) {
-                CompoundTag custom = components.getCompound("minecraft:custom_components");
-                if (custom.contains("hasPlayerInteract")) {
+            NbtMap components = def.getComponents();
+            if (components != null && components.containsKey("minecraft:custom_components")) {
+                NbtMap custom = components.getCompound("minecraft:custom_components");
+                if (custom.containsKey("hasPlayerInteract")) {
                     return custom.getByte("hasPlayerInteract") != 0;
                 }
             }
@@ -650,18 +649,18 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
         if (s.length() == 6) {
             return new BlockColor(
-                (int) ((val >> 16) & 0xFF),
-                (int) ((val >> 8) & 0xFF),
-                (int) (val & 0xFF),
-                0xFF
+                    (int) ((val >> 16) & 0xFF),
+                    (int) ((val >> 8) & 0xFF),
+                    (int) (val & 0xFF),
+                    0xFF
             );
         }
         if (s.length() == 8) {
             return new BlockColor(
-                (int) ((val >> 16) & 0xFF),
-                (int) ((val >> 8) & 0xFF),
-                (int) (val & 0xFF),
-                (int) ((val >> 24) & 0xFF)
+                    (int) ((val >> 16) & 0xFF),
+                    (int) ((val >> 8) & 0xFF),
+                    (int) (val & 0xFF),
+                    (int) ((val >> 24) & 0xFF)
             );
         }
         return new BlockColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -736,10 +735,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean hasTag(final String blockTag) {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag nbt = def.nbt();
-            if (nbt.contains("blockTags")) {
-                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
-                return tagList.getAll().stream().anyMatch(t -> blockTag.equals(t.data));
+            NbtMap nbt = def.nbt();
+            if (nbt.containsKey("blockTags")) {
+                List<String> tagList = nbt.getList("blockTags", NbtType.STRING);
+                return tagList.stream().anyMatch(blockTag::equals);
             }
         }
 
@@ -752,12 +751,10 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public String[] getTags() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag nbt = def.nbt();
-            if (nbt.contains("blockTags")) {
-                ListTag<StringTag> tagList = nbt.getList("blockTags", StringTag.class);
-                return tagList.getAll().stream()
-                    .map(tag -> tag.data)
-                    .toArray(String[]::new);
+            NbtMap nbt = def.nbt();
+            if (nbt.containsKey("blockTags")) {
+                List<String> tagList = nbt.getList("blockTags", NbtType.STRING);
+                return tagList.toArray(String[]::new);
             }
         }
 
@@ -981,7 +978,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                     .map(Effect::getAmplifier).orElse(0);
         }
 
-        CompoundTag digger = item.getCustomItemComponent("minecraft:digger");
+        NbtMap digger = item.getCustomItemComponent("minecraft:digger");
         boolean hasCustomDigger = digger != null;
         boolean correctTool = correctTool0(getToolType(), item, this);
 
@@ -1036,8 +1033,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean canBeMinedWith(Item item) {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag mining = def.getComponents().getCompound("minecraft:destructible_by_mining");
-            if (mining != null && mining.contains("value")) {
+            NbtMap mining = def.getComponents().getCompound("minecraft:destructible_by_mining");
+            if (mining != null && mining.containsKey("value")) {
                 float secondsToDestroy = mining.getFloat("value");
                 return secondsToDestroy != -1f;
             }
@@ -1051,7 +1048,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public boolean canBeExploded() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag resistance = def.getComponents().getCompound("minecraft:destructible_by_explosion");
+            NbtMap resistance = def.getComponents().getCompound("minecraft:destructible_by_explosion");
             int resistanceValue = resistance.getInt("explosion_resistance");
             return resistanceValue != -1;
         }
@@ -1259,11 +1256,12 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     protected AxisAlignedBB recalculateBoundingBox() {
         try {
             CustomBlockDefinition def = getCustomDefinition();
-            if (def != null && def.getComponents().contains("minecraft:collision_box")) {
+            if (def != null && def.getComponents().containsKey("minecraft:collision_box")) {
                 AxisAlignedBB box = def.getBoundingBox(this);
                 if (box != null) return box;
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return this;
     }
 
@@ -1296,7 +1294,6 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     public double getMaxZ() {
         return this.z + 1;
     }
-
 
 
     @Override
@@ -1633,29 +1630,29 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public final boolean isBlockChangeAllowed(@Nullable Player player) {
         if (isBlockChangeAllowed()) {
-            int height = (int) (this.getY()-1);
-            for(int i = height; i >= getLevel().getMinHeight(); i--) {
-                Block block = this.down(height-i);
-                if(block instanceof BlockAllow) {
+            int height = (int) (this.getY() - 1);
+            for (int i = height; i >= getLevel().getMinHeight(); i--) {
+                Block block = this.down(height - i);
+                if (block instanceof BlockAllow) {
                     return true;
-                } else if(block instanceof BlockDeny) {
+                } else if (block instanceof BlockDeny) {
                     return player == null || player.isCreative();
                 }
             }
-            if(player == null) return true;
+            if (player == null) return true;
 
             if(player.isAdventure()) {
                 Item itemInHand = player.getInventory().getItemInMainHand();
                 if(itemInHand.isNull()) return false;
 
-                Tag tag = itemInHand.getNamedTagEntry("CanDestroy");
+                Object tag = itemInHand.getNamedTagEntry("CanDestroy");
                 boolean canBreak = false;
-                if (tag instanceof ListTag) {
-                    for (Tag v : ((ListTag<? extends Tag>) tag).getAll()) {
-                        if (!(v instanceof StringTag stringTag)) {
+                if (tag instanceof List<?> list) {
+                    for (Object v : list) {
+                        if (!(v instanceof String stringTag)) {
                             continue;
                         }
-                        Item entry = Item.get(stringTag.data);
+                        Item entry = Item.get(stringTag);
                         if (!entry.isNull() &&
                                 entry.getBlock().getId().equals(this.getId())) {
                             canBreak = true;
@@ -1665,7 +1662,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 }
 
                 return canBreak;
-            }else{
+            } else {
                 return true;
             }
         }
@@ -1674,13 +1671,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     /**
      * Controls the amount of light absorbed by the block
+     *
      * @return Light absorbed by the block 0-15
      */
     public int getLightFilter() {
         CustomBlockDefinition def = getCustomDefinition();
         if (def != null) {
-            CompoundTag light = def.getComponents().getCompound("minecraft:light_dampening");
-            if (light != null && light.contains("lightLevel")) {
+            NbtMap light = def.getComponents().getCompound("minecraft:light_dampening");
+            if (light != null && light.containsKey("lightLevel")) {
                 return light.getByte("lightLevel");
             }
         }
@@ -1737,7 +1735,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
-            CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
+            NbtMap tag = holder.getBlockEntity().getCleanedNBT();
             //方块实体要求direct=true
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, false, update, tag) != null;
         } else {

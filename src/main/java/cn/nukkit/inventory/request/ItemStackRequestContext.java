@@ -1,9 +1,9 @@
 package cn.nukkit.inventory.request;
 
-import cn.nukkit.network.protocol.types.itemstack.request.ItemStackRequest;
-import cn.nukkit.network.protocol.types.itemstack.response.ItemStackResponseContainer;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
+import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseContainerInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +39,7 @@ public class ItemStackRequestContext {
         return new ActionResponse(false, List.of());
     }
 
-    public ActionResponse success(List<ItemStackResponseContainer> containers) {
+    public ActionResponse success(List<ItemStackResponseContainerInfo> containers) {
         return new ActionResponse(true, containers);
     }
 }

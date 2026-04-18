@@ -6,8 +6,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityShootBowEvent;
@@ -17,11 +15,12 @@ import cn.nukkit.item.ItemCrossbow;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
@@ -149,20 +148,25 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
         Enchantment flameEnchant = bow.getEnchantment(Enchantment.ID_BOW_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(entity.x))
-                        .add(new DoubleTag(entity.y + entity.getCurrentHeight() / 2 + 0.2f))
-                        .add(new DoubleTag(entity.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
-                        .add(new FloatTag((float) -entity.pitch)))
-                .putShort("Fire", flame ? 45 * 60 : 0)
-                .putDouble("damage", damage);
+        final NbtMap nbt = NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                entity.x,
+                                entity.y + entity.getCurrentHeight() / 2 + 0.2f,
+                                entity.z
+                        )
+                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
+                                -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI),
+                                -Math.sin(entity.pitch / 180 * Math.PI),
+                                Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)
+                        )
+                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
+                                (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw,
+                                (float) -entity.pitch
+                        )
+                )
+                .putShort("Fire", (short) (flame ? 45 * 60 : 0))
+                .putDouble("damage", damage)
+                .build();
 
         double p = (double) pullBowTick / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
@@ -195,20 +199,20 @@ public class CrossBowShootExecutor implements EntityControl, IBehaviorExecutor {
     private void playBowAnimation(Entity entity, int chargeAmount) {
         if(chargeAmount == 0) {
             entity.level.addSound(entity, Sound.CROSSBOW_LOADING_START);
-            entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-            entity.setDataFlag(EntityFlag.USING_ITEM);
-        } else entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, chargeAmount*2);
+            entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+            entity.setDataFlag(ActorFlags.USING_ITEM);
+        } else entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, chargeAmount*2);
         if(chargeAmount == 30) entity.level.addSound(entity, Sound.CROSSBOW_LOADING_MIDDLE);
         if(chargeAmount == 60) {
-            entity.setDataFlag(EntityFlag.CHARGED);
+            entity.setDataFlag(ActorFlags.CHARGED);
             entity.level.addSound(entity, Sound.CROSSBOW_LOADING_END);
         }
     }
 
     private void stopBowAnimation(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
-        entity.setDataProperty(EntityDataTypes.CHARGE_AMOUNT, 0);
-        entity.setDataFlag(EntityFlag.USING_ITEM, false);
-        entity.setDataFlag(EntityFlag.CHARGED, false);
+        entity.setDataProperty(ActorDataTypes.TARGET, 0L);
+        entity.setDataProperty(ActorDataTypes.CHARGE_AMOUNT, 0);
+        entity.setDataFlag(ActorFlags.USING_ITEM, false);
+        entity.setDataFlag(ActorFlags.CHARGED, false);
     }
 }

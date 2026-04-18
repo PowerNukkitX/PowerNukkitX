@@ -3,7 +3,7 @@ package cn.nukkit.event.server;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.network.protocol.DataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 
 
 /**
@@ -17,10 +17,10 @@ public class DataPacketSendEvent extends ServerEvent implements Cancellable {
         return handlers;
     }
 
-    private final DataPacket packet;
+    private final BedrockPacket packet;
     private final Player player;
 
-    public DataPacketSendEvent(Player player, DataPacket packet) {
+    public DataPacketSendEvent(Player player, BedrockPacket packet) {
         this.packet = packet;
         this.player = player;
     }
@@ -29,7 +29,7 @@ public class DataPacketSendEvent extends ServerEvent implements Cancellable {
         return player;
     }
 
-    public DataPacket getPacket() {
+    public BedrockPacket getPacket() {
         return packet;
     }
 }

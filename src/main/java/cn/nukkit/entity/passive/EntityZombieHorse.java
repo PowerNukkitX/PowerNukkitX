@@ -7,13 +7,12 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.Set;
-
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * @author PikyCZ
@@ -25,7 +24,7 @@ public class EntityZombieHorse extends EntityAnimal implements EntityWalkable, E
     }
     
 
-    public EntityZombieHorse(IChunk chunk, CompoundTag nbt) {
+    public EntityZombieHorse(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

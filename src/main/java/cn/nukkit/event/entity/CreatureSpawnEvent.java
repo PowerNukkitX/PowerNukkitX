@@ -5,7 +5,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 public class CreatureSpawnEvent extends Event implements Cancellable {
 
@@ -18,9 +18,9 @@ public class CreatureSpawnEvent extends Event implements Cancellable {
     private final SpawnReason reason;
     private final int entityNetworkId;
     private final Position position;
-    private final CompoundTag compoundTag;
+    private final NbtMap compoundTag;
 
-    public CreatureSpawnEvent(int networkId, Position position, CompoundTag nbt, SpawnReason reason) {
+    public CreatureSpawnEvent(int networkId, Position position, NbtMap nbt, SpawnReason reason) {
         this.reason = reason;
         this.entityNetworkId = networkId;
         this.position = position;
@@ -42,7 +42,7 @@ public class CreatureSpawnEvent extends Event implements Cancellable {
         return entityNetworkId;
     }
 
-    public CompoundTag getCompoundTag() {
+    public NbtMap getCompoundTag() {
         return compoundTag;
     }
 

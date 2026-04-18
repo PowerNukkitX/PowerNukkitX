@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
@@ -47,13 +46,14 @@ public class MineshaftPopulator extends Populator {
                         start.postProcess(manager, random, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
                     }
                 }
-                for(Block block : manager.getBlocks()) {
-                    if(!block.getChunk().isGenerated()) block.getLevel().syncGenerateChunk(block.getChunkX(), block.getChunkZ());
-                    if(block.isAir()) {
-                        if(level.getBlock(block).getId() == Block.WATER) {
+                for (Block block : manager.getBlocks()) {
+                    if (!block.getChunk().isGenerated())
+                        block.getLevel().syncGenerateChunk(block.getChunkX(), block.getChunkZ());
+                    if (block.isAir()) {
+                        if (level.getBlock(block).getId() == Block.WATER) {
                             manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
-                        } else if(block.up().getId() == Block.WATER) {
-                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data.chunkGenData.get().surfaceMaterial.get().seaFloorBlock));
+                        } else if (block.up().getId() == Block.WATER) {
+                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).second().getChunkGenData().getSurfaceBuilderData().getSurfaceMaterial().getSeaFloorBlock().getRuntimeId()));
                         }
                     }
                 }

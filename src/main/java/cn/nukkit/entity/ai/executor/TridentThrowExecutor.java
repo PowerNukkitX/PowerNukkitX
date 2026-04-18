@@ -7,19 +7,18 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.ai.memory.MemoryType;
-import cn.nukkit.entity.data.EntityDataTypes;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
@@ -140,19 +139,22 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         Location fireballLocation = entity.getLocation();
         Vector3 directionVector = entity.getDirectionVector().multiply(1 + ThreadLocalRandom.current().nextFloat(0.2f));
         fireballLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY());
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(fireballLocation.x))
-                        .add(new DoubleTag(fireballLocation.y))
-                        .add(new DoubleTag(fireballLocation.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
-                        .add(new FloatTag((float) -entity.pitch)))
-                .putDouble("damage", 2);
+        final NbtMap nbt = NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
+                                fireballLocation.x,
+                                fireballLocation.y,
+                                fireballLocation.z
+                        )
+                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
+                                -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI),
+                                -Math.sin(entity.pitch / 180 * Math.PI),
+                                Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)
+                        )
+                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
+                                (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw,
+                                (float) -entity.pitch
+                        )
+                ).build();
 
         double p = 1;
         double f = Math.min((p * p + p * 2) / 3, 1) * 3;
@@ -162,7 +164,7 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
         if (projectile == null) {
             return;
         }
-        if(projectile instanceof EntityThrownTrident trident) {
+        if (projectile instanceof EntityThrownTrident trident) {
             trident.shootingEntity = entity;
             trident.setPickupMode(EntityProjectile.PICKUP_CREATIVE);
         }
@@ -178,12 +180,12 @@ public class TridentThrowExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     private void playTridentAnimation(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
-        entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK);
+        entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
+        entity.setDataFlag(ActorFlags.FACING_TARGET_TO_RANGE_ATTACK);
     }
 
     private void stopTridentAnimation(Entity entity) {
-        entity.setDataProperty(EntityDataTypes.TARGET_EID, 0L);
-        entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK, false);
+        entity.setDataProperty(ActorDataTypes.TARGET, 0L);
+        entity.setDataFlag(ActorFlags.FACING_TARGET_TO_RANGE_ATTACK, false);
     }
 }

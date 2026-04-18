@@ -2,13 +2,10 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
-import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityID;
-import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.blockentity.BlockEntityTrialSpawner;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockTrialSpawner extends Block implements BlockEntityHolder<BlockEntityTrialSpawner> {

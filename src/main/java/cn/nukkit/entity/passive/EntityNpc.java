@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.window.FormWindowDialog;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.MovementComponent;
@@ -14,12 +13,13 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.NPCRequestPacket;
-
-import java.util.Set;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.packet.NpcRequestPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * @author good777LUCKY
@@ -42,7 +42,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     protected int variant = 0;
 
 
-    public EntityNpc(IChunk chunk, CompoundTag nbt) {
+    public EntityNpc(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -101,30 +101,30 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         if (!this.namedTag.getString(KEY_DIALOG_BUTTONS).isEmpty())
             this.dialog.setButtonJSONData(this.namedTag.getString(KEY_DIALOG_BUTTONS));
         this.dialog.addHandler((player, response) -> {
-            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_ACTIONS) {
+            if (response.getRequestType() == NpcRequestPacket.RequestType.SET_ACTIONS) {
                 if (!response.getData().isEmpty()) {
                     this.dialog.setButtonJSONData(response.getData());
-                    this.setDataProperty(Entity.ACTIONS, response.getData());
+                    this.setDataProperty(ActorDataTypes.ACTIONS, response.getData());
                 }
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_INTERACTION_TEXT) {
+            if (response.getRequestType() == NpcRequestPacket.RequestType.SET_INTERACT_TEXT) {
                 this.dialog.setContent(response.getData());
-                this.setDataProperty(Entity.INTERACT_TEXT, response.getData());
+                this.setDataProperty(ActorDataTypes.INTERACT_TEXT, response.getData());
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME) {
+            if (response.getRequestType() == NpcRequestPacket.RequestType.SET_NAME) {
                 this.dialog.setTitle(response.getData());
                 this.setNameTag(response.getData());
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_SKIN) {
-                this.setVariant(response.getSkinType());
+            if (response.getRequestType() == NpcRequestPacket.RequestType.SET_SKIN) {
+                this.setVariant(response.getActionIndex());
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
+            if (response.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_ACTION) {
                 ElementDialogButton clickedButton = response.getClickedButton();
                 for (ElementDialogButton.CmdLine line : clickedButton.getData()) {
                     Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line);
                 }
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_OPENING_COMMANDS) {
+            if (response.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_OPENING_COMMANDS) {
                 for (ElementDialogButton button : this.dialog.getButtons()) {
                     if (button.getMode() == ElementDialogButton.Mode.ON_ENTER) {
                         for (ElementDialogButton.CmdLine line : button.getData()) {
@@ -133,7 +133,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
                     }
                 }
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
+            if (response.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
                 for (ElementDialogButton button : this.dialog.getButtons()) {
                     if (button.getMode() == ElementDialogButton.Mode.ON_EXIT) {
                         for (ElementDialogButton.CmdLine line : button.getData()) {
@@ -149,11 +149,12 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putString(KEY_DIALOG_TITLE, this.dialog.getTitle());
-        this.namedTag.putString(KEY_DIALOG_CONTENT, this.dialog.getContent());
-        this.namedTag.putString(KEY_DIALOG_SKINDATA, this.dialog.getSkinData());
-        this.namedTag.putString(KEY_DIALOG_BUTTONS, this.dialog.getButtonJSONData());
-        this.namedTag.putInt("Variant", this.variant);
+        this.namedTag = this.namedTag.toBuilder().putString(KEY_DIALOG_TITLE, this.dialog.getTitle())
+                .putString(KEY_DIALOG_CONTENT, this.dialog.getContent())
+                .putString(KEY_DIALOG_SKINDATA, this.dialog.getSkinData())
+                .putString(KEY_DIALOG_BUTTONS, this.dialog.getButtonJSONData())
+                .putInt("Variant", this.variant)
+                .build();
     }
 
     @Override
@@ -178,7 +179,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
 
     public void setVariant(int variant) {
         this.variant = variant;
-        this.setDataProperty(VARIANT, variant);
+        this.setDataProperty(ActorDataTypes.VARIANT, variant);
     }
 
     public FormWindowDialog getDialog() {

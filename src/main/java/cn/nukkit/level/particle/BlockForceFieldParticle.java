@@ -1,8 +1,7 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 
 public class BlockForceFieldParticle extends GenericParticle {
     public BlockForceFieldParticle(Vector3 pos) {
@@ -10,18 +9,6 @@ public class BlockForceFieldParticle extends GenericParticle {
     }
 
     public BlockForceFieldParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_BLOCK_FORCE_FIELD);
-    }
-
-    @Override
-    public DataPacket[] encode() {
-        LevelEventPacket pk = new LevelEventPacket();
-        pk.evid = LevelEventPacket.EVENT_PARTICLE_DENY_BLOCK;
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.data = this.data;
-
-        return new DataPacket[]{pk};
+        super(pos, ParticleType.BLOCK_FORCE_FIELD);
     }
 }

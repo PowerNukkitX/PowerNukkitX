@@ -2,8 +2,8 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
+import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author CreeperFace
@@ -13,15 +13,15 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     public int color;
 
-    public BlockEntityBed(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityBed(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.contains("color")) {
-            this.namedTag.putByte("color", 0);
+        if (!this.namedTag.containsKey("color")) {
+            this.namedTag = this.namedTag.toBuilder().putByte("color", (byte) 0).build();
         }
 
         this.color = this.namedTag.getByte("color");
@@ -35,12 +35,12 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("color", this.color);
+        this.namedTag = this.namedTag.toBuilder().putByte("color", (byte) this.color).build();
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        return super.getSpawnCompound().putByte("color", this.color);
+    public NbtMap getSpawnCompound() {
+        return super.getSpawnCompound().toBuilder().putByte("color", (byte) this.color).build();
     }
 
     public DyeColor getDyeColor() {

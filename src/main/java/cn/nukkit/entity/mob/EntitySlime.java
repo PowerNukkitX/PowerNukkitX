@@ -22,8 +22,8 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,8 @@ import java.util.Set;
 public class EntitySlime extends EntityMob implements EntityWalkable, EntityVariant {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return SLIME;
     }
 
@@ -45,7 +46,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
     public static final int SIZE_MEDIUM = 2;
     public static final int SIZE_BIG = 4;
 
-    public EntitySlime(IChunk chunk, CompoundTag nbt) {
+    public EntitySlime(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -56,7 +57,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
             if (variant != null) return variant;
         }
 
-        if (this.namedTag.contains(TAG_SLIME_SIZE)) {
+        if (this.namedTag.containsKey(TAG_SLIME_SIZE)) {
             return this.namedTag.getInt(TAG_SLIME_SIZE);
         }
 
@@ -65,7 +66,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
 
     @Override
     public void setVariant(int variant) {
-        this.namedTag.putInt(TAG_SLIME_SIZE, variant);
+        this.namedTag = this.namedTag.toBuilder().putInt(TAG_SLIME_SIZE, variant).build();
 
         if (getBehaviorGroup() != null) {
             getMemoryStorage().put(CoreMemoryTypes.VARIANT, variant);
@@ -78,7 +79,7 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
             return true;
         }
 
-        return this.namedTag.contains(TAG_SLIME_SIZE);
+        return this.namedTag.containsKey(TAG_SLIME_SIZE);
     }
 
     @Override
@@ -101,8 +102,8 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
 
     @Override
     protected void initEntity() {
-        if (!this.namedTag.contains(TAG_SLIME_SIZE)) {
-            this.namedTag.putInt(TAG_SLIME_SIZE, randomVariant());
+        if (!this.namedTag.containsKey(TAG_SLIME_SIZE)) {
+            this.namedTag = this.namedTag.toBuilder().putInt(TAG_SLIME_SIZE, randomVariant()).build();
         }
 
         super.initEntity();
@@ -112,11 +113,11 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
         }
 
         if (getVariant() == SIZE_BIG) {
-            this.diffHandDamage = new float[] {3, 4, 6};
+            this.diffHandDamage = new float[]{3, 4, 6};
         } else if (getVariant() == SIZE_MEDIUM) {
-            this.diffHandDamage = new float[] {2, 2, 3};
+            this.diffHandDamage = new float[]{2, 2, 3};
         } else {
-            this.diffHandDamage = new float[] {0, 0, 0};
+            this.diffHandDamage = new float[]{0, 0, 0};
         }
 
         recalculateBoundingBox();
@@ -129,13 +130,13 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
 
     @Override
     public float getWidth() {
-        if(getBehaviorGroup() == null) return 0;
+        if (getBehaviorGroup() == null) return 0;
         return 0.51f + getVariant() * 0.51f;
     }
 
     @Override
     public float getHeight() {
-        if(getBehaviorGroup() == null) return 0;
+        if (getBehaviorGroup() == null) return 0;
         return 0.51f + getVariant() * 0.51f;
     }
 
@@ -206,14 +207,14 @@ public class EntitySlime extends EntityMob implements EntityWalkable, EntityVari
     private int getSmaller() {
         return switch (getVariant()) {
             case 4 -> 2;
-            default -> getVariant()-1;
+            default -> getVariant() - 1;
         };
     }
 
     @Override
     public void kill() {
-        if(getVariant() != SIZE_SMALL) {
-            for(int i = 1; i < Utils.rand(2, 5); i++) {
+        if (getVariant() != SIZE_SMALL) {
+            for (int i = 1; i < Utils.rand(2, 5); i++) {
                 EntitySlime slime = new EntitySlime(this.getChunk(), this.namedTag);
                 slime.setPosition(this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
                 slime.setRotation(this.yaw, this.pitch);

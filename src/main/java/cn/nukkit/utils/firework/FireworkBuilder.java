@@ -6,14 +6,15 @@ import cn.nukkit.item.ItemFireworkRocket;
 import cn.nukkit.item.ItemFireworkRocket.FireworkExplosion.ExplosionType;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -29,20 +30,20 @@ import java.util.Random;
  * @since 2025/04/08
  */
 public class FireworkBuilder {
-	private final ItemFireworkRocket itemFirework;
-    private final CompoundTag fireworkTag;
-    private final List<CompoundTag> explosions;
+    private final ItemFireworkRocket itemFirework;
+    private NbtMap fireworkTag;
+    private List<NbtMap> explosions;
     private final Random fireworkRandom;
     private Entity rider;
 
     public FireworkBuilder() {
         this.itemFirework = new ItemFireworkRocket();
-        this.fireworkTag = new CompoundTag();
-        this.explosions = new ArrayList<CompoundTag>();
+        this.fireworkTag = NbtMap.EMPTY;
+        this.explosions = new ArrayList<>();
         this.fireworkRandom = new Random();
     }
 
-    public FireworkBuilder addExplosion(CompoundTag explosion) {
+    public FireworkBuilder addExplosion(NbtMap explosion) {
         this.explosions.add(explosion);
         return this;
     }
@@ -57,13 +58,13 @@ public class FireworkBuilder {
      * @return FireworkBuilder
      */
     public FireworkBuilder setFlight(int flight) {
-        this.fireworkTag.putByte("Flight", (byte) flight);
+        this.fireworkTag = this.fireworkTag.toBuilder().putByte("Flight", (byte) flight).build();
         return this;
     }
-    
+
     public FireworkBuilder setRider(Entity rider) {
-    	this.rider = rider;
-		return this;
+        this.rider = rider;
+        return this;
     }
 
     /**
@@ -108,7 +109,7 @@ public class FireworkBuilder {
             explosionBuilder.setFlicker(Objects.requireNonNullElseGet(flicker, fireworkRandom::nextBoolean));
 
             explosionBuilder.setTrail(Objects.requireNonNullElseGet(trail, fireworkRandom::nextBoolean));
-            
+
             this.addExplosion(explosionBuilder);
         }
 
@@ -127,29 +128,22 @@ public class FireworkBuilder {
      * @return EntityFireworksRocket
      */
     public EntityFireworksRocket build(Position pos, IChunk chunk) {
-        ListTag<CompoundTag> explosions = new ListTag<CompoundTag>();
+        List<NbtMap> explosions = new ObjectArrayList<>();
         this.explosions.forEach(explosions::add);
-        this.fireworkTag.putList("Explosions", explosions);
-        CompoundTag fireworks = new CompoundTag().putCompound("Fireworks", this.fireworkTag);
+        this.fireworkTag = this.fireworkTag.toBuilder().putList("Explosions", NbtType.COMPOUND, explosions).build();
+        NbtMap fireworks = NbtMap.builder().putCompound("Fireworks", this.fireworkTag).build();
         this.itemFirework.setNamedTag(fireworks);
 
-        CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(pos.x))
-                        .add(new DoubleTag(pos.y + 0.5))
-                        .add(new DoubleTag(pos.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(0))
-                        .add(new FloatTag(0)))
+        final NbtMap nbt = NbtMap.builder()
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x, pos.y + 0.5, pos.z))
+                .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
                 .putBoolean("Riding", false)
-                .putCompound("FireworkItem", NBTIO.putItemHelper(this.itemFirework));
+                .putCompound("FireworkItem", ItemHelper.write(this.itemFirework))
+                .build();
         EntityFireworksRocket eFirework = new EntityFireworksRocket(chunk, nbt);
-        if(this.rider != null) eFirework.mountEntity(this.rider, false);
-        eFirework.setDataProperty(Entity.DISPLAY_TILE_RUNTIME_ID, this.itemFirework.getNamedTag());
+        if (this.rider != null) eFirework.mountEntity(this.rider, false);
+        eFirework.setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, this.itemFirework.getNamedTag());
         return eFirework;
     }
 }

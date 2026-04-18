@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandOverload;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
@@ -22,6 +21,7 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +94,7 @@ public abstract class Command {
     }
 
     public Command(String name, String description, String usageMessage, String[] aliases) {
-        this.commandData = new CommandData();
+        this.commandData = new CommandData(name);
         this.name = name.toLowerCase(Locale.ENGLISH); // Uppercase letters crash the client?!?
         this.nextLabel = name;
         this.label = name;
@@ -102,7 +102,7 @@ public abstract class Command {
         this.usageMessage = usageMessage == null ? "/" + name : usageMessage;
         this.aliases = aliases;
         this.activeAliases = aliases;
-        this.commandParameters.put("default", new CommandParameter[]{CommandParameter.newType("args", true, CommandParamType.RAWTEXT)});
+        this.commandParameters.put("default", new CommandParameter[]{CommandParameter.newType("args", true, CommandParamType.TEXT)});
     }
 
     /**
@@ -145,7 +145,7 @@ public abstract class Command {
     /**
      * Adds command parameters for a specific key.
      *
-     * @param key the parameter key
+     * @param key        the parameter key
      * @param parameters the array of {@link CommandParameter} to add
      */
     public void addCommandParameters(String key, CommandParameter[] parameters) {
@@ -216,9 +216,9 @@ public abstract class Command {
      * Executes the command with the given sender, label, and arguments.
      * Must be implemented by subclasses.
      *
-     * @param sender the command sender
+     * @param sender       the command sender
      * @param commandLabel the command label
-     * @param args the command arguments
+     * @param args         the command arguments
      * @return true if the command executed successfully, false otherwise
      * @throws UnsupportedOperationException if not implemented
      */
@@ -230,10 +230,10 @@ public abstract class Command {
      * Executes the command with parsed parameters and logging.
      * Must be implemented by subclasses.
      *
-     * @param sender the command sender
+     * @param sender       the command sender
      * @param commandLabel the command label
-     * @param result the parsed command result
-     * @param log the command logger
+     * @param result       the parsed command result
+     * @param log          the command logger
      * @return 0 for failure, >=1 for success
      * @throws UnsupportedOperationException if not implemented
      */
@@ -524,7 +524,7 @@ public abstract class Command {
     /**
      * Broadcasts a command message to all users with administrative permissions.
      *
-     * @param source the sender of the command
+     * @param source  the sender of the command
      * @param message the message to broadcast
      */
     public static void broadcastCommandMessage(CommandSender source, String message) {
@@ -534,8 +534,8 @@ public abstract class Command {
     /**
      * Broadcasts a command message to all users with administrative permissions, optionally sending to the source.
      *
-     * @param source the sender of the command
-     * @param message the message to broadcast
+     * @param source       the sender of the command
+     * @param message      the message to broadcast
      * @param sendToSource whether to send the message to the source
      */
     public static void broadcastCommandMessage(CommandSender source, String message, boolean sendToSource) {
@@ -563,7 +563,7 @@ public abstract class Command {
     /**
      * Broadcasts a command message to all users with administrative permissions using a TextContainer.
      *
-     * @param source the sender of the command
+     * @param source  the sender of the command
      * @param message the TextContainer message to broadcast
      */
     public static void broadcastCommandMessage(CommandSender source, TextContainer message) {
@@ -573,8 +573,8 @@ public abstract class Command {
     /**
      * Broadcasts a command message to all users with administrative permissions using a TextContainer, optionally sending to the source.
      *
-     * @param source the sender of the command
-     * @param message the TextContainer message to broadcast
+     * @param source       the sender of the command
+     * @param message      the TextContainer message to broadcast
      * @param sendToSource whether to send the message to the source
      */
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {

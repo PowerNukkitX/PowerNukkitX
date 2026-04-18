@@ -14,7 +14,8 @@ import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -191,9 +192,9 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected void playAttackAnimation(EntityIntelligent entity) {
-        EntityEventPacket pk = new EntityEventPacket();
-        pk.eid = entity.getId();
-        pk.event = EntityEventPacket.ARM_SWING;
+        final ActorEventPacket pk = new ActorEventPacket();
+        pk.setTargetRuntimeID(entity.getId());
+        pk.setType(ActorEvent.START_ATTACKING);
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

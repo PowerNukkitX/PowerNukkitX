@@ -1,16 +1,8 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.camera.data.CameraPreset;
-import cn.nukkit.camera.data.Ease;
-import cn.nukkit.camera.data.EaseType;
-import cn.nukkit.camera.data.Time;
-import cn.nukkit.camera.instruction.impl.ClearInstruction;
-import cn.nukkit.camera.instruction.impl.FadeInstruction;
-import cn.nukkit.camera.instruction.impl.SetInstruction;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.FloatNode;
@@ -20,7 +12,9 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.network.protocol.CameraInstructionPacket;
+import org.cloudburstmc.protocol.bedrock.data.camera.EasingType;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.packet.CameraInstructionPacket;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -36,7 +30,7 @@ import java.util.Objects;
 
 public class CameraCommand extends VanillaCommand {
 
-    public static final String[] EASE_TYPES = Arrays.stream(EaseType.values()).map(EaseType::getType).toArray(String[]::new);
+    public static final String[] EASE_TYPES = Arrays.stream(EasingType.values()).map(EasingType::getSerializeName).toArray(String[]::new);
 
     public CameraCommand(String name) {
         super(name, "commands.camera.description");
@@ -157,7 +151,7 @@ public class CameraCommand extends VanillaCommand {
 
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        var list = result.getValue();
+        /* TODO protocol var list = result.getValue();
         List<Player> players = list.getResult(0);
         players = players.stream().filter(Objects::nonNull).toList();
         if (players.isEmpty()) {
@@ -296,7 +290,7 @@ public class CameraCommand extends VanillaCommand {
         for (Player player : players) {
             player.dataPacket(pk);
         }
-        log.addSuccess("commands.camera.success", playerNames).output();
+        log.addSuccess("commands.camera.success", playerNames).output();*/
         return 1;
     }
 }

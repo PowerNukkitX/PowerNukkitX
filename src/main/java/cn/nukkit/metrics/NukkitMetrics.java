@@ -2,8 +2,8 @@ package cn.nukkit.metrics;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.utils.Config;
-import cn.nukkit.utils.LoginChainData;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -131,13 +131,13 @@ public class NukkitMetrics {
         metrics.addCustomChart(new Metrics.SimplePie("xbox_auth", () -> server.getSettings().baseSettings().xboxAuth() ? "Required" : "Not required"));
 
         metrics.addCustomChart(new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
-                .map(Player::getLoginChainData)
-                .map(LoginChainData::getDeviceOS)
-                .collect(groupingBy(nukkitMetrics::mapDeviceOSToString, countingInt()))));
+                .map(Player::getClientChainData)
+                .map(ClientChainData::getDeviceOS)
+                .collect(groupingBy(buildPlatform -> nukkitMetrics.mapDeviceOSToString(buildPlatform.getId()), countingInt()))));
 
         metrics.addCustomChart(new Metrics.AdvancedPie("player_game_version_pie", () -> server.getOnlinePlayers().values().stream()
-                .map(Player::getLoginChainData)
-                .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
+                .map(Player::getClientChainData)
+                .collect(groupingBy(ClientChainData::getGameVersion, countingInt()))));
 
         metrics.addCustomChart(new Metrics.DrilldownPie("java_version_pie", new JavaVersionRetriever()));
 

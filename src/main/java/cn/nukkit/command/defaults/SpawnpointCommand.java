@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
@@ -10,8 +9,8 @@ import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.types.SpawnPointType;
 import cn.nukkit.utils.TextFormat;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -58,7 +57,7 @@ public class SpawnpointCommand extends VanillaCommand {
                         if (position.y > 255) position.y = 255;
                     }
                     for (Player player : players) {
-                        player.setSpawn(position, SpawnPointType.PLAYER);
+                        player.setSpawn(position, Player.SpawnPointType.PLAYER);
                     }
                     log.addSuccess("commands.spawnpoint.success.multiple.specific", players.stream().map(Player::getName).collect(Collectors.joining(" ")),
                             round2.format(position.x),
@@ -72,7 +71,7 @@ public class SpawnpointCommand extends VanillaCommand {
         }
         if (!players.isEmpty()) {
             Position pos = players.get(0).getPosition();
-            players.get(0).setSpawn(pos, SpawnPointType.PLAYER);
+            players.get(0).setSpawn(pos, Player.SpawnPointType.PLAYER);
             log.addSuccess("commands.spawnpoint.success.single", sender.getName(),
                     round2.format(pos.x),
                     round2.format(pos.y),

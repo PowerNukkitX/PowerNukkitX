@@ -1,27 +1,28 @@
 package cn.nukkit;
 
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.RequestPermissionsPacket;
-import cn.nukkit.network.protocol.UpdateAbilitiesPacket;
-import cn.nukkit.network.protocol.UpdateAdventureSettingsPacket;
-import cn.nukkit.network.protocol.types.AbilityLayer;
-import cn.nukkit.network.protocol.types.CommandPermission;
-import cn.nukkit.network.protocol.types.PlayerAbility;
-import cn.nukkit.network.protocol.types.PlayerPermission;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
+import org.cloudburstmc.protocol.bedrock.data.PlayerPermissionLevel;
+import org.cloudburstmc.protocol.bedrock.data.SerializedAbilitiesData;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateAbilitiesPacket;
+import org.cloudburstmc.protocol.bedrock.packet.UpdateAdventureSettingsPacket;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
  * AdventureSettings class for managing player abilities and permissions.
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public class AdventureSettings implements Cloneable {
@@ -29,16 +30,28 @@ public class AdventureSettings implements Cloneable {
     public static final String KEY_PLAYER_PERMISSION = "PlayerPermission";
     public static final String KEY_COMMAND_PERMISSION = "CommandPermission";
 
-    private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
+    private static final Map<AbilitiesIndex, Type> ability2TypeMap = new HashMap<>();
+
+    //Controllable capabilities in the permission list
+    public static final AbilitiesIndex[] CONTROLLABLE_ABILITIES = new AbilitiesIndex[]{
+            AbilitiesIndex.BUILD,
+            AbilitiesIndex.MINE,
+            AbilitiesIndex.DOORS_AND_SWITCHES,
+            AbilitiesIndex.OPEN_CONTAINERS,
+            AbilitiesIndex.ATTACK_PLAYERS,
+            AbilitiesIndex.ATTACK_MOBS,
+            AbilitiesIndex.OPERATOR_COMMANDS,
+            AbilitiesIndex.TELEPORT
+    };
 
     private final Map<Type, Boolean> values;
 
     @Getter
-    private PlayerPermission playerPermission;
+    private PlayerPermissionLevel playerPermission;
 
     @Getter
     @Setter
-    private CommandPermission commandPermission;
+    private CommandPermissionLevel commandPermission;
 
     private Player player;
 
@@ -46,48 +59,48 @@ public class AdventureSettings implements Cloneable {
         this(player, null);
     }
 
-    public AdventureSettings(Player player, CompoundTag nbt) {
+    public AdventureSettings(Player player, NbtMap nbt) {
         this.player = player;
         this.values = new EnumMap<>(Type.class);
 
         this.init(nbt);
     }
 
-    public void setPlayerPermission(PlayerPermission playerPermission) {
+    public void setPlayerPermission(PlayerPermissionLevel playerPermission) {
         this.playerPermission = playerPermission;
-        this.player.setOp(playerPermission == PlayerPermission.OPERATOR);
+        this.player.setOp(playerPermission == PlayerPermissionLevel.OPERATOR);
     }
 
-    public void init(@Nullable CompoundTag nbt) {
-        if (nbt != null && nbt.contains(KEY_ABILITIES)) {
+    public void init(@Nullable NbtMap nbt) {
+        if (nbt != null && nbt.containsKey(KEY_ABILITIES)) {
             this.readNBT(nbt);
             this.opCheck();
             return;
         }
 
-        boolean immutable = player.isAdventure() || player.isSpectator();
+        boolean immutable = this.player.isAdventure() || this.player.isSpectator();
         set(Type.WORLD_IMMUTABLE, immutable);
         // !player.isAdventure() && !player.isSpectator()
         set(Type.WORLD_BUILDER, !immutable);
         set(Type.AUTO_JUMP, true);
-        set(Type.ALLOW_FLIGHT, player.isCreative() || player.isSpectator());
-        set(Type.NO_CLIP, player.isSpectator());
-        set(Type.FLYING, player.isSpectator());
-        set(Type.OPERATOR, player.isOp());
-        set(Type.TELEPORT, player.isOp());
+        set(Type.ALLOW_FLIGHT, this.player.isCreative() || this.player.isSpectator());
+        set(Type.NO_CLIP, this.player.isSpectator());
+        set(Type.FLYING, this.player.isSpectator());
+        set(Type.OPERATOR, this.player.isOp());
+        set(Type.TELEPORT, this.player.isOp());
 
-        commandPermission = player.isOp() ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
-        playerPermission = player.isOp() ? PlayerPermission.OPERATOR : PlayerPermission.MEMBER;
+        this.commandPermission = this.player.isOp() ? CommandPermissionLevel.GAME_DIRECTORS : CommandPermissionLevel.ANY;
+        this.playerPermission = this.player.isOp() ? PlayerPermissionLevel.OPERATOR : PlayerPermissionLevel.MEMBER;
     }
 
     private void opCheck() {
         // Offline de-op
-        if (playerPermission == PlayerPermission.OPERATOR && !player.isOp()) {
+        if (this.playerPermission == PlayerPermissionLevel.OPERATOR && !this.player.isOp()) {
             onOpChange(false);
         }
 
         // Offline by op
-        if (playerPermission != PlayerPermission.OPERATOR && player.isOp()) {
+        if (this.playerPermission != PlayerPermissionLevel.OPERATOR && this.player.isOp()) {
             onOpChange(true);
         }
     }
@@ -106,7 +119,7 @@ public class AdventureSettings implements Cloneable {
         }
     }
 
-    public AdventureSettings set(PlayerAbility ability, boolean value) {
+    public AdventureSettings set(AbilitiesIndex ability, boolean value) {
         Type type = ability2TypeMap.get(ability);
         if (type != null) {
             this.values.put(type, value);
@@ -119,7 +132,7 @@ public class AdventureSettings implements Cloneable {
         return this;
     }
 
-    public boolean get(PlayerAbility ability) {
+    public boolean get(AbilitiesIndex ability) {
         Type type = ability2TypeMap.get(ability);
         if (type == null) {
             throw new IllegalArgumentException("Unknown ability: " + ability);
@@ -143,11 +156,12 @@ public class AdventureSettings implements Cloneable {
     /**
      * This method will be called when the player's OP status changes.
      * Note that this method does not send a packet to the client to refresh the privilege information; you need to manually call the update() method to do so
+     *
      * @param op is OP or not
      */
     public void onOpChange(boolean op) {
         if (op) {
-            for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
+            for (AbilitiesIndex controllableAbility : CONTROLLABLE_ABILITIES) {
                 set(controllableAbility, true);
             }
         }
@@ -156,45 +170,46 @@ public class AdventureSettings implements Cloneable {
         set(Type.OPERATOR, op);
         set(Type.TELEPORT, op);
 
-        commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
+        this.commandPermission = op ? CommandPermissionLevel.GAME_DIRECTORS : CommandPermissionLevel.ANY;
 
         // Don't override customization/guest status
-        if (op && playerPermission != PlayerPermission.OPERATOR) {
-            playerPermission = PlayerPermission.OPERATOR;
+        if (op && this.playerPermission != PlayerPermissionLevel.OPERATOR) {
+            this.playerPermission = PlayerPermissionLevel.OPERATOR;
         }
-        if (!op && playerPermission == PlayerPermission.OPERATOR) {
-            playerPermission = PlayerPermission.MEMBER;
+        if (!op && playerPermission == PlayerPermissionLevel.OPERATOR) {
+            this.playerPermission = PlayerPermissionLevel.MEMBER;
         }
     }
 
     public void sendAbilities(Collection<Player> players) {
-        UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
-        packet.entityId = player.getId();
-        packet.commandPermission = commandPermission;
-        packet.playerPermission = playerPermission;
+        final UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
+        final SerializedAbilitiesData data = new SerializedAbilitiesData();
+        data.setTargetPlayerRawId(this.player.getId());
+        data.setPlayerPermissions(this.playerPermission);
+        data.setCommandPermissions(this.commandPermission);
 
-        AbilityLayer layer = new AbilityLayer();
-        layer.setVerticalFlySpeed(player.getVerticalFlySpeed());
-        layer.setLayerType(AbilityLayer.Type.BASE);
-        layer.getAbilitiesSet().addAll(PlayerAbility.VALUES);
+        final SerializedAbilitiesData.SerializedLayer layer = new SerializedAbilitiesData.SerializedLayer();
+        layer.setSerializedLayer(SerializedAbilitiesData.SerializedLayer.SerializedAbilitiesLayer.BASE);
+        layer.getAbilitiesSet().addAll(List.of(AbilitiesIndex.values()));
 
-        for (Type type : Type.values()) {
-            if (type.isAbility() && get(type)) {
+        for (final Type type : Type.values()) {
+            if (type.isAbility() && this.get(type)) {
                 layer.getAbilityValues().add(type.getAbility());
             }
         }
-
-        if (player.isCreative()) {
-            layer.getAbilityValues().add(PlayerAbility.INSTABUILD);
+        if (this.player.isCreative()) {
+            layer.getAbilityValues().add(AbilitiesIndex.INSTABUILD);
         }
-
-        layer.getAbilityValues().add(PlayerAbility.WALK_SPEED);
-        layer.getAbilityValues().add(PlayerAbility.FLY_SPEED);
-
+        layer.getAbilityValues().add(AbilitiesIndex.WALK_SPEED);
+        layer.getAbilityValues().add(AbilitiesIndex.FLY_SPEED);
+        layer.getAbilityValues().add(AbilitiesIndex.VERTICAL_FLY_SPEED);
         layer.setWalkSpeed(Player.DEFAULT_SPEED);
-        layer.setFlySpeed(player.getHorizontalFlySpeed());
+        layer.setFlySpeed(this.player.getHorizontalFlySpeed());
+        layer.setVerticalFlySpeed(this.player.getVerticalFlySpeed());
 
-        packet.abilityLayers.add(layer);
+        data.getLayers().add(layer);
+
+        packet.setData(data);
 
         Server.broadcastPacket(players, packet);
     }
@@ -203,64 +218,65 @@ public class AdventureSettings implements Cloneable {
      * Save permissions to nbt
      */
     public void saveNBT() {
-        CompoundTag nbt = player.namedTag;
-        CompoundTag abilityTag = new CompoundTag();
-        this.values.forEach((type, bool) -> abilityTag.put(type.name(), new IntTag(bool ? 1 : 0)));
-        nbt.put(KEY_ABILITIES, abilityTag);
-        nbt.putString(KEY_PLAYER_PERMISSION, playerPermission.name());
-        nbt.putString(KEY_COMMAND_PERMISSION, commandPermission.name());
+        NbtMapBuilder abilityTag = NbtMap.builder();
+        this.values.forEach((type, bool) -> abilityTag.putInt(type.name(), (bool ? 1 : 0)));
+        this.player.namedTag = this.player.namedTag.toBuilder()
+                .putList(KEY_ABILITIES, NbtType.COMPOUND, abilityTag.build())
+                .putString(KEY_PLAYER_PERMISSION, this.playerPermission.name())
+                .putString(KEY_COMMAND_PERMISSION, this.commandPermission.name())
+                .build();
     }
 
     /**
      * Read permission data from nbt
      */
-    public void readNBT(CompoundTag nbt) {
-        CompoundTag abilityTag = nbt.getCompound(KEY_ABILITIES);
-        for (Map.Entry<String, Tag> e : abilityTag.getTags().entrySet()) {
-            if (e.getValue() instanceof IntTag tag) {
+    public void readNBT(NbtMap nbt) {
+        NbtMap abilityTag = nbt.getCompound(KEY_ABILITIES);
+        for (Map.Entry<String, Object> e : abilityTag.entrySet()) {
+            if (e.getValue() instanceof Integer tag) {
                 Type type = Type.valueOf(e.getKey());
-                this.set(type, tag.getData() == 1);
+                this.set(type, tag == 1);
             }
         }
-        playerPermission = PlayerPermission.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
-        commandPermission = CommandPermission.valueOf(nbt.getString(KEY_COMMAND_PERMISSION));
+        this.playerPermission = PlayerPermissionLevel.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
+        this.commandPermission = CommandPermissionLevel.valueOf(nbt.getString(KEY_COMMAND_PERMISSION));
     }
 
     public void updateAdventureSettings() {
-        UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();
-        adventurePacket.autoJump = get(Type.AUTO_JUMP);
-        adventurePacket.immutableWorld = get(Type.WORLD_IMMUTABLE);
-        adventurePacket.noMvP = get(Type.NO_MVP);
-        adventurePacket.noPvM = get(Type.NO_PVM);
-        adventurePacket.showNameTags = get(Type.SHOW_NAME_TAGS);
+        final UpdateAdventureSettingsPacket packet = new UpdateAdventureSettingsPacket();
+        packet.setNoPvM(this.get(Type.NO_PVM));
+        packet.setNoMvP(this.get(Type.NO_MVP));
+        packet.setImmutableWorld(this.get(Type.WORLD_IMMUTABLE));
+        packet.setShowNameTags(this.get(Type.SHOW_NAME_TAGS));
+        packet.setImmutableWorld(this.get(Type.AUTO_JUMP));
 
-        player.dataPacket(adventurePacket);
-        player.resetInAirTicks();
+        this.player.dataPacket(packet);
+        this.player.resetInAirTicks();
     }
 
     public enum Type {
         WORLD_IMMUTABLE(false),
         NO_PVM(false),
-        NO_MVP(PlayerAbility.INVULNERABLE, false),
+        NO_MVP(AbilitiesIndex.INVULNERABLE, false),
         SHOW_NAME_TAGS(false),
         AUTO_JUMP(true),
-        ALLOW_FLIGHT(PlayerAbility.MAY_FLY, false),
-        NO_CLIP(PlayerAbility.NO_CLIP, false),
-        WORLD_BUILDER(PlayerAbility.WORLD_BUILDER, false),
-        FLYING(PlayerAbility.FLYING, false),
-        MUTED(PlayerAbility.MUTED, false),
-        MINE(PlayerAbility.MINE, true),
-        DOORS_AND_SWITCHED(PlayerAbility.DOORS_AND_SWITCHES, true),
-        OPEN_CONTAINERS(PlayerAbility.OPEN_CONTAINERS, true),
-        ATTACK_PLAYERS(PlayerAbility.ATTACK_PLAYERS, true),
-        ATTACK_MOBS(PlayerAbility.ATTACK_MOBS, true),
-        OPERATOR(PlayerAbility.OPERATOR_COMMANDS, false),
-        TELEPORT(PlayerAbility.TELEPORT, false),
-        BUILD(PlayerAbility.BUILD, true),
-        PRIVILEGED_BUILDER(PlayerAbility.PRIVILEGED_BUILDER, false),
-        VERTICAL_FLY_SPEED(PlayerAbility.VERTICAL_FLY_SPEED, true);
+        ALLOW_FLIGHT(AbilitiesIndex.MAY_FLY, false),
+        NO_CLIP(AbilitiesIndex.NO_CLIP, false),
+        WORLD_BUILDER(AbilitiesIndex.WORLD_BUILDER, false),
+        FLYING(AbilitiesIndex.FLYING, false),
+        MUTED(AbilitiesIndex.MUTED, false),
+        MINE(AbilitiesIndex.MINE, true),
+        DOORS_AND_SWITCHED(AbilitiesIndex.DOORS_AND_SWITCHES, true),
+        OPEN_CONTAINERS(AbilitiesIndex.OPEN_CONTAINERS, true),
+        ATTACK_PLAYERS(AbilitiesIndex.ATTACK_PLAYERS, true),
+        ATTACK_MOBS(AbilitiesIndex.ATTACK_MOBS, true),
+        OPERATOR(AbilitiesIndex.OPERATOR_COMMANDS, false),
+        TELEPORT(AbilitiesIndex.TELEPORT, false),
+        BUILD(AbilitiesIndex.BUILD, true),
+        PRIVILEGED_BUILDER(AbilitiesIndex.PRIVILEGED_BUILDER, false),
+        VERTICAL_FLY_SPEED(AbilitiesIndex.VERTICAL_FLY_SPEED, true);
 
-        private final PlayerAbility ability;
+        private final AbilitiesIndex ability;
         private final boolean defaultValue;
 
         Type(boolean defaultValue) {
@@ -268,7 +284,7 @@ public class AdventureSettings implements Cloneable {
             this.ability = null;
         }
 
-        Type(PlayerAbility ability, boolean defaultValue) {
+        Type(AbilitiesIndex ability, boolean defaultValue) {
             this.ability = ability;
             this.defaultValue = defaultValue;
             if (this.ability != null) {
@@ -280,7 +296,7 @@ public class AdventureSettings implements Cloneable {
             return this.defaultValue;
         }
 
-        public PlayerAbility getAbility() {
+        public AbilitiesIndex getAbility() {
             return this.ability;
         }
 

@@ -10,12 +10,11 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -62,7 +61,7 @@ public class ItemPainting extends Item {
                 validMotives.add(motive);
             }
         }
-        if(validMotives.isEmpty()) return false;
+        if (validMotives.isEmpty()) return false;
 
         int direction = DIRECTION[face.getIndex() - 2];
         EntityPainting.Motive motive = validMotives.get(ThreadLocalRandom.current().nextInt(validMotives.size()));
@@ -90,20 +89,13 @@ public class ItemPainting extends Item {
         }
         position.y += offset(motive.height);
 
-        CompoundTag nbt = new CompoundTag()
-                .putByte("Direction", direction)
+        final NbtMap nbt = NbtMap.builder()
+                .putByte("Direction", (byte) direction)
                 .putString("Motive", motive.title)
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(position.x))
-                        .add(new DoubleTag(position.y))
-                        .add(new DoubleTag(position.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0))
-                        .add(new DoubleTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                        .add(new FloatTag(direction * 90))
-                        .add(new FloatTag(0)));
+                .putList("Pos", NbtType.DOUBLE, Arrays.asList(position.x, position.y, position.z))
+                .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                .putList("Rotation", NbtType.FLOAT, Arrays.asList(direction * 90f, 0f))
+                .build();
 
         EntityPainting entity = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
 
@@ -125,7 +117,7 @@ public class ItemPainting extends Item {
     }
 
     private static double offset(int value) {
-        if(value > 1 && value != 3) {
+        if (value > 1 && value != 3) {
             return 0.5;
         }
         return 0;

@@ -16,11 +16,13 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.recipe.MultiRecipe;
 import cn.nukkit.recipe.Recipe;
 import cn.nukkit.recipe.UserDataShapelessRecipe;
 import cn.nukkit.utils.RedstoneComponent;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
+import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -35,7 +37,8 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
     private static final List<Location> manualOverrides = new ArrayList<>();
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -77,13 +80,13 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         Orientation orientation;
-        if(player != null) {
-            double pitch = player.getLookingAngleAtPitch(new Vector3(fx, fy, fz)) * (player.getPitch()/Math.abs(player.getPitch()));
+        if (player != null) {
+            double pitch = player.getLookingAngleAtPitch(new Vector3(fx, fy, fz)) * (player.getPitch() / Math.abs(player.getPitch()));
             BlockFace primary = BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex());
-            if(pitch > 70 || player.getPitch() > 80) primary = BlockFace.UP;
-            if(pitch < -45) primary = BlockFace.DOWN;
+            if (pitch > 70 || player.getPitch() > 80) primary = BlockFace.UP;
+            if (pitch < -45) primary = BlockFace.DOWN;
             BlockFace secondary;
-            if(primary.getAxis().isHorizontal()) {
+            if (primary.getAxis().isHorizontal()) {
                 secondary = BlockFace.UP;
             } else {
                 secondary = BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex());
@@ -135,14 +138,14 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if(isTriggered()) {
+            if (isTriggered()) {
                 getLevel().addSound(this, craft() ? Sound.CRAFTER_CRAFT : Sound.CRAFTER_FAIL);
                 updateAllAroundRedstone();
                 this.setTriggered(false);
                 setCrafting(true);
                 this.level.setBlock(this, this, false, false);
                 level.scheduleUpdate(this, this, 4);
-            } else if(isCrafting()) {
+            } else if (isCrafting()) {
                 setCrafting(false);
                 this.level.setBlock(this, this, false, false);
             }
@@ -154,7 +157,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
                 this.level.setBlock(this, this, false, false);
                 level.scheduleUpdate(this, this, 4);
             }
-            if(!isGettingPower()) this.setManualOverride(false);
+            if (!isGettingPower()) this.setManualOverride(false);
             return type;
         }
 
@@ -169,7 +172,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
         }
 
         Recipe recipe = getBlockEntity().getInventory().getRecipe();
-        if(recipe == null || recipe instanceof MultiRecipe) return false;
+        if (recipe == null || recipe instanceof MultiRecipe) return false;
 
         CraftItemEvent event = new CraftItemEvent(blockEntity, getBlockEntity().getInventory().getInput().getFlatItems(), recipe, 1);
         getLevel().getServer().getPluginManager().callEvent(event);
@@ -188,18 +191,18 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
             }
         }
 
-        for(Item target : recipe.getResults()) {
+        for (Item target : recipe.getResults()) {
+            final BlockFace facing = getBlockFace();
+            final LevelEventPacket pk = new LevelEventPacket();
+            pk.setType(LevelEvent.PARTICLE_SHOOT);
+            pk.setPosition(Vector3f.from(
+                            0.5f + facing.getXOffset() * 0.7f,
+                            0.5f + facing.getYOffset() * 0.7f,
+                            0.5f + facing.getZOffset() * 0.7f
+                    )
+            );
+            pk.setData(7);
 
-            LevelEventPacket pk = new LevelEventPacket();
-
-            BlockFace facing = getBlockFace();
-
-            pk.x = 0.5f + facing.getXOffset() * 0.7f;
-            pk.y = 0.5f + facing.getYOffset() * 0.7f;
-            pk.z = 0.5f + facing.getZOffset() * 0.7f;
-
-            pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;
-            pk.data = 7;
             this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
 
             Block side = this.getSide(facing);
@@ -239,7 +242,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
             }
         }
         Inventory inventory = blockEntity.getInventory();
-        for(int i = 0; i < inventory.getSize(); i++) {
+        for (int i = 0; i < inventory.getSize(); i++) {
             inventory.decreaseCount(i);
         }
         return true;

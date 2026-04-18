@@ -3,13 +3,12 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.node.PlayersNode;
 import cn.nukkit.command.utils.CommandLogger;
-import cn.nukkit.network.protocol.PlayerFogPacket;
 import cn.nukkit.utils.Identifier;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +52,9 @@ public class FogCommand extends VanillaCommand {
                     return 0;
                 }
                 String userProvidedId = list.getResult(3);
-                var fog = new PlayerFogPacket.Fog(fogId, userProvidedId);
                 targets.forEach(player -> {
-                    player.getFogStack().add(fog);
-                    player.sendFogStack();//刷新到客户端
+                    player.getFogStack().add(fogIdStr);
+                    player.sendFogStack();
                 });
                 log.addSuccess("commands.fog.success.push", userProvidedId, fogIdStr).output();
                 return 1;
@@ -71,10 +69,10 @@ public class FogCommand extends VanillaCommand {
                             var fogStack = player.getFogStack();
                             for (int i = fogStack.size() - 1; i >= 0; i--) {
                                 var fog = fogStack.get(i);
-                                if (fog.userProvidedId().equals(userProvidedId)) {
+                                if (fog.equals(userProvidedId)) {
                                     fogStack.remove(i);
-                                    player.sendFogStack();//刷新到客户端
-                                    log.addSuccess("commands.fog.success.pop", userProvidedId, fog.identifier().toString()).output();
+                                    player.sendFogStack();
+                                    log.addSuccess("commands.fog.success.pop", userProvidedId, fog).output();
                                     return;
                                 }
                             }
@@ -86,17 +84,17 @@ public class FogCommand extends VanillaCommand {
                     case "remove" -> {
                         targets.forEach(player -> {
                             var fogStack = player.getFogStack();
-                            List<PlayerFogPacket.Fog> shouldRemoved = new ArrayList<>();
+                            List<String> shouldRemoved = new ArrayList<>();
                             for (int i = 0; i < fogStack.size(); i++) {
                                 var fog = fogStack.get(i);
-                                if (fog.userProvidedId().equals(userProvidedId)) {
+                                if (fog.equals(userProvidedId)) {
                                     shouldRemoved.add(fog);
-                                    log.addSuccess("commands.fog.success.remove", userProvidedId, fog.identifier().toString()).output();
+                                    log.addSuccess("commands.fog.success.remove", userProvidedId, fog).output();
                                 }
                             }
                             fogStack.removeAll(shouldRemoved);
-                            player.sendFogStack();//刷新到客户端
-                            if (shouldRemoved.size() == 0) {
+                            player.sendFogStack();
+                            if (shouldRemoved.isEmpty()) {
                                 log.addError("commands.fog.invalidUserId", userProvidedId).output();
                                 success.set(0);
                             }

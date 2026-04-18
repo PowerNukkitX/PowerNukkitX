@@ -3,8 +3,8 @@ package cn.nukkit.inventory.fake;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.collect.Lists;
+import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.List;
 
@@ -32,10 +32,11 @@ public class DoubleFakeBlock extends SingleFakeBlock {
     }
 
     @Override
-    protected CompoundTag getBlockEntityDataAt(Vector3 position, String title) {
-        return super.getBlockEntityDataAt(position, title)
+    protected NbtMap getBlockEntityDataAt(Vector3 position, String title) {
+        return super.getBlockEntityDataAt(position, title).toBuilder()
                 .putInt("pairx", position.getFloorX() + ((position.getFloorX() & 1) == 1 ? 1 : -1))
-                .putInt("pairz", position.getFloorZ());
+                .putInt("pairz", position.getFloorZ())
+                .build();
     }
 }
 

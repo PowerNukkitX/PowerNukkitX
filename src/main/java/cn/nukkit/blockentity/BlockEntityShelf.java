@@ -5,10 +5,13 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.ShelfInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+
+import java.util.List;
 
 /**
  * @author Buddelbubi
@@ -16,7 +19,7 @@ import cn.nukkit.nbt.tag.Tag;
  */
 public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
-    public BlockEntityShelf(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityShelf(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -26,13 +29,13 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
         this.inventory = new ShelfInventory(this);
 
-        if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        if (!this.namedTag.containsKey("Items") || !(this.namedTag.get("Items") instanceof List<?>)) {
+            this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
         }
 
-        ListTag<CompoundTag> itemsTag = this.namedTag.getList("Items", CompoundTag.class);
+        List<NbtMap> itemsTag = this.namedTag.getList("Items", NbtType.COMPOUND);
         for (int i = 0; i < itemsTag.size(); i++) {
-            this.inventory.setItem(i, NBTIO.getItemHelper(itemsTag.get(i)));
+            this.inventory.setItem(i, ItemHelper.read(itemsTag.get(i)));
         }
         this.level.updateComparatorOutputLevel(this);
     }
@@ -40,7 +43,7 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -68,15 +71,15 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag tag = super.getSpawnCompound();
-        ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
-        for(int i = 0; i < getSize(); i++) {
+    public NbtMap getSpawnCompound() {
+        NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
+        List<NbtMap> items = new ObjectArrayList<>();
+        for (int i = 0; i < getSize(); i++) {
             Item item = this.inventory.getItem(i);
-            items.add(NBTIO.putItemHelper(item, i));
+            items.add(ItemHelper.write(item, i));
         }
         tag.put("Items", items);
-        return tag;
+        return tag.build();
     }
 
     @Override

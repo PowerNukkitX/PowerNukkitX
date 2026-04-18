@@ -1,20 +1,20 @@
 package cn.nukkit.level.format.leveldb;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.types.ExperimentEntry;
-import cn.nukkit.network.protocol.types.GameType;
+import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.utils.SemVersion;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
+import org.cloudburstmc.protocol.bedrock.data.Experiment;
+import org.cloudburstmc.protocol.bedrock.data.GameType;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -63,7 +63,7 @@ public class LevelDat {
     @Builder.Default
     int netherScale = 8;
     @Builder.Default
-    int networkVersion = ProtocolInfo.CURRENT_PROTOCOL;
+    int networkVersion = NetworkConstants.CODEC.getProtocolVersion();
     @Builder.Default
     int platform = 2;
     @Builder.Default
@@ -336,10 +336,10 @@ public class LevelDat {
             return new Experiments(new HashMap<>());
         }
 
-        public static Experiments fromList(List<ExperimentEntry> entries) {
+        public static Experiments fromList(List<Experiment> entries) {
             Map<String, Boolean> map = new HashMap<>();
-            for (ExperimentEntry entry : entries) {
-                map.put(entry.name(), entry.enabled());
+            for (Experiment entry : entries) {
+                map.put(entry.getName(), entry.isEnabled());
             }
             return new Experiments(map);
         }

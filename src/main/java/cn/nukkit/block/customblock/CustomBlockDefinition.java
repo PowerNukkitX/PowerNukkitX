@@ -16,21 +16,20 @@ import cn.nukkit.item.customitem.data.CreativeGroup;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
-
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,8 @@ import java.util.function.Consumer;
  * For further customization of runtime behavior, you can still override methods in {@link Block Block}.
  */
 @Slf4j
-public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullable BlockTickSettings tickSettings, boolean isStepSensor) {
+public record CustomBlockDefinition(String identifier, NbtMap nbt, @Nullable BlockTickSettings tickSettings,
+                                    boolean isStepSensor) {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger CUSTOM_BLOCK_RUNTIMEID = new AtomicInteger(10000);
 
@@ -74,8 +74,9 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         private BlockTickSettings tickSettings = null;
         private boolean isStepSensor = false;
 
-        protected CompoundTag nbt = new CompoundTag()
-                .putCompound("components", new CompoundTag());
+        protected NbtMap nbt = NbtMap.builder()
+                .putCompound("components", NbtMap.EMPTY)
+                .build();
 
         protected Builder(CustomBlock customBlock) {
             this.identifier = customBlock.getId();
@@ -83,7 +84,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             var components = this.nbt.getCompound("components");
 
             // Set default components using static default values
-            CompoundTag defaults = createDefaultComponents(
+            NbtMap defaults = createDefaultComponents(
                     0.4f,
                     0.0f,
                     0.0f,
@@ -91,27 +92,26 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                     0,
                     "#ffffff"
             );
-            for (Map.Entry<String, Tag> entry : defaults.getTags().entrySet()) {
-                components.put(entry.getKey(), entry.getValue());
-            }
+            components.putAll(defaults);
 
             // Setting up  default material instances
-            getOrCreateMaterialInstances(components);
+            this.nbt = getOrCreateMaterialInstances(this.nbt);
             //CompoundTag defaultMaterial = getOrCreateMaterialInstances(components); << TO REMOVE???
             //components.putCompound("minecraft:material_instances", defaultMaterial); << TO REMOVE???
+            final NbtMapBuilder builder = this.nbt.toBuilder();
 
             // Sets the default geometry
-            components.putCompound("minecraft:geometry", createDefaultGeometry(null));
+            builder.putCompound("components", components.toBuilder().putCompound("minecraft:geometry", createDefaultGeometry(null)).build());
 
             // Set the category of the block in the creation column
-            this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            builder.putCompound("menu_category", createDefaultMenuCategory());
             // Molang version
-            this.nbt.putInt("molangVersion", 9);
+            builder.putInt("molangVersion", 9);
 
             // Set the properties of the block
             var propertiesNBT = getPropertiesNBT();
             if (propertiesNBT != null) {
-                nbt.putList("properties", propertiesNBT);
+                builder.putList("properties", NbtType.COMPOUND, propertiesNBT);
             }
 
             int block_id;
@@ -122,14 +122,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             } else {
                 block_id = INTERNAL_ALLOCATION_ID_MAP.getInt(identifier);
             }
-            nbt.putCompound("vanilla_block_data", new CompoundTag().putInt("block_id", block_id)
+            builder.putCompound("vanilla_block_data", NbtMap.builder().putInt("block_id", block_id).build()
                     /*.putString("material", "")*/); //todo Figure what is dirt, maybe that corresponds to https://wiki.bedrock.dev/documentation/materials.html
         }
 
         public Builder name(String name) {
             Preconditions.checkArgument(!name.isBlank(), "name is blank");
-            this.nbt.getCompound("components").putCompound("minecraft:display_name", new CompoundTag()
-                    .putString("value", name));
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:display_name", NbtMap.builder()
+                            .putString("value", name)
+                            .build())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -137,8 +141,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Sets the friction value of the block. Default is 0.6f.
          */
         public Builder friction(float value) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", value));
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:friction", NbtMap.builder()
+                            .putFloat("value", value)
+                            .build())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -150,14 +158,18 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             int resistance = value ? 0 : -1;
             return this.destructibleByExplosion(resistance);
         }
+
         /**
          * Sets the explosion resistance of the block. Default is 0. Accepted values are: false or any int value 0 or greater <p>
          * False means block can not be exploded, or any int value will make it destructible but as bigger the value more resistance.
          */
         public Builder destructibleByExplosion(int resistance) {
-            this.nbt.getCompound("components")
-                .putCompound("minecraft:destructible_by_explosion",
-                    new CompoundTag().putInt("explosion_resistance", resistance));
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:destructible_by_explosion", NbtMap.builder()
+                            .putInt("explosion_resistance", resistance)
+                            .build())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -168,14 +180,20 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             float time = value ? 0.0f : -1.0f;
             return this.destructibleByMining(time);
         }
+
         /**
          * Sets the mining time in seconds. Default is 0.0f. Use false to make the block unbreakable by mining.
          */
         public Builder destructibleByMining(float seconds) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:destructible_by_mining", new CompoundTag().putFloat("value", seconds));
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:destructible_by_mining", NbtMap.builder()
+                            .putFloat("value", seconds)
+                            .build())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
+
         /**
          * @deprecated Use {@link #destructibleByMining(float)} or {@link #destructibleByMining(boolean)} instead.
          */
@@ -188,8 +206,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Sets the light dampening level. Default is 15.
          */
         public Builder lightDampening(int lightLevel) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:light_dampening", new CompoundTag().putByte("lightLevel", (byte) lightLevel));
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:light_dampening", NbtMap.builder()
+                            .putByte("lightLevel", (byte) lightLevel)
+                            .build())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -197,8 +219,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Sets the light emission level. Default is 0.
          */
         public Builder lightEmission(int emission) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:light_emission", new CompoundTag().putByte("emission", (byte) emission));
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:light_emission", NbtMap.builder()
+                            .putByte("emission", (byte) emission)
+                            .build())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -206,8 +232,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Sets the map color used in maps. Default is #ffffff.
          */
         public Builder mapColor(String hexColor) {
-            this.nbt.getCompound("components")
-                    .putString("minecraft:map_color", hexColor);
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putString("minecraft:map_color", hexColor)
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -217,30 +245,32 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         public Builder texture(String texture) {
             String tex = (texture != null && !texture.isBlank()) ? texture : "missing_texture";
 
-            CompoundTag components = this.nbt.getCompound("components");
-            CompoundTag mi = getOrCreateMaterialInstances(components);
-            CompoundTag mats = mi.getCompound("materials");
+            NbtMap nbt = getOrCreateMaterialInstances(this.nbt);
+            NbtMap components = nbt.getCompound("components");
+            NbtMap mi = components.getCompound("minecraft:material_instances");
+            NbtMap mats = mi.getCompound("materials");
             if (mats == null || mats.isEmpty()) {
-                mats = new CompoundTag(new LinkedHashMap<>());
-                mi.putCompound("materials", mats);
+                mats = NbtMap.EMPTY;
+                mi = mi.toBuilder().putCompound("materials", mats).build();
             }
 
-            CompoundTag star = mats.contains("*") ? mats.getCompound("*") : new CompoundTag();
+            NbtMapBuilder star = mats.containsKey("*") ? mats.getCompound("*").toBuilder() : NbtMap.builder();
             star.putString("texture", tex);
-            mats.putCompound("*", star);
+            mats = mats.toBuilder().putCompound("*", star.build()).build();
 
-            for (Map.Entry<String, Tag> entry : mats.getTags().entrySet()) {
+            for (Map.Entry<String, Object> entry : mats.entrySet()) {
                 String face = entry.getKey();
                 if ("*".equals(face)) continue;
-                Tag tag = entry.getValue();
-                if (tag instanceof CompoundTag faceTag) {
-                    faceTag.putString("texture", tex);
-                    mats.putCompound(face, faceTag);
+                Object tag = entry.getValue();
+                if (tag instanceof NbtMap faceTag) {
+                    faceTag = faceTag.toBuilder().putString("texture", tex).build();
+                    mats = mats.toBuilder().putCompound(face, faceTag).build();
                 }
             }
 
-            mi.putCompound("materials", mats);
-            components.putCompound("minecraft:material_instances", mi);
+            mi = mi.toBuilder().putCompound("materials", mats).build();
+            components = components.toBuilder().putCompound("minecraft:material_instances", mi).build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -271,50 +301,54 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * @return this builder
          */
         public Builder materials(Materials materials) {
-            CompoundTag components = this.nbt.getCompound("components");
-            CompoundTag mi = getOrCreateMaterialInstances(components);
-
-            CompoundTag baseMaterials = mi.getCompound("materials");
+            NbtMap nbt = getOrCreateMaterialInstances(this.nbt);
+            NbtMap components = nbt.getCompound("components");
+            NbtMap mi = components.getCompound("minecraft:material_instances");
+            NbtMap baseMaterials = mi.getCompound("materials");
             if (baseMaterials == null || baseMaterials.isEmpty()) {
-                baseMaterials = new CompoundTag(new LinkedHashMap<>());
+                baseMaterials = NbtMap.EMPTY;
             }
 
-            CompoundTag customMaterials = materials.toCompoundTag();
+            NbtMap customMaterials = materials.toCompoundTag();
 
-            for (Map.Entry<String, Tag> customEntry : customMaterials.getTags().entrySet()) {
+            for (Map.Entry<String, Object> customEntry : customMaterials.entrySet()) {
                 String key = customEntry.getKey();
-                CompoundTag customMat = (CompoundTag) customEntry.getValue();
-                CompoundTag baseMat = baseMaterials.contains(key)
+                NbtMap customMat = (NbtMap) customEntry.getValue();
+                NbtMap baseMat = baseMaterials.containsKey(key)
                         ? baseMaterials.getCompound(key)
-                        : new CompoundTag();
+                        : NbtMap.EMPTY;
+                baseMat.putAll(customMat);
 
-                for (Map.Entry<String, Tag> entry : customMat.getTags().entrySet()) {
-                    baseMat.put(entry.getKey(), entry.getValue());
-                }
-
-                baseMaterials.putCompound(key, baseMat);
+                baseMaterials = baseMaterials.toBuilder().putCompound(key, baseMat).build();
             }
 
-            mi.putCompound("materials", baseMaterials);
-            components.putCompound("minecraft:material_instances", mi);
+            mi = mi.toBuilder().putCompound("materials", baseMaterials).build();
+            components = components.toBuilder().putCompound("minecraft:material_instances", mi).build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
         public Builder creativeCategory(String creativeCategory) {
-            if (!this.nbt.contains("menu_category")) {
-                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            if (!this.nbt.containsKey("menu_category")) {
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", createDefaultMenuCategory()).build();
+            } else {
+                final NbtMap menuCategory = this.nbt.getCompound("menu_category").toBuilder()
+                        .putString("category", creativeCategory.toLowerCase(Locale.ENGLISH))
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", menuCategory).build();
             }
-            this.nbt.getCompound("menu_category")
-                    .putString("category", creativeCategory.toLowerCase(Locale.ENGLISH));
             return this;
         }
 
         public Builder creativeCategory(CreativeCategory creativeCategory) {
-            if (!this.nbt.contains("menu_category")) {
-                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            if (!this.nbt.containsKey("menu_category")) {
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", createDefaultMenuCategory()).build();
+            } else {
+                final NbtMap menuCategory = this.nbt.getCompound("menu_category").toBuilder()
+                        .putString("category", creativeCategory.name().toLowerCase(Locale.ENGLISH))
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", menuCategory).build();
             }
-            this.nbt.getCompound("menu_category")
-                    .putString("category", creativeCategory.name().toLowerCase(Locale.ENGLISH));
             return this;
         }
 
@@ -328,10 +362,14 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 log.error("creativeGroup has an invalid value!");
                 return this;
             }
-            if (!this.nbt.contains("menu_category")) {
-                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            if (!this.nbt.containsKey("menu_category")) {
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", createDefaultMenuCategory()).build();
+            } else {
+                final NbtMap menuCategory = this.nbt.getCompound("menu_category").toBuilder()
+                        .putString("group", creativeGroup)
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", menuCategory).build();
             }
-            this.nbt.getCompound("menu_category").putString("group", creativeGroup);
             return this;
         }
 
@@ -341,24 +379,32 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
          */
         public Builder creativeGroup(CreativeGroup creativeGroup) {
-            if (!this.nbt.contains("menu_category")) {
-                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            if (!this.nbt.containsKey("menu_category")) {
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", createDefaultMenuCategory()).build();
+            } else {
+                final NbtMap menuCategory = this.nbt.getCompound("menu_category").toBuilder()
+                        .putString("group", creativeGroup.getGroupName())
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", menuCategory).build();
             }
-            this.nbt.getCompound("menu_category").putString("group", creativeGroup.getGroupName());
             return this;
         }
 
         /**
          * Sets whether the item/block should be hidden from commands like /give and /replaceitem.
-         * 
+         *
          * @param hidden true to hide, false to show (default: false)
          * @return this builder
          */
         public Builder isHiddenInCommands(boolean hidden) {
-            if (!this.nbt.contains("menu_category")) {
-                this.nbt.putCompound("menu_category", createDefaultMenuCategory());
+            if (!this.nbt.containsKey("menu_category")) {
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", createDefaultMenuCategory()).build();
+            } else {
+                final NbtMap menuCategory = this.nbt.getCompound("menu_category").toBuilder()
+                        .putByte("is_hidden_in_commands", (byte) (hidden ? 1 : 0))
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("menu_category", menuCategory).build();
             }
-            this.nbt.getCompound("menu_category").putByte("is_hidden_in_commands", (byte) (hidden ? 1 : 0));
             return this;
         }
 
@@ -366,7 +412,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * @see <a href="https://wiki.bedrock.dev/blocks/block-components.html#crafting-table">wiki.bedrock.dev</a>
          */
         public Builder craftingTable(CraftingTable craftingTable) {
-            this.nbt.getCompound("components").putCompound("minecraft:crafting_table", craftingTable.toCompoundTag());
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:crafting_table", craftingTable.toCompoundTag())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -374,7 +423,10 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * supports rotation, scaling, and translation. The component can be added to the whole block and/or to individual block permutations. Transformed geometries still have the same restrictions that non-transformed geometries have such as a maximum size of 30/16 units.
          */
         public Builder transformation(@NotNull Transformation transformation) {
-            this.nbt.getCompound("components").putCompound("minecraft:transformation", transformation.toCompoundTag());
+            final NbtMap components = this.nbt.getCompound("components").toBuilder()
+                    .putCompound("minecraft:transformation", transformation.toCompoundTag())
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -397,9 +449,11 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 log.error("geometry has an invalid value!");
                 return this;
             }
-            var components = this.nbt.getCompound("components");
-            CompoundTag mergedGeometry = createDefaultGeometry(geometry.toLowerCase(Locale.ENGLISH));
-            components.putCompound("minecraft:geometry", mergedGeometry);
+            NbtMap mergedGeometry = createDefaultGeometry(geometry.toLowerCase(Locale.ENGLISH));
+            var components = this.nbt.getCompound("components")
+                    .toBuilder().putCompound("minecraft:geometry", mergedGeometry)
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -409,13 +463,15 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Use this to control visible bones or other geometry properties.
          */
         public Builder geometry(@NotNull Geometry geometry) {
-            var components = this.nbt.getCompound("components");
-            CompoundTag base = createDefaultGeometry(null);
-            CompoundTag custom = geometry.toCompoundTag();
-            for (Map.Entry<String, Tag> entry : custom.getTags().entrySet()) {
+            NbtMap base = createDefaultGeometry(null);
+            NbtMap custom = geometry.toCompoundTag();
+            for (Map.Entry<String, Object> entry : custom.entrySet()) {
                 base.put(entry.getKey(), entry.getValue());
             }
-            components.putCompound("minecraft:geometry", base);
+            var components = this.nbt.getCompound("components")
+                    .toBuilder().putCompound("minecraft:geometry", base)
+                    .build();
+            this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
             return this;
         }
 
@@ -423,12 +479,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
         public Builder permutation(Permutation permutation) {
-            if (!this.nbt.contains("permutations")) {
-                this.nbt.putList("permutations", new ListTag<CompoundTag>());
+            if (!this.nbt.containsKey("permutations")) {
+                this.nbt = this.nbt.toBuilder().putList("permutations", NbtType.COMPOUND, new ObjectArrayList<>()).build();
             }
-            ListTag<CompoundTag> permutations = this.nbt.getList("permutations", CompoundTag.class);
+            List<NbtMap> permutations = new ObjectArrayList<>(this.nbt.getList("permutations", NbtType.COMPOUND));
             permutations.add(permutation.toCompoundTag());
-            this.nbt.putList("permutations", permutations);
+            this.nbt = this.nbt.toBuilder().putList("permutations", NbtType.COMPOUND, permutations).build();
             return this;
         }
 
@@ -436,11 +492,11 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * Control custom block permutation features such as conditional rendering, partial rendering, etc.
          */
         public Builder permutations(Permutation... permutations) {
-            var per = new ListTag<CompoundTag>();
+            final List<NbtMap> per = new ObjectArrayList<>();
             for (var permutation : permutations) {
                 per.add(permutation.toCompoundTag());
             }
-            this.nbt.putList("permutations", per);
+            this.nbt = this.nbt.toBuilder().putList("permutations", NbtType.COMPOUND, per).build();
             return this;
         }
 
@@ -459,22 +515,22 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             float maxY = minY + size.y;
             float maxZ = minZ + size.z;
 
-            CompoundTag components = this.nbt.getCompound("components");
-            CompoundTag collision = components.getCompound("minecraft:collision_box");
-            if (collision.isEmpty()) collision.putBoolean("enabled", true);
+            NbtMap components = this.nbt.getCompound("components");
+            NbtMap collision = components.getCompound("minecraft:collision_box");
+            if (collision.isEmpty()) collision = collision.toBuilder().putBoolean("enabled", true).build();
 
-            ListTag<CompoundTag> boxes = collision.getList("boxes", CompoundTag.class);
-            boxes.add(new CompoundTag()
+            List<NbtMap> boxes = new ObjectArrayList<>(collision.getList("boxes", NbtType.COMPOUND));
+            boxes.add(NbtMap.builder()
                     .putFloat("minX", minX)
                     .putFloat("minY", minY)
                     .putFloat("minZ", minZ)
                     .putFloat("maxX", maxX)
                     .putFloat("maxY", maxY)
-                    .putFloat("maxZ", maxZ));
+                    .putFloat("maxZ", maxZ)
+                    .build());
 
-            collision.putList("boxes", boxes);
-            components.putCompound("minecraft:collision_box", collision);
-
+            collision = collision.toBuilder().putList("boxes", NbtType.COMPOUND, boxes).build();
+            this.nbt.toBuilder().putCompound("components", components.toBuilder().putCompound("minecraft:collision_box", collision).build()).build();
             return this;
         }
 
@@ -485,50 +541,56 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * @param size   The size of the collision box
          */
         public Builder selectionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
-            this.nbt.getCompound("components")
-                    .putCompound("minecraft:selection_box", new CompoundTag()
-                            .putBoolean("enabled", true)
-                            .putList("origin", new ListTag<FloatTag>()
-                                    .add(new FloatTag(origin.x))
-                                    .add(new FloatTag(origin.y))
-                                    .add(new FloatTag(origin.z)))
-                            .putList("size", new ListTag<FloatTag>()
-                                    .add(new FloatTag(size.x))
-                                    .add(new FloatTag(size.y))
-                                    .add(new FloatTag(size.z))));
+            this.nbt = this.nbt.toBuilder()
+                    .putCompound("components", this.nbt.getCompound("components").toBuilder()
+                            .putCompound("minecraft:selection_box", NbtMap.builder()
+                                    .putBoolean("enabled", true)
+                                    .putList("origin", NbtType.FLOAT, Arrays.asList(origin.x, origin.y, origin.z))
+                                    .putList("size", NbtType.FLOAT, Arrays.asList(size.x, size.y, size.z))
+                                    .build())
+                            .build()
+                    ).build();
             return this;
         }
 
         public Builder blockTags(String... tag) {
             Preconditions.checkNotNull(tag);
             Preconditions.checkArgument(tag.length > 0);
-            ListTag<StringTag> stringTagListTag = new ListTag<>();
-            for (String s : tag) {
-                stringTagListTag.add(new StringTag(s));
-            }
-            this.nbt.putList("blockTags", stringTagListTag);
+            List<String> stringTagListTag = new ObjectArrayList<>();
+            stringTagListTag.addAll(Arrays.asList(tag));
+            this.nbt = this.nbt.toBuilder().putList("blockTags", NbtType.STRING, stringTagListTag).build();
             return this;
         }
 
         public Builder isPlayerInteractable(boolean value) {
-            if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
-                this.nbt.getCompound("components")
-                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+            NbtMap components = this.nbt.getCompound("components");
+            if (!components.containsKey("minecraft:custom_components")) {
+                components = components.toBuilder()
+                        .putCompound("minecraft:custom_components", createDefaultCustomComponents())
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
+            } else {
+                final NbtMap customComponents = components.getCompound("minecraft:custom_components").toBuilder()
+                        .putByte("hasPlayerInteract", (byte) (value ? 1 : 0))
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("components", components.toBuilder().putCompound("minecraft:custom_components", customComponents).build()).build();
             }
-            this.nbt.getCompound("components")
-                .getCompound("minecraft:custom_components")
-                .putByte("hasPlayerInteract", (byte) (value ? 1 : 0));
             return this;
         }
 
         public Builder hasPlayerPlacingSensor(boolean value) {
-            if (!this.nbt.getCompound("components").contains("minecraft:custom_components")) {
-                this.nbt.getCompound("components")
-                    .putCompound("minecraft:custom_components", createDefaultCustomComponents());
+            NbtMap components = this.nbt.getCompound("components");
+            if (!components.containsKey("minecraft:custom_components")) {
+                components = components.toBuilder()
+                        .putCompound("minecraft:custom_components", createDefaultCustomComponents())
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("components", components).build();
+            } else {
+                final NbtMap customComponents = components.getCompound("minecraft:custom_components").toBuilder()
+                        .putByte("hasPlayerPlacing", (byte) (value ? 1 : 0))
+                        .build();
+                this.nbt = this.nbt.toBuilder().putCompound("components", components.toBuilder().putCompound("minecraft:custom_components", customComponents).build()).build();
             }
-            this.nbt.getCompound("components")
-                .getCompound("minecraft:custom_components")
-                .putByte("hasPlayerPlacing", (byte) (value ? 1 : 0));
             return this;
         }
 
@@ -539,7 +601,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * @param maxTicks The maximum number of ticks before the block updates. Must be ≥ {@code minTicks}.
          * @param looping  If {@code true}, the block will continue ticking; if {@code false}, it will tick only once.
          * @return This builder instance for chaining.
-         *
+         * <p>
          * Example: {@code .blockTick(60, 60, true)} will schedule the block to tick every 3 seconds.
          */
         public Builder blockTick(int minTicks, int maxTicks, boolean looping) {
@@ -562,32 +624,31 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
          * @return Block Properties in NBT Tag format
          */
         @Nullable
-        private ListTag<CompoundTag> getPropertiesNBT() {
+        private List<NbtMap> getPropertiesNBT() {
             if (this.customBlock instanceof Block block) {
                 var properties = block.getProperties();
                 Set<BlockPropertyType<?>> propertyTypeSet = properties.getPropertyTypeSet();
                 if (propertyTypeSet.isEmpty()) {
                     return null;
                 }
-                var nbtList = new ListTag<CompoundTag>();
+                final List<NbtMap> nbtList = new ObjectArrayList<>();
                 for (var each : propertyTypeSet) {
                     if (each instanceof BooleanPropertyType booleanBlockProperty) {
-                        nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
-                                .putList("enum", new ListTag<>()
-                                        .add(new ByteTag(0))
-                                        .add(new ByteTag(1))));
+                        nbtList.add(NbtMap.builder().putString("name", booleanBlockProperty.getName())
+                                .putList("enum", NbtType.BYTE, Arrays.asList((byte) 0, (byte) 1))
+                                .build());
                     } else if (each instanceof IntPropertyType intBlockProperty) {
-                        var enumList = new ListTag<IntTag>();
+                        final List<Integer> enumList = new IntArrayList();
                         for (int i = intBlockProperty.getMin(); i <= intBlockProperty.getMax(); i++) {
-                            enumList.add(new IntTag(i));
+                            enumList.add(i);
                         }
-                        nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList("enum", enumList));
+                        nbtList.add(NbtMap.builder().putString("name", intBlockProperty.getName()).putList("enum", NbtType.INT, enumList).build());
                     } else if (each instanceof EnumPropertyType<?> arrayBlockProperty) {
-                        var enumList = new ListTag<StringTag>();
+                        final List<String> enumList = new ObjectArrayList<>();
                         for (var e : arrayBlockProperty.getValidValues()) {
-                            enumList.add(new StringTag(e.name().toLowerCase(Locale.ENGLISH)));
+                            enumList.add(e.name().toLowerCase(Locale.ENGLISH));
                         }
-                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList("enum", enumList));
+                        nbtList.add(NbtMap.builder().putString("name", arrayBlockProperty.getName()).putList("enum", NbtType.STRING, enumList).build());
                     }
                 }
                 return nbtList;
@@ -598,7 +659,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
         /**
          * Custom processing of the block to be sent to the client ComponentNBT, which contains all definitions for custom block. You can modify them as much as you want, under the right conditions.
          */
-        public CustomBlockDefinition customBuild(@NotNull Consumer<CompoundTag> nbt) {
+        public CustomBlockDefinition customBuild(@NotNull Consumer<NbtMap> nbt) {
             var def = this.build();
             nbt.accept(def.nbt);
             return def;
@@ -610,54 +671,60 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     }
 
     // Creates default geometry
-    public static CompoundTag createDefaultGeometry(String identifierOverride) {
-        CompoundTag geometry = new CompoundTag(new LinkedHashMap<>());
-        geometry.putCompound("bone_visibility", new CompoundTag());
-        geometry.putString("culling", "");
-        geometry.putString("culling_layer", "minecraft:culling_layer.undefined");
-        geometry.putString("culling_shape", "");
-        geometry.putString("identifier", identifierOverride != null ? identifierOverride : "minecraft:geometry.full_block");
-        geometry.putByte("ignoreGeometryForIsSolid", (byte) 1);
-        geometry.putByte("needsLegacyTopRotation", (byte) 0);
-        geometry.putByte("useLegacyBlockLightAbsorption", (byte) 0);
-        geometry.putByte("uv_lock", (byte) 0);
-        return geometry;
+    public static NbtMap createDefaultGeometry(String identifierOverride) {
+        return NbtMap.builder()
+                .putCompound("bone_visibility", NbtMap.EMPTY)
+                .putString("culling", "")
+                .putString("culling_layer", "minecraft:culling_layer.undefined")
+                .putString("culling_shape", "")
+                .putString("identifier", identifierOverride != null ? identifierOverride : "minecraft:geometry.full_block")
+                .putByte("ignoreGeometryForIsSolid", (byte) 1)
+                .putByte("needsLegacyTopRotation", (byte) 0)
+                .putByte("useLegacyBlockLightAbsorption", (byte) 0)
+                .putByte("uv_lock", (byte) 0)
+                .build();
     }
 
     // Creates default materials instance
-    private static CompoundTag getOrCreateMaterialInstances(CompoundTag components) {
-        CompoundTag material = components.getCompound("minecraft:material_instances");
+    private static NbtMap getOrCreateMaterialInstances(NbtMap nbt) {
+        NbtMap components = nbt.getCompound("components");
+        NbtMap material = components.getCompound("minecraft:material_instances");
         if (material != null && !material.isEmpty()) return material;
 
         // create once
-        CompoundTag materials = new CompoundTag(new LinkedHashMap<>());
-        CompoundTag star = new CompoundTag(new LinkedHashMap<>());
-        star.putFloat("ambient_occlusion", 1.0f);
-        star.putByte("packed_bools", (byte) 0x1);
-        star.putByte("isotropic", (byte) 0);
-        star.putString("render_method", "opaque");
-        star.putString("texture", "missing_texture");
-        star.putString("tint_method", "none");
-        materials.putCompound("*", star);
+        NbtMapBuilder materialsBuilder = NbtMap.builder();
+        NbtMap star = NbtMap.builder()
+                .putFloat("ambient_occlusion", 1.0f)
+                .putByte("packed_bools", (byte) 0x1)
+                .putByte("isotropic", (byte) 0)
+                .putString("render_method", "opaque")
+                .putString("texture", "missing_texture")
+                .putString("tint_method", "none")
+                .build();
+        materialsBuilder.putCompound("*", star);
 
-        material = new CompoundTag(new LinkedHashMap<>());
-        material.putCompound("mappings", new CompoundTag());
-        material.putCompound("materials", materials);
+        material = NbtMap.builder()
+                .putCompound("mappings", NbtMap.EMPTY)
+                .putCompound("materials", materialsBuilder.build())
+                .build();
 
-        components.putCompound("minecraft:material_instances", material);
-        return material;
+        components = components.toBuilder().putCompound("minecraft:material_instances", material).build();
+
+        nbt = nbt.toBuilder().putCompound("components", components).build();
+        return nbt;
     }
 
     // Creates default category
-    public static CompoundTag createDefaultMenuCategory() {
-        return new CompoundTag(new LinkedHashMap<>())
-            .putString("category", "construction")
-            .putString("group", "")
-            .putByte("is_hidden_in_commands", (byte) 0);
+    public static NbtMap createDefaultMenuCategory() {
+        return NbtMap.builder()
+                .putString("category", "construction")
+                .putString("group", "")
+                .putByte("is_hidden_in_commands", (byte) 0)
+                .build();
     }
 
     // Create default components
-    public static CompoundTag createDefaultComponents(
+    public static NbtMap createDefaultComponents(
             float frictionFactor,
             float explosionResistance,
             float miningTime,
@@ -665,30 +732,38 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
             int lightEmission,
             String mapColor
     ) {
-        CompoundTag components = new CompoundTag(new LinkedHashMap<>());
-        components.putCompound("minecraft:friction", new CompoundTag()
-                .putFloat("value", 0.4f));
-        components.putCompound("minecraft:destructible_by_explosion", new CompoundTag()
-                .putInt("explosion_resistance", 0));
-        components.putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                .putFloat("value", 0.0f));
-        components.putCompound("minecraft:light_dampening", new CompoundTag()
-                .putByte("lightLevel", (byte) 15));
-        components.putCompound("minecraft:light_emission", new CompoundTag()
-                .putByte("emission", (byte) 0));
-        components.putString("minecraft:map_color", "#ffffff");
-        return components;
+        return NbtMap.builder()
+                .putCompound("minecraft:friction", NbtMap.builder()
+                        .putFloat("value", 0.4f)
+                        .build())
+                .putCompound("minecraft:destructible_by_explosion", NbtMap.builder()
+                        .putInt("explosion_resistance", 0)
+                        .build())
+                .putCompound("minecraft:destructible_by_mining", NbtMap.builder()
+                        .putFloat("value", 0.0f)
+                        .build())
+                .putCompound("minecraft:light_dampening", NbtMap.builder()
+                        .putByte("lightLevel", (byte) 15)
+                        .build())
+                .putCompound("minecraft:light_emission", NbtMap.builder()
+                        .putByte("emission", (byte) 0)
+                        .build())
+                .putCompound("minecraft:map_color", NbtMap.builder()
+                        .putString("", "#ffffff")
+                        .build())
+                .build();
     }
 
     // Creates default custom_components
-    public static CompoundTag createDefaultCustomComponents() {
-        return new CompoundTag(new LinkedHashMap<>())
-            .putByte("hasPlayerInteract", (byte) 0)
-            .putByte("hasPlayerPlacing", (byte) 0)
-            .putByte("isV1Component", (byte) 1);
+    public static NbtMap createDefaultCustomComponents() {
+        return NbtMap.builder()
+                .putByte("hasPlayerInteract", (byte) 0)
+                .putByte("hasPlayerPlacing", (byte) 0)
+                .putByte("isV1Component", (byte) 1)
+                .build();
     }
 
-    public CompoundTag getComponents() {
+    public NbtMap getComponents() {
         return this.nbt.getCompound("components");
     }
 
@@ -701,5 +776,12 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
     }
 
     public record BlockTickSettings(int minTicks, int maxTicks, boolean looping) {
+    }
+
+    public BlockPropertyData toNetwork() {
+        return new BlockPropertyData(
+                this.identifier,
+                this.nbt
+        );
     }
 }

@@ -24,16 +24,16 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +52,7 @@ public class EntityVex extends EntityMob implements EntityFlyable {
         return VEX;
     }
 
-    public EntityVex(IChunk chunk, CompoundTag nbt) {
+    public EntityVex(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -190,20 +190,20 @@ public class EntityVex extends EntityMob implements EntityFlyable {
         @Override
         public void onStart(EntityIntelligent entity) {
             super.onStart(entity);
-            entity.setDataFlag(EntityFlag.CHARGING);
+            entity.setDataFlag(ActorFlags.CHARGING);
             entity.level.addSound(entity, Sound.MOB_VEX_CHARGE);
         }
 
         @Override
         public void onStop(EntityIntelligent entity) {
             super.onStop(entity);
-            entity.setDataFlag(EntityFlag.CHARGING, false);
+            entity.setDataFlag(ActorFlags.CHARGING, false);
         }
 
         @Override
         public void onInterrupt(EntityIntelligent entity) {
             super.onInterrupt(entity);
-            entity.setDataFlag(EntityFlag.CHARGING, false);
+            entity.setDataFlag(ActorFlags.CHARGING, false);
         }
     }
 

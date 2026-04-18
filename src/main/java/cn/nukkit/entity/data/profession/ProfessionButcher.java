@@ -3,10 +3,11 @@ package cn.nukkit.entity.data.profession;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.nbt.NbtMap;
 
+import java.util.List;
 import java.util.Random;
 
 import static cn.nukkit.item.ItemID.SWEET_BERRIES;
@@ -18,8 +19,8 @@ public class ProfessionButcher extends Profession {
     }
 
     @Override
-    public ListTag<CompoundTag> buildTrades(int seed) {
-        ListTag<CompoundTag> recipes = new ListTag<>();
+    public List<NbtMap> buildTrades(int seed) {
+        List<NbtMap> recipes = new ObjectArrayList<>();
         Random random = new Random(seed);
         switch (random.nextInt(3)) {
             case 0:
@@ -50,19 +51,19 @@ public class ProfessionButcher extends Profession {
                         .build());
         }
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(Item.RABBIT_STEW))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(1)
-                        .setTraderExp(1)
-                        .setPriceMultiplierA(0.05f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(Item.COAL, 0, 15), Item.get(Item.EMERALD))
-                        .setMaxUses(16)
-                        .setRewardExp((byte) 1)
-                        .setTier(2)
-                        .setTraderExp(10)
-                        .setPriceMultiplierA(0.05f)
-                        .build());
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(1)
+                .setTraderExp(1)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.COAL, 0, 15), Item.get(Item.EMERALD))
+                .setMaxUses(16)
+                .setRewardExp((byte) 1)
+                .setTier(2)
+                .setTraderExp(10)
+                .setPriceMultiplierA(0.05f)
+                .build());
         if (random.nextBoolean()) {
             recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 1), Item.get(Item.COOKED_PORKCHOP, 0, 5))
                     .setMaxUses(16)
@@ -99,19 +100,19 @@ public class ProfessionButcher extends Profession {
         }
 
         recipes.add(TradeRecipeBuildUtils.of(Item.get(BlockID.DRIED_KELP_BLOCK, 0, 10), Item.get(Item.EMERALD))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(4)
-                        .setTraderExp(30)
-                        .setPriceMultiplierA(0.05f)
-                        .build())
-                .add(TradeRecipeBuildUtils.of(Item.get(SWEET_BERRIES, 0, 10), Item.get(Item.EMERALD))
-                        .setMaxUses(12)
-                        .setRewardExp((byte) 1)
-                        .setTier(5)
-                        .setTraderExp(30)
-                        .setPriceMultiplierA(0.05f)
-                        .build());
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(4)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.05f)
+                .build());
+        recipes.add(TradeRecipeBuildUtils.of(Item.get(SWEET_BERRIES, 0, 10), Item.get(Item.EMERALD))
+                .setMaxUses(12)
+                .setRewardExp((byte) 1)
+                .setTier(5)
+                .setTraderExp(30)
+                .setPriceMultiplierA(0.05f)
+                .build());
         return recipes;
     }
 

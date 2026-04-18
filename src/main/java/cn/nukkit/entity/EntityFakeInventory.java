@@ -1,23 +1,24 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 
 public class EntityFakeInventory extends Entity implements InventoryHolder {
 
-    public EntityFakeInventory(IChunk chunk, CompoundTag nbt) {
+    public EntityFakeInventory(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -43,27 +44,27 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
         this.setHealthMax(1);
         this.setHealthCurrent(1);
 
-        this.setDataProperty(NAMETAG_ALWAYS_SHOW, (byte) 0, false);
-        this.setDataFlag(EntityFlag.CAN_SHOW_NAME, false);
+        this.setDataProperty(ActorDataTypes.NAMETAG_ALWAYS_SHOW, (byte) 0, false);
+        this.setDataFlag(ActorFlags.CAN_SHOW_NAME, false);
 
-        this.setDataFlag(EntityFlag.FIRE_IMMUNE, true);
-        this.setDataFlag(EntityFlag.NO_AI, true);
-        this.setDataFlag(EntityFlag.SILENT, true);
-        this.setDataFlag(EntityFlag.HAS_GRAVITY, false);
-        this.setDataFlag(EntityFlag.HAS_COLLISION, false);
-        this.setDataFlag(EntityFlag.CAN_CLIMB, false);
+        this.setDataFlag(ActorFlags.FIRE_IMMUNE, true);
+        this.setDataFlag(ActorFlags.NO_AI, true);
+        this.setDataFlag(ActorFlags.SILENT, true);
+        this.setDataFlag(ActorFlags.HAS_GRAVITY, false);
+        this.setDataFlag(ActorFlags.HAS_COLLISION, false);
+        this.setDataFlag(ActorFlags.CAN_CLIMB, false);
 
-        if (this.namedTag.contains("ContainerSize")) {
+        if (this.namedTag.containsKey("ContainerSize")) {
             this.containerSize = this.namedTag.getInt("ContainerSize");
         }
-        if (this.namedTag.contains("displayName")) {
+        if (this.namedTag.containsKey("displayName")) {
             this.displayName = this.namedTag.getString("displayName");
             this.setNameTag(this.displayName);
         }
 
-        this.entityDataMap.put(CONTAINER_TYPE, InventoryType.CONTAINER.getNetworkType());
-        this.entityDataMap.put(CONTAINER_SIZE, this.containerSize);
-        this.entityDataMap.put(CONTAINER_STRENGTH_MODIFIER, 0);
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CONTAINER.getId());
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.containerSize);
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     public int getContainerSize() {

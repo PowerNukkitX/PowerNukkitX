@@ -4,9 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.ContainerOpenPacket;
 
 import java.util.Map;
 
@@ -16,13 +18,13 @@ import java.util.Map;
 public class BeaconInventory extends BaseInventory implements BlockEntityInventoryNameable {
 
     public BeaconInventory(BlockEntityBeacon blockBeacon) {
-        super(blockBeacon, InventoryType.BEACON, 1);
+        super(blockBeacon, ContainerType.BEACON, 1);
     }
 
     @Override
     public void init() {
-        Map<Integer, ContainerSlotType> map = super.slotTypeMap();
-        map.put(0, ContainerSlotType.BEACON_PAYMENT);
+        Map<Integer, ContainerEnumName> map = super.slotTypeMap();
+        map.put(0, ContainerEnumName.BEACON_PAYMENT_CONTAINER);
 
         BiMap<Integer, Integer> networkSlotMap = super.networkSlotMap();
         networkSlotMap.put(0, 27);
@@ -45,14 +47,12 @@ public class BeaconInventory extends BaseInventory implements BlockEntityInvento
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
-        pk.windowId = who.getWindowId(this);
-        pk.type = this.getType().getNetworkType();
-        InventoryHolder holder = this.getHolder();
-        pk.x = (int) holder.getX();
-        pk.y = (int) holder.getY();
-        pk.z = (int) holder.getZ();
-        who.dataPacket(pk);
+        final InventoryHolder holder = this.getHolder();
+        final ContainerOpenPacket packet = new ContainerOpenPacket();
+        packet.setContainerID((byte) who.getWindowId(this));
+        packet.setContainerType(this.getType());
+        packet.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
+        who.dataPacket(packet);
         this.sendContents(who);
     }
 

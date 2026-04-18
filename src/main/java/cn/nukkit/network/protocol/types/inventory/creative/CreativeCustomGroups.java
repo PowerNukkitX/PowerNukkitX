@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.nukkit.registry.CreativeGroupsRegistry;
+import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemCategory;
 
 /**
  * Stages custom creative groups for runtime registration.

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.types.LevelSoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.PILLAR_AXIS;
@@ -46,7 +46,7 @@ public abstract class BlockLog extends BlockSolid implements IBlockWood {
                 item.useOn(this);
             }
             this.level.setBlock(this, strippedBlock, true, true);
-            this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEvent.ITEM_USE_ON, strippedBlock.getBlockState().blockStateHash());
+            this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), SoundEvent.ITEM_USE_ON, strippedBlock.getBlockState().blockStateHash());
             return true;
         }
         return false;

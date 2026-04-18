@@ -3,21 +3,26 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.ChestBoatInventory;
 import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
-
-import java.util.Set;
-
+import cn.nukkit.utils.ItemHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.math.vector.Vector2f;
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
+import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Set;
 
 
 public class EntityChestBoat extends EntityBoat implements InventoryHolder {
@@ -29,7 +34,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     protected ChestBoatInventory inventory;
 
-    public EntityChestBoat(IChunk chunk, CompoundTag nbt) {
+    public EntityChestBoat(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -70,29 +75,29 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
-    protected DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = 0;
-        addEntity.id = "minecraft:chest_boat";
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
+    protected BedrockPacket createAddEntityPacket() {
+        final AddActorPacket packet = new AddActorPacket();
+        packet.setTargetActorID(this.getId());
+        packet.setTargetRuntimeID(this.getId());
+        packet.setActorType("minecraft:chest_boat");
+        packet.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
+        packet.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
+        packet.setRotation(Vector2f.from(this.pitch, this.yaw));
+        packet.setActorData(this.entityDataMap);
 
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.Type.RIDER : EntityLink.Type.PASSENGER, false, false, 0f);
+        for (int i = 0; i < this.passengers.size(); i++) {
+            packet.getActorLinks().add(
+                    new ActorLink(
+                            this.getId(),
+                            this.passengers.get(i).getId(),
+                            i == 0 ? ActorLinkType.RIDING : ActorLinkType.PASSENGER,
+                            false,
+                            false,
+                            0f
+                    )
+            );
         }
-
-        return addEntity;
+        return packet;
     }
 
     @Override
@@ -108,32 +113,35 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         super.initEntity();
 
         this.inventory = new ChestBoatInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+
+        if (this.namedTag.containsKey("Items") && this.namedTag.get("Items") instanceof List<?>) {
+            List<NbtMap> inventoryList = this.namedTag.getList("Items", NbtType.COMPOUND);
+            for (NbtMap item : inventoryList) {
+                this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
 
-        this.entityDataMap.put(CONTAINER_TYPE, InventoryType.CHEST_BOAT.getNetworkType());
-        entityDataMap.put(CONTAINER_SIZE, this.inventory.getSize());
-        entityDataMap.put(CONTAINER_STRENGTH_MODIFIER, 0);
+        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CHEST_BOAT.ordinal());
+        entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList("Items", new ListTag<CompoundTag>());
+        final List<NbtMap> serializedItems = new ObjectArrayList<>();
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
-                    this.namedTag.getList("Items", CompoundTag.class)
-                            .add(NBTIO.putItemHelper(item, slot));
+                    serializedItems.add(ItemHelper.write(item, slot));
                 }
             }
         }
+        this.namedTag = this.namedTag.toBuilder()
+                .putList("Items", NbtType.COMPOUND, serializedItems)
+                .build();
     }
 
     @Override

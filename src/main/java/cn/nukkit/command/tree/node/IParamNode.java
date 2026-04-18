@@ -1,10 +1,10 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.lang.CommandOutputContainer;
-import cn.nukkit.network.protocol.types.CommandOutputMessage;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputMessage;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
 /**
  * Represents an abstract command parameter node for PowerNukkitX command trees.

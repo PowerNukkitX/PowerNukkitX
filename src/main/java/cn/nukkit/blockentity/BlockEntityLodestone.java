@@ -4,11 +4,12 @@ import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
+import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -23,20 +24,21 @@ import java.util.OptionalInt;
 public class BlockEntityLodestone extends BlockEntitySpawnable {
 
 
-    public BlockEntityLodestone(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityLodestone(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (namedTag.containsInt("trackingHandler")) {
-            namedTag.put("trackingHandle", namedTag.removeAndGet("trackingHandler"));
+        if (namedTag.containsKey("trackingHandler")) {
+            this.namedTag = namedTag.toBuilder().putCompound("trackingHandle", NbtHelper.remove(this.namedTag, "trackingHandler")).build();
         }
     }
 
-    @NotNull public OptionalInt getTrackingHandler() {
-        if (namedTag.containsInt("trackingHandle")) {
+    @NotNull
+    public OptionalInt getTrackingHandler() {
+        if (namedTag.containsKey("trackingHandle")) {
             return OptionalInt.of(namedTag.getInt("trackingHandle"));
         }
         return OptionalInt.empty();
@@ -55,7 +57,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         }
 
         int handler = positionTrackingService.addOrReusePosition(floor);
-        namedTag.putInt("trackingHandle", handler);
+        this.namedTag = namedTag.toBuilder().putInt("trackingHandle", handler).build();
         return handler;
     }
 
@@ -77,7 +79,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
             log.error("Failed to remove the tracking position handler for {}", getLocation());
             return;
         }
-        
+
         int size = handlers.size();
         for (int i = 0; i < size; i++) {
             int handler = handlers.getInt(i);

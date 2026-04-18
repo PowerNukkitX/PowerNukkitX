@@ -1,19 +1,19 @@
 package cn.nukkit.item.customitem.data;
 
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 
 
 public class DigProperty {
-    private CompoundTag states;
+    private NbtMap states;
     private Integer speed;
 
     public DigProperty() {
-        this.states = new CompoundTag();
+        this.states = NbtMap.EMPTY;
     }
 
-    public DigProperty(CompoundTag states, int speed) {
+    public DigProperty(NbtMap states, int speed) {
         this.states = states;
         this.speed = speed;
     }
@@ -26,11 +26,11 @@ public class DigProperty {
         return speed;
     }
 
-    public void setStates(CompoundTag states) {
+    public void setStates(NbtMap states) {
         this.states = states;
     }
 
-    public CompoundTag getStates() {
+    public NbtMap getStates() {
         return states;
     }
 }

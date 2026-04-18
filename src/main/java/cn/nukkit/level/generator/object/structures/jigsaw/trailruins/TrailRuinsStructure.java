@@ -20,11 +20,11 @@ import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,22 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import static cn.nukkit.block.BlockAir.STATE;
-import static cn.nukkit.block.BlockID.BLUE_STAINED_GLASS_PANE;
-import static cn.nukkit.block.BlockID.BROWN_CANDLE;
-import static cn.nukkit.block.BlockID.DEADBUSH;
-import static cn.nukkit.block.BlockID.FLOWER_POT;
-import static cn.nukkit.block.BlockID.GREEN_CANDLE;
-import static cn.nukkit.block.BlockID.LIGHT_BLUE_STAINED_GLASS_PANE;
-import static cn.nukkit.block.BlockID.MAGENTA_STAINED_GLASS_PANE;
-import static cn.nukkit.block.BlockID.OAK_HANGING_SIGN;
-import static cn.nukkit.block.BlockID.PINK_STAINED_GLASS_PANE;
-import static cn.nukkit.block.BlockID.PURPLE_CANDLE;
-import static cn.nukkit.block.BlockID.PURPLE_STAINED_GLASS_PANE;
-import static cn.nukkit.block.BlockID.RED_CANDLE;
-import static cn.nukkit.block.BlockID.RED_STAINED_GLASS_PANE;
-import static cn.nukkit.block.BlockID.SPRUCE_HANGING_SIGN;
-import static cn.nukkit.block.BlockID.WHEAT;
-import static cn.nukkit.block.BlockID.YELLOW_STAINED_GLASS_PANE;
+import static cn.nukkit.block.BlockID.*;
 
 /**
  * Trail Ruins for PowerNukkitX
@@ -289,7 +274,7 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
         Xoroshiro128 random = new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
 
         int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         return definition.getTags().contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS) &&
                 ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }

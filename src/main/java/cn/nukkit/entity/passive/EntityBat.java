@@ -13,7 +13,7 @@ import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class EntityBat extends EntityAnimal implements EntityFlyable {
         return BAT;
     }
 
-    public EntityBat(IChunk chunk, CompoundTag nbt) {
+    public EntityBat(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

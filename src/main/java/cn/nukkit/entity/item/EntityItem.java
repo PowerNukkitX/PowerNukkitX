@@ -4,20 +4,22 @@ import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.components.NameableComponent;
-import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ItemDespawnEvent;
 import cn.nukkit.event.entity.ItemSpawnEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddItemEntityPacket;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.utils.ItemHelper;
 import lombok.extern.slf4j.Slf4j;
-
+import org.cloudburstmc.math.vector.Vector3f;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
+import org.cloudburstmc.protocol.bedrock.packet.AddItemActorPacket;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -42,7 +44,7 @@ public class EntityItem extends Entity {
     private boolean shouldDespawn;
     private boolean isDisplayOnly;
 
-    public EntityItem(IChunk chunk, CompoundTag nbt) {
+    public EntityItem(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 
@@ -63,7 +65,7 @@ public class EntityItem extends Entity {
 
     @Override
     public float getGravity() {
-        if(!getDataFlag(EntityFlag.HAS_GRAVITY)) return 0f;
+        if (!getDataFlag(ActorFlags.HAS_GRAVITY)) return 0f;
         return 0.04f;
     }
 
@@ -100,41 +102,41 @@ public class EntityItem extends Entity {
         this.setHealthMax(5);
         this.setHealthCurrent(this.namedTag.getShort("Health"));
 
-        if (this.namedTag.contains("Age")) {
+        if (this.namedTag.containsKey("Age")) {
             this.age = this.namedTag.getShort("Age");
         }
 
-        if(this.namedTag.contains("ShouldDespawn")) {
+        if (this.namedTag.containsKey("ShouldDespawn")) {
             this.shouldDespawn = this.namedTag.getBoolean("ShouldDespawn");
         } else shouldDespawn = true;
 
-        if(this.namedTag.contains("DisplayOnly")) {
+        if (this.namedTag.containsKey("DisplayOnly")) {
             this.isDisplayOnly = this.namedTag.getBoolean("DisplayOnly");
         } else isDisplayOnly = false;
 
-        if (this.namedTag.contains("PickupDelay")) {
+        if (this.namedTag.containsKey("PickupDelay")) {
             this.pickupDelay = this.namedTag.getShort("PickupDelay");
         }
 
-        if (this.namedTag.contains("Owner")) {
+        if (this.namedTag.containsKey("Owner")) {
             this.owner = this.namedTag.getString("Owner");
         }
 
-        if (this.namedTag.contains("Thrower")) {
+        if (this.namedTag.containsKey("Thrower")) {
             this.thrower = this.namedTag.getString("Thrower");
         }
 
-        if (!this.namedTag.contains("Item")) {
+        if (!this.namedTag.containsKey("Item")) {
             this.close();
             return;
         }
 
-        if(this.namedTag.contains("Mergeable")) {
+        if (this.namedTag.containsKey("Mergeable")) {
             this.mergeItems = this.namedTag.getBoolean("Mergeable");
         } else mergeItems = true;
 
-        this.item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
-        this.setDataFlag(EntityFlag.HAS_GRAVITY, true);
+        this.item = ItemHelper.read(this.namedTag.getCompound("Item"));
+        this.setDataFlag(ActorFlags.HAS_GRAVITY, true);
 
         if (this.item.isLavaResistant()) {
             this.setFireImmune(true);
@@ -185,7 +187,7 @@ public class EntityItem extends Entity {
                         if (!entity.isAlive()) {
                             continue;
                         }
-                        if(!((EntityItem) entity).mergeItems) continue;
+                        if (!((EntityItem) entity).mergeItems) continue;
                         Item closeItem = ((EntityItem) entity).getItem();
                         if (!closeItem.equals(getItem(), true, true)) {
                             continue;
@@ -199,10 +201,10 @@ public class EntityItem extends Entity {
                         }
                         entity.close();
                         this.getItem().setCount(newAmount);
-                        EntityEventPacket packet = new EntityEventPacket();
-                        packet.eid = getId();
-                        packet.data = newAmount;
-                        packet.event = EntityEventPacket.MERGE_ITEMS;
+                        final ActorEventPacket packet = new ActorEventPacket();
+                        packet.setTargetRuntimeID(this.getId());
+                        packet.setType(ActorEvent.UPDATE_STACK_SIZE);
+                        packet.setData(newAmount);
                         Server.broadcastPacket(this.getViewers().values(), packet);
                     }
                 }
@@ -309,24 +311,26 @@ public class EntityItem extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
+        final NbtMapBuilder builder = this.namedTag.toBuilder();
         if (this.item != null) { // Yes, a item can be null... I don't know what causes this, but it can happen.
-            this.namedTag.putCompound("Item", NBTIO.putItemHelper(this.item, -1));
-            this.namedTag.putShort("Health", (int) this.getHealthCurrent());
-            this.namedTag.putShort("Age", this.age);
-            this.namedTag.putShort("PickupDelay", this.pickupDelay);
-            this.namedTag.putBoolean("ShouldDespawn", this.shouldDespawn);
-            this.namedTag.putBoolean("DisplayOnly", this.isDisplayOnly);
+            builder.putCompound("Item", ItemHelper.write(this.item, -1))
+                    .putShort("Health", (short) this.getHealthCurrent())
+                    .putShort("Age", (short) this.age)
+                    .putShort("PickupDelay", (short) this.pickupDelay)
+                    .putBoolean("ShouldDespawn", this.shouldDespawn)
+                    .putBoolean("DisplayOnly", this.isDisplayOnly);
 
             if (this.owner != null) {
-                this.namedTag.putString("Owner", this.owner);
+                builder.putString("Owner", this.owner);
             }
 
             if (this.thrower != null) {
-                this.namedTag.putString("Thrower", this.thrower);
+                builder.putString("Thrower", this.thrower);
             }
 
-            this.namedTag.putBoolean("Mergeable", this.mergeItems);
+            builder.putBoolean("Mergeable", this.mergeItems);
         }
+        this.namedTag = builder.build();
     }
 
     @Override
@@ -394,19 +398,15 @@ public class EntityItem extends Entity {
     }
 
     @Override
-    public DataPacket createAddEntityPacket() {
-        AddItemEntityPacket addEntity = new AddItemEntityPacket();
-        addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.entityData = this.entityDataMap;
-        addEntity.item = this.getItem();
-        return addEntity;
+    public BedrockPacket createAddEntityPacket() {
+        final AddItemActorPacket addItemActorPacket = new AddItemActorPacket();
+        addItemActorPacket.setEntityData(this.entityDataMap);
+        addItemActorPacket.setTargetActorID(this.getId());
+        addItemActorPacket.setTargetRuntimeID(this.getId());
+        addItemActorPacket.setItem(this.getItem().toNetwork());
+        addItemActorPacket.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
+        addItemActorPacket.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
+        return addItemActorPacket;
     }
 
     @Override

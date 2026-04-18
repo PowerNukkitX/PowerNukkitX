@@ -18,12 +18,12 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.List;
 
@@ -125,9 +125,9 @@ public class OceanRuinPopulator extends Populator {
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (definition.getTags().contains(BiomeTags.OCEAN)
-                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) -1)
+                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) - 1)
                 && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) - 1)) {
             boolean isWarm = definition.getTags().contains(BiomeTags.WARM);
             boolean isLarge = random.nextBoundedInt(100) <= 30;
@@ -138,15 +138,15 @@ public class OceanRuinPopulator extends Populator {
             if (isWarm) {
                 index = -1;
                 if (isLarge) {
-                    template = BIG_WARM_RUINS[random.nextBoundedInt(BIG_WARM_RUINS.length-1)];
+                    template = BIG_WARM_RUINS[random.nextBoundedInt(BIG_WARM_RUINS.length - 1)];
                 } else {
-                    template = WARM_RUINS[random.nextBoundedInt(WARM_RUINS.length-1)];
+                    template = WARM_RUINS[random.nextBoundedInt(WARM_RUINS.length - 1)];
                 }
             } else if (isLarge) {
-                index = random.nextBoundedInt(BIG_RUINS_BRICK.length-1);
+                index = random.nextBoundedInt(BIG_RUINS_BRICK.length - 1);
                 template = BIG_RUINS_BRICK[index];
             } else {
-                index = random.nextBoundedInt(RUINS_BRICK.length-1);
+                index = random.nextBoundedInt(RUINS_BRICK.length - 1);
                 template = RUINS_BRICK[index];
             }
             BlockManager manager = new BlockManager(level);
@@ -155,13 +155,13 @@ public class OceanRuinPopulator extends Populator {
             if (isLarge && random.nextBoundedInt(100) <= 90) {
                 List<ChunkPosition> adjacentChunks = Lists.newArrayList(ADJACENT_CHUNKS);
                 for (int i = 0; i < random.nextInt(4, 8); i++) {
-                    ChunkPosition chunkPos = adjacentChunks.remove(random.nextBoundedInt(adjacentChunks.size()-1));
+                    ChunkPosition chunkPos = adjacentChunks.remove(random.nextBoundedInt(adjacentChunks.size() - 1));
                     this.placeAdjacentRuin(level.getChunk(chunkX + chunkPos.x, chunkZ + chunkPos.z), random, isWarm, manager);
                 }
             }
-            for(Block block : manager.getBlocks()) {
-                if(block instanceof BlockAir) manager.unsetBlockStateAt(block);
-                if(block instanceof BlockStructureBlock) {
+            for (Block block : manager.getBlocks()) {
+                if (block instanceof BlockAir) manager.unsetBlockStateAt(block);
+                if (block instanceof BlockStructureBlock) {
                     manager.setBlockStateAt(block, BlockChest.PROPERTIES.getDefaultState());
                     manager.addHook(() -> {
                         BlockChest chest = (BlockChest) manager.getBlockAt(block);
@@ -169,7 +169,7 @@ public class OceanRuinPopulator extends Populator {
                         container.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
-                if(block instanceof BlockMagma) {
+                if (block instanceof BlockMagma) {
                     manager.addHook(() -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
@@ -186,11 +186,11 @@ public class OceanRuinPopulator extends Populator {
         int index;
 
         if (isWarm) {
-            template = WARM_RUINS[random.nextBoundedInt(WARM_RUINS.length-1)];
+            template = WARM_RUINS[random.nextBoundedInt(WARM_RUINS.length - 1)];
             index = -1;
         } else {
-            index = random.nextBoundedInt(RUINS_BRICK.length-1);
-            template = RUINS_BRICK[random.nextBoundedInt(RUINS_BRICK.length-1)];
+            index = random.nextBoundedInt(RUINS_BRICK.length - 1);
+            template = RUINS_BRICK[random.nextBoundedInt(RUINS_BRICK.length - 1)];
         }
 
         int seed = random.nextInt();
@@ -223,10 +223,10 @@ public class OceanRuinPopulator extends Populator {
         Position vec = new Position((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z);
         BlockManager manager1 = new BlockManager(manager.getLevel());
         template.preparePlace(vec, manager1);
-        for(Block block : manager1.getBlocks()) {
+        for (Block block : manager1.getBlocks()) {
             int ran = random.nextInt(10);
-            if(ran == 0) manager1.unsetBlockStateAt(block);
-            if(ran == 1 && !isLarge) manager1.unsetBlockStateAt(block);
+            if (ran == 0) manager1.unsetBlockStateAt(block);
+            if (ran == 1 && !isLarge) manager1.unsetBlockStateAt(block);
         }
         manager.merge(manager1);
         if (index != -1) {
@@ -243,15 +243,15 @@ public class OceanRuinPopulator extends Populator {
 
             BlockManager manager2 = new BlockManager(manager.getLevel());
             mossy.preparePlace(vec, manager2);
-            for(Block block : manager2.getBlocks()) {
+            for (Block block : manager2.getBlocks()) {
                 int ran = random.nextInt(10);
-                if(ran < 3) manager2.unsetBlockStateAt(block);
+                if (ran < 3) manager2.unsetBlockStateAt(block);
             }
             manager.merge(manager2);
             BlockManager manager3 = new BlockManager(manager.getLevel());
             cracked.preparePlace(vec, manager3);
-            for(Block block : manager3.getBlocks()) {
-                if(random.nextBoolean()) manager3.unsetBlockStateAt(block);
+            for (Block block : manager3.getBlocks()) {
+                if (random.nextBoolean()) manager3.unsetBlockStateAt(block);
             }
             manager.merge(manager3);
         }
@@ -290,7 +290,7 @@ public class OceanRuinPopulator extends Populator {
                     .register(new ItemEntry(Item.ENCHANTED_BOOK, 0, 1, 1, 5, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.LEATHER_CHESTPLATE, 1))
                     .register(new ItemEntry(Item.GOLDEN_HELMET, 1))
-                    .register(new ItemEntry(Item.FISHING_ROD, 0, 1, 1,5, getRodEnchantments()))
+                    .register(new ItemEntry(Item.FISHING_ROD, 0, 1, 1, 5, getRodEnchantments()))
                     .register(new ItemEntry(Item.EMPTY_MAP, 10)); //TODO: exploration_map buried treasure
             this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
         }

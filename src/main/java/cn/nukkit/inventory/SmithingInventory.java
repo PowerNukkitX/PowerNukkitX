@@ -21,8 +21,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockSmithingTable;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
 import com.google.common.collect.BiMap;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
 
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
     private static final int TEMPLATE = 2;
 
     public SmithingInventory(BlockSmithingTable blockSmithingTable) {
-        super(blockSmithingTable, InventoryType.SMITHING_TABLE, 3);
+        super(blockSmithingTable, ContainerType.SMITHING_TABLE, 3);
     }
 
     @Override
@@ -46,10 +47,10 @@ public class SmithingInventory extends ContainerInventory implements CraftTypeIn
             map.put(i, 51 + i);
         }
 
-        Map<Integer, ContainerSlotType> map2 = super.slotTypeMap();
-        map2.put(0, ContainerSlotType.SMITHING_TABLE_INPUT);
-        map2.put(1, ContainerSlotType.SMITHING_TABLE_MATERIAL);
-        map2.put(2, ContainerSlotType.SMITHING_TABLE_TEMPLATE);
+        Map<Integer, ContainerEnumName> map2 = super.slotTypeMap();
+        map2.put(0, ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER);
+        map2.put(1, ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER);
+        map2.put(2, ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER);
     }
 
     public Item getEquipment() {

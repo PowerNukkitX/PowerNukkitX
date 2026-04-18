@@ -13,9 +13,9 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 public class FossilPopulator extends Populator {
 
@@ -32,7 +32,7 @@ public class FossilPopulator extends Populator {
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
+        BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (definition.getTags().contains(BiomeTags.DESERT) || definition.getTags().contains(BiomeTags.SWAMP) || definition.getTags().contains(BiomeTags.MANGROVE_SWAMP)
                 && random.nextBoundedInt(64) == (0x1211dfa1 & 63)) { //salted
             int y = Math.min(64, chunk.getHeightMap(0, 0));

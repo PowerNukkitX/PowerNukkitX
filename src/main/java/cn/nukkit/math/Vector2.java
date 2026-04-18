@@ -1,5 +1,7 @@
 package cn.nukkit.math;
 
+import org.cloudburstmc.math.vector.Vector2f;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -136,6 +138,10 @@ public class Vector2 {
     @Override
     public String toString() {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
+    }
+
+    public static Vector2 fromNetwork(Vector2f vector2f) {
+        return new Vector2(vector2f.getX(), vector2f.getY());
     }
 
 }

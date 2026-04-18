@@ -4,13 +4,12 @@ import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-
-import java.util.Set;
-
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * @author PetteriM1
@@ -22,7 +21,7 @@ public class EntitySalmon extends EntityFish {
     }
     
 
-    public EntitySalmon(IChunk chunk, CompoundTag nbt) {
+    public EntitySalmon(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
     }
 

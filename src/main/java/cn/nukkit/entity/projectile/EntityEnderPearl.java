@@ -3,7 +3,6 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityTntMinecart;
 import cn.nukkit.entity.mob.EntityEndermite;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -12,31 +11,30 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
+import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityEnderPearl extends EntityProjectile {
 
     @Override
-    @NotNull public String getIdentifier() {
+    @NotNull
+    public String getIdentifier() {
         return ENDER_PEARL;
     }
 
-    public EntityEnderPearl(IChunk chunk, CompoundTag nbt) {
+    public EntityEnderPearl(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityEnderPearl(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+    public EntityEnderPearl(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
-    
 
     @Override
     public float getWidth() {
@@ -103,29 +101,22 @@ public class EntityEnderPearl extends EntityProjectile {
             return;
         }
 
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_TELEPORT_ENDERPEARL);
-        Vector3 destination = new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y+1, NukkitMath.floorDouble(this.z) + 0.5);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
+        Vector3 destination = new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y + 1, NukkitMath.floorDouble(this.z) + 0.5);
         this.shootingEntity.teleport(destination, TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
             this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
         }
-        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_TELEPORT);
-        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_TELEPORT_ENDERPEARL);
-        if(this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-            if(ThreadLocalRandom.current().nextInt(1,20) == 1) {
+        this.level.addLevelEvent(this, LevelEvent.PARTICLE_TELEPORT);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEvent.SOUND_TELEPORT_ENDERPEARL);
+        if (this.level.getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
+            if (ThreadLocalRandom.current().nextInt(1, 20) == 1) {
                 EntityEndermite endermite = (EntityEndermite) Entity.createEntity(Entity.ENDERMITE,
-                        level.getChunk(destination.getFloorX() >> 4, destination.getFloorZ() >> 4), new CompoundTag()
-                                .putList("Pos", new ListTag<>()
-                                        .add(new DoubleTag(destination.getX() + 0.5))
-                                        .add(new DoubleTag(destination.getY() + 0.0625d))
-                                        .add(new DoubleTag(destination.getZ() + 0.5)))
-                                .putList("Motion", new ListTag<>()
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0)))
-                                .putList("Rotation", new ListTag<>()
-                                        .add(new FloatTag(0))
-                                        .add(new FloatTag(0)))
+                        level.getChunk(destination.getFloorX() >> 4, destination.getFloorZ() >> 4), NbtMap.builder()
+                                .putList("Pos", NbtType.DOUBLE, Arrays.asList(destination.getX() + 0.5, destination.getY() + 0.0625d, destination.getZ() + 0.5))
+                                .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
+                                .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
+                                .build()
                 );
                 endermite.spawnToAll();
             }

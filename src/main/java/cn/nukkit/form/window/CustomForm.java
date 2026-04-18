@@ -7,7 +7,6 @@ import cn.nukkit.form.element.ElementLabel;
 import cn.nukkit.form.element.custom.*;
 import cn.nukkit.form.response.CustomResponse;
 import cn.nukkit.form.response.ElementResponse;
-import cn.nukkit.network.protocol.types.ModalFormCancelReason;
 import cn.nukkit.utils.JSONUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -17,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 
 import java.lang.reflect.Type;
 import java.util.List;

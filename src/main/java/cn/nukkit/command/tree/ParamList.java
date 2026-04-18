@@ -2,7 +2,7 @@ package cn.nukkit.command.tree;
 
 import cn.nukkit.command.tree.node.IParamNode;
 import cn.nukkit.lang.CommandOutputContainer;
-import cn.nukkit.network.protocol.types.CommandOutputMessage;
+import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputMessage;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -79,11 +79,11 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     public void addMessage(String key) {
-        this.messageContainer.getMessages().add(new CommandOutputMessage(key, CommandOutputContainer.EMPTY_STRING));
+        this.messageContainer.getMessages().add(new CommandOutputMessage(false, key, CommandOutputContainer.EMPTY_STRING));
     }
 
     public void addMessage(String key, String... params) {
-        this.messageContainer.getMessages().add(new CommandOutputMessage(key, params));
+        this.messageContainer.getMessages().add(new CommandOutputMessage(false, key, params));
     }
 
     public void addMessage(CommandOutputMessage... messages) {

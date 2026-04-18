@@ -10,9 +10,9 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
+import org.cloudburstmc.nbt.NbtMap;
 
 public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
@@ -22,7 +22,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
     public double spawnRangeHorizontal = 16.5d;
     public double spawnRangeVertical = 8.5d;
 
-    public BlockEntityCreakingHeart(IChunk chunk, CompoundTag nbt) {
+    public BlockEntityCreakingHeart(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -93,7 +93,7 @@ public class BlockEntityCreakingHeart extends BlockEntitySpawnable {
 
             Entity ent = Entity.createEntity(Entity.CREAKING, pos);
             if(ent != null) {
-                CreatureSpawnEvent ev = new CreatureSpawnEvent(ent.getNetworkId(), pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.CREAKING_HEART);
+                CreatureSpawnEvent ev = new CreatureSpawnEvent(ent.getNetworkId(), pos, NbtMap.EMPTY, CreatureSpawnEvent.SpawnReason.CREAKING_HEART);
                 level.getServer().getPluginManager().callEvent(ev);
                 if(ev.isCancelled()) {
                     ent.close();

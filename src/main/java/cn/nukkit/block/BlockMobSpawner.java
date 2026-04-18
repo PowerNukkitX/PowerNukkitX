@@ -8,10 +8,9 @@ import cn.nukkit.item.ItemCustomEntitySpawnEgg;
 import cn.nukkit.item.ItemSpawnEgg;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 
+import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +20,8 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
     public static final BlockProperties PROPERTIES = new BlockProperties(MOB_SPAWNER);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -35,13 +35,10 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        CompoundTag nbt = new CompoundTag();
+        NbtMap nbt = NbtMap.EMPTY;
 
         if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
+            nbt.putAll(item.getCustomBlockData());
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -88,7 +85,7 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
     }
 
     @Override
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 
@@ -104,18 +101,19 @@ public class BlockMobSpawner extends BlockSolid implements BlockEntityHolder<Blo
 
     public boolean setType(int networkId) {
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
-        if(blockEntity != null && blockEntity instanceof BlockEntityMobSpawner spawner) {
+        if (blockEntity != null && blockEntity instanceof BlockEntityMobSpawner spawner) {
             spawner.setSpawnEntityType(networkId);
         } else {
             if (blockEntity != null) {
                 blockEntity.close();
             }
-            CompoundTag nbt = new CompoundTag()
+            NbtMap nbt = NbtMap.builder()
                     .putString(BlockEntityMobSpawner.TAG_ID, BlockEntity.MOB_SPAWNER)
                     .putInt(BlockEntityMobSpawner.TAG_ENTITY_ID, networkId)
                     .putInt(BlockEntityMobSpawner.TAG_X, (int) x)
                     .putInt(BlockEntityMobSpawner.TAG_Y, (int) y)
-                    .putInt(BlockEntityMobSpawner.TAG_Z, (int) z);
+                    .putInt(BlockEntityMobSpawner.TAG_Z, (int) z)
+                    .build();
 
             BlockEntityMobSpawner entitySpawner = new BlockEntityMobSpawner(getLevel().getChunk((int) x >> 4, (int) z >> 4), nbt);
             entitySpawner.spawnToAll();

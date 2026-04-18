@@ -11,10 +11,12 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+
+import java.util.List;
 import java.util.Set;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
@@ -62,26 +64,27 @@ public class PopulatorRuinedPortal extends Populator {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(canGenerate(random, chunk)) {
+        if (canGenerate(random, chunk)) {
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
-            BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7));
-            Set<String> tags = definition.getTags();
+            List<String> tags = Registries.BIOME.getTags(chunk.getBiomeId(7, SEA_LEVEL, 7));
             PortalHeight height = null;
-            if(tags.contains(BiomeTags.DESERT)) height = PortalHeight.PARTLY_BURIED;
-            else if(tags.contains(BiomeTags.JUNGLE) || tags.contains(BiomeTags.SWAMP)) height = PortalHeight.ON_LAND_SURFACE;
-            else if(tags.contains(BiomeTags.MOUNTAINS)) height = random.nextBoolean() ? PortalHeight.ON_LAND_SURFACE : PortalHeight.IN_MOUNTAIN;
-            else if(tags.contains(BiomeTags.OCEAN)) height = PortalHeight.ON_OCEAN_FLOOR;
-            else if(tags.contains(BiomeTags.NETHER)) height = PortalHeight.IN_NETHER;
+            if (tags.contains(BiomeTags.DESERT)) height = PortalHeight.PARTLY_BURIED;
+            else if (tags.contains(BiomeTags.JUNGLE) || tags.contains(BiomeTags.SWAMP))
+                height = PortalHeight.ON_LAND_SURFACE;
+            else if (tags.contains(BiomeTags.MOUNTAINS))
+                height = random.nextBoolean() ? PortalHeight.ON_LAND_SURFACE : PortalHeight.IN_MOUNTAIN;
+            else if (tags.contains(BiomeTags.OCEAN)) height = PortalHeight.ON_OCEAN_FLOOR;
+            else if (tags.contains(BiomeTags.NETHER)) height = PortalHeight.IN_NETHER;
             else height = random.nextBoolean() ? PortalHeight.ON_LAND_SURFACE : PortalHeight.UNDERGROUND;
             boolean big = random.nextBoundedInt(20) == 0;
             PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get(big ? GIANT_PORTALS[random.nextInt(GIANT_PORTALS.length)] : PORTALS[random.nextInt(PORTALS.length)]);
             int y = findSuitableY(random, chunk, height, chunk.getHeightMap(7, 7), structure.getSizeY());
             BlockManager manager = new BlockManager(level);
             structure.preparePlace(new Position(x, y, z), manager);
-            for(Block block : manager.getBlocks()) {
-                if(block instanceof BlockJigsaw) manager.setBlockStateAt(block, NETHERRACK);
-                if(level.getBlock(block) instanceof BlockFlowingWater) {
+            for (Block block : manager.getBlocks()) {
+                if (block instanceof BlockJigsaw) manager.setBlockStateAt(block, NETHERRACK);
+                if (level.getBlock(block) instanceof BlockFlowingWater) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
                     manager.getLevel().setBlockStateAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 1, BlockWater.PROPERTIES.getDefaultState());
                 }
@@ -93,30 +96,30 @@ public class PopulatorRuinedPortal extends Populator {
                         manager.setBlockStateAt(block, CRYING_OBSIDIAN);
                     }
                 }
-                if(block instanceof BlockMagma) {
+                if (block instanceof BlockMagma) {
                     manager.addHook(() -> {
                         level.getBlock(block).onUpdate(Level.BLOCK_UPDATE_NORMAL);
                     });
                 }
-                if(block instanceof BlockChest chest) {
+                if (block instanceof BlockChest chest) {
                     manager.addHook(() -> {
                         CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
-                if(level.getDimension() == Level.DIMENSION_NETHER) {
+                if (level.getDimension() == Level.DIMENSION_NETHER) {
                     if (block instanceof BlockChiseledStoneBricks) {
                         manager.setBlockStateAt(block, CHISELED_POLISHED_BLACKSTONE.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockCrackedStoneBricks) {
+                    } else if (block instanceof BlockCrackedStoneBricks) {
                         manager.setBlockStateAt(block, CRACKED_POLISHED_BLACKSTONE_BRICKS.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockMossyStoneBricks) {
+                    } else if (block instanceof BlockMossyStoneBricks) {
                         manager.unsetBlockStateAt(block);
-                    } else if(block instanceof BlockStoneBricks) {
+                    } else if (block instanceof BlockStoneBricks) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICKS);
-                    }  else if(block instanceof BlockStoneBrickSlab) {
+                    } else if (block instanceof BlockStoneBrickSlab) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_SLAB.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockStoneBrickStairs) {
+                    } else if (block instanceof BlockStoneBrickStairs) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_BRICK_STAIRS.setPropertyValues(block.getProperties()));
-                    } else if(block instanceof BlockStoneBrickWall) {
+                    } else if (block instanceof BlockStoneBrickWall) {
                         manager.setBlockStateAt(block, POLISHED_BLACKSTONE_WALL.setPropertyValues(block.getProperties()));
                     }
                 }

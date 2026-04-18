@@ -4,6 +4,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public interface LevelProvider {
 
     DimensionData getDimensionData();
 
-    Pair<byte[], Integer> requestChunkData(int x, int z);
+    Pair<ByteBuf, Integer> requestChunkData(int x, int z);
 
     String getPath();
 
