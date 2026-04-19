@@ -2343,7 +2343,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     protected void updatePassengerPosition(Entity passenger) {
-        Vector3f seat = passenger.getSeatPosition();
+        Vector3f seat = passenger.getSeatPosition(passenger);
         if (seat == null) seat = new Vector3f(0, getHeight() * SEATED_FACTOR, 0);
 
         double yawRad = Math.toRadians(this.yaw);
@@ -2637,12 +2637,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     /// ///// PASSENGER SEAT META SYNC ////////////
     /// ///////////////////////////////////////////
 
-    public Vector3f getSeatPosition() {
-        return Vector3f.fromNetwork(this.getDataProperty(ActorDataTypes.SEAT_OFFSET));
+    public Vector3f getSeatPosition(Entity passenger) {
+        return Vector3f.fromNetwork(this.getDataProperty(ActorDataTypes.SEAT_OFFSET, this.getSeatOffsetFor(this.passengers.indexOf(passenger), passenger).toNetwork()));
     }
 
     public void setSeatPosition(Vector3f pos) {
-        this.setDataProperty(ActorDataTypes.SEAT_OFFSET, pos);
+        this.setDataProperty(ActorDataTypes.SEAT_OFFSET, pos.toNetwork());
     }
 
     public @Nullable Float getSeatThirdPersonCameraRadius() {
