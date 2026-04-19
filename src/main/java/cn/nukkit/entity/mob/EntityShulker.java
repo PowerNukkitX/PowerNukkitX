@@ -134,7 +134,7 @@ public class EntityShulker extends EntityMob implements EntityVariant {
     protected void initEntity() {
         super.initEntity();
         if(getMemoryStorage().get(CoreMemoryTypes.VARIANT) == null) setVariant(16);
-        setDataProperty(ActorDataTypes.ATTACH_POS, getLevelBlock().getSide(BlockFace.UP).asBlockVector3());
+        setDataProperty(ActorDataTypes.ATTACH_POS, getLevelBlock().getSide(BlockFace.UP).asBlockVector3().toNetwork());
     }
 
     @Override
