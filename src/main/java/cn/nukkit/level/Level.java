@@ -1290,6 +1290,7 @@ public class Level implements Metadatable {
                         if (isRaining()) {
                             final LevelEventPacket levelEventPacketStartRain = new LevelEventPacket();
                             levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
+                            levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                             levelEventPacketStartRain.setData(this.rainTime);
                             player.dataPacket(levelEventPacketStartRain);
                             this.playerWeatherShowMap.put(key, 1);
@@ -1297,6 +1298,7 @@ public class Level implements Metadatable {
                                 final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
                                 levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
                                 levelEventPacketStartThunder.setData(this.thunderTime);
+                                levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                                 player.dataPacket(levelEventPacketStartThunder);
                                 this.playerWeatherShowMap.put(key, 2);
                             }
