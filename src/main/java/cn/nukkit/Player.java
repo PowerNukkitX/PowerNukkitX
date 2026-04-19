@@ -2704,9 +2704,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 this.checkNearEntities();
             }
 
-            Item itemInHand = this.getInventory().getItemInMainHand();
-            if (!itemInHand.isNull() && this.isUsingItem(itemInHand.getId())) {
-                itemInHand.whileUsing(this);
+            HumanInventory inventory = this.getInventory();
+            try {
+                if (inventory != null) {
+                    Item itemInHand = inventory.getItemInMainHand();
+                    if (itemInHand != null && !itemInHand.isNull() && this.isUsingItem(itemInHand.getId())) {
+                        itemInHand.whileUsing(this);
+                    }
+                }
+            } catch (Exception e) {
+                // Sécurisation contre les accès asynchrones ou l'initialisation incomplète
             }
 
             this.entityBaseTick(tickDiff);

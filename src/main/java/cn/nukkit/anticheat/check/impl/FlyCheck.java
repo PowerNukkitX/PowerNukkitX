@@ -31,7 +31,9 @@ public class FlyCheck implements ICheatCheck {
             player.isSpectator() ||
             player.getRiding() != null ||
             player.isGliding() ||
-            player.isSwimming()) {
+            player.isSwimming() ||
+            player.isTouchingWater() ||
+            player.isInsideOfWater()) {
             inAirTicks.remove(player.getUniqueId());
             return true;
         }

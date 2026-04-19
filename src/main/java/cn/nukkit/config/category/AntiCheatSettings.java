@@ -33,9 +33,6 @@ public class AntiCheatSettings extends OkaeriConfig {
     @Comment("pnx.settings.anticheat.water.threshold")
     double waterThreshold = 0.4;
 
-    @Comment("pnx.settings.anticheat.noclip.enabled")
-    boolean noclipEnabled = true;
-
     @Comment("pnx.settings.anticheat.fastbreak.enabled")
     boolean fastbreakEnabled = true;
 
@@ -46,10 +43,4 @@ public class AntiCheatSettings extends OkaeriConfig {
     boolean autoclickerEnabled = true;
     @Comment("pnx.settings.anticheat.autoclicker.max_cps")
     int autoclickerMaxCps = 20;
-
-    @Comment("pnx.settings.anticheat.phase.enabled")
-    boolean phaseEnabled = true;
-
-    @Comment("pnx.settings.anticheat.ghosthand.enabled")
-    boolean ghosthandEnabled = true;
 }

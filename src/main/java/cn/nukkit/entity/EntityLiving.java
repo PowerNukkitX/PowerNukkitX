@@ -501,14 +501,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         boolean isBreathing = !this.isInsideOfWater();
 
         if (this instanceof Player player) {
-            if (isBreathing && player.getInventory().getHelmet() instanceof ItemTurtleHelmet) {
-                turtleTicks = 200;
-            } else if (turtleTicks > 0) {
-                isBreathing = true;
-                turtleTicks--;
-            }
-
-            if (player.isCreative() || player.isSpectator()) {
+            try {
+                HumanInventory playerInventory = player.getInventory();
+                if (playerInventory != null) {
+                    if (isBreathing && playerInventory.getHelmet() instanceof ItemTurtleHelmet) {
+                        turtleTicks = 200;
+                    } else if (turtleTicks > 0) {
+                        isBreathing = true;
+                        turtleTicks--;
+                    }
+                }
+                
+                if (player.isCreative() || player.isSpectator()) {
+                    isBreathing = true;
+                }
+            } catch (Exception e) {
+                // Sécurisation maximale contre tout type d'erreur lors de l'accès à l'inventaire
                 isBreathing = true;
             }
         }
