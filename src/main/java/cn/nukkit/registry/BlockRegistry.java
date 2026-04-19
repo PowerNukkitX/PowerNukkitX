@@ -347,7 +347,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(DARK_PRISMARINE_DOUBLE_SLAB, BlockDarkPrismarineDoubleSlab.class);
         register0(DARK_PRISMARINE_SLAB, BlockDarkPrismarineSlab.class);
         register0(DARK_PRISMARINE_STAIRS, BlockDarkPrismarineStairs.class);
-        register0(DARKOAK_STANDING_SIGN, BlockDarkoakStandingSign.class);
+        register0(DARKOAK_STANDING_SIGN, BlockDarkOakStandingSign.class);
         register0(DARKOAK_WALL_SIGN, BlockDarkoakWallSign.class);
         register0(DAYLIGHT_DETECTOR, BlockDaylightDetector.class);
         register0(DAYLIGHT_DETECTOR_INVERTED, BlockDaylightDetectorInverted.class);
