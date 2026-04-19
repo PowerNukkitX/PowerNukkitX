@@ -32,7 +32,6 @@ import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
 import cn.nukkit.entity.mob.EntityBoss;
-import cn.nukkit.entity.passive.EntityHorse;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -1986,7 +1985,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.info.getIdentityClaims().extraData.xuid, this.getLocatorBarColor());
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
         }
     }
 
@@ -5568,7 +5567,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setLocatorBarColor(Color color) {
         this.locatorBarColor = color;
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.info.getIdentityClaims().extraData.xuid, this.getLocatorBarColor());
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
         }
     }
 
@@ -5602,7 +5601,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the XUID
      */
     public String getXUID() {
-        return this.info.identityClaims.extraData.xuid;
+        return this.server.getSettings().baseSettings().waterdogpe() &&
+                this.info.clientChainData.getWaterdogData() != null ?
+                this.info.clientChainData.getWaterdogData().getXuid() :
+                this.info.identityClaims.extraData.xuid;
     }
 
     /**
