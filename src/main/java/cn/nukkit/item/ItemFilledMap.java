@@ -5,9 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.InternalPlugin;
+import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
+import org.cloudburstmc.protocol.bedrock.data.Dimension;
 import org.cloudburstmc.protocol.bedrock.packet.ClientboundMapItemDataPacket;
 
 import javax.imageio.ImageIO;
@@ -17,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 public class ItemFilledMap extends Item {
@@ -121,22 +126,25 @@ public class ItemFilledMap extends Item {
         // don't load the image from NBT if it has been done before.
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
-        /*final ClientboundMapItemDataPacket clientboundMapItemDataPacket = new ClientboundMapItemDataPacket();
-        clientboundMapItemDataPacket.getTrackedEntityIds().add(this.getMapId());
-        clientboundMapItemDataPacket.getTrackedObjects()
-        clientboundMapItemDataPacket.eids = new long[]{getMapId()};
-        clientboundMapItemDataPacket.mapId = getMapId();
-        clientboundMapItemDataPacket.update = 2;
-        clientboundMapItemDataPacket.scale = (byte) (scale - 1);
-        clientboundMapItemDataPacket.width = 128;
-        clientboundMapItemDataPacket.height = 128;
-        clientboundMapItemDataPacket.offsetX = 0;
-        clientboundMapItemDataPacket.offsetZ = 0;
-        clientboundMapItemDataPacket.image = image; TODO protocol
+        final ClientboundMapItemDataPacket packet = new ClientboundMapItemDataPacket();
+        packet.getTrackedEntityIds().add(this.getMapId());
+        packet.setMapID(this.getMapId());
+        packet.setDimension(Dimension.from(player.getLevel().getDimension()));
+        packet.setMapOrigin(Vector3i.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
+        packet.setScale(scale);
+        packet.setTextureHeight(128);
+        packet.setTextureWidth(128);
 
+        final List<Integer> pixels = new IntArrayList();
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                pixels.add((int) Utils.toABGR(this.image.getRGB(x, y)));
+            }
+        }
+        packet.setPixels(pixels.stream().mapToInt(Integer::intValue).toArray());
 
-                                                     player.dataPacket(clientboundMapItemDataPacket);
-        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(clientboundMapItemDataPacket), 20);*/
+        player.dataPacket(packet);
+        player.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> player.dataPacket(packet), 20);
     }
 
     public boolean trySendImage(Player p) {
