@@ -47,7 +47,6 @@ import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
-import org.cloudburstmc.protocol.bedrock.packet.CompletedUsingItemPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -463,20 +462,8 @@ public abstract class Item implements Cloneable, ItemID {
             tag = this.getNamedTag();
         }
 
-        List<NbtMap> ench;
-        if (!tag.containsKey("ench")) {
-            ench = new ObjectArrayList<>();
-            tag = tag.toBuilder().putList("ench", NbtType.COMPOUND, ench).build();
-        } else {
-            ench = new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND));
-        }
-        List<NbtMap> custom_ench;
-        if (!tag.containsKey("custom_ench")) {
-            custom_ench = new ObjectArrayList<>();
-            tag = tag.toBuilder().putList("custom_ench", NbtType.COMPOUND, custom_ench).build();
-        } else {
-            custom_ench = new ObjectArrayList<>(tag.getList("custom_ench", NbtType.COMPOUND));
-        }
+        final List<NbtMap> ench = tag.containsKey("ench") ? new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND)) : new ObjectArrayList<>();
+        final List<NbtMap> custom_ench = tag.containsKey("custom_ench") ? new ObjectArrayList<>(tag.getList("custom_ench", NbtType.COMPOUND)) : new ObjectArrayList<>();
 
         for (Enchantment enchantment : enchantments) {
             boolean found = false;
@@ -522,7 +509,7 @@ public abstract class Item implements Cloneable, ItemID {
                 }
             }
         }
-        if (custom_ench.size() != 0) {
+        if (!custom_ench.isEmpty()) {
             var customName = setCustomEnchantDisplay(custom_ench);
             if (tag.containsKey("display") && tag.get("display") instanceof NbtMap displayTag) {
                 tag = tag.toBuilder().putCompound("display",
@@ -534,6 +521,10 @@ public abstract class Item implements Cloneable, ItemID {
                         .build()
                 ).build();
             }
+            tag = tag.toBuilder().putList("custom_ench", NbtType.COMPOUND, custom_ench).build();
+        }
+        if (!ench.isEmpty()) {
+            tag = tag.toBuilder().putList("ench", NbtType.COMPOUND, ench).build();
         }
         this.setNamedTag(tag);
     }
@@ -2685,6 +2676,8 @@ public abstract class Item implements Cloneable, ItemID {
             item.setBlockUnsafe(Block.get(Registries.BLOCKSTATE.get(itemData.getBlockDefinition().getRuntimeId())));
         }
         item.setNetId(itemData.getNetId());
+        item.identifier = Identifier.tryParse(itemData.getDefinition().getIdentifier());
+        item.id = item.identifier.toString();
         return item;
     }
 
