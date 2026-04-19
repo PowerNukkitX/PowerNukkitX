@@ -100,11 +100,11 @@ public class ShipwreckPopulator extends Populator {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(5, chunk.getHeightMap(5, 5), 5);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
-        if ((definition.getTags().contains(BiomeTags.OCEAN) || definition.getTags().contains(BiomeTags.BEACH))
+        if ((Registries.BIOME.containsTag(BiomeTags.OCEAN, definition) || Registries.BIOME.containsTag(BiomeTags.BEACH, definition))
                 && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
                 && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
             PNXStructure template;
-            boolean beach = definition.getTags().contains(BiomeTags.BEACH);
+            boolean beach =  Registries.BIOME.containsTag(BiomeTags.BEACH, definition);
             if (beach) {
                 template = STRUCTURE_LOCATION_BEACHED[random.nextInt(STRUCTURE_LOCATION_BEACHED.length)];
             } else {

@@ -264,7 +264,7 @@ public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectG
 
         int biome = level.getBiomeId(x, y, z);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
-        if (!definition.getTags().contains(BiomeTags.DESERT) ||
+        if (!Registries.BIOME.containsTag(BiomeTags.DESERT, definition) ||
                 !((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
             return false;
         }

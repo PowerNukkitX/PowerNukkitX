@@ -1199,7 +1199,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void spawnTo(Player player) {
         if (this.closed) return;
-        log.info("spawn {} to {}", this.getName(), player.getName());
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(createAddEntityPacket());

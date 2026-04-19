@@ -30,11 +30,11 @@ public class ForestRockFeature extends SurfaceGenerateFeature {
         this.random.setSeed(x + y + z);
         int sizeX = 3 + random.nextInt(1);
         int sizeZ = 3 + random.nextInt(1);
-        for(int _x = 0; _x < sizeX; _x++) {
-            for(int _y = -1; _y <= 1; _y++) {
-                for(int _z = 0; _z < sizeX; _z++) {
-                    boolean corner = (_x == 0 || _x == sizeX-1) && (_z == 0 || _z == sizeZ-1) && _y != 0;
-                    if(!corner) {
+        for (int _x = 0; _x < sizeX; _x++) {
+            for (int _y = -1; _y <= 1; _y++) {
+                for (int _z = 0; _z < sizeX; _z++) {
+                    boolean corner = (_x == 0 || _x == sizeX - 1) && (_z == 0 || _z == sizeZ - 1) && _y != 0;
+                    if (!corner) {
                         manager.setBlockStateAt(x + _x, y + _y, z + _z, MOSSY_COBBLESTONE);
                     }
                 }
@@ -45,7 +45,7 @@ public class ForestRockFeature extends SurfaceGenerateFeature {
     @Override
     public boolean isSupportValid(Block support) {
         return support.hasTag(BlockTags.DIRT) &&
-                Registries.BIOME.get(support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ())).second().getTags().contains(BiomeTags.TAIGA);
+                Registries.BIOME.containsTag(BiomeTags.TAIGA, support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ()));
     }
 
     @Override

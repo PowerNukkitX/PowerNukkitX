@@ -35,9 +35,9 @@ public class PinkPetalsFeature extends GenerateFeature {
         this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                if(random.nextBoolean()) {
+                if (random.nextBoolean()) {
                     int y = chunk.getHeightMap(x, z) + 1;
-                    if(Registries.BIOME.get(chunk.getBiomeId(x, y, z)).second().getTags().contains(BiomeTags.CHERRY_GROVE)) {
+                    if (Registries.BIOME.containsTag(BiomeTags.CHERRY_GROVE, chunk.getBiomeId(x, y, z))) {
                         Block support = chunk.getBlockState(x, y - 1, z).toBlock();
                         if (support.hasTag(BlockTags.GRASS)) {
                             if (chunk.getBlockState(x, y, z) == BlockAir.STATE) {

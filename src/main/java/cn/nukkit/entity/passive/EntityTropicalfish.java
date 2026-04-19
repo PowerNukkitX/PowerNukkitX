@@ -92,7 +92,7 @@ public class EntityTropicalfish extends EntityFish {
         }
         this.setDataProperty(ActorDataTypes.MARK_VARIANT, this.mark_variant);
         this.setDataProperty(ActorDataTypes.VARIANT, this.variant);
-        this.setDataProperty(ActorDataTypes.COLOR_2_INDEX, this.color2);
+        this.setDataProperty(ActorDataTypes.COLOR_2_INDEX, (byte) this.color2);
     }
 
     private int getRandomColor() {
@@ -132,7 +132,7 @@ public class EntityTropicalfish extends EntityFish {
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(ActorDataTypes.COLOR_INDEX, color);
+        this.setDataProperty(ActorDataTypes.COLOR_INDEX, (byte) color);
         this.namedTag = this.namedTag.toBuilder().putByte("Color", (byte) this.color).build();
     }
 

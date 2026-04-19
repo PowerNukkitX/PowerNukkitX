@@ -3,6 +3,7 @@ package cn.nukkit.level.generator.feature.tree;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
 import cn.nukkit.level.generator.object.ObjectBigMushroom;
 import cn.nukkit.level.generator.object.ObjectGenerator;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
@@ -28,7 +29,7 @@ public class MushroomIslandMushroomFeature extends ObjectGeneratorFeature {
 
     @Override
     public boolean canSpawnHere(BiomeDefinitionData definition) {
-        return definition.getTags().contains(BiomeTags.MOOSHROOM_ISLAND);
+        return Registries.BIOME.containsTag(BiomeTags.MOOSHROOM_ISLAND, definition);
     }
 
     @Override

@@ -86,8 +86,8 @@ public class EntityHusk extends EntityZombie {
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
-        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8);
-        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL, 8f);
+        this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_INTERVAL_RANGE, 16f);
         this.setDataProperty(ActorDataTypes.AMBIENT_SOUND_EVENT_NAME, "ambient");
     }
 

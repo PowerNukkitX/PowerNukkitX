@@ -7,7 +7,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.generator.noise.minecraft.utils.Pair;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -198,7 +197,7 @@ public class BlockSnowLayer extends BlockFallable {
         super.onUpdate(type);
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             BiomeDefinitionData biomeDefinition = Registries.BIOME.get(getLevel().getBiomeId(getFloorX(), this.getFloorY(), getFloorZ())).second();
-            if (biomeDefinition.getTags().contains(BiomeTags.WARM) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
+            if (Registries.BIOME.containsTag(BiomeTags.WARM, biomeDefinition) || this.getLevel().getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) >= 10) {
                 melt();
                 return Level.BLOCK_UPDATE_RANDOM;
             }

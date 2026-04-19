@@ -126,10 +126,10 @@ public class OceanRuinPopulator extends Populator {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
-        if (definition.getTags().contains(BiomeTags.OCEAN)
+        if (Registries.BIOME.containsTag(BiomeTags.OCEAN, definition)
                 && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) - 1)
                 && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt((SPACING - SEPARATION) - 1)) {
-            boolean isWarm = definition.getTags().contains(BiomeTags.WARM);
+            boolean isWarm = Registries.BIOME.containsTag(BiomeTags.WARM, definition);
             boolean isLarge = random.nextBoundedInt(100) <= 30;
 
             PNXStructure template;

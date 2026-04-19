@@ -58,7 +58,7 @@ public class OceanMonumentPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level l = chunk.getLevel();
-        if (Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7)).second().getTags().contains(BiomeTags.OCEAN)) {
+        if (Registries.BIOME.containsTag(BiomeTags.OCEAN, chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7))) {
             BlockManager level = new BlockManager(l);
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
             int cZ = (chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING;

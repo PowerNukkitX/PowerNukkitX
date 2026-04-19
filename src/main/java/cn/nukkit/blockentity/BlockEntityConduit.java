@@ -14,6 +14,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
 import org.cloudburstmc.nbt.NbtMap;
@@ -209,7 +210,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
                 || target.level.isRaining() && target.level.canBlockSeeSky(target)
-                && !BiomeTags.containTag(target.level.getBiomeId(target.getFloorX(), target.getFloorY(), target.getFloorZ()), BiomeTags.FROZEN);
+                && !Registries.BIOME.containsTag(BiomeTags.FROZEN, target.level.getBiomeId(target.getFloorX(), target.getFloorY(), target.getFloorZ()));
     }
 
     private boolean scanWater() {

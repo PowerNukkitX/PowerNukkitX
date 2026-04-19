@@ -35,16 +35,16 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
         int radius = NukkitMath.randomRange(random, 0, 2);
         for (int x = sourceX - radius; x <= sourceX + radius; x++) {
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                if(!level.isChunkGenerated( x >> 4, z >> 4)) return;
+                if (!level.isChunkGenerated(x >> 4, z >> 4)) return;
                 if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
-                    if(random.nextFloat() < 0.3f) {
+                    if (random.nextFloat() < 0.3f) {
                         int depth = 0;
                         int height = level.getHeightMap(x, z);
                         BlockState topBlockState = level.getBlockStateAt(x, height, z);
                         while (topBlockState.toBlock() instanceof BlockLeaves || topBlockState == BlockAir.STATE) {
                             topBlockState = level.getBlockStateAt(x, height - (++depth), z);
                         }
-                        if(isSupportValid(topBlockState.toBlock(new Position(x, (height - depth), z, level)))) {
+                        if (isSupportValid(topBlockState.toBlock(new Position(x, (height - depth), z, level)))) {
                             populateFlower(flower, object, x, (height - depth) + 1, z);
                         }
                     }
@@ -60,15 +60,15 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
             case 2 -> level.setBlockStateAt(x, y, z, BlockLilyOfTheValley.PROPERTIES.getDefaultState());
             case 3 -> {
                 level.setBlockStateAt(x, y, z, BlockLilac.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y+1, z, BlockLilac.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                level.setBlockStateAt(x, y + 1, z, BlockLilac.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
             }
             case 4 -> {
                 level.setBlockStateAt(x, y, z, BlockPeony.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y+1, z, BlockPeony.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                level.setBlockStateAt(x, y + 1, z, BlockPeony.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
             }
             case 0 -> {
                 level.setBlockStateAt(x, y, z, BlockRoseBush.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y+1, z, BlockRoseBush.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+                level.setBlockStateAt(x, y + 1, z, BlockRoseBush.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
             }
         }
     }
@@ -85,10 +85,10 @@ public class ForestFlowerFoliageFeature extends CountGenerateFeature {
 
     public boolean isSupportValid(Block support) {
         return support instanceof BlockGrassBlock &&
-                Registries.BIOME.get(support.getLevel().getBiomeId(
+                Registries.BIOME.containsTag(BiomeTags.FOREST, support.getLevel().getBiomeId(
                         support.getFloorX(),
                         support.getFloorY(),
-                        support.getFloorZ())).second().getTags().contains(BiomeTags.FOREST);
+                        support.getFloorZ()));
     }
 
     @Override

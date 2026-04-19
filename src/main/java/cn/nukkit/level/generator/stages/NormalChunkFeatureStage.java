@@ -52,7 +52,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
                             }
                         }
                     } else {
-                        if (biome.getTags().contains(BiomeTags.JUNGLE)) {
+                        if (Registries.BIOME.containsTag(BiomeTags.JUNGLE, biome)) {
                             log.warn("No chunkGenData for biome {}", definition.first());
                         }
                     }

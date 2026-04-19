@@ -5,6 +5,7 @@ import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectJungleTree;
 import cn.nukkit.level.generator.object.ObjectLegacyObjectWrapper;
 import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
@@ -25,7 +26,7 @@ public class JungleEdgeTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public boolean canSpawnHere(BiomeDefinitionData definition) {
-        return definition.getTags().contains(BiomeTags.EDGE);
+        return Registries.BIOME.containsTag(BiomeTags.EDGE, definition);
     }
 
     @Override

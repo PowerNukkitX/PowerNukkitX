@@ -24,7 +24,7 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
 
-        if(!Registries.BIOME.get(manager.getLevel().getBiomeId(x, y, z)).second().getTags().contains(BiomeTags.BAMBOO)) return;
+        if(!Registries.BIOME.containsTag(BiomeTags.BAMBOO, manager.getLevel().getBiomeId(x, y, z))) return;
         this.random.setSeed(x + y + z);
         int midX = x + 1;
         int midZ = z + 1;

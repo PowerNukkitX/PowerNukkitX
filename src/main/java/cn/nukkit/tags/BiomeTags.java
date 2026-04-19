@@ -107,14 +107,6 @@ public final class BiomeTags {
         TAG_2_BIOMES.trim();
     }
 
-    public static boolean containTag(int biomeId, String tag) {
-        return Registries.BIOME.get(biomeId).second().getTags().contains(tag);
-    }
-
-    public static boolean containTag(String biomeName, String tag) {
-        return Registries.BIOME.get(biomeName).second().getTags().contains(tag);
-    }
-
     @UnmodifiableView
     @NotNull
     public static Set<String> getTagSet(String biomeName) {

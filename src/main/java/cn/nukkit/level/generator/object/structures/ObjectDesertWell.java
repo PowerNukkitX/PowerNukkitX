@@ -86,7 +86,7 @@ public class ObjectDesertWell extends ObjectGenerator implements RuledObjectGene
 
         int biome = level.getBiomeId(x, y, z);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
-        if (!definition.getTags().contains(BiomeTags.DESERT) || random.nextBoundedInt(500) != 0) {
+        if (!Registries.BIOME.containsTag(BiomeTags.DESERT, definition) || random.nextBoundedInt(500) != 0) {
             return false;
         }
 

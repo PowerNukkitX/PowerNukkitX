@@ -36,7 +36,9 @@ public class EyeBlossomFeature extends SurfaceGenerateFeature {
 
     @Override
     public boolean isSupportValid(Block support) {
-        return support.hasTag(BlockTags.DIRT) &&
-                Registries.BIOME.get(support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ())).second().getTags().contains(BiomeTags.PALE_GARDEN);
+        return support.hasTag(BlockTags.DIRT) && Registries.BIOME.containsTag(
+                BiomeTags.PALE_GARDEN,
+                support.getLevel().getBiomeId(support.getFloorX(), support.getFloorY(), support.getFloorZ())
+        );
     }
 }

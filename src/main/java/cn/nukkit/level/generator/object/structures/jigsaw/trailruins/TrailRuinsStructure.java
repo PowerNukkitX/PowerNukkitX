@@ -275,7 +275,7 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
 
         int biome = level.getBiomeId(x, y, z);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
-        return definition.getTags().contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS) &&
+        return Registries.BIOME.containsTag(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS, definition) &&
                 ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }
 

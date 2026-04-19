@@ -229,7 +229,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(ActorDataTypes.COLOR_INDEX, color);
+        this.setDataProperty(ActorDataTypes.COLOR_INDEX, (byte) color);
         this.namedTag = this.namedTag.toBuilder().putByte("Color", (byte) this.color).build();
     }
 

@@ -33,7 +33,7 @@ public class FossilPopulator extends Populator {
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
-        if (definition.getTags().contains(BiomeTags.DESERT) || definition.getTags().contains(BiomeTags.SWAMP) || definition.getTags().contains(BiomeTags.MANGROVE_SWAMP)
+        if (Registries.BIOME.containsTag(BiomeTags.DESERT, definition) || Registries.BIOME.containsTag(BiomeTags.SWAMP, definition) || Registries.BIOME.containsTag(BiomeTags.MANGROVE_SWAMP, definition)
                 && random.nextBoundedInt(64) == (0x1211dfa1 & 63)) { //salted
             int y = Math.min(64, chunk.getHeightMap(0, 0));
 

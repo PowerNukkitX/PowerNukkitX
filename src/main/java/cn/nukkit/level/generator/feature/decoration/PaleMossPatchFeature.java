@@ -31,7 +31,7 @@ public class PaleMossPatchFeature extends GenerateFeature {
         this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
-                if(Registries.BIOME.get(chunk.getBiomeId(x, SEA_LEVEL, z)).second().getTags().contains(BiomeTags.PALE_GARDEN)) {
+                if(Registries.BIOME.containsTag(BiomeTags.PALE_GARDEN, chunk.getBiomeId(x, SEA_LEVEL, z))) {
                     if(random.nextInt(9) < 7) {
                         int y = chunk.getHeightMap(x, z);
                         while(chunk.getBlockState(x, y, z) != GRASS_BLOCK && y > SEA_LEVEL) {

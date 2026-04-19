@@ -9,9 +9,6 @@ import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
@@ -38,6 +35,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -220,6 +218,18 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
                 }
             }
         }
+    }
+
+    public boolean containsTag(String tag, BiomeDefinitionData data) {
+        return Objects.requireNonNull(data.getTags()).contains(((Integer) BIOME_STRING_LIST.indexOf(tag)).shortValue());
+    }
+
+    public boolean containsTag(String tag, String biomeId) {
+        return this.containsTag(tag, this.get(biomeId).second());
+    }
+
+    public boolean containsTag(String tag, int biomeId) {
+        return this.containsTag(tag, this.get(biomeId).second());
     }
 
     private List<Pair<Short, BiomeDefinitionData>> parseBiomeDefinitions(List<NbtMap> nbtMap) {

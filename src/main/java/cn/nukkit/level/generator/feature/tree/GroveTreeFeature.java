@@ -10,6 +10,7 @@ import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
@@ -32,7 +33,7 @@ public class GroveTreeFeature extends GriddedFeature {
 
     @Override
     public boolean canSpawnHere(BiomeDefinitionData definition) {
-        return definition.getTags().contains(BiomeTags.GROVE);
+        return Registries.BIOME.containsTag(BiomeTags.GROVE, definition);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class GroveTreeFeature extends GriddedFeature {
             for (int z = 0; z < 16; z++) {
                 int y = chunk.getHeightMap(x, z);
                 BlockState support = chunk.getBlockState(x, y, z);
-                if(support.toBlock() instanceof BlockSpruceLeaves) {
-                    object.setBlockStateAt(x + (chunk.getX() << 4), y+1, z + (chunk.getZ() << 4), SNOW_LAYER);
+                if (support.toBlock() instanceof BlockSpruceLeaves) {
+                    object.setBlockStateAt(x + (chunk.getX() << 4), y + 1, z + (chunk.getZ() << 4), SNOW_LAYER);
                 }
             }
         }
