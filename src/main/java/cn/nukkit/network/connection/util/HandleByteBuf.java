@@ -2018,6 +2018,7 @@ public class HandleByteBuf extends ByteBuf {
                 writeString((String) value.getValue());
                 break;
             case TYPE:
+                @SuppressWarnings("unchecked")
                 final Map<String, DataStorePropertyValue> map = (Map<String, DataStorePropertyValue>) value.getValue();
                 writeUnsignedVarInt(map.size());
                 for (Map.Entry<String, DataStorePropertyValue> entry : map.entrySet()) {

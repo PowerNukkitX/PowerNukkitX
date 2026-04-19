@@ -158,7 +158,9 @@ public enum Rotation {
                 if (rotatedWallConnections != null) {
                     WallConnectionType rotatedConnection = getRotatedWallConnection(type, rotatedWallConnections);
                     if (rotatedConnection != null) {
-                        states.set(idx, ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection));
+                        @SuppressWarnings("unchecked")
+                        var rotated = ((EnumPropertyType<WallConnectionType>) type).createValue(rotatedConnection);
+                        states.set(idx, rotated);
                     }
                 }
             }

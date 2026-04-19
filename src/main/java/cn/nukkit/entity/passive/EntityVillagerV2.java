@@ -785,6 +785,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         for (int i = 0, len = tierExpRequirement.length; i < len; ++i) {
             tierExpRequirements.add(i, new CompoundTag().putInt(String.valueOf(i), tierExpRequirement[i]));
         }
+        @SuppressWarnings("unchecked")
         ListTag<CompoundTag> recipes = (ListTag<CompoundTag>) getRecipes().copy();
         int reputation = getReputation(player);
         for (CompoundTag tag : recipes.getAll()) {

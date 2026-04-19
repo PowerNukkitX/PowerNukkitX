@@ -513,7 +513,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
                 double maxSpeed = this.getMovementSpeedDefault();
                 if (pk.inputData.contains(AuthInputAction.SPRINTING)) {
-                    maxSpeed *= this.getSpeedMultiplier();
+                    @SuppressWarnings("removal")
+                    float speedMultiplier = this.getSpeedMultiplier();
+                    maxSpeed *= speedMultiplier;
                     rideSprintingTicks++;
                 } else {
                     rideSprintingTicks = 0;
@@ -602,7 +604,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 || pk.inputData.contains(AuthInputAction.START_JUMPING);
 
         double speed = this.getDefaultFlyingSpeed() * FRICTION_KNOB;
-        if (rushing) speed *= this.getSpeedMultiplier();
+        if (rushing) {
+            @SuppressWarnings("removal")
+            float speedMultiplier = this.getSpeedMultiplier();
+            speed *= speedMultiplier;
+        }
 
         if (Math.abs(forward) < 0.01f && Math.abs(strafe) < 0.01f && !upPressed) {
             this.motionX = 0;
@@ -631,6 +637,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     /** Water Input Controls */
+    @SuppressWarnings("removal")
     public boolean onRiderInputWaterControlled(Player rider, PlayerAuthInputPacket pk) {
         int controlSeat = getControllingSeatIndex();
         if (controlSeat < 0 || controlSeat >= passengers.size() || passengers.get(controlSeat) != rider) return false;

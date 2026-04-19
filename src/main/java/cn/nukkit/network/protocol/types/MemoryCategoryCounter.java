@@ -18,6 +18,7 @@ public class MemoryCategoryCounter {
         /**
          * @deprecated since v944
          */
+        @Deprecated
         BALANCER,
         BLOCK_TICKING_QUEUES,
         BIOME_STORAGE,

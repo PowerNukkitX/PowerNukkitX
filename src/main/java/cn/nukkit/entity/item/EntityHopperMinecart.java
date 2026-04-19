@@ -123,6 +123,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean mountEntity(Entity entity, EntityLink.Type mode) {
         return false;
     }

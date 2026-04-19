@@ -94,13 +94,19 @@ public class Network implements NetworkInterface {
         EventLoopGroup eventloopgroup;
         if (Epoll.isAvailable()) {
             oclass = EpollDatagramChannel.class;
-            eventloopgroup = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
+            @SuppressWarnings("deprecation")
+            var group = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
+            eventloopgroup = group;
         } else if (KQueue.isAvailable()) {
             oclass = KQueueDatagramChannel.class;
-            eventloopgroup = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
+            @SuppressWarnings("deprecation")
+            var group = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
+            eventloopgroup = group;
         } else {
             oclass = NioDatagramChannel.class;
-            eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
+            @SuppressWarnings("deprecation")
+            var group = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
+            eventloopgroup = group;
         }
         InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
 
