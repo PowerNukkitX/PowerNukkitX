@@ -333,7 +333,6 @@ public class CommandParameter {
                 type = CommandParamType.TEXT;
             }
             final Field field = CommandParam.class.getDeclaredField(type.name());
-            field.setAccessible(true);
             final CommandParam param = (CommandParam) field.get(null);
             data.setType(param);
         } catch (Throwable e) {

@@ -733,9 +733,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             }
                             this.register(new ShapedRecipe(
                                     recipeId,
-                                    uuid,
-                                    netId,
-                                    priority,
+                                    new ShapedRecipe.Data(uuid,
+                                            netId,
+                                            priority
+                                    ),
                                     primaryResult.toItem(),
                                     shape,
                                     ingredients,
@@ -1014,7 +1015,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
         final int netId = (int) ((double) recipeObject.get("netId"));
 
-        return new ShapedRecipe(id, uuid, netId, priority, primaryResult.toItem(), shape, ingredients, extraResults, mirror, null);
+        return new ShapedRecipe(id, new ShapedRecipe.Data(uuid, netId, priority), primaryResult.toItem(), shape, ingredients, extraResults, mirror, null);
     }
 
     private ItemDescriptor parseRecipeItem(Map<String, Object> data) {

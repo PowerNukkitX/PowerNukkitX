@@ -69,7 +69,7 @@ public class DisconnectReasonRegistry implements IRegistry<DisconnectFailReason,
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Failed to initialize DisconnectReasonRegistry");
         }
     }
 

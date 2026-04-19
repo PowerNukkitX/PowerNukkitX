@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.util.collection.CharObjectHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.CraftingDataEntryType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 import org.jetbrains.annotations.NotNull;
@@ -58,13 +59,13 @@ public class ShapedRecipe extends CraftingRecipe {
     }
 
     public ShapedRecipe(String recipeId, UUID uuid, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients, Collection<Item> extraResults, boolean mirror) {
-        this(recipeId, uuid, netId, priority, primaryResult, shape, ingredients, extraResults, mirror, null);
+        this(recipeId, new Data(uuid, netId, priority), primaryResult, shape, ingredients, extraResults, mirror, null);
     }
 
-    public ShapedRecipe(String recipeId, UUID uuid, int netId, int priority, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
+    public ShapedRecipe(String recipeId, Data data, Item primaryResult, String[] shape, Map<Character, ItemDescriptor> ingredients,
                         Collection<Item> extraResults, boolean mirror, RecipeUnlockingRequirement recipeUnlockingRequirement) {
-        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, netId, priority, recipeUnlockingRequirement);
-        this.uuid = uuid;
+        super(recipeId == null ? RecipeRegistry.computeRecipeId(Lists.asList(primaryResult, extraResults.toArray(Item.EMPTY_ARRAY)), ingredients.values(), SHAPED) : recipeId, data.getNetId(), data.getPriority(),recipeUnlockingRequirement);
+        this.uuid = data.getUuid();
         this.mirror = mirror;
 
         this.row = shape.length;
@@ -322,5 +323,12 @@ public class ShapedRecipe extends CraftingRecipe {
                 this.isMirror(),
                 this.getRequirement()
         );
+    }
+
+    @Value
+    public static class Data {
+        UUID uuid;
+        int netId;
+        int priority;
     }
 }

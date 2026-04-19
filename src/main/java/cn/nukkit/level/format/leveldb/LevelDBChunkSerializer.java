@@ -513,7 +513,7 @@ public class LevelDBChunkSerializer {
              final NBTInputStream nbtInputStream = NbtUtils.createNetworkReader(inputStream)) {
             return (NbtMap) nbtInputStream.readTag();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Failed to read network nbt");
         }
     }
 
@@ -523,7 +523,7 @@ public class LevelDBChunkSerializer {
             nbtOutputStream.writeTag(nbtMap);
             return outputStream.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Failed to write network nbt");
         }
     }
 }
