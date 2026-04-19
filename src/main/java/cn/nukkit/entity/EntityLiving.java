@@ -431,20 +431,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
 
-        if(this instanceof Player player) {
-            float totalReduction = 0.0f;
-
-            InventorySlice armorInventory = player.getInventory().getArmorInventory();
-
-            for (Item item : armorInventory.getContents().values()){
-                if(!item.isNull()){
-                    totalReduction += item.getKnockbackResistance();
-                }
-            }
-
-            base *= (1.0 - totalReduction);
-        }
-
         float resist = this.getKnockbackResistance();
         base *= (1.0 - resist);
         if (f < 1.0e-6) {

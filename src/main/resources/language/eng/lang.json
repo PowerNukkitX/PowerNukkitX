@@ -72,6 +72,7 @@
   "pnx.settings.base.defaultlevel": "Default world name",
   "pnx.settings.base.allowlist": "Whether to enable the allowlist",
   "pnx.settings.base.motd": "Server's MOTD",
+  "pnx.settings.base.whitelistmessage": "Message shown to players who are not whitelisted when they try to join the server",
   "pnx.settings.base.submotd": "Server's sub-MOTD",
   "pnx.settings.base.language": "Server's language settings",
   "pnx.settings.base.forcetranslate": "Whether the server translates the text when sending or the client translates",
