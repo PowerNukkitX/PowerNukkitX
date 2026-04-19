@@ -36,7 +36,9 @@ public class KelpFeature extends WaterFoliageFeature {
 
         SimplexNoise noise = ((NormalObjectHolder) chunk.getLevel().getGeneratorObjectHolder()).getFeatureHolder().getKelp();
 
-        if(noise.getValue(x, 0, z) < 0) return;
+        int chunkX = chunk.getX();
+        int chunkZ = chunk.getZ();
+        if(noise.getValue((chunkX << 4) | x, 0, (chunkZ << 4) + z) < 0) return;
 
         if (!canStay(x, y + 1, z, chunk)) {
             return;

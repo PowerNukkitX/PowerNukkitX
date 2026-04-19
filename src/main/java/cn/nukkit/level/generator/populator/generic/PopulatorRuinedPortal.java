@@ -10,11 +10,14 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.structure.PNXStructure;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 import java.util.Set;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
@@ -76,10 +79,15 @@ public class PopulatorRuinedPortal extends Populator {
             else height = random.nextBoolean() ? PortalHeight.ON_LAND_SURFACE : PortalHeight.UNDERGROUND;
             boolean big = random.nextBoundedInt(20) == 0;
             PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get(big ? GIANT_PORTALS[random.nextInt(GIANT_PORTALS.length)] : PORTALS[random.nextInt(PORTALS.length)]);
-            int y = findSuitableY(random, chunk, height, chunk.getHeightMap(7, 7), structure.getSizeY());
+            boolean airPocket = height == PortalHeight.IN_NETHER && random.nextFloat() < 0.5f;
+            int y = findSuitableY(random, level, x, z, height, airPocket, structure.getSizeX(), structure.getSizeY(), structure.getSizeZ());
             BlockManager manager = new BlockManager(level);
             structure.preparePlace(new Position(x, y, z), manager);
             for(Block block : manager.getBlocks()) {
+                if (block.isAir() && shouldFillAirWithWater(level, block)) {
+                    manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
+                    continue;
+                }
                 if(block instanceof BlockJigsaw) manager.setBlockStateAt(block, NETHERRACK);
                 if(level.getBlock(block) instanceof BlockFlowingWater) {
                     //WaterLogging does not work with BlockManager. Therefore, we set the water in the level.
@@ -99,8 +107,12 @@ public class PopulatorRuinedPortal extends Populator {
                     });
                 }
                 if(block instanceof BlockChest chest) {
+                    BlockVector3 chestPos = chest.asBlockVector3();
                     manager.addHook(() -> {
-                        CHEST_POPULATOR.create(chest.getOrCreateBlockEntity().getInventory(), random);
+                        Block worldBlock = level.getBlock(chestPos.getX(), chestPos.getY(), chestPos.getZ());
+                        if (worldBlock instanceof BlockChest worldChest) {
+                            CHEST_POPULATOR.create(worldChest.getOrCreateBlockEntity().getInventory(), createChestLootRandom(level, chestPos));
+                        }
                     });
                 }
                 if(level.getDimension() == Level.DIMENSION_NETHER) {
@@ -128,36 +140,98 @@ public class PopulatorRuinedPortal extends Populator {
 
     private static int findSuitableY(
             RandomSourceProvider random,
-            IChunk chunk,
+            Level level,
+            int worldX,
+            int worldZ,
             PortalHeight portalHeight,
-            int height,
-            int structureHeight) {
-        int j = 15;
+            boolean airPocket,
+            int structureWidth,
+            int structureHeight,
+            int structureDepth) {
+        int minY = level.getMinHeight() + 15;
+        int centerX = worldX + (structureWidth >> 1);
+        int centerZ = worldZ + (structureDepth >> 1);
+        int surfaceYAtCenter = getSurfaceY(level, centerX, centerZ, portalHeight);
         int i;
         if (portalHeight == PortalHeight.IN_NETHER) {
-            if (random.nextBoolean()) {
+            if (airPocket) {
+                i = NukkitMath.randomRange(random, 32, 100);
+            } else if (random.nextBoolean()) {
                 i = NukkitMath.randomRange(random, 27, 29);
             } else {
                 i = NukkitMath.randomRange(random, 29, 100);
             }
         } else if (portalHeight == PortalHeight.IN_MOUNTAIN) {
-            int k = height - structureHeight;
+            int k = surfaceYAtCenter - structureHeight;
             i = getRandomWithinInterval(random, 70, k);
         } else if (portalHeight == PortalHeight.UNDERGROUND) {
-            int j1 = height - structureHeight;
-            i = getRandomWithinInterval(random, j, j1);
+            int j1 = surfaceYAtCenter - structureHeight;
+            i = getRandomWithinInterval(random, minY, j1);
         } else if (portalHeight == PortalHeight.PARTLY_BURIED) {
-            i = height - structureHeight + NukkitMath.randomRange(random, 2, 8);
+            i = surfaceYAtCenter - structureHeight + NukkitMath.randomRange(random, 2, 8);
         } else {
-            i = height;
+            i = surfaceYAtCenter;
         }
 
-        int y = i;
-        Block id = chunk.getBlockState(7, y, 7).toBlock();
-        while (id.canBeReplaced()) {
-            id = chunk.getBlockState(7, --y, 7).toBlock();
+        int minCornerX = worldX;
+        int minCornerZ = worldZ;
+        int maxCornerX = worldX + structureWidth - 1;
+        int maxCornerZ = worldZ + structureDepth - 1;
+
+        int y;
+        for (y = i; y > minY; y--) {
+            int cornersOnSolidGround = 0;
+            if (isOpaqueGround(level.getBlock(minCornerX, y, minCornerZ))) cornersOnSolidGround++;
+            if (isOpaqueGround(level.getBlock(maxCornerX, y, minCornerZ))) cornersOnSolidGround++;
+            if (isOpaqueGround(level.getBlock(minCornerX, y, maxCornerZ))) cornersOnSolidGround++;
+            if (isOpaqueGround(level.getBlock(maxCornerX, y, maxCornerZ))) cornersOnSolidGround++;
+            if (cornersOnSolidGround >= 3) {
+                return y;
+            }
         }
         return y;
+    }
+
+    private static int getSurfaceY(Level level, int x, int z, PortalHeight portalHeight) {
+        int y = level.getHeightMap(x, z);
+        if (portalHeight != PortalHeight.ON_OCEAN_FLOOR) {
+            return y;
+        }
+        while (y > level.getMinHeight() && isWater(level.getBlock(x, y, z))) {
+            y--;
+        }
+        return y;
+    }
+
+    private static boolean isWater(Block block) {
+        return block instanceof BlockFlowingWater;
+    }
+
+    private static boolean shouldFillAirWithWater(Level level, Block block) {
+        if (block.getFloorY() >= SEA_LEVEL) {
+            return false;
+        }
+        if (isWater(level.getBlock(block))) {
+            return true;
+        }
+        for (BlockFace face : BlockFace.values()) {
+            if (isWater(level.getBlock(block.getSide(face)))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static RandomSourceProvider createChestLootRandom(Level level, BlockVector3 pos) {
+        long seed = level.getSeed();
+        seed ^= 0x9E3779B97F4A7C15L * pos.getX();
+        seed ^= 0xC2B2AE3D27D4EB4FL * pos.getY();
+        seed ^= 0x165667B19E3779F9L * pos.getZ();
+        return new Xoroshiro128(seed);
+    }
+
+    private static boolean isOpaqueGround(Block block) {
+        return block.isSolid() && !block.canBeReplaced() && !block.isTransparent();
     }
 
     private static int getRandomWithinInterval(RandomSourceProvider random, int start, int end) {

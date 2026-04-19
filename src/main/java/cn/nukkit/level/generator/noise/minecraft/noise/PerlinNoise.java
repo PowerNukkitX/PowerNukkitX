@@ -4,24 +4,22 @@ import cn.nukkit.level.generator.noise.minecraft.perlin.PerlinNoiseSampler;
 import cn.nukkit.level.generator.noise.minecraft.utils.MathHelper;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-import java.util.List;
-
 public class PerlinNoise {
     private final PerlinNoiseSampler[] noiseLevels;
-    private final List<Double> amplitudes;
+    private final double[] amplitudes;
     private final double lowestFreqValueFactor;
     private final double lowestFreqInputFactor;
     private final double maxValue;
 
-    public PerlinNoise(RandomSourceProvider random, int firstOctave, List<Double> amplitudes) {
+    public PerlinNoise(RandomSourceProvider random, int firstOctave, double[] amplitudes) {
         this.amplitudes = amplitudes;
-        int octaves = amplitudes.size();
+        int octaves = amplitudes.length;
         int zeroOctaveIndex = -firstOctave;
         this.noiseLevels = new PerlinNoiseSampler[octaves];
 
         PerlinNoiseSampler zeroOctave = new PerlinNoiseSampler(random);
         if (zeroOctaveIndex >= 0 && zeroOctaveIndex < octaves) {
-            double amplitude = amplitudes.get(zeroOctaveIndex);
+            double amplitude = amplitudes[zeroOctaveIndex];
             if (amplitude != 0.0D) {
                 this.noiseLevels[zeroOctaveIndex] = zeroOctave;
             }
@@ -29,7 +27,7 @@ public class PerlinNoise {
 
         for (int ix = zeroOctaveIndex - 1; ix >= 0; --ix) {
             if (ix < octaves) {
-                if (amplitudes.get(ix) != 0.0D) {
+                if (amplitudes[ix] != 0.0D) {
                     this.noiseLevels[ix] = new PerlinNoiseSampler(random);
                 } else {
                     skipOctave(random);
@@ -37,10 +35,6 @@ public class PerlinNoise {
             } else {
                 skipOctave(random);
             }
-        }
-
-        if (zeroOctaveIndex < octaves - 1) {
-            throw new IllegalArgumentException("Positive octaves are temporarily disabled");
         }
 
         this.lowestFreqInputFactor = Math.pow(2.0D, -zeroOctaveIndex);
@@ -67,7 +61,7 @@ public class PerlinNoise {
                         0.0D,
                         0.0D
                 );
-                value += this.amplitudes.get(i) * noiseValue * valueFactor;
+                value += this.amplitudes[i] * noiseValue * valueFactor;
             }
 
             factor *= 2.0D;
@@ -84,7 +78,7 @@ public class PerlinNoise {
         for (int i = 0; i < this.noiseLevels.length; i++) {
             PerlinNoiseSampler noise = this.noiseLevels[i];
             if (noise != null) {
-                value += this.amplitudes.get(i) * noiseValue * valueFactor;
+                value += this.amplitudes[i] * noiseValue * valueFactor;
             }
             valueFactor /= 2.0D;
         }

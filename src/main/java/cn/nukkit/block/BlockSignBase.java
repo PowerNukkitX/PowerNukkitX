@@ -92,6 +92,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 }
                 sign.setColor(front, color);
                 sign.spawnToAll();
+                sign.setDirty();
                 this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
                 if ((player.getGamemode() & 0x01) == 0) {
                     item.count--;
@@ -110,6 +111,7 @@ public abstract class BlockSignBase extends BlockTransparent implements Faceable
                 }
                 sign.setGlowing(front, true);
                 sign.spawnToAll();
+                sign.setDirty();
                 this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
                 if ((player.getGamemode() & 0x01) == 0) {
                     item.count--;

@@ -10,6 +10,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.densityfunction.DensityCommon;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.entity.spawners.SpawnRule;
 import cn.nukkit.math.BlockVector3;
@@ -56,6 +57,7 @@ public class Chunk implements IChunk {
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
     //delay load block entity and entity
     protected final CompoundTag extraData;
+    private volatile DensityCommon.ChunkCache densityChunkCache;
     protected final StampedLock blockLock;
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
@@ -120,6 +122,24 @@ public class Chunk implements IChunk {
     public boolean isSectionEmpty(int fY) {
         ChunkSection section = this.getSection(fY - getDimensionData().getMinSectionY());
         return section == null || section.isEmpty();
+    }
+
+    public DensityCommon.ChunkCache getOrCreateDensityChunkCache() {
+        DensityCommon.ChunkCache cache = this.densityChunkCache;
+        if (cache == null) {
+            synchronized (this) {
+                cache = this.densityChunkCache;
+                if (cache == null) {
+                    cache = new DensityCommon.ChunkCache();
+                    this.densityChunkCache = cache;
+                }
+            }
+        }
+        return cache;
+    }
+
+    public void releaseDensityChunkCache() {
+        this.densityChunkCache = null;
     }
 
     @Override
@@ -472,12 +492,11 @@ public class Chunk implements IChunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         this.tiles.put(blockEntity.getId(), blockEntity);
         int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
-        BlockEntity entity = this.tileList.get(index);
-        if (this.tileList.containsKey(index) && !entity.equals(blockEntity)) {
-            this.tiles.remove(entity.getId());
-            entity.close();
+        BlockEntity existing = this.tileList.put(index, blockEntity);
+        if (existing != null && !existing.equals(blockEntity)) {
+            this.tiles.remove(existing.getId());
+            existing.close();
         }
-        this.tileList.put(index, blockEntity);
         if (this.isInit) {
             this.setChanged();
         }
@@ -488,7 +507,7 @@ public class Chunk implements IChunk {
         if (this.tiles != null) {
             this.tiles.remove(blockEntity.getId());
             int index = ((blockEntity.getFloorZ() & 0x0f) << 16) | ((blockEntity.getFloorX() & 0x0f) << 12) | (ensureY(blockEntity.getFloorY()) + 64);
-            this.tileList.remove(index);
+            this.tileList.remove(index, blockEntity);
             if (this.isInit) {
                 this.setChanged();
             }

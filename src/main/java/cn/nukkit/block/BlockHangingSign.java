@@ -102,14 +102,14 @@ public abstract class BlockHangingSign extends BlockSignBase implements BlockEnt
             if ((player != null && player.isSneaking()) || target instanceof BlockThin || target instanceof BlockIronChain || target instanceof BlockHangingSign) {
                 this.setPropertyValue(CommonBlockProperties.ATTACHED_BIT, true);
                 this.setPropertyValue(CommonBlockProperties.GROUND_SIGN_DIRECTION, direction.getIndex());
-                getLevel().setBlock(block, this, true);
+                getLevel().setBlock(block, this);
             } else {
                 this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, direction.getClosestBlockFace().getIndex());
-                getLevel().setBlock(block, this, true);
+                getLevel().setBlock(block, this);
             }
         } else {
             this.setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.rotateY().getIndex());
-            getLevel().setBlock(block, this, true);
+            getLevel().setBlock(block, this);
         }
         if (item.hasCustomBlockData()) {
             for (var e : item.getCustomBlockData().getEntrySet()) {
