@@ -21,8 +21,6 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         if ((packetHandler = PacketHandlerRegistry.getPacketHandler(packet.getClass())) != null) {
             packetHandler.handle(packet, this.session, this.server);
             return PacketSignal.HANDLED;
-        } else {
-            this.server.getLogger().warning("Unimplemented handler for packet: " + packet.getPacketType());
         }
         return BedrockPacketHandler.super.handlePacket(packet);
     }
