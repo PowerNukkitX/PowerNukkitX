@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCherrySign;
+import cn.nukkit.item.ItemCrimsonSign;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCrimsonStandingSign extends BlockStandingSign {
@@ -28,6 +29,6 @@ public class BlockCrimsonStandingSign extends BlockStandingSign {
 
     @Override
     public Item toItem() {
-        return new ItemCherrySign();
+        return new ItemCrimsonSign();
     }
 }
