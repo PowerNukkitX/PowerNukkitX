@@ -155,7 +155,7 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         if (!server.isWhitelisted((info.getUsername()).toLowerCase(Locale.ENGLISH))) {
             log.debug("disconnection due to white-listed");
-            session.close(Server.getInstance().getSettings().baseSettings().whitelistmessage());
+            session.close("Server is white-listed");
             return;
         }
 

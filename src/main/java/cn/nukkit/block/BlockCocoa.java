@@ -132,14 +132,6 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-
-            for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP}) {
-                Block neighbor = this.getSide(face);
-                if (neighbor instanceof BlockFlowingWater) {
-                    this.getLevel().useBreakOn(this);
-                    return Level.BLOCK_UPDATE_NORMAL;
-                }
-            }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1) {
                 if (this.getAge() < 2 && !this.grow()) {

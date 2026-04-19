@@ -104,27 +104,20 @@ public class BlockReeds extends BlockFlowable {
     public int onUpdate(int type) {
         Level level = getLevel();
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block down = down();
-            if (isSupportValidForBreak(down)) {
-                level.useBreakOn(this);
-                return 0;
-            }
+            level.scheduleUpdate(this, 0);
             return type;
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            Block down = down();
-            if (isSupportValidForBreak(down)) {
+            if (!isSupportValid(this.down())) {
                 level.useBreakOn(this);
-                return 0;
             }
             return type;
         }
 
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            Block down = down();
-            if (!isSupportValidForGrow(down)) {
-                level.useBreakOn(this);
+            if (!isSupportValid(this.down())) {
+                level.scheduleUpdate(this, 0);
                 return type;
             }
             if (getAge() < 15) {
@@ -192,18 +185,6 @@ public class BlockReeds extends BlockFlowable {
             }
         }
         return false;
-    }
-
-    public static boolean isSupportValidForBreak(Block down) {
-        String downId = down.getId();
-        if (downId.equals(REEDS)) {
-            return false;
-        }
-        return !down.hasTag(BlockTags.DIRT) && !down.hasTag(BlockTags.SAND);
-    }
-
-    public static boolean isSupportValidForGrow(Block down) {
-        return isSupportValid(down);
     }
 
     @Override
