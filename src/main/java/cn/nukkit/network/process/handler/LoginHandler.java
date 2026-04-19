@@ -8,6 +8,7 @@ import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.process.auth.ClientSkinData;
+import cn.nukkit.network.process.auth.WaterdogData;
 import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
@@ -127,7 +128,6 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 holder.setState(SessionState.RESOURCE_PACK);
                 holder.sendResourcePacksInfo(server);
             }
-            // TODO protocol wdpe
         } catch (InvalidJwtException | JoseException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             holder.disconnect(notAuthenticated);
             return;

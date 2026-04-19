@@ -43,6 +43,7 @@ public class ClientChainData {
     boolean trustedSkin;
     UserInterfaceProfile uiProfile;
     boolean isEduMode;
+    WaterdogData waterdogData;
 
     public static ClientChainData from(JwtClaims claims) {
         final Map<String, Object> map = claims.getClaimsMap();
@@ -132,6 +133,11 @@ public class ClientChainData {
         } catch (Exception e) {
             return null;
         }
+        final WaterdogData waterdogData = !map.containsKey("Waterdog_IP") && !map.containsKey("Waterdog_XUID") ? null :
+                new WaterdogData(
+                        map.get("Waterdog_IP").toString(),
+                        map.get("Waterdog_XUID").toString()
+                );
         return new ClientChainData(
                 clientRandomId,
                 compatibleWithClientSideChunkGen,
@@ -156,7 +162,8 @@ public class ClientChainData {
                 thirdPartyName,
                 trustedSkin,
                 uiProfile,
-                map.containsKey("IsEduMode")
+                map.containsKey("IsEduMode"),
+                waterdogData
         );
     }
 
