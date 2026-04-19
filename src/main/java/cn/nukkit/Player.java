@@ -4564,7 +4564,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param id the window id
      */
     public Inventory getWindowById(int id) {
-        return this.windowIndex.get(id);
+        return this.windowIndex.get((byte) id);
     }
 
     /**

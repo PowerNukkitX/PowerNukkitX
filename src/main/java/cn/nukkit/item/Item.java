@@ -2670,8 +2670,14 @@ public abstract class Item implements Cloneable, ItemID {
         final ItemDefinition definition = itemData.getDefinition();
         final Item item = Item.get(definition.getIdentifier(), itemData.getDamage(), itemData.getCount());
         item.setNamedTag(itemData.getTag());
-        item.setCanPlaceOn(Arrays.stream(itemData.getCanPlace()).toList());
-        item.setCanDestroyOn(Arrays.stream(itemData.getCanBreak()).toList());
+        final List<String> canPlaceOn = Arrays.stream(itemData.getCanPlace()).toList();
+        final List<String> canDestroyOn = Arrays.stream(itemData.getCanBreak()).toList();
+        if (!canPlaceOn.isEmpty()) {
+            item.setCanPlaceOn(canPlaceOn);
+        }
+        if (!canDestroyOn.isEmpty()) {
+            item.setCanDestroyOn(canDestroyOn);
+        }
         if (itemData.getBlockDefinition() != null) {
             item.setBlockUnsafe(Block.get(Registries.BLOCKSTATE.get(itemData.getBlockDefinition().getRuntimeId())));
         }
