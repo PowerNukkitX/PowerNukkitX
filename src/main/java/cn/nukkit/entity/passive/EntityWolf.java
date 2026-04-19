@@ -426,9 +426,8 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     }
 
     public static int getBiomeVariant(int biomeId) {
-        BiomeDefinitionData definition = Registries.BIOME.get(biomeId).second();
         List<String> tags = Registries.BIOME.getTags(biomeId);
-        String name = Registries.BIOME.getFromBiomeStringList(definition.getId());
+        String name = Registries.BIOME.getBiomeName(biomeId);
         if (name.equals("cold_taiga")) return ASHEN;
         if (name.equals("mega_taiga")) return BLACK;
         if (name.equals("redwood_taiga_mutated")) return CHESSNUT;

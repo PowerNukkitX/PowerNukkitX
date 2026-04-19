@@ -44,6 +44,7 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
     private static final ObjectArrayList<String> BIOME_STRING_LIST = new ObjectArrayList<>();
     private static final Int2ObjectOpenHashMap<Pair<Short, BiomeDefinitionData>> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
     private static final Object2IntOpenHashMap<String> NAME2ID = new Object2IntOpenHashMap<>(0xFF);
+    private static final Int2ObjectMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
     private static final AtomicBoolean isLoad = new AtomicBoolean(false);
     private static final Map<String, List<String>> BIOME_NAME_TO_TAGS_MAP = new Object2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<List<String>> BIOME_ID_TO_TAGS_MAP = new Int2ObjectOpenHashMap<>();
@@ -61,6 +62,7 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
                 Object value = e.getValue();
                 if (value instanceof Number number) {
                     NAME2ID.put(e.getKey(), number.intValue());
+                    ID2NAME.put(number.intValue(), e.getKey());
                 }
             }
         } catch (IOException e) {
@@ -111,6 +113,10 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
 
     public int getBiomeId(String biomeName) {
         return NAME2ID.getInt(biomeName.split(":")[1]);
+    }
+
+    public String getBiomeName(int biomeId) {
+        return ID2NAME.get(biomeId);
     }
 
     public BiomeDefinitionListPacket getBiomeDefinitionListPacket() {
