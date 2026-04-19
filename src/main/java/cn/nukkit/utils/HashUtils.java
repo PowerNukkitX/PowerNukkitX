@@ -100,6 +100,7 @@ public class HashUtils {
         final TreeMap<String, Object> sorted = new TreeMap<>(tag.getCompound("states"));
         final NbtMap states = NbtMap.fromMap(sorted);
         final NbtMapBuilder builder = NbtMap.builder();
+        builder.putString("name", tag.getString("name"));
         builder.putCompound("states", states);
         builder.remove("version");
         tag = builder.build();
