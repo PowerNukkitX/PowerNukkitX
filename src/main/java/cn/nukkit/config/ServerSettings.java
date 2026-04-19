@@ -44,6 +44,10 @@ public final class ServerSettings extends OkaeriConfig {
     @CustomKey("debug-settings")
     private DebugSettings debugSettings = new DebugSettings();
 
+    @Comment("pnx.settings.anticheat")
+    @CustomKey("anticheat-settings")
+    private AntiCheatSettings antiCheatSettings = new AntiCheatSettings();
+
     @Comment("pnx.settings.performance")
     @CustomKey("performance-settings")
     private PerformanceSettings performanceSettings = new PerformanceSettings();

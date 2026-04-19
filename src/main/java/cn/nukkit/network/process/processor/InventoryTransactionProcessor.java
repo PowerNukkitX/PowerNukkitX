@@ -3,6 +3,7 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
+import cn.nukkit.anticheat.AntiCheatManager;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -50,6 +51,7 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
         Player player = playerHandle.player;
+        AntiCheatManager.getInstance().getAutoClickerCheck().recordClick(player);
         if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM) {
             handleUseItem(playerHandle, pk);
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY) {
@@ -223,6 +225,17 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         knockBack += knockBackEnchantment.getLevel() * 0.1f;
                     }
                 }
+                cn.nukkit.anticheat.check.impl.ReachCheck reachCheck = null;
+                for (cn.nukkit.anticheat.ICheatCheck check : cn.nukkit.anticheat.AntiCheatManager.getInstance().getChecks()) {
+                    if (check instanceof cn.nukkit.anticheat.check.impl.ReachCheck) {
+                        reachCheck = (cn.nukkit.anticheat.check.impl.ReachCheck) check;
+                        break;
+                    }
+                }
+                if (reachCheck != null) {
+                    reachCheck.checkReach(player, player.distance(target));
+                }
+
                 EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
                 if (player.isSpectator()) entityDamageByEntityEvent.setCancelled();
@@ -279,6 +292,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         }
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK -> {
+                if (!AntiCheatManager.getInstance().getGhostHandCheck().checkInteraction(player, blockVector.asVector3())) {
+                    player.getInventory().sendSlot(useItemData.hotbarSlot, player);
+                    return;
+                }
                 if(!useItemData.itemInHand.canBeActivated()) player.setDataFlag(EntityFlag.USING_ITEM, false);
                 if (player.canInteract(blockVector.add(0.5, 0.5, 0.5), player.isCreative() ? 13 : 7)) {
                     if (player.isCreative()) {

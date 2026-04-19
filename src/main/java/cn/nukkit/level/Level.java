@@ -2844,6 +2844,10 @@ public class Level implements Metadatable {
                     ev.setCancelled();
                 } else if (!ev.getInstaBreak() && ev.isFastBreak()) {
                     ev.setCancelled();
+                    cn.nukkit.anticheat.AntiCheatManager.getInstance().getChecks().stream()
+                            .filter(c -> c instanceof cn.nukkit.anticheat.check.impl.FastBreakCheck)
+                            .map(c -> (cn.nukkit.anticheat.check.impl.FastBreakCheck) c)
+                            .forEach(c -> c.onBlockBreak(player, target));
                 }
 
                 this.server.getPluginManager().callEvent(ev);

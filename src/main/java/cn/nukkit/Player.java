@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
+import cn.nukkit.anticheat.AntiCheatManager;
 import cn.nukkit.api.UnintendedClientBehaviour;
 import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
@@ -994,6 +995,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         handleLogicInMove(invalidMotion, distance);
+        AntiCheatManager.getInstance().runChecks(this);
 
         //if plugin cancels move
         if (invalidMotion) {

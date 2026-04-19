@@ -12,10 +12,24 @@ public class PlayerHackDetectedEvent extends PlayerEvent {
 
     protected boolean kick = true;
     protected HackType type;
+    protected String description;
 
     public PlayerHackDetectedEvent(Player player, HackType type) {
+        this(player, type, "");
+    }
+
+    public PlayerHackDetectedEvent(Player player, HackType type, String description) {
         this.player = player;
         this.type = type;
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public HackType getType() {
+        return type;
     }
 
     public boolean isKick() {
@@ -28,11 +42,19 @@ public class PlayerHackDetectedEvent extends PlayerEvent {
 
     public enum HackType {
         FLIGHT,
+        SPEED,
         COMMAND_SPAM,
         MODAL_SPAM,
         PACKET_FLOOD,
         PERMISSION_REQUEST,
         INVALID_PVP,
-        INVALID_PVE
+        INVALID_PVE,
+        NOCLIP,
+        FAST_BREAK,
+        TIMER,
+        AUTOCLICKER,
+        PHASE,
+        GHOSTHAND,
+        OTHER
     }
 }
