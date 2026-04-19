@@ -104,6 +104,7 @@ public abstract class VillageStructure extends JigsawStructure {
             if (lampHeightOffset != 0) {
                 shiftWholePiece(blockManager, jigsaws, lampHeightOffset);
             }
+            fillPieceSupports(blockManager, BlockDirt.PROPERTIES.getDefaultState());
             for(Block block : blockManager.getBlocks()) {
                 if(block.isAir()) blockManager.unsetBlockStateAt(block);
             }
@@ -115,7 +116,7 @@ public abstract class VillageStructure extends JigsawStructure {
         }
         if (structureName.contains("/houses/")) {
             if (shouldShiftHousesToTerrain()) {
-                shiftWholePieceToTerrain(blockManager, jigsaws);
+                shiftHousePieceToStreetAlignedTerrain(blockManager, jigsaws);
             }
             if (usesDirtSupports(structureName)) {
                 fillPieceSupports(blockManager, BlockDirt.PROPERTIES.getDefaultState());
@@ -281,6 +282,43 @@ public abstract class VillageStructure extends JigsawStructure {
         shiftWholePiece(blockManager, jigsaws, deltaY);
     }
 
+    protected void shiftHousePieceToStreetAlignedTerrain(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
+        Integer preferredDeltaY = resolveHouseStreetConnectorDeltaY(blockManager.getLevel(), jigsaws);
+        if (preferredDeltaY != null && preferredDeltaY != 0) {
+            shiftWholePiece(blockManager, jigsaws, preferredDeltaY);
+            return;
+        }
+        shiftWholePieceToTerrain(blockManager, jigsaws);
+    }
+
+    protected Integer resolveHouseStreetConnectorDeltaY(Level level, PNXStructure.Jigsaw[] jigsaws) {
+        Map<Integer, Integer> deltaCounts = new HashMap<>();
+        for (PNXStructure.Jigsaw jigsaw : jigsaws) {
+            String pool = jigsaw.getPool();
+            if (pool == null || (!pool.contains("/streets") && !pool.contains("/zombie/streets"))) {
+                continue;
+            }
+            int desiredY = getPlacementY(level, jigsaw.getX(), jigsaw.getZ());
+            int deltaY = desiredY - jigsaw.getY();
+            deltaCounts.merge(deltaY, 1, Integer::sum);
+        }
+        if (deltaCounts.isEmpty()) {
+            return null;
+        }
+
+        int bestDelta = 0;
+        int bestCount = -1;
+        for (Map.Entry<Integer, Integer> entry : deltaCounts.entrySet()) {
+            int delta = entry.getKey();
+            int count = entry.getValue();
+            if (count > bestCount || (count == bestCount && Math.abs(delta) < Math.abs(bestDelta))) {
+                bestCount = count;
+                bestDelta = delta;
+            }
+        }
+        return bestDelta;
+    }
+
     protected void shiftWholePiece(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws, int deltaY) {
         List<Block> blocks = new ArrayList<>(blockManager.getBlocks());
         for (Block block : blocks) {
@@ -299,6 +337,7 @@ public abstract class VillageStructure extends JigsawStructure {
 
     protected void adaptStreetColumnsToTerrain(BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
         Level level = blockManager.getLevel();
+        Map<Long, Integer> columnHeights = new HashMap<>();
         for (Block block : blockManager.getBlocks()) {
             if (block instanceof BlockJigsaw) {
                 blockManager.unsetBlockStateAt(block);
@@ -308,7 +347,8 @@ public abstract class VillageStructure extends JigsawStructure {
             if (!chunk.isGenerated()) {
                 level.syncGenerateChunk(chunk.getX(), chunk.getZ());
             }
-            int height = getTerrainY(level, block.getFloorX(), block.getFloorZ());
+            int height = getPlacementY(level, block.getFloorX(), block.getFloorZ()) - 1;
+            columnHeights.put(columnKey(block.getFloorX(), block.getFloorZ()), height);
             blockManager.unsetBlockStateAt(block);
             if (isStreet(block)) {
                 if(!blockManager.isCached(new BlockVector3(block.getFloorX(), height+1, block.getFloorZ()))) {
@@ -316,12 +356,19 @@ public abstract class VillageStructure extends JigsawStructure {
                     blockManager.setBlockStateAt(block.getFloorX(), height + 2, block.getFloorZ(), BlockAir.STATE);
                 }
                 blockManager.setBlockStateAt(block.getFloorX(), height, block.getFloorZ(), block.getBlockState());
-                int finalHeight = height;
-                Arrays.stream(jigsaws)
-                        .filter(jigsaw -> jigsaw.x == block.getFloorX() && jigsaw.z == block.getFloorZ())
-                        .findFirst()
-                        .ifPresent(jigsaw -> jigsaw.y = finalHeight + 1);
             }
+        }
+
+        for (PNXStructure.Jigsaw jigsaw : jigsaws) {
+            Integer height = columnHeights.get(columnKey(jigsaw.x, jigsaw.z));
+            if (height == null) {
+                IChunk chunk = level.getChunk(jigsaw.x >> 4, jigsaw.z >> 4);
+                if (!chunk.isGenerated()) {
+                    level.syncGenerateChunk(chunk.getX(), chunk.getZ());
+                }
+                height = getPlacementY(level, jigsaw.x, jigsaw.z) - 1;
+            }
+            jigsaw.y = height + 1;
         }
     }
 

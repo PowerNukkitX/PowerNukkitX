@@ -13,7 +13,6 @@ import cn.nukkit.level.generator.stages.NormalChunkFeatureStage;
 import cn.nukkit.level.generator.stages.FinishedStage;
 import cn.nukkit.level.generator.stages.BiomeMapStage;
 import cn.nukkit.level.generator.stages.normal.NormalPopulatorStage;
-import cn.nukkit.level.generator.stages.normal.NormalAquiferStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
 import cn.nukkit.level.generator.stages.normal.NormalTerrainStage;
@@ -35,7 +34,6 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
     public void stages(GenerateStage.Builder builder) {
         builder.start(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
-        builder.next(Registries.GENERATE_STAGE.get(NormalAquiferStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceDataStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceOverwriteStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(GeneratedStage.NAME));

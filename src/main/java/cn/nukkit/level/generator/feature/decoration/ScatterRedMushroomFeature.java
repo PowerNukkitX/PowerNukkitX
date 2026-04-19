@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockRedMushroom;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 
 public class ScatterRedMushroomFeature extends GroupedDiscFeature {
@@ -44,7 +45,9 @@ public class ScatterRedMushroomFeature extends GroupedDiscFeature {
 
     @Override
     public boolean isSupportValid(Block block) {
-        return super.isSupportValid(block) && block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) != block.getFloorY();
+        return super.isSupportValid(block) &&
+                (block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) != block.getFloorY()
+                        || block.getLevel().getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ()) == BiomeID.MUSHROOM_ISLAND);
     }
 
     @Override

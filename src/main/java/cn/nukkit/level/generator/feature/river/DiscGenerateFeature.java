@@ -6,7 +6,9 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.level.format.UnsafeChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
@@ -55,32 +57,75 @@ public abstract class DiscGenerateFeature extends CountGenerateFeature {
         int sourceX = (chunkX << 4) + randomX;
         int sourceZ = (chunkZ << 4) + randomZ;
         BlockState topBlockState = chunk.getBlockState(randomX, height, randomZ);
-        if(topBlockState == STATE_STILL_WATER) {
+        if (topBlockState == STATE_STILL_WATER) {
+            BlockState stillWaterState = BlockWater.PROPERTIES.getBlockState();
             int depth = 0;
-            while (topBlockState == BlockWater.PROPERTIES.getBlockState()) {
+            while (topBlockState == stillWaterState) {
                 topBlockState = chunk.getBlockState(randomX, height - (++depth), randomZ);
             }
             int sourceY = height - (++depth);
-
-            if (sourceY < getRadiusY()) {
+            int radiusY = getRadiusY();
+            if (sourceY < radiusY) {
                 return;
             }
+
             BlockManager object = new BlockManager(level);
+            BlockState sourceBlock = getSourceBlock();
+            BlockState[] replacementBlocks = getReplacementBlocks();
             int radius = NukkitMath.randomRange(random, getMinRadius(), getMaxRadius());
-            for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-                for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                    if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
-                        for (int y = sourceY - getRadiusY(); y <= sourceY + getRadiusY(); y++) {
-                            for (BlockState replaceBlockState : getReplacementBlocks()) {
-                                if (object.getBlockIfCachedOrLoaded(x, y, z).getBlockState().equals(replaceBlockState)) {
-                                    object.setBlockStateAt(x, y, z, getSourceBlock());
+            int radiusSquared = radius * radius;
+            int minY = sourceY - radiusY;
+            int maxY = sourceY + radiusY;
+            int minX = sourceX - radius;
+            int maxX = sourceX + radius;
+            int minZ = sourceZ - radius;
+            int maxZ = sourceZ + radius;
+            int minChunkX = minX >> 4;
+            int maxChunkX = maxX >> 4;
+            int minChunkZ = minZ >> 4;
+            int maxChunkZ = maxZ >> 4;
+            boolean[] placedAny = {false};
+
+            for (int currentChunkX = minChunkX; currentChunkX <= maxChunkX; currentChunkX++) {
+                int chunkStartX = currentChunkX << 4;
+                int chunkEndX = chunkStartX + 15;
+                int startX = Math.max(minX, chunkStartX);
+                int endX = Math.min(maxX, chunkEndX);
+                for (int currentChunkZ = minChunkZ; currentChunkZ <= maxChunkZ; currentChunkZ++) {
+                    int chunkStartZ = currentChunkZ << 4;
+                    int chunkEndZ = chunkStartZ + 15;
+                    int startZ = Math.max(minZ, chunkStartZ);
+                    int endZ = Math.min(maxZ, chunkEndZ);
+                    IChunk targetChunk = level.getChunkIfLoaded(currentChunkX, currentChunkZ);
+                    if(targetChunk == null) continue;
+                    UnsafeChunk unsafeChunk = new UnsafeChunk((Chunk) targetChunk);
+                    for (int x = startX; x <= endX; x++) {
+                        int dx = x - sourceX;
+                        int dx2 = dx * dx;
+                        int localX = x & 15;
+                        for (int z = startZ; z <= endZ; z++) {
+                            int dz = z - sourceZ;
+                            if (dx2 + dz * dz > radiusSquared) {
+                                continue;
+                            }
+                            int localZ = z & 15;
+                            for (int y = minY; y <= maxY; y++) {
+                                BlockState currentState = unsafeChunk.getBlockState(localX, y, localZ, 0);
+                                for (BlockState replaceBlockState : replacementBlocks) {
+                                    if (currentState.equals(replaceBlockState)) {
+                                        object.setBlockStateAt(x, y, z, sourceBlock);
+                                        placedAny[0] = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            queueObject(chunk, object);
+            if (placedAny[0]) {
+                queueObject(chunk, object);
+            }
         }
     }
 }

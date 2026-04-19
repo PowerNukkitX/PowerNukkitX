@@ -27,29 +27,6 @@ public class OceanMonumentPopulator extends Populator {
 
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 5;
-    protected static boolean[] DEEP_OCEAN_BIOMES = new boolean[256];
-    protected static boolean[] WATER_BIOMES = new boolean[256];
-
-    static {
-        // Oceans
-        WATER_BIOMES[BiomeID.OCEAN] = true;
-        WATER_BIOMES[BiomeID.FROZEN_OCEAN] = true;
-        WATER_BIOMES[BiomeID.LUKEWARM_OCEAN] = true;
-        WATER_BIOMES[BiomeID.COLD_OCEAN] = true;
-        WATER_BIOMES[BiomeID.WARM_OCEAN] = true;
-
-        //Deep Oceans
-        WATER_BIOMES[BiomeID.DEEP_OCEAN] = DEEP_OCEAN_BIOMES[BiomeID.DEEP_OCEAN] = true;
-        WATER_BIOMES[BiomeID.DEEP_WARM_OCEAN] = DEEP_OCEAN_BIOMES[BiomeID.DEEP_WARM_OCEAN] = true;
-        WATER_BIOMES[BiomeID.DEEP_LUKEWARM_OCEAN] = DEEP_OCEAN_BIOMES[BiomeID.DEEP_LUKEWARM_OCEAN] = true;
-        WATER_BIOMES[BiomeID.DEEP_COLD_OCEAN] = DEEP_OCEAN_BIOMES[BiomeID.DEEP_COLD_OCEAN] = true;
-        WATER_BIOMES[BiomeID.DEEP_FROZEN_OCEAN] = DEEP_OCEAN_BIOMES[BiomeID.DEEP_FROZEN_OCEAN] = true;
-
-        // Rivers
-        WATER_BIOMES[BiomeID.RIVER] = true;
-        WATER_BIOMES[BiomeID.FROZEN_RIVER] = true;
-    }
-
     protected final Map<Long, Set<Long>> waitingChunks = Maps.newConcurrentMap();
 
     @Override
@@ -58,7 +35,14 @@ public class OceanMonumentPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level l = chunk.getLevel();
-        if(Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7,7), 7)).getTags().contains(BiomeTags.OCEAN)) {
+        int biome = Registries.BIOME.get(chunk.getBiomeId(7, chunk.getHeightMap(7,7), 7)).getId();
+        if(switch (biome){
+            case BiomeID.DEEP_OCEAN,
+                 BiomeID.DEEP_COLD_OCEAN,
+                 BiomeID.DEEP_FROZEN_OCEAN,
+                 BiomeID.DEEP_LUKEWARM_OCEAN -> true;
+            default -> false;
+        }) {
             BlockManager level = new BlockManager(l);
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
             int cZ = (chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING;
