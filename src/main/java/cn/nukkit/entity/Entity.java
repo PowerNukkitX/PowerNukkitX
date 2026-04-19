@@ -5585,9 +5585,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.entityDataMap;
     }
 
-    @NotNull
+    @Nullable
     public <T> T getDataProperty(ActorDataType<T> key) {
-        return this.getEntityDataMap().get(key);
+        return !this.getEntityDataMap().containsKey(key) ? null : this.getEntityDataMap().get(key);
     }
 
     @NotNull

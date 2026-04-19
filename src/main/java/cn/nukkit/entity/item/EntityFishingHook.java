@@ -98,7 +98,7 @@ public class EntityFishingHook extends SlenderProjectile {
     @Override
     public boolean onUpdate(int currentTick) {
         boolean hasUpdate;
-        long target = getDataProperty(ActorDataTypes.TARGET);
+        long target = getDataProperty(ActorDataTypes.TARGET, 0L);
         if (target != 0L) {
             Entity entity = getLevel().getEntity(target);
             if (entity == null || !entity.isAlive()) {
@@ -269,9 +269,9 @@ public class EntityFishingHook extends SlenderProjectile {
                 }
             }
         } else if (this.shootingEntity != null) {
-            var eid = this.getDataProperty(ActorDataTypes.TARGET);
+            var eid = this.getDataProperty(ActorDataTypes.TARGET, 0L);
             var targetEntity = this.getLevel().getEntity(eid);
-            if (targetEntity != null && targetEntity.isAlive()) { // 钓鱼竿收杆应该牵引被钓生物
+            if (eid != 0L && targetEntity != null && targetEntity.isAlive()) {
                 targetEntity.setMotion(this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
             }
         }
@@ -283,7 +283,7 @@ public class EntityFishingHook extends SlenderProjectile {
         final AddActorPacket pk = new AddActorPacket();
         pk.setTargetActorID(this.getId());
         pk.setTargetRuntimeID(this.getId());
-        pk.setEntityType(this.getNetworkId());
+        pk.setActorType("minecraft:fishing_hook");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         pk.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
         pk.setRotation(org.cloudburstmc.math.vector.Vector2f.from(this.pitch, this.yaw));

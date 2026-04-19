@@ -130,7 +130,7 @@ public class DummyBossBar {
         packet.setTargetActorID(this.bossBarId);
         packet.setTargetRuntimeID(this.bossBarId);
         packet.setPosition(Vector3f.from(this.player.getX(), -74, this.player.getZ()));
-        packet.setEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.CREEPER));
+        packet.setActorType("minecraft:creeper");
         packet.setVelocity(Vector3f.ZERO);
         packet.setRotation(Vector2f.ZERO);
         this.player.dataPacket(packet);

@@ -234,11 +234,10 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         packet.setActorData(this.getEntityDataMap());
         packet.setTargetActorID(this.getId());
         packet.setTargetRuntimeID(this.getId());
-        packet.setEntityType(this.getNetworkId());
+        packet.setActorType("minecraft:wither");
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         packet.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
         packet.setRotation(org.cloudburstmc.math.vector.Vector2f.from(this.pitch, this.yaw));
-        packet.setEntityType(this.getNetworkId());
         return packet;
     }
 

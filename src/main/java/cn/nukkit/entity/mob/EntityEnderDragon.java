@@ -46,6 +46,7 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.plugin.InternalPlugin;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.data.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -116,7 +117,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         pk.setActorData(this.getEntityDataMap());
         pk.setTargetActorID(this.getId());
         pk.setTargetRuntimeID(this.getId());
-        pk.setEntityType(this.getNetworkId());
+        pk.setActorType("minecraft:ender_dragon");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
         pk.setVelocity(org.cloudburstmc.math.vector.Vector3f.from(this.motionX, this.motionY, this.motionZ));
         pk.setRotation(org.cloudburstmc.math.vector.Vector2f.from(this.pitch, this.yaw));
@@ -282,6 +283,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     public void addBossbar(Player player) {
         final BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setTargetActorID(this.getId());
+        bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
         bossEventPacket.setColor(5);

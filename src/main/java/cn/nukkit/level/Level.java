@@ -768,13 +768,12 @@ public class Level implements Metadatable {
     }
 
     public void addLevelEvent(Vector3 pos, LevelEventType type, int data) {
-        LevelEventPacket pk = new LevelEventPacket();
         final LevelEventPacket packet = new LevelEventPacket();
         packet.setType(type);
         packet.setPosition(pos.toNetwork());
         packet.setData(data);
 
-        addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+        addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
     }
 
     public void addLevelEvent(Vector3 pos, LevelEventType type, NbtMap data) {
