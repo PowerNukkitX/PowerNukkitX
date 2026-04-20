@@ -23,6 +23,8 @@ public final class OreVeinifier {
     private static final float MAX_RICHNESS_THRESHOLD = 0.6F;
     private static final float CHANCE_OF_RAW_ORE_BLOCK = 0.02F;
     private static final float SKIP_ORE_IF_GAP_NOISE_IS_BELOW = -0.3F;
+    public static final int MIN_VEIN_Y = VeinType.IRON.minY;
+    public static final int MAX_VEIN_Y = VeinType.COPPER.maxY;
 
     private final DensityFunction veinToggle;
     private final DensityFunction veinRidged;
@@ -46,7 +48,7 @@ public final class OreVeinifier {
     public @Nullable BlockState calculate(DensityFunction.FunctionContext context) {
         int y = context.blockY();
         // Outside both copper and iron vein bands, no vein material can ever be placed.
-        if (y < VeinType.IRON.minY || y > VeinType.COPPER.maxY) {
+        if (y < MIN_VEIN_Y || y > MAX_VEIN_Y) {
             return null;
         }
 
@@ -65,12 +67,13 @@ public final class OreVeinifier {
             return null;
         }
 
+        if (this.veinRidged.compute(context) >= 0.0) {
+            return null;
+        }
+
         NukkitRandom positionalRandom = this.random.get();
         positionalRandom.setSeed(mixSeed(this.oreVeinSeed, context.blockX(), y, context.blockZ()));
         if (positionalRandom.nextFloat() > VEIN_SOLIDNESS) {
-            return null;
-        }
-        if (this.veinRidged.compute(context) >= 0.0) {
             return null;
         }
 

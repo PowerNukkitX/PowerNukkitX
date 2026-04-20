@@ -30,19 +30,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         final int minHeight = chunk.getLevel().getMinHeight();
-        IntOpenHashSet allBiomesInChunk = new IntOpenHashSet();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                int y = chunk.getHeightMap(x, z);
-                for (int i = y; i > minHeight; i--) {
-                    ChunkSection section = chunk.getSection(i >> 4);
-                    if (section == null) {
-                        continue;
-                    }
-                    allBiomesInChunk.add(section.getBiomeId(x, i & 0x0f, z));
-                }
-            }
-        }
+        final IntOpenHashSet allBiomesInChunk = collectBiomesInChunk(chunk, minHeight);
 
         Int2ObjectOpenHashMap<BiomeConsolidatedFeatureData> featuresByIdentifier = new Int2ObjectOpenHashMap<>();
         for (int biomeId : allBiomesInChunk) {
@@ -89,6 +77,40 @@ public class NormalChunkFeatureStage extends GenerateStage {
         }
         root.applySubChunkUpdate();
         chunk.setChunkState(ChunkState.POPULATED);
+    }
+
+    private static IntOpenHashSet collectBiomesInChunk(IChunk chunk, int minHeight) {
+        IntOpenHashSet allBiomesInChunk = new IntOpenHashSet();
+        final ChunkSection[] sections = chunk.getSections();
+        final int minSectionY = chunk.getDimensionData().getMinSectionY();
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                int y = chunk.getHeightMap(x, z);
+                int currentSectionY = Integer.MIN_VALUE;
+                ChunkSection currentSection = null;
+
+                while (y > minHeight) {
+                    int sectionY = y >> 4;
+                    if (sectionY != currentSectionY) {
+                        int sectionIndex = sectionY - minSectionY;
+                        currentSection = sectionIndex >= 0 && sectionIndex < sections.length ? sections[sectionIndex] : null;
+                        currentSectionY = sectionY;
+                    }
+
+                    if (currentSection == null) {
+                        y = Math.max(minHeight, (sectionY << 4) - 1);
+                        continue;
+                    }
+
+                    for (int yInSection = y & 0x0f; yInSection >= 0 && y > minHeight; yInSection--, y--) {
+                        allBiomesInChunk.add(currentSection.getBiomeId(x, yInSection, z));
+                    }
+                }
+            }
+        }
+
+        return allBiomesInChunk;
     }
 
     @Override

@@ -356,43 +356,4 @@ public final class OverworldCavesDensity {
                 )
         );
     }
-
-    public static DensityFunction createCaveDetector(NormalObjectHolder.TerrainHolder terrainHolder) {
-        DensityFunction spaghettiRoughness = OverworldCavesDensity.spaghettiRoughnessFunction(
-                terrainHolder.getSpaghettiRoughness(),
-                terrainHolder.getSpaghettiRoughnessModulator()
-        );
-        DensityFunction spaghetti2dThickness = OverworldCavesDensity.spaghetti2dThicknessModulator(
-                terrainHolder.getSpaghetti2dThickness()
-        );
-        DensityFunction spaghetti2d = OverworldCavesDensity.spaghetti2d(
-                spaghetti2dThickness,
-                terrainHolder.getSpaghetti2dModulator(),
-                terrainHolder.getSpaghetti2d(),
-                terrainHolder.getSpaghetti2dElevation()
-        );
-        DensityFunction entrances = OverworldCavesDensity.entrances(
-                spaghettiRoughness,
-                terrainHolder.getSpaghetti3dRarity(),
-                terrainHolder.getSpaghetti3dThickness(),
-                terrainHolder.getSpaghetti3dFirst(),
-                terrainHolder.getSpaghetti3dSecond(),
-                terrainHolder.getCaveEntrance()
-        );
-        DensityFunction caveLayer = DensityCommon.mul(
-                DensityCommon.constant(4.0),
-                DensityCommon.noise(terrainHolder.getCaveLayer(), 1.0, 8.0).square()
-        );
-        DensityFunction caveCheese = DensityCommon.add(
-                DensityCommon.constant(0.27),
-                DensityCommon.noise(terrainHolder.getCaveCheese(), 1.0, 0.6666666666666666)
-        ).clamp(-1.0, 1.0);
-        return DensityCommon.min(
-                DensityCommon.min(
-                        DensityCommon.add(caveLayer, caveCheese),
-                        entrances
-                ),
-                DensityCommon.add(spaghetti2d, spaghettiRoughness)
-        );
-    }
 }
