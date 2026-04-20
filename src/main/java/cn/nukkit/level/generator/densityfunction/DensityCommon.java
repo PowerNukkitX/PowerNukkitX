@@ -4,7 +4,6 @@ import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.Arrays;
 import java.util.IdentityHashMap;
@@ -31,6 +30,44 @@ public final class DensityCommon {
     public static void releaseChunkCache(IChunk chunk) {
         if (chunk instanceof Chunk concreteChunk) {
             concreteChunk.releaseDensityChunkCache();
+        }
+    }
+
+    public static final class CellFunctionContext implements DensityCommon.ChunkCacheContext {
+        private final DensityCommon.ChunkCache chunkCache;
+        private int worldX;
+        private int worldY;
+        private int worldZ;
+
+        public CellFunctionContext(DensityCommon.ChunkCache chunkCache) {
+            this.chunkCache = chunkCache;
+        }
+
+        public CellFunctionContext set(int worldX, int worldY, int worldZ) {
+            this.worldX = worldX;
+            this.worldY = worldY;
+            this.worldZ = worldZ;
+            return this;
+        }
+
+        @Override
+        public int blockX() {
+            return worldX;
+        }
+
+        @Override
+        public int blockY() {
+            return worldY;
+        }
+
+        @Override
+        public int blockZ() {
+            return worldZ;
+        }
+
+        @Override
+        public DensityCommon.ChunkCache densityChunkCache() {
+            return chunkCache;
         }
     }
 
