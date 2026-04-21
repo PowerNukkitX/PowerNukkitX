@@ -44,7 +44,7 @@ public class NormalTerrainStage extends GenerateStage {
         chunkCache.clear();
         final NukkitRandom random = this.random.get();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunk.getX(), chunk.getZ()));
-        final CellFunctionContext functionContext = new CellFunctionContext(chunkCache);
+        final DensityCommon.CellFunctionContext functionContext = new DensityCommon.CellFunctionContext(chunkCache);
 
         terrainHolder.beginAquifer(chunk, level, chunkCache, minY, yBlockSize, SEA_LEVEL);
         try {
@@ -115,43 +115,4 @@ public class NormalTerrainStage extends GenerateStage {
         }
         return random.nextBoundedInt(9) >= y;
     }
-
-    private static final class CellFunctionContext implements DensityCommon.ChunkCacheContext {
-        private final DensityCommon.ChunkCache chunkCache;
-        private int worldX;
-        private int worldY;
-        private int worldZ;
-
-        private CellFunctionContext(DensityCommon.ChunkCache chunkCache) {
-            this.chunkCache = chunkCache;
-        }
-
-        private CellFunctionContext set(int worldX, int worldY, int worldZ) {
-            this.worldX = worldX;
-            this.worldY = worldY;
-            this.worldZ = worldZ;
-            return this;
-        }
-
-        @Override
-        public int blockX() {
-            return worldX;
-        }
-
-        @Override
-        public int blockY() {
-            return worldY;
-        }
-
-        @Override
-        public int blockZ() {
-            return worldZ;
-        }
-
-        @Override
-        public DensityCommon.ChunkCache densityChunkCache() {
-            return chunkCache;
-        }
-    }
-
 }

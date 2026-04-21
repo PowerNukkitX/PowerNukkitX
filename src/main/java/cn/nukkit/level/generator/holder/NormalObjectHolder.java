@@ -183,7 +183,6 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
             builder.add(oreVeinifier::calculate);
             builder.add(context -> wrapped.compute(context) > 0.0d ? stone : null);
             multiMaterial = new MultiMaterial(builder.toArray(new MaterialFiller[0]));
-            caveDetector = OverworldCavesDensity.createCaveDetector(this);
         }
 
         public void beginAquifer(IChunk chunk, Level level, DensityCommon.ChunkCache chunkCache, int minY, int yBlockSize, int seaLevel) {

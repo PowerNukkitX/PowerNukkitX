@@ -170,7 +170,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 itemTag.putShort("Damage", networkDamage);
                 itemTag.putString("Name", namespacedId);
             }
-            if (item.isBlock()) {
+            if (item instanceof ItemBlock) {
                 itemTag.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
             }
             tag.putCompound("Item", itemTag)
