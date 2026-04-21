@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.registry.Registries;
 
 public class ScatterRedMushroomFeature extends GroupedDiscFeature {
 
@@ -34,6 +35,11 @@ public class ScatterRedMushroomFeature extends GroupedDiscFeature {
     }
 
     @Override
+    public double getProbability() {
+        return 0.1f;
+    }
+
+    @Override
     public int getBase() {
         return -7;
     }
@@ -45,7 +51,7 @@ public class ScatterRedMushroomFeature extends GroupedDiscFeature {
 
     @Override
     public boolean isSupportValid(Block block) {
-        return super.isSupportValid(block) &&
+        return block.isSolid() &&
                 (block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) != block.getFloorY()
                         || block.getLevel().getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ()) == BiomeID.MUSHROOM_ISLAND);
     }
@@ -54,7 +60,7 @@ public class ScatterRedMushroomFeature extends GroupedDiscFeature {
     public int getY(IChunk chunk, int x, int z) {
         int startY = super.getY(chunk, x, z);
         for(int y = startY; y > chunk.getLevel().getMinHeight(); y--) {
-            Block block = chunk.getBlockState(x, y, z).toBlock(new Position(x, y, z, chunk.getLevel()));
+            Block block = Registries.BLOCK.get(chunk.getBlockState(x, y, z), (chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z, 0, chunk.getLevel());
             if(block.up().isAir()) {
                 if(isSupportValid(block)) return y;
             }
