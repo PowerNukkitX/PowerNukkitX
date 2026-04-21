@@ -14,6 +14,7 @@ jobs:
       tag: ${{ steps.meta.outputs.tag }}
       title: ${{ steps.meta.outputs.title }}
       prerelease: ${{ steps.meta.outputs.prerelease }}
+      nightly: ${{ steps.meta.outputs.nightly }}
     steps:
       - name: Check Branch
         run: |
@@ -43,9 +44,16 @@ jobs:
             PRERELEASE=true
           fi
 
+          if [ "$TAG" = "nightly" ]; then
+            NIGHTLY=true
+          else
+            NIGHTLY=false
+          fi
+
           echo "tag=$TAG"               >> $GITHUB_OUTPUT
           echo "title=$TITLE"           >> $GITHUB_OUTPUT
           echo "prerelease=$PRERELEASE" >> $GITHUB_OUTPUT
+          echo "nightly=$NIGHTLY"       >> $GITHUB_OUTPUT
 
       - name: Set Up JDK 21 (Temurin)
         uses: actions/setup-java@v5
@@ -106,12 +114,137 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/git/refs \
             -d '{"ref":"refs/tags/${{ needs.build-publish-maven.outputs.tag }}","sha":"${{ github.sha }}"}'
 
-      - name: Publish Release
+      - name: Publish Release (Nightly)
+        if: needs.build-publish-maven.outputs.nightly == 'true'
         uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
         with:
           tag_name: ${{ needs.build-publish-maven.outputs.tag }}
           name: ${{ needs.build-publish-maven.outputs.title }}
-          prerelease: ${{ needs.build-publish-maven.outputs.prerelease }}
+          prerelease: true
+          make_latest: false
+          body: |
+            This is the **latest nightly build of PowerNukkitX**, built automatically from the latest source.
+            (_Please note that the date on GitHub might appear outdated due to certain limitations._)
+            **Corresponding commit:** <https://github.com/${{ github.repository }}/commit/${{ github.sha }}>
+
+            > [!NOTE]
+            > Nightly builds are updated on every push and may be unstable or contain untested features. The tag remains the same but the assets below are replaced on every push.
+            > If you encounter any issues, please report them on our [Discord](https://discord.gg/apwd7uauZg) or in the [GitHub Issues](https://github.com/${{ github.repository }}/issues) tab.
+
+            ### How to Update
+            To update to the latest nightly build, follow these steps:
+            1. Download the `powernukkitx.jar` file from the assets below.
+            2. Replace the `powernukkitx.jar` file in your server's directory with the new one.
+            3. Restart your server.
+            4. Enjoy the latest features and bug fixes!
+
+            Thank you for helping us improve PowerNukkitX ⭐
           files: build/powernukkitx.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Release (Latest Snapshot)
+        if: needs.build-publish-maven.outputs.prerelease == 'false' && needs.build-publish-maven.outputs.nightly == 'false'
+        uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
+        with:
+          tag_name: ${{ needs.build-publish-maven.outputs.tag }}
+          name: ${{ needs.build-publish-maven.outputs.title }}
+          prerelease: false
+          make_latest: true
+          body: |
+            This is the **latest version of PowerNukkitX**, built from the latest source.
+            (_Please note that the date on GitHub might appear outdated due to certain limitations._)
+            **Corresponding commit:** <https://github.com/${{ github.repository }}/commit/${{ github.sha }}>
+
+            > [!NOTE]
+            > If you encounter any issues, please report them directly on our [Discord](https://discord.gg/apwd7uauZg) or in the [GitHub Issues](https://github.com/${{ github.repository }}/issues) tab.
+
+            ### How to Update
+            To update to the latest version, follow these steps:
+            1. Download the `powernukkitx.jar` file from the assets below.
+            2. Replace the `powernukkitx.jar` file in your server's directory with the new one.
+            3. Restart your server.
+            4. Enjoy the latest features and bug fixes!
+
+            Thank you for using PowerNukkitX ⭐
+          files: build/powernukkitx.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Release (Versioned Prerelease)
+        if: needs.build-publish-maven.outputs.prerelease == 'true' && needs.build-publish-maven.outputs.nightly == 'false'
+        uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
+        with:
+          tag_name: ${{ needs.build-publish-maven.outputs.tag }}
+          name: ${{ needs.build-publish-maven.outputs.title }}
+          prerelease: true
+          make_latest: false
+          body: |
+            This is an older build of PowerNukkitX, built from the `${{ github.ref_name }}` branch.
+            (_Please note that the date on GitHub might appear outdated due to certain limitations._)
+            **Corresponding commit:** <https://github.com/${{ github.repository }}/commit/${{ github.sha }}>
+
+            > [!NOTE]
+            > If you encounter any issues, please report them on our [Discord](https://discord.gg/apwd7uauZg) or in the [GitHub Issues](https://github.com/${{ github.repository }}/issues) tab.
+
+            ### How to Install
+            1. Download the `powernukkitx.jar` file from the assets below.
+            2. Replace the `powernukkitx.jar` file in your server's directory with the new one.
+            3. Restart your server.
+
+            Thank you for using PowerNukkitX ⭐
+          files: build/powernukkitx.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if Newer Release Exists & Mark Outdated
+        if: needs.build-publish-maven.outputs.prerelease == 'true' && needs.build-publish-maven.outputs.nightly == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_TAG: ${{ needs.build-publish-maven.outputs.tag }}
+        run: |
+          # Get the latest non-prerelease release
+          latest=$(curl -s \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest")
+
+          latest_tag=$(echo "$latest" | jq -r '.tag_name')
+
+          # If a newer latest release exists, mark this one as outdated
+          if [ "$latest_tag" != "$CURRENT_TAG" ] && [ "$latest_tag" != "null" ]; then
+            echo "Newer release ($latest_tag) exists. Marking $CURRENT_TAG as outdated."
+
+            our_release=$(curl -s \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/tags/$CURRENT_TAG")
+
+            our_id=$(echo "$our_release" | jq -r '.id')
+            our_body=$(echo "$our_release" | jq -r '.body')
+
+            # Skip if already marked outdated
+            if echo "$our_body" | grep -q "superseded by"; then
+              echo "Already marked as outdated, skipping."
+              exit 0
+            fi
+
+            OUTDATED_PREFIX="> [!WARNING]
+          > This release (\`$CURRENT_TAG\`) has been superseded by [\`$latest_tag\`](https://github.com/${{ github.repository }}/releases/tag/$latest_tag). It was updated after a newer version was already available and is kept for archival or critical fix purposes only.
+          > We recommend using the [latest snapshot](https://github.com/${{ github.repository }}/releases/latest) for the most up-to-date build.
+
+          ---
+          "
+            NEW_BODY="${OUTDATED_PREFIX}${our_body}"
+
+            curl -s -o /dev/null \
+              -X PATCH \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$our_id" \
+              -d "$(jq -n --arg body "$NEW_BODY" '{body: $body, prerelease: false, make_latest: "false"}')"
+
+            echo "Marked $CURRENT_TAG as outdated (superseded by $latest_tag)."
+          else
+            echo "No newer release found. $CURRENT_TAG is current, skipping."
+          fi
