@@ -2232,7 +2232,7 @@ public class Server {
      * @param player the player
      */
     public void sendRecipeList(Player player) {
-        player.getSession().sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
+        player.dataPacketImmediately(Registries.RECIPE.getCraftingPacket());
     }
 
     /**

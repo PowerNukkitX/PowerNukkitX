@@ -49,7 +49,7 @@ import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.event.server.PacketSendEvent;
 import cn.nukkit.form.window.Form;
 import cn.nukkit.inventory.CraftTypeInventory;
 import cn.nukkit.inventory.CraftingGridInventory;
@@ -683,7 +683,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void doFirstSpawn() {
         this.spawned = true;
 
-        this.session.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
+        this.dataPacketImmediately(Registries.RECIPE.getCraftingPacket());
         this.syncInventory();
         this.resetInventory();
 
@@ -2305,6 +2305,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param packet packet to send
      */
     public void dataPacket(BedrockPacket packet) {
+        final PacketSendEvent event = new PacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
         this.getSession().sendPacket(packet);
     }
 
@@ -5376,9 +5381,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (!this.isConnected()) {
             return false;
         }
-        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-        this.server.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        final PacketSendEvent event = new PacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
             return false;
         }
         this.getSession().sendPacketImmediately(packet);
@@ -5894,6 +5899,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void sendFogStack() {
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.getFogStack());
-        this.session.sendPacketImmediately(playerFogPacket);
+        this.dataPacketImmediately(playerFogPacket);
     }
 }
