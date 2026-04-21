@@ -1,8 +1,11 @@
 package cn.nukkit.level.generator.densityfunction;
 
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
+import cn.nukkit.level.generator.material.OreVeinifier;
 
 public final class DensityOreVeins {
+    private static final double MIN_VEIN_Y = OreVeinifier.MIN_VEIN_Y;
+    private static final double MAX_VEIN_Y_EXCLUSIVE = OreVeinifier.MAX_VEIN_Y + 1.0;
 
     private static final DensityFunction Y = new DensityFunction.SimpleFunction() {
         @Override
@@ -28,8 +31,8 @@ public final class DensityOreVeins {
         return DensityCommon.interpolated(
                 DensityCommon.rangeChoice(
                         Y,
-                        -60.0,
-                        51.0,
+                        MIN_VEIN_Y,
+                        MAX_VEIN_Y_EXCLUSIVE,
                         DensityCommon.noise(oreVeininess, 1.5, 1.5),
                         DensityCommon.zero()
                 )
@@ -40,8 +43,8 @@ public final class DensityOreVeins {
         DensityFunction veinA = DensityCommon.interpolated(
                 DensityCommon.rangeChoice(
                         Y,
-                        -60.0,
-                        51.0,
+                        MIN_VEIN_Y,
+                        MAX_VEIN_Y_EXCLUSIVE,
                         DensityCommon.noise(oreVeinA, 4.0, 4.0),
                         DensityCommon.zero()
                 )
@@ -49,21 +52,19 @@ public final class DensityOreVeins {
         DensityFunction veinB = DensityCommon.interpolated(
                 DensityCommon.rangeChoice(
                         Y,
-                        -60.0,
-                        51.0,
+                        MIN_VEIN_Y,
+                        MAX_VEIN_Y_EXCLUSIVE,
                         DensityCommon.noise(oreVeinB, 4.0, 4.0),
                         DensityCommon.zero()
                 )
         );
-        return DensityCommon.cacheAllInCell(
-                DensityCommon.add(
-                        DensityCommon.constant(-0.08),
-                        DensityCommon.max(veinA.abs(), veinB.abs())
-                )
+        return DensityCommon.add(
+                DensityCommon.constant(-0.08),
+                DensityCommon.max(veinA.abs(), veinB.abs())
         );
     }
 
     public static DensityFunction overworldVeinGap(NormalNoise oreGap) {
-        return DensityCommon.cacheAllInCell(DensityCommon.noise(oreGap, 1.0, 1.0));
+        return DensityCommon.noise(oreGap, 1.0, 1.0);
     }
 }
