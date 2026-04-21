@@ -1,14 +1,9 @@
 name: PowerNukkitX Build
 
 on:
-  push:
-    branches:
-      - master
-      - next-major
   pull_request:
     branches:
-      - master
-      - next-major
+      - r/**
 
 jobs:
   filter:

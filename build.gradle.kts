@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "org.powernukkitx"
-version = "2.0.0-SNAPSHOT"
+version = providers.gradleProperty("buildVersion").orElse("nightly-SNAPSHOT").get()
 description = "powernukkitx"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
