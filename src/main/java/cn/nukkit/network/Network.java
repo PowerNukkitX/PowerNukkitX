@@ -146,7 +146,12 @@ public class Network implements NetworkInterface {
                             onSessionDisconnect(address);
                         } else {
                             session.setCodec(NetworkConstants.CODEC);
-                            session.setPacketHandler(new NetworkPacketHandler(server, new PlayerSessionHolder(session)));
+                            session.setPacketHandler(new NetworkPacketHandler(server,
+                                    new PlayerSessionHolder(
+                                            session,
+                                            Network.this.server.getSettings().networkSettings().rateLimitSettings()
+                                    )
+                            ));
                             Network.this.sessionMap.put(address, session);
                         }
                     }

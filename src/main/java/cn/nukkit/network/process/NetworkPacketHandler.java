@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.event.server.PacketHandleEvent;
 import cn.nukkit.event.server.PacketReceiveEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
 import org.cloudburstmc.protocol.common.PacketSignal;
@@ -12,6 +13,7 @@ import org.cloudburstmc.protocol.common.PacketSignal;
 /**
  * @author Kaooot
  */
+@Slf4j
 @RequiredArgsConstructor
 public class NetworkPacketHandler implements BedrockPacketHandler {
 
@@ -20,6 +22,9 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
 
     @Override
     public PacketSignal handlePacket(BedrockPacket packet) {
+        if (!this.session.checkRateLimits(this.server)) {
+            return PacketSignal.UNHANDLED;
+        }
         final Player player;
         if ((player = this.session.getPlayer()) != null) {
             final PacketReceiveEvent packetReceiveEvent = new PacketReceiveEvent(player, packet);

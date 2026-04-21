@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.config.category.network.RateLimitSettings;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.network.protocol.types.TrimData;
@@ -54,6 +55,54 @@ public class PlayerSessionHolder {
     private Player player;
     private Player.PlayerInfo playerInfo;
     private PlayerHandle playerHandle;
+    private final RateLimitSettings rateLimitSettings;
+    private long packetRateLimitTimeInMS;
+    private long packetRateLimitTimeInTicks;
+    private long packetCounter;
+    private long packetCounterForTicks;
+    private long lastWarnTime;
+
+    private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
+
+    public boolean checkRateLimits(Server server) {
+        if (this.getRateLimitSettings().rateLimitEnabled()) {
+            this.setPacketCounter(this.getPacketCounter() + 1L);
+            this.setPacketCounterForTicks(this.getPacketCounterForTicks() + 1L);
+            if (this.getPacketCounter() > this.getRateLimitSettings().maxInboundPacketsPerSecond()) {
+                log.warn(
+                        "{}: exceeded the limit for the maximum packets per second (limit: {}, received: {}) ",
+                        this.getPlayer() != null ? this.getPlayer().getName() : this.getSession().getSocketAddress(),
+                        this.getRateLimitSettings().maxInboundPacketsPerSecond(),
+                        this.getPacketCounter()
+                );
+                this.disconnect(DisconnectFailReason.UNKNOWN); // flooding
+                return false;
+            }
+            if (this.getPacketCounterForTicks() > this.getRateLimitSettings().maxPacketsPerTick()) {
+                if (System.currentTimeMillis() - this.lastWarnTime >= WARN_TIME_INTERVAL_IN_MS) {
+                    log.warn(
+                            "{}: exceeded the limit for the maximum packets per tick (limit: {}, received: {}, excess: {}) ",
+                            this.getPlayer() != null ? this.getPlayer().getName() : this.getSession().getSocketAddress(),
+                            this.getRateLimitSettings().maxPacketsPerTick(),
+                            this.getPacketCounterForTicks(),
+                            this.packetCounterForTicks - this.rateLimitSettings.maxPacketsPerTick()
+                    );
+                    this.lastWarnTime = System.currentTimeMillis();
+                }
+                return false; // excess is dropped
+            }
+            // reset counters
+            if (this.getPacketRateLimitTimeInMS() <= System.currentTimeMillis()) {
+                this.setPacketRateLimitTimeInMS(System.currentTimeMillis() + 1000L);
+                this.setPacketCounter(0L);
+            }
+            if (this.getPacketRateLimitTimeInTicks() <= server.getTick()) {
+                this.setPacketRateLimitTimeInTicks(server.getTick() + 1L);
+                this.setPacketCounterForTicks(0L);
+            }
+        }
+        return true;
+    }
 
     public void sendPlayStatus(PlayStatus status) {
         final PlayStatusPacket packet = new PlayStatusPacket();
