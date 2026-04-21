@@ -81,17 +81,17 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         if (isLoad.getAndSet(true))
             return;
 
-        // We use ProxyPass data since protocol 776 since we need item version and componentBased now.
-        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/proxypass/runtime_item_states.json")) {
+        try (InputStream stream = ItemRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/item_palette.json")) {
             if (stream == null) {
                 throw new IllegalStateException("Failed to load runtime_item_states.json");
             }
 
-            JsonArray items = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
+            final JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            final JsonArray items = jsonObject.getAsJsonArray("items");
 
             for (JsonElement element : items) {
                 JsonObject item = element.getAsJsonObject();
-                register1(new ItemData(item.get("name").getAsString(), item.get("id").getAsInt(), item.get("version").getAsInt(), item.get("componentBased").getAsBoolean()));
+                register1(new ItemData(item.get("name").getAsString(), item.get("id").getAsInt(), item.get("version").getAsInt(), item.get("component_based").getAsBoolean()));
             }
             trim();
         } catch (IOException e) {
