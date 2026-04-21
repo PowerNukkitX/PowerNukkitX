@@ -1,5 +1,7 @@
 package cn.nukkit;
 
+//Some totally obvious fix
+
 import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.wizard.SetupWizard;
 import cn.nukkit.wizard.WizardConfig;
