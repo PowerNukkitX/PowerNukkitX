@@ -254,6 +254,59 @@ public final class OverworldCavesDensity {
         return DensityCommon.min(postProcessed, noodle(noodle, noodleThickness, noodleRidgeA, noodleRidgeB));
     }
 
+    public static DensityFunction preliminarySurfaceLevel(DensityFunction offset, DensityFunction factor) {
+        DensityFunction base = DensityCommon.add(
+                DensityCommon.yClampedGradient(-64, 320, 1.5, -1.5),
+                DensityCommon.cache2d(offset)
+        );
+        DensityFunction scaled = DensityCommon.mul(base, DensityCommon.cache2d(factor)).quarterNegative();
+        DensityFunction clamped = DensityCommon.add(
+                DensityCommon.constant(-0.703125),
+                DensityCommon.mul(DensityCommon.constant(4.0), scaled)
+        ).clamp(-64.0, 64.0);
+        return DensityCommon.add(
+                DensityCommon.constant(-0.390625),
+                DensityCommon.add(
+                        DensityCommon.constant(0.1171875),
+                        DensityCommon.mul(
+                                DensityCommon.yClampedGradient(-64, -40, 0.0, 1.0),
+                                DensityCommon.add(
+                                        DensityCommon.constant(-0.1171875),
+                                        DensityCommon.add(
+                                                DensityCommon.constant(-0.078125),
+                                                DensityCommon.mul(
+                                                        DensityCommon.yClampedGradient(240, 256, 1.0, 0.0),
+                                                        DensityCommon.add(
+                                                                DensityCommon.constant(0.078125),
+                                                                clamped
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    public static DensityFunction preliminarySurfaceLevelUpperBound(DensityFunction offset, DensityFunction factor) {
+        return DensityCommon.add(
+                DensityCommon.constant(128.0),
+                DensityCommon.mul(
+                        DensityCommon.constant(-128.0),
+                        DensityCommon.add(
+                                DensityCommon.mul(
+                                        DensityCommon.constant(0.2734375),
+                                        DensityCommon.cache2d(factor).invert()
+                                ),
+                                DensityCommon.mul(
+                                        DensityCommon.constant(-1.0),
+                                        DensityCommon.cache2d(offset)
+                                )
+                        )
+                )
+        ).clamp(-40.0, 320.0);
+    }
+
     private static DensityFunction underground(
             DensityFunction slopedCheese,
             DensityFunction spaghetti2d,
@@ -301,45 +354,6 @@ public final class OverworldCavesDensity {
                         density,
                         DensityCommon.constant(whenOutOfRange)
                 )
-        );
-    }
-
-    public static DensityFunction createCaveDetector(NormalObjectHolder.TerrainHolder terrainHolder) {
-        DensityFunction spaghettiRoughness = OverworldCavesDensity.spaghettiRoughnessFunction(
-                terrainHolder.getSpaghettiRoughness(),
-                terrainHolder.getSpaghettiRoughnessModulator()
-        );
-        DensityFunction spaghetti2dThickness = OverworldCavesDensity.spaghetti2dThicknessModulator(
-                terrainHolder.getSpaghetti2dThickness()
-        );
-        DensityFunction spaghetti2d = OverworldCavesDensity.spaghetti2d(
-                spaghetti2dThickness,
-                terrainHolder.getSpaghetti2dModulator(),
-                terrainHolder.getSpaghetti2d(),
-                terrainHolder.getSpaghetti2dElevation()
-        );
-        DensityFunction entrances = OverworldCavesDensity.entrances(
-                spaghettiRoughness,
-                terrainHolder.getSpaghetti3dRarity(),
-                terrainHolder.getSpaghetti3dThickness(),
-                terrainHolder.getSpaghetti3dFirst(),
-                terrainHolder.getSpaghetti3dSecond(),
-                terrainHolder.getCaveEntrance()
-        );
-        DensityFunction caveLayer = DensityCommon.mul(
-                DensityCommon.constant(4.0),
-                DensityCommon.noise(terrainHolder.getCaveLayer(), 1.0, 8.0).square()
-        );
-        DensityFunction caveCheese = DensityCommon.add(
-                DensityCommon.constant(0.27),
-                DensityCommon.noise(terrainHolder.getCaveCheese(), 1.0, 0.6666666666666666)
-        ).clamp(-1.0, 1.0);
-        return DensityCommon.min(
-                DensityCommon.min(
-                        DensityCommon.add(caveLayer, caveCheese),
-                        entrances
-                ),
-                DensityCommon.add(spaghetti2d, spaghettiRoughness)
         );
     }
 }

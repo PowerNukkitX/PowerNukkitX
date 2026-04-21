@@ -14,7 +14,6 @@ public class GeneratedStage extends GenerateStage {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         chunk.setChunkState(ChunkState.GENERATED);
-        //chunk.getProvider().saveChunk(chunk.getX(), chunk.getZ(), chunk);
         chunk.setChanged(false);
     }
 

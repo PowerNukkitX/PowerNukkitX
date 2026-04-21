@@ -36,7 +36,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(DioriteOreUpperGenerationFeature.NAME, DioriteOreUpperGenerationFeature.class);
             this.register(DioriteOreLowerGenerationFeature.NAME, DioriteOreLowerGenerationFeature.class);
             this.register(AndesiteOreUpperGenerationFeature.NAME, AndesiteOreUpperGenerationFeature.class);
-            this.register(AndesiteOreLowerGenerationFeature.NAME, AndesiteOreUpperGenerationFeature.class);
+            this.register(AndesiteOreLowerGenerationFeature.NAME, AndesiteOreLowerGenerationFeature.class);
             this.register(TuffOreGenerationFeature.NAME, TuffOreGenerationFeature.class);
             this.register(CoalOreUpperGenerationFeature.NAME, CoalOreUpperGenerationFeature.class);
             this.register(CoalOreLowerGenerationFeature.NAME, CoalOreLowerGenerationFeature.class);
@@ -86,6 +86,9 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(ScatterDryGrassFeature.NAME, ScatterDryGrassFeature.class);
             this.register(MeadowTreeFeature.NAME, MeadowTreeFeature.class);
             this.register(IceSurfaceTreeFeature.NAME, IceSurfaceTreeFeature.class);
+            this.register(IceSpikeFeature.NAME, IceSpikeFeature.class);
+            this.register(IcePatchFeature.NAME, IcePatchFeature.class);
+            this.register(IcebergFeature.NAME, IcebergFeature.class);
             this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
             this.register(CherryTreeFeature.NAME, CherryTreeFeature.class);
             this.register(BirchForestTreeFeature.NAME, BirchForestTreeFeature.class);
@@ -129,9 +132,15 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(TaigaTreeFeature.NAME, TaigaTreeFeature.class);
             this.register(ScatterSweetBerryBushFeature.NAME, ScatterSweetBerryBushFeature.class);
             this.register(FireflyBushWaterClusterFeature.NAME, FireflyBushWaterClusterFeature.class);
+            this.register(CoralClawFeature.NAME, CoralClawFeature.class);
+            this.register(CoralTreeFeature.NAME, CoralTreeFeature.class);
+            this.register(CoralMushroomFeature.NAME, CoralMushroomFeature.class);
+            this.register(SeaAnemoneFeature.NAME, SeaAnemoneFeature.class);
+            this.register(SeaPickleFeature.NAME, SeaPickleFeature.class);
             this.register(OverworldCaveCarverFeature.NAME, OverworldCaveCarverFeature.class);
             this.register(MonsterRoomFeature.NAME, MonsterRoomFeature.class);
             this.register(MossSnapToCeilingFeature.NAME, MossSnapToCeilingFeature.class);
+            this.register(AzaleaRootSystemSnapToCeilingFeature.NAME, AzaleaRootSystemSnapToCeilingFeature.class);
             this.register(MossPatchSnapToFloorFeature.NAME, MossPatchSnapToFloorFeature.class);
             this.register(RandomClayWithDripleavesSnapToFloorFeature.NAME, RandomClayWithDripleavesSnapToFloorFeature.class);
             this.register(DripstoneClusterFeature.NAME, DripstoneClusterFeature.class);

@@ -11,7 +11,6 @@ import cn.nukkit.level.generator.stages.LightPopulationStage;
 import cn.nukkit.level.generator.stages.BiomeMapStage;
 import cn.nukkit.level.generator.stages.nether.NetherPopulatorStage;
 import cn.nukkit.level.generator.stages.nether.NetherTerrainStage;
-import cn.nukkit.level.generator.stages.normal.NormalAquiferStage;
 import cn.nukkit.level.generator.stages.normal.NormalPopulatorStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceDataStage;
 import cn.nukkit.level.generator.stages.normal.NormalSurfaceOverwriteStage;
@@ -36,7 +35,6 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(LightPopulationStage.NAME, LightPopulationStage.class);
             this.register(BiomeMapStage.NAME, BiomeMapStage.class);
             this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
-            this.register(NormalAquiferStage.NAME, NormalAquiferStage.class);
             this.register(NormalSurfaceDataStage.NAME, NormalSurfaceDataStage.class);
             this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
             this.register(NormalPopulatorStage.NAME, NormalPopulatorStage.class);
