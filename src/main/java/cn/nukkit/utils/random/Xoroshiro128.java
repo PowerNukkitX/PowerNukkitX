@@ -53,7 +53,7 @@ public class Xoroshiro128 implements RandomSourceProvider {
         j ^= i;
         this.s0 = rotateLeft(i, 49) ^ j ^ j << 21;
         this.s1 = rotateLeft(j, 28);
-        return k & Long.MAX_VALUE;
+        return k;
     }
 
     @Override
