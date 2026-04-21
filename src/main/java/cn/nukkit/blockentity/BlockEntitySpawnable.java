@@ -35,7 +35,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
             return;
         }
 
-        player.dataPacket(getSpawnPacket());
+        player.sendPacket(getSpawnPacket());
     }
 
     public BlockActorDataPacket getSpawnPacket() {

@@ -116,7 +116,7 @@ public class PositionTrackingService implements Closeable {
                             .putInt("dim", player.getLevel().getDimension())
                             .build()
             );
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         } else {
             sendTrackingDestroy(player, trackingHandler);
         }
@@ -124,7 +124,7 @@ public class PositionTrackingService implements Closeable {
 
     private void sendTrackingDestroy(Player player, int trackingHandler) {
         PositionTrackingDBServerBroadcastPacket packet = destroyPacket(trackingHandler);
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     public @Nullable
@@ -182,7 +182,7 @@ public class PositionTrackingService implements Closeable {
                     .mapToObj(this::destroyPacket)
                     .toArray(BedrockPacket[]::new);
             for (var p : packets) {
-                player.dataPacket(p);
+                player.sendPacket(p);
             }
         }
         return toRemove != null;
@@ -199,7 +199,7 @@ public class PositionTrackingService implements Closeable {
                 if (entry.getValue().isEmpty()) {
                     tracking.remove(entry.getKey());
                 }
-                player.dataPacket(destroyPacket(trackingHandler));
+                player.sendPacket(destroyPacket(trackingHandler));
                 return true;
             }
         }

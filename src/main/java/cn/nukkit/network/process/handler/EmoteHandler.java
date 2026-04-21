@@ -35,7 +35,7 @@ public class EmoteHandler implements PacketHandler<EmotePacket> {
         packet.getFlags().add(EmoteFlag.SERVER_SIDE);
         packet.getFlags().add(EmoteFlag.MUTE_EMOTE_CHAT);
         for (Player viewer : playerHandle.player.getViewers().values()) {
-            viewer.dataPacket(packet);
+            viewer.sendPacket(packet);
         }
     }
 }

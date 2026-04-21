@@ -10,8 +10,8 @@ import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
  * resource pack sequence.
  * Note: Packets sent via the player's BedrockServerSession are not affected by this. Please use the methods provided
  * for this purpose in the player class.
- * @see Player#dataPacket(BedrockPacket)
- * @see Player#dataPacketImmediately(BedrockPacket)
+ * @see Player#sendPacket(BedrockPacket)
+ * @see Player#sendPacketImmediately(BedrockPacket)
  */
 public class PacketSendEvent extends ServerEvent implements Cancellable {
 

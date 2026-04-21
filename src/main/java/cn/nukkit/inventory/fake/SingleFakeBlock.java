@@ -67,13 +67,13 @@ public class SingleFakeBlock implements FakeBlock {
             final UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
             updateBlockPacket.setBlockPosition(vector3i);
             updateBlockPacket.setDefinition(new RuntimeBlockDefinition(this.block.getRuntimeId()));
-            player.dataPacket(updateBlockPacket);
+            player.sendPacket(updateBlockPacket);
 
             final BlockActorDataPacket blockActorDataPacket = new BlockActorDataPacket();
             blockActorDataPacket.setBlockPosition(vector3i);
             blockActorDataPacket.setActorDataTags(this.getBlockEntityDataAt(position, titleName));
 
-            player.dataPacket(blockActorDataPacket);
+            player.sendPacket(blockActorDataPacket);
         });
         lastPositions.addAll(additional);
     }

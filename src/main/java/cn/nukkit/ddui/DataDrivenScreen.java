@@ -53,7 +53,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
         final ClientboundDataDrivenUIShowScreenPacket show = new ClientboundDataDrivenUIShowScreenPacket();
         show.setScreenId(getIdentifier());
         show.setFormId(0);
-        player.sendDataPackets(data, show);
+        player.sendPackets(data, show);
 
         viewers.add(player);
         ACTIVE_SCREENS.put(player, this);
@@ -65,7 +65,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
 
         final ClientboundDataDrivenUICloseScreenPacket packet = new ClientboundDataDrivenUICloseScreenPacket();
         packet.setFormId(0);
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     public List<Player> getAllViewers() {

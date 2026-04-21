@@ -195,7 +195,7 @@ public class StructBlockInventory implements Inventory {
                     )
                             : Vector3i.ZERO
             );
-            who.dataPacket(pk);
+            who.sendPacket(pk);
         }
     }
 
@@ -227,7 +227,7 @@ public class StructBlockInventory implements Inventory {
         pk.setContainerID((byte) who.getWindowId(this));
         pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
         pk.setContainerType(this.getType());
-        who.dataPacket(pk);
+        who.sendPacket(pk);
         this.viewers.remove(who);
     }
 

@@ -54,7 +54,7 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
         final ActorEventPacket pk = new ActorEventPacket();
         pk.setTargetRuntimeID(this.getId());
         pk.setType(ActorEvent.START_ATTACKING);
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     @Override

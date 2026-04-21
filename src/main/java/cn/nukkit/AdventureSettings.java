@@ -250,7 +250,7 @@ public class AdventureSettings implements Cloneable {
         packet.setShowNameTags(this.get(Type.SHOW_NAME_TAGS));
         packet.setImmutableWorld(this.get(Type.AUTO_JUMP));
 
-        this.player.dataPacket(packet);
+        this.player.sendPacket(packet);
         this.player.resetInAirTicks();
     }
 

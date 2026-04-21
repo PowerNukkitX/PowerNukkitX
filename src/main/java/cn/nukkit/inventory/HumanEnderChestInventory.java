@@ -64,7 +64,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         containerOpenPacket.setContainerType(this.getType());
         containerOpenPacket.setPosition(Vector3i.from(enderChest.getX(), enderChest.getY(), enderChest.getZ()));
         super.onOpen(who);
-        who.dataPacket(containerOpenPacket);
+        who.sendPacket(containerOpenPacket);
         this.sendContents(who);
 
         final BlockEventPacket blockEventPacket = new BlockEventPacket();
@@ -99,7 +99,7 @@ public class HumanEnderChestInventory extends BaseInventory implements BlockEnti
         containerClosePacket.setContainerID((byte) who.getWindowId(this));
         containerClosePacket.setServerInitiatedClose(who.getClosingWindowId() != containerClosePacket.getContainerID());
         containerClosePacket.setContainerType(this.getType());
-        who.dataPacket(containerClosePacket);
+        who.sendPacket(containerClosePacket);
 
         final BlockEventPacket blockEventPacket = new BlockEventPacket();
         blockEventPacket.setBlockPosition(Vector3i.from(enderChest.getX(), enderChest.getY(), enderChest.getZ()));

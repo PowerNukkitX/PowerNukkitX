@@ -52,6 +52,6 @@ public class ContainerCloseHandler implements PacketHandler<ContainerClosePacket
         } else {
             pk2.setContainerType(pk.getContainerType());
         }
-        player.dataPacket(pk2);
+        player.sendPacket(pk2);
     }
 }

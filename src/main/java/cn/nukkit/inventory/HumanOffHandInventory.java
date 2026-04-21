@@ -73,10 +73,10 @@ public class HumanOffHandInventory extends BaseInventory {
                                 null
                         )
                 );
-                player.dataPacket(inventoryContentPacket);
-                player.dataPacket(pk);
+                player.sendPacket(inventoryContentPacket);
+                player.sendPacket(pk);
             } else {
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }

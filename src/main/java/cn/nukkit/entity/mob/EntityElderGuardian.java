@@ -173,7 +173,7 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
                     final LevelEventPacket pk = new LevelEventPacket();
                     pk.setType(LevelEvent.PARTICLE_SOUND_GUARDIAN_GHOST);
                     pk.setPosition(Vector3f.from(this.x, this.y, this.z));
-                    p.dataPacket(pk);
+                    p.sendPacket(pk);
                 }
             }
         }

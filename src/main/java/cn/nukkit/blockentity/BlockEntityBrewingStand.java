@@ -311,13 +311,13 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
                 pk1.setContainerID((byte) windowId);
                 pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_AMOUNT);
                 pk1.setValue(this.fuelAmount);
-                p.dataPacket(pk1);
+                p.sendPacket(pk1);
 
                 final ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
                 pk1.setContainerID((byte) windowId);
                 pk1.setId(ContainerSetDataPacket.BREWING_STAND_FUEL_TOTAL);
                 pk1.setValue(this.fuelTotal);
-                p.dataPacket(pk2);
+                p.sendPacket(pk2);
             }
         }
     }
@@ -331,7 +331,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
                 pk.setContainerID((byte) windowId);
-                p.dataPacket(pk);
+                p.sendPacket(pk);
             }
         }
     }

@@ -250,7 +250,7 @@ public class PlayerSessionHolder {
         packet.setScenarioID("");
         packet.setWorldID("");
         packet.setOwnerID("");
-        this.player.dataPacketImmediately(packet);
+        this.player.sendPacketImmediately(packet);
     }
 
     private void sendItemRegistry() {
@@ -283,7 +283,7 @@ public class PlayerSessionHolder {
                 .build();
         this.session.getPeer().getCodecHelper().setItemDefinitions(itemDefinitionRegistry);
 
-        this.player.dataPacketImmediately(itemRegistryPacket);
+        this.player.sendPacketImmediately(itemRegistryPacket);
     }
 
     public void doPlayerCreation(Player.PlayerInfo playerInfo) {

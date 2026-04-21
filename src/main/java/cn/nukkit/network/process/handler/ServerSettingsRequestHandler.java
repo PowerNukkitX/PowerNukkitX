@@ -26,7 +26,7 @@ public class ServerSettingsRequestHandler implements PacketHandler<ServerSetting
                 responsePacket.setFormID(id);
                 responsePacket.setFormData(window.toJson());
 
-                holder.getPlayer().dataPacket(responsePacket);
+                holder.getPlayer().sendPacket(responsePacket);
             });
         }
     }

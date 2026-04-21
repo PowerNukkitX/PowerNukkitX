@@ -114,7 +114,7 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
                 pk.setContainerID((byte) player.getWindowId(brewing.getInventory()));
                 pk.setId(ContainerSetDataPacket.BREWING_STAND_BREW_TIME);
                 pk.setValue(0);
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
 

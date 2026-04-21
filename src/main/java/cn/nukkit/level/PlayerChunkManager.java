@@ -242,7 +242,7 @@ public final class PlayerChunkManager {
             final NetworkChunkPublisherUpdatePacket packet = new NetworkChunkPublisherUpdatePacket();
             packet.setNewPositionForView(player.asBlockVector3().toNetwork());
             packet.setNewRadiusForView(player.getViewDistance() << 4);
-            player.dataPacket(packet);
+            player.sendPacket(packet);
             while (!chunkReadyToSend.isEmpty()) {
                 long chunkHash = chunkReadyToSend.dequeueLong();
                 int chunkX = Level.getHashX(chunkHash);

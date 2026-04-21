@@ -194,7 +194,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
             } else {
                 pk.setPosition(Vector3i.ZERO);
             }
-            who.dataPacket(pk);
+            who.sendPacket(pk);
         }
     }
 
@@ -225,7 +225,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
         pk.setContainerID((byte) who.getWindowId(this));
         pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
         pk.setContainerType(this.getType());
-        who.dataPacket(pk);
+        who.sendPacket(pk);
         this.viewers.remove(who);
     }
 

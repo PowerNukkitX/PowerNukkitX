@@ -42,12 +42,12 @@ public class FakeStructBlock extends SingleFakeBlock {
             updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
             updateBlockPacket.setBlockPosition(vector3i);
             updateBlockPacket.setDefinition(new RuntimeBlockDefinition(this.block.getRuntimeId()));
-            player.dataPacket(updateBlockPacket);
+            player.sendPacket(updateBlockPacket);
 
             final BlockActorDataPacket blockActorDataPacket = new BlockActorDataPacket();
             blockActorDataPacket.setBlockPosition(vector3i);
             blockActorDataPacket.setActorDataTags(this.getBlockEntityDataAt(position, targetStart, targetEnd));
-            player.dataPacket(blockActorDataPacket);
+            player.sendPacket(blockActorDataPacket);
         });
     }
 
@@ -59,7 +59,7 @@ public class FakeStructBlock extends SingleFakeBlock {
             updateBlockPacket.getFlags().add(UpdateBlockPacket.Flag.NETWORK);
             updateBlockPacket.setBlockPosition(vector3i);
             updateBlockPacket.setDefinition(new RuntimeBlockDefinition(player.getLevel().getBlock(position).getRuntimeId()));
-            player.dataPacket(updateBlockPacket);
+            player.sendPacket(updateBlockPacket);
         });
         this.lastPositions.clear();
     }

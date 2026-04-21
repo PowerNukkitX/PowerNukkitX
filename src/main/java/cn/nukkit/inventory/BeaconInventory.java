@@ -52,7 +52,7 @@ public class BeaconInventory extends BaseInventory implements BlockEntityInvento
         packet.setContainerID((byte) who.getWindowId(this));
         packet.setContainerType(this.getType());
         packet.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
-        who.dataPacket(packet);
+        who.sendPacket(packet);
         this.sendContents(who);
     }
 

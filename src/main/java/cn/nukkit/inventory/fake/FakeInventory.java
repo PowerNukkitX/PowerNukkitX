@@ -149,7 +149,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         if (entityId != 0) {
             packet.setTargetActorID(entityId);
         }
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         packet.setContainerID((byte) player.getWindowId(this));
         packet.setServerInitiatedClose(player.getClosingWindowId() != packet.getContainerID());
         packet.setContainerType(this.getType());
-        player.dataPacket(packet);
+        player.sendPacket(packet);
 
         if (this.fakeBlock != null) {
             if (this.fakeInventoryType == FakeInventoryType.ENTITY) {

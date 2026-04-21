@@ -8,7 +8,6 @@ import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Preconditions;
-import org.checkerframework.checker.units.qual.A;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.jetbrains.annotations.NotNull;
@@ -96,7 +95,7 @@ public class RideableTameExecutor extends FlatRandomRoamExecutor {
                 animal.updateInventoryFlags();
                 Player player = (Player) animal.getRider();
                 if (player == null) return false;
-                player.dataPacket(packet);
+                player.sendPacket(packet);
 
             } else {
                 final ActorEventPacket packet = new ActorEventPacket();
@@ -104,7 +103,7 @@ public class RideableTameExecutor extends FlatRandomRoamExecutor {
                 packet.setType(ActorEvent.TAMING_FAILED);
                 Player player = (Player) animal.getRider();
                 if (player == null) return false;
-                player.dataPacket(packet);
+                player.sendPacket(packet);
                 if (animal.isEquine()) animal.equinePlayTameFailAnimation();
                 animal.dismountEntity(animal.getRider());
                 animal.setPersistent(true);

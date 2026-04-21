@@ -917,7 +917,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 packet.setTargetRuntimeID(player.getId());
                 packet.setEffectID(effect.getId());
                 packet.setEvent(MobEffectPacket.Event.REMOVE);
-                player.dataPacket(packet);
+                player.sendPacket(packet);
             }
 
             effect.remove(this);
@@ -969,7 +969,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             packet.setEvent(
                     oldEffect != null ? MobEffectPacket.Event.MODIFY : MobEffectPacket.Event.ADD
             );
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
 
         effect.add(this);
@@ -1201,7 +1201,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.closed) return;
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.getUsedChunks().contains(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
-            player.dataPacket(createAddEntityPacket());
+            player.sendPacket(createAddEntityPacket());
         }
 
         if (this.riding != null) {
@@ -1218,7 +1218,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                             0f
                     )
             );
-            player.dataPacket(setActorLinkPacket);
+            player.sendPacket(setActorLinkPacket);
         }
     }
 
@@ -1275,7 +1275,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 packet.setShowParticles(effect.isVisible());
                 packet.setEffectDurationTicks(effect.getDuration());
                 packet.setEvent(MobEffectPacket.Event.ADD);
-                player.dataPacket(packet);
+                player.sendPacket(packet);
             }
         }
     }
@@ -1291,7 +1291,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
 
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     public void sendData(Player[] players) {
@@ -1309,10 +1309,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             if (player == this) {
                 continue;
             }
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
         if (this instanceof Player player) {
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
     }
 
@@ -1320,7 +1320,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             final RemoveActorPacket packet = new RemoveActorPacket();
             packet.setTargetActorID(this.getId());
-            player.dataPacket(packet);
+            player.sendPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }
@@ -1403,7 +1403,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     final ActorEventPacket actorEventPacket = new ActorEventPacket();
                     actorEventPacket.setTargetRuntimeID(this.getId());
                     actorEventPacket.setType(ActorEvent.TALISMAN_ACTIVATE);
-                    player.dataPacket(actorEventPacket);
+                    player.sendPacket(actorEventPacket);
 
                     if (isOffhand) {
                         player.getOffhandInventory().clear(0, true);
@@ -4268,7 +4268,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         packet.setTargetRuntimeID(this.getId());
         packet.setType(ActorEvent.TAMING_SUCCEEDED);
 
-        player.dataPacket(packet);
+        player.sendPacket(packet);
 
         this.saveNBT();
     }
@@ -4278,7 +4278,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         packet.setTargetRuntimeID(this.getId());
         packet.setType(ActorEvent.TAMING_FAILED);
 
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     /**

@@ -83,7 +83,7 @@ public class Observable<T> {
             cbDataStore.getUpdates().add(update);
 
             for (Player viewer : screen.getAllViewers()) {
-                viewer.dataPacket(cbDataStore);
+                viewer.sendPacket(cbDataStore);
             }
         }
     }

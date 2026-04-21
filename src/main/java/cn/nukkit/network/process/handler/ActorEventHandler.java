@@ -41,7 +41,7 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
             packet.setTargetRuntimeID(player.getId());
             packet.setData(predictedData);
 
-            player.dataPacket(packet);
+            player.sendPacket(packet);
             Server.broadcastPacket(player.getViewers().values(), packet);
         }
     }

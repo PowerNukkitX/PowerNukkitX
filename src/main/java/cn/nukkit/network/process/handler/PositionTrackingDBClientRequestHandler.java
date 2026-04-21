@@ -33,6 +33,6 @@ public class PositionTrackingDBClientRequestHandler implements PacketHandler<Pos
         PositionTrackingDBServerBroadcastPacket notFound = new PositionTrackingDBServerBroadcastPacket();
         notFound.setAction(PositionTrackingDBServerBroadcastPacket.Action.NOT_FOUND);
         notFound.setTrackingId(packet.getTrackingId());
-        player.dataPacket(notFound);
+        player.sendPacket(notFound);
     }
 }

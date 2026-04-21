@@ -215,7 +215,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         pk.setContainerID((byte) who.getWindowId(this));
         pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
         pk.setContainerType(this.getType());
-        who.dataPacket(pk);
+        who.sendPacket(pk);
         super.onClose(who);
     }
 
@@ -223,7 +223,7 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
     public void onOpen(Player who) {
         super.onOpen(who);
 
-        who.dataPacket(createUpdateEquipmentPacket(who));
+        who.sendPacket(createUpdateEquipmentPacket(who));
         sendContents(this.getViewers());
         for (int idx : buildEquippableSlotMap().keySet()) {
             sendSlot(idx, who);

@@ -15,6 +15,6 @@ public class TickSyncHandler implements PacketHandler<TickSyncPacket> {
         final TickSyncPacket responsePacket = new TickSyncPacket();
         responsePacket.setRequestTimestamp(packet.getRequestTimestamp());
         responsePacket.setResponseTimestamp(server.getTick());
-        holder.getPlayer().dataPacketImmediately(responsePacket);
+        holder.getPlayer().sendPacketImmediately(responsePacket);
     }
 }

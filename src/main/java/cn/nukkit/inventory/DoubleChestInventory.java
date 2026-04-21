@@ -207,7 +207,7 @@ public class DoubleChestInventory extends ContainerInventory {
                             id
                     )
             );
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 }

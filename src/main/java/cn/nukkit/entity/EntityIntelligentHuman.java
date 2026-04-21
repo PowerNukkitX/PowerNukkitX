@@ -361,7 +361,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             pk.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
             pk.setRotation(Vector3f.from(this.pitch, this.yaw, this.yaw));
             pk.setCarriedItem(this.getInventory().getItemInMainHand().toNetwork());
-            player.dataPacket(pk);
+            player.sendPacket(pk);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
@@ -379,7 +379,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
                         )
                 );
 
-                player.dataPacket(setActorLinkPacket);
+                player.sendPacket(setActorLinkPacket);
             }
             this.server.removePlayerListData(this.getUniqueId(), player);
         }
@@ -390,7 +390,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             final RemoveActorPacket removeActorPacket = new RemoveActorPacket();
             removeActorPacket.setTargetActorID(this.getId());
-            player.dataPacket(removeActorPacket);
+            player.sendPacket(removeActorPacket);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }

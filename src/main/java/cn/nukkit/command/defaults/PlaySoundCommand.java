@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 
 
 public class PlaySoundCommand extends VanillaCommand {
@@ -91,7 +90,7 @@ public class PlaySoundCommand extends VanillaCommand {
 
             packet.setName(sound);
             packet.setPitch(pitch);
-            player.dataPacket(packet);
+            player.sendPacket(packet);
 
             successes.add(name);
         }

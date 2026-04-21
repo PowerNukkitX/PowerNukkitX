@@ -37,7 +37,7 @@ public class CartographyTableInventory extends BaseInventory {
         pk.setContainerID((byte) who.getWindowId(this));
         pk.setContainerType(this.getType());
         pk.setPosition(Vector3i.from(holder.getX(), holder.getY(), holder.getZ()));
-        who.dataPacket(pk);
+        who.sendPacket(pk);
         this.sendContents(who);
     }
 

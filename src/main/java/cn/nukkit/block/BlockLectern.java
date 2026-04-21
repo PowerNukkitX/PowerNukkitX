@@ -13,7 +13,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import org.cloudburstmc.math.vector.Vector3i;
@@ -232,6 +231,6 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         containerOpenPacket.setContainerID((byte) -1);
         containerOpenPacket.setContainerType(ContainerType.LECTERN);
         containerOpenPacket.setPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
-        player.dataPacket(containerOpenPacket);
+        player.sendPacket(containerOpenPacket);
     }
 }

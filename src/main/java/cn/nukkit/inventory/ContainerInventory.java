@@ -34,7 +34,7 @@ public abstract class ContainerInventory extends BaseInventory {
         if (holder instanceof Entity entity) {
             pk.setTargetActorID(entity.getId());
         }
-        who.dataPacket(pk);
+        who.sendPacket(pk);
 
         this.sendContents(who);
 

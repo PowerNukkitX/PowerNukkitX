@@ -1454,7 +1454,7 @@ public class Server {
      */
     public static void broadcastPacket(Collection<Player> players, BedrockPacket packet) {
         for (Player player : players) {
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
     }
 
@@ -1466,7 +1466,7 @@ public class Server {
      */
     public static void broadcastPacket(Player[] players, BedrockPacket packet) {
         for (Player player : players) {
-            player.dataPacket(packet);
+            player.sendPacket(packet);
         }
     }
 
@@ -1670,7 +1670,7 @@ public class Server {
         final PlayerListPacket pk = new PlayerListPacket();
         pk.setAction(PlayerListPacketType.REMOVE);
         pk.getEntries().add(new PlayerListPacket.Entry(uuid));
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     public void removePlayerListData(UUID uuid, Collection<Player> players) {
@@ -1695,7 +1695,7 @@ public class Server {
             entry.setSkin(value.getSkin());
             entry.setPlayerColor(value.getLocatorBarColor());
         }
-        player.dataPacket(pk);
+        player.sendPacket(pk);
     }
 
     /**
@@ -2232,7 +2232,7 @@ public class Server {
      * @param player the player
      */
     public void sendRecipeList(Player player) {
-        player.dataPacketImmediately(Registries.RECIPE.getCraftingPacket());
+        player.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
     }
 
     /**

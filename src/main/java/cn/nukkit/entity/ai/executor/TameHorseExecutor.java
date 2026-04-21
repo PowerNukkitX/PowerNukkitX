@@ -100,7 +100,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                 if (player == null) {
                     return false;
                 }
-                player.dataPacket(packet);
+                player.sendPacket(packet);
             } else {
                 var horse = (EntityHorse) entity;
                 final ActorEventPacket packet = new ActorEventPacket();
@@ -110,7 +110,7 @@ public class TameHorseExecutor extends FlatRandomRoamExecutor {
                 if (player == null) {
                     return false;
                 }
-                player.dataPacket(packet);
+                player.sendPacket(packet);
                 horse.dismountEntity(horse.getRider());
                 horse.setPersistent(true);
                 tick1++;

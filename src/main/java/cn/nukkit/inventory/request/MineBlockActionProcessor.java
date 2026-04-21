@@ -52,7 +52,7 @@ public class MineBlockActionProcessor implements ItemStackRequestActionProcessor
                             id
                     )
             );
-            player.dataPacket(inventorySlotPacket);
+            player.sendPacket(inventorySlotPacket);
         }
         var itemStackResponseSlot =
                 new ItemStackResponseContainerInfo(

@@ -24,7 +24,7 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
 
         if (structure == null) {
             responsePacket.setResponseType(StructureTemplateResponseType.NONE);
-            holder.getPlayer().dataPacket(responsePacket);
+            holder.getPlayer().sendPacket(responsePacket);
             return;
         }
 
@@ -36,6 +36,6 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
             default -> StructureTemplateResponseType.NONE;
         });
 
-        holder.getPlayer().dataPacket(responsePacket);
+        holder.getPlayer().sendPacket(responsePacket);
     }
 }

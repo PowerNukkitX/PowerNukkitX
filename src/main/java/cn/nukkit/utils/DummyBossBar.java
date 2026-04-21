@@ -2,8 +2,6 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.EntityID;
-import cn.nukkit.registry.Registries;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.BossEventUpdateType;
@@ -133,7 +131,7 @@ public class DummyBossBar {
         packet.setActorType("minecraft:creeper");
         packet.setVelocity(Vector3f.ZERO);
         packet.setRotation(Vector2f.ZERO);
-        this.player.dataPacket(packet);
+        this.player.sendPacket(packet);
     }
 
     private void sendAttributes() {
@@ -143,7 +141,7 @@ public class DummyBossBar {
         final UpdateAttributesPacket packet = new UpdateAttributesPacket();
         packet.setRuntimeID(this.bossBarId);
         packet.getAttributeList().add(attr.toNetwork());
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     private void sendShowBossBar() {
@@ -152,14 +150,14 @@ public class DummyBossBar {
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.text);
         bossEventPacket.setHealthPercent(this.length / 100);
-        this.player.dataPacket(bossEventPacket);
+        this.player.sendPacket(bossEventPacket);
     }
 
     private void sendHideBossBar() {
         final BossEventPacket bossEventPacket = new BossEventPacket();
         bossEventPacket.setTargetActorID(this.bossBarId);
         bossEventPacket.setEventType(BossEventUpdateType.REMOVE);
-        this.player.dataPacket(bossEventPacket);
+        this.player.sendPacket(bossEventPacket);
     }
 
     private void sendSetBossBarTexture() {
@@ -167,7 +165,7 @@ public class DummyBossBar {
         bossEventPacket.setTargetActorID(this.bossBarId);
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_STYLE);
         bossEventPacket.setColor(color != null ? color.ordinal() : 0);
-        this.player.dataPacket(bossEventPacket);
+        this.player.sendPacket(bossEventPacket);
     }
 
     private void sendSetBossBarTitle() {
@@ -176,7 +174,7 @@ public class DummyBossBar {
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_NAME);
         bossEventPacket.setName(this.text);
         bossEventPacket.setHealthPercent(this.length / 100);
-        this.player.dataPacket(bossEventPacket);
+        this.player.sendPacket(bossEventPacket);
     }
 
     private void sendSetBossBarLength() {
@@ -184,7 +182,7 @@ public class DummyBossBar {
         bossEventPacket.setTargetActorID(this.bossBarId);
         bossEventPacket.setEventType(BossEventUpdateType.UPDATE_PERCENT);
         bossEventPacket.setHealthPercent(this.length / 100);
-        this.player.dataPacket(bossEventPacket);
+        this.player.sendPacket(bossEventPacket);
     }
 
     /**
@@ -199,20 +197,20 @@ public class DummyBossBar {
         final MoveActorAbsolutePacket packet = new MoveActorAbsolutePacket();
         packet.setMoveData(moveData);
 
-        this.player.dataPacket(packet);
+        this.player.sendPacket(packet);
     }
 
     private void updateBossEntityNameTag() {
         final SetActorDataPacket packet = new SetActorDataPacket();
         packet.getActorData().put(ActorDataTypes.NAME, this.text);
         packet.setTargetRuntimeID(this.bossBarId);
-        this.player.dataPacket(packet);
+        this.player.sendPacket(packet);
     }
 
     private void removeBossEntity() {
         final RemoveActorPacket packet = new RemoveActorPacket();
         packet.setTargetActorID(this.bossBarId);
-        this.player.dataPacket(packet);
+        this.player.sendPacket(packet);
     }
 
     public void create() {

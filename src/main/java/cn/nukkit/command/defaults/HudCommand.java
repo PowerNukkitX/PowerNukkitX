@@ -71,7 +71,7 @@ public class HudCommand extends VanillaCommand {
             SetHudPacket packet = new SetHudPacket();
             packet.getHudElementList().add(element);
             packet.setHudVisible(visibility);
-            player.dataPacket(packet);
+            player.sendPacket(packet);
 
             return 1;
         }

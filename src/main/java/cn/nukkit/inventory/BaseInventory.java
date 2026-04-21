@@ -546,7 +546,7 @@ public abstract class BaseInventory implements Inventory {
                 continue;
             }
             pk.setInventoryId(id);
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -640,7 +640,7 @@ public abstract class BaseInventory implements Inventory {
                             id
                     )
             );
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 

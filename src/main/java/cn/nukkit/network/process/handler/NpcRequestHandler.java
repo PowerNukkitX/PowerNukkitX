@@ -58,7 +58,7 @@ public class NpcRequestHandler implements PacketHandler<NpcRequestPacket> {
                 npcDialoguePacket.setNpcId(packet.getNpcRuntimeID());
                 npcDialoguePacket.setSceneName(response.getSceneName());
                 npcDialoguePacket.setActionType(NpcDialoguePacket.Action.CLOSE);
-                player.dataPacket(npcDialoguePacket);
+                player.sendPacket(npcDialoguePacket);
             }
             if (response.getClickedButton() != null && response.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null) {
                 response.getClickedButton().getNextDialog().send(player);

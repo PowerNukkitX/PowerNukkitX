@@ -51,13 +51,13 @@ public class EnchantInventory extends ContainerInventory implements BlockEntityI
                     if (!event.isCancelled() && !event.getOptions().isEmpty()) {
                         final PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
                         pk.getOptions().addAll(event.getOptions());
-                        viewer.dataPacket(pk);
+                        viewer.sendPacket(pk);
                     }
                 }
             } else {
                 for (final Player viewer : this.getViewers()) {
                     PlayerEnchantOptionsPacket pk = new PlayerEnchantOptionsPacket();
-                    viewer.dataPacket(pk);
+                    viewer.sendPacket(pk);
                 }
             }
         }

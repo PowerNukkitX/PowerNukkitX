@@ -110,7 +110,7 @@ public class EntityArmorInventory extends BaseInventory {
             inventorySlotPacket.setFullContainerName(
                     new FullContainerName(this.getContainerEnumName(index), null)
             );
-            player.dataPacket(inventorySlotPacket);
+            player.sendPacket(inventorySlotPacket);
         } else {
             final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.getId());
@@ -119,7 +119,7 @@ public class EntityArmorInventory extends BaseInventory {
             mobArmorEquipmentPacket.setLegs(this.getLeggings().toNetwork());
             mobArmorEquipmentPacket.setFeet(this.getBoots().toNetwork());
             mobArmorEquipmentPacket.setBody(this.getBody().toNetwork());
-            player.dataPacket(mobArmorEquipmentPacket);
+            player.sendPacket(mobArmorEquipmentPacket);
         }
     }
 
@@ -146,7 +146,7 @@ public class EntityArmorInventory extends BaseInventory {
             inventoryContentPacket.setFullContainerName(
                     new FullContainerName(ContainerEnumName.ARMOR_CONTAINER, null)
             );
-            player.dataPacket(inventoryContentPacket);
+            player.sendPacket(inventoryContentPacket);
         } else {
             final MobArmorEquipmentPacket mobArmorEquipmentPacket = new MobArmorEquipmentPacket();
             mobArmorEquipmentPacket.setTargetRuntimeID(this.entity.getId());
@@ -155,7 +155,7 @@ public class EntityArmorInventory extends BaseInventory {
             mobArmorEquipmentPacket.setLegs(this.getLeggings().toNetwork());
             mobArmorEquipmentPacket.setFeet(this.getBoots().toNetwork());
             mobArmorEquipmentPacket.setBody(this.getBody().toNetwork());
-            player.dataPacket(mobArmorEquipmentPacket);
+            player.sendPacket(mobArmorEquipmentPacket);
         }
     }
 

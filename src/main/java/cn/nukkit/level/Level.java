@@ -1292,14 +1292,14 @@ public class Level implements Metadatable {
                             levelEventPacketStartRain.setType(LevelEvent.START_RAINING);
                             levelEventPacketStartRain.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
                             levelEventPacketStartRain.setData(this.rainTime);
-                            player.dataPacket(levelEventPacketStartRain);
+                            player.sendPacket(levelEventPacketStartRain);
                             this.playerWeatherShowMap.put(key, 1);
                             if (isThundering()) {
                                 final LevelEventPacket levelEventPacketStartThunder = new LevelEventPacket();
                                 levelEventPacketStartThunder.setType(LevelEvent.START_THUNDERSTORM);
                                 levelEventPacketStartThunder.setData(this.thunderTime);
                                 levelEventPacketStartThunder.setPosition(org.cloudburstmc.math.vector.Vector3f.ZERO);
-                                player.dataPacket(levelEventPacketStartThunder);
+                                player.sendPacket(levelEventPacketStartThunder);
                                 this.playerWeatherShowMap.put(key, 2);
                             }
                         }
@@ -4013,7 +4013,7 @@ public class Level implements Metadatable {
                             final NetworkChunkPublisherUpdatePacket networkChunkPublisherUpdatePacket = new NetworkChunkPublisherUpdatePacket();
                             networkChunkPublisherUpdatePacket.setNewPositionForView(player.asBlockVector3().toNetwork());
                             networkChunkPublisherUpdatePacket.setNewRadiusForView(player.getViewDistance() << 4);
-                            player.dataPacketImmediately(networkChunkPublisherUpdatePacket);
+                            player.sendPacketImmediately(networkChunkPublisherUpdatePacket);
 
                             final LevelChunkPacket levelChunkPacket;
                             levelChunkPacket = new LevelChunkPacket();
@@ -4746,7 +4746,7 @@ public class Level implements Metadatable {
 
         for (var p : this.getPlayers().values()) {
             this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
-            p.dataPacket(pk);
+            p.sendPacket(pk);
         }
 
         return true;
@@ -4794,7 +4794,7 @@ public class Level implements Metadatable {
 
         for (var p : this.getPlayers().values()) {
             this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
-            p.dataPacket(pk);
+            p.sendPacket(pk);
         }
 
         return true;

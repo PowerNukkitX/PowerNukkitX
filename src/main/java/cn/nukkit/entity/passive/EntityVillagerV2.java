@@ -70,7 +70,6 @@ import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateTradePacket;
@@ -814,7 +813,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 .build());
         updateTradePacket.setUseNewTradeScreen(true);
         updateTradePacket.setUsingEconomyTrade(true);
-        player.dataPacket(updateTradePacket);
+        player.sendPacket(updateTradePacket);
     }
 
     /**

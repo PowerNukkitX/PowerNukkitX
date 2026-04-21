@@ -144,7 +144,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
 
         var itemStackResponsePacket = new ItemStackResponsePacket();
         itemStackResponsePacket.getResponses().addAll(responses);
-        player.dataPacket(itemStackResponsePacket);
+        player.sendPacket(itemStackResponsePacket);
     }
 
     private static Set<Inventory> resolveAffectedInventories(Player player, ItemStackRequestAction action) {

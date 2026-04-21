@@ -190,7 +190,7 @@ public class EntityHuman extends EntityHumanType {
             addPlayerPacket.setDeviceId("");
             addPlayerPacket.setBuildPlatform(BuildPlatform.UNKNOWN);
             addPlayerPacket.setPlayerGameType(GameType.SURVIVAL);
-            player.dataPacket(addPlayerPacket);
+            player.sendPacket(addPlayerPacket);
 
             this.inventory.sendArmorContents(player);
             this.offhandInventory.sendContents(player);
@@ -207,7 +207,7 @@ public class EntityHuman extends EntityHumanType {
                                 0f
                         )
                 );
-                player.dataPacket(setActorLinkPacket);
+                player.sendPacket(setActorLinkPacket);
             }
 
             if (!(this instanceof Player)) {
@@ -221,7 +221,7 @@ public class EntityHuman extends EntityHumanType {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             final RemoveActorPacket packet = new RemoveActorPacket();
             packet.setTargetActorID(this.getId());
-            player.dataPacket(packet);
+            player.sendPacket(packet);
             this.hasSpawned.remove(player.getLoaderId());
         }
     }

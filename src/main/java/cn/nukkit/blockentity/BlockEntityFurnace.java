@@ -356,13 +356,13 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
                 pk.setContainerID((byte) windowId);
                 pk.setId(ContainerSetDataPacket.FURNACE_TICK_COUNT);
                 pk.setValue(cookTime);
-                player.dataPacket(pk);
+                player.sendPacket(pk);
 
                 pk = new ContainerSetDataPacket();
                 pk.setContainerID((byte) windowId);
                 pk.setId(ContainerSetDataPacket.FURNACE_LIT_DURATION);
                 pk.setValue(burnDuration);
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
 

@@ -48,7 +48,7 @@ public class EntityEquipmentInventory extends BaseInventory {
         packet.setSlot(index);
         packet.setSelectedSlot(index);
         packet.setItem(this.getItem(index).toNetwork());
-        player.dataPacket(packet);
+        player.sendPacket(packet);
     }
 
     @Override

@@ -273,7 +273,7 @@ public class HumanInventory extends BaseInventory {
                 this.sendSlot(this.getHeldItemIndex(), player);
             }
 
-            player.dataPacket(pk);
+            player.sendPacket(pk);
         }
     }
 
@@ -605,7 +605,7 @@ public class HumanInventory extends BaseInventory {
                                 null
                         )
                 );
-                player.dataPacket(inventoryContentPacket);
+                player.sendPacket(inventoryContentPacket);
 
                 final PlayerArmorDamagePacket pk2 = new PlayerArmorDamagePacket();
                 for (int i = 0; i < 4; ++i) {
@@ -613,9 +613,9 @@ public class HumanInventory extends BaseInventory {
                     short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
                     pk2.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(i), dmg));
                 }
-                player.dataPacket(pk2);
+                player.sendPacket(pk2);
             } else {
-                player.dataPacket(pk);
+                player.sendPacket(pk);
             }
         }
     }
@@ -694,15 +694,15 @@ public class HumanInventory extends BaseInventory {
                                 null
                         )
                 );
-                player.dataPacket(inventorySlotPacket);
+                player.sendPacket(inventorySlotPacket);
 
                 final PlayerArmorDamagePacket playerArmorDamagePacket = new PlayerArmorDamagePacket();
                 Item item = armor[index];
                 short dmg = item.isNull() ? (short) 0 : (short) item.getDamage();
                 playerArmorDamagePacket.getArmorSlotAndDamagePairs().add(new ArmorSlotAndDamagePair(armorSlotOfIndex(index), dmg));
-                player.dataPacket(playerArmorDamagePacket);
+                player.sendPacket(playerArmorDamagePacket);
             } else {
-                player.dataPacket(mobArmorEquipmentPacket);
+                player.sendPacket(mobArmorEquipmentPacket);
             }
         }
     }
@@ -738,7 +738,7 @@ public class HumanInventory extends BaseInventory {
                             null
                     )
             );
-            player.dataPacket(inventoryContentPacket);
+            player.sendPacket(inventoryContentPacket);
         }
     }
 
@@ -768,7 +768,7 @@ public class HumanInventory extends BaseInventory {
                                 null
                         )
                 );
-                player.dataPacket(inventorySlotPacket);
+                player.sendPacket(inventorySlotPacket);
             } else {
                 int id = player.getWindowId(this);
                 if (id == -1) {
@@ -782,7 +782,7 @@ public class HumanInventory extends BaseInventory {
                                 null
                         )
                 );
-                player.dataPacket(inventorySlotPacket);
+                player.sendPacket(inventorySlotPacket);
             }
         }
     }
@@ -801,7 +801,7 @@ public class HumanInventory extends BaseInventory {
             pk.setContainerType(this.getType());
             pk.setPosition(Vector3i.from(who.getFloorX(), who.getFloorY(), who.getFloorZ()));
             pk.setTargetActorID(who.getId());
-            who.dataPacket(pk);
+            who.sendPacket(pk);
         }
     }
 
@@ -811,7 +811,7 @@ public class HumanInventory extends BaseInventory {
         pk.setContainerID((byte) who.getWindowId(this));
         pk.setServerInitiatedClose(who.getClosingWindowId() != pk.getContainerID());
         pk.setContainerType(this.getType());
-        who.dataPacket(pk);
+        who.sendPacket(pk);
         // player can never stop viewing their own inventory
         if (who != holder) {
             super.onClose(who);

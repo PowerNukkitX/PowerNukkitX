@@ -297,7 +297,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         bossEventPacket.setHealthPercent(0f);
         bossEventPacket.setDarkenScreen(1);
         bossEventPacket.setColor(6);
-        player.dataPacket(bossEventPacket);
+        player.sendPacket(bossEventPacket);
     }
 
     @Override
