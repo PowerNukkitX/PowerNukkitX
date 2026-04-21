@@ -120,7 +120,8 @@ jobs:
         with:
           tag_name: ${{ needs.build-publish-maven.outputs.tag }}
           name: ${{ needs.build-publish-maven.outputs.title }}
-          prerelease: false
+          prerelease: true
+          make_latest: false
           body: |
             This is the **latest nightly build of PowerNukkitX**, built automatically from the latest source.
             (_Please note that the date on GitHub might appear outdated due to certain limitations._)
@@ -149,6 +150,7 @@ jobs:
           tag_name: ${{ needs.build-publish-maven.outputs.tag }}
           name: ${{ needs.build-publish-maven.outputs.title }}
           prerelease: false
+          make_latest: true
           body: |
             This is the **latest version of PowerNukkitX**, built from the latest source.
             (_Please note that the date on GitHub might appear outdated due to certain limitations._)
@@ -170,12 +172,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish Release (Versioned Prerelease)
-        if: needs.build-publish-maven.outputs.prerelease == 'true'
+        if: needs.build-publish-maven.outputs.prerelease == 'true' && needs.build-publish-maven.outputs.nightly == 'false'
         uses: softprops/action-gh-release@e798e6a1ede8d07b74ac4cdac6bdfa4cc1653907
         with:
           tag_name: ${{ needs.build-publish-maven.outputs.tag }}
           name: ${{ needs.build-publish-maven.outputs.title }}
           prerelease: true
+          make_latest: false
           body: |
             This is an older build of PowerNukkitX, built from the `${{ github.ref_name }}` branch.
             (_Please note that the date on GitHub might appear outdated due to certain limitations._)
@@ -195,7 +198,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check if Newer Release Exists & Mark Outdated
-        if: needs.build-publish-maven.outputs.prerelease == 'true'
+        if: needs.build-publish-maven.outputs.prerelease == 'true' && needs.build-publish-maven.outputs.nightly == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CURRENT_TAG: ${{ needs.build-publish-maven.outputs.tag }}
@@ -239,7 +242,7 @@ jobs:
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/${{ github.repository }}/releases/$our_id" \
-              -d "$(jq -n --arg body "$NEW_BODY" '{body: $body}')"
+              -d "$(jq -n --arg body "$NEW_BODY" '{body: $body, prerelease: false, make_latest: "false"}')"
 
             echo "Marked $CURRENT_TAG as outdated (superseded by $latest_tag)."
           else
