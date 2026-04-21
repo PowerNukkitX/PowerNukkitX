@@ -67,7 +67,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build & Publish to Maven Repository
-        run: ./gradlew publish --no-configuration-cache -PbuildVersion=${{ steps.meta.outputs.tag }}-SNAPSHOT
+        run: ./gradlew shadowJar --no-configuration-cache -PbuildVersion=${{ steps.meta.outputs.tag }}-SNAPSHOT
         env:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
