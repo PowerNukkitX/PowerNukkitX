@@ -16,7 +16,10 @@ import cn.nukkit.utils.DefaultCameraAimAssistPresets;
 import cn.nukkit.utils.DefaultCameraPresets;
 import cn.nukkit.utils.RuntimeBlockDefinitionRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
@@ -52,14 +55,27 @@ public class PlayerSessionHolder {
 
     private final BedrockServerSession session;
     private SessionState state = SessionState.INITIAL;
+    @Setter(AccessLevel.PRIVATE)
     private Player player;
     private Player.PlayerInfo playerInfo;
+    @Setter(AccessLevel.PRIVATE)
     private PlayerHandle playerHandle;
+    @Getter(AccessLevel.PRIVATE)
     private final RateLimitSettings rateLimitSettings;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private long packetRateLimitTimeInMS;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private long packetRateLimitTimeInTicks;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private long packetCounter;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private long packetCounterForTicks;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
     private long lastWarnTime;
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
