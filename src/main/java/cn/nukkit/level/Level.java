@@ -2972,7 +2972,7 @@ public class Level implements Metadatable {
 
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, UseItemData data, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
-        Block block = target.canBeReplaced() ? target : target.getSide(face);
+        Block block = target.canBeReplaced() ? target : (target.getSnowloggingLevel() > 0 && item.getBlock() instanceof BlockSnowLayer ? target : target.getSide(face));
 
         float fx = data.clickPos.x;
         float fy = data.clickPos.y;
@@ -3062,6 +3062,7 @@ public class Level implements Metadatable {
 
         // Check for valid placement conditions
         if (!(block.canBeReplaced() ||
+                (block.getSnowloggingLevel() > 0 && hand instanceof BlockSnowLayer) ||
                 (hand instanceof BlockSlab && hand.getId().equals(block.getId())) ||
                 hand instanceof BlockCandle)) {
             return null;
