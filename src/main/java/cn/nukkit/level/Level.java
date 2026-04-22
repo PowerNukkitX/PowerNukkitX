@@ -102,7 +102,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -2364,9 +2363,9 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
-        ObjectSet<Long2ObjectMap.Entry<IntOpenHashSet>> blockLightQueue;
+        Long2ObjectMap<IntOpenHashSet> blockLightQueue = new Long2ObjectOpenHashMap<>(8);
         synchronized (this.blockLightQueue) {
-            blockLightQueue = this.blockLightQueue.long2ObjectEntrySet();
+            blockLightQueue.putAll(this.blockLightQueue);
             this.blockLightQueue.clear();
         }
         try {
@@ -2376,7 +2375,7 @@ public class Level implements Metadatable {
             Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
             Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-            var iter = blockLightQueue.iterator();
+            var iter = blockLightQueue.long2ObjectEntrySet().iterator();
             while (iter.hasNext()) {
                 var entry = iter.next();
                 long index = entry.getLongKey();
