@@ -6,8 +6,10 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.biome.BiomePicker;
+import cn.nukkit.level.generator.biome.OverworldBiomePicker;
 import cn.nukkit.level.generator.biome.result.BiomeResult;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.level.generator.densityfunction.DensityCommon;
 
 import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
@@ -27,11 +29,28 @@ public class BiomeMapStage extends GenerateStage {
         final int minHeight = level.getMinHeight();
         final int maxHeight = level.getMaxHeight();
         BiomeResult[] biomes = new BiomeResult[16*16];
-        for(int _x = 0; _x < 16; _x++) {
-            int x = chunkX * 16 + _x;
-            for(int _z = 0; _z < 16; _z++) {
-                int z = chunkZ * 16 + _z;
-                biomes[_x * 16 + _z] = biomePicker.pick(x, SEA_LEVEL, z);
+        if (biomePicker instanceof OverworldBiomePicker overworldBiomePicker) {
+            DensityCommon.ChunkCache chunkCache = DensityCommon.chunkCache(chunk);
+            chunkCache.clear();
+            DensityCommon.CellFunctionContext functionContext = new DensityCommon.CellFunctionContext(chunkCache);
+            try {
+                for(int _x = 0; _x < 16; _x++) {
+                    int x = chunkX * 16 + _x;
+                    for(int _z = 0; _z < 16; _z++) {
+                        int z = chunkZ * 16 + _z;
+                        biomes[_x * 16 + _z] = overworldBiomePicker.pick(x, SEA_LEVEL, z, functionContext.set(x, SEA_LEVEL, z));
+                    }
+                }
+            } finally {
+                DensityCommon.releaseChunkCache(chunk);
+            }
+        } else {
+            for(int _x = 0; _x < 16; _x++) {
+                int x = chunkX * 16 + _x;
+                for(int _z = 0; _z < 16; _z++) {
+                    int z = chunkZ * 16 + _z;
+                    biomes[_x * 16 + _z] = biomePicker.pick(x, SEA_LEVEL, z);
+                }
             }
         }
         chunk.batchProcess(unsafeChunk -> {
