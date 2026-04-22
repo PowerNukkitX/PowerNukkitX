@@ -2363,19 +2363,19 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
-        Long2ObjectMap<IntOpenHashSet> blockLightQueue = new Long2ObjectOpenHashMap<>(8);
+        Long2ObjectMap<IntOpenHashSet> pendingBlockLight  = new Long2ObjectOpenHashMap<>(8);
         synchronized (this.blockLightQueue) {
-            blockLightQueue.putAll(this.blockLightQueue);
+            pendingBlockLight.putAll(this.blockLightQueue);
             this.blockLightQueue.clear();
         }
+        
         try {
-
             Queue<Long> lightPropagationQueue = new ConcurrentLinkedQueue<>();
             Queue<Object[]> lightRemovalQueue = new ConcurrentLinkedQueue<>();
             Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
             Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-            var iter = blockLightQueue.long2ObjectEntrySet().iterator();
+            var iter = pendingBlockLight.long2ObjectEntrySet().iterator();
             while (iter.hasNext()) {
                 var entry = iter.next();
                 long index = entry.getLongKey();
