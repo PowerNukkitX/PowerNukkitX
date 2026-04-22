@@ -2363,7 +2363,7 @@ public class Level implements Metadatable {
     }
 
     public void updateBlockLight() {
-        Long2ObjectMap<IntOpenHashSet> pendingBlockLight  = new Long2ObjectOpenHashMap<>(8);
+        Long2ObjectMap<IntOpenHashSet> pendingBlockLight = new Long2ObjectOpenHashMap<>(8);
         synchronized (this.blockLightQueue) {
             pendingBlockLight.putAll(this.blockLightQueue);
             this.blockLightQueue.clear();
