@@ -7,6 +7,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.GeneratorRoot;
 import cn.nukkit.network.protocol.types.biome.BiomeConsolidatedFeatureData;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
@@ -54,7 +55,7 @@ public class NormalChunkFeatureStage extends GenerateStage {
         ArrayList<BiomeConsolidatedFeatureData> sortedFeatures = new ArrayList<>(featuresByIdentifier.values());
         sortedFeatures.sort(Comparator.comparingInt(feature -> feature.scatter.evalOrder));
 
-        BlockManager root = new BlockManager(chunk.getLevel());
+        GeneratorRoot root = new GeneratorRoot(chunk.getLevel());
         for (BiomeConsolidatedFeatureData consolidatedFeatureData : sortedFeatures) {
             String featureIdentifier = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.identifier); //Usually more specific. Like contains biome and type.
             String featureName = Registries.BIOME.getFromBiomeStringList(consolidatedFeatureData.feature); //Usually globally usable. But not always descriptive enough to use (e.g. ores)
