@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
@@ -178,7 +179,11 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public final void scheduleUpdate() {
-        this.level.scheduleBlockEntityUpdate(this);
+        Level level = this.level;
+        if (level == null || this.closed) {
+            return;
+        }
+        level.scheduleBlockEntityUpdate(this);
     }
 
     public void close() {

@@ -144,69 +144,71 @@ public class Binary {
 
     public static byte[] writeEntityData(EntityDataMap entityDataMap) {
         BinaryStream stream = new BinaryStream();
-        stream.putUnsignedVarInt(entityDataMap.size());//size
-        for (var e : entityDataMap.entrySet()) {
-            EntityDataType<?> key = e.getKey();
-            Object data = e.getValue();
-            stream.putUnsignedVarInt(key.getValue());
-            Function<Object, Object> transformer = key.getTransformer();
-            Object applyData = transformer.apply(data);
+        synchronized (entityDataMap) {
+            stream.putUnsignedVarInt(entityDataMap.size());//size
+            for (var e : entityDataMap.entrySet()) {
+                EntityDataType<?> key = e.getKey();
+                Object data = e.getValue();
+                stream.putUnsignedVarInt(key.getValue());
+                Function<Object, Object> transformer = key.getTransformer();
+                Object applyData = transformer.apply(data);
 
-            EntityDataFormat format = EntityDataFormat.from(applyData.getClass());
-            stream.putUnsignedVarInt(format.ordinal());
+                EntityDataFormat format = EntityDataFormat.from(applyData.getClass());
+                stream.putUnsignedVarInt(format.ordinal());
 
-            switch (format) {
-                case BYTE:
-                    stream.putByte((byte) applyData);
-                    break;
-                case SHORT:
-                    stream.putLShort((short) applyData);
-                    break;
-                case INT:
-                    stream.putVarInt((int) applyData);
-                    break;
-                case FLOAT:
-                    stream.putLFloat((float) applyData);
-                    break;
-                case STRING:
-                    String s = (String) applyData;
-                    stream.putUnsignedVarInt(s.getBytes(StandardCharsets.UTF_8).length);
-                    stream.put(s.getBytes(StandardCharsets.UTF_8));
-                    break;
-                case NBT:
-                    try {
-                        stream.put(NBTIO.write((CompoundTag) applyData, ByteOrder.LITTLE_ENDIAN, true));
-                    } catch (IOException ee) {
-                        throw new UncheckedIOException(ee);
-                    }
-                    break;
-                case VECTOR3I:
-                    BlockVector3 pos = (BlockVector3) applyData;
-                    stream.putVarInt(pos.x);
-                    stream.putVarInt(pos.y);
-                    stream.putVarInt(pos.z);
-                    break;
-                case LONG:
-                    stream.putVarLong((Long) applyData);
-                    break;
-                case VECTOR3F:
-                    float x, y, z;
-                    if (applyData instanceof Vector3 vector3) {
-                        x = (float) vector3.x;
-                        y = (float) vector3.y;
-                        z = (float) vector3.z;
-                    } else {
-                        Vector3f v3data = (Vector3f) applyData;
-                        x = v3data.x;
-                        y = v3data.y;
-                        z = v3data.z;
-                    }
-                    stream.putLFloat(x);
-                    stream.putLFloat(y);
-                    stream.putLFloat(z);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unknown entity data type " + format);
+                switch (format) {
+                    case BYTE:
+                        stream.putByte((byte) applyData);
+                        break;
+                    case SHORT:
+                        stream.putLShort((short) applyData);
+                        break;
+                    case INT:
+                        stream.putVarInt((int) applyData);
+                        break;
+                    case FLOAT:
+                        stream.putLFloat((float) applyData);
+                        break;
+                    case STRING:
+                        String s = (String) applyData;
+                        stream.putUnsignedVarInt(s.getBytes(StandardCharsets.UTF_8).length);
+                        stream.put(s.getBytes(StandardCharsets.UTF_8));
+                        break;
+                    case NBT:
+                        try {
+                            stream.put(NBTIO.write((CompoundTag) applyData, ByteOrder.LITTLE_ENDIAN, true));
+                        } catch (IOException ee) {
+                            throw new UncheckedIOException(ee);
+                        }
+                        break;
+                    case VECTOR3I:
+                        BlockVector3 pos = (BlockVector3) applyData;
+                        stream.putVarInt(pos.x);
+                        stream.putVarInt(pos.y);
+                        stream.putVarInt(pos.z);
+                        break;
+                    case LONG:
+                        stream.putVarLong((Long) applyData);
+                        break;
+                    case VECTOR3F:
+                        float x, y, z;
+                        if (applyData instanceof Vector3 vector3) {
+                            x = (float) vector3.x;
+                            y = (float) vector3.y;
+                            z = (float) vector3.z;
+                        } else {
+                            Vector3f v3data = (Vector3f) applyData;
+                            x = v3data.x;
+                            y = v3data.y;
+                            z = v3data.z;
+                        }
+                        stream.putLFloat(x);
+                        stream.putLFloat(y);
+                        stream.putLFloat(z);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unknown entity data type " + format);
+                }
             }
         }
         return stream.getBuffer();
