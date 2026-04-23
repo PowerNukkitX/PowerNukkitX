@@ -81,4 +81,9 @@ public class BlockPinkPetals extends BlockFlower {
 
         return false;
     }
+
+    @Override
+    public int getSnowloggingLevel() {
+        return 0;
+    }
 }
