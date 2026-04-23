@@ -31,11 +31,12 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
 
     @Override
     public OverworldBiomeResult pick(int x, int y, int z) {
+        return pick(x, y, z, new DensityFunction.SinglePointContext(x, y, z));
+    }
 
+    public OverworldBiomeResult pick(int x, int y, int z, DensityFunction.FunctionContext point) {
         NormalObjectHolder.TerrainHolder density = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
         NormalObjectHolder.BiomeHolder noises = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getBiomeHolder();
-
-        var point = new DensityFunction.SinglePointContext(x, y, z);
         //Those values are 2D
         float continental = (float) density.getContinents().compute(point);
         float temperature = noises.getTemperatureNoise().getValue(x, SEA_LEVEL, z);
