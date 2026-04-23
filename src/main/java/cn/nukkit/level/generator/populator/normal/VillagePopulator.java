@@ -12,15 +12,19 @@ import cn.nukkit.level.generator.object.structures.jigsaw.village.SnowyVillageSt
 import cn.nukkit.level.generator.object.structures.jigsaw.village.TaigaVillageStructure;
 import cn.nukkit.level.generator.object.structures.jigsaw.village.VillageStructure;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.math.BlockVector3;
 
 public class VillagePopulator extends Populator {
 
     public static final String NAME = "normal_village";
-    protected static final long SALT = 0x76696C6C616765L;
 
-    protected static final int MIN_DISTANCE = 8;
-    protected static final int MAX_DISTANCE = 32;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(10387312L)
+            .minDistance(8)
+            .maxDistance(34)
+            .isBiomeValid(biome -> getVillageForBiome(biome) != null)
+            .build());
 
     protected static final VillageStructure PLAINS_VILLAGE = new PlainsVillageStructure();
     protected static final VillageStructure DESERT_VILLAGE = new DesertVillageStructure();
@@ -34,12 +38,12 @@ public class VillagePopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
+        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
 
-        if (!canGenerate(level.getSeed(), chunkX, chunkZ)) {
+        if (!PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             return;
         }
 
-        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
         VillageStructure village = getVillageForBiome(biome);
         if (village == null) {
             return;
@@ -52,12 +56,6 @@ public class VillagePopulator extends Populator {
         village.place(helper, random.fork());
     }
 
-    protected boolean canGenerate(long levelSeed, int chunkX, int chunkZ) {
-        random.setSeed((levelSeed ^ SALT) + Level.chunkHash(chunkX, chunkZ));
-        return (chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX
-                && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ;
-    }
-
     protected int findGenerationY(IChunk chunk, Level level) {
         int worldX = (chunk.getX() << 4) + 7;
         int worldZ = (chunk.getZ() << 4) + 7;
@@ -68,7 +66,7 @@ public class VillagePopulator extends Populator {
         return y;
     }
 
-    protected VillageStructure getVillageForBiome(int biome) {
+    protected static VillageStructure getVillageForBiome(int biome) {
         return switch (biome) {
             case BiomeID.DESERT -> DESERT_VILLAGE;
             case BiomeID.SAVANNA -> SAVANNA_VILLAGE;

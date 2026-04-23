@@ -10,7 +10,6 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
-import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -26,7 +25,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_
 import static cn.nukkit.block.property.CommonBlockProperties.MINECRAFT_VERTICAL_HALF;
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
-public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectGenerator {
+public class ObjectDesertPyramid extends ObjectGenerator {
 
     protected static final BlockState SANDSTONE = BlockSandstone.PROPERTIES.getDefaultState();
     protected static final BlockState CUT_SANDSTONE = BlockCutSandstone.PROPERTIES.getDefaultState();
@@ -240,40 +239,8 @@ public class ObjectDesertPyramid extends ObjectGenerator implements RuledObjectG
         }
     }
 
-    @Override
-    public String getName() {
-        return "desert_pyramid";
-    }
-
     public AxisAlignedBB getBoundingBox() {
         return new SimpleAxisAlignedBB(0, -18, 0, 21, 29, 21);
-    }
-
-    protected static final int MIN_DISTANCE = 8;
-    protected static final int MAX_DISTANCE = 32;
-
-    @Override
-    public boolean canGenerateAt(Location location) {
-        int x = location.getFloorX();
-        int y = location.getFloorY();
-        int z = location.getFloorZ();
-        int chunkX = location.getChunkX();
-        int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-
-        int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
-        if (!definition.getTags().contains(BiomeTags.DESERT) ||
-                !((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ)) {
-            return false;
-        }
-
-        if (y > 128) {
-            return false;
-        }
-
-        return level.getBlock(x, y, z).hasTag(BlockTags.SAND);
     }
 
     protected static class ChestPopulator extends RandomizableContainer {

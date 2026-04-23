@@ -15,6 +15,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.types.BannerPattern;
@@ -56,9 +57,25 @@ public class PillagerOutpostPopulator extends Populator {
             new BannerPattern(BannerPatternType.BORDER, DyeColor.BLACK)
     };
 
-
-    protected static final int SPACING = 32;
-    protected static final int SEPARATION = 8;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(165745296L)
+            .minDistance(8)
+            .maxDistance(32)
+            .isBiomeValid(biome -> biome == BiomeID.PLAINS
+                    || biome == BiomeID.DESERT
+                    || biome == BiomeID.SAVANNA
+                    || biome == BiomeID.TAIGA
+                    || biome == BiomeID.ICE_PLAINS
+                    || biome == BiomeID.COLD_TAIGA
+                    || biome == BiomeID.SUNFLOWER_PLAINS
+                    || biome == BiomeID.MEADOW
+                    || biome == BiomeID.GROVE
+                    || biome == BiomeID.SNOWY_SLOPES
+                    || biome == BiomeID.JAGGED_PEAKS
+                    || biome == BiomeID.FROZEN_PEAKS
+                    || biome == BiomeID.STONY_PEAKS
+                    || biome == BiomeID.CHERRY_GROVE)
+            .build());
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -66,13 +83,8 @@ public class PillagerOutpostPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        if ((biome == BiomeID.PLAINS || biome == BiomeID.DESERT || biome == BiomeID.SAVANNA || biome == BiomeID.TAIGA || biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA
-                || biome == BiomeID.SUNFLOWER_PLAINS || biome == BiomeID.MEADOW || biome == BiomeID.GROVE || biome == BiomeID.SNOWY_SLOPES || biome == BiomeID.JAGGED_PEAKS
-                || biome == BiomeID.FROZEN_PEAKS || biome == BiomeID.STONY_PEAKS || biome == BiomeID.CHERRY_GROVE)
-                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextInt(SPACING - SEPARATION)
-                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextInt(SPACING - SEPARATION)) {
+        if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             random.setSeed(((chunkX >> 4) ^ (chunkZ >> 4) << 4) ^ level.getSeed());
             random.nextInt();
             if (random.nextInt(5) == 0) {

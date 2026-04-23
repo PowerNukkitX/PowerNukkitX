@@ -7,7 +7,6 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
-import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -16,7 +15,7 @@ import cn.nukkit.utils.random.Xoroshiro128;
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
 
-public class ObjectSwampHut extends ObjectGenerator implements RuledObjectGenerator {
+public class ObjectSwampHut extends ObjectGenerator {
 
     protected static final BlockState SPRUCE_PLANKS = BlockSprucePlanks.PROPERTIES.getDefaultState();
     protected static final BlockState FLOWER_POT = BlockFlowerPot.PROPERTIES.getDefaultState();
@@ -72,62 +71,7 @@ public class ObjectSwampHut extends ObjectGenerator implements RuledObjectGenera
         object.merge(builder);
         return true;
     }
-
-    @Override
-    public String getName() {
-        return "monster_room";
-    }
-
-    @Override
-    public boolean canGenerateAt(Location location) {
-        int x = location.getFloorX();
-        int y = location.getFloorY();
-        int z = location.getFloorZ();
-        Level level = location.getLevel();
-        random.setSeed(level.getSeed() ^ (x+y+z));
-
-        chance:
-        for (int chance = 0; chance < 8; ++chance) {
-            int xv = random.nextBoundedInt(2) + 2;
-            int x1 = -xv - 1;
-            int x2 = xv + 1;
-
-            int zv = random.nextBoundedInt(2) + 2;
-            int z1 = -zv - 1;
-            int z2 = zv + 1;
-
-            int t = 0;
-
-            for (int dx = x1; dx <= x2; ++dx) {
-                for (int dy = -1; dy <= 4; ++dy) {
-                    for (int dz = z1; dz <= z2; ++dz) {
-                        int tx = x + dx;
-                        int ty = y + dy;
-                        int tz = z + dz;
-
-                        Block block = level.getBlock(tx, ty, tz);
-                        boolean isSolid = block.isSolid();
-
-                        if (dy == -1 && !isSolid) {
-                            continue chance;
-                        }
-                        if (dy == 4 && !isSolid) {
-                            continue chance;
-                        }
-                        if ((dx == x1 || dx == x2 || dz == z1 || dz == z2) && dy == 0 && level.getBlockIdAt(tx, ty + 1, tz) == AIR) {
-                            ++t;
-                        }
-                    }
-                }
-            }
-
-            if (t >= 1 && t <= 5) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
     protected static class ChestPopulator extends RandomizableContainer {
         public ChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()

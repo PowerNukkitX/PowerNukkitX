@@ -4,7 +4,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.generator.densityfunction.DensityFunction;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
-import cn.nukkit.level.generator.noise.minecraft.simplex.SimplexNoise;
 import cn.nukkit.utils.random.NukkitRandom;
 import lombok.Getter;
 
@@ -35,6 +34,14 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
     }
 
     public OverworldBiomeResult pick(int x, int y, int z, DensityFunction.FunctionContext point) {
+        return pickRaw(x, y, z, point).correct(y - level.getHeightMap(x, z));
+    }
+
+    public OverworldBiomeResult pickRaw(int x, int y, int z) {
+        return pickRaw(x, y, z, new DensityFunction.SinglePointContext(x, y, z));
+    }
+
+    public OverworldBiomeResult pickRaw(int x, int y, int z, DensityFunction.FunctionContext point) {
         NormalObjectHolder.TerrainHolder density = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
         NormalObjectHolder.BiomeHolder noises = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getBiomeHolder();
         //Those values are 2D
@@ -56,7 +63,7 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
             default -> getInlandBiome(temperatureLevel, humidityLevel, continentalLevel, erosionLevel, weirdness);
         };
 
-        return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv).correct(y - level.getHeightMap(x, z));
+        return new OverworldBiomeResult(biome, continental, temperature, humidity, erosion, weirdness, pv);
     }
 
     protected int getNonInlandBiome(int temperatureLevel, int continentalLevel) {

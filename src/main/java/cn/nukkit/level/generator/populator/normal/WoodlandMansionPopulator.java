@@ -7,16 +7,21 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.structures.WoodlandMansionPieces;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.types.Rotation;
 import cn.nukkit.utils.random.Xoroshiro128;
 
 public class WoodlandMansionPopulator extends Populator {
-    public static final String NAME = "normal_woodland_mansion";
-    protected static final long SALT = 0x76694565C616765L;
 
-    protected static final int MIN_DISTANCE = 20;
-    protected static final int MAX_DISTANCE = 80;
+    public static final String NAME = "normal_woodland_mansion";
+
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(10387319L)
+            .minDistance(20)
+            .maxDistance(80)
+            .isBiomeValid(biome -> biome == BiomeID.ROOFED_FOREST || biome == BiomeID.ROOFED_FOREST_MUTATED)
+            .build());
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -29,21 +34,17 @@ public class WoodlandMansionPopulator extends Populator {
         }
 
         int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
-        if(!canGenerate(level.getSeed(), chunkX, chunkZ, biome)) {
+        if(!PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             return;
         }
 
-        Rotation rotation = Rotation.from(random.nextInt(4));
+        Rotation rotation = Rotation.NONE;
         BlockVector3 origin = getStartPosition(chunk, rotation);
-        if (origin.getY() < 64) {
-            return;
-        }
 
         BlockManager manager = new BlockManager(level);
         Xoroshiro128 pieceRandom = new Xoroshiro128(level.getSeed());
         pieceRandom.setSeed((long) chunkX * pieceRandom.nextInt() ^ (long) chunkZ * pieceRandom.nextInt() ^ level.getSeed());
         WoodlandMansionPieces.PostPlacement postPlacement = WoodlandMansionPieces.place(manager, origin, rotation, pieceRandom);
-
         if (!postPlacement.chests().isEmpty() || !postPlacement.mobSpawns().isEmpty() || !postPlacement.spiderSpawnerPositions().isEmpty()) {
             manager.addHook(() -> WoodlandMansionPieces.populatePlacedData(
                     level,
@@ -54,13 +55,6 @@ public class WoodlandMansionPopulator extends Populator {
             ));
         }
         queueObject(chunk, manager);
-    }
-
-    protected boolean canGenerate(long levelSeed, int chunkX, int chunkZ, int biome) {
-        random.setSeed((levelSeed ^ SALT) + Level.chunkHash(chunkX, chunkZ));
-        return (biome == BiomeID.ROOFED_FOREST || biome == BiomeID.ROOFED_FOREST_MUTATED)
-                && (chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX
-                && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ;
     }
 
     private BlockVector3 getStartPosition(IChunk chunk, Rotation rotation) {
@@ -82,7 +76,7 @@ public class WoodlandMansionPopulator extends Populator {
                     case ROTATE_270 -> 4 - dx;
                     default -> dz;
                 };
-                minY = Math.min(minY, chunk.getHeightMap(sampleX + 7, sampleZ + 7));
+                minY = Math.min(minY, Math.max(chunk.getHeightMap(sampleX + 7, sampleZ + 7), 64));
             }
         }
 

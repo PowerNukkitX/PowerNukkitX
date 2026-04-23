@@ -10,6 +10,7 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.level.generator.object.structures.utils.StructureStart;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.collect.Lists;
 
@@ -20,8 +21,10 @@ public class StrongholdPopulator extends Populator {
 
     public static final String NAME = "normal_stronghold";
 
-    protected static final int SPACING = 32;
-    protected static final int SEPARATION = 3;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .minDistance(3)
+            .maxDistance(32)
+            .build());
 
     private final List<StrongholdStart> discoveredStarts = Lists.newArrayList();
 
@@ -31,11 +34,10 @@ public class StrongholdPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         if (!chunk.isOverWorld()) return;
+        int biome = chunk.getBiomeId(7, chunk.getHeightMap(7, 7), 7);
 
-        if (chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+        if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             BlockManager object = new BlockManager(level);
             StrongholdStart start = new StrongholdStart(object, chunkX, chunkZ);
             start.generatePieces(object, chunkX, chunkZ);
