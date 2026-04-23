@@ -41,7 +41,7 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!canPlantOn(down())) {
+            if (!canPlantOn(getLevelBlock().down())) {
                 this.getLevel().useBreakOn(this);
 
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -84,6 +84,11 @@ public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPo
         }
 
         return false;
+    }
+
+    @Override
+    public int getSnowloggingLevel() {
+        return 1;
     }
 
     public Block getUncommonFlower() {

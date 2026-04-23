@@ -31,6 +31,11 @@ public class BlockTallDryGrass extends BlockFlowable {
     }
 
     @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
     public String getName() {
         return "Tall dry grass";
     }
