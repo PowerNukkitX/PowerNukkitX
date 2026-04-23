@@ -46,7 +46,6 @@ public class ItemEnderEye extends Item {
             return false;
         }
 
-        eye.setItem(this);
         eye.signalTo(target);
         eye.spawnToAll();
         player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.BOW, -1, eye.getIdentifier(), false, false);
