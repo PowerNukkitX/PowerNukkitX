@@ -80,4 +80,9 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
     public boolean isFertilizable() {
         return true;
     }
+
+    @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
 }

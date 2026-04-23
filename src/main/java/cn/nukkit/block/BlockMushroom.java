@@ -112,4 +112,9 @@ public abstract class BlockMushroom extends BlockFlowable implements BlockFlower
     public boolean isFertilizable() {
         return true;
     }
+
+    @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
 }
