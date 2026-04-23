@@ -10,9 +10,9 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.utils.random.RandomSourceProvider;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -23,8 +23,11 @@ public class NetherFossilPopulator extends Populator {
 
     public static final String NAME = "nether_fossil";
 
-    protected static final int MIN_DISTANCE = 2;
-    protected static final int MAX_DISTANCE = 32;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .minDistance(2)
+            .maxDistance(32)
+            .isBiomeValid(biome -> biome == BiomeID.SOULSAND_VALLEY)
+            .build());
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -32,8 +35,9 @@ public class NetherFossilPopulator extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(canGenerate(random, chunk)) {
+        int biome = chunk.getBiomeId(3, LAVA_LEVEL, 3);
+        if(PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int x = (chunkX << 4) + 3;
             int z = (chunkZ << 4) + 3;
             BlockManager manager = new BlockManager(level);
@@ -66,12 +70,6 @@ public class NetherFossilPopulator extends Populator {
             }
         }
         return blockYs;
-    }
-
-    public boolean canGenerate(RandomSourceProvider random, IChunk chunk) {
-        int chunkX = chunk.getX();
-        int chunkZ = chunk.getZ();
-        return ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ) && chunk.getBiomeId(3, LAVA_LEVEL, 3) == BiomeID.SOULSAND_VALLEY;
     }
 
     @Override

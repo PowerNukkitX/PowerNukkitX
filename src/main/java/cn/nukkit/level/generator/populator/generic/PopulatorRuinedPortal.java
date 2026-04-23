@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -37,8 +38,11 @@ public class PopulatorRuinedPortal extends Populator {
 
     private static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
 
-    protected static final int MIN_DISTANCE = 40;
-    protected static final int MAX_DISTANCE = 25;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(34222645L)
+            .minDistance(15)
+            .maxDistance(40)
+            .build());
 
     private static final String[] PORTALS = new String[]{
             "ruined_portal/portal_1",
@@ -64,8 +68,9 @@ public class PopulatorRuinedPortal extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(canGenerate(random, chunk)) {
+        int biome = chunk.getBiomeId(7, SEA_LEVEL, 7);
+        if(PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
             BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7));
@@ -236,12 +241,6 @@ public class PopulatorRuinedPortal extends Populator {
 
     private static int getRandomWithinInterval(RandomSourceProvider random, int start, int end) {
         return start < end ? NukkitMath.randomRange(random, start, end) : end;
-    }
-
-    public boolean canGenerate(RandomSourceProvider random, IChunk chunk) {
-        int chunkX = chunk.getX();
-        int chunkZ = chunk.getZ();
-        return ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }
 
     @Override
