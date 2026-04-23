@@ -4075,6 +4075,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * Planned removal: after behavior parity is complete (>= 2026-09-05).
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
+    @SuppressWarnings("removal")
     public float getSpeedMultiplier() {
         if (isCustomEntity()) {
             Float sm = meta().getSpeedMultiplier(CustomEntityComponents.DEFAULT_MOVEMENT_MULTIPLIER);

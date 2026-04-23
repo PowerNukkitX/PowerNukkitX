@@ -828,6 +828,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return attackTimeBefore;
     }
 
+    @SuppressWarnings("removal")
     public void recalcMovementSpeedFromEffects() {
         float base = this.getMovementSpeedDefault() * this.getSpeedMultiplier();
         float mul = 1.0f;

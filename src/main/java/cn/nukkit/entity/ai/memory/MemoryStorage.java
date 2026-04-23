@@ -43,7 +43,9 @@ public class MemoryStorage implements IMemoryStorage {
             put(type, data);
         }
         D value;
-        return (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
+        @SuppressWarnings("unchecked")
+        var result = (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
+        return result;
     }
 
     @Override

@@ -15,6 +15,7 @@ import cn.nukkit.item.Item;
  * Planned removal: after 6 months (>= 2026-08-19).
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange) {
@@ -26,6 +27,7 @@ public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void sense(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal entityAnimal) {
             Player player = null;

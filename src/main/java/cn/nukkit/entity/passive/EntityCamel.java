@@ -172,6 +172,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public float getSpeedMultiplier() {
         return 2.0f;
     }

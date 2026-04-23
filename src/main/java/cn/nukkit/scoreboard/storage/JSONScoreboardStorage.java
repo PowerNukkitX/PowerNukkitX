@@ -149,7 +149,9 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
         Object linesObj = map.get("lines");
         if (!(linesObj instanceof List)) return scoreboard;
 
-        for (Map<String, Object> line : (List<Map<String, Object>>) linesObj) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> linesList = (List<Map<String, Object>>) linesObj;
+        for (Map<String, Object> line : linesList) {
             if (!line.containsKey("score") || !line.containsKey("scorerType")) continue;
             int score = ((Number) line.get("score")).intValue();
             String scorerType = Objects.toString(line.get("scorerType"), null);

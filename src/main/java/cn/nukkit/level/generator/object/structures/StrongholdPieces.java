@@ -697,8 +697,13 @@ public class StrongholdPieces {
                 this.placeBlock(chest, BlockChest.PROPERTIES.getBlockState(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION.createValue((orientation == null ? MinecraftCardinalDirection.NORTH : MinecraftCardinalDirection.valueOf(orientation.getOpposite().getName().toUpperCase())))), 3, 2, 3, boundingBox);
                 level.merge(chest);
                 for(Block block : chest.getBlocks()) {
+                    int fx = block.getFloorX();
+                    int fy = block.getFloorY();
+                    int fz = block.getFloorZ();
                     level.addHook(() -> {
-                        CORRIDOR.create(((BlockEntityHolder<BlockEntityChest>) block).getOrCreateBlockEntity().getInventory(), random);
+                        @SuppressWarnings("unchecked")
+                        var holder = (BlockEntityHolder<BlockEntityChest>) level.getBlockAt(fx, fy, fz);
+                        CORRIDOR.create(holder.getOrCreateBlockEntity().getInventory(), random);
                     });
                 }
             }
@@ -1017,9 +1022,11 @@ public class StrongholdPieces {
 
                     BlockVector3 vec = new BlockVector3(this.getWorldX(3, 8), this.getWorldY(4), this.getWorldZ(3, 8));
                     if (boundingBox.isInside(vec)) {
-                        level.addHook(() -> {
-                            CROSSING.create(((BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().getInventory(), random);
-                        });
+                    level.addHook(() -> {
+                        @SuppressWarnings("unchecked")
+                        var holder = (BlockEntityHolder<BlockEntityChest>) level.getBlockAt(vec.x, vec.y, vec.z);
+                        CROSSING.create(holder.getOrCreateBlockEntity().getInventory(), random);
+                    });
                     }
             }
 
@@ -1471,7 +1478,9 @@ public class StrongholdPieces {
                     this.hasPlacedSpawner = true;
                     level.setBlockStateAt(vec.x, vec.y, vec.z, SPAWNER);
                     level.addHook(() -> {
-                        ((BlockEntityHolder<BlockEntityMobSpawner>) level.getBlockAt(vec.x, vec.y, vec.z)).getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.SILVERFISH));
+                        @SuppressWarnings("unchecked")
+                        var holder = (BlockEntityHolder<BlockEntityMobSpawner>) level.getBlockAt(vec.x, vec.y, vec.z);
+                        holder.getOrCreateBlockEntity().setSpawnEntityType(Registries.ENTITY.getEntityNetworkId(EntityID.SILVERFISH));
                     });
                 }
             }

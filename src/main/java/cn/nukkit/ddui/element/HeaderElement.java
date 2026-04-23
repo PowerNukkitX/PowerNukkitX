@@ -21,7 +21,9 @@ public class HeaderElement extends Element<String> {
         setText(text);
 
         if (options.getVisible() instanceof Observable<?> obs) {
-            setVisibility((Observable<Boolean>) obs);
+            @SuppressWarnings("unchecked")
+            var castedObs = (Observable<Boolean>) obs;
+            setVisibility(castedObs);
         } else {
             setVisibility((Boolean) options.getVisible());
         }
@@ -36,7 +38,9 @@ public class HeaderElement extends Element<String> {
         setText(text);
 
         if (options.getVisible() instanceof Observable<?> obs) {
-            setVisibility((Observable<Boolean>) obs);
+            @SuppressWarnings("unchecked")
+            var castedObs = (Observable<Boolean>) obs;
+            setVisibility(castedObs);
         } else {
             setVisibility((Boolean) options.getVisible());
         }
