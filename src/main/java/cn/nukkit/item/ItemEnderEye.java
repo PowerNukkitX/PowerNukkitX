@@ -6,14 +6,13 @@ import cn.nukkit.entity.projectile.EntityEyeOfEnderSignal;
 import cn.nukkit.level.generator.populator.normal.StrongholdPopulator;
 import cn.nukkit.math.ChunkVector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 
-public class ItemEnderEye extends Item {
+public class ItemEnderEye extends ProjectileItem {
     private static final int STRONGHOLD_SEARCH_RADIUS_CHUNKS = 100;
-    private static final double EYE_SPAWN_Y_OFFSET = 0.3;
+    private Vector3 pendingTarget;
 
     public ItemEnderEye() {
         this(0, 1);
@@ -28,8 +27,13 @@ public class ItemEnderEye extends Item {
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
+    public String getProjectileEntityType() {
+        return Entity.EYE_OF_ENDER_SIGNAL;
+    }
+
+    @Override
+    public float getThrowForce() {
+        return 0f;
     }
 
     @Override
@@ -39,22 +43,14 @@ public class ItemEnderEye extends Item {
             return true;
         }
 
-        CompoundTag nbt = createEyeNbt(player);
-
-        Entity created = Entity.createEntity(Entity.EYE_OF_ENDER_SIGNAL, player.getLevel().getChunk(player.getFloorX() >> 4, player.getFloorZ() >> 4), nbt);
-        if (!(created instanceof EntityEyeOfEnderSignal eye)) {
+        this.pendingTarget = target;
+        try {
+            return super.onClickAir(player, directionVector);
+        } catch (IllegalArgumentException e) {
             return false;
+        } finally {
+            this.pendingTarget = null;
         }
-
-        eye.signalTo(target);
-        eye.spawnToAll();
-        player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.BOW, -1, eye.getIdentifier(), false, false);
-
-        if (!player.isCreative()) {
-            this.count--;
-        }
-
-        return true;
     }
 
     private Vector3 findNearestStronghold(Player player, int maxRadiusChunks) {
@@ -71,8 +67,17 @@ public class ItemEnderEye extends Item {
         return new Vector3(x, player.y, z);
     }
 
-    private CompoundTag createEyeNbt(Player player) {
-        Vector3 spawnPos = player.add(0, player.getEyeHeight() - EYE_SPAWN_Y_OFFSET, 0);
-        return Entity.getDefaultNBT(spawnPos, null, (float) player.yaw, (float) player.pitch);
+    @Override
+    protected Entity correctProjectile(Player player, Entity projectile) {
+        if (!(projectile instanceof EntityEyeOfEnderSignal eye) || this.pendingTarget == null) {
+            return null;
+        }
+        eye.signalTo(this.pendingTarget);
+        return eye;
+    }
+
+    @Override
+    protected void addThrowSound(Player player) {
+        player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.BOW, -1, "minecraft:player", false, false);
     }
 }

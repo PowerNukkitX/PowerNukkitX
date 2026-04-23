@@ -8,7 +8,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.types.LevelSoundEvent;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class EntityEyeOfEnderSignal extends Entity {
+public class EntityEyeOfEnderSignal extends EntityProjectile {
     private static final String TAG_LIFE = "Life";
     private static final String TAG_SURVIVE_AFTER_DEATH = "SurviveAfterDeath";
     private static final String TAG_TARGET = "Target";
@@ -33,7 +32,11 @@ public class EntityEyeOfEnderSignal extends Entity {
     private boolean surviveAfterDeath;
 
     public EntityEyeOfEnderSignal(IChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
+        this(chunk, nbt, null);
+    }
+
+    public EntityEyeOfEnderSignal(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+        super(chunk, nbt, shootingEntity);
     }
 
     @Override
@@ -45,6 +48,7 @@ public class EntityEyeOfEnderSignal extends Entity {
     @Override
     protected void initEntity() {
         super.initEntity();
+        this.closeOnCollide = false;
 
         this.setDataFlag(EntityFlag.HAS_GRAVITY, false);
         this.setDataFlag(EntityFlag.HAS_COLLISION, false);
@@ -187,5 +191,15 @@ public class EntityEyeOfEnderSignal extends Entity {
     @Override
     public String getOriginalName() {
         return "Eye of Ender";
+    }
+
+    @Override
+    protected float getGravity() {
+        return 0;
+    }
+
+    @Override
+    protected float getDrag() {
+        return 0;
     }
 }
