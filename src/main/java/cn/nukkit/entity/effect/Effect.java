@@ -164,6 +164,10 @@ public abstract class Effect implements Cloneable {
         return false;
     }
 
+    public boolean canTick(Entity entity) {
+        return canTick();
+    }
+
     public void apply(Entity entity, double tickCount) {
 
     }

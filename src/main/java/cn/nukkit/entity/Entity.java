@@ -1618,7 +1618,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
-                if (effect.canTick()) {
+                if (effect.canTick(this)) {
                     effect.apply(this, 1);
                 }
                 
