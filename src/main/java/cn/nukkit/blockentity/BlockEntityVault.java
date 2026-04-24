@@ -620,9 +620,8 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         }
 
         private static Item ominousBottle(int amplifier) {
-            Item item = item(ItemID.OMINOUS_BOTTLE, 0, 1);
+            Item item = item(ItemID.OMINOUS_BOTTLE, amplifier, 1);
             item.setNamedTag(new CompoundTag().putInt("OminousBottleAmplifier", amplifier));
-            item.setLore("Amplifier: " + (amplifier + 1));
             return item;
         }
 
