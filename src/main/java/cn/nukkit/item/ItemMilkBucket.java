@@ -19,6 +19,11 @@ public class ItemMilkBucket extends ItemBucket {
     }
 
     @Override
+    public boolean isConsumable() {
+        return true;
+    }
+
+    @Override
     public int getUsingTicks() {
         return 31;
     }

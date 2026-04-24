@@ -4,10 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFood;
-import cn.nukkit.item.ItemMilkBucket;
-import cn.nukkit.item.ItemOminousBottle;
-import cn.nukkit.item.ItemPotion;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -28,8 +24,7 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             }
 
             Item hand = player.getInventory().getItemInMainHand();
-            if (!(hand instanceof ItemFood) && !(hand instanceof ItemPotion)
-                    && !(hand instanceof ItemMilkBucket) && !(hand instanceof ItemOminousBottle)) {
+            if (!hand.isConsumable()) {
                 return;
             }
 

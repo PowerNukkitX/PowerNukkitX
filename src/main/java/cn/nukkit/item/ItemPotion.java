@@ -81,6 +81,11 @@ public class ItemPotion extends Item {
     }
 
     @Override
+    public boolean isConsumable() {
+        return true;
+    }
+
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }

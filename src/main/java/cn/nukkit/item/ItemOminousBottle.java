@@ -33,6 +33,11 @@ public class ItemOminousBottle extends Item {
     }
 
     @Override
+    public boolean isConsumable() {
+        return true;
+    }
+
+    @Override
     public int getUsingTicks() {
         return 31;
     }
