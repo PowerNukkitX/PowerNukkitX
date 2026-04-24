@@ -32,13 +32,13 @@ public class BlockColor implements Cloneable {
     public static final BlockColor VOID_BLOCK_COLOR = TRANSPARENT_BLOCK_COLOR;
     public static final BlockColor AIR_BLOCK_COLOR = TRANSPARENT_BLOCK_COLOR;
 
-    public static final BlockColor GRASS_BLOCK_COLOR = new BlockColor(0x7f, 0xb2, 0x38);
+    public static final BlockColor GRASS_BLOCK_COLOR = new BlockColor(0x7f, 0xb2, 0x38, 1, Tint.GRASS);
     public static final BlockColor SAND_BLOCK_COLOR = new BlockColor(0xf7, 0xe9, 0xa3);
     public static final BlockColor CLOTH_BLOCK_COLOR = new BlockColor(0xc7, 0xc7, 0xc7);
     public static final BlockColor TNT_BLOCK_COLOR = new BlockColor(0xff, 0x00, 0x00);
     public static final BlockColor ICE_BLOCK_COLOR = new BlockColor(0xa0, 0xa0, 0xff);
     public static final BlockColor IRON_BLOCK_COLOR = new BlockColor(0xa7, 0xa7, 0xa7);
-    public static final BlockColor FOLIAGE_BLOCK_COLOR = new BlockColor(0x00, 0x7c, 0x00);
+    public static final BlockColor FOLIAGE_BLOCK_COLOR = new BlockColor(0x00, 0x7c, 0x00, 1, Tint.DEFAULT_FOLIAGE);
     public static final BlockColor SNOW_BLOCK_COLOR = new BlockColor(0xff, 0xff, 0xff);
     public static final BlockColor CLAY_BLOCK_COLOR = new BlockColor(0xa4, 0xa8, 0xb8);
     public static final BlockColor DIRT_BLOCK_COLOR = new BlockColor(0x97, 0x6d, 0x4d);
@@ -226,17 +226,16 @@ public class BlockColor implements Cloneable {
 
     public void applyTint(int biomeId) {
         if(tint != Tint.NONE) {
-            try {
-                String hexString = tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture);
-                red =  Integer.parseInt(hexString.substring(0,2), 16);
-                green = Integer.parseInt(hexString.substring(2,4), 16);
-                blue = Integer.parseInt(hexString.substring(4,6), 16);
-                alpha = Integer.parseInt(hexString.substring(6,8), 16);
-            }catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture));
-            }
+            applyTint(biomeId, this.tint);
         }
+    }
+
+    public void applyTint(int biomeId, Tint tint) {
+        String hexString = tint_tag.getCompound(String.valueOf(biomeId)).getString(tint.texture);
+        red =  Integer.parseInt(hexString.substring(0,2), 16);
+        green = Integer.parseInt(hexString.substring(2,4), 16);
+        blue = Integer.parseInt(hexString.substring(4,6), 16);
+        alpha = Integer.parseInt(hexString.substring(6,8), 16);
     }
 
     @Override
@@ -248,6 +247,7 @@ public class BlockColor implements Cloneable {
     public enum Tint {
 
         NONE("None"),
+        SWAMP_GRASS("SwampGrass", "swamp_grass"),
         DRY_FOLIAGE("DryFoliage", "dry_foliage"),
         DEFAULT_FOLIAGE("DefaultFoliage", "foliage"),
         BIRCH_FOLIAGE("BirchFoliage", "birch"),
@@ -255,7 +255,9 @@ public class BlockColor implements Cloneable {
         EVERGREEN_FOLIAGE("EvergreenFoliage", "evergreen"),
         //WATER("Water"),
         //STEM("Stem"),
-        GRASS("Grass", "grass");
+        GRASS("Grass", "grass"),
+        MANGROVE_SWAMP_FOLIAGE("MangroveSwampFoliage", "mangrove_swamp_foliage"),
+        SWAMP_FOLIAGE("SwampFoliage", "swamp_foliage");
 
         String name;
         String texture;

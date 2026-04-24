@@ -9,7 +9,9 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
@@ -228,5 +230,17 @@ public abstract class BlockLeaves extends BlockTransparent {
 
     public Item toSapling() {
         return Item.AIR;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        BlockColor color = BlockColor.FOLIAGE_BLOCK_COLOR.clone();
+        int biomeId = level.getBiomeId(getFloorX(), getFloorY(), getFloorZ());
+        color.applyTint(biomeId, switch (biomeId) {
+            case BiomeID.SWAMPLAND -> BlockColor.Tint.SWAMP_FOLIAGE;
+            case BiomeID.MANGROVE_SWAMP -> BlockColor.Tint.MANGROVE_SWAMP_FOLIAGE;
+            default -> BlockColor.Tint.DEFAULT_FOLIAGE;
+        });
+        return color;
     }
 }
