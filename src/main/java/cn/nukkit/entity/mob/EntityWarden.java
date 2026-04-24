@@ -106,8 +106,10 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                                         player.addEffect(effect);
                                         continue;
                                     }
-                                    effect.setDuration(effect.getDuration() + 260);
-                                    player.addEffect(effect);
+                                    if (!effect.isInfinite()) {
+                                        effect.setDuration(effect.getDuration() + 260);
+                                        player.addEffect(effect);
+                                    }
                                 }
                             }
                             return false;

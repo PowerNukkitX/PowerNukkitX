@@ -123,7 +123,7 @@ public record PotionType(String name, String stringId, int id, int level, Potion
         }
 
         for (Effect effect : event.getApplyEffects()) {
-            int duration = (int) ((mode == PotionApplicationMode.SPLASH ? health : 1.0) * (double) effect.getDuration() + 0.5);
+            int duration = effect.isInfinite() ? -1 : (int) ((mode == PotionApplicationMode.SPLASH ? health : 1.0) * (double) effect.getDuration() + 0.5);
             effect.setDuration(duration);
             entity.addEffect(effect);
         }
