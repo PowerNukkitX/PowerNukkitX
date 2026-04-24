@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
+import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPaleOakLeaves extends BlockLeaves {
@@ -26,5 +27,10 @@ public class BlockPaleOakLeaves extends BlockLeaves {
     @Override
     public Item toSapling() {
         return Item.get(PALE_OAK_SAPLING);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.IRON_BLOCK_COLOR;
     }
 }
