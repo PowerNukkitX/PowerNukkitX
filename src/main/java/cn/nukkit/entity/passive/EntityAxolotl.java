@@ -182,13 +182,9 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                                 if(!lastAttack.isAlive()) {
                                     if(lastAttack instanceof EntityIntelligent intelligent) {
                                         if(intelligent.getLastDamageCause() instanceof EntityDamageByEntityEvent event) {
-                                            if (event.getDamager() instanceof Player player) {
+                                            if(event.getDamager() instanceof Player player) {
                                                 player.removeEffect(EffectType.MINING_FATIGUE);
-                                                Effect currentRegen = player.getEffect(EffectType.REGENERATION);
-                                                if (currentRegen == null || !currentRegen.isInfinite()) {
-                                                    int duration = currentRegen == null ? 0 : currentRegen.getDuration();
-                                                    player.addEffect(Effect.get(EffectType.REGENERATION).setDuration(duration + 100));
-                                                }
+                                                player.addEffect(Effect.get(EffectType.REGENERATION).setDuration((player.hasEffect(EffectType.REGENERATION) ? player.getEffect(EffectType.REGENERATION).getDuration() : 0) + 100));
                                             }
                                         }
                                     }
