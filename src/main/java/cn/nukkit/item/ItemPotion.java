@@ -7,6 +7,8 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.CompletedUsingItemPacket;
+import cn.nukkit.network.protocol.types.LevelSoundEvent;
 
 import javax.annotation.Nullable;
 
@@ -98,6 +100,9 @@ public class ItemPotion extends Item {
         if (consumeEvent.isCancelled()) {
             return false;
         }
+
+        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_CONSUME);
+
         PotionType potion = PotionType.get(this.getDamage());
 
         player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.getLocation(), VibrationType.DRINKING));
@@ -106,6 +111,7 @@ public class ItemPotion extends Item {
             --this.count;
             player.getInventory().setItemInMainHand(this);
             player.getInventory().addItem(new ItemGlassBottle());
+            player.level.addLevelSoundEvent(player, LevelSoundEvent.BOTTLE_EMPTY);
         }
 
         if (potion != null) {

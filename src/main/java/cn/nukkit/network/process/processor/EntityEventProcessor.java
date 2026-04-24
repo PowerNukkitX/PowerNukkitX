@@ -5,6 +5,9 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFood;
+import cn.nukkit.item.ItemMilkBucket;
+import cn.nukkit.item.ItemOminousBottle;
+import cn.nukkit.item.ItemPotion;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -19,23 +22,30 @@ public class EntityEventProcessor extends DataPacketProcessor<EntityEventPacket>
             return;
         }
 
-        if (pk.event == EntityEventPacket.EATING_ITEM) {
-            if (pk.data == 0 || pk.eid != player.getId()) {
+        if (pk.event == EntityEventPacket.EATING_ITEM || pk.event == EntityEventPacket.DRINK_MILK) {
+            if (pk.eid != player.getId()) {
                 return;
             }
 
             Item hand = player.getInventory().getItemInMainHand();
-            if(!(hand instanceof ItemFood)) {
+            if (!(hand instanceof ItemFood) && !(hand instanceof ItemPotion)
+                    && !(hand instanceof ItemMilkBucket) && !(hand instanceof ItemOminousBottle)) {
+                return;
+            }
+
+            if (pk.event == EntityEventPacket.EATING_ITEM && pk.data == 0) {
                 return;
             }
 
             int predictedData = (hand.getRuntimeId() << 16) | hand.getDamage();
-            if(pk.data != predictedData) {
+            if (pk.event == EntityEventPacket.EATING_ITEM && pk.data != predictedData) {
                 return;
             }
 
             pk.eid = player.getId();
-            pk.data = predictedData;
+            if (pk.event == EntityEventPacket.EATING_ITEM) {
+                pk.data = predictedData;
+            }
 
             player.dataPacket(pk);
             Server.broadcastPacket(player.getViewers().values(), pk);

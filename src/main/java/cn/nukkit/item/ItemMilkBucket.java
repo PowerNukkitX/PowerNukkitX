@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
@@ -40,13 +39,12 @@ public class ItemMilkBucket extends ItemBucket {
 
         player.removeAllEffects();
 
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
+        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_CONSUME);
 
         if (player.isAdventure() || player.isSurvival()) {
             --this.count;
             player.getInventory().addItem(Item.get(ItemID.BUCKET, 0, 1));
             player.getInventory().setItemInMainHand(this);
-            player.getLevel().addSound(player, Sound.RANDOM_BURP);
         }
 
         player.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.DRINKING));
