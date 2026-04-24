@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Nie można zabrać efektów graczowi {%0}, ponieważ nie ma on żadnych",
   "commands.effect.notFound": "Brak efektu moba o ID {%0}",
   "commands.effect.success": "Przekazano efekt {%0} * {%1} graczowi {%2} na {%3} sek.",
+  "commands.effect.success.infinite": "Przekazano efekt {%0} * {%1} graczowi {%2} na nieskończony czas trwania",
   "commands.effect.success.removed": "Zabrano efekt {%0} graczowi {%1}",
   "commands.effect.success.removed.all": "Zabrano wszystkie efekty graczowi {%0}",
   "commands.enchant.cantCombine": "{%0} - nie można połączyć z: {%1}",

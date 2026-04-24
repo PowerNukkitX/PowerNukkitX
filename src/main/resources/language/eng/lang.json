@@ -384,6 +384,7 @@
   "commands.effect.failure.notActive.all": "Couldn\u0027t take any effects from {%0} as they do not have any",
   "commands.effect.notFound": "There is no such mob effect with ID {%0}",
   "commands.effect.success": "Gave {%0} * {%1} to {%2} for {%3} seconds",
+  "commands.effect.success.infinite": "Gave {%0} * {%1} to {%2} for an infinite duration",
   "commands.effect.success.removed": "Took {%0} from {%1}",
   "commands.effect.success.removed.all": "Took all effects from {%0}",
   "commands.enchant.cantCombine": "{%0} can\u0027t be combined with {%1}",

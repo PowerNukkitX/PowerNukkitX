@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Nenhum efeito pôde ser removido de {%0}, pois não há efeitos",
   "commands.effect.notFound": "Não há nenhum efeito de criatura com o ID {%0}",
   "commands.effect.success": "Deu {%0} * {%1} para {%2} por {%3} segundos",
+  "commands.effect.success.infinite": "Deu {%0} * {%1} para {%2} por tempo ilimitado",
   "commands.effect.success.removed": "{%0} retirado de {%1}",
   "commands.effect.success.removed.all": "Todos os efeitos de {%0} foram removidos",
   "commands.enchant.cantCombine": "{%0} não pode ser combinado com {%1}",

@@ -313,6 +313,7 @@
   "commands.effect.failure.notActive.all": "无法从 {%0} 身上消除任何效果，因为什么效果都没有",
   "commands.effect.notFound": "没有 ID 为 {%0} 的生物状态效果",
   "commands.effect.success": "给予 {%2} 时长为 {%3} 秒的 {%0} * {%1} 效果",
+  "commands.effect.success.infinite": "给予 {%2} {%0} * {%1} 效果，持续无限时长",
   "commands.effect.success.removed": "消除了 {%1} 身上的 {%0}",
   "commands.effect.success.removed.all": "已消除 {%0} 身上的全部效果",
   "commands.enchant.cantCombine": "{%0} 无法和 {%1} 结合",
