@@ -59,6 +59,13 @@ public abstract class Effect implements Cloneable {
     }
 
     /**
+     * @return true if the effect is infinite (-1)
+     */
+    public boolean isInfinite() {
+        return duration == -1;
+    }
+
+    /**
      * set the duration of this potion , 1 tick = 0.05 s
      *
      * @param duration the duration
@@ -66,6 +73,32 @@ public abstract class Effect implements Cloneable {
      */
     public Effect setDuration(int duration) {
         this.duration = duration;
+        return this;
+    }
+
+    /**
+     * Set the effect as infinite.
+     *
+     * @return the Effect instance
+     */
+    public Effect setInfinite() {
+        return setDuration(-1);
+    }
+
+    /**
+     * Set the effect as infinite based on a boolean value.
+     * If true, it sets the duration to -1. If false and the effect is currently infinite,
+     * it resets the duration to the default 600 ticks (30 seconds).
+     *
+     * @param infinite whether to set the effect as infinite
+     * @return the Effect instance
+     */
+    public Effect setInfinite(boolean infinite) {
+        if (infinite) {
+            return setDuration(-1);
+        } else if (isInfinite()) {
+            return setDuration(600); // Revert to default duration
+        }
         return this;
     }
 

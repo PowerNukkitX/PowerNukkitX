@@ -943,7 +943,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (oldEffect != null && (
                 Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
                         (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
-                                effect.getDuration() < oldEffect.getDuration())
+                                (oldEffect.getDuration() == -1 || (effect.getDuration() != -1 && effect.getDuration() < oldEffect.getDuration())))
         )) {
             return;
         }
@@ -1621,10 +1621,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 if (effect.canTick()) {
                     effect.apply(this, 1);
                 }
-                effect.setDuration(effect.getDuration() - tickDiff);
+                
+                if (!effect.isInfinite()) {
+                    effect.setDuration(effect.getDuration() - tickDiff);
 
-                if (effect.getDuration() <= 0) {
-                    this.removeEffect(effect.getType());
+                    if (effect.getDuration() <= 0) {
+                        this.removeEffect(effect.getType());
+                    }
                 }
             }
         }
