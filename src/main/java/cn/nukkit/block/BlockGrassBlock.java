@@ -7,11 +7,13 @@ import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.legacytree.LegacyTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.random.NukkitRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,5 +138,17 @@ public class BlockGrassBlock extends BlockDirt {
     @Override
     public boolean isFertilizable() {
         return true;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        BlockColor color = BlockColor.FOLIAGE_BLOCK_COLOR.clone();
+        int biomeId = level.getBiomeId(getFloorX(), getFloorY(), getFloorZ());
+        color.applyTint(biomeId, switch (biomeId) {
+            case BiomeID.SWAMPLAND -> BlockColor.Tint.SWAMP_GRASS;
+            case BiomeID.MANGROVE_SWAMP -> BlockColor.Tint.MANGROVE_SWAMP_FOLIAGE;
+            default -> BlockColor.Tint.GRASS;
+        });
+        return color;
     }
 }
