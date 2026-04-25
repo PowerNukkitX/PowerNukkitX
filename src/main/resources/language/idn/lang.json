@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Tidak bisa mengambil efek apa pun dari {%0} karena tidak punya",
   "commands.effect.notFound": "Tidak ada efek mob tersebut dengan ID {%0}",
   "commands.effect.success": "Memberikan {%0} * {%1} ke {%2} selama {%3} detik",
+  "commands.effect.success.infinite": "Memberikan {%0} * {%1} ke {%2} untuk durasi tak terbatas",
   "commands.effect.success.removed": "Mengambil {%0}  dari {%1}",
   "commands.effect.success.removed.all": "Mengambil semua efek dari {%0}",
   "commands.enchant.cantCombine": "{%0} tidak bisa digabungkan dengan {%1}",

@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Hráči {%0} nelze odebrat žádné účinky, neboť žádné účinky nemá",
   "commands.effect.notFound": "Účinek stvoření s ID {%0} neexistuje",
   "commands.effect.success": "Předáno {%0} * {%1} hráči {%2} po dobu {%3} sekund",
+  "commands.effect.success.infinite": "Předáno {%0} * {%1} hráči {%2} na neomezeně dlouhou dobu",
   "commands.effect.success.removed": "Převzato {%0} od hráče {%1}",
   "commands.effect.success.removed.all": "Převzaty všechny účinky od hráče {%0}",
   "commands.enchant.cantCombine": "{%0} nelze kombinovat s {%1}",

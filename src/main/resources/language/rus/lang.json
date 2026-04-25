@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "{%0}: не удалось удалить эффекты, так как они отсутствуют",
   "commands.effect.notFound": "Не существует эффекта моба с ID {%0}",
   "commands.effect.success": "Наложен эффект {%0} * {%1} на цель {%2} на {%3} с",
+  "commands.effect.success.infinite": "{%2} получает {%0} * {%1} с бесконечной продолжительностью",
   "commands.effect.success.removed": "«{%1}»: эффект «{%0}» удален",
   "commands.effect.success.removed.all": "{%0}: все эффекты удалены",
   "commands.enchant.cantCombine": "{%0} и {%1}: невозможно объединить",

@@ -301,6 +301,7 @@
   "commands.effect.failure.notActive.all": "Hindi maaaring kumuha ng anumang epekto mula sa {%0} dahil wala silang anumang epekto", 
   "commands.effect.notFound": "Walang ganitong mob effect na may ID na {%0}", 
   "commands.effect.success": "Nagbigay ng {%0} * {%1} kay {%2} sa loob ng {%3} segundo",
+  "commands.effect.success.infinite": "Gave {%0} * {%1} to {%2} for an infinite duration",
   "commands.effect.success.removed": "Kinuha ang {%0} mula sa {%1}", 
   "commands.effect.success.removed.all": "Kinuha ang lahat ng epekto mula sa {%0}", 
   "commands.enchant.cantCombine": "Hindi maaaring pagsamahin ang {%0} sa {%1}", 

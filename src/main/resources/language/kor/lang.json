@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "{%0}에게 현재 적용된 효과가 없어 취소할 수 없습니다",
   "commands.effect.notFound": "ID {%0}에 해당하는 몹 효과가 없습니다",
   "commands.effect.success": "{%2}에 효과 {%0} * {%1} 만큼을 {%3}초 동안 주었습니다",
+  "commands.effect.success.infinite": "{%2}에게 {%0} * {%1}을(를) 무기한으로 주었습니다.",
   "commands.effect.success.removed": "{%0}의 {%1} 효과를 제거했습니다",
   "commands.effect.success.removed.all": "{%0}에게 적용된 모든 효과를 취소했습니다",
   "commands.enchant.cantCombine": "{%0}은(는) {%1}와(과) 결합할 수 없습니다",
