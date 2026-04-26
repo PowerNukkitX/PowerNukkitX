@@ -122,7 +122,8 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         float y = 0.54f;
         float z = -0.1f;
 
-        switch (this.jockeyType) {
+        SpawnRiderType type = this.jockeyType != null ? this.jockeyType : SpawnRiderType.NORMAL;
+        switch (type) {
             case SKELETON_JOCKEY, STRAY_JOCKEY, WITHER_SKELETON_JOCKEY -> {
                 riders = Set.of("skeleton");
                 y = 0.54f;
