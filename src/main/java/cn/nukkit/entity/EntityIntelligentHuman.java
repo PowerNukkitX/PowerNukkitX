@@ -265,6 +265,7 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }

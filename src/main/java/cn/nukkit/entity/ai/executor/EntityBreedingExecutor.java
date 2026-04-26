@@ -85,6 +85,7 @@ public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBeh
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onInterrupt(EntityIntelligent entity) {
         clearData((T) entity);
 
@@ -149,6 +150,7 @@ public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBeh
         for (var e : entities) {
             var newDistance = e.distanceSquared(entity);
             if (!e.equals(entity) && entityClass.isInstance(e)) {
+                @SuppressWarnings("unchecked")
                 T another = (T) e;
                 if (!another.isBaby() && another.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE) && another.getMemoryStorage().isEmpty(CoreMemoryTypes.ENTITY_SPOUSE) && (maxDistanceSquared == -1 || newDistance < maxDistanceSquared)) {
                     maxDistanceSquared = newDistance;
@@ -164,6 +166,7 @@ public class EntityBreedingExecutor<T extends EntityIntelligent> implements IBeh
     }
 
     protected void bear(T entity) {
+        @SuppressWarnings("unchecked")
         T baby = (T) Entity.createEntity(entity.getNetworkId(), entity.getPosition());
         baby.setBaby(true);
 

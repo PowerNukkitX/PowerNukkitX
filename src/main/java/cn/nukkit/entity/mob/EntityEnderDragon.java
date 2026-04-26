@@ -253,6 +253,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }

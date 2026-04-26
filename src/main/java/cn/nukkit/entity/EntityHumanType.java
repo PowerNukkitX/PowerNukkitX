@@ -153,6 +153,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected boolean applyNameTag(@NotNull Player player, @NotNull Item item) {
         return false;
     }

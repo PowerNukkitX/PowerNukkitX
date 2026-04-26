@@ -97,7 +97,9 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
                 if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared && !p.equals(entity)) {
                     int i = 0;
                     for (var targetFunction : allTargetFunction) {
-                        if (targetFunction.apply((T) p)) {
+                        @SuppressWarnings("unchecked")
+                        T castedP = (T) p;
+                        if (targetFunction.apply(castedP)) {
                             sortEntities.get(i).add(p);
                         }
                         ++i;

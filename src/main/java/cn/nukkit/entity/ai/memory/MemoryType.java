@@ -90,7 +90,9 @@ public final class MemoryType<Data> {
 
     public void forceEncode(Entity entity, Object data) {
         if (codec != null) {
-            codec.encode((Data) data, entity.namedTag);
+            @SuppressWarnings("unchecked")
+            var castedData = (Data) data;
+            codec.encode(castedData, entity.namedTag);
         }
     }
 

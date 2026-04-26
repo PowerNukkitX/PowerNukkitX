@@ -60,6 +60,7 @@ import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -82,6 +83,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
         ItemID.TROPICAL_FISH_BUCKET
     );
 
+    @SuppressWarnings("unchecked")
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return new BehaviorGroup(
@@ -203,11 +205,10 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
                             Pair.of(entity -> !entity.isInsideOfWater(), new FluctuateController())
                         )
                 ),
-                    new ConditionalAStarRouteFinder(
-                        this,
-                        Pair.of(ent -> !ent.isInsideOfWater(), new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)),
-                        Pair.of(Entity::isInsideOfWater, new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this)
-                    )
+                new ConditionalAStarRouteFinder(
+                    this,
+                    Pair.of(ent -> !ent.isInsideOfWater(), new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)),
+                    Pair.of(Entity::isInsideOfWater, new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
                 ),
                 this
         );
