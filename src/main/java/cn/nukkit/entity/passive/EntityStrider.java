@@ -139,7 +139,8 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
             interactText = "action.interact.ride.strider";
             seatPos = new Vector3f(0.0f, 1.7f, -0.2f);
 
-            riders = switch (this.jockeyType) {
+            SpawnRiderType type = this.jockeyType != null ? this.jockeyType : SpawnRiderType.NORMAL;
+            riders = switch (type) {
                 case PLAYER -> Set.of("player");
                 case PIGLIN_JOCKEY -> Set.of("player", "zombie_pigman");
                 default -> null;
