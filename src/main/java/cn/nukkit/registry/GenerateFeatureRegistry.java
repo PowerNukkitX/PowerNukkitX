@@ -10,7 +10,9 @@ import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
 import cn.nukkit.level.generator.feature.river.SandGenerateFeature;
+import cn.nukkit.level.generator.feature.terrain.CaveExtraUndergroundFeature;
 import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
+import cn.nukkit.level.generator.feature.terrain.CanyonCarverFeature;
 import cn.nukkit.level.generator.feature.tree.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
@@ -72,6 +74,8 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(GravelGenerateFeature.NAME, GravelGenerateFeature.class);
             this.register(SandGenerateFeature.NAME, SandGenerateFeature.class);
             this.register(CaveGenerateFeature.NAME, CaveGenerateFeature.class);
+            this.register(CaveExtraUndergroundFeature.NAME, CaveExtraUndergroundFeature.class);
+            this.register(CanyonCarverFeature.NAME, CanyonCarverFeature.class);
             this.register(FlowerForestFoliageFeature.NAME, FlowerForestFoliageFeature.class);
             this.register(ForestFlowerFoliageFeature.NAME, ForestFlowerFoliageFeature.class);
             this.register(SeagrassRiverGenerateFeature.NAME, SeagrassRiverGenerateFeature.class);
