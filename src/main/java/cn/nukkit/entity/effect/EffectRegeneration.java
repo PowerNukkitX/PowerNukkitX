@@ -12,23 +12,8 @@ public class EffectRegeneration extends Effect {
     }
 
     @Override
-    public boolean canTick() {
-        int amplifier = Math.min(5, this.getAmplifier());
-        int interval = 50 >> amplifier;
-        return interval > 0 && this.getDuration() % interval == 0;
-    }
-
-    @Override
-    public boolean canTick(Entity entity) {
-        int amplifier = Math.min(5, this.getAmplifier());
-        int interval = 50 >> amplifier;
-        if (interval > 0) {
-            if (this.isInfinite()) {
-                return entity.ticksLived % interval == 0;
-            }
-            return this.getDuration() % interval == 0;
-        }
-        return false;
+    public int getInterval() {
+        return 50 >> Math.min(5, this.getAmplifier());
     }
 
     @Override

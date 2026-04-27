@@ -12,27 +12,12 @@ public class EffectFatalPoison extends Effect {
     }
 
     @Override
-    public boolean canTick() {
-        int interval = 25 >> this.getAmplifier();
-        return interval > 0 && this.getDuration() % interval == 0;
-    }
-
-    @Override
-    public boolean canTick(Entity entity) {
-        int interval = 25 >> this.getAmplifier();
-        if (interval > 0) {
-            if (this.isInfinite()) {
-                return entity.ticksLived % interval == 0;
-            }
-            return this.getDuration() % interval == 0;
-        }
-        return false;
+    public int getInterval() {
+        return 25 >> this.getAmplifier();
     }
 
     @Override
     public void apply(Entity entity, double tickCount) {
-        if (this.canTick(entity)) {
-            entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, 1));
-        }
+        entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.MAGIC, 1));
     }
 }

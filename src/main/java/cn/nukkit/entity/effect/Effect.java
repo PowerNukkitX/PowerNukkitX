@@ -86,23 +86,6 @@ public abstract class Effect implements Cloneable {
     }
 
     /**
-     * Set the effect as infinite based on a boolean value.
-     * If true, it sets the duration to -1. If false and the effect is currently infinite,
-     * it resets the duration to the default 600 ticks (30 seconds).
-     *
-     * @param infinite whether to set the effect as infinite
-     * @return the Effect instance
-     */
-    public Effect setInfinite(boolean infinite) {
-        if (infinite) {
-            return setDuration(-1);
-        } else if (isInfinite()) {
-            return setDuration(600); // Revert to default duration
-        }
-        return this;
-    }
-
-    /**
      * Get amplifier.
      */
     public int getAmplifier() {
@@ -160,12 +143,60 @@ public abstract class Effect implements Cloneable {
         return this;
     }
 
+    /**
+     * Checks whether the effect should perform its action in the current tick based on its internal duration.
+     * <p>
+     * Note: For infinite effects (which have no duration clock), this method will generally return {@code false}
+     * for periodic effects. Use {@link #canTick(int)} with the entity's lifetime ticks instead.
+     *
+     * @return {@code true} if the effect should tick based on its duration, {@code false} otherwise.
+     */
     public boolean canTick() {
-        return false;
+        return canTick(this.getDuration());
     }
 
-    public boolean canTick(Entity entity) {
-        return canTick();
+    /**
+     * Checks whether the effect should perform its action based on a specific tick clock.
+     * <p>
+     * This method is clock-agnostic; the provided {@code tick} can be an effect's duration, 
+     * an entity's lifetime ticks, or any other temporal value.
+     *
+     * @param tick the current tick value to evaluate against the effect's interval.
+     * @return {@code true} if the effect should tick at this specific temporal point, {@code false} otherwise.
+     */
+    public boolean canTick(int tick) {
+        int interval = getInterval();
+        return interval > 0 && tick % interval == 0;
+    }
+
+    /**
+     * Returns the periodic interval (in ticks) at which this effect should perform its action.
+     * <p>
+     * Subclasses for periodic effects should override this to define their ticking frequency.
+     *
+     * @return the tick interval, where {@code 0} means no periodic action, and {@code 1} means every tick.
+     */
+    public int getInterval() {
+        return 0;
+    }
+
+    /**
+     * Orchestrates the effect's action on the given entity. 
+     * <p>
+     * This is the primary entry point used by the entity tick loop. it automatically 
+     * selects the appropriate clock (entity lifetime for infinite effects, duration for finite ones)
+     * to determine if the action {@link #apply(Entity, double)} should be performed.
+     *
+     * @param entity the entity to evaluate and potentially run {@link #apply(Entity, double)} for.
+     */
+    public void onTick(Entity entity) {
+        if (this.isInfinite()) {
+            if (canTick(entity.ticksLived)) {
+                apply(entity, 1);
+            }
+        } else if (canTick()) {
+            apply(entity, 1);
+        }
     }
 
     public void apply(Entity entity, double tickCount) {
