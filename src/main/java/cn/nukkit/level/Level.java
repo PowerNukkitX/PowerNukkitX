@@ -161,7 +161,9 @@ public class Level implements Metadatable {
     public static int COMPRESSION_LEVEL = 8;
     private static int levelIdCounter = 1;
     private static int chunkLoaderCounter = 1;
-    private static final double INV_CHUNK_SIZE = 1.0 / 16.0;
+
+    public static final int CHUNK_SIZE = 16;
+    private static final double INV_CHUNK_SIZE = 1.0d / CHUNK_SIZE;
     // endregion finals - number finals
 
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick

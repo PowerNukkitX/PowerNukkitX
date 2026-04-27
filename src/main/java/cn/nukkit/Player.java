@@ -3024,12 +3024,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param distance view distance
      */
     public void setViewDistance(int distance) {
-        this.chunkRadius = distance;
+        int clampedDistance = NukkitMath.clamp(distance, 2, this.server.getViewDistance());
+        int previousDistance = this.chunkRadius;
+        this.chunkRadius = clampedDistance;
 
         ChunkRadiusUpdatedPacket pk = new ChunkRadiusUpdatedPacket();
-        pk.radius = distance;
+        pk.radius = clampedDistance;
 
         this.dataPacket(pk);
+        if (previousDistance != clampedDistance) {
+            this.playerChunkManager.handleViewDistanceChange();
+        }
     }
 
     /**
