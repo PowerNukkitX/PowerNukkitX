@@ -1127,7 +1127,7 @@ public class HandleByteBuf extends ByteBuf {
             return Item.AIR;
         }
 
-        int count = readShortLE();
+        int count = readUnsignedShortLE();
         int damage = readUnsignedVarInt();
 
         Integer netId = null;
