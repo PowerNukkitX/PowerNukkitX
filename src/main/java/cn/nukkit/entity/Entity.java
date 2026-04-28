@@ -1604,7 +1604,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.stepOnBlocks = null;
 
         if (riding != null && !riding.isAlive() && riding.isRideable()) {
-            riding.dismountEntity(this);
+            riding.dismountEntity(this, true, false);
         }
         updatePassengers();
 
@@ -2279,7 +2279,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public boolean mountEntity(@NotNull Entity entity, boolean riderInitiated) {
         if (!isRideable() || entity.isSneaking()) return false;
 
-        if (isPassenger(entity) || (entity.riding != null && !entity.riding.dismountEntity(entity, false))) {
+        if (isPassenger(entity) || (entity.riding != null && !entity.riding.dismountEntity(entity, false, false))) {
             return false;
         }
 
@@ -2334,7 +2334,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         for (Entity passenger : new ArrayList<>(passengers)) {
-            if (!passenger.isAlive()) dismountEntity(passenger, sendLinks);
+            if (!passenger.isAlive()) dismountEntity(passenger, sendLinks, false);
         }
         if (passengers.isEmpty()) {
             refreshRideMemory();
@@ -2454,10 +2454,22 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             if (relax != null) p.setSeatCameraRelaxDistanceSmoothing(relax);
 
             Float lock = sm.lockRiderRotationDegrees();
-            if (lock != null) p.setSeatLockRiderRotationDegrees(lock);
+            if (lock != null) {
+                p.setDataProperty(SEAT_LOCK_RIDER_ROTATION, true);
+                p.setSeatLockRiderRotationDegrees(lock);
+            } else {
+                p.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false);
+                p.setSeatLockRiderRotationDegrees(0.0f);
+            }
 
             Float rot = sm.rotateRiderByDegrees();
-            if (rot != null) p.setSeatRotateRiderByDegrees(rot);
+            if (rot != null) {
+                p.setDataProperty(SEAT_HAS_ROTATION, true);
+                p.setSeatRotateRiderByDegrees(rot);
+            } else {
+                p.setDataProperty(SEAT_HAS_ROTATION, false);
+                p.setSeatRotateRiderByDegrees(0.0f);
+            }
         }
     }
 
@@ -2467,26 +2479,31 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     //////////////////////////////////////////////
 
     public boolean dismountEntity(Entity entity) {
-        return this.dismountEntity(entity, true);
+        return this.dismountEntity(entity, true, true);
     }
 
     public boolean dismountEntity(Entity entity, boolean sendLinks) {
+        return this.dismountEntity(entity, sendLinks, true);
+    }
+
+    public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
         int seatIndex = passengers.indexOf(entity);
 
         EntityVehicleExitEvent ev = new EntityVehicleExitEvent(entity, this);
         server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             if (seatIndex == 0) {
-                broadcastLinkPacket(entity, EntityLink.Type.RIDER);
+                broadcastLinkPacket(entity, EntityLink.Type.RIDER, riderInitiated);
             } else if (seatIndex != -1) {
-                broadcastLinkPacket(entity, EntityLink.Type.PASSENGER);
+                broadcastLinkPacket(entity, EntityLink.Type.PASSENGER, riderInitiated);
             }
             return false;
         }
 
         if (entity instanceof Player p) clearSeatData(p);
+
         if (sendLinks) {
-            broadcastLinkPacket(entity, EntityLink.Type.REMOVE, false);
+            broadcastLinkPacket(entity, EntityLink.Type.REMOVE, riderInitiated);
         }
 
         entity.riding = null;
@@ -2495,8 +2512,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         entity.seatRawOffset = null;
         passengers.remove(entity);
 
-        // Dismount placement 
-        // TODO: need a few improvements when dismounting default, it will must select safe place
         Vector3 dismount = resolveDismountPosition(entity);
         if (entity instanceof Player p) {
             p.teleport(dismount);
@@ -2505,7 +2520,6 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             entity.setPosition(dismount);
         }
 
-        // Remaining passengers may need reordering/offsets
         updatePassengers(sendLinks, false);
 
         if (entity instanceof Player p) p.resetFallDistance();
@@ -2586,6 +2600,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
     public void clearSeatData(Player passenger) {
         passenger.setDataProperty(SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING, 0.0f, false);
+        passenger.setDataProperty(SEAT_LOCK_RIDER_ROTATION, false, false);
         passenger.setDataProperty(SEAT_LOCK_RIDER_ROTATION_DEGREES, 0.0f, false);
         passenger.setDataProperty(SEAT_THIRD_PERSON_CAMERA_RADIUS, 0.0f, false);
         passenger.setDataProperty(SEAT_ROTATION_OFFSET_DEGREES, 0.0f, false);
@@ -4057,13 +4072,38 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     /**
-     * @deprecated Movement multipliers should be implemented in behavior executors.
+     * Returns the runtime sprint speed multiplier used by rideable entities.
      *
      * <p>
+     * This multiplier is intended for sprint/rider-input behavior, not as a
+     * generic entity movement speed value.
+     * </p>
+     *
+     * <p>
+     * For custom entities, the value is read from the entity definition using
+     * {@link CustomEntityComponents#PNX_SPRINT_MULTIPLIER}.
+     * If no value is defined, it falls back to {@code 1.0f}.
+     * </p>
+     *
+     * @return the sprint movement multiplier for this entity
+     */
+    public float getSprintMultiplier() {
+        if (isCustomEntity()) {
+            Float sm = meta().getSprintMultiplier(CustomEntityComponents.PNX_SPRINT_MULTIPLIER);
+            if (sm != null) return sm;
+        }
+        return 1.0f;
+    }
+
+    /**
+     * @deprecated Use {@link #getSprintMultiplier()} instead.
+     *
+     * <p>
+     * Movement multipliers should be implemented in behavior executors.
      * This method is kept for backward compatibility only.
-     * Bedrock entity definitions do not store movement multipliers;
+     * Bedrock entity definitions do not store generic movement multipliers;
      * speed scaling is controlled by runtime behaviors such as
-     * follow, tempt, boost, or rider input.
+     * follow, tempt, boost, sprint, or rider input.
      * </p>
      *
      * <p>
@@ -5335,7 +5375,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.scheduleUpdate();
 
         for (Entity passenger : new ArrayList<>(this.passengers)) {
-            dismountEntity(passenger);
+            dismountEntity(passenger, true, false);
         }
     }
 
@@ -5382,7 +5422,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         }
 
         final Entity currentRide = getRiding();
-        if (currentRide != null && !currentRide.dismountEntity(this)) {
+        if (currentRide != null && !currentRide.dismountEntity(this, true, false)) {
             return false;
         }
 

@@ -48,11 +48,14 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     private static final double GROUND_FRICTION_EXPONENT = 0.5574929506502402;
 
     protected int rideJumpingTicks = -1;
-    protected final AtomicInteger rideJumping = new AtomicInteger(-1);
+    protected AtomicInteger rideJumping;
     protected int rideSprintingTicks = 0;
     private int powerDashingTicks = -1;
     private int dashCooldownEndTick = -1;
     private boolean waterDashChargeStartedInWater = false;
+    private boolean wasOnSlipperyGround = false;
+    private int slipperyEntryGraceTicks = 0;
+    private double slipperyEntrySpeed = 0.0d;
 
 
     public EntityPhysical(IChunk chunk, CompoundTag nbt) {
@@ -61,6 +64,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
         previousCollideMotion = new Vector3();
         previousCurrentMotion = new Vector3();
+        this.rideJumping = new AtomicInteger(-1);
     }
 
     @Override
@@ -180,7 +184,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         // Reduce movement vector (calculate friction coefficient, slide further on ice)
         double factor = getGroundFrictionFactor();
-        if (factor > 0.0 && factor < 1.0) {
+
+        if (this.isRideable() && hasControllingPassenger() && isRideGroundSlipperyBlock()) {
+            double slipperiness = getRideGroundSlipperiness();
+            factor = factor + ((1.0d - factor) * (0.55d + slipperiness * 0.35d));
+            if (factor > 0.997d) factor = 0.997d;
+        } else if (factor > 0.0 && factor < 1.0) {
             factor = Math.pow(factor, GROUND_FRICTION_EXPONENT);
         }
 
@@ -272,7 +281,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      *
      * @return the floating force factor
      */
-
     public double getFloatingForceFactor() {
         if (hasWaterAt(this.getFloatingHeight())) {
             return 1.3;
@@ -465,10 +473,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         final double DEADZONE = 0.08;        // stick drift tolerance
         final double CURVE_EXP = 1.6;        // >1 = more precision at low input
         final double ACCEL_PER_TICK = 0.30;  // how fast it ramps up (0..1)
-        final double BRAKE_PER_TICK = 0.65;  // how hard it brakes (0..1)
+        final double BRAKE_PER_TICK = 0.45;  // how hard it brakes (0..1)
         final double SPEED_KNOB = 1.80d;     // Knob to parity with BDS speed
 
         // AIR / GROUND
+        boolean slipperyGround = isRideEffectivelyOnSlipperyGround();
+        updateSlipperyGroundTransition(slipperyGround);
+
         if (isOnGround() || level.getTick() - getRideJumping().get() <= 5) {
             Vector2 raw = pk.motion;
             final double GROUND_BACKWARDS_MOVEMENT_MODIFIER = 0.5d;
@@ -484,26 +495,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             double curZ = this.motionZ;
 
             if (mag <= DEADZONE) {
-                double brake = BRAKE_PER_TICK;
-                double newX = curX * (1.0 - brake);
-                double newZ = curZ * (1.0 - brake);
+                if (!slipperyGround) {
+                    double brake = getRideGroundBrakeFactor(BRAKE_PER_TICK);
+                    double newX = curX * (1.0 - brake);
+                    double newZ = curZ * (1.0 - brake);
 
-                if (newX * newX + newZ * newZ < 0.0004) {
-                    newX = 0;
-                    newZ = 0;
+                    if (newX * newX + newZ * newZ < 0.000025) {
+                        newX = 0;
+                        newZ = 0;
+                    }
+
+                    this.addTmpMoveMotion(new Vector3(newX - curX, 0, newZ - curZ));
                 }
-
-                this.addTmpMoveMotion(new Vector3(newX - curX, 0, newZ - curZ));
 
             } else {
                 Vector2 dir = adjusted.normalize();
-
                 double yawRad = Math.toRadians(pk.yaw);
-                double cos = Math.cos(yawRad);
-                double sin = Math.sin(yawRad);
-
-                double wishX = dir.x * cos - dir.y * sin;
-                double wishZ = dir.x * sin + dir.y * cos;
+                double wishX = -Math.sin(yawRad) * dir.y + Math.cos(yawRad) * dir.x;
+                double wishZ =  Math.cos(yawRad) * dir.y + Math.sin(yawRad) * dir.x;
 
                 double strength = mag;
                 if (strength > 1.0) strength = 1.0;
@@ -513,43 +522,35 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
                 double maxSpeed = this.getMovementSpeedDefault();
                 if (pk.inputData.contains(AuthInputAction.SPRINTING)) {
-                    maxSpeed *= this.getSpeedMultiplier();
+                    maxSpeed *= this.getSprintMultiplier();
                     rideSprintingTicks++;
                 } else {
                     rideSprintingTicks = 0;
                 }
 
-                double friction = SPEED_KNOB;
-                int bx = (int) Math.floor(this.x);
-                int by = (int) Math.floor(this.y - 0.01);
-                int bz = (int) Math.floor(this.z);
+                double surfaceSpeed = getRideGroundSurfaceSpeedFactor();
+                double cap = (maxSpeed * surfaceSpeed) / SPEED_KNOB;
 
-                Block under = this.level.getBlock(bx, by, bz);
-                if (under != null) {
-                    double blockFriction = under.getFrictionFactor();
-                    if (Double.isFinite(blockFriction) && blockFriction > 0.0) {
-                        friction *= blockFriction;
+                if (slipperyGround) {
+                    applySlipperyGroundLookInput(wishX, wishZ, strength, cap);
+                } else {
+                    double targetX = wishX * cap * strength;
+                    double targetZ = wishZ * cap * strength;
+
+                    double accel = ACCEL_PER_TICK;
+                    double newX = curX + (targetX - curX) * accel;
+                    double newZ = curZ + (targetZ - curZ) * accel;
+
+                    double s2 = newX * newX + newZ * newZ;
+                    double m2 = cap * cap;
+                    if (s2 > m2) {
+                        double inv = cap / Math.sqrt(s2);
+                        newX *= inv;
+                        newZ *= inv;
                     }
+
+                    this.addTmpMoveMotion(new Vector3(newX - curX, 0.0d, newZ - curZ));
                 }
-                if (!Double.isFinite(friction) || friction < 0.001d) friction = 0.001d;
-
-                double targetX = (wishX * maxSpeed * strength) / friction;
-                double targetZ = (wishZ * maxSpeed * strength) / friction;
-
-                double accel = ACCEL_PER_TICK;
-                double newX = curX + (targetX - curX) * accel;
-                double newZ = curZ + (targetZ - curZ) * accel;
-
-                double cap = (maxSpeed / friction);
-                double s2 = newX * newX + newZ * newZ;
-                double m2 = cap * cap;
-                if (s2 > m2) {
-                    double inv = cap / Math.sqrt(s2);
-                    newX *= inv;
-                    newZ *= inv;
-                }
-
-                this.addTmpMoveMotion(new Vector3((newX - curX), 0.0d, (newZ - curZ)));
             }
 
         } else {
@@ -562,6 +563,270 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.yaw = pk.yaw;
         this.headYaw = pk.yaw;
         return true;
+    }
+
+    private boolean isRideEffectivelyOnSlipperyGround() {
+        if (this.hasWaterAt(0)) {
+            return false;
+        }
+
+        return isRideGroundSlipperyBlock();
+    }
+
+    private void updateSlipperyGroundTransition(boolean slipperyGround) {
+        if (slipperyGround) {
+            if (!wasOnSlipperyGround) {
+                double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
+                slipperyEntrySpeed = Math.sqrt(speedSq);
+                slipperyEntryGraceTicks = 16;
+            } else if (slipperyEntryGraceTicks > 0) {
+                slipperyEntryGraceTicks--;
+            }
+
+            wasOnSlipperyGround = true;
+            return;
+        }
+
+        wasOnSlipperyGround = false;
+        slipperyEntryGraceTicks = 0;
+        slipperyEntrySpeed = 0.0d;
+    }
+
+    private void applySlipperyGroundLookInput(double wishX, double wishZ, double strength, double cap) {
+        double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
+
+        if (speedSq < 0.000025d) {
+            applySlipperyGroundImpulse(wishX, wishZ, strength, cap);
+            return;
+        }
+
+        double speed = Math.sqrt(speedSq);
+        double moveX = this.motionX / speed;
+        double moveZ = this.motionZ / speed;
+        double sideX = -moveZ;
+        double sideZ =  moveX;
+
+        double forwardDot = wishX * moveX + wishZ * moveZ;
+        double sideDot = wishX * sideX + wishZ * sideZ;
+        double slipperiness = getRideGroundSlipperiness();
+
+        double forwardControl;
+        if (forwardDot >= 0.0d) {
+            forwardControl = forwardDot;
+        } else {
+            double speedRatio = cap <= 0.0d ? 1.0d : speed / cap;
+            if (speedRatio > 1.0d) speedRatio = 1.0d;
+            if (speedRatio < 0.0d) speedRatio = 0.0d;
+
+            double reverseAuthority = 0.10d - (slipperiness * 0.06d);
+            reverseAuthority *= 1.0d - (speedRatio * 0.65d);
+
+            if (reverseAuthority < 0.015d) reverseAuthority = 0.015d;
+
+            forwardControl = forwardDot * reverseAuthority;
+        }
+
+        double sideAuthority = 0.38d - (slipperiness * 0.22d);
+        if (sideAuthority < 0.10d) sideAuthority = 0.10d;
+
+        double speedRatio = cap <= 0.0d ? 1.0d : speed / cap;
+        if (speedRatio > 1.0d) {
+            sideAuthority *= 0.55d;
+        }
+
+        double mergedX = (moveX * forwardControl) + (sideX * sideDot * sideAuthority);
+        double mergedZ = (moveZ * forwardControl) + (sideZ * sideDot * sideAuthority);
+
+        double mergedLen = Math.sqrt(mergedX * mergedX + mergedZ * mergedZ);
+        if (mergedLen < 0.000001d) return;
+
+        mergedX /= mergedLen;
+        mergedZ /= mergedLen;
+
+        double controlScale = Math.abs(forwardControl) + Math.abs(sideDot) * sideAuthority;
+        if (controlScale > 1.0d) controlScale = 1.0d;
+        if (controlScale < 0.0d) controlScale = 0.0d;
+
+        applySlipperyGroundImpulse(mergedX, mergedZ, strength, cap, controlScale);
+    }
+
+    private void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap) {
+        applySlipperyGroundImpulse(wishX, wishZ, strength, cap, 1.0d);
+    }
+
+    private void applySlipperyGroundImpulse(double wishX, double wishZ, double strength, double cap, double controlScale) {
+        double slipperiness = getRideGroundSlipperiness();
+
+        double speedSq = this.motionX * this.motionX + this.motionZ * this.motionZ;
+        double speed = Math.sqrt(speedSq);
+
+        double speedRatio = cap <= 0.0d ? 0.0d : speed / cap;
+        if (speedRatio > 1.0d) speedRatio = 1.0d;
+        if (speedRatio < 0.0d) speedRatio = 0.0d;
+
+        double traction = 0.20d - (slipperiness * 0.145d);
+        if (traction < 0.035d) traction = 0.035d;
+
+        double lowSpeedLimiter = 0.14d + (speedRatio * 0.86d);
+
+        double impulse = cap
+                * 0.075d
+                * strength
+                * traction
+                * controlScale
+                * lowSpeedLimiter;
+
+        if (speed > cap) impulse *= 0.22d;
+
+        double oldX = this.motionX;
+        double oldZ = this.motionZ;
+        double oldSpeed = speed;
+
+        double newX = oldX + wishX * impulse;
+        double newZ = oldZ + wishZ * impulse;
+
+        double newSpeedSq = newX * newX + newZ * newZ;
+        double newSpeed = Math.sqrt(newSpeedSq);
+        double maxSlideSpeed = cap * (1.50d + slipperiness * 0.65d);
+
+        if (slipperyEntryGraceTicks > 0 && slipperyEntrySpeed > maxSlideSpeed) {
+            maxSlideSpeed = slipperyEntrySpeed;
+        }
+
+        double allowedSpeed;
+        if (oldSpeed < cap * 0.35d) {
+            allowedSpeed = oldSpeed + (cap * 0.014d * strength * controlScale);
+        } else {
+            allowedSpeed = oldSpeed + (cap * 0.0035d * strength * controlScale);
+        }
+
+        if (allowedSpeed < oldSpeed) {
+            allowedSpeed = oldSpeed;
+        }
+
+        if (allowedSpeed > maxSlideSpeed) {
+            allowedSpeed = maxSlideSpeed;
+        }
+
+        if (newSpeed > allowedSpeed && newSpeed > 0.000001d) {
+            double mul = allowedSpeed / newSpeed;
+            newX *= mul;
+            newZ *= mul;
+        }
+
+        this.motionX = newX;
+        this.motionZ = newZ;
+    }
+
+    private double getRideGroundSlipperiness() {
+        double friction = getRideGroundBlockFriction();
+        double normal = Block.DEFAULT_FRICTION_FACTOR;
+
+        if (friction <= normal) return 0.0d;
+
+        double slipperiness = (friction - normal) / (1.0d - normal);
+        if (slipperiness < 0.0d) return 0.0d;
+        if (slipperiness > 1.0d) return 1.0d;
+        return slipperiness;
+    }
+
+    private double getRideGroundSurfaceSpeedFactor() {
+        Block under = getRideGroundBlock();
+        if (under == null) return 1.0d;
+
+        if (under.getId().equals(Block.SOUL_SAND)) return 0.4d;
+
+        double friction = getRideGroundBlockFriction();
+        double normal = Block.DEFAULT_FRICTION_FACTOR;
+
+        if (friction <= normal + 0.05d) return 1.0d;
+
+        double slipperiness = (friction - normal) / (1.0d - normal);
+        if (slipperiness < 0.0d) slipperiness = 0.0d;
+        if (slipperiness > 1.0d) slipperiness = 1.0d;
+
+        return 1.0d + (slipperiness * 0.85d);
+    }
+
+    private Block getRideGroundBlock() {
+        if (this.level == null || this.getBoundingBox() == null) {
+            return null;
+        }
+
+        AxisAlignedBB bb = this.getBoundingBox();
+
+        int minX = (int) Math.floor(bb.getMinX() + 0.05d);
+        int maxX = (int) Math.floor(bb.getMaxX() - 0.05d);
+        int minZ = (int) Math.floor(bb.getMinZ() + 0.05d);
+        int maxZ = (int) Math.floor(bb.getMaxZ() - 0.05d);
+        int y = (int) Math.floor(bb.getMinY() - 0.05d);
+
+        Block bestBlock = null;
+        double bestFriction = Block.DEFAULT_FRICTION_FACTOR;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                Block block = this.level.getBlock(x, y, z);
+                if (block == null || block.getId().equals(Block.AIR)) {
+                    continue;
+                }
+
+                double friction = block.getFrictionFactor();
+                if (!Double.isFinite(friction) || friction <= 0.0d) {
+                    continue;
+                }
+
+                if (bestBlock == null || friction > bestFriction) {
+                    bestBlock = block;
+                    bestFriction = friction;
+                }
+            }
+        }
+
+        return bestBlock;
+    }
+
+    private double getRideGroundBlockFriction() {
+        Block under = getRideGroundBlock();
+        if (under == null) {
+            return Block.DEFAULT_FRICTION_FACTOR;
+        }
+
+        double friction = under.getFrictionFactor();
+        if (!Double.isFinite(friction) || friction <= 0.0d) {
+            return Block.DEFAULT_FRICTION_FACTOR;
+        }
+
+        return friction;
+    }
+
+    private boolean isRideGroundSlipperyBlock() {
+        return getRideGroundBlockFriction() > Block.DEFAULT_FRICTION_FACTOR + 0.05d;
+    }
+
+    private double getRideGroundBrakeFactor(double baseBrake) {
+        Block under = getRideGroundBlock();
+        if (under == null) return baseBrake;
+
+        if (under.getId().equals(Block.SOUL_SAND)) return baseBrake;
+
+        double friction = under.getFrictionFactor();
+        if (!Double.isFinite(friction) || friction <= 0.0d) return baseBrake;
+
+        double normal = Block.DEFAULT_FRICTION_FACTOR;
+        if (friction <= normal) return baseBrake;
+
+        double slipperiness = (friction - normal) / (1.0d - normal);
+        if (slipperiness < 0.0d) slipperiness = 0.0d;
+        if (slipperiness > 1.0d) slipperiness = 1.0d;
+
+        // Higher slipperiness = much weaker active brake
+        double brake = 0.018d - (slipperiness * 0.014d);
+
+        if (!Double.isFinite(brake)) return baseBrake;
+        if (brake < 0.004d) return 0.004d;
+        if (brake > baseBrake) return baseBrake;
+        return brake;
     }
 
     /** Air Input Controls */
@@ -602,7 +867,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 || pk.inputData.contains(AuthInputAction.START_JUMPING);
 
         double speed = this.getDefaultFlyingSpeed() * FRICTION_KNOB;
-        if (rushing) speed *= this.getSpeedMultiplier();
+        if (rushing) speed *= this.getSprintMultiplier();
 
         if (Math.abs(forward) < 0.01f && Math.abs(strafe) < 0.01f && !upPressed) {
             this.motionX = 0;
@@ -700,7 +965,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 pk.inputData.contains(AuthInputAction.START_SPRINTING);
 
         double speed = getDefaultUnderWaterSpeed() * SPEED_KNOB;
-        if (rushing) speed *= getSpeedMultiplier();
+        if (rushing) speed *= getSprintMultiplier();
 
         boolean moving = (Math.abs(forward) >= 0.01f) || (Math.abs(strafe) >= 0.01f);
         final double DASH_EPS2 = 0.02d * 0.02d;
@@ -832,6 +1097,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         // DASH
         if (this.canDash()) {
             if (dashHeld) {
+                if (this.isDashOnCooldown()) return false;
+                if (type == RideableComponent.InputType.GROUND && !isOnGround()) return false;
                 if (powerDashingTicks == -1) {
                     powerDashingTicks = 0;
                     if (type == RideableComponent.InputType.WATER) waterDashChargeStartedInWater = isInWaterForDash();
@@ -862,7 +1129,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         return false;
     }
-
 
     protected boolean tryDash(PlayerAuthInputPacket pk, float charge) {
         if (this.isDashOnCooldown()) return false;
@@ -993,11 +1259,15 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     public AtomicInteger getRideJumping() {
-        return rideJumping;
+        if (this.rideJumping == null) {
+            this.rideJumping = new AtomicInteger(-1);
+        }
+
+        return this.rideJumping;
     }
 
     public boolean isRideJumping() {
-        return this.rideJumping.get() != -1;
+        return this.getRideJumping().get() != -1;
     }
 
     public boolean isRideSprinting() {

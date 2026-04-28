@@ -829,7 +829,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void recalcMovementSpeedFromEffects() {
-        float base = this.getMovementSpeedDefault() * this.getSpeedMultiplier();
+        float base = this.getMovementSpeedDefault() * this.getSprintMultiplier();
         float mul = 1.0f;
 
         Effect speed = this.getEffect(EffectType.SPEED);

@@ -35,15 +35,6 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         }
         animation = animationEvent.getAnimationType();
 
-        switch (animation) {
-            case ROW_RIGHT, ROW_LEFT -> {
-                if (player.riding instanceof EntityBoat boat) {
-                    boat.onPaddle(animation, 1); // TODO: Paddle time got removed from packet. Needs debugging!!
-                }
-                return;
-            }
-        }
-
         pk = new AnimatePacket();
         pk.eid = player.getId();
         pk.action = animationEvent.getAnimationType();
