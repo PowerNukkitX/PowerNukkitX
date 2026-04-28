@@ -234,9 +234,11 @@ public class ObjectDesertPyramid extends ObjectGenerator {
 
     private void populateChestAt(StructureHelper builder, int x, int y, int z, Xoroshiro128 random) {
         var block = builder.getBlockAt(x, y, z);
-        if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntityChest chest) {
-            CHEST_POPULATOR.create(chest.getInventory(), random);
-        }
+        builder.addHook(() -> {
+            if (block instanceof BlockEntityHolder<?> holder && holder.getOrCreateBlockEntity() instanceof BlockEntityChest chest) {
+                CHEST_POPULATOR.create(chest.getInventory(), random);
+            }
+        });
     }
 
     public AxisAlignedBB getBoundingBox() {
