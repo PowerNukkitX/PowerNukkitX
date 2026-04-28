@@ -2,13 +2,12 @@ package cn.nukkit.level.generator.stages.normal;
 
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockWater;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
 import cn.nukkit.level.generator.holder.NormalObjectHolder;
 import cn.nukkit.level.generator.noise.f.SimplexF;
+import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinitionChunkGenData;
@@ -17,7 +16,6 @@ import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialAdjustmentData
 import cn.nukkit.network.protocol.types.biome.BiomeSurfaceMaterialData;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.OptionalValue;
-import cn.nukkit.utils.random.NukkitRandom;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,7 +27,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
 
-        SimplexF simplexF = ((NormalObjectHolder) chunk.getLevel().getGeneratorObjectHolder()).getSurfaceHolder().getSimplexF();
+        NormalNoise noise = ((NormalObjectHolder) chunk.getLevel().getGeneratorObjectHolder()).getSurfaceHolder().getNoise();
         chunk.batchProcess(unsafeChunk -> {
             for(int x = 0; x < 16; x++) {
                 for(int z = 0; z < 16; z++) {
@@ -53,7 +51,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                             if(biomeSurfaceMaterialAdjustmentDataOptional.isPresent()) {
                                 BiomeSurfaceMaterialAdjustmentData biomeSurfaceMaterialAdjustmentData = biomeSurfaceMaterialAdjustmentDataOptional.get();
                                 for(var element : biomeSurfaceMaterialAdjustmentData.biomeElements) {
-                                    float random = simplexF.noise2D(((unsafeChunk.getX() << 4) + x) * 0.25f, ((unsafeChunk.getZ() << 4) + z) * 0.25f, true);
+                                    float random = noise.getValue(((unsafeChunk.getX() << 4) + x),  0, ((unsafeChunk.getZ() << 4) + z));
                                     if(random < element.noiseUpperBound && random > element.noiseLowerBound) {
                                         int _topBlock = element.adjustedMaterials.topBlock;
                                         int _midBlock = element.adjustedMaterials.midBlock;
@@ -62,12 +60,11 @@ public class NormalSurfaceDataStage extends GenerateStage {
                                         if(_midBlock != -1) midBlock = _midBlock;
                                         if(_seaFloorBlock != -1) seaFloorBlock = _seaFloorBlock;
                                     }
-
                                 }
                             }
                             if(topBlockState != BlockWater.PROPERTIES.getBlockState()) {
                                 unsafeChunk.setBlockState(x, y, z, Registries.BLOCKSTATE.get(topBlock), 0);
-                                for(int i = 1; i < NukkitMath.remapFromNormalized(simplexF.noise2D(x, z, true), 1, 4); i++){
+                                for(int i = 1; i < NukkitMath.remapFromNormalized(noise.getValue(x, 0, z), 1, 4); i++){
                                     unsafeChunk.setBlockState(x, y-i, z, Registries.BLOCKSTATE.get(midBlock), 0);
                                 }
                             } else {
