@@ -9,6 +9,17 @@ import cn.nukkit.math.Vector3;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Behavior that makes a Turtle move toward nearby water.
+ *
+ * Uses a stored water block memory as a reference, chooses a water target
+ * farther inside the water body, and routes the entity toward it. When the
+ * turtle is centered over the water but still treated as standing on the
+ * surface, it commits the entity into the water column so swimming movement
+ * can take over.
+ *
+ * @author Curse
+ */
 @Getter
 public class TurtleMoveToWaterExecutor implements EntityControl, IBehaviorExecutor {
     protected final MemoryType<? extends Vector3> memory;
