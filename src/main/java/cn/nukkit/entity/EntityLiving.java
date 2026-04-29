@@ -810,10 +810,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.shieldReblockAfterAttack = true;
         this.shieldAttackInterruptTicks = SHIELD_ATTACK_REENABLE_DELAY_TICKS;
 
-        this.shieldTransitionTicks = 0;
-        this.setBlockingFlags(false, false);
+        this.shieldTransitionTicks = SHIELD_TRANSITION_TICKS;
 
-        this.shieldTransitionTicks = SHIELD_TRANSITION_TICKS + 1;
+        this.setBlockingFlags(false, true);
     }
 
     public void setBlocking(boolean value) {
