@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.Pair;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -32,6 +33,8 @@ public interface LevelProvider {
     IChunk getEmptyChunk(int x, int z);
 
     void saveChunks();
+
+    void saveChunks(Collection<IChunk> chunks);
 
     void saveChunk(int x, int z);
 
