@@ -70,6 +70,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
+    private static final int SHIELD_TRANSITION_TICKS = 2;
+    private static final int SHIELD_ATTACK_REENABLE_DELAY_TICKS = 6;
+
+    private int shieldTransitionTicks = 0;
+    private int shieldAttackInterruptTicks = 0;
+    private boolean shieldReblockAfterAttack = false;
+
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -578,6 +585,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         var block = this.level.getTickCachedBlock(getFloorX(), (int) (Math.round(this.y) - 1), getFloorZ());
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
+        this.tickShieldBlockingState(tickDiff);
+
         return hasUpdate;
     }
 
@@ -760,41 +769,114 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public boolean isBlocking() {
-        if(this.getDataFlag(EntityFlag.BLOCKING)) {
-            if(this instanceof InventoryHolder holder) {
-                if(holder.getInventory() instanceof HumanInventory inventory) {
-                    return inventory.getItemInMainHand() instanceof ItemShield
-                        || inventory.getItemInOffhand() instanceof ItemShield;
-                }
+        return this.getDataFlag(EntityFlag.BLOCKING) && this.hasShieldReady();
+    }
+
+    public boolean hasShieldReady() {
+        if (this instanceof InventoryHolder holder) {
+            if (holder.getInventory() instanceof HumanInventory inventory) {
+                return inventory.getItemInMainHand() instanceof ItemShield
+                    || inventory.getItemInOffhand() instanceof ItemShield;
             }
         }
         return false;
     }
 
-    public void setBlocking(boolean value) {
-        EnumSet<EntityFlag> ext = this.getEntityDataMap().getOrCreateFlags2();
+    protected boolean shouldBlockWithShield() {
+        if (!(this instanceof Player)) return false;
+        if (!this.hasShieldReady()) return false;
+        if (!this.getDataFlag(EntityFlag.SNEAKING)) return false;
+        return this.shieldAttackInterruptTicks <= 0;
+    }
 
-        boolean changed;
-        if (value) {
-            changed = ext.add(EntityFlag.BLOCKING);
+    public void updateShieldBlockingState() {
+        boolean shouldBlock = this.shouldBlockWithShield();
+        boolean isBlocking = this.getDataFlag(EntityFlag.BLOCKING);
+
+        if (shouldBlock && !isBlocking) {
+            this.setBlocking(true);
+        } else if (!shouldBlock && isBlocking) {
+            this.setBlocking(false);
+        }
+    }
+
+    public void interruptShieldBlockingForAttack() {
+        if (!(this instanceof Player)) return;
+        if (!this.hasShieldReady()) return;
+        if (!this.getDataFlag(EntityFlag.SNEAKING)) return;
+
+        if (this.shieldAttackInterruptTicks > 0) return;
+
+        this.shieldReblockAfterAttack = true;
+        this.shieldAttackInterruptTicks = SHIELD_ATTACK_REENABLE_DELAY_TICKS;
+
+        this.shieldTransitionTicks = SHIELD_TRANSITION_TICKS;
+
+        this.setBlockingFlags(false, true);
+    }
+
+    public void setBlocking(boolean value) {
+        this.shieldTransitionTicks = SHIELD_TRANSITION_TICKS;
+        this.setBlockingFlags(value, true);
+    }
+
+    private void setBlockingFlags(boolean blocking, boolean transitionBlocking) {
+        EnumSet<EntityFlag> flags = this.getEntityDataMap().getOrCreateFlags2();
+
+        boolean changed = false;
+
+        if (blocking) {
+            changed |= flags.add(EntityFlag.BLOCKING);
         } else {
-            changed = ext.remove(EntityFlag.BLOCKING);
+            changed |= flags.remove(EntityFlag.BLOCKING);
+        }
+
+        if (transitionBlocking) {
+            changed |= flags.add(EntityFlag.TRANSITION_BLOCKING);
+        } else {
+            changed |= flags.remove(EntityFlag.TRANSITION_BLOCKING);
         }
 
         if (!changed) return;
 
-        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, ext);
-
-        EnumSet<EntityFlag> wire = EnumSet.copyOf(ext);
-        if (value) {
-            wire.add(EntityFlag.TRANSITION_BLOCKING);
-        } else {
-            wire.remove(EntityFlag.TRANSITION_BLOCKING);
-        }
+        this.getEntityDataMap().put(EntityDataTypes.FLAGS_2, flags);
 
         EntityDataMap delta = new EntityDataMap();
-        delta.put(EntityDataTypes.FLAGS_2, wire);
+        delta.put(EntityDataTypes.FLAGS_2, flags);
         sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
+    }
+
+    private void tickShieldBlockingState(int tickDiff) {
+        if (!(this instanceof Player)) return;
+
+        if (this.shieldTransitionTicks > 0) {
+            this.shieldTransitionTicks -= tickDiff;
+
+            if (this.shieldTransitionTicks <= 0 && this.getDataFlag(EntityFlag.TRANSITION_BLOCKING)) {
+                this.shieldTransitionTicks = 0;
+                this.setBlockingFlags(this.getDataFlag(EntityFlag.BLOCKING), false);
+            }
+        }
+
+        if (this.shieldAttackInterruptTicks > 0) {
+            this.shieldAttackInterruptTicks -= tickDiff;
+
+            if (this.shieldAttackInterruptTicks <= 0) {
+                this.shieldAttackInterruptTicks = 0;
+
+                if (this.shieldReblockAfterAttack) {
+                    this.shieldReblockAfterAttack = false;
+
+                    if (this.shouldBlockWithShield()) {
+                        this.setBlocking(true);
+                    }
+                }
+            }
+
+            return;
+        }
+
+        this.updateShieldBlockingState();
     }
 
     @Override

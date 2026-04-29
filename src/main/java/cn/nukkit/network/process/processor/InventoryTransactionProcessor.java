@@ -207,6 +207,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                         return;
                     }
                 }
+
+                player.interruptShieldBlockingForAttack();
+
                 float itemDamage = item.getAttackDamage(player);
                 Enchantment[] enchantments = item.getEnchantments();
                 if (item.applyEnchantments()) {
