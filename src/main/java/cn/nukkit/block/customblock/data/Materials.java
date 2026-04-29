@@ -1,11 +1,13 @@
 package cn.nukkit.block.customblock.data;
 
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -13,6 +15,10 @@ import java.util.Locale;
  */
 public class Materials implements NBTData {
     private final CompoundTag tag;
+
+    private Float defaultAmbientOcclusion;
+    private Boolean defaultFaceDimming;
+    private Boolean defaultIsotropic;
 
     private Materials() {
         this.tag = new CompoundTag();
@@ -36,6 +42,18 @@ public class Materials implements NBTData {
             this.faceDimming = faceDimming;
             this.randomUVRotation = randomUVRotation;
             this.textureVariation = textureVariation;
+        }
+
+        public boolean faceDimming() {
+            return this.faceDimming;
+        }
+
+        public boolean randomUVRotation() {
+            return this.randomUVRotation;
+        }
+
+        public boolean textureVariation() {
+            return this.textureVariation;
         }
 
         public byte toByte() {
@@ -393,6 +411,181 @@ public class Materials implements NBTData {
     }
 
     /**
+     * Specify all corresponding rendering method, rendering parameters and texture name. tintMethod=null
+     *
+     * @param renderMethod     Rendering method to be used
+     * @param ambientOcclusion Ambient occlusion exponent. 0.0 disables it, 1.0 is normal/default.
+     * @param packedBools      Carries bools for packed bools compatibility.
+     * @param texture          Specify the texture's name
+     * @return the materials
+     */
+    public Materials any(RenderMethod renderMethod, float ambientOcclusion, PackedBools packedBools, String texture) {
+        this.process("*", ambientOcclusion, packedBools, renderMethod, texture, null);
+        return this;
+    }
+
+    /**
+     * Specify all corresponding rendering method, rendering parameters and texture name.
+     *
+     * @param renderMethod     Rendering method to be used
+     * @param ambientOcclusion Ambient occlusion exponent. 0.0 disables it, 1.0 is normal/default.
+     * @param packedBools      Carries bools for packed bools compatibility.
+     * @param texture          Specify the texture's name
+     * @param tintMethod       Set tinting method for the block
+     * @return the materials
+     */
+    public Materials any(RenderMethod renderMethod, float ambientOcclusion, PackedBools packedBools, String texture, TintMethod tintMethod) {
+        this.process("*", ambientOcclusion, packedBools, renderMethod, texture, tintMethod);
+        return this;
+    }
+
+    private CompoundTag getOrCreateFaceTag(@NotNull String face) {
+        Tag existing = this.tag.get(face);
+
+        if (existing instanceof CompoundTag compoundTag) {
+            return compoundTag;
+        }
+
+        CompoundTag faceTag = new CompoundTag();
+        this.applyDefaults(faceTag);
+        this.tag.putCompound(face, faceTag);
+        return faceTag;
+    }
+
+    private void applyDefaults(@NotNull CompoundTag faceTag) {
+        if (this.defaultAmbientOcclusion != null && !faceTag.contains("ambient_occlusion")) {
+            faceTag.putFloat("ambient_occlusion", this.defaultAmbientOcclusion);
+        }
+
+        if (this.defaultFaceDimming != null && !faceTag.contains("face_dimming")) {
+            faceTag.putBoolean("face_dimming", this.defaultFaceDimming);
+        }
+
+        if (this.defaultIsotropic != null && !faceTag.contains("isotropic")) {
+            faceTag.putBoolean("isotropic", this.defaultIsotropic);
+        }
+    }
+
+    private void applyFloatToCompoundMaterials(@NotNull String key, float value) {
+        for (Map.Entry<String, Tag> entry : this.tag.getTags().entrySet()) {
+            if (entry.getValue() instanceof CompoundTag faceTag) {
+                faceTag.putFloat(key, value);
+            }
+        }
+    }
+
+    private void applyBooleanToCompoundMaterials(@NotNull String key, boolean value) {
+        for (Map.Entry<String, Tag> entry : this.tag.getTags().entrySet()) {
+            if (entry.getValue() instanceof CompoundTag faceTag) {
+                faceTag.putBoolean(key, value);
+            }
+        }
+    }
+
+    /**
+     * Sets ambient occlusion for all material instances.
+     * <p>
+     * 0.0 disables ambient occlusion. 1.0 is the normal/default value.
+     */
+    public Materials ambientOcclusion(float value) {
+        this.defaultAmbientOcclusion = value;
+        this.applyFloatToCompoundMaterials("ambient_occlusion", value);
+        return this;
+    }
+
+    /**
+     * Sets ambient occlusion for one material instance.
+     *
+     * @param face Valid values are: up, down, north, south, east, west, *, or a named material.
+     */
+    public Materials ambientOcclusion(@NotNull String face, float value) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face);
+        faceTag.putFloat("ambient_occlusion", value);
+        this.tag.putCompound(face, faceTag);
+        return this;
+    }
+
+    /**
+     * Sets whether all material instances should be dimmed by the direction they are facing.
+     */
+    public Materials faceDimming(boolean value) {
+        this.defaultFaceDimming = value;
+        this.applyBooleanToCompoundMaterials("face_dimming", value);
+        return this;
+    }
+
+    /**
+     * Sets whether one material instance should be dimmed by the direction it is facing.
+     *
+     * @param face Valid values are: up, down, north, south, east, west, *, or a named material.
+     */
+    public Materials faceDimming(@NotNull String face, boolean value) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face);
+        faceTag.putBoolean("face_dimming", value);
+        this.tag.putCompound(face, faceTag);
+        return this;
+    }
+
+    /**
+     * Sets whether all material instances should randomize their UVs.
+     * <p>
+     * This requires a format version of at least 1.21.80.
+     */
+    public Materials isotropic(boolean value) {
+        this.defaultIsotropic = value;
+        this.applyBooleanToCompoundMaterials("isotropic", value);
+        return this;
+    }
+
+    /**
+     * Sets whether one material instance should randomize its UVs.
+     * <p>
+     * This requires a format version of at least 1.21.80.
+     *
+     * @param face Valid values are: up, down, north, south, east, west, *, or a named material.
+     */
+    public Materials isotropic(@NotNull String face, boolean value) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face);
+        faceTag.putBoolean("isotropic", value);
+        this.tag.putCompound(face, faceTag);
+        return this;
+    }
+
+    /**
+     * Sets the render method for one material instance.
+     */
+    public Materials renderMethod(@NotNull String face, @NotNull RenderMethod renderMethod) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face);
+        faceTag.putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH));
+        this.tag.putCompound(face, faceTag);
+        return this;
+    }
+
+    /**
+     * Sets the texture for one material instance.
+     */
+    public Materials texture(@NotNull String face, @NotNull String texture) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face);
+        faceTag.putString("texture", texture);
+        this.tag.putCompound(face, faceTag);
+        return this;
+    }
+
+    /**
+     * Sets the tint method for one material instance.
+     */
+    public Materials tintMethod(@NotNull String face, @Nullable TintMethod tintMethod) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face);
+
+        if (tintMethod != null) {
+            faceTag.putString("tint_method", tintMethod.name().toLowerCase(Locale.ENGLISH));
+        }
+
+        this.tag.putCompound(face, faceTag);
+        return this;
+    }
+
+    /**
      * Specify the corresponding rendering method, rendering parameters and materials.<p>
      * This method is completely customized. Please capture the package to confirm the legality of the parameters before using it.
      *
@@ -411,15 +604,40 @@ public class Materials implements NBTData {
         @NotNull String texture,
         @Nullable TintMethod tintMethod
     ) {
-        CompoundTag faceTag = new CompoundTag()
-            .putBoolean("ambient_occlusion", ambientOcclusion)
+        this.process(face, ambientOcclusion ? 1.0f : 0.0f, packedBools, renderMethodName, texture, tintMethod);
+    }
+
+    /**
+     * Specify the corresponding rendering method, rendering parameters and materials.<p>
+     * This method is completely customized. Please capture the package to confirm the legality of the parameters before using it.
+     *
+     * @param face             Specifies the name of the face. The optional value is：up, down, north, south, east, west, *
+     * @param ambientOcclusion Ambient occlusion exponent. 0.0 disables it, 1.0 is normal/default.
+     * @param packedBools      Carries bools for packed bools compatibility.
+     * @param renderMethodName Rendering method to be used
+     * @param texture          Specify the texture's name
+     * @see TintMethod         Specify the tinting type
+     */
+    public void process(
+        @NotNull String face,
+        float ambientOcclusion,
+        @NotNull PackedBools packedBools,
+        @NotNull String renderMethodName,
+        @NotNull String texture,
+        @Nullable TintMethod tintMethod
+    ) {
+        CompoundTag faceTag = this.getOrCreateFaceTag(face)
+            .putFloat("ambient_occlusion", ambientOcclusion)
             .putByte("packed_bools", packedBools.toByte())
             .putString("render_method", renderMethodName)
             .putString("texture", texture);
 
-        if (tintMethod != null && tintMethod != TintMethod.NONE) {
+        this.applyDefaults(faceTag);
+
+        if (tintMethod != null) {
             faceTag.putString("tint_method", tintMethod.name().toLowerCase(Locale.ENGLISH));
         }
+
         this.tag.putCompound(face, faceTag);
     }
 
@@ -431,16 +649,18 @@ public class Materials implements NBTData {
         @NotNull String texture,
         @Nullable TintMethod tintMethod
     ) {
-        CompoundTag faceTag = new CompoundTag()
-            .putBoolean("ambient_occlusion", ambientOcclusion)
-            .putByte("packed_bools", packedBools.toByte())
-            .putString("render_method", renderMethod.name().toLowerCase(Locale.ENGLISH))
-            .putString("texture", texture);
+        this.process(face, ambientOcclusion ? 1.0f : 0.0f, packedBools, renderMethod, texture, tintMethod);
+    }
 
-        if (tintMethod != null && tintMethod != TintMethod.NONE) {
-            faceTag.putString("tint_method", tintMethod.name().toLowerCase(Locale.ENGLISH));
-        }
-        this.tag.putCompound(face, faceTag);
+    private void process(
+        @NotNull String face,
+        float ambientOcclusion,
+        @NotNull PackedBools packedBools,
+        @NotNull RenderMethod renderMethod,
+        @NotNull String texture,
+        @Nullable TintMethod tintMethod
+    ) {
+        this.process(face, ambientOcclusion, packedBools, renderMethod.name().toLowerCase(Locale.ENGLISH), texture, tintMethod);
     }
 
     public CompoundTag toCompoundTag() {
