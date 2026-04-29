@@ -6,6 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.MathHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,8 +48,18 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         Level level = this.getLevel();
 
         if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
-            boolean isDark = getIsFullyDarkAround(level, getFloorX(), getFloorY(), getFloorZ());
-            i = isDark ? 15 : 0;
+            int skylight = getEffectiveSkyLightSignalAround(level, getFloorX(), getFloorY(), getFloorZ());
+            i = skylight - level.calculateSkylightSubtracted(1.0F);
+
+            float f = level.getCelestialAngle(1.0F) * 6.2831855F;
+
+            if (i > 0) {
+                float f1 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
+                f = f + (f1 - f) * 0.2F;
+                i = Math.round((float) i * MathHelper.cos(f));
+            }
+
+            i = MathHelper.clamp(i, 0, 15) > 0 ? 0 : 15;
         } else {
             i = 0;
         }
