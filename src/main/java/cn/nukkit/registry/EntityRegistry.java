@@ -569,7 +569,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             }
 
             BufferedInputStream bis = new BufferedInputStream(inputStream);
-            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+            CompoundTag nbt = NBTIO.readCompressed(bis);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
 
             // Add fake inventory entity definition

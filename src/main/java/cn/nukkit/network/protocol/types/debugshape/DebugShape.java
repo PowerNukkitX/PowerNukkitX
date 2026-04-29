@@ -24,4 +24,8 @@ public class DebugShape {
     public Float arrowHeadLength;
     public Float arrowHeadRadius;
     public Integer numSegments;
+    public boolean useRotation;
+    public Integer backgroundColor;
+    public boolean depthTest;
+    public boolean showBackface;
 }

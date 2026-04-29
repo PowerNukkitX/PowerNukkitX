@@ -53,7 +53,7 @@ public class MineshaftPopulator extends Populator {
                         if(level.getBlock(block).getId() == Block.WATER) {
                             manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
                         } else if(block.up().getId() == Block.WATER) {
-                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data.chunkGenData.get().surfaceMaterial.get().seaFloorBlock));
+                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data.chunkGenData.get().surfaceBuilderData.get().surfaceMaterial.get().seaFloorBlock));
                         }
                     }
                 }

@@ -11,8 +11,8 @@ import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
-import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
 import cn.nukkit.recipe.special.DecoratedPotRecipe;
+import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
@@ -789,12 +789,32 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         }
                     }
                     case "furnace", "blast_furnace", "smoker", "campfire", "soul_campfire" -> {
-                        Map<String, Object> inputData = (Map<String, Object>) recipe.get("input");
-                        Map<String, Object> outputData = (Map<String, Object>) recipe.get("output");
-                        Item inputItem = parseDescription(inputData, ParseType.FURNACE_INPUT).toItem();
-                        Item outputItem = parseDescription(outputData, ParseType.FURNACE_OUTPUT).toItem();
+                        String recipeId = (String) recipe.get("id");
+                        UUID uuid = UUID.fromString((String) recipe.get("uuid"));
+                        int priority = (int) ((double) recipe.get("priority"));
 
-                        SmeltingRecipe smeltingRecipe = switch (block) {
+                        List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipe.get("output");
+                        Map<String, Object> primaryResultData = outputs.removeFirst();
+                        ItemDescriptor primaryResult = parseDescription(primaryResultData, ParseType.FURNACE_OUTPUT);
+                        List<ItemDescriptor> ingredients = new ArrayList<>();
+                        List<Map<String, Object>> inputs = (List<Map<String, Object>>) recipe.get("input");
+
+                        for (Map<String, Object> input : inputs) {
+                            ingredients.add(parseDescription(input, ParseType.FURNACE_INPUT));
+                        }
+
+                        this.register(new ShapelessRecipe(
+                                recipeId + "_" + block,
+                                uuid,
+                                priority,
+                                primaryResult.toItem(),
+                                ingredients,
+                                new RecipeUnlockingRequirement(
+                                        RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                )
+                        ));
+
+                        /*SmeltingRecipe smeltingRecipe = switch (block) {
                             case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
                             case "smoker" -> new SmokerRecipe(outputItem, inputItem);
                             case "campfire" -> new CampfireRecipe(outputItem, inputItem);
@@ -810,7 +830,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         try {
                             this.register(smeltingRecipe);
                         } catch (Exception e) {     //this can be removed once duplicate recipes no longer exist
-                        }
+                        }*/
                     }
                 }
             }
@@ -943,7 +963,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         ItemDescriptor descriptor = null;
 
         switch (parseType) {
-            case SMITHING_TABLE, CRAFTING_TABLE_INPUT, CARTOGRAPHY_TABLE_INPUT, STONECUTTER_INPUT -> {
+            case SMITHING_TABLE, CRAFTING_TABLE_INPUT, CARTOGRAPHY_TABLE_INPUT, STONECUTTER_INPUT,
+                 FURNACE_INPUT -> {
                 if (data.get("type").equals("item_tag")) {
                     String itemTag = (String) data.get("itemTag");
                     int count = data.containsKey("count") ? Utils.toInt(data.get("count")) : 1;
@@ -970,7 +991,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                     descriptor = new DefaultDescriptor(item);
                 }
             }
-            case CRAFTING_TABLE_OUTPUT, CARTOGRAPHY_TABLE_OUTPUT, STONECUTTER_OUTPUT, FURNACE_INPUT, FURNACE_OUTPUT -> {
+            case CRAFTING_TABLE_OUTPUT, CARTOGRAPHY_TABLE_OUTPUT, STONECUTTER_OUTPUT, FURNACE_OUTPUT -> {
                 String id = (String) data.get("id");
                 int count = 1;
                 short meta = 0;

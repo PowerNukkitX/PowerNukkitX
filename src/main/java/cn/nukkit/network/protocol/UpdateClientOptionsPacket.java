@@ -13,11 +13,13 @@ public class UpdateClientOptionsPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         graphicsMode = OptionalValue.of(byteBuf.readOptional(null, () -> GraphicsMode.values()[byteBuf.readByte()]));
+        byteBuf.readOptional(null, byteBuf::readBoolean);
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeOptional(graphicsMode, graphicsMode -> byteBuf.writeByte(graphicsMode.ordinal()));
+        byteBuf.writeBoolean(false);
     }
 
     @Override
