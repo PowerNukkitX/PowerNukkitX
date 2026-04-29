@@ -37,6 +37,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
             shape.scale = buf.readOptional(null, buf::readFloatLE);
             shape.rotation = buf.readOptional(null, buf::readVector3f);
             shape.totalTimeLeft = buf.readOptional(null, buf::readFloatLE);
+            shape.maximumRenderDistance = buf.readOptional(null, buf::readFloatLE);
 
             boolean hasColor = buf.readBoolean();
             if (hasColor) {
@@ -102,6 +103,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
             buf.writeOptional(OptionalValue.ofNullable(shape.scale), buf::writeFloatLE);
             buf.writeOptional(OptionalValue.ofNullable(shape.rotation), buf::writeVector3f);
             buf.writeOptional(OptionalValue.ofNullable(shape.totalTimeLeft), buf::writeFloatLE);
+            buf.writeOptional(OptionalValue.ofNullable(shape.maximumRenderDistance), buf::writeFloatLE);
 
             if (shape.color != null) {
                 buf.writeBoolean(true);
