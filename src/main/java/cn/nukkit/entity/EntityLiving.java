@@ -70,7 +70,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private boolean attackTimeByShieldKb;
     private int attackTimeBefore;
 
-    private static final int SHIELD_TRANSITION_TICKS = 1;
+    private static final int SHIELD_TRANSITION_TICKS = 2;
     private static final int SHIELD_ATTACK_REENABLE_DELAY_TICKS = 6;
 
     private int shieldTransitionTicks = 0;
