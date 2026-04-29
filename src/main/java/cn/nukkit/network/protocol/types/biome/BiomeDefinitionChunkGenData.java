@@ -33,7 +33,8 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         byteBuf.writeOptional(overworldGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(multinoiseGenRules, v -> v.encode(byteBuf));
         byteBuf.writeOptional(legacyWorldGenRules, v -> v.encode(byteBuf));
-        byteBuf.writeOptional(replacementBiomes, v -> v.encode(byteBuf));
+        byteBuf.writeBoolean(false);
+    //    byteBuf.writeOptional(replacementBiomes, v -> v.encode(byteBuf));
         byteBuf.writeOptional(villageType, v -> byteBuf.writeByte(v.ordinal()));
         byteBuf.writeOptional(surfaceBuilderData, v -> v.encode(byteBuf));
         byteBuf.writeOptional(subSurfaceBuilderData, v -> v.encode(byteBuf));
@@ -49,7 +50,7 @@ public class BiomeDefinitionChunkGenData implements IBiomeDefinitionListObject {
         if(tag.containsCompound("overworldGenRules")) overworldGenRules = OptionalValue.of(parseFrom(tag.getCompound("overworldGenRules"), new BiomeOverworldGenRulesData()));
         if(tag.containsCompound("multinoiseGenRules")) multinoiseGenRules = OptionalValue.of(parseFrom(tag.getCompound("multinoiseGenRules"), new BiomeMultinoiseGenRulesData()));
         if(tag.containsCompound("legacyWorldGenRules")) legacyWorldGenRules = OptionalValue.of(parseFrom(tag.getCompound("legacyWorldGenRules"), new BiomeLegacyWorldGenRulesData()));
-        if(tag.containsCompound("replacementBiomes")) replacementBiomes = OptionalValue.of(parseFrom(tag.getCompound("replacementBiomes"), new BiomeReplacementData()));
+       // if(tag.containsCompound("replacementBiomes")) replacementBiomes = OptionalValue.of(parseFrom(tag.getCompound("replacementBiomes"), new BiomeReplacementData()));
         if(tag.containsCompound("villageType")) villageType = OptionalValue.of(VillageType.from(tag.getInt("villageType")));
         if(tag.containsCompound("surfaceBuilderData")) surfaceBuilderData = OptionalValue.of(parseFrom(tag.getCompound("surfaceBuilderData"), new BiomeSurfaceBuilderData()));
         if(tag.containsCompound("subSurfaceBuilderData")) subSurfaceBuilderData = OptionalValue.of(parseFrom(tag.getCompound("subsurfaceBuilderData"), new BiomeSurfaceBuilderData()));
