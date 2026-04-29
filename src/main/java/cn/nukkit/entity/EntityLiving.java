@@ -879,12 +879,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.updateShieldBlockingState();
     }
 
-
-
-
-
-
-
     @Override
     public boolean isPersistent() {
         return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
