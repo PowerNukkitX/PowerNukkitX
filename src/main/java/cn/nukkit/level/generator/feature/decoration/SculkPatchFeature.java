@@ -83,6 +83,7 @@ public class SculkPatchFeature extends GenerateFeature {
 
             for (BlockFace face : BlockFace.values()) {
                 BlockVector3 neighborPos = sculkPos.getSide(face);
+                if(neighborPos.getY() <= level.getMinHeight()) continue;
 
                 if (neighborPos.getChunkX() != sculkPos.getChunkX() || neighborPos.getChunkZ() != sculkPos.getChunkZ()) {
                     continue;
