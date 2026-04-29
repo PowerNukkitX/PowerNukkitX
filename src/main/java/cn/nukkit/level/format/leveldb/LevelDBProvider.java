@@ -503,6 +503,7 @@ public class LevelDBProvider implements LevelProvider {
             WriteBatchHelper helper = new WriteBatchHelper();
             CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
                 LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
+                chunk.setChanged(false);
             }), Server.getInstance().getComputeThreadPool()).join();
             helper.write(batch);
             helper.close();
