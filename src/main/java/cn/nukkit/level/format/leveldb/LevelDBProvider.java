@@ -5,6 +5,8 @@ import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -35,6 +37,7 @@ import it.unimi.dsi.fastutil.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Options;
+import org.iq80.leveldb.WriteBatch;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
@@ -51,11 +54,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -486,11 +494,22 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks() {
-        for (IChunk chunk : this.chunks.values()) {
-            if (chunk.getChanges() != 0) {
+        saveChunks(this.chunks.values());
+    }
+
+    @Override
+    public void saveChunks(Collection<IChunk> chunks) {
+        try (WriteBatch batch = storage.createBatch()) {
+            WriteBatchHelper helper = new WriteBatchHelper();
+            CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
+                LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
                 chunk.setChanged(false);
-                this.saveChunk(chunk.getX(), chunk.getZ());
-            }
+            }), Server.getInstance().getComputeThreadPool()).join();
+            helper.write(batch);
+            helper.close();
+            storage.writeBatch(batch);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
