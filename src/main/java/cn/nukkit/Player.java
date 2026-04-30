@@ -4672,9 +4672,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
-     * Returns items from open crafting grids and cursor
+     * Moves items from open crafting grids and cursor back to player inventory
      * <p>
      * Usually already handled client-side through ItemStackRequestPackets.
+     * Items will be dropped when the inventory is full (unless they have ItemLockMode)
      * This method mainly prevents preserving items (without any ItemLockMode) in cursor or crafting grid.
      */
     @ApiStatus.Internal
