@@ -981,18 +981,19 @@ public class Materials implements NBTData {
         public static @Nullable TintMethod fromString(String s) {
             if (s == null || s.isBlank()) return null;
             String key = s.trim()
-                          .toUpperCase(Locale.ENGLISH)
-                          .replaceAll("[\\s-]+", "_");
-            switch (key) {
-                case "NONE": return NONE;
-                case "DEFAULT_FOLIAGE": return DEFAULT_FOLIAGE;
-                case "BIRCH_FOLIAGE": return BIRCH_FOLIAGE;
-                case "EVERGREEN_FOLIAGE": return EVERGREEN_FOLIAGE;
-                case "DRY_FOLIAGE": return DRY_FOLIAGE;
-                case "GRASS": return GRASS;
-                case "WATER": return WATER;
-                default: return null;
-            }
+                    .toUpperCase(Locale.ENGLISH)
+                    .replaceAll("[\\s-]+", "_");
+
+            return switch (key) {
+                case "NONE" -> NONE;
+                case "DEFAULT_FOLIAGE" -> DEFAULT_FOLIAGE;
+                case "BIRCH_FOLIAGE" -> BIRCH_FOLIAGE;
+                case "EVERGREEN_FOLIAGE" -> EVERGREEN_FOLIAGE;
+                case "DRY_FOLIAGE" -> DRY_FOLIAGE;
+                case "GRASS" -> GRASS;
+                case "WATER" -> WATER;
+                default -> null;
+            };
         }
     }
 
