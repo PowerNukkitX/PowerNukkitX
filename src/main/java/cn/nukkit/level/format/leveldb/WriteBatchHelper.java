@@ -2,7 +2,6 @@ package cn.nukkit.level.format.leveldb;
 
 import org.iq80.leveldb.WriteBatch;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WriteBatchHelper implements WriteBatch {
 
     private final Map<byte[], byte[]> PUT = new ConcurrentHashMap<>();
-    private final Set<byte[]> DELETE = new HashSet<>();
+    private final Set<byte[]> DELETE = ConcurrentHashMap.newKeySet();
 
     @Override
     public int getApproximateSize() {
