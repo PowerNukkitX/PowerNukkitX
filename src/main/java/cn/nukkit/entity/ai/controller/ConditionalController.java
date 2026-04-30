@@ -12,6 +12,7 @@ public class ConditionalController implements IController {
 
     private Object2ObjectArrayMap<Predicate<EntityIntelligent>, IController> controllers = new Object2ObjectArrayMap<>();
 
+    @SafeVarargs
     public ConditionalController(Pair<Predicate<EntityIntelligent>, IController>... controllers) {
         Arrays.stream(controllers).forEach(pair -> this.controllers.put(pair.first(), pair.second()));
     }

@@ -37,5 +37,6 @@ public final class CustomEntityComponents {
     // NON-VANILLA
     public static final String DEFAULT_MOVEMENT_MULTIPLIER  = "default_movement_multiplier";
     public static final String PNX_CAN_BE_SADDLED           = "pnx_can_be_saddled";
+    public static final String PNX_SPRINT_MULTIPLIER        = "pnx_sprint_multiplier";
 }
 
