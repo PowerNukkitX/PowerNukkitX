@@ -75,33 +75,6 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         }
     }
 
-    public static boolean getIsFullyDarkAround(Level level, int x, int y, int z) {
-        int skyReduction = level.skyLightSubtracted;
-
-        int directSky = level.getBlockSkyLightAt(x, y + 1, z);
-        int directSignal = directSky - skyReduction;
-        if (directSignal >= 5) return false;
-
-        final int radius = 10;
-
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                int dist = Math.abs(dx) + Math.abs(dz);
-                if (dist == 0 || dist > radius) continue;
-
-                int cx = x + dx;
-                int cz = z + dz;
-
-                int sky = level.getBlockSkyLightAt(cx, y + 1, cz);
-                int signal = sky - skyReduction - dist;
-
-                if (signal >= 5) return false;
-            }
-        }
-
-        return true;
-    }
-
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (isNotActivate(player)) return false;
