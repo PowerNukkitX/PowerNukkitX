@@ -13,6 +13,8 @@ import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWool;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityHangingSign;
+import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.camera.data.CameraPreset;
@@ -2252,6 +2254,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 spawnable.spawnTo(this);
             }
         }
+
+        this.server.getScheduler().scheduleDelayedTask(() -> {
+            if (!this.isConnected() || this.level == null) return;
+            for (BlockEntity entity : this.level.getChunkBlockEntities(x, z).values()) {
+                if ((entity instanceof BlockEntityItemFrame || entity instanceof BlockEntitySign) && !entity.closed) {
+                    ((BlockEntitySpawnable) entity).spawnTo(this);
+                }
+            }
+        }, 2);
 
         if (this.needDimensionChangeACK) {
             this.needDimensionChangeACK = false;

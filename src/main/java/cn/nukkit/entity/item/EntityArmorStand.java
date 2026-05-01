@@ -114,21 +114,11 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (this.namedTag.contains(TAG_MAINHAND)) {
             Item mainhand = NBTIO.getItemHelper(this.namedTag.getCompound(TAG_MAINHAND));
             this.equipmentInventory.setItemInHand(mainhand, true);
-            // [ITEM_DEBUG]
-            if (mainhand != null && !mainhand.isNull()) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded mainhand {} x{}",
-                        (int) x, (int) y, (int) z, mainhand.getId(), mainhand.getCount());
-            }
         }
 
         if (this.namedTag.contains(TAG_OFFHAND)) {
             Item offhand = NBTIO.getItemHelper(this.namedTag.getCompound(TAG_OFFHAND));
             this.equipmentInventory.setItemInOffhand(offhand, true);
-            // [ITEM_DEBUG]
-            if (offhand != null && !offhand.isNull()) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded offhand {} x{}",
-                        (int) x, (int) y, (int) z, offhand.getId(), offhand.getCount());
-            }
         }
 
         if (this.namedTag.contains(TAG_ARMOR)) {
@@ -137,11 +127,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 Item armorItem = NBTIO.getItemHelper(armorTag);
                 int slot = armorTag.getByte("Slot");
                 this.armorInventory.setItem(slot, armorItem);
-                // [ITEM_DEBUG]
-                if (armorItem != null && !armorItem.isNull()) {
-                    log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded armor slot {} = {} x{}",
-                            (int) x, (int) y, (int) z, slot, armorItem.getId(), armorItem.getCount());
-                }
             }
         }
 
@@ -267,10 +252,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             Item itemClone = handItem.clone();
             itemClone.setCount(1);
             inventory.setItem(slot, itemClone);
-            // [ITEM_DEBUG]
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} equip: player {} added {} x1 to {}[{}]",
-                    (int) x, (int) y, (int) z, player.getName(), handItem.getId(),
-                    isArmorSlot ? "armor" : "equipment", slot);
             if (!player.isCreative()) {
                 handItem.count--;
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), handItem);
@@ -303,11 +284,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }
 
-            // [ITEM_DEBUG] Removing/swapping item from the armor stand
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} swap: player {} removing {} x{} from {}[{}], replacing with {}",
-                    (int) x, (int) y, (int) z, player.getName(), item.getId(), item.getCount(),
-                    isArmorSlot ? "armor" : "equipment", slot,
-                    itemtoAddToArmorStand.isNull() ? "AIR" : itemtoAddToArmorStand.getId());
             Item[] notAdded = player.getInventory().addItem(item);
             if (notAdded.length > 0) {
                 if (notAdded[0].count == item.count) {
@@ -347,10 +323,6 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         if (this.equipmentInventory != null) {
             this.namedTag.put(TAG_MAINHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInHand()));
             this.namedTag.put(TAG_OFFHAND, NBTIO.putItemHelper(this.equipmentInventory.getItemInOffhand()));
-        } else {
-            // [ITEM_DEBUG] This means items in hand/offhand will NOT be saved
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: equipmentInventory is NULL, hand items will not be saved!",
-                    (int) x, (int) y, (int) z);
         }
 
         if (this.armorInventory != null) {
@@ -359,47 +331,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
                 armorTag.add(NBTIO.putItemHelper(this.armorInventory.getItem(i), i));
             }
             this.namedTag.putList(TAG_ARMOR, armorTag);
-        } else {
-            // [ITEM_DEBUG] This means armor will NOT be saved
-            log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: armorInventory is NULL, armor will not be saved!",
-                    (int) x, (int) y, (int) z);
         }
 
         this.namedTag.putInt(TAG_POSE_INDEX, this.getPose());
-    }
-
-    @Override
-    public void close() {
-        // [ITEM_DEBUG] Log when an armor stand is closed while still holding items
-        if (!this.closed) {
-            boolean hasItems = false;
-            StringBuilder items = new StringBuilder();
-            if (this.equipmentInventory != null) {
-                for (var entry : this.equipmentInventory.getContents().entrySet()) {
-                    if (!entry.getValue().isNull()) {
-                        hasItems = true;
-                        items.append("equip[").append(entry.getKey()).append("]=")
-                                .append(entry.getValue().getId()).append("x").append(entry.getValue().getCount()).append(", ");
-                    }
-                }
-            }
-            if (this.armorInventory != null) {
-                for (int i = 0; i < 4; i++) {
-                    Item armorItem = this.armorInventory.getItem(i);
-                    if (!armorItem.isNull()) {
-                        hasItems = true;
-                        items.append("armor[").append(i).append("]=")
-                                .append(armorItem.getId()).append("x").append(armorItem.getCount()).append(", ");
-                    }
-                }
-            }
-            if (hasItems) {
-                log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} CLOSE with items still present: {}. Stack trace:",
-                        (int) x, (int) y, (int) z, items,
-                        new Throwable("ArmorStand close trace"));
-            }
-        }
-        super.close();
     }
 
     @Override
