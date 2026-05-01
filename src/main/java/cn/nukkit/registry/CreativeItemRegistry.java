@@ -1,6 +1,5 @@
 package cn.nukkit.registry;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-import cn.nukkit.utils.Config;
 import cn.nukkit.utils.MapParsingUtils;
 import lombok.extern.slf4j.Slf4j;
 import com.google.gson.Gson;
@@ -370,14 +368,19 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
 
                     if (menu.contains("group")) {
                         String groupName = menu.getString("group");
-                        CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
+                        boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
 
-                        Integer index = groupMap.get(groupName);
-                        if (index != null) {
-                            return index;
+                        if (!noGroup) {
+                            CreativeItemRegistry.ITEM_GROUP_MAP.put(identifier, groupName);
+                            Integer index = groupMap.get(groupName);
+                            if (index != null) {
+                                return index;
+                            }
+                        } else {
+                            CreativeItemRegistry.ITEM_GROUP_MAP.remove(identifier);
                         }
                     }
-                    return getLastGroupIndexFrom(categoryStr);
+                    return tailIndexForCategory(category);
                 } catch (Exception e) {
                     log.warn("Invalid creative category/group in block definition NBT for '{}': {}", identifier, e.getMessage());
                 }

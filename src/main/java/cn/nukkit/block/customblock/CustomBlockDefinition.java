@@ -95,11 +95,6 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt, @Nullabl
                 components.put(entry.getKey(), entry.getValue());
             }
 
-            // Setting up  default material instances
-            getOrCreateMaterialInstances(components);
-            //CompoundTag defaultMaterial = getOrCreateMaterialInstances(components); << TO REMOVE???
-            //components.putCompound("minecraft:material_instances", defaultMaterial); << TO REMOVE???
-
             // Sets the default geometry
             components.putCompound("minecraft:geometry", createDefaultGeometry(null));
 
