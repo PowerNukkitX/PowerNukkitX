@@ -15,7 +15,7 @@ public class InstantEffect extends Effect {
     }
 
     @Override
-    public boolean canTick() {
-        return true;
+    public int getInterval() {
+        return 1;
     }
 }
