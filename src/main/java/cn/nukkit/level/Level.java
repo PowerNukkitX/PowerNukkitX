@@ -604,14 +604,22 @@ public class Level implements Metadatable {
         long period = 1000 / 20;
         subTickGameLoop.setRunning(true);
         this.subTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
-            if (this.players.isEmpty() && !this.hasTickingAreas()) return;
-            subTickGameLoop.tick();
+            try {
+                if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                subTickGameLoop.tick();
+            } catch (Throwable t) {
+                log.error("Error in sub-tick for level {}", this.getName(), t);
+            }
         }, 0, period, TimeUnit.MILLISECONDS);
         if (getServer().getSettings().levelSettings().levelThread()) {
             baseTickGameLoop.setRunning(true);
             this.baseTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
-                if (this.players.isEmpty() && !this.hasTickingAreas()) return;
-                baseTickGameLoop.tick();
+                try {
+                    if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                    baseTickGameLoop.tick();
+                } catch (Throwable t) {
+                    log.error("Error in base-tick for level {}", this.getName(), t);
+                }
             }, 0, period, TimeUnit.MILLISECONDS);
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
@@ -667,8 +675,13 @@ public class Level implements Metadatable {
             if (this.subTickTask != null) {
                 this.subTickTask.cancel(false);
             }
-            if (this.provider.get() != null) {
-                remove();
+            // Ensure any concurrent tick has finished before removing level resources
+            synchronized (this.baseTickGameLoop.getTickLock()) {
+                synchronized (this.subTickGameLoop.getTickLock()) {
+                    if (this.provider.get() != null) {
+                        remove();
+                    }
+                }
             }
         } else {
             remove();
