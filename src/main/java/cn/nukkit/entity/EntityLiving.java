@@ -469,6 +469,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         motion.y += base;
         motion.z += z * f * base;
 
+        if (motion.y > 0.4) {
+            motion.y = 0.4;
+        }
+
         this.setMotion(motion);
     }
 
