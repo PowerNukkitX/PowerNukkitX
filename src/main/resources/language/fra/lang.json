@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Impossible de supprimer les effets du joueur {%0} car il n\u0027en a pas",
   "commands.effect.notFound": "Il n\u0027y a pas de créature ayant pour ID {%0}",
   "commands.effect.success": "Don de l\u0027effet {%0} * {%1} à {%2} pendant {%3} secondes",
+  "commands.effect.success.infinite": "Don de l'effet {%0} * {%1} à {%2} pour une durée illimitée",
   "commands.effect.success.removed": "Retrait de l\u0027effet {%0} à {%1}",
   "commands.effect.success.removed.all": "Retrait de tous les effets de {%0}",
   "commands.enchant.cantCombine": "{%0} ne peut pas être combiné avec {%1}",

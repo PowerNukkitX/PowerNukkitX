@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Es konnten keine Effekte von {%0} entfernt werden, da keine vorhanden waren",
   "commands.effect.notFound": "Es gibt keinen Kreatur-Effekt mit der ID {%0}",
   "commands.effect.success": "{%0} * {%1} an {%2} für {%3} Sekunden gegeben",
+  "commands.effect.success.infinite": "Gab {%0} * {%1} an {%2} für eine unendliche Dauer",
   "commands.effect.success.removed": "{%0} von {%1} entfernt",
   "commands.effect.success.removed.all": "Alle Effekte von {%0} entfernt",
   "commands.enchant.cantCombine": "{%0} ist nicht kombinierbar mit {%1}",
