@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Hiçbir etkiye sahip olmadığı için {%0} ögesinden etki alınamadı",
   "commands.effect.notFound": "{%0} kimlikli hiçbir mob etkisi yok",
   "commands.effect.success": "{%2} ögesine {%3} saniyeliğine {%0} * {%1} verildi",
+  "commands.effect.success.infinite": "Sonsuz süre boyunca {%2} ögesine {%0} * {%1} verildi",
   "commands.effect.success.removed": "{%1} öğesinden {%0} alındı",
   "commands.effect.success.removed.all": "{%0} ögesinden bütün efektler alındı",
   "commands.enchant.cantCombine": "{%0}, {%1} ile birleştirilemiyor",

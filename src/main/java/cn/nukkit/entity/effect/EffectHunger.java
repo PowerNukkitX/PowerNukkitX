@@ -12,8 +12,8 @@ public class EffectHunger extends Effect {
     }
 
     @Override
-    public boolean canTick() {
-        return true;
+    public int getInterval() {
+        return 1;
     }
 
     @Override
