@@ -65,6 +65,16 @@ public final class GameLoop {
         return sum / count;
     }
 
+    public void tick() {
+        if (!isRunning.get()) return;
+        long startTickTime = System.nanoTime();
+        onTick.accept(this);
+        tick++;
+        long timeTakenToTick = System.nanoTime() - startTickTime;
+        updateMSTP(timeTakenToTick, MSPTSummary);
+        updateTPS(timeTakenToTick);
+    }
+
     public void startLoop() {
         isRunning.set(true);
         onStart.run();
@@ -119,6 +129,10 @@ public final class GameLoop {
 
     public boolean isRunning() {
         return isRunning.get();
+    }
+
+    public void setRunning(boolean value) {
+        isRunning.set(value);
     }
 
     public static class GameLoopBuilder {
