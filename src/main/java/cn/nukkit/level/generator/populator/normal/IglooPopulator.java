@@ -17,6 +17,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -31,8 +32,12 @@ public class IglooPopulator extends Populator {
 
     public static final String NAME = "normal_igloo";
 
-    protected static final int SPACING = 32;
-    protected static final int SEPARATION = 8;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(14357618L)
+            .minDistance(8)
+            .maxDistance(32)
+            .isBiomeValid(biome -> biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA || biome == BiomeID.SNOWY_SLOPES)
+            .build());
 
     protected final PNXStructure TOP = (PNXStructure) Registries.STRUCTURE.get("igloo/top");
     protected final PNXStructure MIDDLE = (PNXStructure) Registries.STRUCTURE.get("igloo/middle");
@@ -48,9 +53,7 @@ public class IglooPopulator extends Populator {
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
         int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
-        if ((biome == BiomeID.ICE_PLAINS || biome == BiomeID.COLD_TAIGA|| biome == BiomeID.SNOWY_SLOPES)
-                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+        if (PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             boolean hasLaboratory = random.nextBoolean();
 
             BlockVector3 size = new BlockVector3(TOP.getSizeX(), TOP.getSizeY(), TOP.getSizeZ());

@@ -51,8 +51,10 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
 
     @Override
     public void close() {
-        //Those also drop when broken in creative mode
-        level.dropItem(this.add(HALF), this.getItem());
+        if(isValid() && chunk.isLoaded() && level.isChunkInUse(chunk.getX(), chunk.getZ())) {
+            //Those also drop when broken in creative mode
+            level.dropItem(this.add(HALF), this.getItem());
+        }
         super.close();
     }
 }

@@ -1221,6 +1221,31 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             );
         }
 
+        /**
+         * Sets the sprint movement multiplier for this custom entity.
+         *
+         * <p>
+         * This value is intended to be used by runtime movement behaviors,
+         * especially rideable/rider-input logic, to scale the entity speed
+         * while sprinting.
+         * </p>
+         *
+         * <p>
+         * Invalid values such as {@code NaN} or infinity are normalized to
+         * {@code 1.0f}. Negative values are clamped to {@code 0.0f}.
+         * </p>
+         *
+         * @param sprintMultiplier the sprint speed multiplier to apply;
+         *                         {@code 1.0f} means normal speed,
+         *                         values above {@code 1.0f} increase speed,
+         *                         and {@code 0.0f} disables sprint movement
+         * @return this builder instance
+         */
+        public SimpleBuilder sprintMultiplier(float sprintMultiplier) {
+            if (!Float.isFinite(sprintMultiplier)) sprintMultiplier = 1.0f;
+            sprintMultiplier = Math.max(0f, sprintMultiplier);
+            return withObject(CustomEntityComponents.PNX_SPRINT_MULTIPLIER, sprintMultiplier);
+        }
 
 
         /////////////////////////////////////////////////
@@ -1313,22 +1338,27 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
         }
 
         /**
-         * @deprecated Movement multipliers should be implemented in behavior executors.
+         * @deprecated Use {@link #sprintMultiplier(float)} instead when configuring
+         * rideable sprint/rider-input speed scaling.
          *
          * <p>
+         * Movement multipliers should be implemented in behavior executors.
          * This method is kept for backward compatibility only.
-         * Bedrock entity definitions do not store movement multipliers;
+         * Bedrock entity definitions do not store generic movement multipliers;
          * speed scaling is controlled by runtime behaviors such as
-         * follow, tempt, boost, or rider input.
+         * follow, tempt, boost, sprint, or rider input.
          * </p>
          *
          * <p>
          * This field is currently used as a server-side tuning knob for
-         * legacy entities and will be removed once all movement behaviors
-         * implement proper runtime multipliers.
+         * legacy entities. New custom entity definitions should use
+         * {@link #sprintMultiplier(float)} for sprint-specific speed scaling.
          * </p>
          *
          * Planned removal: after behavior parity is complete (>= 2026-09-05).
+         *
+         * @param speedMultiplier the legacy movement multiplier to apply
+         * @return this builder instance
          */
         @Deprecated(since = "2.0.0", forRemoval = true)
         public SimpleBuilder defaultMovementMultiplier(float speedMultiplier) {
@@ -1636,6 +1666,11 @@ public record CustomEntityDefinition(String id, String eid, boolean hasSpawnEgg,
             return (obj instanceof AgeableComponent data) ? data : null;
         }
 
+        // Sprint Multiplier Meta
+        public @Nullable Float getSprintMultiplier(String key) {
+            Object obj = components.get(key);
+            return (obj instanceof Number n) ? n.floatValue() : null;
+        }
 
 
 

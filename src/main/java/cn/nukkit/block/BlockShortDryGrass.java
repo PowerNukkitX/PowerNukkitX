@@ -29,6 +29,11 @@ public class BlockShortDryGrass extends BlockFlowable {
     }
 
     @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);

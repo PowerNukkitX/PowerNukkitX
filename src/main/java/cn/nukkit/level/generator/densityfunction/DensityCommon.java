@@ -685,10 +685,7 @@ public final class DensityCommon {
     }
 
     private static final class FlatCacheMarker extends Marker {
-        private static final int QUART_SIZE = 4;
         private static final int CHUNK_SIZE_BLOCKS = 16;
-        private static final int GRID_SIZE_XZ = (CHUNK_SIZE_BLOCKS / QUART_SIZE) + 1; // 5
-        private static final int QUART_MASK = QUART_SIZE - 1;
         private final ThreadLocal<FlatCacheState> state = ThreadLocal.withInitial(FlatCacheState::new);
 
         private FlatCacheMarker(DensityFunction wrapped) {
@@ -703,11 +700,21 @@ public final class DensityCommon {
             int chunkX = blockX >> 4;
             int chunkZ = blockZ >> 4;
             FlatCacheCell cell = s.getOrCreateCell(chunkX, chunkZ, wrapped);
-            int localQuartX = (blockX >> 2) - cell.firstQuartX;
-            int localQuartZ = (blockZ >> 2) - cell.firstQuartZ;
-            // Same-chunk lookups always map to a 4x4 quart area [0..3], cached in the 5x5 grid.
-            if ((localQuartX & ~QUART_MASK) == 0 && (localQuartZ & ~QUART_MASK) == 0) {
-                return cell.values[localQuartX + localQuartZ * GRID_SIZE_XZ];
+            int localX = blockX - cell.firstBlockX;
+            int localZ = blockZ - cell.firstBlockZ;
+            if (localX >= 0 && localX < CHUNK_SIZE_BLOCKS
+                    && localZ >= 0 && localZ < CHUNK_SIZE_BLOCKS) {
+                int index = localX + localZ * CHUNK_SIZE_BLOCKS;
+                int word = index >>> 6;
+                long mask = 1L << (index & 63);
+                if ((cell.filledBits[word] & mask) != 0L) {
+                    return cell.values[index];
+                }
+
+                double computed = wrapped.compute(s.context.set(blockX, 0, blockZ));
+                cell.values[index] = computed;
+                cell.filledBits[word] |= mask;
+                return computed;
             }
             return wrapped.compute(context);
         }
@@ -734,25 +741,16 @@ public final class DensityCommon {
                 return cell;
             }
 
-            int firstQuartX = chunkX << 2;
-            int firstQuartZ = chunkZ << 2;
-            double[] values = new double[FlatCacheMarker.GRID_SIZE_XZ * FlatCacheMarker.GRID_SIZE_XZ];
-            for (int x = 0; x < FlatCacheMarker.GRID_SIZE_XZ; x++) {
-                int blockX = (firstQuartX + x) << 2;
-                for (int z = 0; z < FlatCacheMarker.GRID_SIZE_XZ; z++) {
-                    int blockZ = (firstQuartZ + z) << 2;
-                    values[x + z * FlatCacheMarker.GRID_SIZE_XZ] =
-                            wrapped.compute(context.set(blockX, 0, blockZ));
-                }
-            }
-
-            cell = new FlatCacheCell(firstQuartX, firstQuartZ, values);
+            int firstBlockX = chunkX << 4;
+            int firstBlockZ = chunkZ << 4;
+            int valueCount = FlatCacheMarker.CHUNK_SIZE_BLOCKS * FlatCacheMarker.CHUNK_SIZE_BLOCKS;
+            cell = new FlatCacheCell(firstBlockX, firstBlockZ, new double[valueCount], new long[(valueCount + 63) >>> 6]);
             cells.put(key, cell);
             return cell;
         }
     }
 
-    private record FlatCacheCell(int firstQuartX, int firstQuartZ, double[] values) {
+    private record FlatCacheCell(int firstBlockX, int firstBlockZ, double[] values, long[] filledBits) {
     }
 
     private static final class CacheOnceMarker extends Marker {

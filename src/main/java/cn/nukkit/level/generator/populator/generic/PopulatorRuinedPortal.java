@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.populator.Populator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -37,8 +38,11 @@ public class PopulatorRuinedPortal extends Populator {
 
     private static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
 
-    protected static final int MIN_DISTANCE = 40;
-    protected static final int MAX_DISTANCE = 25;
+    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(34222645L)
+            .minDistance(15)
+            .maxDistance(40)
+            .build());
 
     private static final String[] PORTALS = new String[]{
             "ruined_portal/portal_1",
@@ -64,8 +68,9 @@ public class PopulatorRuinedPortal extends Populator {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        if(canGenerate(random, chunk)) {
+        int biome = chunk.getBiomeId(7, SEA_LEVEL, 7);
+        if(PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
+            random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
             BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(7, SEA_LEVEL, 7));
@@ -238,12 +243,6 @@ public class PopulatorRuinedPortal extends Populator {
         return start < end ? NukkitMath.randomRange(random, start, end) : end;
     }
 
-    public boolean canGenerate(RandomSourceProvider random, IChunk chunk) {
-        int chunkX = chunk.getX();
-        int chunkZ = chunk.getZ();
-        return ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
-    }
-
     @Override
     public String name() {
         return NAME;
@@ -253,13 +252,13 @@ public class PopulatorRuinedPortal extends Populator {
 
         public ChestPopulator() {
             PoolBuilder pool1 = new PoolBuilder()
-                    .register(new ItemEntry(Block.OBSIDIAN, 0, 1, 2, 40))
-                    .register(new ItemEntry(Item.FLINT, 0, 1, 4, 40))
-                    .register(new ItemEntry(Item.IRON_NUGGET, 0, 9, 18, 40))
+                    .register(new ItemEntry(Block.OBSIDIAN, 0, 2, 1, 40))
+                    .register(new ItemEntry(Item.FLINT, 0, 4, 1, 40))
+                    .register(new ItemEntry(Item.IRON_NUGGET, 0, 18, 9, 40))
                     .register(new ItemEntry(Item.FLINT_AND_STEEL, 40))
                     .register(new ItemEntry(Item.FIRE_CHARGE, 40))
                     .register(new ItemEntry(Item.GOLDEN_APPLE, 15))
-                    .register(new ItemEntry(Item.GOLD_NUGGET, 0, 4, 24, 15))
+                    .register(new ItemEntry(Item.GOLD_NUGGET, 0, 24, 4, 15))
                     .register(new ItemEntry(Item.GOLDEN_SWORD, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_AXE, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_HOE, 0, 1, 1, 15, getDefaultEnchantments()))
@@ -269,21 +268,21 @@ public class PopulatorRuinedPortal extends Populator {
                     .register(new ItemEntry(Item.GOLDEN_CHESTPLATE, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_HELMET, 0, 1, 1, 15, getDefaultEnchantments()))
                     .register(new ItemEntry(Item.GOLDEN_LEGGINGS, 0, 1, 1, 15, getDefaultEnchantments()))
-                    .register(new ItemEntry(Item.GLISTERING_MELON_SLICE, 0, 4, 12, 5))
+                    .register(new ItemEntry(Item.GLISTERING_MELON_SLICE, 0, 12, 4, 5))
                     .register(new ItemEntry(Item.GOLDEN_HORSE_ARMOR, 5))
                     .register(new ItemEntry(Block.LIGHT_WEIGHTED_PRESSURE_PLATE, 5))
-                    .register(new ItemEntry(Item.GOLDEN_CARROT, 0, 4, 12, 5))
+                    .register(new ItemEntry(Item.GOLDEN_CARROT, 0, 12, 4, 5))
                     .register(new ItemEntry(Item.CLOCK, 5))
-                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 2, 8, 5))
+                    .register(new ItemEntry(Item.GOLD_INGOT, 0, 8, 2, 5))
                     .register(new ItemEntry(Block.BELL, 1))
                     .register(new ItemEntry(Item.ENCHANTED_GOLDEN_APPLE, 1))
-                    .register(new ItemEntry(Block.GOLD_BLOCK, 0, 1, 2, 1));
+                    .register(new ItemEntry(Block.GOLD_BLOCK, 0, 2, 1, 1));
 
             this.pools.put(pool1.build(), new RollEntry(8, 4, pool1.getTotalWeight()));
 
             PoolBuilder pool2 = new PoolBuilder()
                     .register(new ItemEntry(Block.AIR, 1))
-                    .register(new ItemEntry(Block.LODESTONE, 0, 1, 2, 2));
+                    .register(new ItemEntry(Block.LODESTONE, 0, 2, 1, 2));
 
             this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
         }

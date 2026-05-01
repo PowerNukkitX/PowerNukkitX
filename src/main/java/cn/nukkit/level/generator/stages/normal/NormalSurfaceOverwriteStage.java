@@ -43,6 +43,8 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
     protected static final BlockState ICE = BlockIce.PROPERTIES.getDefaultState();
     protected static final BlockState PACKED_ICE = BlockPackedIce.PROPERTIES.getDefaultState();
 
+    protected static final BlockState STONE = BlockStone.PROPERTIES.getDefaultState();
+
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
@@ -65,7 +67,7 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                     switch (biomeId) {
                         case SWAMPLAND -> {
                             if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
-                                if(y == SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
+                                if(y == SEA_LEVEL - 1) unsafeChunk.setBlockState(x, y, z, WATER, 0);
                         }
                         case MANGROVE_SWAMP -> {
                             if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
@@ -140,8 +142,9 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
         int minSnowHeight = SEA_LEVEL + 18 + random.nextBoundedInt(10);
         int snowDepth = 0;
 
-        for (int y = Math.max(height, (int) extensionTop + 1); y >= level.getMinHeight(); y--) {
+        for (int y = Math.max(height, (int) extensionTop + 1); y > 0; y--) {
             BlockState state = chunk.getBlockState(localX, y, localZ);
+            if(state == STONE) break;
             boolean place = (state == BlockAir.STATE && y < (int) extensionTop && random.nextDouble() > 0.01)
                     || (state.toBlock() instanceof BlockFlowingWater && y > (int) extensionBottom && y <= SEA_LEVEL && random.nextDouble() > 0.15);
             if (!place) {

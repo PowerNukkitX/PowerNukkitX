@@ -105,7 +105,7 @@ public class RideableTameExecutor extends FlatRandomRoamExecutor {
                 if (player == null) return false;
                 player.dataPacket(packet);
                 if (animal.isEquine()) animal.equinePlayTameFailAnimation();
-                animal.dismountEntity(animal.getRider());
+                animal.dismountEntity(animal.getRider(), true, false);
                 animal.setPersistent(true);
 
                 tick1++;

@@ -5,13 +5,9 @@ import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
-import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.RandomizableContainer;
-import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -29,7 +25,7 @@ import static cn.nukkit.block.property.CommonBlockProperties.REPEATER_DELAY;
 import static cn.nukkit.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
 import static cn.nukkit.block.property.CommonBlockProperties.WEIRDO_DIRECTION;
 
-public class ObjectJungleTemple extends ObjectGenerator implements RuledObjectGenerator {
+public class ObjectJungleTemple extends ObjectGenerator {
 
     protected static final int MIN_DISTANCE = 8;
     protected static final int MAX_DISTANCE = 32;
@@ -263,26 +259,6 @@ public class ObjectJungleTemple extends ObjectGenerator implements RuledObjectGe
 
         level.merge(builder);
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return "jungle_temple";
-    }
-
-    @Override
-    public boolean canGenerateAt(Location location) {
-        int x = location.getFloorX();
-        int y = location.getFloorY();
-        int z = location.getFloorZ();
-        int chunkX = location.getChunkX();
-        int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-
-        int biome = level.getBiomeId(x, y, z);
-        return biome == BiomeID.JUNGLE && ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX
-                && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }
 
     protected static class ChestPopulator extends RandomizableContainer {

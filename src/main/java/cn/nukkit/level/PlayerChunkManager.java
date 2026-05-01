@@ -12,6 +12,7 @@ import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayPriorityQueue;
 import it.unimi.dsi.fastutil.longs.LongComparator;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
@@ -134,6 +135,17 @@ public final class PlayerChunkManager {
         sendChunk();
     }
 
+    public synchronized void handleViewDistanceChange() {
+        if (!player.isConnected()) return;
+        BlockVector3 floor = player.asBlockVector3();
+        updateInRadiusChunks(player.getViewDistance(), floor);
+        removeOutOfRadiusChunks();
+        pruneQueueOutOfRadius(chunkSendQueue, false);
+        pruneQueueOutOfRadius(chunkReadyToSend, true);
+        pruneLoadingQueueOutOfRadius();
+        updateChunkSendingQueue();
+    }
+
     @ApiStatus.Internal
     public LongOpenHashSet getUsedChunks() {
         return sentChunks;
@@ -182,15 +194,7 @@ public final class PlayerChunkManager {
         Set<Long> difference = new HashSet<>(Sets.difference(sentChunks, inRadiusChunks));
         // Unload blocks that are out of range
         for (Long hash : difference) {
-            int x = Level.getHashX(hash);
-            int z = Level.getHashZ(hash);
-            if (player.level.unregisterChunkLoader(player, x, z)) {
-                for (Entity entity : player.level.getChunkEntities(x, z).values()) {
-                    if (entity != player) {
-                        entity.despawnFrom(player);
-                    }
-                }
-            }
+            unloadChunkForPlayer(hash.longValue());
         }
         // The intersection of the remaining sentChunks and inRadiusChunks
         sentChunks.removeAll(difference);
@@ -245,6 +249,11 @@ public final class PlayerChunkManager {
             player.dataPacket(ncp);
             while (!chunkReadyToSend.isEmpty()) {
                 long chunkHash = chunkReadyToSend.dequeueLong();
+                if (!inRadiusChunks.contains(chunkHash)) {
+                    sentChunks.remove(chunkHash);
+                    unloadChunkForPlayer(chunkHash);
+                    continue;
+                }
                 int chunkX = Level.getHashX(chunkHash);
                 int chunkZ = Level.getHashZ(chunkHash);
                 PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(player, chunkX, chunkZ);
@@ -254,6 +263,43 @@ public final class PlayerChunkManager {
             }
         }
         chunkReadyToSend.clear();
+    }
+
+    private void pruneQueueOutOfRadius(LongArrayPriorityQueue queue, boolean unloadChunkLoader) {
+        if (queue.isEmpty()) return;
+        LongOpenHashSet keep = new LongOpenHashSet();
+        while (!queue.isEmpty()) {
+            long chunkHash = queue.dequeueLong();
+            if (inRadiusChunks.contains(chunkHash)) {
+                keep.add(chunkHash);
+            } else if (unloadChunkLoader) {
+                sentChunks.remove(chunkHash);
+                unloadChunkForPlayer(chunkHash);
+            }
+        }
+        keep.forEach(queue::enqueue);
+    }
+
+    private void pruneLoadingQueueOutOfRadius() {
+        LongIterator iterator = chunkLoadingQueue.keySet().iterator();
+        while (iterator.hasNext()) {
+            long chunkHash = iterator.nextLong();
+            if (!inRadiusChunks.contains(chunkHash)) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private void unloadChunkForPlayer(long hash) {
+        int x = Level.getHashX(hash);
+        int z = Level.getHashZ(hash);
+        if (player.level.unregisterChunkLoader(player, x, z)) {
+            for (Entity entity : player.level.getChunkEntities(x, z).values()) {
+                if (entity != player) {
+                    entity.despawnFrom(player);
+                }
+            }
+        }
     }
 
     private boolean ifChunkNotInRadius(int chunkX, int chunkZ, int radius) {

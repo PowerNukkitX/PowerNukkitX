@@ -21,6 +21,8 @@ public class BaseSettings extends OkaeriConfig {
     String defaultLevelName = "world";
     @Comment("pnx.settings.base.allowlist")
     boolean allowList = false;
+    @Comment("pnx.settings.base.allowlist.message")
+    String allowListMessage = "Server is white-listed";
     @Comment("pnx.settings.base.motd")
     String motd = "PowerNukkitX Server";
     @CustomKey("sub-motd")

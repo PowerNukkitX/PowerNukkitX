@@ -98,6 +98,10 @@ public class StriderMoveToLavaExecutor implements EntityControl, IBehaviorExecut
 
         if (!isCenterOnLava(entity) && d2xz <= (1.25 * 1.25)) {
             entity.getBehaviorGroup().setForceUpdateRoute(true);
+            if (d2xz <= (0.35 * 0.35)) {
+                commitIntoLava(entity, lavaBlock);
+                return true;
+            }
             nudgeInto(entity, lavaCenter, 0.06f);
         }
 
@@ -163,6 +167,13 @@ public class StriderMoveToLavaExecutor implements EntityControl, IBehaviorExecut
                 motion.y,
                 motion.z + (dz * push)
         ));
+    }
+
+    protected void commitIntoLava(EntityIntelligent entity, Block lavaBlock) {
+        entity.setPosition(new Vector3(entity.x, lavaBlock.getFloorY() + 0.05d, entity.z));
+        entity.onGround = false;
+        entity.motionY = -0.02d;
+        entity.updateMovement();
     }
 
     @Override

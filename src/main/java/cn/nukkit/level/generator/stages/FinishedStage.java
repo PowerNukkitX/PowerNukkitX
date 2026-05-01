@@ -14,7 +14,9 @@ public class FinishedStage extends GenerateStage {
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         chunk.setChunkState(ChunkState.FINISHED);
-        chunk.setChanged(false);
+        if(!chunk.getLevel().getServer().getSettings().chunkSettings().saveGenerated()) {
+            chunk.setChanged(false);
+        }
     }
 
     @Override

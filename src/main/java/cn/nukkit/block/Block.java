@@ -525,6 +525,27 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     /**
+     * Returns the level of snowlogging for this block.
+     * 0 means the block cannot be snowlogged.
+     */
+    public int getSnowloggingLevel() {
+        return 0;
+    }
+
+    /**
+     * Checks if this block is snowlogged.
+     * Returns {@code true} if this block supports snowlogging and has a snow layer on layer 0.
+     */
+    public boolean isSnowLogged() {
+        if (getSnowloggingLevel() == 0) return false;
+
+        Block snow = this.getLevelBlockAtLayer(0);
+        if (snow == null || snow.isAir()) return false;
+
+        return snow instanceof BlockSnowLayer;
+    }
+
+    /**
      * Returns true if this block is interactable (can be activated).
      * <p>
      * For custom blocks, set interactability using the builder (isPlayerInteractable)

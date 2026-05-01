@@ -302,7 +302,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
         if (currentTick % 2 == 0 && getRideJumping() != null && currentTick - getRideJumping().get() > 5 && this.isOnGround()) {
             this.setDataFlag(EntityFlag.STANDING, false);
-            this.rideJumping.set(-1);
+            this.getRideJumping().set(-1);
         }
         return b;
     }

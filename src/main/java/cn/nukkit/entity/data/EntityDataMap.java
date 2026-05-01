@@ -18,7 +18,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     private final Map<EntityDataType<?>, Object> map = new LinkedHashMap<>();
 
     @NonNull
-    public EnumSet<EntityFlag> getOrCreateFlags() {
+    public synchronized EnumSet<EntityFlag> getOrCreateFlags() {
         EnumSet<EntityFlag> flags = this.mapGetFlagsLane(FLAGS);
         if (flags == null) {
             flags = EnumSet.noneOf(EntityFlag.class);
@@ -28,7 +28,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     }
 
     @NonNull
-    public EnumSet<EntityFlag> getOrCreateFlags2() {
+    public synchronized EnumSet<EntityFlag> getOrCreateFlags2() {
         EnumSet<EntityFlag> flags = this.mapGetFlagsLane(FLAGS_2);
         if (flags == null) {
             flags = EnumSet.noneOf(EntityFlag.class);
@@ -47,7 +47,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
         return flags != null ? flags : EnumSet.noneOf(EntityFlag.class);
     }
 
-    public EntityFlag setFlag(EntityFlag flag, boolean value) {
+    public synchronized EntityFlag setFlag(EntityFlag flag, boolean value) {
         Objects.requireNonNull(flag, "flag");
 
         EnumSet<EntityFlag> flags = (flag.getValue() >= 64) ? this.getOrCreateFlags2() : this.getOrCreateFlags();
@@ -73,7 +73,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     /**
      * Accepts a mixed flags set and splits it into FLAGS (0-63) and FLAGS_2 (64+).
      */
-    public EnumSet<EntityFlag> putFlags(EnumSet<EntityFlag> flags) {
+    public synchronized EnumSet<EntityFlag> putFlags(EnumSet<EntityFlag> flags) {
         Objects.requireNonNull(flags, "flags");
 
         EnumSet<EntityFlag> lane0 = EnumSet.noneOf(EntityFlag.class);
@@ -159,7 +159,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object put(EntityDataType<?> key, Object value) {
+    public synchronized Object put(EntityDataType<?> key, Object value) {
         checkNotNull(key, "type");
         checkNotNull(value, "value was null for %s", key);
 
@@ -190,12 +190,12 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     }
 
     @Override
-    public Object remove(Object key) {
+    public synchronized Object remove(Object key) {
         return this.map.remove(key);
     }
 
     @Override
-    public void putAll(@NonNull Map<? extends EntityDataType<?>, ?> map) {
+    public synchronized void putAll(@NonNull Map<? extends EntityDataType<?>, ?> map) {
         checkNotNull(map, "map");
         for (Entry<? extends EntityDataType<?>, ?> e : map.entrySet()) {
             this.put(e.getKey(), e.getValue());
@@ -203,7 +203,7 @@ public final class EntityDataMap implements Map<EntityDataType<?>, Object> {
     }
 
     @Override
-    public void clear() {
+    public synchronized void clear() {
         this.map.clear();
     }
 

@@ -37,6 +37,11 @@ public class BlockShortGrass extends BlockFlowable {
     }
 
     @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
     public int getBurnChance() {
         return 60;
     }

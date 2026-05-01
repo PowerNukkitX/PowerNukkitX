@@ -24,6 +24,11 @@ public class BlockCrimsonRoots extends BlockHanging implements BlockFlowerPot.Fl
     }
 
     @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
     public String getName() {
         return "Crimson Roots";
     }

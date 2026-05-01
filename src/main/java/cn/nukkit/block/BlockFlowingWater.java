@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockFlowingWater extends BlockLiquid {
@@ -83,5 +84,12 @@ public class BlockFlowingWater extends BlockLiquid {
     @Override
     public double getPassableBlockFrictionFactor() {
         return 0.5;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        BlockColor color = BlockColor.WATER_BLOCK_COLOR.clone();
+        color.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()));
+        return color;
     }
 }

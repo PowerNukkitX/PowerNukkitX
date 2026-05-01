@@ -16,11 +16,24 @@ public class ItemOminousBottle extends Item {
     private static final int BAD_OMEN_DURATION = 100 * 60 * 20;
 
     public ItemOminousBottle() {
-        super(OMINOUS_BOTTLE);
+        this(0, 1);
+    }
+
+    public ItemOminousBottle(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemOminousBottle(Integer meta, int count) {
+        super(OMINOUS_BOTTLE, meta, count);
     }
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
+    }
+
+    @Override
+    public boolean isConsumable() {
         return true;
     }
 
@@ -42,16 +55,18 @@ public class ItemOminousBottle extends Item {
             return false;
         }
 
-        int amplifier = Math.max(0, Math.min(4, this.getNamedTag() != null
-                ? this.getNamedTag().getInt(TAG_OMINOUS_BOTTLE_AMPLIFIER, 0)
-                : 0));
+        int amplifier = this.getDamage();
+        if (this.hasCompoundTag() && this.getNamedTag().contains(TAG_OMINOUS_BOTTLE_AMPLIFIER)) {
+            amplifier = this.getNamedTag().getInt(TAG_OMINOUS_BOTTLE_AMPLIFIER);
+        }
+        amplifier = Math.clamp(amplifier, 0, 4);
 
         player.addEffect(Effect.get(EffectType.BAD_OMEN)
                 .setAmplifier(amplifier)
                 .setDuration(BAD_OMEN_DURATION)
                 .setVisible(true));
 
-        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_EAT);
+        player.completeUsingItem(this.getRuntimeId(), CompletedUsingItemPacket.ACTION_CONSUME);
         player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.OMINOUS_BOTTLE_END_USE);
         player.getLevel().addLevelSoundEvent(player, LevelSoundEvent.APPLY_EFFECT_BAD_OMEN);
         player.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(

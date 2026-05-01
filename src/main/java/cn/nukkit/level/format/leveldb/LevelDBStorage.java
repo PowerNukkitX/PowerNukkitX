@@ -3,6 +3,7 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelProvider;
+import org.apache.logging.log4j.util.InternalApi;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
@@ -12,6 +13,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import cn.nukkit.level.util.LevelDBKeyUtil;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,13 +61,21 @@ public final class LevelDBStorage {
         return builder.build();
     }
 
+    WriteBatch createBatch() {
+        return this.db.createWriteBatch();
+    }
+
     public void writeChunk(IChunk chunk) throws IOException {
-        try (WriteBatch writeBatch = this.db.createWriteBatch()) {
+        try (WriteBatch writeBatch = createBatch()) {
             LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
-            WriteOptions writeOptions = new WriteOptions();
-            writeOptions.sync(false);
-            this.db.write(writeBatch, writeOptions);
+            writeBatch(writeBatch);
         }
+    }
+
+    void writeBatch(WriteBatch writeBatch) {
+        WriteOptions writeOptions = new WriteOptions();
+        writeOptions.sync(false);
+        this.db.write(writeBatch, writeOptions);
     }
 
     public CompoundTag readWorldDynamicProperties() {

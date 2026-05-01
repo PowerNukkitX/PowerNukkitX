@@ -11,6 +11,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.CountGenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
@@ -52,8 +53,8 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
         int sourceZ = (chunkZ << 4) + randomZ;
         double probability = getProbability();
         boolean alwaysPlace = probability >= 1d;
-        BlockState topBlockState = chunk.getBlockState(randomX, height + 1, randomZ);
-        if (topBlockState == BlockAir.STATE) {
+
+        if (chunk.getBlockState(randomX, height + 1, randomZ) == BlockAir.STATE) {
             BlockManager object = new BlockManager(level);
             BlockState sourceBlock = getSourceBlock();
             int radius = NukkitMath.randomRange(random, getMinRadius(), getMaxRadius());
@@ -96,10 +97,20 @@ public abstract class GroupedDiscFeature extends CountGenerateFeature {
                                 continue;
                             }
                             int localZ = z & 15;
-                            int placeY = unsafeChunk.getHeightMap(localX, localZ) + 1;
-                            BlockState supportState = unsafeChunk.getBlockState(localX, placeY - 1, localZ, 0);
-                            if (isSupportValid(supportState)) {
-                                object.setBlockStateAt(x, placeY, z, sourceBlock);
+                            int supportY = getY(targetChunk, localX, localZ);
+                            if (unsafeChunk.getBlockState(localX, supportY + 1, localZ, 0) != BlockAir.STATE) {
+                                continue;
+                            }
+                            Block supportBlock = Registries.BLOCK.get(
+                                    unsafeChunk.getBlockState(localX, supportY, localZ, 0),
+                                    x,
+                                    supportY,
+                                    z,
+                                    0,
+                                    level
+                            );
+                            if (isSupportValid(supportBlock)) {
+                                object.setBlockStateAt(x, supportY + 1, z, sourceBlock);
                                 placedAny = true;
                             }
                         }

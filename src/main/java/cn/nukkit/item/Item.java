@@ -2031,6 +2031,15 @@ public abstract class Item implements Cloneable, ItemID {
     /////////////////////////////
     // Item Food/Edible Methods
     /////////////////////////////
+    /**
+     * Whether the item can be consumed, and therefore has a consumption animation (e.g. eating food, drinking potions/milk)
+     *
+     * @return true if the item can be consumed, otherwise {@link #isEdible()}
+     */
+    public boolean isConsumable() {
+        return this.isEdible();
+    }
+
     public boolean isEdible() {
         CustomItemDefinition def = getCustomDefinition();
         if (def != null) {

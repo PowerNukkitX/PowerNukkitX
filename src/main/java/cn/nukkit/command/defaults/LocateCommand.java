@@ -8,11 +8,33 @@ import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.generator.biome.result.BiomeResult;
 import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
+import cn.nukkit.level.generator.populator.generic.PopulatorRuinedPortal;
+import cn.nukkit.level.generator.populator.nether.BastionRemnantPopulator;
+import cn.nukkit.level.generator.populator.nether.NetherFortressPopulator;
+import cn.nukkit.level.generator.populator.nether.soulsand_valley.NetherFossilPopulator;
+import cn.nukkit.level.generator.populator.normal.DesertPyramidPopulator;
+import cn.nukkit.level.generator.populator.normal.IglooPopulator;
+import cn.nukkit.level.generator.populator.normal.JungleTemplePopulator;
+import cn.nukkit.level.generator.populator.normal.OceanMonumentPopulator;
+import cn.nukkit.level.generator.populator.normal.OceanRuinPopulator;
+import cn.nukkit.level.generator.populator.normal.PillagerOutpostPopulator;
+import cn.nukkit.level.generator.populator.normal.ShipwreckPopulator;
+import cn.nukkit.level.generator.populator.normal.StrongholdPopulator;
+import cn.nukkit.level.generator.populator.normal.SwampHutPopulator;
+import cn.nukkit.level.generator.populator.normal.TrailRuinsPopulator;
+import cn.nukkit.level.generator.populator.normal.TrialChambersPopulator;
+import cn.nukkit.level.generator.populator.normal.VillagePopulator;
+import cn.nukkit.level.generator.populator.normal.WoodlandMansionPopulator;
+import cn.nukkit.level.generator.populator.placement.StructurePlacement;
+import cn.nukkit.math.ChunkVector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.random.RandomSourceProvider;
+import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.Map;
 
@@ -21,11 +43,16 @@ import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEV
 public class LocateCommand extends VanillaCommand {
     private static final int SEARCH_SPIRAL = 0;
     private static final int SEARCH_X_AXIS = 1;
-
     public LocateCommand(String name) {
         super(name, "commands.locate.description");
         this.setPermission("nukkit.command.locate");
         this.commandParameters.clear();
+        this.commandParameters.put("structure", new CommandParameter[]{
+                CommandParameter.newEnum("mode", new CommandEnum("LocateModeStructure", "structure")),
+                CommandParameter.newEnum("structures", new String[]{"woodland_mansion", "desert_pyramid", "igloo", "jungle_temple", "ocean_monument", "ocean_ruin", "pillager_outpost", "shipwreck", "stronghold", "swamp_hut", "trail_ruins", "trial_chambers", "village", "ruined_portal", "bastion_remnant", "nether_fortress", "nether_fossil"}),
+                CommandParameter.newEnum("teleport", true, CommandEnum.ENUM_BOOLEAN),
+                CommandParameter.newType("radius", true, CommandParamType.INT)
+        });
         this.commandParameters.put("biome", new CommandParameter[]{
                 CommandParameter.newEnum("mode", new CommandEnum("LocateModeBiome", "biome")),
                 CommandParameter.newEnum("biomes", Registries.BIOME.getBiomeDefinitions().stream().map(BiomeDefinition::getName).toArray(String[]::new)),
@@ -40,6 +67,57 @@ public class LocateCommand extends VanillaCommand {
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
         switch (result.getKey()) {
+            case "structure" -> {
+                if (!sender.hasPermission("nukkit.command.locate.structure")) {
+                    log.addMessage("nukkit.command.generic.permission").output();
+                    return 0;
+                }
+                String structure = list.getResult(1);
+                Location pos = sender.getLocation();
+                int maxRadius = 65536;
+                if (list.hasResult(3)) {
+                    maxRadius = list.getResult(3);
+                }
+
+                StructurePlacement placement = switch (structure) {
+                    case "woodland_mansion" -> WoodlandMansionPopulator.PLACEMENT;
+                    case "desert_pyramid" -> DesertPyramidPopulator.PLACEMENT;
+                    case "igloo" -> IglooPopulator.PLACEMENT;
+                    case "jungle_temple" -> JungleTemplePopulator.PLACEMENT;
+                    case "ocean_monument" -> OceanMonumentPopulator.PLACEMENT;
+                    case "ocean_ruin" -> OceanRuinPopulator.PLACEMENT;
+                    case "pillager_outpost" -> PillagerOutpostPopulator.PLACEMENT;
+                    case "shipwreck" -> ShipwreckPopulator.PLACEMENT;
+                    case "stronghold" -> StrongholdPopulator.PLACEMENT;
+                    case "swamp_hut" -> SwampHutPopulator.PLACEMENT;
+                    case "trail_ruins" -> TrailRuinsPopulator.PLACEMENT;
+                    case "trial_chambers" -> TrialChambersPopulator.PLACEMENT;
+                    case "village" -> VillagePopulator.PLACEMENT;
+                    case "ruined_portal" -> PopulatorRuinedPortal.PLACEMENT;
+                    case "bastion_remnant" -> BastionRemnantPopulator.PLACEMENT;
+                    case "nether_fortress" -> NetherFortressPopulator.PLACEMENT;
+                    case "nether_fossil" -> NetherFossilPopulator.PLACEMENT;
+                    default -> null;
+                };
+                if (placement == null) {
+                    log.addError("commands.locate.structure.fail.nostructurefound");
+                    break;
+                }
+
+                Vector3 found = findStructure(pos, placement, maxRadius);
+                if (found != null) {
+                    String _x = String.valueOf(found.getFloorX());
+                    String _y = String.valueOf(found.getFloorY());
+                    String _z = String.valueOf(found.getFloorZ());
+                    String _d = String.valueOf((int) found.distance(pos));
+                    log.addSuccess("commands.locate.structure.success", structure, _x, _y, _z, _d);
+                    if (list.hasResult(2) && (boolean) list.getResult(2) && sender.isPlayer()) {
+                        sender.asPlayer().teleport(found);
+                    }
+                } else {
+                    log.addError("commands.locate.structure.fail.nostructurefound");
+                }
+            }
             case "biome" -> {
                 if (!sender.hasPermission("nukkit.command.locate.biome")) {
                     log.addMessage("nukkit.command.generic.permission").output();
@@ -82,6 +160,20 @@ public class LocateCommand extends VanillaCommand {
         }
         log.output();
         return 1;
+    }
+
+    private Vector3 findStructure(Position pos, StructurePlacement placement, int maxRadiusBlocks) {
+        int maxRadiusChunks = Math.max(1, maxRadiusBlocks >> 4);
+        RandomSourceProvider random = new Xoroshiro128(pos.getLevel().getSeed());
+        ChunkVector2 center = new ChunkVector2(pos.getFloorX() >> 4, pos.getFloorZ() >> 4);
+        ChunkVector2 found = placement.findNearestGenerationChunk(center, random, pos.getLevel().getBiomePicker(), maxRadiusChunks);
+        if (found == null) {
+            return null;
+        }
+        int x = (found.getX() << 4) + 8;
+        int z = (found.getZ() << 4) + 8;
+        int y = pos.getFloorY();
+        return new Vector3(x, y, z);
     }
 
     private int resolveSearchType(ParamList list) {
