@@ -13,7 +13,7 @@ import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
-import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.block.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;

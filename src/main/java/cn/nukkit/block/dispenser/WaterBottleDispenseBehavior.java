@@ -1,7 +1,6 @@
-package cn.nukkit.dispenser;
+package cn.nukkit.block.dispenser;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemPotion;
