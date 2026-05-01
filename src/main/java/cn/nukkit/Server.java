@@ -2575,6 +2575,14 @@ public class Server {
         return !this.hasWhitelist() || this.operators.exists(name, true) || this.whitelist.exists(name, true);
     }
 
+    public String getWhitelistMessage() {
+        return this.settings.baseSettings().allowListMessage();
+    }
+
+    public void setWhitelistMessage(String message) {
+        this.settings.baseSettings().allowListMessage(message);
+    }
+
     public boolean isOp(String name) {
         return name != null && this.operators.exists(name, true);
     }
