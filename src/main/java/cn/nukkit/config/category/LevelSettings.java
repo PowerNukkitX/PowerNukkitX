@@ -29,5 +29,5 @@ public class LevelSettings extends OkaeriConfig {
     @Comment("pnx.settings.level.fieldofview")
     int fieldOfView = 100;
     @Comment("pnx.settings.level.levelworkerthreads")
-    int levelWorkerThreads = 4;
+    int levelWorkerThreads = -1;
 }
