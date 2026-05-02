@@ -557,7 +557,7 @@ public abstract class Enchantment implements Cloneable {
 
     @NotNull
     public Enchantment setLevel(int level) {
-        return this.setLevel(level, true);
+        return this.setLevel(level, false);
     }
 
     /**

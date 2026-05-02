@@ -24,7 +24,7 @@ public abstract class ItemSpear extends ItemTool {
 
     public float MINIMUM_SPEED = 0.13f;
     public int MINIMUM_LUNGE_FOOD = 6;
-    public int BASE_LUNGE_EXHAUST = 4;
+    public int BASE_LUNGE_EXHAUST = 5;
 
     public ItemSpear(String id, Integer meta, int count, String name) {
         super(id, meta, count, name);
@@ -131,7 +131,7 @@ public abstract class ItemSpear extends ItemTool {
 
             player.setMotion(player.getMotion().add(dir));
             player.getLevel().addSound(player.getPosition(), Sound.ITEM_SPEAR_LUNGE);
-            player.getFoodData().exhaust(BASE_LUNGE_EXHAUST * lungeLevel);
+            player.getFoodData().setFood(player.getFoodData().getFood() - BASE_LUNGE_EXHAUST);
         }
     }
 
@@ -167,7 +167,7 @@ public abstract class ItemSpear extends ItemTool {
     public void whileUsing(Player player) {
         if (!player.isItemCoolDownEnd(this.getIdentifier())) return;
 
-        player.setItemCoolDown(5, this.getIdentifier());
+        player.setItemCoolDown(20, this.getIdentifier());
         float playerSpeed = player.getMovementSpeed();
 
         if (playerSpeed < MINIMUM_SPEED) {
