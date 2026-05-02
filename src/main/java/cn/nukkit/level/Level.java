@@ -120,6 +120,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
@@ -128,6 +129,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.concurrent.ScheduledFuture;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -368,11 +370,11 @@ public class Level implements Metadatable {
     private final Long2ObjectMap<IntOpenHashSet> blockLightQueue = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>(8));
     private final int dimensionCount;
     /// base tick system
-    private final Thread baseTickThread;
+    private ScheduledFuture<?> baseTickTask;
     @Getter
     private final GameLoop baseTickGameLoop;
     /// sub tick system
-    private final Thread subTickThread;
+    private ScheduledFuture<?> subTickTask;
     private final GameLoop subTickGameLoop;
     //Scheduler
     @Getter
@@ -468,31 +470,11 @@ public class Level implements Metadatable {
                 .onStop(this::remove)
                 .loopCountPerSec(20)
                 .build();
-        this.baseTickThread = new Thread() {
-            {
-                setName(Level.this.getFolderName());
-            }
-
-            @Override
-            public void run() {
-                baseTickGameLoop.startLoop();
-            }
-        };
         subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
                 .onStop(() -> log.debug("{} SubTick is closed!", levelName))
                 .loopCountPerSec(20)
                 .build();
-        this.subTickThread = new Thread() {
-            {
-                setName(Level.this.getFolderName() + " SubTick");
-            }
-
-            @Override
-            public void run() {
-                subTickGameLoop.startLoop();
-            }
-        };
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -619,9 +601,26 @@ public class Level implements Metadatable {
         if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
-        this.subTickThread.start();
+        long period = 1000 / 20;
+        subTickGameLoop.setRunning(true);
+        this.subTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
+            try {
+                if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                subTickGameLoop.tick();
+            } catch (Throwable t) {
+                log.error("Error in sub-tick for level {}", this.getName(), t);
+            }
+        }, 0, period, TimeUnit.MILLISECONDS);
         if (getServer().getSettings().levelSettings().levelThread()) {
-            this.baseTickThread.start();
+            baseTickGameLoop.setRunning(true);
+            this.baseTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
+                try {
+                    if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                    baseTickGameLoop.tick();
+                } catch (Throwable t) {
+                    log.error("Error in base-tick for level {}", this.getName(), t);
+                }
+            }, 0, period, TimeUnit.MILLISECONDS);
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
@@ -667,24 +666,21 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if (baseTickThread.isAlive()) {
+        if (isThreadRunning()) {
             this.baseTickGameLoop.stop();
-            try {
-                this.baseTickThread.join(5000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            if (this.baseTickTask != null) {
+                this.baseTickTask.cancel(false);
             }
-            if (baseTickThread.isAlive()) {
-                log.warn("Level {} tick thread did not stop in time, interrupting", getFolderName());
-                baseTickThread.interrupt();
-                try {
-                    baseTickThread.join(2000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                if (this.provider.get() != null) {
-                    remove();
-                    log.warn("Level {} tick thread did not stop gracefully, forcing level unload.", getFolderName());
+            this.subTickGameLoop.stop();
+            if (this.subTickTask != null) {
+                this.subTickTask.cancel(false);
+            }
+            // Ensure any concurrent tick has finished before removing level resources
+            synchronized (this.baseTickGameLoop.getTickLock()) {
+                synchronized (this.subTickGameLoop.getTickLock()) {
+                    if (this.provider.get() != null) {
+                        remove();
+                    }
                 }
             }
         } else {
@@ -4426,7 +4422,16 @@ public class Level implements Metadatable {
     }
 
     public boolean isThreadRunning() {
-        return baseTickThread.isAlive();
+        return (baseTickTask != null && !baseTickTask.isDone()) || (subTickTask != null && !subTickTask.isDone());
+    }
+
+    public boolean hasTickingAreas() {
+        var manager = getServer().getTickingAreaManager();
+        if (manager == null) return false;
+        for (var area : manager.getAllTickingArea()) {
+            if (area.getLevelName().equals(this.getName())) return true;
+        }
+        return false;
     }
 
     /**
