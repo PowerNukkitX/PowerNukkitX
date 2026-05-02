@@ -412,10 +412,11 @@ public class SimpleCommandMap implements CommandMap {
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
-        if (target == null) {
+        if (target == null || target.isUnregistered()) {
             sender.sendCommandOutput(new CommandOutputContainer(TextFormat.RED + "%commands.generic.unknown", new String[]{sentCommandLabel}, 0));
             return -1;
         }
+
         int output;
         try {
             if (target.hasParamTree()) {
