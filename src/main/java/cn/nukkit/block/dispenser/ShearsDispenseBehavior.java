@@ -1,6 +1,5 @@
-package cn.nukkit.dispenser;
+package cn.nukkit.block.dispenser;
 
-import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.EntityShearable;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
