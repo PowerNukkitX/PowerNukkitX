@@ -2000,7 +2000,6 @@ public class Server {
         tag.remove("Skin");
     }
 
-    // Helper methods to avoid duplication between name and display name lookups
     private Player findPlayerByString(java.util.function.Function<Player, String> extractor, String name, boolean exact) {
         if (name == null) return null;
         String q = name.toLowerCase(Locale.ENGLISH);
@@ -2059,7 +2058,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayer(String name) {
-        return findPlayerByString(Player::getName, name, /*exact=*/ false);
+        return findPlayerByString(Player::getName, name, false);
     }
 
     /**
@@ -2070,7 +2069,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayerExact(String name) {
-        return findPlayerByString(Player::getName, name, /*exact=*/ true);
+        return findPlayerByString(Player::getName, name, true);
     }
 
     /**
@@ -2092,7 +2091,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayerByDisplayName(String name) {
-        return findPlayerByString(Player::getDisplayName, name, /*exact=*/ false);
+        return findPlayerByString(Player::getDisplayName, name, false);
     }
 
     /**
@@ -2103,7 +2102,7 @@ public class Server {
      * @return Player instance object, failed to get null
      */
     public Player getPlayerExactByDisplayName(String name) {
-        return findPlayerByString(Player::getDisplayName, name, /*exact=*/ true);
+        return findPlayerByString(Player::getDisplayName, name, true);
     }
 
     /**
