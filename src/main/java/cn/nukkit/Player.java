@@ -4712,10 +4712,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     this.dropItem(remain);
                     inventory.clear(slot);
                 } else if (remain.getCount() != item.getCount()) {
-                    log.warn("Partially moved {} to inventory of player {}. {} remains in {} slot {}", item, this.getName(), remain.getCount(), invName, slot);
+                    log.debug("Partially moved {} to inventory of player {}. {} remains in {} slot {}", item, this.getName(), remain.getCount(), invName, slot);
                     inventory.setItem(slot, remain);
                 } else {
-                    log.warn("Locked item {} in {} slot {} not moved: inventory of player {} is full and dropping locked items is forbidden. The item will persist", item, invName, slot, this.getName());
+                    log.debug("Locked item {} in {} slot {} not moved: inventory of player {} is full and dropping locked items is forbidden. The item will persist", item, invName, slot, this.getName());
                 }
             }
         }
