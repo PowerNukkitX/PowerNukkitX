@@ -249,6 +249,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return The update type to continue ticking, or 0 to stop future ticks.
      */
     public int onUpdate(int type) {
+        if (isTickingDisabled()) return 0;
         if (type != Level.BLOCK_UPDATE_SCHEDULED) return 0;
 
         CustomBlockDefinition def = getCustomDefinition();
@@ -1772,6 +1773,42 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             return BlockRegistry.getCustomBlockDefinitionByIdStatic(customBlock.getId());
         }
         return null;
+    }
+
+    public static boolean isTickingDisabled(Level level, String id) {
+        if (level == null) return false;
+
+        List<String> disabledList = level.getServer().getSettings().chunkSettings().disableBlockTicking();
+        if (disabledList == null || disabledList.isEmpty()) return false;
+
+        String normalizedId = id.toLowerCase();
+        if (normalizedId.startsWith("minecraft:")) {
+            normalizedId = normalizedId.substring(10);
+        }
+        if (normalizedId.startsWith("flowing_")) {
+            normalizedId = normalizedId.substring(8);
+        }
+
+        for (String disabledId : disabledList) {
+            String normalizedDisabled = disabledId.toLowerCase();
+
+            if (normalizedDisabled.startsWith("minecraft:")) {
+                normalizedDisabled = normalizedDisabled.substring(10);
+            }
+            if (normalizedDisabled.startsWith("flowing_")) {
+                normalizedDisabled = normalizedDisabled.substring(8);
+            }
+
+            if (normalizedId.equals(normalizedDisabled)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isTickingDisabled() {
+        return isTickingDisabled(this.getLevel(), getId());
     }
 
     @Override
