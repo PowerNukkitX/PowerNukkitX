@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockComposter;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
-import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.block.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.data.profession.Profession;
