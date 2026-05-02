@@ -51,7 +51,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
 import cn.nukkit.metadata.PlayerMetadataStore;
-import cn.nukkit.metrics.NukkitMetrics;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -469,7 +468,7 @@ public class Server {
         this.consoleSender = new ConsoleCommandSender();
 
         // Initialize metrics
-        NukkitMetrics.startNow(this);
+        //NukkitMetrics.startNow(this);
 
         final RegistryCache registryCache;
         Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
@@ -913,7 +912,6 @@ public class Server {
             if (this.watchdog != null) {
                 this.watchdog.running = false;
             }
-            NukkitMetrics.closeNow(this);
             // close threadPool
             try (ForkJoinPool pool = ForkJoinPool.commonPool()) {
                 pool.shutdownNow();
