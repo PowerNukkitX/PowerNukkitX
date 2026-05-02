@@ -874,7 +874,7 @@ public class Server {
                 player.close(player.getLeaveMessage(), getSettings().miscSettings().shutdownMessage());
             }
 
-            this.getSettings().save();
+            //this.getSettings().save();
 
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
@@ -2167,7 +2167,7 @@ public class Server {
      * @return The name of server
      */
     public String getName() {
-        return "PowerNukkitX";
+        return "PowerNukkitX-EN";
     }
 
     public String getNukkitVersion() {
@@ -2481,13 +2481,67 @@ public class Server {
         File config = jpath.resolve("config.json").toFile();
         if (config.exists()) {
             try {
-                levelConfig = JSONUtils.from(new FileReader(config), LevelConfig.class);
-                FileUtils.write(config, JSONUtils.toPretty(levelConfig), StandardCharsets.UTF_8);
+                levelConfig = JSONUtils.from(config, LevelConfig.class);
+
+                if (levelConfig == null
+                        || levelConfig.generators() == null
+                        || levelConfig.generators().isEmpty()) {
+
+                    Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
+                    if (provider == null) {
+                        provider = LevelProviderManager.getProviderByName("leveldb");
+                    }
+
+                    Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
+                    long seed = System.currentTimeMillis();
+
+                    map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                            DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                    map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                            DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+                    map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                            DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
+
+                    levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
+                }
+
             } catch (Exception e) {
-                log.error("The levelConfig is not exists under the {} path", path);
-                return false;
+                Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
+                if (provider == null) {
+                    provider = LevelProviderManager.getProviderByName("anvil");
+                }
+
+                Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
+                long seed = System.currentTimeMillis();
+
+                map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                        DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+                map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                        DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+                map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                        DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
+
+                levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
             }
-        } else if (levelConfig != null) {
+
+        } else {
+            Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
+            if (provider == null) {
+                provider = LevelProviderManager.getProviderByName("leveldb");
+            }
+
+            Map<Integer, LevelConfig.GeneratorConfig> map = new HashMap<>();
+            long seed = System.currentTimeMillis();
+
+            map.put(0, new LevelConfig.GeneratorConfig("normal", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    DimensionEnum.OVERWORLD.getDimensionData(), Collections.emptyMap()));
+            map.put(1, new LevelConfig.GeneratorConfig("nether", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    DimensionEnum.NETHER.getDimensionData(), Collections.emptyMap()));
+            map.put(2, new LevelConfig.GeneratorConfig("the_end", seed, false, LevelConfig.AntiXrayMode.LOW, true,
+                    DimensionEnum.THE_END.getDimensionData(), Collections.emptyMap()));
+
+            levelConfig = new LevelConfig(LevelProviderManager.getProviderName(provider), true, map);
+
             try {
                 jpath.toFile().mkdirs();
                 config.createNewFile();
@@ -2495,25 +2549,33 @@ public class Server {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            log.error("The levelConfig is not specified and no config.json exists under the {} path", path);
-            return false;
-        }
-        if (levelConfig == null) {
-            log.error("Could not load level " + name, new LevelException("Level config is not a valid"));
-            return false;
         }
         for (var entry : levelConfig.generators().entrySet()) {
             LevelConfig.GeneratorConfig generatorConfig = entry.getValue();
-            var provider = LevelProviderManager.getProviderByName(levelConfig.format());
+            Class<? extends LevelProvider> provider = LevelProviderManager.getProviderByName(levelConfig.format());
+
+            if (provider == null) {
+                provider = LevelProviderManager.getProvider(path);
+            }
+
+            if (provider == null) {
+                provider = LevelProviderManager.getProviderByName("anvil");
+            }
+
+            if (provider == null) {
+                log.error("No valid level provider found for level {}", name);
+                return false;
+            }
             Level level;
             try {
                 provider.getMethod("generate", String.class, String.class, LevelConfig.GeneratorConfig.class)
                         .invoke(null, path, name, generatorConfig);
                 String levelName = name
-                        + (levelConfig.generators().size() > 1 ? entry.getValue().dimensionData().getSuffix() : "");
+                        + (levelConfig.generators().size() > 1
+                        ? entry.getValue().dimensionData().getSuffix()
+                        : "");
+
                 if (this.isLevelLoaded(levelName)) {
-                    log.warn("level {} has already been loaded!", levelName);
                     continue;
                 }
                 level = new Level(this, levelName, path, levelConfig.generators().size(), provider, generatorConfig);
