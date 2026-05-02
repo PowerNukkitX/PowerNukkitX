@@ -108,7 +108,6 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new FogCommand("fog"));
         this.register("nukkit", new PlayAnimationCommand("playanimation"));
         this.register("nukkit", new WorldCommand("world"));
-        this.register("nukkit", new TpsCommand("tps"));
         this.register("nukkit", new TickingAreaCommand("tickingarea"));
         this.register("nukkit", new TellrawCommand("tellraw"));
         this.register("nukkit", new TitlerawCommand("titleraw"));
