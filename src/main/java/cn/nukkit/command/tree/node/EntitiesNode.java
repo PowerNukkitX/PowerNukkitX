@@ -58,7 +58,7 @@ public class EntitiesNode extends TargetNode<Entity> {
             this.value = entities;
         } else {
             entities = Lists.newArrayList();
-            Player player = Server.getInstance().getPlayer(arg);
+            Player player = Server.getInstance().getPlayerByDisplayName(arg);
             if (player != null) {
                 entities.add(player);
             }

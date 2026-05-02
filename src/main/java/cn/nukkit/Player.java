@@ -1128,7 +1128,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Processing execution in LoginPacket
      */
     public void processLogin() {
-
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
         }
@@ -3623,9 +3622,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                         if(e instanceof EntityHandItem entityHandItem) {
                             weapon = entityHandItem.getItemInHand();
                         }
-                        if (e instanceof Player) {
+                        if (e instanceof Player pl) {
                             message = "death.attack.player";
-                            params.add(((Player) e).getDisplayName());
+                            params.add(pl.getDisplayName());
                             break;
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.mob";
@@ -3640,9 +3639,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
                         killer = e;
-                        if (e instanceof Player) {
+                        if (e instanceof Player pl) {
                             message = "death.attack.arrow";
-                            params.add(((Player) e).getDisplayName());
+                            params.add(pl.getDisplayName());
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.arrow";
                             params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());

@@ -1,5 +1,6 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -102,7 +103,8 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Location victim = sender.getLocation();
-                Location target = destination.get(0).setYaw(victim.getYaw()).setPitch(victim.getPitch());
+                Entity first = destination.getFirst();
+                Location target = first.setYaw(victim.getYaw()).setPitch(victim.getPitch());
                 boolean checkForBlocks = false;
                 if (list.hasResult(1)) {
                     checkForBlocks = list.getResult(1);
@@ -110,14 +112,14 @@ public class TeleportCommand extends VanillaCommand {
                 if (checkForBlocks) {
                     if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
                         sender.asEntity().teleport(target);
-                        log.addSuccess("commands.tp.successVictim", destination.get(0).getName()).output();
+                        log.addSuccess("commands.tp.successVictim", first instanceof Player pl ? pl.getDisplayName() : first.getName()).output();
                     } else {
-                        log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), destination.get(0).getName()).output();
+                        log.addError("commands.tp.safeTeleportFail", sender.isPlayer() ? sender.asPlayer().getDisplayName() : sender.getName(), first instanceof Player pl ? pl.getDisplayName() : first.getName()).output();
                         return 0;
                     }
                 } else {
                     sender.asEntity().teleport(target);
-                    log.addSuccess("commands.tp.successVictim", destination.get(0).getName()).output();
+                    log.addSuccess("commands.tp.successVictim", first instanceof Player pl ? pl.getDisplayName() : first.getName()).output();
                 }
                 return 1;
             }

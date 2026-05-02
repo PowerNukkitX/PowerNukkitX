@@ -169,8 +169,8 @@ public class EntityHuman extends EntityHumanType {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
-            if (this instanceof Player)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, ((Player) this).getLoginChainData().getXUID(), ((Player) this).getLocatorBarColor(), new Player[]{player});
+            if (this instanceof Player pl)
+                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), pl.getDisplayName(), this.skin, pl.getLoginChainData().getXUID(), pl.getLocatorBarColor(), new Player[]{player});
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
