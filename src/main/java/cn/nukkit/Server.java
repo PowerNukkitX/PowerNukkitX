@@ -132,10 +132,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -200,6 +197,7 @@ public class Server {
      * other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
+    private final ScheduledExecutorService levelTickExecutor;
     private SimpleCommandMap commandMap;
     private ResourcePackManager resourcePackManager;
     private ConsoleCommandSender consoleSender;
@@ -380,6 +378,11 @@ public class Server {
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()),
                 new ComputeThreadPoolThreadFactory(), null, false);
+        int levelWorkerThreads = this.settings.levelSettings().levelWorkerThreads();
+        if (levelWorkerThreads <= 0) {
+            levelWorkerThreads = Runtime.getRuntime().availableProcessors();
+        }
+        this.levelTickExecutor = new ScheduledThreadPoolExecutor(levelWorkerThreads, r -> new Thread(r, "Level Worker"));
 
         levelArray = Level.EMPTY_ARRAY;
 
@@ -898,6 +901,7 @@ public class Server {
                 log.debug("Closing position tracking service");
                 positionTrackingService.close();
             }
+            this.levelTickExecutor.shutdown();
 
             log.debug("Closing console");
             this.consoleThread.interrupt();
@@ -2880,6 +2884,10 @@ public class Server {
 
     public LangCode getLanguageCode() {
         return baseLangCode;
+    }
+
+    public ScheduledExecutorService getLevelTickExecutor() {
+        return levelTickExecutor;
     }
 
     public ServerSettings getSettings() {
