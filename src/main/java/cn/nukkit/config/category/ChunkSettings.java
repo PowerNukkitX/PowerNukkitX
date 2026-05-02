@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(fluent = true)
@@ -30,4 +32,6 @@ public class ChunkSettings extends OkaeriConfig {
     boolean saveGenerated = true;
     @Comment("pnx.settings.chunk.convertBDSChunks")
     boolean convertBDSChunks = false;
+    @Comment("pnx.settings.chunk.disableblockticking")
+    ArrayList<String> disableBlockTicking = new ArrayList<>();
 }
