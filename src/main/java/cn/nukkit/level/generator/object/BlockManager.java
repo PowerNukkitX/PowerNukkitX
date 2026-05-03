@@ -9,7 +9,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.IntArrayTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -201,6 +203,26 @@ public class BlockManager {
 
     public List<Block> getBlocks() {
         return new ArrayList<>(this.places.values());
+    }
+
+    public AxisAlignedBB getBounds() {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        for (Block block : this.getBlocks()) {
+            minX = Math.min(minX, block.getFloorX());
+            minY = Math.min(minY, block.getFloorY());
+            minZ = Math.min(minZ, block.getFloorZ());
+            maxX = Math.max(maxX, block.getFloorX());
+            maxY = Math.max(maxY, block.getFloorY());
+            maxZ = Math.max(maxZ, block.getFloorZ());
+        }
+
+        return new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public void applyWithoutUpdate() {
