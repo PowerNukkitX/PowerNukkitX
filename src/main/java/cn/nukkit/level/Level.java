@@ -4581,7 +4581,7 @@ public class Level implements Metadatable {
         chunkGenerationQueue.remove(index);
     }
 
-    boolean inGarbageCollectionProcess = false;
+        private final AtomicBoolean inGarbageCollectionProcess = new AtomicBoolean(false);
 
     /**
      * 异步执行服务器内存垃圾收集
@@ -4589,67 +4589,69 @@ public class Level implements Metadatable {
      * Run server memory garbage collection asynchronously
      */
     public void doLevelGarbageCollection(boolean force) {
-        if(inGarbageCollectionProcess) return;
-        inGarbageCollectionProcess = true;
-        //gcBlockInventoryMetaData
-        for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
-            String key = entry.getKey();
-            String[] split = key.split(":");
-            Map<Plugin, MetadataValue> value = entry.getValue();
-            if (split[3].equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
-                Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-                if (!(block instanceof BlockInventoryHolder)) {
-                    this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
-                }
-            }
-        }
-
-        // remove all invaild block entities.
-        if (!blockEntities.isEmpty()) {
-            var iter = blockEntities.values().iterator();
-            while (iter.hasNext()) {
-                BlockEntity blockEntity = iter.next();
-                if (blockEntity != null) {
-                    if (!blockEntity.isValid()) {
-                        iter.remove();
-                        blockEntity.close();
+        if(!inGarbageCollectionProcess.compareAndSet(false, true)) return;
+        try {
+            //gcBlockInventoryMetaData
+            for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
+                String key = entry.getKey();
+                String[] split = key.split(":");
+                Map<Plugin, MetadataValue> value = entry.getValue();
+                if (split[3].equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
+                    Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                    if (!(block instanceof BlockInventoryHolder)) {
+                        this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
                     }
-                } else {
-                    iter.remove();
                 }
             }
-        }
 
-        for (Entity entity : this.entities.values()) {
-            if(!isChunkLoaded(entity.getChunkX(), entity.getChunkZ())) {
-                removeEntity(entity);
+            // remove all invaild block entities.
+            if (!blockEntities.isEmpty()) {
+                var iter = blockEntities.values().iterator();
+                while (iter.hasNext()) {
+                    BlockEntity blockEntity = iter.next();
+                    if (blockEntity != null) {
+                        if (!blockEntity.isValid()) {
+                            iter.remove();
+                            blockEntity.close();
+                        }
+                    } else {
+                        iter.remove();
+                    }
+                }
             }
-        }
 
-        //gcDeadChunks
-        for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
-            long index = entry.getKey();
-            if (!this.unloadQueue.containsKey(index)) {
-                IChunk chunk = entry.getValue();
-                int X = chunk.getX();
-                int Z = chunk.getZ();
-                this.unloadChunkRequest(X, Z, true);
+            for (Entity entity : this.entities.values()) {
+                if(!isChunkLoaded(entity.getChunkX(), entity.getChunkZ())) {
+                    removeEntity(entity);
+                }
             }
-        }
-        long next = this.tickTime + 50;
-        long current = System.currentTimeMillis();
-        if (next - 5 > current || force) {
-            long allocated = (next - current) - 1;
-            boolean forceUnload = force;
-            if(!forceUnload) {
-                double maxChunkLength = 0;
-                for(Player player : getPlayers().values()) maxChunkLength += Math.PI * Math.pow(player.getViewDistance(), 2);
-                float margin = getServer().getSettings().performanceSettings().forceGCpercentage();
-                if(this.unloadQueue.size() > maxChunkLength * margin) forceUnload = true;
+
+            //gcDeadChunks
+            for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
+                long index = entry.getKey();
+                if (!this.unloadQueue.containsKey(index)) {
+                    IChunk chunk = entry.getValue();
+                    int X = chunk.getX();
+                    int Z = chunk.getZ();
+                    this.unloadChunkRequest(X, Z, true);
+                }
             }
-            this.unloadChunks(allocated, forceUnload);
+            long next = this.tickTime + 50;
+            long current = System.currentTimeMillis();
+            if (next - 5 > current || force) {
+                long allocated = (next - current) - 1;
+                boolean forceUnload = force;
+                if(!forceUnload) {
+                    double maxChunkLength = 0;
+                    for(Player player : getPlayers().values()) maxChunkLength += Math.PI * Math.pow(player.getViewDistance(), 2);
+                    float margin = getServer().getSettings().performanceSettings().forceGCpercentage();
+                    if(maxChunkLength > 0 && this.unloadQueue.size() > maxChunkLength * margin) forceUnload = true;
+                }
+                this.unloadChunks(allocated, forceUnload);
+            }
+        } finally {
+            inGarbageCollectionProcess.set(false);
         }
-        inGarbageCollectionProcess = false;
     }
 
     public void unloadChunks() {
@@ -4657,18 +4659,22 @@ public class Level implements Metadatable {
     }
 
     public void unloadChunks(boolean force) {
-        unloadChunks(16, force);
+        this.unloadChunks(16, force);
     }
 
 
     private void unloadChunks(long allocatedTime, boolean force) {
         long now = System.currentTimeMillis();
         while (!this.unloadQueue.isEmpty() && (System.currentTimeMillis() - now < allocatedTime || force)) {
-            this.unloadChunks(force);
+            int unloaded = this.unloadChunks(force ? 256 : 16, force);
+            if (unloaded <= 0) {
+                break;
+            }
         }
     }
 
-    public void unloadChunks(int maxUnload, boolean force) {
+    public int unloadChunks(int maxUnload, boolean force) {
+        int unloaded = 0;
 
         if (!this.unloadQueue.isEmpty()) {
             long now = System.currentTimeMillis();
@@ -4686,14 +4692,24 @@ public class Level implements Metadatable {
                     } else if (time > (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
                         continue;
                     }
+                } else if (maxUnload <= 0) {
+                    break;
                 }
+
                 maxUnload--;
                 toRemove.add(index);
             }
 
             int size = toRemove.size();
             if(size > 0) {
-                requireProvider().saveChunks(toRemove.stream().map(index -> getChunkIfLoaded(getHashX(index), getHashZ(index))).collect(Collectors.toUnmodifiableSet()));
+                Set<IChunk> chunksToSave = toRemove.stream()
+                        .map(index -> getChunkIfLoaded(getHashX(index), getHashZ(index)))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toUnmodifiableSet());
+
+                if (!chunksToSave.isEmpty()) {
+                    requireProvider().saveChunks(chunksToSave);
+                }
 
                 for (int i = 0; i < size; i++) {
                     long index = toRemove.getLong(i);
@@ -4702,10 +4718,13 @@ public class Level implements Metadatable {
 
                     if (this.unloadChunk(X, Z, true, false)) {
                         this.unloadQueue.remove(index);
+                        unloaded++;
                     }
                 }
             }
         }
+
+        return unloaded;
     }
 
     @Override
