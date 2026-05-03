@@ -4666,14 +4666,18 @@ public class Level implements Metadatable {
     private void unloadChunks(long allocatedTime, boolean force) {
         long now = System.currentTimeMillis();
         while (!this.unloadQueue.isEmpty() && (System.currentTimeMillis() - now < allocatedTime || force)) {
-            int unloaded = this.unloadChunks(force ? 256 : 16, force);
+            int unloaded = this.unloadChunksAndCount(force ? 256 : 16, force);
             if (unloaded <= 0) {
                 break;
             }
         }
     }
 
-    public int unloadChunks(int maxUnload, boolean force) {
+    public void unloadChunks(int maxUnload, boolean force) {
+        this.unloadChunksAndCount(maxUnload, force);
+    }
+
+    private int unloadChunksAndCount(int maxUnload, boolean force) {
         int unloaded = 0;
 
         if (!this.unloadQueue.isEmpty()) {
