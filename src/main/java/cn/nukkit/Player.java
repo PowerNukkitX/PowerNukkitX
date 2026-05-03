@@ -90,6 +90,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -1479,6 +1480,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.craftingGridInventory = new CraftingGridInventory(this);
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
+
+        if (this.namedTag.containsCompound("CursorItem")) {
+            this.playerCursorInventory.setItem(0, NBTIO.getItemHelper(this.namedTag.getCompound("CursorItem")));
+        }
 
         this.addWindow(this.getInventory(), SpecialWindowId.PLAYER.getId());
         //addDefaultWindows when the player doesn't have a spawn yet,
@@ -3537,6 +3542,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
+        if (this.playerCursorInventory != null) {
+            Item item = this.playerCursorInventory.getItem(0);
+            if (!item.isNull()) {
+                this.namedTag.putCompound("CursorItem", NBTIO.putItemHelper(item));
+            } else {
+                this.namedTag.remove("CursorItem");
+            }
+        }
+
         this.adventureSettings.saveNBT();
     }
 
@@ -4657,30 +4671,52 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.creativeOutputInventory;
     }
 
+    /**
+     * Moves items from open crafting grids and cursor back to player inventory
+     * <p>
+     * Usually already handled client-side through ItemStackRequestPackets.
+     * Items will be dropped when the inventory is full (unless they have ItemLockMode)
+     * This method mainly prevents preserving items (without any ItemLockMode) in cursor or crafting grid.
+     */
     @ApiStatus.Internal
     public void resetInventory() {
         if (spawned) {
-            Map<Integer, Item> contents = this.getCraftingGrid().getContents();
-            this.getCraftingGrid().clearAll();
-            List<Item> puts = new ArrayList<>(contents.values());
-
-            Map<Integer, Item> contents2 = this.getCursorInventory().getContents();
-            this.getCursorInventory().clearAll();
-            puts.addAll(contents2.values());
+            this.returnItemsFromInventory(this.getCraftingGrid());
+            this.returnItemsFromInventory(this.getCursorInventory());
 
             Optional<Inventory> topWindow = getTopWindow();
-            Inventory value;
             if (topWindow.isPresent()) {
-                value = topWindow.get();
+                Inventory value = topWindow.get();
                 if (value instanceof CraftTypeInventory || (value instanceof FakeInventory fakeInventory && fakeInventory.getFakeInventoryType().isCraftType())) {
-                    puts.addAll(value.getContents().values());
-                    value.clearAll();
+                    this.returnItemsFromInventory(value);
                 }
                 removeWindow(value);
             }
-            Item[] drops = getInventory().addItem(puts.toArray(Item.EMPTY_ARRAY));
-            for (Item drop : drops) {
-                this.dropItem(drop);
+        }
+    }
+
+    private void returnItemsFromInventory(Inventory inventory) {
+        String invName = inventory.getClass().getSimpleName();
+        for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
+            int slot = entry.getKey();
+            Item item = entry.getValue();
+            if (item.isNull()) {
+                continue;
+            }
+            Item[] remains = getInventory().addItem(item);
+            if (remains.length == 0) {
+                inventory.clear(slot);
+            } else {
+                Item remain = remains[0];
+                if (remain.getItemLockMode() == Item.ItemLockMode.NONE) {
+                    this.dropItem(remain);
+                    inventory.clear(slot);
+                } else if (remain.getCount() != item.getCount()) {
+                    log.debug("Partially moved {} to inventory of player {}. {} remains in {} slot {}", item, this.getName(), remain.getCount(), invName, slot);
+                    inventory.setItem(slot, remain);
+                } else {
+                    log.debug("Locked item {} in {} slot {} not moved: inventory of player {} is full and dropping locked items is forbidden. The item will persist", item, invName, slot, this.getName());
+                }
             }
         }
     }
