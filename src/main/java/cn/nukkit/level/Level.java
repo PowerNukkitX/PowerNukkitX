@@ -4581,7 +4581,7 @@ public class Level implements Metadatable {
         chunkGenerationQueue.remove(index);
     }
 
-        private final AtomicBoolean inGarbageCollectionProcess = new AtomicBoolean(false);
+    private final AtomicBoolean inGarbageCollectionProcess = new AtomicBoolean(false);
 
     /**
      * 异步执行服务器内存垃圾收集
