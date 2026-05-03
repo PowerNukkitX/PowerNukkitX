@@ -1,10 +1,14 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Nukkit;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.TextFormat;
 import com.sun.jna.platform.win32.COM.WbemcliUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -72,6 +76,10 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newEnum("mode", true, new String[]{"full", "simple"})
+        });
+        this.addCommandParameters("tps", new CommandParameter[]{
+                CommandParameter.newEnum("tps", new CommandEnum("StatusTps", "tps")),
+                CommandParameter.newType("count", true, CommandParamType.INT),
         });
     }
 
@@ -145,7 +153,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
         }
 
         //Memory model detection
-        if (hardware.getMemory().getPhysicalMemory().get(0).getManufacturer().equals("QEMU")) {
+        if (hardware.getMemory().getPhysicalMemory().getFirst().getManufacturer().equals("QEMU")) {
             return "QEMU";
         }
 
@@ -189,11 +197,14 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
             return false;
         }
 
-        var simpleMode = args.length == 0 || !args[0].equalsIgnoreCase("full");
+        var simpleMode = args.length == 0 || args[0].equalsIgnoreCase("simple");
+        var fullMode = args.length == 0 || args[0].equalsIgnoreCase("full");
+        var tpsMode = args.length == 0 || args[0].equalsIgnoreCase("tps");
+
         var server = sender.getServer();
 
+        sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
         if (simpleMode) {
-            sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
 
             long time = System.currentTimeMillis() - Nukkit.START_TIME;
 
@@ -248,9 +259,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                                 (level.getBaseTickGameLoop().isRunning() ? " (" + ((level.getBaseTickGameLoop().getTps() >= 19) ? TextFormat.GREEN : ((level.getBaseTickGameLoop().getTps() < 5) ? TextFormat.RED : TextFormat.YELLOW)) + level.getBaseTickGameLoop().getTps() + " TPS, " + level.getBaseTickGameLoop().getMSPT() + " MSPT)" : "")
                 );
             }
-        } else {
+        } else if (fullMode){
             // Full mode
-            sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
 
             // PNX Server Information
             {
@@ -259,13 +269,8 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 long time = System.currentTimeMillis() - Nukkit.START_TIME;
                 sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
                 // TPS
-                TextFormat tpsColor = TextFormat.GREEN;
-                float tps = server.getTicksPerSecond();
-                if (tps < 12) {
-                    tpsColor = TextFormat.RED;
-                } else if (tps < 17) {
-                    tpsColor = TextFormat.GOLD;
-                }
+                var tps = server.getTicksPerSecond();
+                var tpsColor = getTPSColor(tps);
                 sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
                 // load
                 sender.sendMessage(TextFormat.GOLD + "CPU Load: " + tpsColor + server.getCPULoad());
@@ -382,7 +387,7 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                     usageColor = TextFormat.GOLD;
                 }
                 sender.sendMessage(TextFormat.GOLD + "  Virtual memory: " + TextFormat.GREEN + usageColor + formatMB(usedVirtualMemory) + " / " + formatMB(allVirtualMemory) + ". (" + NukkitMath.round(usage, 2) + "%)");
-                if (physicalMemories.size() > 0)
+                if (!physicalMemories.isEmpty())
                     sender.sendMessage(TextFormat.GOLD + "  Hardware list: ");
                 for (var each : physicalMemories) {
                     sender.sendMessage(TextFormat.AQUA + "    " + each.getBankLabel() + " @ " + formatFreq(each.getClockSpeed()) + TextFormat.WHITE + " " + formatMB(each.getCapacity() / 1000));
@@ -390,12 +395,67 @@ public final class StatusCommand extends TestCommand implements CoreCommand {
                 }
                 sender.sendMessage("");
             }
-        }
+        } else if (tpsMode) {
+            int count = 1;
+
+            if (args.length > 1) {
+                try {
+                    count = Math.max(1, Integer.parseInt(args[1]));
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+
+            if (count == 1) {
+                float currentTps = server.getTicksPerSecond();
+                sender.sendMessage(getTPSColor(currentTps) + " Current TPS: " + String.format("%.2f", currentTps));
+                return true;
+            }
+
+            server.getScheduler().scheduleRepeatingTask(new TpsTestTask(sender, count), 20);
+        } else return false;
 
         return true;
     }
 
+    private TextFormat getTPSColor(float tps) {
+        TextFormat tpsColor = TextFormat.GREEN;
+        if (tps < 12) {
+            tpsColor = TextFormat.RED;
+        } else if (tps < 17) {
+            tpsColor = TextFormat.GOLD;
+        }
+        return tpsColor;
+    }
+
     public enum ComputerSystemEntry {
         HYPERVISORPRESENT
+    }
+
+    private class TpsTestTask extends Task {
+
+        private CommandSender sender;
+        private int count;
+        private int currentCount = 0;
+        private float tpsSum = 0;
+
+        public TpsTestTask(CommandSender sender, int count) {
+            this.sender = sender;
+            this.count = count;
+        }
+
+        @Override
+        public void onRun(int currentTick) {
+            currentCount++;
+            float currentTps = Server.getInstance().getTicksPerSecond();
+
+            sender.sendMessage(TextFormat.GRAY + "[" + currentCount + "]" + getTPSColor(currentTps) + " Current TPS: " + currentTps);
+            tpsSum += currentTps;
+            if (currentCount >= count) {
+                var averageTps = (tpsSum / count);
+                sender.sendMessage(TextFormat.GOLD + "Average TPS: " + getTPSColor(averageTps));
+                this.cancel();
+            }
+        }
     }
 }

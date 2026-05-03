@@ -1,4 +1,4 @@
-package cn.nukkit.dispenser;
+package cn.nukkit.block.dispenser;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityChestBoat;

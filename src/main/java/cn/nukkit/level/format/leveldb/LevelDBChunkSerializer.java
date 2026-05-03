@@ -3,10 +3,8 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
@@ -24,7 +22,6 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.LittleEndianByteBufOutputStream;
@@ -400,55 +397,30 @@ public class LevelDBChunkSerializer {
         ListTag<CompoundTag> normalTickBlocks = new ListTag<>();
 
         Chunk chunk = unsafe.getChunk();
-        Set<BlockUpdateEntry> pending = chunk.getLevel().getPendingBlockUpdates(chunk);
-        pending.parallelStream().forEach(blockUpdateEntry -> {
+        long currentTick = chunk.getLevel().getCurrentTick();
+        Set<BlockUpdateEntry> pending = chunk.getBlockUpdateScheduler().getPendingBlockUpdates();
+        for (BlockUpdateEntry blockUpdateEntry : pending) {
             Block block = blockUpdateEntry.block;
-            String id = block.getId();
-            int x = block.getFloorX();
-            int y = block.getFloorY();
-            int z = block.getFloorZ();
-            handleCustomTickableBlock(id, x, y, z, scheduledTicks);
-            handleVanillaTickableBlock(id, x, y, z, normalTickBlocks);
-        });
+            int x = blockUpdateEntry.pos.getFloorX();
+            int y = blockUpdateEntry.pos.getFloorY();
+            int z = blockUpdateEntry.pos.getFloorZ();
+            int delay = (int) Math.max(1, blockUpdateEntry.delay - currentTick);
 
-        // Save both lists to extraData
-        CompoundTag extraData = unsafe.getExtraData();
-        extraData.putList("pendingScheduledTicks", scheduledTicks);
-        extraData.putList("pendingNormalTickBlocks", normalTickBlocks);
-    }
-
-    private void handleCustomTickableBlock(String id, int x, int y, int z, ListTag<CompoundTag> scheduledTicks) {
-        CustomBlockDefinition def = BlockRegistry.getCustomBlockDefinition(id);
-        if (def == null || def.tickSettings() == null) return;
-
-        CompoundTag tag = new CompoundTag()
-            .putInt("x", x)
-            .putInt("y", y)
-            .putInt("z", z)
-            .putString("id", id)
-            .putInt("layer", 0)
-            .putInt("delay", def.tickSettings().minTicks())
-            .putInt("priority", 0)
-            .putBoolean("checkBlockWhenUpdate", true);
-
-        scheduledTicks.add(tag);
-    }
-
-    private void handleVanillaTickableBlock(String id, int x, int y, int z, ListTag<CompoundTag> normalTickBlocks) {
-        switch (id) {
-            case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
-                 BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
-                 BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
-                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR,
-                 BlockID.PISTON, BlockID.STICKY_PISTON -> {
-                CompoundTag tag = new CompoundTag()
+            CompoundTag tag = new CompoundTag()
                     .putInt("x", x)
                     .putInt("y", y)
                     .putInt("z", z)
-                    .putString("id", id);
-                normalTickBlocks.add(tag);
-            }
+                    .putString("id", block.getId())
+                    .putInt("layer", block.layer)
+                    .putInt("delay", delay)
+                    .putInt("priority", blockUpdateEntry.priority)
+                    .putBoolean("checkBlockWhenUpdate", blockUpdateEntry.checkBlockWhenUpdate);
+            scheduledTicks.add(tag);
         }
+
+        CompoundTag extraData = unsafe.getExtraData();
+        extraData.putList("pendingScheduledTicks", scheduledTicks);
+        extraData.putList("pendingNormalTickBlocks", normalTickBlocks);
     }
 
     public static class ScheduledTickInfo {

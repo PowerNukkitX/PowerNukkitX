@@ -6,6 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.MathHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,8 +48,18 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         Level level = this.getLevel();
 
         if (level.getDimension() == Level.DIMENSION_OVERWORLD) {
-            boolean isDark = getIsFullyDarkAround(level, getFloorX(), getFloorY(), getFloorZ());
-            i = isDark ? 15 : 0;
+            int skylight = getEffectiveSkyLightSignalAround(level, getFloorX(), getFloorY(), getFloorZ());
+            i = skylight - level.calculateSkylightSubtracted(1.0F);
+
+            float f = level.getCelestialAngle(1.0F) * 6.2831855F;
+
+            if (i > 0) {
+                float f1 = f < (float) Math.PI ? 0.0F : ((float) Math.PI * 2F);
+                f = f + (f1 - f) * 0.2F;
+                i = Math.round((float) i * MathHelper.cos(f));
+            }
+
+            i = MathHelper.clamp(i, 0, 15) > 0 ? 0 : 15;
         } else {
             i = 0;
         }
@@ -62,33 +73,6 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
             level.setBlockStateAt(getFloorX(), getFloorY(), getFloorZ(), blockState);
             updateAroundRedstone();
         }
-    }
-
-    public static boolean getIsFullyDarkAround(Level level, int x, int y, int z) {
-        int skyReduction = level.skyLightSubtracted;
-
-        int directSky = level.getBlockSkyLightAt(x, y + 1, z);
-        int directSignal = directSky - skyReduction;
-        if (directSignal >= 5) return false;
-
-        final int radius = 10;
-
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                int dist = Math.abs(dx) + Math.abs(dz);
-                if (dist == 0 || dist > radius) continue;
-
-                int cx = x + dx;
-                int cz = z + dz;
-
-                int sky = level.getBlockSkyLightAt(cx, y + 1, cz);
-                int signal = sky - skyReduction - dist;
-
-                if (signal >= 5) return false;
-            }
-        }
-
-        return true;
     }
 
     @Override

@@ -82,7 +82,6 @@ import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
@@ -120,6 +119,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
@@ -128,6 +128,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.concurrent.ScheduledFuture;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -328,7 +329,6 @@ public class Level implements Metadatable {
             return Character.MAX_VALUE;
         }
     };
-    private final BlockUpdateScheduler updateQueue;
     private final Queue<QueuedUpdate> normalUpdateQueue = new ConcurrentLinkedDeque<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
@@ -364,14 +364,15 @@ public class Level implements Metadatable {
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
+    private long tickTime = System.currentTimeMillis();
     private final Long2ObjectMap<IntOpenHashSet> blockLightQueue = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>(8));
     private final int dimensionCount;
     /// base tick system
-    private final Thread baseTickThread;
+    private ScheduledFuture<?> baseTickTask;
     @Getter
     private final GameLoop baseTickGameLoop;
     /// sub tick system
-    private final Thread subTickThread;
+    private ScheduledFuture<?> subTickTask;
     private final GameLoop subTickGameLoop;
     //Scheduler
     @Getter
@@ -449,8 +450,6 @@ public class Level implements Metadatable {
         }
         this.noSleepNights = levelProvider.getNoSleepNight();
         this.levelCurrentTick = levelProvider.getCurrentTick();
-        this.updateQueue = new BlockUpdateScheduler(this, levelCurrentTick);
-
         this.chunkTickRadius = Math.min(this.server.getViewDistance(), Math.max(1, this.server.getSettings().chunkSettings().tickRadius()));
         this.chunkGenerationQueueSize = this.server.getSettings().chunkSettings().generationQueueSize();
         this.chunksPerTicks = this.server.getSettings().chunkSettings().chunksPerTicks();
@@ -467,31 +466,11 @@ public class Level implements Metadatable {
                 .onStop(this::remove)
                 .loopCountPerSec(20)
                 .build();
-        this.baseTickThread = new Thread() {
-            {
-                setName(Level.this.getFolderName());
-            }
-
-            @Override
-            public void run() {
-                baseTickGameLoop.startLoop();
-            }
-        };
         subTickGameLoop = GameLoop.builder()
                 .onTick(this::subTick)
                 .onStop(() -> log.debug("{} SubTick is closed!", levelName))
                 .loopCountPerSec(20)
                 .build();
-        this.subTickThread = new Thread() {
-            {
-                setName(Level.this.getFolderName() + " SubTick");
-            }
-
-            @Override
-            public void run() {
-                subTickGameLoop.startLoop();
-            }
-        };
     }
 
     public static boolean canRandomTick(String blockId) {
@@ -618,9 +597,26 @@ public class Level implements Metadatable {
         if (!getChunk(spawn.getChunkX(), spawn.getChunkZ(), true).getChunkState().canSend()) {
             this.generateChunk(spawn.getChunkX(), spawn.getChunkZ());
         }
-        this.subTickThread.start();
+        long period = 1000 / 20;
+        subTickGameLoop.setRunning(true);
+        this.subTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
+            try {
+                if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                subTickGameLoop.tick();
+            } catch (Throwable t) {
+                log.error("Error in sub-tick for level {}", this.getName(), t);
+            }
+        }, 0, period, TimeUnit.MILLISECONDS);
         if (getServer().getSettings().levelSettings().levelThread()) {
-            this.baseTickThread.start();
+            baseTickGameLoop.setRunning(true);
+            this.baseTickTask = getServer().getLevelTickExecutor().scheduleAtFixedRate(() -> {
+                try {
+                    if (this.players.isEmpty() && !this.hasTickingAreas()) return;
+                    baseTickGameLoop.tick();
+                } catch (Throwable t) {
+                    log.error("Error in base-tick for level {}", this.getName(), t);
+                }
+            }, 0, period, TimeUnit.MILLISECONDS);
         }
         log.info(this.server.getLanguage().tr("nukkit.level.init", TextFormat.GREEN + this.getName() + TextFormat.RESET));
     }
@@ -666,24 +662,21 @@ public class Level implements Metadatable {
     }
 
     public void close() {
-        if (baseTickThread.isAlive()) {
+        if (isThreadRunning()) {
             this.baseTickGameLoop.stop();
-            try {
-                this.baseTickThread.join(5000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            if (this.baseTickTask != null) {
+                this.baseTickTask.cancel(false);
             }
-            if (baseTickThread.isAlive()) {
-                log.warn("Level {} tick thread did not stop in time, interrupting", getFolderName());
-                baseTickThread.interrupt();
-                try {
-                    baseTickThread.join(2000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                if (this.provider.get() != null) {
-                    remove();
-                    log.warn("Level {} tick thread did not stop gracefully, forcing level unload.", getFolderName());
+            this.subTickGameLoop.stop();
+            if (this.subTickTask != null) {
+                this.subTickTask.cancel(false);
+            }
+            // Ensure any concurrent tick has finished before removing level resources
+            synchronized (this.baseTickGameLoop.getTickLock()) {
+                synchronized (this.subTickGameLoop.getTickLock()) {
+                    if (this.provider.get() != null) {
+                        remove();
+                    }
                 }
             }
         } else {
@@ -1142,6 +1135,7 @@ public class Level implements Metadatable {
 
     public void doTick(int currentTick) {
         if (getProvider() == null) return; // level is closing
+        this.tickTime = System.currentTimeMillis();
         players.values().forEach(player -> player.getSession().tick());
         try {
             getScheduler().mainThreadHeartbeat(currentTick);
@@ -1172,8 +1166,6 @@ public class Level implements Metadatable {
             this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
 
             this.levelCurrentTick++;
-
-            this.updateQueue.tick(this.getCurrentTick());
 
             if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                 if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
@@ -1633,6 +1625,8 @@ public class Level implements Metadatable {
                         }
                     });
 
+                    chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
+
                     int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
                     if (tickSpeed <= 0) {
                         continue;
@@ -1649,6 +1643,9 @@ public class Level implements Metadatable {
                             int z = lcg >>> 16 & 0x0f;
                             BlockState state = section.getBlockState(x, y, z);
                             if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
+                                if (Block.isTickingDisabled(this, state.getIdentifier())) {
+                                    continue;
+                                }
                                 Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
                                 block.setLevel(this);
                                 block.onUpdate(BLOCK_UPDATE_RANDOM);
@@ -1791,7 +1788,14 @@ public class Level implements Metadatable {
     }
 
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea, boolean checkBlockWhenUpdate) {
-        if (block.getId().equals(BlockID.AIR) || (checkArea && !this.isChunkLoaded(block.getFloorX() >> 4, block.getFloorZ() >> 4))) {
+        int chunkX = NukkitMath.floorDouble(pos.x) >> 4;
+        int chunkZ = NukkitMath.floorDouble(pos.z) >> 4;
+        if (block.getId().equals(BlockID.AIR) || (checkArea && !this.isChunkLoaded(chunkX, chunkZ))) {
+            return;
+        }
+
+        IChunk chunk = this.getChunk(chunkX, chunkZ, false);
+        if (chunk == null) {
             return;
         }
 
@@ -1801,46 +1805,54 @@ public class Level implements Metadatable {
         boolean isRedstoneDiode = block instanceof BlockRedstoneDiode;
         if (isRedstoneDiode) {
             if (!this.isConcurrentSchedule(pos.floor(), block, tick, delay) && !this.isBlockTickPending(pos.floor(), block)) {
-                this.updateQueue.add(entry);
+                chunk.getBlockUpdateScheduler().add(entry);
             }
         } else {
-            if (!this.updateQueue.contains(entry)) {
-                this.updateQueue.add(entry);
+            if (!chunk.getBlockUpdateScheduler().contains(entry)) {
+                chunk.getBlockUpdateScheduler().add(entry);
             }
         }
     }
 
     public boolean cancelScheduledUpdate(Vector3 pos, Block block) {
-        return this.updateQueue.remove(new BlockUpdateEntry(pos, block));
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().remove(new BlockUpdateEntry(pos, block));
     }
 
     public boolean isUpdateScheduled(Vector3 pos, Block block) {
-        return this.updateQueue.contains(new BlockUpdateEntry(pos, block));
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().contains(new BlockUpdateEntry(pos, block));
     }
 
     public boolean isConcurrentSchedule(Vector3 pos, Block block, long targetTick, int delay) {
-        return this.updateQueue.isConcurrentSchedule(pos, block, targetTick, delay);
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().isConcurrentSchedule(pos, block, targetTick, delay);
     }
 
     public boolean isBlockTickPending(Vector3 pos, Block block) {
-        return this.updateQueue.isBlockTickPending(pos, block);
-    }
-
-    public BlockUpdateScheduler getBlockUpdateScheduler() {
-        return this.updateQueue;
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().isBlockTickPending(pos, block);
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates(IChunk chunk) {
-        int minX = (chunk.getX() << 4) - 2;
-        int maxX = minX + 16 + 2;
-        int minZ = (chunk.getZ() << 4) - 2;
-        int maxZ = minZ + 16 + 2;
-
-        return this.getPendingBlockUpdates(new SimpleAxisAlignedBB(minX, isOverWorld() ? -64 : 0, minZ, maxX, isOverWorld() ? 320 : 256, maxZ));
+        return chunk.getBlockUpdateScheduler().getPendingBlockUpdates();
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates(AxisAlignedBB boundingBox) {
-        return updateQueue.getPendingBlockUpdates(boundingBox);
+        Set<BlockUpdateEntry> pending = new HashSet<>();
+        int minChunkX = NukkitMath.floorDouble(boundingBox.getMinX()) >> 4;
+        int maxChunkX = NukkitMath.floorDouble(boundingBox.getMaxX()) >> 4;
+        int minChunkZ = NukkitMath.floorDouble(boundingBox.getMinZ()) >> 4;
+        int maxChunkZ = NukkitMath.floorDouble(boundingBox.getMaxZ()) >> 4;
+        for (int x = minChunkX; x <= maxChunkX; x++) {
+            for (int z = minChunkZ; z <= maxChunkZ; z++) {
+                IChunk chunk = this.getChunk(x, z, false);
+                if (chunk != null) {
+                    pending.addAll(chunk.getBlockUpdateScheduler().getPendingBlockUpdates(boundingBox));
+                }
+            }
+        }
+        return pending;
     }
 
     public List<Block> scanBlocks(@NotNull AxisAlignedBB bb, @NotNull BiPredicate<BlockVector3, BlockState> condition) {
@@ -4022,8 +4034,8 @@ public class Level implements Metadatable {
         try {
             processChunkRequest();
 
-            if (currentTick.getTick() % 100 == 0) {
-                doLevelGarbageCollection();
+            if (currentTick.getTick() % 5 == 0) {
+                getServer().getComputeThreadPool().execute(() -> doLevelGarbageCollection(false));
             }
         } catch (Exception e) {
             getServer().getLogger().error("Subtick Thread for level " + getFolderName() + " failed.", e);
@@ -4424,7 +4436,16 @@ public class Level implements Metadatable {
     }
 
     public boolean isThreadRunning() {
-        return baseTickThread.isAlive();
+        return (baseTickTask != null && !baseTickTask.isDone()) || (subTickTask != null && !subTickTask.isDone());
+    }
+
+    public boolean hasTickingAreas() {
+        var manager = getServer().getTickingAreaManager();
+        if (manager == null) return false;
+        for (var area : manager.getAllTickingArea()) {
+            if (area.getLevelName().equals(this.getName())) return true;
+        }
+        return false;
     }
 
     /**
@@ -4571,52 +4592,77 @@ public class Level implements Metadatable {
         chunkGenerationQueue.remove(index);
     }
 
+    private final AtomicBoolean inGarbageCollectionProcess = new AtomicBoolean(false);
+
     /**
      * 异步执行服务器内存垃圾收集
      * <p>
      * Run server memory garbage collection asynchronously
      */
-    public void doLevelGarbageCollection() {
-        //gcBlockInventoryMetaData
-        for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
-            String key = entry.getKey();
-            String[] split = key.split(":");
-            Map<Plugin, MetadataValue> value = entry.getValue();
-            if (split[3].equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
-                Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-                if (!(block instanceof BlockInventoryHolder)) {
-                    this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
-                }
-            }
-        }
-
-        // remove all invaild block entities.
-        if (!blockEntities.isEmpty()) {
-            var iter = blockEntities.values().iterator();
-            while (iter.hasNext()) {
-                BlockEntity blockEntity = iter.next();
-                if (blockEntity != null) {
-                    if (!blockEntity.isValid()) {
-                        iter.remove();
-                        blockEntity.close();
+    public void doLevelGarbageCollection(boolean force) {
+        if(!inGarbageCollectionProcess.compareAndSet(false, true)) return;
+        try {
+            //gcBlockInventoryMetaData
+            for (var entry : new HashMap<>(this.getBlockMetadata().getBlockMetadataMap()).entrySet()) {
+                String key = entry.getKey();
+                String[] split = key.split(":");
+                Map<Plugin, MetadataValue> value = entry.getValue();
+                if (split[3].equals(BlockInventoryHolder.KEY) && value.containsKey(InternalPlugin.INSTANCE)) {
+                    Block block = getBlock(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+                    if (!(block instanceof BlockInventoryHolder)) {
+                        this.getBlockMetadata().removeMetadata(block, key, InternalPlugin.INSTANCE);
                     }
-                } else {
-                    iter.remove();
                 }
             }
-        }
 
-        //gcDeadChunks
-        for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
-            long index = entry.getKey();
-            if (!this.unloadQueue.containsKey(index)) {
-                IChunk chunk = entry.getValue();
-                int X = chunk.getX();
-                int Z = chunk.getZ();
-                this.unloadChunkRequest(X, Z, true);
+            // remove all invaild block entities.
+            if (!blockEntities.isEmpty()) {
+                var iter = blockEntities.values().iterator();
+                while (iter.hasNext()) {
+                    BlockEntity blockEntity = iter.next();
+                    if (blockEntity != null) {
+                        if (!blockEntity.isValid()) {
+                            iter.remove();
+                            blockEntity.close();
+                        }
+                    } else {
+                        iter.remove();
+                    }
+                }
             }
+
+            for (Entity entity : this.entities.values()) {
+                if(!isChunkLoaded(entity.getChunkX(), entity.getChunkZ())) {
+                    removeEntity(entity);
+                }
+            }
+
+            //gcDeadChunks
+            for (Map.Entry<Long, ? extends IChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
+                long index = entry.getKey();
+                if (!this.unloadQueue.containsKey(index)) {
+                    IChunk chunk = entry.getValue();
+                    int X = chunk.getX();
+                    int Z = chunk.getZ();
+                    this.unloadChunkRequest(X, Z, true);
+                }
+            }
+            long next = this.tickTime + 50;
+            long current = System.currentTimeMillis();
+            if (next - 5 > current || force) {
+                long allocated = (next - current) - 1;
+                boolean forceUnload = force;
+                if(!forceUnload) {
+                    double maxChunkLength = 0;
+                    for(Player player : getPlayers().values()) maxChunkLength += Math.PI * Math.pow(player.getViewDistance(), 2);
+                    float margin = getServer().getSettings().performanceSettings().forceGCpercentage();
+                    if(maxChunkLength > 0 && this.unloadQueue.size() > maxChunkLength * margin) forceUnload = true;
+                }
+                this.unloadChunks(allocated, forceUnload);
+            }
+        } finally {
+            inGarbageCollectionProcess.set(false);
         }
-        this.unloadChunks();
     }
 
     public void unloadChunks() {
@@ -4624,10 +4670,26 @@ public class Level implements Metadatable {
     }
 
     public void unloadChunks(boolean force) {
-        unloadChunks(96, force);
+        this.unloadChunks(16, force);
+    }
+
+
+    private void unloadChunks(long allocatedTime, boolean force) {
+        long now = System.currentTimeMillis();
+        while (!this.unloadQueue.isEmpty() && (System.currentTimeMillis() - now < allocatedTime || force)) {
+            int unloaded = this.unloadChunksAndCount(force ? 256 : 16, force);
+            if (unloaded <= 0) {
+                break;
+            }
+        }
     }
 
     public void unloadChunks(int maxUnload, boolean force) {
+        this.unloadChunksAndCount(maxUnload, force);
+    }
+
+    private int unloadChunksAndCount(int maxUnload, boolean force) {
+        int unloaded = 0;
 
         if (!this.unloadQueue.isEmpty()) {
             long now = System.currentTimeMillis();
@@ -4645,24 +4707,39 @@ public class Level implements Metadatable {
                     } else if (time > (now - Server.getInstance().getSettings().levelSettings().chunkUnloadDelay())) {
                         continue;
                     }
+                } else if (maxUnload <= 0) {
+                    break;
                 }
 
+                maxUnload--;
                 toRemove.add(index);
             }
 
             int size = toRemove.size();
+            if(size > 0) {
+                Set<IChunk> chunksToSave = toRemove.stream()
+                        .map(index -> getChunkIfLoaded(getHashX(index), getHashZ(index)))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toUnmodifiableSet());
 
-            for (int i = 0; i < size; i++) {
-                long index = toRemove.getLong(i);
-                int X = getHashX(index);
-                int Z = getHashZ(index);
+                if (!chunksToSave.isEmpty()) {
+                    requireProvider().saveChunks(chunksToSave);
+                }
 
-                if (this.unloadChunk(X, Z, true)) {
-                    this.unloadQueue.remove(index);
-                    --maxUnload;
+                for (int i = 0; i < size; i++) {
+                    long index = toRemove.getLong(i);
+                    int X = getHashX(index);
+                    int Z = getHashZ(index);
+
+                    if (this.unloadChunk(X, Z, true, false)) {
+                        this.unloadQueue.remove(index);
+                        unloaded++;
+                    }
                 }
             }
         }
+
+        return unloaded;
     }
 
     @Override
