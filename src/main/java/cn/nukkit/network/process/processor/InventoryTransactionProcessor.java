@@ -220,12 +220,6 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
                 damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
                 float knockBack = 0.3f;
-                if (item.applyEnchantments()) {
-                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                    if (knockBackEnchantment != null) {
-                        knockBack += knockBackEnchantment.getLevel() * 0.1f;
-                    }
-                }
                 EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
                 if (player.isSpectator()) entityDamageByEntityEvent.setCancelled();

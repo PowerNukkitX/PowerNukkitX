@@ -1,5 +1,7 @@
 package cn.nukkit.item.enchantment;
 
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -21,5 +23,10 @@ public class EnchantmentKnockback extends Enchantment {
     @Override
     public int getMaxLevel() {
         return 2;
+    }
+
+    @Override
+    public void doAttack(EntityDamageByEntityEvent event) {
+        event.setKnockBack(event.getKnockBack() + this.getLevel() * 0.5f);
     }
 }
