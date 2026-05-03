@@ -8,13 +8,20 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.math.*;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2f;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
+import cn.nukkit.network.protocol.types.PlayerInputTick;
+import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
 import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
 import cn.nukkit.network.protocol.types.ddui.DataStorePropertyValue;
 import cn.nukkit.network.protocol.types.ddui.DataStoreUpdate;
@@ -39,8 +46,6 @@ import cn.nukkit.utils.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
-import java.util.HashMap;
-import java.util.Map;
 import io.netty.util.ByteProcessor;
 import io.netty.util.internal.ObjectUtil;
 import io.netty.util.internal.StringUtil;
@@ -1188,7 +1193,7 @@ public class HandleByteBuf extends ByteBuf {
                 blockingTicks = stream.readLong();//blockingTicks
             }
             if (compoundTag != null) {
-                if(compoundTag.contains("__DamageConflict__")) {
+                if (compoundTag.contains("__DamageConflict__")) {
                     compoundTag.put("Damage", compoundTag.removeAndGet("__DamageConflict__"));
                 }
                 item.setCompoundTag(compoundTag);
@@ -1293,7 +1298,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public Item readCerealSlot() {
-        return this.readSlot(false);
+        return this.readCerealSlot(false);
     }
 
     public Item readCerealSlot(boolean instanceItem) {
@@ -1316,14 +1321,18 @@ public class HandleByteBuf extends ByteBuf {
         String[] canPlace;
         String[] canBreak;
         Item item;
-        if (blockRuntimeId == 0) {
-            item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
-        } else {
-            item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
-            BlockState blockState = Registries.BLOCKSTATE.get(blockRuntimeId);
-            if (blockState != null) {
-                item.setBlockUnsafe(blockState.toBlock());
+        if (runtimeId != 0) {
+            if (blockRuntimeId == 0) {
+                item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+            } else {
+                item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+                BlockState blockState = Registries.BLOCKSTATE.get(blockRuntimeId);
+                if (blockState != null) {
+                    item.setBlockUnsafe(blockState.toBlock());
+                }
             }
+        } else {
+            item = Item.AIR;
         }
 
         if (netId != null) {
@@ -1334,6 +1343,9 @@ public class HandleByteBuf extends ByteBuf {
         readBytes(bytes);
         ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
         buf.writeBytes(bytes);
+        if (!buf.isReadable()) {
+            return item;
+        }
         try (LittleEndianByteBufInputStream stream = new LittleEndianByteBufInputStream(buf)) {
             int nbtSize = stream.readShort();
             if (nbtSize > 0) {
@@ -1360,7 +1372,7 @@ public class HandleByteBuf extends ByteBuf {
                 blockingTicks = stream.readLong();//blockingTicks
             }
             if (compoundTag != null) {
-                if(compoundTag.contains("__DamageConflict__")) {
+                if (compoundTag.contains("__DamageConflict__")) {
                     compoundTag.put("Damage", compoundTag.removeAndGet("__DamageConflict__"));
                 }
                 item.setCompoundTag(compoundTag);
@@ -1388,7 +1400,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public void writeCerealSlot(Item item) {
-        this.writeSlot(item, false);
+        this.writeCerealSlot(item, false);
     }
 
     public void writeCerealSlot(Item item, boolean instanceItem) {
@@ -1794,7 +1806,8 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
+            case CRAFT_REPAIR_AND_DISENCHANT ->
+                    new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString(), readUnsignedByte());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();
@@ -2080,7 +2093,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public void writeExperiments(List<ExperimentEntry> experiments) {
-        for(ExperimentEntry experiment : experiments) {
+        for (ExperimentEntry experiment : experiments) {
             this.writeString(experiment.name());
             this.writeBoolean(experiment.enabled());
         }

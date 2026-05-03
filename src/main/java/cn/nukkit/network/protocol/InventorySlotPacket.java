@@ -29,7 +29,7 @@ public class InventorySlotPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.inventoryId = byteBuf.readUnsignedVarInt();
         this.slot = byteBuf.readUnsignedVarInt();
-        this.fullContainerName = byteBuf.readFullContainerName();
+        this.fullContainerName = byteBuf.readOptional(null, byteBuf::readFullContainerName);
         this.storageItem = byteBuf.readOptional(null, byteBuf::readCerealSlot);
         this.item = byteBuf.readCerealSlot();
     }
@@ -38,10 +38,9 @@ public class InventorySlotPacket extends DataPacket {
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
-        byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeOptional(OptionalValue.of(this.storageItem), byteBuf::writeCerealSlot);
-        byteBuf.writeCerealSlot(this.storageItem);
-        byteBuf.writeSlot(this.item);
+        byteBuf.writeOptional(OptionalValue.ofNullable(this.fullContainerName), byteBuf::writeFullContainerName);
+        byteBuf.writeOptional(OptionalValue.ofNullable(this.storageItem), byteBuf::writeCerealSlot);
+        byteBuf.writeCerealSlot(this.item);
     }
 
     @Override

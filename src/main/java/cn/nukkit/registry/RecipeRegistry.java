@@ -814,7 +814,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                 )
                         );
 
-                        this.register(smeltingRecipe);
+                        /*this.register(smeltingRecipe);
 
                         final Item outputItem = primaryResult.toItem();
                         final Item inputItem = ingredients.getFirst().toItem();
@@ -830,8 +830,8 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         double xp = furnaceXpConfig.getDouble(inputItem.getId() + ":" + inputItem.getDamage());
 
                         if (xp != 0) {
-                            this.setRecipeXp(smeltingRecipeInternal, xp);
-                        }
+                            this.setRecipeXp(smeltingRecipe, xp);
+                        }*/
                     }
                 }
             }
