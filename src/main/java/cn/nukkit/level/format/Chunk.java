@@ -20,6 +20,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
@@ -55,6 +56,7 @@ public class Chunk implements IChunk {
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
+    protected final BlockUpdateScheduler blockUpdateScheduler;
     //delay load block entity and entity
     protected final CompoundTag extraData;
     private volatile DensityCommon.ChunkCache densityChunkCache;
@@ -80,6 +82,7 @@ public class Chunk implements IChunk {
         this.entities = new Long2ObjectNonBlockingMap<>();
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
+        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
         this.extraData = new CompoundTag();
@@ -109,6 +112,7 @@ public class Chunk implements IChunk {
         this.entities = new Long2ObjectNonBlockingMap<>();
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
+        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
         this.extraData = extraData;
@@ -617,6 +621,11 @@ public class Chunk implements IChunk {
                 }
             }
         }
+    }
+
+    @Override
+    public BlockUpdateScheduler getBlockUpdateScheduler() {
+        return blockUpdateScheduler;
     }
 
     @Override

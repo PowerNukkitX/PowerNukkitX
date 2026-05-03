@@ -1,27 +1,30 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public class BlockUpdateScheduler {
-    private final Level level;
+    private final IChunk chunk;
     private long lastTick;
     private final Long2ObjectNonBlockingMap<Set<BlockUpdateEntry>> queuedUpdates;
 
     private Set<BlockUpdateEntry> pendingUpdates;
 
-    public BlockUpdateScheduler(Level level, long currentTick) {
+    public BlockUpdateScheduler(IChunk chunk, long currentTick) {
         queuedUpdates = new Long2ObjectNonBlockingMap<>(); // Change to ConcurrentHashMap if this needs to be concurrent
         lastTick = currentTick;
-        this.level = level;
+        this.chunk = chunk;
     }
 
     public void tick(long currentTick) {
@@ -55,17 +58,16 @@ public class BlockUpdateScheduler {
                     BlockUpdateEntry entry = updateIterator.next();
 
                     Vector3 pos = entry.pos;
-                    if (level.isChunkLoaded(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4)) {
+                    updateIterator.remove();
+                    if(pos.getChunkX() == chunk.getX() && pos.getChunkZ() == chunk.getZ()) {
+                        Level level = chunk.getLevel();
                         Block block = level.getBlock(entry.pos, entry.block.layer);
 
-                        updateIterator.remove();
                         if (block.isTickingDisabled()) {
                             continue;
                         }
                         block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
-                    } else {
-                        level.scheduleUpdate(entry.block, entry.pos, 0);
-                    }
+                    } else log.warn("Scheduled block {} in chunk {}, {}", entry.block.getId(), chunk.getX(), chunk.getZ());
                 }
             }
         } finally {
@@ -87,6 +89,14 @@ public class BlockUpdateScheduler {
             }
         }
 
+        return set;
+    }
+
+    public Set<BlockUpdateEntry> getPendingBlockUpdates() {
+        Set<BlockUpdateEntry> set = new HashSet<>();
+        for (var tickSet : this.queuedUpdates.values()) {
+            set.addAll(tickSet);
+        }
         return set;
     }
 

@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
@@ -69,6 +70,9 @@ public class NormalTerrainStage extends GenerateStage {
                                                 generatedState = DEEPSLATE;
                                             }
                                             unsafeChunk.setBlockState(x, y, z, generatedState, 0);
+                                            if(terrainHolder.getAquifer().get().shouldScheduleFluidUpdate()) {
+                                                level.scheduleUpdate(generatedState.toBlock(new Position(worldX, y, worldZ, level)), 10);
+                                            }
                                             if(generatedState != BlockAir.STATE) {
                                                 if (y > unsafeChunk.getHeightMap(x, z)) {
                                                     unsafeChunk.setHeightMap(x, z, y);
