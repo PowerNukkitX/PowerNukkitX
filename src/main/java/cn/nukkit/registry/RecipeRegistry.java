@@ -803,7 +803,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             ingredients.add(parseDescription(input, ParseType.FURNACE_INPUT));
                         }
 
-                        this.register(new ShapelessRecipe(
+                        final ShapelessRecipe smeltingRecipe = new ShapelessRecipe(
                                 recipeId + "_" + block,
                                 uuid,
                                 priority,
@@ -812,25 +812,26 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                 new RecipeUnlockingRequirement(
                                         RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
                                 )
-                        ));
+                        );
 
-                        /*SmeltingRecipe smeltingRecipe = switch (block) {
+                        this.register(smeltingRecipe);
+
+                        final Item outputItem = primaryResult.toItem();
+                        final Item inputItem = ingredients.getFirst().toItem();
+                        final SmeltingRecipe smeltingRecipeInternal = switch (block) {
                             case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
                             case "smoker" -> new SmokerRecipe(outputItem, inputItem);
                             case "campfire" -> new CampfireRecipe(outputItem, inputItem);
                             case "soul_campfire" -> new SoulCampfireRecipe(outputItem, inputItem);
                             default -> new FurnaceRecipe(outputItem, inputItem);
                         };
+                        this.register(smeltingRecipeInternal);
 
                         double xp = furnaceXpConfig.getDouble(inputItem.getId() + ":" + inputItem.getDamage());
-                        if (xp != 0) {
-                            this.setRecipeXp(smeltingRecipe, xp);
-                        }
 
-                        try {
-                            this.register(smeltingRecipe);
-                        } catch (Exception e) {     //this can be removed once duplicate recipes no longer exist
-                        }*/
+                        if (xp != 0) {
+                            this.setRecipeXp(smeltingRecipeInternal, xp);
+                        }
                     }
                 }
             }
