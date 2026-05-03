@@ -59,11 +59,10 @@ public class BlockUpdateScheduler {
                         Block block = level.getBlock(entry.pos, entry.block.layer);
 
                         updateIterator.remove();
-                        if (Block.equals(block, entry.block, false) && entry.checkBlockWhenUpdate) {
-                            block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
-                        } else {
-                            block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                        if (block.isTickingDisabled()) {
+                            continue;
                         }
+                        block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
                     } else {
                         level.scheduleUpdate(entry.block, entry.pos, 0);
                     }
