@@ -71,8 +71,10 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         if (chunk == null) return false;
 
         double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
-        float yaw = java.util.concurrent.ThreadLocalRandom.current().nextFloat() * 360f;
-        Location loc = new Location(block.getX() + 0.5, spawnY, block.getZ() + 0.5, yaw, 0f, level);
+        double spawnX = block.getX() + 0.5;
+        double spawnZ = block.getZ() + 0.5;
+        float yaw = getYawFacingPlayer(spawnX, spawnZ, player);
+        Location loc = new Location(spawnX, spawnY, spawnZ, yaw, 0f, level);
 
         CompoundTag nbt = Entity.getDefaultNBT(loc);
         if (this.hasCustomName()) {
@@ -128,5 +130,12 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     @Override
     public void setEntityNBT(CompoundTag entityNBT) {
         this.entityNBT = entityNBT;
+    }
+
+    private float getYawFacingPlayer(double spawnX, double spawnZ, Player player) {
+        double dx = player.getX() - spawnX;
+        double dz = player.getZ() - spawnZ;
+
+        return (float) Math.toDegrees(Math.atan2(-dx, dz));
     }
 }
