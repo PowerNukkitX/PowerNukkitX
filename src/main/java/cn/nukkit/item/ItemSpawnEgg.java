@@ -67,14 +67,13 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) return false;
 
-        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
-        if (chunk == null) return false;
-
         double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
-        double spawnX = block.getX() + 0.5;
-        double spawnZ = block.getZ() + 0.5;
-        float yaw = getYawFacingPlayer(spawnX, spawnZ, player);
-        Location loc = new Location(spawnX, spawnY, spawnZ, yaw, 0f, level);
+        double spawnX = target.getX() + fx;
+        double spawnZ = target.getZ() + fz;
+        Location loc = new Location(spawnX, spawnY, spawnZ, 0f, 0f, level).setYawFacing(player);
+
+        IChunk chunk = level.getChunk((int) Math.floor(loc.getX()) >> 4, (int) Math.floor(loc.getZ()) >> 4);
+        if (chunk == null) return false;
 
         CompoundTag nbt = Entity.getDefaultNBT(loc);
         if (this.hasCustomName()) {
@@ -130,12 +129,5 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     @Override
     public void setEntityNBT(CompoundTag entityNBT) {
         this.entityNBT = entityNBT;
-    }
-
-    private float getYawFacingPlayer(double spawnX, double spawnZ, Player player) {
-        double dx = player.getX() - spawnX;
-        double dz = player.getZ() - spawnZ;
-
-        return (float) Math.toDegrees(Math.atan2(-dx, dz));
     }
 }
