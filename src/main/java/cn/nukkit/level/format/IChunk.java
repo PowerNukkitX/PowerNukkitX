@@ -8,6 +8,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.scheduler.BlockUpdateScheduler;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
@@ -202,6 +203,8 @@ public interface IChunk {
     Map<Long, Entity> getEntities();
 
     void doMobSpawning();
+
+    BlockUpdateScheduler getBlockUpdateScheduler();
 
     Map<Long, BlockEntity> getBlockEntities();
 

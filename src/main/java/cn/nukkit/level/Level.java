@@ -82,7 +82,6 @@ import cn.nukkit.network.protocol.types.inventory.transaction.UseItemData;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
-import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.BlockUpdateEntry;
@@ -330,7 +329,6 @@ public class Level implements Metadatable {
             return Character.MAX_VALUE;
         }
     };
-    private final BlockUpdateScheduler updateQueue;
     private final Queue<QueuedUpdate> normalUpdateQueue = new ConcurrentLinkedDeque<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<Player>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
@@ -452,8 +450,6 @@ public class Level implements Metadatable {
         }
         this.noSleepNights = levelProvider.getNoSleepNight();
         this.levelCurrentTick = levelProvider.getCurrentTick();
-        this.updateQueue = new BlockUpdateScheduler(this, levelCurrentTick);
-
         this.chunkTickRadius = Math.min(this.server.getViewDistance(), Math.max(1, this.server.getSettings().chunkSettings().tickRadius()));
         this.chunkGenerationQueueSize = this.server.getSettings().chunkSettings().generationQueueSize();
         this.chunksPerTicks = this.server.getSettings().chunkSettings().chunksPerTicks();
@@ -1171,8 +1167,6 @@ public class Level implements Metadatable {
 
             this.levelCurrentTick++;
 
-            this.updateQueue.tick(this.getCurrentTick());
-
             if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
                 if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
                     getChunks().values().forEach(IChunk::doMobSpawning);
@@ -1631,6 +1625,8 @@ public class Level implements Metadatable {
                         }
                     });
 
+                    chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
+
                     int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
                     if (tickSpeed <= 0) {
                         continue;
@@ -1792,7 +1788,14 @@ public class Level implements Metadatable {
     }
 
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea, boolean checkBlockWhenUpdate) {
-        if (block.getId().equals(BlockID.AIR) || (checkArea && !this.isChunkLoaded(block.getFloorX() >> 4, block.getFloorZ() >> 4))) {
+        int chunkX = NukkitMath.floorDouble(pos.x) >> 4;
+        int chunkZ = NukkitMath.floorDouble(pos.z) >> 4;
+        if (block.getId().equals(BlockID.AIR) || (checkArea && !this.isChunkLoaded(chunkX, chunkZ))) {
+            return;
+        }
+
+        IChunk chunk = this.getChunk(chunkX, chunkZ, false);
+        if (chunk == null) {
             return;
         }
 
@@ -1802,46 +1805,54 @@ public class Level implements Metadatable {
         boolean isRedstoneDiode = block instanceof BlockRedstoneDiode;
         if (isRedstoneDiode) {
             if (!this.isConcurrentSchedule(pos.floor(), block, tick, delay) && !this.isBlockTickPending(pos.floor(), block)) {
-                this.updateQueue.add(entry);
+                chunk.getBlockUpdateScheduler().add(entry);
             }
         } else {
-            if (!this.updateQueue.contains(entry)) {
-                this.updateQueue.add(entry);
+            if (!chunk.getBlockUpdateScheduler().contains(entry)) {
+                chunk.getBlockUpdateScheduler().add(entry);
             }
         }
     }
 
     public boolean cancelScheduledUpdate(Vector3 pos, Block block) {
-        return this.updateQueue.remove(new BlockUpdateEntry(pos, block));
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().remove(new BlockUpdateEntry(pos, block));
     }
 
     public boolean isUpdateScheduled(Vector3 pos, Block block) {
-        return this.updateQueue.contains(new BlockUpdateEntry(pos, block));
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().contains(new BlockUpdateEntry(pos, block));
     }
 
     public boolean isConcurrentSchedule(Vector3 pos, Block block, long targetTick, int delay) {
-        return this.updateQueue.isConcurrentSchedule(pos, block, targetTick, delay);
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().isConcurrentSchedule(pos, block, targetTick, delay);
     }
 
     public boolean isBlockTickPending(Vector3 pos, Block block) {
-        return this.updateQueue.isBlockTickPending(pos, block);
-    }
-
-    public BlockUpdateScheduler getBlockUpdateScheduler() {
-        return this.updateQueue;
+        IChunk chunk = this.getChunk(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4, false);
+        return chunk != null && chunk.getBlockUpdateScheduler().isBlockTickPending(pos, block);
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates(IChunk chunk) {
-        int minX = (chunk.getX() << 4) - 2;
-        int maxX = minX + 16 + 2;
-        int minZ = (chunk.getZ() << 4) - 2;
-        int maxZ = minZ + 16 + 2;
-
-        return this.getPendingBlockUpdates(new SimpleAxisAlignedBB(minX, isOverWorld() ? -64 : 0, minZ, maxX, isOverWorld() ? 320 : 256, maxZ));
+        return chunk.getBlockUpdateScheduler().getPendingBlockUpdates();
     }
 
     public Set<BlockUpdateEntry> getPendingBlockUpdates(AxisAlignedBB boundingBox) {
-        return updateQueue.getPendingBlockUpdates(boundingBox);
+        Set<BlockUpdateEntry> pending = new HashSet<>();
+        int minChunkX = NukkitMath.floorDouble(boundingBox.getMinX()) >> 4;
+        int maxChunkX = NukkitMath.floorDouble(boundingBox.getMaxX()) >> 4;
+        int minChunkZ = NukkitMath.floorDouble(boundingBox.getMinZ()) >> 4;
+        int maxChunkZ = NukkitMath.floorDouble(boundingBox.getMaxZ()) >> 4;
+        for (int x = minChunkX; x <= maxChunkX; x++) {
+            for (int z = minChunkZ; z <= maxChunkZ; z++) {
+                IChunk chunk = this.getChunk(x, z, false);
+                if (chunk != null) {
+                    pending.addAll(chunk.getBlockUpdateScheduler().getPendingBlockUpdates(boundingBox));
+                }
+            }
+        }
+        return pending;
     }
 
     public List<Block> scanBlocks(@NotNull AxisAlignedBB bb, @NotNull BiPredicate<BlockVector3, BlockState> condition) {

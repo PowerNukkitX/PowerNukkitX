@@ -27,6 +27,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.types.GameType;
+import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.Utils;
@@ -209,21 +210,24 @@ public class LevelDBProvider implements LevelProvider {
         List<ScheduledTickInfo> scheduledList = LevelDBProvider.getScheduledTicksMap().remove(chunkKey);
         List<NormalTickInfo> normalList = LevelDBProvider.getNormalTicksMap().remove(chunkKey);
 
-        restoreScheduledTicks(level, scheduledList);
+        restoreScheduledTicks(level, chunk, scheduledList);
         restoreNormalTicks(level, chunk, normalList);
     }
 
-    private static void restoreScheduledTicks(Level level, List<ScheduledTickInfo> scheduledList) {
+    private static void restoreScheduledTicks(Level level, IChunk chunk, List<ScheduledTickInfo> scheduledList) {
         if (scheduledList == null || scheduledList.isEmpty()) return;
 
         for (ScheduledTickInfo info : scheduledList) {
-            level.getScheduler().scheduleDelayedTask(() -> {
-                Block block = level.getBlock(info.x, info.y, info.z, info.layer);
-                if (block.getId().equals(info.id)) {
-                    level.scheduleUpdate(block, new Vector3(info.x, info.y, info.z),
-                            Math.max(info.delay, 1), info.priority, false, info.checkBlockWhenUpdate);
-                }
-            }, 1);
+            Block block = level.getBlock(info.x, info.y, info.z, info.layer);
+            if (block.getId().equals(info.id)) {
+                chunk.getBlockUpdateScheduler().add(new BlockUpdateEntry(
+                        new Vector3(info.x, info.y, info.z),
+                        block,
+                        level.getCurrentTick() + Math.max(info.delay, 1),
+                        info.priority,
+                        info.checkBlockWhenUpdate
+                ));
+            }
         }
     }
 

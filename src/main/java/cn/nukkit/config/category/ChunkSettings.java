@@ -21,11 +21,11 @@ public class ChunkSettings extends OkaeriConfig {
     @Comment("pnx.settings.chunk.chunksperticks")
     int chunksPerTicks = 40;
     @Comment("pnx.settings.chunk.tickRadius")
-    int tickRadius = 3;
+    int tickRadius = 4;
     @Comment("pnx.settings.chunk.lightupdates")
     boolean lightUpdates = true;
     @Comment("pnx.settings.chunk.clearticklist")
-    boolean clearTickList = false;
+    boolean clearTickList = true;
     @Comment("pnx.settings.chunk.generationqueuesize")
     int generationQueueSize = 8;
     @Comment("pnx.settings.chunk.saveGenerated")
