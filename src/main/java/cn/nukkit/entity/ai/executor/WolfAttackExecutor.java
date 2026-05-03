@@ -45,6 +45,6 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
 
     private void stop(EntityIntelligent entity) {
         var wolf = (EntityWolf) entity;
-        entity.getLevel().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 5);
+        wolf.setAngry(false);
     }
 }
