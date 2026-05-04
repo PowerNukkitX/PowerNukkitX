@@ -176,6 +176,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             } else {
                 this.setPose(this.getPose() + 1);
             }
+            this.markChunkChanged();
             return false; // Returning true would consume the item
         }
 
@@ -248,6 +249,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         if (changed) {
+            this.markChunkChanged();
             level.addSound(this, Sound.MOB_ARMOR_STAND_PLACE);
         }
 
@@ -334,6 +336,12 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         setEntityDataPacket.eid = this.getId();
         setEntityDataPacket.entityData = this.getEntityDataMap();
         Server.getInstance().getOnlinePlayers().values().forEach(all -> all.dataPacket(setEntityDataPacket));
+    }
+
+    private void markChunkChanged() {
+        if (this.chunk != null) {
+            this.chunk.setChanged();
+        }
     }
 
     @Override
