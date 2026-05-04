@@ -1,10 +1,9 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityAnimal;
+import cn.nukkit.entity.passive.EntityPig;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
-import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionInAir;
 import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnBlockFilter;
@@ -15,13 +14,13 @@ import cn.nukkit.tags.BlockTags;
 public class SpawnRulePig extends SpawnRule {
 
     public SpawnRulePig() {
-        super(Entity.PIG, 1, 3,
+        super(Entity.PIG, 1, 3, 10,
                 new ConditionInAir(),
                 new ConditionSpawnOnGround(),
                 new ConditionSpawnOnBlockFilter(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new)),
                 new ConditionBrightnessFilter(7, 15),
                 new ConditionBiomeFilter(BiomeTags.ANIMAL, BiomeTags.CHERRY_GROVE),
-                new ConditionPopulationControl(EntityAnimal.class, new int[]{4, 0, 4}));
+                new ConditionPopulationControl(EntityPig.class, new int[]{4, 0, 4}));
     }
 
 }

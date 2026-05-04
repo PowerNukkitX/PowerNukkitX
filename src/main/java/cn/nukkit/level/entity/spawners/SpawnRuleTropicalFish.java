@@ -9,7 +9,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleTropicalFish extends SpawnRule {
 
     public SpawnRuleTropicalFish() {
-        super(Entity.TROPICALFISH, 3, 5,
+        super(Entity.TROPICALFISH, 3, 5, 75,
                 new ConditionSpawnUnderwater(),
                 new ConditionDensityLimit(Entity.TROPICALFISH, 20, 128),
                 new ConditionBiomeFilter(BiomeTags.OCEAN),

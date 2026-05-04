@@ -15,7 +15,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleHoglin extends SpawnRule {
 
     public SpawnRuleHoglin() {
-        super(Entity.HOGLIN, 4, 4,
+        super(Entity.HOGLIN, 4, 4, 20,
                 new ConditionSpawnOnGround(),
                 new ConditionInAir(),
                 new ConditionSpawnUnderground(),

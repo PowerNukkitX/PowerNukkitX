@@ -12,7 +12,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleGhast extends SpawnRule {
 
     public SpawnRuleGhast() {
-        super(Entity.GHAST,
+        super(Entity.GHAST, 40,
                 new ConditionInAir(),
                 new GhastCondition(),
                 new ConditionDifficultyFilter(),

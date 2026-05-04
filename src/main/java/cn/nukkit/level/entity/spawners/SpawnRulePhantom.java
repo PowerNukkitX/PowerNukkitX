@@ -14,7 +14,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRulePhantom extends SpawnRule {
 
     public SpawnRulePhantom() {
-        super(Entity.PHANTOM,
+        super(Entity.PHANTOM, 100,
                 new ConditionDifficultyFilter(),
                 new ConditionNoSleep(),
                 new ConditionInAir(),

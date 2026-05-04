@@ -11,7 +11,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleSquid extends SpawnRule {
 
     public SpawnRuleSquid() {
-        super(Entity.SQUID, 2, 4,
+        super(Entity.SQUID, 2, 4, 8,
                 new ConditionSpawnUnderwater(),
                 new ConditionAny(
                         new ConditionAll(

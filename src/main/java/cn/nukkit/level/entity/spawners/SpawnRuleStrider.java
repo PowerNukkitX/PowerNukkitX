@@ -11,7 +11,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleStrider extends SpawnRule {
 
     public SpawnRuleStrider() {
-        super(Entity.STRIDER, 2, 4,
+        super(Entity.STRIDER, 2, 4, 20,
                 new ConditionInAir(),
                 new ConditionSpawnOnBlockFilter(BlockID.LAVA),
                 new ConditionDensityLimit(Entity.STRIDER, 3),

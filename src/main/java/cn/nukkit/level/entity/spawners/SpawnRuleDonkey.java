@@ -1,7 +1,7 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityAnimal;
+import cn.nukkit.entity.passive.EntityDonkey;
 import cn.nukkit.level.entity.condition.Condition;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionBrightnessFilter;
@@ -21,14 +21,14 @@ public class SpawnRuleDonkey extends MultiSpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionSpawnOnBlockFilter(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new)),
                 new ConditionBrightnessFilter(7, 15),
-                new ConditionPopulationControl(EntityAnimal.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(EntityDonkey.class, new int[]{4, 0, 4})
         }, new SpawnRuleDonkeyPlains(), new SpawnRuleDonkeyMeadow());
     }
 
     private static class SpawnRuleDonkeyPlains extends SpawnRule {
 
         public SpawnRuleDonkeyPlains() {
-            super(Entity.DONKEY, 2 ,6,
+            super(Entity.DONKEY, 1 ,3, 1,
                     new ConditionBiomeFilter(BiomeTags.PLAINS),
                     new ConditionDensityLimit(Entity.DONKEY, 6)
             );
@@ -38,7 +38,7 @@ public class SpawnRuleDonkey extends MultiSpawnRule {
     private static class SpawnRuleDonkeyMeadow extends SpawnRule {
 
         public SpawnRuleDonkeyMeadow() {
-            super(Entity.DONKEY, 1, 2,
+            super(Entity.DONKEY, 1, 2, 1,
                     new ConditionBiomeFilter(BiomeTags.MEADOW),
                     new ConditionDensityLimit(Entity.DONKEY, 2)
             );

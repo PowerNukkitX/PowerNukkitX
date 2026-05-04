@@ -1,14 +1,14 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.entity.mob.EntityHusk;
 import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRuleHusk extends SpawnRule {
 
     public SpawnRuleHusk() {
-        super(Entity.HUSK, 2, 4,
+        super(Entity.HUSK, 2, 4, 240,
                 new ConditionInAir(),
                 new ConditionDifficultyFilter(),
                 new ConditionSpawnOnGround(),
@@ -17,11 +17,11 @@ public class SpawnRuleHusk extends SpawnRule {
                 new ConditionAny(
                         new ConditionAll(
                                 new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 16, 8})
+                                new ConditionPopulationControl(EntityHusk.class, new int[]{8, 16, 8})
                         ),
                         new ConditionAll(
                                 new ConditionSpawnOnSurface(),
-                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
+                                new ConditionPopulationControl(EntityHusk.class, new int[]{8, 0, 10})
                         )
                 ));
     }

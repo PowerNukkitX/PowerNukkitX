@@ -11,7 +11,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleCod extends SpawnRule {
 
     public SpawnRuleCod() {
-        super(Entity.COD, 4, 7,
+        super(Entity.COD, 4, 7, 75,
                 new ConditionSpawnUnderwater(),
                 new ConditionHeightFilter(0, 64),
                 new ConditionDensityLimit(Entity.COD, 20, 128),

@@ -1,8 +1,11 @@
 package cn.nukkit.level.entity.condition;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.NukkitMath;
 
-import java.util.Arrays;
+import java.util.Map;
 
 public class ConditionDensityLimit extends Condition {
 
@@ -23,7 +26,35 @@ public class ConditionDensityLimit extends Condition {
 
     @Override
     public boolean evaluate(Block block) {
-        return Arrays.stream(block.getLevel().getEntities()).filter(entity -> entity.distance(block) < radius && entity.getIdentifier().equals(entityId)).count() < limit;
+        if (limit <= 0) {
+            return false;
+        }
+        if (radius <= 0) {
+            return true;
+        }
+
+        Level level = block.getLevel();
+        double radiusSquared = (double) radius * radius;
+        double invChunkSize = 1.0d / Level.CHUNK_SIZE;
+        int minChunkX = NukkitMath.floorDouble((block.x - radius) * invChunkSize);
+        int maxChunkX = NukkitMath.floorDouble((block.x + radius) * invChunkSize);
+        int minChunkZ = NukkitMath.floorDouble((block.z - radius) * invChunkSize);
+        int maxChunkZ = NukkitMath.floorDouble((block.z + radius) * invChunkSize);
+
+        int count = 0;
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                Map<Long, Entity> entities = level.getChunkEntities(chunkX, chunkZ, false);
+                for (Entity entity : entities.values()) {
+                    if (entityId.equals(entity.getIdentifier())
+                            && entity.distanceSquared(block) < radiusSquared
+                            && ++count >= limit) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

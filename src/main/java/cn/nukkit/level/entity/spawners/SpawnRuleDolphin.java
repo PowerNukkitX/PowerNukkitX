@@ -12,7 +12,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleDolphin extends SpawnRule {
 
     public SpawnRuleDolphin() {
-        super(Entity.DOLPHIN, 3, 5,
+        super(Entity.DOLPHIN, 3, 5, 7,
                 new ConditionInAir(),
                 new ConditionSpawnUnderwater(),
                 new ConditionHeightFilter(0, 64),

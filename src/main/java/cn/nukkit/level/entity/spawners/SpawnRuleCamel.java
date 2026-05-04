@@ -13,7 +13,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRuleCamel extends SpawnRule {
 
     public SpawnRuleCamel() {
-        super(Entity.CAMEL,
+        super(Entity.CAMEL, 1,
                 new ConditionInAir(),
                 new ConditionSpawnOnGround(),
                 new ConditionSpawnOnBlockFilter(BlockID.SAND, BlockID.RED_SAND, BlockID.SANDSTONE),

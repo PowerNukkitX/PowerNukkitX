@@ -1,7 +1,7 @@
 package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.entity.mob.EntityEnderman;
 import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
@@ -13,11 +13,11 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
                         new ConditionAny(
                                 new ConditionAll(
                                         new ConditionSpawnUnderground(),
-                                        new ConditionPopulationControl(EntityMob.class, new int[]{8, 16, 8})
+                                        new ConditionPopulationControl(EntityEnderman.class, new int[]{8, 16, 8})
                                 ),
                                 new ConditionAll(
                                         new ConditionSpawnOnSurface(),
-                                        new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
+                                        new ConditionPopulationControl(EntityEnderman.class, new int[]{8, 0, 10})
                                 ),
                                 new ConditionBiomeFilter(BiomeTags.THE_END)
                         )
@@ -31,7 +31,7 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
     private static class SpawnRuleEndermanOverworld extends SpawnRule {
 
         public SpawnRuleEndermanOverworld() {
-            super(Entity.ENDERMAN, 1, 2,
+            super(Entity.ENDERMAN, 1, 2, 10,
                     new ConditionDifficultyFilter(),
                     new ConditionBrightnessFilter(0, 7),
                     new ConditionBiomeFilter(BiomeTags.MONSTER),
@@ -42,7 +42,7 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
     private static class SpawnRuleEndermanNether extends SpawnRule {
 
         public SpawnRuleEndermanNether() {
-            super(Entity.ENDERMAN, 1, 1,
+            super(Entity.ENDERMAN, 1, 1, 6,
                     new ConditionDifficultyFilter(),
                     new ConditionBiomeFilter(BiomeTags.SPAWN_ENDERMEN),
                     new ConditionDensityLimit(Entity.ENDERMAN, 1));
@@ -52,7 +52,7 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
     private static class SpawnRuleEndermanEnd extends SpawnRule {
 
         public SpawnRuleEndermanEnd() {
-            super(Entity.ENDERMAN, 4, 4,
+            super(Entity.ENDERMAN, 4, 4, 10,
                     new ConditionBiomeFilter(BiomeTags.THE_END));
         }
     }

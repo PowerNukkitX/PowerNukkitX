@@ -9,7 +9,7 @@ import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
 public class SpawnRuleGlowSquid extends SpawnRule {
 
     public SpawnRuleGlowSquid() {
-        super(Entity.GLOW_SQUID, 2, 4,
+        super(Entity.GLOW_SQUID, 2, 4, 10,
                 new ConditionSpawnUnderwater(),
                 new ConditionSpawnUnderground(),
                 new ConditionHeightFilter(-64, 30),

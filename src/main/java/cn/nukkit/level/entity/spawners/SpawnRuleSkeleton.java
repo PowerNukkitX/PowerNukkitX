@@ -2,14 +2,14 @@ package cn.nukkit.level.entity.spawners;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.entity.mob.EntitySkeleton;
 import cn.nukkit.level.entity.condition.*;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRuleSkeleton extends SpawnRule {
 
     public SpawnRuleSkeleton() {
-        super(Entity.SKELETON, 1, 2,
+        super(Entity.SKELETON, 1, 2, 80,
                 new ConditionInAir(),
                 new ConditionDifficultyFilter(),
                 new ConditionSpawnOnGround(),
@@ -25,11 +25,11 @@ public class SpawnRuleSkeleton extends SpawnRule {
                 new ConditionAny(
                         new ConditionAll(
                                 new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 16, 8})
+                                new ConditionPopulationControl(EntitySkeleton.class, new int[]{8, 16, 8})
                         ),
                         new ConditionAll(
                                 new ConditionSpawnOnSurface(),
-                                new ConditionPopulationControl(EntityMob.class, new int[]{8, 0, 10})
+                                new ConditionPopulationControl(EntitySkeleton.class, new int[]{8, 0, 10})
                         )
                 )
         );

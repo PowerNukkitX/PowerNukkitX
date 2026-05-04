@@ -10,7 +10,7 @@ import cn.nukkit.tags.BiomeTags;
 public class SpawnRulePufferfish extends SpawnRule {
 
     public SpawnRulePufferfish() {
-        super(Entity.PUFFERFISH, 3, 5,
+        super(Entity.PUFFERFISH, 3, 5, 25,
                 new ConditionSpawnUnderwater(),
                 new ConditionHeightFilter(0, 64),
                 new ConditionDensityLimit(Entity.PUFFERFISH, 20, 128),
