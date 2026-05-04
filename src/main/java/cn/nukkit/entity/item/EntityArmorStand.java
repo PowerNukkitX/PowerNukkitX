@@ -8,8 +8,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.entity.passive.EntityVillager;
-import cn.nukkit.entity.passive.EntityWanderingTrader;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerChangeArmorStandEvent;
@@ -18,9 +16,7 @@ import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -67,7 +63,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
     }
 
-    private static int getArmorSlot(ItemArmor armorItem) {
+    private static int getArmorSlot(Item armorItem) {
         if (armorItem.isHelmet()) {
             return EntityArmorInventory.SLOT_HEAD;
         } else if (armorItem.isChestplate()) {
@@ -189,15 +185,15 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         boolean hasItemInHand = !item.isNull();
         int slot;
 
-        if (hasItemInHand && item instanceof ItemArmor itemArmor) {
+        if (hasItemInHand && item.isArmor()) {
             isArmor = true;
-            slot = getArmorSlot(itemArmor);
+            slot = getArmorSlot(item);
         } else if (hasItemInHand && (Objects.equals(item.getId(), BlockID.SKULL)) || Objects.equals(item.getBlockId(), BlockID.CARVED_PUMPKIN)) {
             isArmor = true;
             slot = EntityArmorInventory.SLOT_HEAD;
         } else if (hasItemInHand) {
             isArmor = false;
-            if (item instanceof ItemShield) {
+            if (item.isShield()) {
                 slot = EntityEquipmentInventory.OFFHAND;
             } else {
                 slot = EntityEquipmentInventory.MAIN_HAND;
