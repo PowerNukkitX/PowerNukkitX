@@ -614,28 +614,6 @@ public class Chunk implements IChunk {
                 }
             }
         }
-
-        // Despawning
-        if (!spawnedEntities.isEmpty()) {
-            int randIndex = Utils.rand(0, spawnedEntities.size() - 1);
-            Entity randomEntity = spawnedEntities.stream().skip(randIndex).findFirst().orElse(null);
-            if (randomEntity != null) {
-                boolean anyNear = false;
-                for (Player player : level.getPlayers().values()) {
-                    if (player.distance(randomEntity) <= 54) {
-                        anyNear = true;
-                        break;
-                    }
-                }
-                if (!anyNear && randomEntity.getAge() > 6000) {
-                    try {
-                        randomEntity.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
     }
 
     @Override

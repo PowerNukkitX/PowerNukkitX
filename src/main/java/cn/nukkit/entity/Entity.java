@@ -1726,8 +1726,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 }
             }
 
+            if (nearest == null) {
+                return hasUpdate;
+            }
+
             // Hard distance -> immediate despawn
-            if (nearest == null || nearestSq > hardDistSq) {
+            if (nearestSq > hardDistSq) {
                 this.despawnFromAll();
                 this.close();
                 return hasUpdate;
