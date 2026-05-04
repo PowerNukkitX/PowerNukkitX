@@ -15,15 +15,13 @@ public class SpawnRuleCreeper extends SpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(0, 7),
                 new ConditionBiomeFilter(BiomeTags.MONSTER),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER),
+
                 new ConditionAny(
-                        new ConditionAll(
-                                new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntityCreeper.class, new int[]{8, 16, 8})
-                        ),
+                        new ConditionSpawnUnderground(),
                         new ConditionAll(
                                 new ConditionSpawnOnSurface(),
-                                new ConditionDensityLimit(EntityID.CREEPER, 5),
-                                new ConditionPopulationControl(EntityCreeper.class, new int[]{8, 0, 10})
+                                new ConditionDensityLimit(EntityID.CREEPER, 5)
                         )
                 )
         );

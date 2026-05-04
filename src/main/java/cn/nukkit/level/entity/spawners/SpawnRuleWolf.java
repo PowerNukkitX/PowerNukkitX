@@ -25,7 +25,7 @@ public class SpawnRuleWolf extends MultiSpawnRule {
                 new ConditionSpawnOnBlockFilter(Utils.concatArray(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new),
                         BlockTags.getBlockSet(BlockTags.DIRT).toArray(String[]::new),
                         new String[] {BlockID.PODZOL})),
-                new ConditionPopulationControl(EntityWolf.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         }, new SpawnRuleMagmaCubeLess(), new SpawnRuleMagmaCubeMany());
     }
 

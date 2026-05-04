@@ -20,7 +20,8 @@ public class SpawnRuleCow extends SpawnRule {
                 new ConditionSpawnOnBlockFilter(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new)),
                 new ConditionBrightnessFilter(7, 15),
                 new ConditionBiomeFilter(BiomeTags.ANIMAL),
-                new ConditionPopulationControl(EntityCow.class, new int[]{4, 0, 4}));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }

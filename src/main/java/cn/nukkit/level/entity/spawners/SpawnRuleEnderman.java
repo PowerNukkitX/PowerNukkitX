@@ -9,18 +9,10 @@ public class SpawnRuleEnderman extends MultiSpawnRule {
 
     public SpawnRuleEnderman() {
         super(new Condition[]{
-                new ConditionInAir(), new ConditionSpawnOnGround(),
-                        new ConditionAny(
-                                new ConditionAll(
-                                        new ConditionSpawnUnderground(),
-                                        new ConditionPopulationControl(EntityEnderman.class, new int[]{8, 16, 8})
-                                ),
-                                new ConditionAll(
-                                        new ConditionSpawnOnSurface(),
-                                        new ConditionPopulationControl(EntityEnderman.class, new int[]{8, 0, 10})
-                                ),
-                                new ConditionBiomeFilter(BiomeTags.THE_END)
-                        )
+                new ConditionInAir(),
+                new ConditionSpawnOnGround(),
+                new ConditionBiomeFilter(BiomeTags.THE_END),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         },
                 new SpawnRuleEndermanOverworld(),
                 new SpawnRuleEndermanNether(),

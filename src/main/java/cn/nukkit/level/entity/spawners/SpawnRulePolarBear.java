@@ -21,7 +21,7 @@ public class SpawnRulePolarBear extends MultiSpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(7, 15),
                 new ConditionBiomeFilter(BiomeTags.FROZEN),
-                new ConditionPopulationControl(EntityPolarBear.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         }, new SpawnRulePolarBearLand(), new SpawnRulePolarBearOcean());
     }
 

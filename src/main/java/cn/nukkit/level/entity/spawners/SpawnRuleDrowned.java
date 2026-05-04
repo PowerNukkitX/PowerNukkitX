@@ -12,7 +12,7 @@ public class SpawnRuleDrowned extends MultiSpawnRule {
                 new ConditionDifficultyFilter(),
                 new ConditionSpawnUnderwater(),
                 new ConditionBrightnessFilter(0, 7),
-                new ConditionPopulationControl(EntityDrowned.class, new int[]{8, 0, 10})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         }, new SpawnRuleDrownedOcean(), new SpawnRuleDrownedRiver(), new SpawnRuleDrownedDripstoneCaves());
     }
 

@@ -6,6 +6,7 @@ import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
 import cn.nukkit.tags.BiomeTags;
 
@@ -16,6 +17,7 @@ public class SpawnRuleMagmaCube extends MultiSpawnRule {
                 new ConditionDifficultyFilter(),
                 new ConditionInAir(),
                 new ConditionSpawnOnGround(),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         }, new SpawnRuleMagmaCubeLess(), new SpawnRuleMagmaCubeMany());
     }
 

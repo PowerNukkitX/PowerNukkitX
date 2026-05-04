@@ -6,6 +6,7 @@ import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionHeightFilter;
 import cn.nukkit.level.entity.condition.ConditionNot;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
 import cn.nukkit.tags.BiomeTags;
 
@@ -14,7 +15,8 @@ public class SpawnRuleSalmon extends MultiSpawnRule {
     public SpawnRuleSalmon() {
         super(new Condition[]{
                 new ConditionSpawnUnderwater(),
-                new ConditionDensityLimit(Entity.SALMON, 20, 128)
+                new ConditionDensityLimit(Entity.SALMON, 20, 128),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.WATER_ANIMAL)
         }, new SpawnRuleSalmonOcean(), new SpawnRuleSalmonRiver());
     }
 

@@ -21,16 +21,8 @@ public class SpawnRuleStray extends SpawnRule {
                                 new ConditionHeightFilter(60, 66)
                         )
                 ),
-                new ConditionAny(
-                        new ConditionAll(
-                                new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntityStray.class, new int[]{8, 16, 8})
-                        ),
-                        new ConditionAll(
-                                new ConditionSpawnOnSurface(),
-                                new ConditionPopulationControl(EntityStray.class, new int[]{8, 0, 10})
-                        )
-                )
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
+
         );
     }
 

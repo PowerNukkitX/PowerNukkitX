@@ -15,7 +15,7 @@ public class SpawnRuleZombiePigman extends MultiSpawnRule {
                 new ConditionNot(new ConditionSpawnOnBlockFilter(Block.NETHER_WART_BLOCK, Block.SHROOMLIGHT)),
                 new ConditionDifficultyFilter(),
                 new ConditionSpawnOnGround(),
-                new ConditionPopulationControl(EntityZombiePigman.class, new int[]{8, 16, 8})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         }, new SpawnRuleZombiePigmanMany(), new SpawnRuleZombiePigmanFew());
     }
 

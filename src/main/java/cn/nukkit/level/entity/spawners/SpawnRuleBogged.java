@@ -14,16 +14,7 @@ public class SpawnRuleBogged extends SpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(0, 7),
                 new ConditionBiomeFilter(BiomeTags.SWAMP, BiomeTags.MANGROVE_SWAMP),
-                new ConditionAny(
-                        new ConditionAll(
-                                new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntityBogged.class, new int[]{8, 16, 8})
-                        ),
-                        new ConditionAll(
-                                new ConditionSpawnOnSurface(),
-                                new ConditionPopulationControl(EntityBogged.class, new int[]{8, 0, 10})
-                        )
-                )
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         );
     }
 

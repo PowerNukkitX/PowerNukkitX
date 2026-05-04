@@ -6,6 +6,7 @@ import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionHeightFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;
 import cn.nukkit.level.entity.condition.ConditionNot;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
 import cn.nukkit.tags.BiomeTags;
 
@@ -18,7 +19,9 @@ public class SpawnRuleDolphin extends SpawnRule {
                 new ConditionHeightFilter(0, 64),
                 new ConditionDensityLimit(Entity.DOLPHIN, 5, 128),
                 new ConditionBiomeFilter(BiomeTags.OCEAN),
-                new ConditionNot(new ConditionBiomeFilter(BiomeTags.FROZEN)));
+                new ConditionNot(new ConditionBiomeFilter(BiomeTags.FROZEN)),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.WATER_ANIMAL)
+        );
     }
 
 }

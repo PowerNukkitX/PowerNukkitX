@@ -28,7 +28,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
                             new ConditionBiomeFilter(BiomeTags.FROZEN),
                             new ConditionAll(new ConditionBiomeFilter(BiomeTags.TAIGA), new ConditionNot(new ConditionBiomeFilter(BiomeTags.MEGA)))
                     ),
-                    new ConditionPopulationControl(EntityRabbit.class, new int[]{3, 0, 0})
+                    new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
             );
         }
     }
@@ -38,7 +38,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
         public SpawnRuleRabbitDesert() {
             super(Entity.RABBIT, 2, 3, 12,
                     new ConditionBiomeFilter(BiomeTags.DESERT),
-                    new ConditionPopulationControl(EntityRabbit.class, new int[]{3, 0, 0})
+                    new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
             );
         }
     }
@@ -48,7 +48,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
         public SpawnRuleRabbitFlowerOrSlopes() {
             super(Entity.RABBIT, 2, 3, 4,
                     new ConditionBiomeFilter(BiomeTags.FLOWER_FOREST, BiomeTags.SNOWY_SLOPES),
-                    new ConditionPopulationControl(EntityRabbit.class, new int[]{3, 0, 0})
+                    new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
             );
         }
     }
@@ -58,7 +58,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
         public SpawnRuleRabbitGrove() {
             super(Entity.RABBIT, 2, 3, 8,
                     new ConditionBiomeFilter(BiomeTags.GROVE),
-                    new ConditionPopulationControl(EntityRabbit.class, new int[]{3, 0, 0})
+                    new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
             );
         }
     }
@@ -68,7 +68,7 @@ public class SpawnRuleRabbit extends MultiSpawnRule {
         public SpawnRuleRabbitMeadow() {
             super(Entity.RABBIT, 2, 6, 2,
                     new ConditionBiomeFilter(BiomeTags.MEADOW, BiomeTags.CHERRY_GROVE),
-                    new ConditionPopulationControl(EntityRabbit.class, new int[]{6, 0, 0})
+                    new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
             );
         }
     }

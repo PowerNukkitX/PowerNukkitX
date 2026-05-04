@@ -25,7 +25,7 @@ public class SpawnRuleArmadillo extends MultiSpawnRule {
                                                 Block.YELLOW_TERRACOTTA
                 ),
                 new ConditionBiomeFilter(BiomeTags.SAVANNA, BiomeTags.MESA),
-                new ConditionPopulationControl(EntityArmadillo.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         }, new SpawnRuleArmadilloSavanna(), new SpawnRuleArmadilloMesa());
     }
 

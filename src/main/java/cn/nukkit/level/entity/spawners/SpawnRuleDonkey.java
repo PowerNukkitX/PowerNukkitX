@@ -21,7 +21,7 @@ public class SpawnRuleDonkey extends MultiSpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionSpawnOnBlockFilter(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new)),
                 new ConditionBrightnessFilter(7, 15),
-                new ConditionPopulationControl(EntityDonkey.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         }, new SpawnRuleDonkeyPlains(), new SpawnRuleDonkeyMeadow());
     }
 

@@ -20,7 +20,7 @@ public class SpawnRulePiglin extends MultiSpawnRule {
                 new ConditionInAir(),
                 new ConditionSpawnOnGround(),
                 new ConditionNot(new ConditionSpawnOnBlockFilter(Block.NETHER_WART_BLOCK, Block.SHROOMLIGHT)),
-                new ConditionPopulationControl(EntityPiglin.class, new int[]{8, 16, 8})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         }, new SpawnRulePiglinLess(), new SpawnRulePiglinFew());
     }
 

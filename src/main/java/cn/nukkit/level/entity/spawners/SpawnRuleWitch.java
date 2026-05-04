@@ -15,16 +15,7 @@ public class SpawnRuleWitch extends SpawnRule {
                 new ConditionBrightnessFilter(0, 7),
                 new ConditionBiomeFilter(BiomeTags.MONSTER),
                 new ConditionDensityLimit(Entity.WITCH, 1, 128),
-                new ConditionAny(
-                        new ConditionAll(
-                                new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntityWitch.class, new int[]{8, 16, 8})
-                        ),
-                        new ConditionAll(
-                                new ConditionSpawnOnSurface(),
-                                new ConditionPopulationControl(EntityWitch.class, new int[]{8, 0, 10})
-                        )
-                )
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         );
     }
 

@@ -17,7 +17,8 @@ public class SpawnRuleFox extends SpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(7, 15),
                 new ConditionBiomeFilter(BiomeTags.TAIGA, BiomeTags.GROVE),
-                new ConditionPopulationControl(EntityFox.class, new int[]{4, 0, 4}));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }

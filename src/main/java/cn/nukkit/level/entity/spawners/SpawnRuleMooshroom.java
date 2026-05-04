@@ -20,7 +20,8 @@ public class SpawnRuleMooshroom extends SpawnRule {
                 new ConditionSpawnOnBlockFilter(BlockTags.GRASS),
                 new ConditionBrightnessFilter(9, 15),
                 new ConditionBiomeFilter(BiomeTags.MOOSHROOM_ISLAND),
-                new ConditionPopulationControl(EntityMooshroom.class, new int[]{4, 0, 4}));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }

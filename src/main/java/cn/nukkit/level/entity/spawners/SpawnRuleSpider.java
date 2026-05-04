@@ -14,16 +14,8 @@ public class SpawnRuleSpider extends SpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionBrightnessFilter(0, 7),
                 new ConditionBiomeFilter(BiomeTags.MONSTER),
-                new ConditionAny(
-                        new ConditionAll(
-                                new ConditionSpawnUnderground(),
-                                new ConditionPopulationControl(EntitySpider.class, new int[]{8, 16, 8})
-                        ),
-                        new ConditionAll(
-                                new ConditionSpawnOnSurface(),
-                                new ConditionPopulationControl(EntitySpider.class, new int[]{8, 0, 10})
-                        )
-                ));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
+        );
     }
 
 }

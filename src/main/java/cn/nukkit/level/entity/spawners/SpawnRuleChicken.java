@@ -20,7 +20,8 @@ public class SpawnRuleChicken extends SpawnRule {
                 new ConditionSpawnOnBlockFilter(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new)),
                 new ConditionBrightnessFilter(7, 15),
                 new ConditionBiomeFilter(BiomeTags.ANIMAL),
-                new ConditionPopulationControl(EntityChicken.class, new int[]{4, 0, 4}));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }

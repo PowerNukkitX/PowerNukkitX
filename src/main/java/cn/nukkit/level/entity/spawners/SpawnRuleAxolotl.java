@@ -20,7 +20,7 @@ public class SpawnRuleAxolotl extends SpawnRule {
                 //new ConditionDisallowSpawnInBubble(), //Will never happen since spawning on clay is required
                 new ConditionSpawnOnBlockFilter(BlockID.CLAY),
                 new ConditionBiomeFilter(BiomeTags.LUSH_CAVES),
-                new ConditionPopulationControl(EntityAxolotl.class, new int[]{4, 0, 4}),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.WATER_ANIMAL),
                 new ConditionDensityLimit(Entity.AXOLOTL,5));
     }
 

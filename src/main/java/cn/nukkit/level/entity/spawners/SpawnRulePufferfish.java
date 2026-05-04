@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionHeightFilter;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
 import cn.nukkit.tags.BiomeTags;
 
@@ -14,7 +15,9 @@ public class SpawnRulePufferfish extends SpawnRule {
                 new ConditionSpawnUnderwater(),
                 new ConditionHeightFilter(0, 64),
                 new ConditionDensityLimit(Entity.PUFFERFISH, 20, 128),
-                new ConditionBiomeFilter(BiomeTags.OCEAN, BiomeTags.WARM));
+                new ConditionBiomeFilter(BiomeTags.OCEAN, BiomeTags.WARM),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.WATER_ANIMAL)
+        );
     }
 
 }

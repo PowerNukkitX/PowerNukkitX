@@ -2,27 +2,23 @@ package cn.nukkit.level.entity.condition;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.level.DimensionEnum;
+import cn.nukkit.entity.EntitySwimmable;
+import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.entity.mob.EntityPillager;
+import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.IChunk;
+import lombok.AllArgsConstructor;
+
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class ConditionPopulationControl extends Condition {
 
-    public boolean ignoreHeight;
-    public int[] densityCap;
-    private final Class<? extends EntityIntelligent> checkForClass;
+    public Category category;
 
-    public ConditionPopulationControl(Class<? extends EntityIntelligent> checkForClass, int[] densityCap) {
-        this(checkForClass, densityCap, false);
-    }
 
-    public ConditionPopulationControl(Class<? extends EntityIntelligent> checkForClass, int[] densityCap, boolean ignoreHeight) {
+    public ConditionPopulationControl(Category category) {
         super("minecraft:population_control");
-        this.checkForClass = checkForClass;
-        if(densityCap.length != DimensionEnum.values().length) throw new IllegalArgumentException("Density Cap array does not match dimensions");
-        this.densityCap = densityCap;
-        this.ignoreHeight = ignoreHeight;
+        this.category = category;
     }
 
     @Override
@@ -30,21 +26,46 @@ public class ConditionPopulationControl extends Condition {
         Level level = block.getLevel();
         int chunkX = block.getChunkX();
         int chunkZ = block.getChunkZ();
-        int entityDensity = 0;
         boolean surface = block.getY() >= block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ());
+        int entityDensity = 0;
         for(int x = -4; x <= 4; x++) {
             for(int z = -4; z <= 4; z++) {
                 for(Entity entity : level.getChunkEntities(chunkX + x, chunkZ + z, false).values()) {
-                    if(checkForClass.isAssignableFrom(entity.getClass())) {
-                        if(!ignoreHeight) {
-                            if(entity.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) == block.getFloorY()-1) {
-                                if(surface) entityDensity++;
-                            } else if(!surface) entityDensity++;
-                        } else entityDensity++;
+                    if(category.superClass.isAssignableFrom(entity.getClass())) {
+                        if(entity.getFloorY() >= SEA_LEVEL - 2 && surface) entityDensity++;
+                        if(entity.getFloorY() < SEA_LEVEL - 2 && !surface) entityDensity++;
                     }
                 }
             }
         }
-        return entityDensity < densityCap[level.getDimension()];
+        return entityDensity < category.densityCap[surface ? 0 : 1][level.getDimension()];
+    }
+
+    @AllArgsConstructor
+    public enum Category {
+
+        AMBIENT(Entity.class, new int[][]{
+                {0 ,0, 0},
+                {2, 0, 2}
+        }),
+        ANIMAL(EntityAnimal.class, new int[][]{
+                {4, 0, 4},
+                {0, 4, 0}
+        }),
+        MONSTER(EntityMob.class, new int[][]{
+                {8, 0, 10},
+                {8, 16, 8}
+        }),
+        PILLAGER(EntityPillager.class, new int[][]{
+                {8, 0, 8},
+                {8, 0, 8}
+        }),
+        WATER_ANIMAL(EntitySwimmable.class, new int[][]{
+                {36, 0, 36},
+                {0, 0, 0}
+        });
+
+        protected Class<?> superClass;
+        protected int[][] densityCap;
     }
 }

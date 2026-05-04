@@ -7,6 +7,7 @@ import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;
 import cn.nukkit.level.entity.condition.ConditionNot;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnBlockFilter;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
 import cn.nukkit.level.entity.condition.ConditionSpawnUnderground;
@@ -22,7 +23,9 @@ public class SpawnRuleHoglin extends SpawnRule {
                 new ConditionDifficultyFilter(),
                 new ConditionNot(new ConditionSpawnOnBlockFilter(BlockID.NETHER_WART_BLOCK, BlockID.SHROOMLIGHT)),
                 new ConditionBiomeFilter(BiomeTags.CRIMSON_FOREST),
-                new ConditionDensityLimit(Entity.HOGLIN, 4, 64));
+                new ConditionDensityLimit(Entity.HOGLIN, 4, 64),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }

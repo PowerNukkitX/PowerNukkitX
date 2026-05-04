@@ -14,7 +14,7 @@ public class SpawnRuleBat extends SpawnRule {
                 new ConditionBrightnessFilter(0, 4),
                 new ConditionHeightFilter(-63, 63),
                 new ConditionBiomeFilter(BiomeTags.ANIMAL),
-                new ConditionPopulationControl(EntityBat.class, new int[]{2, 0, 2})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.AMBIENT)
         );
     }
 

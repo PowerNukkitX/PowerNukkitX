@@ -23,7 +23,7 @@ public class SpawnRuleTurtle extends SpawnRule {
                 new ConditionHeightFilter(60, 67),
                 new ConditionBiomeFilter(BiomeTags.BEACH),
                 new ConditionBiomeFilter(BiomeTags.WARM),
-                new ConditionPopulationControl(EntityTurtle.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         );
     }
 

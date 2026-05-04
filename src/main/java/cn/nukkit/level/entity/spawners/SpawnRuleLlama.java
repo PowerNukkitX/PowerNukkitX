@@ -21,7 +21,7 @@ public class SpawnRuleLlama extends MultiSpawnRule {
                 new ConditionSpawnOnGround(),
                 new ConditionSpawnOnBlockFilter(BlockTags.getBlockSet(BlockTags.GRASS).toArray(String[]::new)),
                 new ConditionBrightnessFilter(7, 15),
-                new ConditionPopulationControl(EntityLlama.class, new int[]{4, 0, 4})
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
         }, new SpawnRuleLlamaExtremeHills(), new SpawnRuleLlamaSavanna());
     }
 

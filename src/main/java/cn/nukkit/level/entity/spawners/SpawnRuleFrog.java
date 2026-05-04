@@ -15,7 +15,8 @@ public class SpawnRuleFrog extends SpawnRule {
                 new ConditionInAir(),
                 new ConditionSpawnOnGround(),
                 new ConditionBiomeFilter(BiomeTags.SWAMP, BiomeTags.MANGROVE_SWAMP),
-                new ConditionPopulationControl(EntityFrog.class, new int[]{4, 0, 4}));
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }
