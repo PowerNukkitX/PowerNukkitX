@@ -856,7 +856,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         final ItemDescriptor descriptor = ingredients.getFirst();
         if (descriptor instanceof ItemTagDescriptor tagDescriptor) {
             final Set<String> ids = ItemTags.getItemSet(tagDescriptor.getItemTag());
-            System.out.println("ids: " +ids);
             for (String id : ids) {
                 final Item inputItem = Item.get(id, 0, tagDescriptor.getCount());
                 this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig);
@@ -868,7 +867,6 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     private void registerFurnaceRecipe(String block, Item outputItem, Item inputItem, Config furnaceXpConfig) {
-        System.out.println("register " + outputItem + " " + inputItem);
         final SmeltingRecipe smeltingRecipeInternal = switch (block) {
             case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
             case "smoker" -> new SmokerRecipe(outputItem, inputItem);
