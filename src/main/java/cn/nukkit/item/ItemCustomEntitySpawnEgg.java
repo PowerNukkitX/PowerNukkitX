@@ -87,12 +87,20 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
             return false;
         }
 
-        IChunk chunk = level.getChunk((int) block.getX() >> 4, (int) block.getZ() >> 4);
+        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
+        double spawnX = target.getX() + fx;
+        double spawnZ = target.getZ() + fz;
+        Location loc = new Location(spawnX, spawnY, spawnZ, 0f, 0f, level);
+
+        if (player != null) {
+            loc.setYawFacing(player);
+        } else {
+            loc.setYaw(ThreadLocalRandom.current().nextFloat() * 360f);
+        }
+
+        IChunk chunk = level.getChunk((int) Math.floor(loc.getX()) >> 4, (int) Math.floor(loc.getZ()) >> 4);
         if (chunk == null) return false;
 
-        double spawnY = (target.getBoundingBox() == null) ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001d;
-        float yaw = ThreadLocalRandom.current().nextFloat() * 360f;
-        Location loc = new Location(block.getX() + 0.5, spawnY, block.getZ() + 0.5, yaw, 0f, level);
         CompoundTag nbt = Entity.getDefaultNBT(loc);
 
         if (this.hasCustomName()) {
