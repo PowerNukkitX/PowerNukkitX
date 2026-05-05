@@ -81,11 +81,12 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
                 throw new IllegalStateException("Failed to load runtime_item_states.json");
             }
 
-            JsonArray items = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonArray();
+            final JsonObject itemPalette =  JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+            JsonArray items = itemPalette.getAsJsonArray("items");
 
             for (JsonElement element : items) {
                 JsonObject item = element.getAsJsonObject();
-                register1(new ItemData(item.get("name").getAsString(), item.get("id").getAsInt(), item.get("version").getAsInt(), item.get("componentBased").getAsBoolean()));
+                register1(new ItemData(item.get("name").getAsString(), item.get("id").getAsInt(), item.get("version").getAsInt(), item.get("component_based").getAsBoolean()));
             }
             trim();
         } catch (IOException e) {

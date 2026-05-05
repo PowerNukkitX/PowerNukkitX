@@ -53,7 +53,9 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2"
+            "minecraft:deprecated_purpur_block_2",
+            "minecraft:lightning_rod",
+            "minecraft:chain"
     );
 
     @Override
@@ -462,6 +464,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(GLOWINGOBSIDIAN, BlockGlowingobsidian.class);
         register0(GLOWSTONE, BlockGlowstone.class);
         register0(GOLD_BLOCK, BlockGoldBlock.class);
+        register0(GOLDEN_DANDELION, BlockGoldenDandelion.class);
         register0(GOLD_ORE, BlockGoldOre.class);
         register0(GOLDEN_RAIL, BlockGoldenRail.class);
         register0(GRANITE, BlockGranite.class);

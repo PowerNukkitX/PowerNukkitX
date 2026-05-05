@@ -43,7 +43,7 @@ public class BiomeRegistry implements IRegistry<Integer, BiomeDefinition, BiomeD
             for (var e : map.entrySet()) {
                 Object value = e.getValue();
                 if (value instanceof Number number) {
-                    NAME2ID.put(e.getKey(), number.intValue());
+                    NAME2ID.put(e.getKey().replaceAll("minecraft:" ,""), number.intValue());
                 }
             }
         } catch (IOException e) {

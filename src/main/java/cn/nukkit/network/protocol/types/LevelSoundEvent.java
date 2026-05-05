@@ -570,7 +570,9 @@ public enum LevelSoundEvent {
     NETHERITE_SPEAR_USE(596),
     PAUSE_GROWTH(597),
     RESET_GROWTH(598),
-    UNDEFINED(599)
+    PUSHED_BY_PLAYER(599),
+    BOUNCE(600),
+    UNDEFINED(601),
     ;
 
     private final int id;

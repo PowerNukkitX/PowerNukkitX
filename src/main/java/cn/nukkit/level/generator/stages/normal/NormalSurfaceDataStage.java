@@ -39,7 +39,7 @@ public class NormalSurfaceDataStage extends GenerateStage {
                     if(chunkGenDataOptional.isPresent()) {
                         BiomeDefinitionChunkGenData chunkGenData = chunkGenDataOptional.get();
 
-                        OptionalValue<BiomeSurfaceMaterialData> surfaceMaterialDataOptional = chunkGenData.surfaceMaterial;
+                        OptionalValue<BiomeSurfaceMaterialData> surfaceMaterialDataOptional = chunkGenData.surfaceBuilderData.get().surfaceMaterial;
                         if(surfaceMaterialDataOptional.isPresent()) {
                             BiomeSurfaceMaterialData surfaceMaterialData = surfaceMaterialDataOptional.get();
                             int topBlock = surfaceMaterialData.topBlock;

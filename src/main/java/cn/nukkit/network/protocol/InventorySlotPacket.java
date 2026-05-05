@@ -4,6 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.connection.util.HandleByteBuf;
 import cn.nukkit.network.protocol.types.inventory.FullContainerName;
 import cn.nukkit.network.protocol.types.itemstack.ContainerSlotType;
+import cn.nukkit.utils.OptionalValue;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -28,18 +29,18 @@ public class InventorySlotPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.inventoryId = byteBuf.readUnsignedVarInt();
         this.slot = byteBuf.readUnsignedVarInt();
-        this.fullContainerName = byteBuf.readFullContainerName();
-        this.storageItem = byteBuf.readSlot();
-        this.item = byteBuf.readSlot();
+        this.fullContainerName = byteBuf.readOptional(null, byteBuf::readFullContainerName);
+        this.storageItem = byteBuf.readOptional(null, byteBuf::readCerealSlot);
+        this.item = byteBuf.readCerealSlot();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeUnsignedVarInt(this.inventoryId);
         byteBuf.writeUnsignedVarInt(this.slot);
-        byteBuf.writeFullContainerName(this.fullContainerName);
-        byteBuf.writeSlot(this.storageItem);
-        byteBuf.writeSlot(this.item);
+        byteBuf.writeOptional(OptionalValue.ofNullable(this.fullContainerName), byteBuf::writeFullContainerName);
+        byteBuf.writeOptional(OptionalValue.ofNullable(this.storageItem), byteBuf::writeCerealSlot);
+        byteBuf.writeCerealSlot(this.item);
     }
 
     @Override
