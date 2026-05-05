@@ -575,14 +575,29 @@ public class Chunk implements IChunk {
                 }
 
                 if (applicableRules != null && !applicableRules.isEmpty()) {
-                    SpawnRule spawnRule = applicableRules.get(Utils.rand(0, applicableRules.size() - 1));
+                    int totalWeight = 0;
+                    for (SpawnRule rule : applicableRules) {
+                        totalWeight += rule.getWeight();
+                    }
+
+                    int selectedWeight = Utils.rand(1, totalWeight);
+                    SpawnRule spawnRule = applicableRules.get(applicableRules.size() - 1);
+                    for (SpawnRule rule : applicableRules) {
+                        selectedWeight -= rule.getWeight();
+                        if (selectedWeight <= 0) {
+                            spawnRule = rule;
+                            break;
+                        }
+                    }
+
                     int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
                     int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
 
                     for (int i = 0; i < herd; i++) {
                         Vector3 spawnPos = lookVec;
                         if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
-                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5, 0, 0.5);
+                            float offset = i / (100f * herd); //If a herd is spawned at the exact same position, they push themselves infinite
+                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5 + offset, 0, 0.5 + offset);
                         }
                         if (spawnedEntityCount >= maxEntityCount) {
                             break;
@@ -595,28 +610,6 @@ public class Chunk implements IChunk {
                             entity.despawnable = true;
                             entity.spawnToAll();
                         }
-                    }
-                }
-            }
-        }
-
-        // Despawning
-        if (!spawnedEntities.isEmpty()) {
-            int randIndex = Utils.rand(0, spawnedEntities.size() - 1);
-            Entity randomEntity = spawnedEntities.stream().skip(randIndex).findFirst().orElse(null);
-            if (randomEntity != null) {
-                boolean anyNear = false;
-                for (Player player : level.getPlayers().values()) {
-                    if (player.distance(randomEntity) <= 54) {
-                        anyNear = true;
-                        break;
-                    }
-                }
-                if (!anyNear && randomEntity.getAge() > 6000) {
-                    try {
-                        randomEntity.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }
