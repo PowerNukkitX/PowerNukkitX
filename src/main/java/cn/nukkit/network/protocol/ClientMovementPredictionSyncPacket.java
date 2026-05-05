@@ -55,10 +55,16 @@ public class ClientMovementPredictionSyncPacket extends DataPacket {
         byteBuf.writeFloatLE(getMovementAttributesComponent().jumpStrength);
         byteBuf.writeFloatLE(getMovementAttributesComponent().health);
         byteBuf.writeFloatLE(getMovementAttributesComponent().hunger);
+        byteBuf.writeFloatLE(0f);
+        byteBuf.writeFloatLE(0f);
+        byteBuf.writeFloatLE(0f);
     }
 
     public void readMovementAttributesComponent(HandleByteBuf byteBuf) {
         movementAttributesComponent = new MovementAttributesComponent(byteBuf.readFloatLE(), byteBuf.readFloatLE(), byteBuf.readFloatLE(), byteBuf.readFloatLE(), byteBuf.readFloatLE(), byteBuf.readFloatLE());
+        byteBuf.readFloatLE();
+        byteBuf.readFloatLE();
+        byteBuf.readFloatLE();
     }
 
     public record MovementAttributesComponent(float movementSpeed, float underwaterMovementSpeed, float lavaMovementSpeed, float jumpStrength, float health, float hunger) {

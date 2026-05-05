@@ -37,6 +37,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
             shape.scale = buf.readOptional(null, buf::readFloatLE);
             shape.rotation = buf.readOptional(null, buf::readVector3f);
             shape.totalTimeLeft = buf.readOptional(null, buf::readFloatLE);
+            shape.maximumRenderDistance = buf.readOptional(null, buf::readFloatLE);
 
             boolean hasColor = buf.readBoolean();
             if (hasColor) {
@@ -47,7 +48,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
 
             boolean hasAttach = buf.readBoolean();
             if (hasAttach) {
-                shape.attachedToEntityId = buf.readUnsignedVarLong();
+                shape.attachedToEntityId = buf.readVarLong();
             }
 
             buf.readUnsignedVarInt(); // payloadType
@@ -71,7 +72,13 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
                 case BOX -> shape.boxBound = buf.readVector3f();
                 case CIRCLE, SPHERE -> shape.numSegments = (int) buf.readByte();
                 case LINE -> shape.lineEndLocation = buf.readVector3f();
-                case TEXT -> shape.text = buf.readString();
+                case TEXT -> {
+                    shape.text = buf.readString();
+                    shape.useRotation = buf.readBoolean();
+                    shape.backgroundColor = buf.readOptional(null, buf::readIntLE);
+                    shape.depthTest = buf.readBoolean();
+                    shape.showBackface = buf.readBoolean();
+                }
             }
 
             shapes.add(shape);
@@ -96,6 +103,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
             buf.writeOptional(OptionalValue.ofNullable(shape.scale), buf::writeFloatLE);
             buf.writeOptional(OptionalValue.ofNullable(shape.rotation), buf::writeVector3f);
             buf.writeOptional(OptionalValue.ofNullable(shape.totalTimeLeft), buf::writeFloatLE);
+            buf.writeOptional(OptionalValue.ofNullable(shape.maximumRenderDistance), buf::writeFloatLE);
 
             if (shape.color != null) {
                 buf.writeBoolean(true);
@@ -108,7 +116,7 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
 
             if (shape.attachedToEntityId != null) {
                 buf.writeBoolean(true);
-                buf.writeUnsignedVarLong(shape.attachedToEntityId);
+                buf.writeVarLong(shape.attachedToEntityId);
             } else {
                 buf.writeBoolean(false);
             }
@@ -135,7 +143,13 @@ public class ServerScriptDebugDrawerPacket extends DataPacket {
                 case BOX -> buf.writeVector3f(shape.boxBound);
                 case CIRCLE, SPHERE -> buf.writeByte(shape.numSegments != null ? shape.numSegments.byteValue() : 0);
                 case LINE -> buf.writeVector3f(shape.lineEndLocation);
-                case TEXT -> buf.writeString(shape.text);
+                case TEXT -> {
+                    buf.writeString(shape.text);
+                    buf.writeBoolean(shape.useRotation);
+                    buf.writeOptional(OptionalValue.of(shape.backgroundColor), buf::writeIntLE);
+                    buf.writeBoolean(shape.depthTest);
+                    buf.writeBoolean(shape.showBackface);
+                }
             }
         }
     }

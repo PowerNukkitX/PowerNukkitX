@@ -11,11 +11,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(944);
+    int CURRENT_PROTOCOL = dynamic(975);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.26.10");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.26.20");
 
-    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 26, 10, 0, 0);
+    SemVersion MINECRAFT_SEMVERSION = new SemVersion(1, 26, 20, 0, 0);
 
     int BLOCK_STATE_VERSION_NO_REVISION = (MINECRAFT_SEMVERSION.major() << 24) | //major
             (MINECRAFT_SEMVERSION.minor() << 16) | //minor
