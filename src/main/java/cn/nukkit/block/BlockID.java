@@ -1084,6 +1084,8 @@ public interface BlockID {
 
     String GOLD_ORE = "minecraft:gold_ore";
 
+    String GOLDEN_DANDELION = "minecraft:golden_dandelion";
+
     String GOLDEN_RAIL = "minecraft:golden_rail";
 
     String GRANITE = "minecraft:granite";

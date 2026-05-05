@@ -34,7 +34,7 @@ public class BlockStateTest {
                 if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
-                    throw new RuntimeException(name + " (" + hash + ") was not a part of block_states.json.");
+                    throw new RuntimeException(name + " (" + hash + ") was a part of block_states.json, but not registered in PowerNukkitX.");
                 } else {
                     if(!state.getIdentifier().equals(name)) {
                         throw new RuntimeException("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());

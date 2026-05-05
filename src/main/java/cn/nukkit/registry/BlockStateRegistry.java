@@ -38,7 +38,7 @@ public final class BlockStateRegistry implements IRegistry<Integer, BlockState, 
                 if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
                 if(state == null) {
-                    Server.getInstance().getLogger().alert(name + " (" + hash + ") was not a part of block_states.json.");
+                    Server.getInstance().getLogger().alert(name + " (" + hash + ") was a part of block_states.json, but is not registered in PowerNukkitX.");
                 } else {
                     if(!state.getIdentifier().equals(name)) {
                         Server.getInstance().getLogger().alert("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
