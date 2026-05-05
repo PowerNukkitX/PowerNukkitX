@@ -13,6 +13,7 @@ import cn.nukkit.recipe.descriptor.ItemDescriptorType;
 import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.recipe.special.DecoratedPotRecipe;
 import cn.nukkit.recipe.special.SmithingArmorTrimCorrectedRecipe;
+import cn.nukkit.tags.ItemTags;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
@@ -803,7 +804,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                             ingredients.add(parseDescription(input, ParseType.FURNACE_INPUT));
                         }
 
-                        final ShapelessRecipe smeltingRecipe = new ShapelessRecipe(
+                        /*final ShapelessRecipe smeltingRecipe = new ShapelessRecipe(
                                 recipeId + "_" + block,
                                 uuid,
                                 priority,
@@ -814,120 +815,21 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                                 )
                         );
 
-                        /*this.register(smeltingRecipe);
+                        this.register(smeltingRecipe);*/
 
-                        final Item outputItem = primaryResult.toItem();
-                        final Item inputItem = ingredients.getFirst().toItem();
-                        final SmeltingRecipe smeltingRecipeInternal = switch (block) {
-                            case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
-                            case "smoker" -> new SmokerRecipe(outputItem, inputItem);
-                            case "campfire" -> new CampfireRecipe(outputItem, inputItem);
-                            case "soul_campfire" -> new SoulCampfireRecipe(outputItem, inputItem);
-                            default -> new FurnaceRecipe(outputItem, inputItem);
-                        };
-                        this.register(smeltingRecipeInternal);
-
-                        double xp = furnaceXpConfig.getDouble(inputItem.getId() + ":" + inputItem.getDamage());
-
-                        if (xp != 0) {
-                            this.setRecipeXp(smeltingRecipe, xp);
-                        }*/
+                        if (primaryResult instanceof ItemTagDescriptor tagDescriptor) {
+                            final Set<String> ids = ItemTags.getItemSet(tagDescriptor.getItemTag());
+                            for (String id : ids) {
+                                final Item outputItem = Item.get(id, 0, tagDescriptor.getCount());
+                                this.registerFurnaceRecipe(block, outputItem, ingredients, furnaceXpConfig);
+                            }
+                        } else {
+                            final Item outputItem = primaryResult.toItem();
+                            this.registerFurnaceRecipe(block, outputItem, ingredients, furnaceXpConfig);
+                        }
                     }
                 }
             }
-
-            //load furnace recipes
-            // Endstone reader
-//            List<Map<String, Object>> furnaceAuxes = (List<Map<String, Object>>) recipeConfig.getList("furnaceAux");
-//            for (Map<String, Object> furnaceAux : furnaceAuxes) {
-//                Map<String, Object> input = (Map<String, Object>) furnaceAux.get("input");
-//                Item inputItem = Item.get(input.get("item").toString());
-//                Map<String, Object> output = (Map<String, Object>) furnaceAux.get("output");
-//                double outputCount = (double) output.get("count");
-//                double outputData;
-//                if (output.get("data") != null) {
-//                    outputData = (double) output.get("data");
-//                } else {
-//                    outputData = 0;
-//                }
-//
-//                Item outputItem = Item.get(output.get("item").toString());
-//                outputItem.setCount((int) outputCount);
-//                outputItem.setMeta((int) outputData);
-//
-//                String tag = furnaceAux.get("tag").toString();
-//
-//                Recipe furnaceRecipe = switch (tag) {
-//                    case "furnace" -> new FurnaceRecipe(outputItem, inputItem);
-//                    case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
-//                    case "smoker" -> new SmokerRecipe(outputItem, inputItem);
-//                    case "campfire" -> new CampfireRecipe(outputItem, inputItem);
-//                    case "soul_campfire" -> new SoulCampfireRecipe(outputItem, inputItem);
-//                    default -> throw new IllegalStateException("Unexpected value: " + tag);
-//                };
-//
-//                try {
-//                    register(furnaceRecipe);
-//                } catch (RuntimeException e) {
-//
-//                } //TODO: remove this when Endstone will fix duplication of furnaceAux recipes
-//
-//                var xp = furnaceXpConfig.getDouble(input.get("item") + ":" + (int) outputData);
-//                if (xp != 0) {
-//                    this.setRecipeXp(furnaceRecipe, xp);
-//                }
-//            }
-
-            //Shaped recipes
-            // Endstone reader
-//            List<Map<String, Object>> shaped = (List<Map<String, Object>>) recipeConfig.getList("shaped");
-//            for (Map<String, Object> shapedRecipe : shaped) {
-//                register(parseShapeRecipe(shapedRecipe));
-//            }
-
-            //Shapeless
-            //Endstone Reader
-//            List<Map<String, Object>> shapeless = (List<Map<String, Object>>) recipeConfig.getList("shapeless");
-//            for (Map<String, Object> shapelessRecipe : shapeless) {
-//                String block = (String) shapelessRecipe.get("tag");
-//                register(parseShapelessRecipe(shapelessRecipe, block));
-//            }
-
-            //Multi recipes
-            // Endstone Reader
-//            List<Map<String, Object>> multi = (List<Map<String, Object>>) recipeConfig.getList("multi");
-//            for (Map<String, Object> multiRecipe : multi) {
-//                UUID uuid = UUID.fromString((String) multiRecipe.get("uuid"));
-//                register(new MultiRecipe(uuid));
-//            }
-
-            //Smithing Recipes
-            // Endstone Reader
-//            List<Map<String, Object>> smithingTrim = (List<Map<String, Object>>) recipeConfig.getList("smithingTrim");
-//            for (Map<String, Object> smithingTrimRecipe : smithingTrim) {
-//                String id = (String) smithingTrimRecipe.get("id");
-//                Map<String, Object> base = (Map<String, Object>) smithingTrimRecipe.get("base");
-//                ItemDescriptor baseItem = parseRecipeItem(base);
-//                Map<String, Object> addition = (Map<String, Object>) smithingTrimRecipe.get("addition");
-//                ItemDescriptor additionItem = parseRecipeItem(addition);
-//                Map<String, Object> template = (Map<String, Object>) smithingTrimRecipe.get("template");
-//                ItemDescriptor templateItem = parseRecipeItem(template);
-//
-//                register(new SmithingTrimRecipe(id, baseItem, additionItem, templateItem, "smithing_table"));
-//            }
-
-            // Endstone Reader
-//            List<Map<String, Object>> smithingTransform = (List<Map<String, Object>>) recipeConfig.getList("smithingTransform");
-//            for (Map<String, Object> smithingTransformRecipe : smithingTransform) {
-//                register(parseShapelessRecipe(smithingTransformRecipe, "smithing_table"));
-//            }
-
-            // Endstone Reader
-//            List<Map<String, Object>> shulkerBox = (List<Map<String, Object>>) recipeConfig.getList("shulkerBox");
-//            for (Map<String, Object> shulkerBoxRecipe : shulkerBox) {
-//                register(parseShapelessRecipe(shulkerBoxRecipe, "crafting_table"));
-//            }
-
         } catch (IOException e) {
             log.warn("Failed to load recipes config");
         }
@@ -948,6 +850,43 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
         //Registering special recipes
         this.registerSpecial();
+    }
+
+    private void registerFurnaceRecipe(String block, Item outputItem, List<ItemDescriptor> ingredients, Config furnaceXpConfig) {
+        final ItemDescriptor descriptor = ingredients.getFirst();
+        if (descriptor instanceof ItemTagDescriptor tagDescriptor) {
+            final Set<String> ids = ItemTags.getItemSet(tagDescriptor.getItemTag());
+            System.out.println("ids: " +ids);
+            for (String id : ids) {
+                final Item inputItem = Item.get(id, 0, tagDescriptor.getCount());
+                this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig);
+            }
+        } else {
+            final Item inputItem = ingredients.getFirst().toItem();
+            this.registerFurnaceRecipe(block, outputItem, inputItem, furnaceXpConfig);
+        }
+    }
+
+    private void registerFurnaceRecipe(String block, Item outputItem, Item inputItem, Config furnaceXpConfig) {
+        System.out.println("register " + outputItem + " " + inputItem);
+        final SmeltingRecipe smeltingRecipeInternal = switch (block) {
+            case "blast_furnace" -> new BlastFurnaceRecipe(outputItem, inputItem);
+            case "smoker" -> new SmokerRecipe(outputItem, inputItem);
+            case "campfire" -> new CampfireRecipe(outputItem, inputItem);
+            case "soul_campfire" -> new SoulCampfireRecipe(outputItem, inputItem);
+            default -> new FurnaceRecipe(outputItem, inputItem);
+        };
+        try {
+            this.register(smeltingRecipeInternal);
+
+            double xp = furnaceXpConfig.getDouble(inputItem.getId() + ":" + inputItem.getDamage());
+
+            if (xp != 0) {
+                this.setRecipeXp(smeltingRecipeInternal, xp);
+            }
+        } catch (Exception ignored) {
+
+        }
     }
 
     private void registerSpecial() {
