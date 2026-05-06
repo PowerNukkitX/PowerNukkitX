@@ -961,7 +961,15 @@ public class HandleByteBuf extends ByteBuf {
     public SerializedImage readImage() {
         int width = this.readIntLE();
         int height = this.readIntLE();
-        byte[] bytes = new byte[this.readUnsignedVarInt()];
+        int length = this.readUnsignedVarInt();
+        if (width < 0 || height < 0 ||
+                width > SkinUtils.MAX_IMAGE_DIMENSION || height > SkinUtils.MAX_IMAGE_DIMENSION) {
+            throw new IllegalArgumentException("Invalid image dimensions: " + width + "x" + height);
+        }
+        if (length < 0 || length > SkinUtils.MAX_IMAGE_BYTES || length > this.readableBytes()) {
+            throw new IllegalArgumentException("Invalid image data length: " + length);
+        }
+        byte[] bytes = new byte[length];
         this.readBytes(bytes);
         return new SerializedImage(width, height, bytes);
     }
@@ -1036,6 +1044,9 @@ public class HandleByteBuf extends ByteBuf {
         skin.setSkinData(this.readImage());
 
         int animationCount = this.readIntLE();
+        if (animationCount < 0 || animationCount > 32) {
+            throw new IllegalArgumentException("Animation count out of range: " + animationCount);
+        }
         for (int i = 0; i < animationCount; i++) {
             SerializedImage image = this.readImage();
             int type = this.readIntLE();
@@ -1054,6 +1065,9 @@ public class HandleByteBuf extends ByteBuf {
         skin.setSkinColor(this.readString());
 
         int piecesLength = this.readIntLE();
+        if (piecesLength < 0 || piecesLength > 128) {
+            throw new IllegalArgumentException("PersonaPieces count out of range: " + piecesLength);
+        }
         for (int i = 0; i < piecesLength; i++) {
             String pieceId = this.readString();
             String pieceType = this.readString();
@@ -1064,9 +1078,15 @@ public class HandleByteBuf extends ByteBuf {
         }
 
         int tintsLength = this.readIntLE();
+        if (tintsLength < 0 || tintsLength > 128) {
+            throw new IllegalArgumentException("TintColors count out of range: " + tintsLength);
+        }
         for (int i = 0; i < tintsLength; i++) {
             String pieceType = this.readString();
             int colorsLength = this.readIntLE();
+            if (colorsLength < 0 || colorsLength > 64) {
+                throw new IllegalArgumentException("Tint colors count out of range: " + colorsLength);
+            }
             List<String> colors = new ArrayList<>(colorsLength);
             for (int i2 = 0; i2 < colorsLength; i2++) {
                 colors.add(this.readString());

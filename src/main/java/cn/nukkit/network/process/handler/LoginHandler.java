@@ -11,6 +11,7 @@ import cn.nukkit.network.protocol.ServerToClientHandshakePacket;
 import cn.nukkit.network.protocol.types.InputMode;
 import cn.nukkit.network.protocol.types.PlayerInfo;
 import cn.nukkit.network.protocol.types.XboxLivePlayerInfo;
+import cn.nukkit.network.security.PacketSecurityTracker;
 import cn.nukkit.utils.ClientChainData;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +42,25 @@ public class LoginHandler extends BedrockSessionPacketHandler {
     public void handle(LoginPacket pk) {
         var server = this.session.getServer();
 
-        LoginData loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
-
-        ClientChainData loginData = ClientChainData.of(loginDataRaw);
+        LoginData loginDataRaw;
+        ClientChainData loginData;
+        try {
+            loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
+            loginData = ClientChainData.of(loginDataRaw);
+        } catch (IllegalArgumentException e) {
+            // Malicious payload: oversize fields, too many keys, etc.
+            PacketSecurityTracker.flag(session.getAddress(), "LoginPacket: " + e.getMessage());
+            session.close("§cPacket handling error");
+            return;
+        } catch (SecurityException e) {
+            log.debug("Invalid login JWT from {}: {}", session.getAddress(), e.getMessage());
+            session.close("§cPacket handling error");
+            return;
+        } catch (Exception e) {
+            log.error("Unexpected error processing login from {}", session.getAddress(), e);
+            session.close("§cPacket handling error");
+            return;
+        }
 
         //TODO: re-implement if possible
         //check the player login time
@@ -122,13 +139,20 @@ public class LoginHandler extends BedrockSessionPacketHandler {
             return;
         }
 
-        if (!loginDataRaw.skin().isValid()) {
+        Skin skin;
+        try {
+            skin = loginDataRaw.skin();
+        } catch (IllegalArgumentException e) {
+            PacketSecurityTracker.flag(session.getAddress(), "Skin payload: " + e.getMessage());
+            session.close("disconnectionScreen.invalidSkin");
+            return;
+        }
+        if (!skin.isValid()) {
             log.debug("disconnection due to invalidSkin");
             session.close("disconnectionScreen.invalidSkin");
             return;
         }
 
-        Skin skin = loginDataRaw.skin();
         if (server.getSettings().playerSettings().forceSkinTrusted()) {
             skin.setTrusted(true);
         }

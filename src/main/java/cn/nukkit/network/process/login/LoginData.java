@@ -22,6 +22,13 @@ import java.util.Base64;
 import java.util.UUID;
 
 public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicKey, JsonObject clientData, String xuid, UUID uuid, String displayName, boolean xboxAuthed, boolean isChainPayload, ChainValidationResult.IdentityData identityData) {
+    private static final int MAX_RESOURCE_PATCH_LENGTH = 4 * 1024;
+    private static final int MAX_GEOMETRY_BASE64_LENGTH = 2 * 1024 * 1024;
+    private static final int MAX_ANIMATION_BASE64_LENGTH = 1024 * 1024;
+    private static final int MAX_PERSONA_PIECES = 128;
+    private static final int MAX_TINT_COLORS = 128;
+    private static final int MAX_ANIMATIONS = 32;
+
     public static LoginData processHandshake(LoginPacket packet, boolean strict) throws Exception {
         ChainValidationResult result = EncryptionUtils.validatePayload(packet.authPayload);
         boolean xboxAuth = result.signed();
@@ -91,19 +98,39 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
         if (skinToken.has("CapeOnClassicSkin"))
             skin.setCapeOnClassic(skinToken.get("CapeOnClassicSkin").getAsBoolean());
 
-        if (skinToken.has("SkinResourcePatch"))
-            skin.setSkinResourcePatch(new String(Base64.getDecoder().decode(skinToken.get("SkinResourcePatch").getAsString()), StandardCharsets.UTF_8));
+        if (skinToken.has("SkinResourcePatch")) {
+            String resourcePatch = skinToken.get("SkinResourcePatch").getAsString();
+            if (resourcePatch.length() > MAX_RESOURCE_PATCH_LENGTH) {
+                throw new IllegalArgumentException("SkinResourcePatch base64 too large: " + resourcePatch.length());
+            }
+            skin.setSkinResourcePatch(new String(Base64.getDecoder().decode(resourcePatch), StandardCharsets.UTF_8));
+        }
 
-        if (skinToken.has("SkinGeometryData"))
-            skin.setGeometryData(new String(Base64.getDecoder().decode(skinToken.get("SkinGeometryData").getAsString()), StandardCharsets.UTF_8));
+        if (skinToken.has("SkinGeometryData")) {
+            String geometry = skinToken.get("SkinGeometryData").getAsString();
+            if (geometry.length() > MAX_GEOMETRY_BASE64_LENGTH) {
+                throw new IllegalArgumentException("SkinGeometryData base64 too large: " + geometry.length());
+            }
+            skin.setGeometryData(new String(Base64.getDecoder().decode(geometry), StandardCharsets.UTF_8));
+        }
 
-        if (skinToken.has("SkinAnimationData"))
-            skin.setAnimationData(new String(Base64.getDecoder().decode(skinToken.get("SkinAnimationData").getAsString()), StandardCharsets.UTF_8));
+        if (skinToken.has("SkinAnimationData")) {
+            String animationData = skinToken.get("SkinAnimationData").getAsString();
+            if (animationData.length() > MAX_ANIMATION_BASE64_LENGTH) {
+                throw new IllegalArgumentException("SkinAnimationData base64 too large: " + animationData.length());
+            }
+            skin.setAnimationData(new String(Base64.getDecoder().decode(animationData), StandardCharsets.UTF_8));
+        }
 
-        if (skinToken.has("AnimatedImageData"))
-            for (JsonElement element : skinToken.get("AnimatedImageData").getAsJsonArray()) {
+        if (skinToken.has("AnimatedImageData")) {
+            var array = skinToken.get("AnimatedImageData").getAsJsonArray();
+            if (array.size() > MAX_ANIMATIONS) {
+                throw new IllegalArgumentException("AnimatedImageData array too large: " + array.size());
+            }
+            for (JsonElement element : array) {
                 skin.getAnimations().add(SkinUtils.getAnimation(element.getAsJsonObject()));
             }
+        }
 
         if (skinToken.has("SkinColor"))
             skin.setSkinColor(skinToken.get("SkinColor").getAsString());
@@ -111,15 +138,26 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
         if (skinToken.has("ArmSize"))
             skin.setArmSize(skinToken.get("ArmSize").getAsString());
 
-        if (skinToken.has("PersonaPieces"))
-            for (JsonElement object : skinToken.get("PersonaPieces").getAsJsonArray()) {
+        if (skinToken.has("PersonaPieces")) {
+            var array = skinToken.get("PersonaPieces").getAsJsonArray();
+            if (array.size() > MAX_PERSONA_PIECES) {
+                throw new IllegalArgumentException("PersonaPieces array too large: " + array.size());
+            }
+            for (JsonElement object : array) {
                 skin.getPersonaPieces().add(SkinUtils.getPersonaPiece(object.getAsJsonObject()));
             }
+        }
 
-        if (skinToken.has("PieceTintColors"))
-            for (JsonElement object : skinToken.get("PieceTintColors").getAsJsonArray()) {
+
+        if (skinToken.has("PieceTintColors")) {
+            var array = skinToken.get("PieceTintColors").getAsJsonArray();
+            if (array.size() > MAX_TINT_COLORS) {
+                throw new IllegalArgumentException("PieceTintColors array too large: " + array.size());
+            }
+            for (JsonElement object : array) {
                 skin.getTintColors().add(SkinUtils.getTint(object.getAsJsonObject()));
             }
+        }
 
         return skin;
     }

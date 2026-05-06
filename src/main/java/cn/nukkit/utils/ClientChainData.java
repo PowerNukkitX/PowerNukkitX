@@ -3,9 +3,12 @@ package cn.nukkit.utils;
 import cn.nukkit.Server;
 import cn.nukkit.network.process.login.LoginData;
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -15,7 +18,33 @@ import java.util.UUID;
  *
  * @author boybook (Nukkit Project)
  */
+@Slf4j
 public final class ClientChainData implements LoginChainData {
+    private static final int MAX_CLIENT_DATA_KEYS = 256;
+
+    /**
+     * Whitelist of keys produced by vanilla Bedrock clients (and read by this server or by skin
+     * deserialization). Anything outside is logged once and ignored, mirroring the
+     * "extraData CPU exhaustion" hardening in upstream forks.
+     */
+    private static final Set<String> KNOWN_CLIENT_DATA_KEYS = Set.of(
+            // device / session
+            "ClientRandomId", "ServerAddress", "DeviceModel", "DeviceOS", "DeviceId",
+            "GameVersion", "GuiScale", "LanguageCode", "CurrentInputMode", "DefaultInputMode",
+            "UIProfile", "MaxViewDistance", "MemoryTier", "PartyId", "PlatformOnlineId",
+            "PlatformOfflineId", "PlatformUserId", "PlayFabId", "PlayFabID", "SelfSignedId",
+            "ThirdPartyName", "ThirdPartyNameOnly", "TenantId", "GraphicsMode", "TrustedSkin",
+            "CompatibleVersions", "IsEditorMode", "OverrideSkin",
+            // proxy
+            "Waterdog_IP", "Waterdog_XUID",
+            // skin / persona
+            "SkinId", "SkinData", "SkinImageWidth", "SkinImageHeight", "CapeData",
+            "CapeImageWidth", "CapeImageHeight", "CapeId", "PremiumSkin", "PersonaSkin",
+            "CapeOnClassicSkin", "SkinResourcePatch", "SkinGeometryData",
+            "SkinGeometryDataEngineVersion", "SkinAnimationData", "AnimatedImageData",
+            "SkinColor", "ArmSize", "PersonaPieces", "PieceTintColors"
+    );
+
     public static ClientChainData of(LoginData data) {
         return new ClientChainData(data);
     }
@@ -197,6 +226,7 @@ public final class ClientChainData implements LoginChainData {
 
     private void loadClientData(JsonObject skinToken) {
         if (skinToken == null) return;
+        validateClientDataKeys(skinToken);
         if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
         if (skinToken.has("ServerAddress")) this.serverAddress = skinToken.get("ServerAddress").getAsString();
         if (skinToken.has("DeviceModel")) this.deviceModel = skinToken.get("DeviceModel").getAsString();
@@ -220,6 +250,26 @@ public final class ClientChainData implements LoginChainData {
         }
 
         this.rawData = skinToken;
+    }
+
+    /**
+     * Reject JWT bodies with absurd key counts and warn (once) about unknown keys.
+     * Bedrock clients have a stable schema; thousands of keys means a forged token.
+     */
+    private static void validateClientDataKeys(JsonObject skinToken) {
+        int size = skinToken.size();
+        if (size > MAX_CLIENT_DATA_KEYS) {
+            throw new IllegalArgumentException("ClientData has too many keys: " + size);
+        }
+        int unknown = 0;
+        for (Map.Entry<String, ?> entry : skinToken.entrySet()) {
+            if (!KNOWN_CLIENT_DATA_KEYS.contains(entry.getKey())) {
+                unknown++;
+            }
+        }
+        if (unknown > 0) {
+            log.debug("ClientData contains {} unknown key(s), size={}", unknown, size);
+        }
     }
 
     public static JsonObject decodeToken(String token) {

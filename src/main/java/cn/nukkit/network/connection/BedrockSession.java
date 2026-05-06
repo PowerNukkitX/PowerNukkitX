@@ -33,6 +33,7 @@ import cn.nukkit.network.process.handler.SpawnResponseHandler;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
 import cn.nukkit.network.protocol.types.PlayerInfo;
+import cn.nukkit.network.security.PacketSecurityTracker;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ByteBufVarInt;
@@ -108,7 +109,9 @@ public class BedrockSession {
             try {
                 this.handleDataPacket(pk);
             } catch (Exception e) {
-                log.error("An error occurred whilst handling {} for {}", pk.getClass().getSimpleName(), this.getSocketAddress().toString(), e);
+                log.error("Error handling {} for {}", pk.getClass().getSimpleName(), this.getSocketAddress(), e);
+                PacketSecurityTracker.flag(this.address, pk.getClass().getSimpleName() + ": " + e.getMessage());
+                this.close("§cInternal Error");
             }
         });
 
