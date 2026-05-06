@@ -54,7 +54,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
             "minecraft:deprecated_purpur_block_2",
-            "minecraft:chain",
             "minecraft:polished_sulfur",
             "minecraft:polished_sulfur_wall",
             "minecraft:cinnabar_wall",
