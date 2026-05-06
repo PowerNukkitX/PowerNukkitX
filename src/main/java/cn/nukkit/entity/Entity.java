@@ -552,6 +552,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
+        this.entityDataMap.put(RESERVED_139, 0L);
+        this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
 
         // =========================================================
         // Load Effects from NBT
@@ -1619,7 +1621,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
                 effect.onTick(this);
-                
+
                 if (!effect.isInfinite()) {
                     effect.setDuration(effect.getDuration() - tickDiff);
 
@@ -4655,7 +4657,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
-    /** 
+    /**
      * return true if opening inventory, otherwise players inventory will be opnened. <p>
      * If inventory is restricted to owner no inventory UI is opened
      * */

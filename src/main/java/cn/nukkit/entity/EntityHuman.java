@@ -174,6 +174,9 @@ public class EntityHuman extends EntityHumanType {
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
+            this.entityDataMap.put(RESERVED_139, 0L);
+            this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
+
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();
             pk.username = this.getName();
