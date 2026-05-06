@@ -14,27 +14,27 @@
 </p>
 
 <p align="center">
-   <img alt="Sürüm" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
-   <a href="https://www.minecraft.net/en-us/article/minecraft-26-10-bedrock-changelog">
-      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v26.10%20(Bedrock)-56383E" />
+   <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-blue.svg?cacheSeconds=2592000" />
+   <a href="https://feedback.minecraft.net/hc/en-us/articles/45400537384333-Minecraft-Bedrock-Edition-26-20-Changelog">
+      <img alt="Minecraft" src="https://img.shields.io/badge/minecraft-v26.20%20(Bedrock)-56383E" />
    </a>
    <a href="https://github.com/Mojang/bedrock-protocol-docs">
-      <img alt="Protokol" src="https://img.shields.io/badge/protocol-944-blue" />
+      <img alt="Protocol" src="https://img.shields.io/badge/protocol-975-blue" />
    </a>
    <a href="https://github.com/PowerNukkitX/PowerNukkitX/actions?query=branch%3Amaster+is%3Asuccess" target="_blank">
-      <img alt="Action" src="https://img.shields.io/badge/action-tüm%20buildler-FF9B21" />
+      <img alt="Action" src="https://img.shields.io/badge/action-all%20builds-FF9B21" />
    </a>
    <a href="https://discord.com/invite/XXus4FB6qf">
       <img alt="Discord" src="https://img.shields.io/discord/944227466912870410?label=discord&color=7289DA&logo=discord" />
    </a>
    <a href="https://docs.powernukkitx.org" target="_blank">
-      <img alt="Belgeler" src="https://img.shields.io/badge/documentation-var-brightgreen.svg" />
+      <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
    </a>
    <a href="https://codecov.io/github/PowerNukkitX/PowerNukkitX" > 
       <img alt="Codecov" src="https://codecov.io/github/PowerNukkitX/PowerNukkitX/graph/badge.svg?token=84HDP13KC3"/> 
    </a>
    <a href="https://www.gnu.org/licenses/lgpl-3.0.html" target="_blank">
-      <img alt="Lisans: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
+      <img alt="License: LGPL-3" src="https://img.shields.io/badge/License-LGPL--3-yellow.svg" />
    </a>
 </p>
 
