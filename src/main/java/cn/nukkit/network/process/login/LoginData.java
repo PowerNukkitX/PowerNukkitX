@@ -5,6 +5,7 @@ import cn.nukkit.network.connection.util.ChainValidationResult;
 import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.utils.EncryptionUtils;
 import cn.nukkit.utils.SkinUtils;
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -100,33 +101,25 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
 
         if (skinToken.has("SkinResourcePatch")) {
             String resourcePatch = skinToken.get("SkinResourcePatch").getAsString();
-            if (resourcePatch.length() > MAX_RESOURCE_PATCH_LENGTH) {
-                throw new IllegalArgumentException("SkinResourcePatch base64 too large: " + resourcePatch.length());
-            }
+            Preconditions.checkArgument(resourcePatch.length() <= MAX_RESOURCE_PATCH_LENGTH, "SkinResourcePatch base64 too large: %s", resourcePatch.length());
             skin.setSkinResourcePatch(new String(Base64.getDecoder().decode(resourcePatch), StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("SkinGeometryData")) {
             String geometry = skinToken.get("SkinGeometryData").getAsString();
-            if (geometry.length() > MAX_GEOMETRY_BASE64_LENGTH) {
-                throw new IllegalArgumentException("SkinGeometryData base64 too large: " + geometry.length());
-            }
+            Preconditions.checkArgument(geometry.length() <= MAX_GEOMETRY_BASE64_LENGTH, "SkinGeometryData base64 too large: %s", geometry.length());
             skin.setGeometryData(new String(Base64.getDecoder().decode(geometry), StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("SkinAnimationData")) {
             String animationData = skinToken.get("SkinAnimationData").getAsString();
-            if (animationData.length() > MAX_ANIMATION_BASE64_LENGTH) {
-                throw new IllegalArgumentException("SkinAnimationData base64 too large: " + animationData.length());
-            }
+            Preconditions.checkArgument(animationData.length() <= MAX_ANIMATION_BASE64_LENGTH, "SkinAnimationData base64 too large: %s", animationData.length());
             skin.setAnimationData(new String(Base64.getDecoder().decode(animationData), StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("AnimatedImageData")) {
             var array = skinToken.get("AnimatedImageData").getAsJsonArray();
-            if (array.size() > MAX_ANIMATIONS) {
-                throw new IllegalArgumentException("AnimatedImageData array too large: " + array.size());
-            }
+            Preconditions.checkArgument(array.size() <= MAX_ANIMATIONS, "AnimatedImageData array too large: %s", array.size());
             for (JsonElement element : array) {
                 skin.getAnimations().add(SkinUtils.getAnimation(element.getAsJsonObject()));
             }
@@ -140,20 +133,15 @@ public record LoginData(ECPublicKey identityPublicKey, String rawIdentityPublicK
 
         if (skinToken.has("PersonaPieces")) {
             var array = skinToken.get("PersonaPieces").getAsJsonArray();
-            if (array.size() > MAX_PERSONA_PIECES) {
-                throw new IllegalArgumentException("PersonaPieces array too large: " + array.size());
-            }
+            Preconditions.checkArgument(array.size() <= MAX_PERSONA_PIECES, "PersonaPieces array too large: %s", array.size());
             for (JsonElement object : array) {
                 skin.getPersonaPieces().add(SkinUtils.getPersonaPiece(object.getAsJsonObject()));
             }
         }
 
-
         if (skinToken.has("PieceTintColors")) {
             var array = skinToken.get("PieceTintColors").getAsJsonArray();
-            if (array.size() > MAX_TINT_COLORS) {
-                throw new IllegalArgumentException("PieceTintColors array too large: " + array.size());
-            }
+            Preconditions.checkArgument(array.size() <= MAX_TINT_COLORS, "PieceTintColors array too large: %s", array.size());
             for (JsonElement object : array) {
                 skin.getTintColors().add(SkinUtils.getTint(object.getAsJsonObject()));
             }
