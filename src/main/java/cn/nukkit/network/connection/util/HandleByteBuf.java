@@ -43,6 +43,7 @@ import cn.nukkit.recipe.descriptor.ItemTagDescriptor;
 import cn.nukkit.recipe.descriptor.MolangDescriptor;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.*;
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -962,13 +963,8 @@ public class HandleByteBuf extends ByteBuf {
         int width = this.readIntLE();
         int height = this.readIntLE();
         int length = this.readUnsignedVarInt();
-        if (width < 0 || height < 0 ||
-                width > SkinUtils.MAX_IMAGE_DIMENSION || height > SkinUtils.MAX_IMAGE_DIMENSION) {
-            throw new IllegalArgumentException("Invalid image dimensions: " + width + "x" + height);
-        }
-        if (length < 0 || length > SkinUtils.MAX_IMAGE_BYTES || length > this.readableBytes()) {
-            throw new IllegalArgumentException("Invalid image data length: " + length);
-        }
+        Preconditions.checkArgument(width >= 0 && height >= 0 && width <= SkinUtils.MAX_IMAGE_DIMENSION && height <= SkinUtils.MAX_IMAGE_DIMENSION, "Invalid image dimensions: %sx%s", width, height);
+        Preconditions.checkArgument(length >= 0 && length <= SkinUtils.MAX_IMAGE_BYTES && length <= this.readableBytes(), "Invalid image data length: %s", length);
         byte[] bytes = new byte[length];
         this.readBytes(bytes);
         return new SerializedImage(width, height, bytes);
@@ -1044,9 +1040,7 @@ public class HandleByteBuf extends ByteBuf {
         skin.setSkinData(this.readImage());
 
         int animationCount = this.readIntLE();
-        if (animationCount < 0 || animationCount > 32) {
-            throw new IllegalArgumentException("Animation count out of range: " + animationCount);
-        }
+        Preconditions.checkArgument(animationCount >= 0 && animationCount <= 32, "Animation count out of range: %s", animationCount);
         for (int i = 0; i < animationCount; i++) {
             SerializedImage image = this.readImage();
             int type = this.readIntLE();
@@ -1065,9 +1059,7 @@ public class HandleByteBuf extends ByteBuf {
         skin.setSkinColor(this.readString());
 
         int piecesLength = this.readIntLE();
-        if (piecesLength < 0 || piecesLength > 128) {
-            throw new IllegalArgumentException("PersonaPieces count out of range: " + piecesLength);
-        }
+        Preconditions.checkArgument(piecesLength >= 0 && piecesLength <= 128, "PersonaPieces count out of range: %s", piecesLength);
         for (int i = 0; i < piecesLength; i++) {
             String pieceId = this.readString();
             String pieceType = this.readString();
@@ -1078,15 +1070,11 @@ public class HandleByteBuf extends ByteBuf {
         }
 
         int tintsLength = this.readIntLE();
-        if (tintsLength < 0 || tintsLength > 128) {
-            throw new IllegalArgumentException("TintColors count out of range: " + tintsLength);
-        }
+        Preconditions.checkArgument(tintsLength >= 0 && tintsLength <= 128, "TintColors count out of range: %s", tintsLength);
         for (int i = 0; i < tintsLength; i++) {
             String pieceType = this.readString();
             int colorsLength = this.readIntLE();
-            if (colorsLength < 0 || colorsLength > 64) {
-                throw new IllegalArgumentException("Tint colors count out of range: " + colorsLength);
-            }
+            Preconditions.checkArgument(colorsLength >= 0 && colorsLength <= 64, "Tint colors count out of range: %s", colorsLength);
             List<String> colors = new ArrayList<>(colorsLength);
             for (int i2 = 0; i2 < colorsLength; i2++) {
                 colors.add(this.readString());

@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Server;
 import cn.nukkit.network.process.login.LoginData;
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -258,9 +259,7 @@ public final class ClientChainData implements LoginChainData {
      */
     private static void validateClientDataKeys(JsonObject skinToken) {
         int size = skinToken.size();
-        if (size > MAX_CLIENT_DATA_KEYS) {
-            throw new IllegalArgumentException("ClientData has too many keys: " + size);
-        }
+        Preconditions.checkArgument(size <= MAX_CLIENT_DATA_KEYS, "ClientData has too many keys: %s", size);
         int unknown = 0;
         for (Map.Entry<String, ?> entry : skinToken.entrySet()) {
             if (!KNOWN_CLIENT_DATA_KEYS.contains(entry.getKey())) {

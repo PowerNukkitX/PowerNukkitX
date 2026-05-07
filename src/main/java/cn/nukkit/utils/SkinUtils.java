@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -19,9 +20,7 @@ public class SkinUtils {
         float frames = element.get("Frames").getAsFloat();
         int type = element.get("Type").getAsInt();
         String b64 = element.get("Image").getAsString();
-        if (b64.length() > MAX_IMAGE_BASE64_LENGTH) {
-            throw new IllegalArgumentException("Animation image base64 too large: " + b64.length());
-        }
+        Preconditions.checkArgument(b64.length() <= MAX_IMAGE_BASE64_LENGTH, "Animation image base64 too large: %s", b64.length());
         byte[] data = Base64.getDecoder().decode(b64);
         int width = element.get("ImageWidth").getAsInt();
         int height = element.get("ImageHeight").getAsInt();
@@ -33,9 +32,7 @@ public class SkinUtils {
     public static SerializedImage getImage(JsonObject token, String name) {
         if (token.has(name + "Data")) {
             String b64 = token.get(name + "Data").getAsString();
-            if (b64.length() > MAX_IMAGE_BASE64_LENGTH) {
-                throw new IllegalArgumentException(name + "Data base64 too large: " + b64.length());
-            }
+            Preconditions.checkArgument(b64.length() <= MAX_IMAGE_BASE64_LENGTH, "%sData base64 too large: %s", name, b64.length());
             byte[] skinImage = Base64.getDecoder().decode(b64);
             if (token.has(name + "ImageHeight") && token.has(name + "ImageWidth")) {
                 int width = token.get(name + "ImageWidth").getAsInt();
@@ -43,9 +40,7 @@ public class SkinUtils {
                 validateImageDimensions(width, height, skinImage.length);
                 return new SerializedImage(width, height, skinImage);
             } else {
-                if (skinImage.length > MAX_IMAGE_BYTES) {
-                    throw new IllegalArgumentException(name + " legacy image too large: " + skinImage.length);
-                }
+                Preconditions.checkArgument(skinImage.length <= MAX_IMAGE_BYTES, "%s legacy image too large: %s", name, skinImage.length);
                 return SerializedImage.fromLegacy(skinImage);
             }
         }
@@ -74,12 +69,8 @@ public class SkinUtils {
         if (width == 0 && height == 0 && dataLength == 0) {
             return;
         }
-        if (width < 0 || height < 0 || width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-            throw new IllegalArgumentException("Invalid image dimensions: " + width + "x" + height);
-        }
+        Preconditions.checkArgument(width >= 0 && height >= 0 && width <= MAX_IMAGE_DIMENSION && height <= MAX_IMAGE_DIMENSION, "Invalid image dimensions: %sx%s", width, height);
         long expected = (long) width * (long) height * 4L;
-        if (expected != dataLength) {
-            throw new IllegalArgumentException("Image data length " + dataLength + " does not match " + width + "x" + height + "x4");
-        }
+        Preconditions.checkArgument(expected == dataLength, "Image data length %s does not match %sx%sx4", dataLength, width, height);
     }
 }
