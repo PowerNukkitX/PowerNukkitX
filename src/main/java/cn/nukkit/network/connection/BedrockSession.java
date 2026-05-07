@@ -111,7 +111,7 @@ public class BedrockSession {
             } catch (Exception e) {
                 log.error("Error handling {} for {}", pk.getClass().getSimpleName(), this.getSocketAddress(), e);
                 PacketSecurityTracker.flag(this.address, pk.getClass().getSimpleName() + ": " + e.getMessage());
-                this.close("§cInternal Error");
+                this.close("§cInternal error, please try again.");
             }
         });
 
