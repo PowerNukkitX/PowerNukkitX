@@ -67,7 +67,7 @@ public class CameraInstructionPacket extends DataPacket {
         byteBuf.writeNotNull(fovInstruction, target -> {
             byteBuf.writeFloatLE(target.getFov());
             byteBuf.writeFloatLE(target.getEaseTime());
-            byteBuf.writeByte(target.getEaseType().ordinal());
+            byteBuf.writeString(target.getEaseType().getSerializeName());
             byteBuf.writeBoolean(target.isClear());
         });
 
@@ -90,7 +90,7 @@ public class CameraInstructionPacket extends DataPacket {
     }
 
     protected void writeEase(HandleByteBuf byteBuf, Ease ease) {
-        byteBuf.writeByte((byte) ease.easeType().ordinal());
+        byteBuf.writeString(ease.easeType().getType());
         byteBuf.writeFloatLE(ease.time());
     }
 
