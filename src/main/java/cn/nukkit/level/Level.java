@@ -1310,7 +1310,7 @@ public class Level implements Metadatable {
                                 LevelEventPacket pk2 = new LevelEventPacket();
                                 pk2.evid = LevelEventPacket.EVENT_START_THUNDERSTORM;
                                 pk2.data = thunderTime;
-                                player.dataPacket(pk);
+                                player.dataPacket(pk2);
                                 this.playerWeatherShowMap.put(key, 2);
                             }
                         }
