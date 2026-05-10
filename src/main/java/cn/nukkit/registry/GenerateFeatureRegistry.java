@@ -143,6 +143,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(SeaAnemoneFeature.NAME, SeaAnemoneFeature.class);
             this.register(SeaPickleFeature.NAME, SeaPickleFeature.class);
             this.register(OverworldCaveCarverFeature.NAME, OverworldCaveCarverFeature.class);
+            this.register(OverworldSurfaceSpringsFeature.NAME, OverworldSurfaceSpringsFeature.class);
             this.register(MonsterRoomFeature.NAME, MonsterRoomFeature.class);
             this.register(MossSnapToCeilingFeature.NAME, MossSnapToCeilingFeature.class);
             this.register(AzaleaRootSystemSnapToCeilingFeature.NAME, AzaleaRootSystemSnapToCeilingFeature.class);
