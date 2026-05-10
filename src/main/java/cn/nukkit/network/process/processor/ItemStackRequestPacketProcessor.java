@@ -64,6 +64,15 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
     @SuppressWarnings("unchecked")
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ItemStackRequestPacket pk) {
         Player player = playerHandle.player;
+
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
+
+        if (pk.requests.size() > 128) {
+            return;
+        }
+
         List<ItemStackResponse> responses = new ArrayList<>();
 
         for (var request : pk.requests) {

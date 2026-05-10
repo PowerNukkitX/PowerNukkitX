@@ -20,6 +20,9 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
         if (!playerHandle.packetRateLimiter.tryMovement()) {
             return;
         }
+        if (!Float.isFinite(pk.x) || !Float.isFinite(pk.y) || !Float.isFinite(pk.z) || !Float.isFinite(pk.yaw) || !Float.isFinite(pk.headYaw) || !Float.isFinite(pk.pitch)) {
+            return;
+        }
         Vector3 newPos = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);
 
         pk.yaw %= 360;

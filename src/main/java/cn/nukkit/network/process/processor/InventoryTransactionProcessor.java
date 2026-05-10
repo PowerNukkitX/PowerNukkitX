@@ -50,6 +50,11 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
         Player player = playerHandle.player;
+
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
+
         if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM) {
             handleUseItem(playerHandle, pk);
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY) {
@@ -142,6 +147,9 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         Item item = player.getInventory().getItemInMainHand();
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
+                if (!player.canInteract(target, player.isCreative() ? 13 : 7)) {
+                    return;
+                }
                 PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
                 if (player.isSpectator() || (player.getDataFlag(EntityFlag.SILENT) && !(target instanceof InventoryHolder))) playerInteractEntityEvent.setCancelled();
                 playerHandle.setInteract();

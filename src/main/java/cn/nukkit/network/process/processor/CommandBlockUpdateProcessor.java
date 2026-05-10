@@ -17,6 +17,10 @@ import org.jetbrains.annotations.NotNull;
 public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBlockUpdatePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandBlockUpdatePacket pk) {
+        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+            return;
+        }
+
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
             if (pk.isBlock) {
                 BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(pk.x, pk.y, pk.z));

@@ -21,6 +21,9 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
         if (!playerHandle.packetRateLimiter.tryMovement()) {
             return;
         }
+        if (!Double.isFinite(pk.x) || !Double.isFinite(pk.y) || !Double.isFinite(pk.z) || !Double.isFinite(pk.yaw) || !Double.isFinite(pk.headYaw) || !Double.isFinite(pk.pitch)) {
+            return;
+        }
         Entity movedEntity = player.getLevel().getEntity(pk.eid);
         if (!(movedEntity instanceof EntityBoat)) {
             return;

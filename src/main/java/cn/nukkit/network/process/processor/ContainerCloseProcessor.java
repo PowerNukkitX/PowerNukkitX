@@ -16,6 +16,11 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull ContainerClosePacket pk) {
         Player player = playerHandle.player;
+
+        if (pk.windowId < -2 || pk.windowId > 125) {
+            return;
+        }
+
         if (!player.spawned || pk.windowId == SpecialWindowId.PLAYER.getId() && !playerHandle.getInventoryOpen()) {
             sendClose(playerHandle, pk);
             playerHandle.setClosingWindowId(Integer.MIN_VALUE);
