@@ -110,7 +110,7 @@ public class LocateCommand extends VanillaCommand {
                     String _y = String.valueOf(found.getFloorY());
                     String _z = String.valueOf(found.getFloorZ());
                     String _d = String.valueOf((int) found.distance(pos));
-                    log.addSuccess("commands.locate.structure.success", structure, _x, _y, _z, _d);
+                    log.addSuccess("commands.locate.structure.success", structure, _x, _z, _d);
                     if (list.hasResult(2) && (boolean) list.getResult(2) && sender.isPlayer()) {
                         sender.asPlayer().teleport(found);
                     }
