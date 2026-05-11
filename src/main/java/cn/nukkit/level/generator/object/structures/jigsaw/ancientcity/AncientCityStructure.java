@@ -3,6 +3,8 @@ package cn.nukkit.level.generator.object.structures.jigsaw.ancientcity;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockChest;
+import cn.nukkit.block.BlockSculkShrieker;
+import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
@@ -31,10 +33,16 @@ import static cn.nukkit.block.BlockID.SCULK;
 import static cn.nukkit.block.BlockID.SCULK_CATALYST;
 import static cn.nukkit.block.BlockID.SCULK_SENSOR;
 import static cn.nukkit.block.BlockID.SOUL_TORCH;
+import static cn.nukkit.block.property.CommonBlockProperties.CAN_SUMMON;
 
 public class AncientCityStructure extends JigsawStructure {
 
     public static final String START = "ancient_city/city_center";
+
+    private static final BlockState SCULK_SHRIEKER = BlockSculkShrieker.PROPERTIES.getBlockState(
+            CAN_SUMMON.createValue(true)
+    );
+
     private static final int BEARD_KERNEL_RADIUS = 12;
     private static final int BEARD_KERNEL_SIZE = BEARD_KERNEL_RADIUS * 2;
     private static final double BEARD_CARVE_THRESHOLD = -0.03;
@@ -146,7 +154,7 @@ public class AncientCityStructure extends JigsawStructure {
     protected void postProcessStructurePiece(String structureName, BlockManager blockManager, PNXStructure.Jigsaw[] jigsaws) {
         Level level = blockManager.getLevel();
         for(Block block : blockManager.getBlocks()) {
-            if(block.getId().equals(Block.JIGSAW)) blockManager.unsetBlockStateAt(block);
+            if(block.getId().equals(Block.JIGSAW)) blockManager.setBlockStateAt(block, SCULK_SHRIEKER);
         }
 
         RandomizableContainer loot = structureName.contains("ice_box") ? ICE_BOX_CHEST : CITY_CHEST;
