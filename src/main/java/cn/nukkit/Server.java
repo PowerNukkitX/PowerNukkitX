@@ -890,12 +890,12 @@ public class Server {
             this.scheduler.mainThreadHeartbeat((int) (this.getNextTick() + 10000));
 
             log.debug("Unloading all levels");
+            //Chunks may still generate. Waiting for all generation tasks to complete
+            while(!this.getComputeThreadPool().isQuiescent()) Thread.sleep(1);
             for (Level level : this.levelArray) {
                 this.unloadLevel(level, true);
-                while (level.isThreadRunning())
-                    Thread.sleep(10); // TODO: This is just a workaround, we need to apply proper thread
-                                      // synchronization to ensure the level thread is stopped before proceeding with
-                                      // the shutdown process.
+                //Waiting for level to complete its last tick
+                while (level.isThreadRunning()) Thread.sleep(1);
             }
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
