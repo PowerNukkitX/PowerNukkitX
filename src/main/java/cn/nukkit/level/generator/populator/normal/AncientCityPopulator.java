@@ -44,7 +44,6 @@ public class AncientCityPopulator extends Populator {
 
         int originX = chunkX << 4;
         int originZ = chunkZ << 4;
-        System.out.println(originX + " " + -51 + " " + originZ);
         StructureHelper helper = new StructureHelper(level, new BlockVector3(originX, GENERATION_Y, originZ));
         ANCIENT_CITY.place(helper, random.fork());
         queueObject(chunk, helper);
