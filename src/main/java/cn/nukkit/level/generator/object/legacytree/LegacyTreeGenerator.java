@@ -5,10 +5,12 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.TreeGenerator;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-public abstract class LegacyTreeGenerator {
+public abstract class LegacyTreeGenerator extends TreeGenerator {
     protected int treeHeight = 7;
 
     public static void growTree(BlockManager level, int x, int y, int z, RandomSourceProvider random, WoodType type, boolean tall) {
@@ -93,6 +95,12 @@ public abstract class LegacyTreeGenerator {
             }
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
+        placeObject(level, position.getFloorX(), position.getFloorY(), position.getFloorZ(), rand);
         return true;
     }
 

@@ -1,6 +1,8 @@
 package cn.nukkit.level.generator.feature.tree;
 
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
+import cn.nukkit.level.generator.object.ObjectFallenTree;
 import cn.nukkit.level.generator.object.ObjectFancyOakTree;
 import cn.nukkit.level.generator.object.ObjectJungleTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
@@ -16,7 +18,7 @@ public class JungleEdgeTreeFeature extends ObjectGeneratorFeature {
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
         return switch (random.nextInt(5)) {
-            case 0, 1 -> new ObjectJungleTree(7, 8);
+            case 0, 1 -> random.nextInt(100) == 0 ? new ObjectFallenTree(WoodType.JUNGLE) : new ObjectJungleTree(7, 8);
             default -> new ObjectFancyOakTree();
         };
     }

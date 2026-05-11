@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.ObjectGenerator;
+import cn.nukkit.level.generator.object.TreeGenerator;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -16,10 +17,11 @@ import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
+import com.sun.source.tree.Tree;
 
 public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
 
-    public abstract LegacyTreeGenerator getGenerator(RandomSourceProvider random);
+    public abstract TreeGenerator getGenerator(RandomSourceProvider random);
 
     public int getMin() {
         return 5;
@@ -58,9 +60,9 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
             if(!Registries.BIOME.get(level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())).getTags().contains(getRequiredTag())) continue;
             if(isSupportValid(level.getBlock(v))) {
-                LegacyTreeGenerator generator = getGenerator(random);
+                TreeGenerator generator = getGenerator(random);
                 if(generator == null) return;
-                generator.placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
+                generator.generate(object, random, new Vector3(v.getFloorX(), v.getFloorY() + 1, v.getFloorZ()));
                 manager.merge(object);
             }
         }

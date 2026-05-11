@@ -1,12 +1,11 @@
 package cn.nukkit.level.generator.feature.tree;
 
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.generator.feature.LegacyTreeGeneratorFeature;
+import cn.nukkit.level.generator.object.ObjectFallenTree;
+import cn.nukkit.level.generator.object.TreeGenerator;
 import cn.nukkit.level.generator.object.legacytree.LegacyBirchTree;
-import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
-import cn.nukkit.level.generator.object.legacytree.LegacyTallBirchTree;
-import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class BirchForestTreeFeature extends LegacyTreeGeneratorFeature {
@@ -14,8 +13,8 @@ public class BirchForestTreeFeature extends LegacyTreeGeneratorFeature {
     public static final String NAME = "minecraft:birch_forest_surface_trees_feature";
 
     @Override
-    public LegacyTreeGenerator getGenerator(RandomSourceProvider random) {
-        return new LegacyBirchTree();
+    public TreeGenerator getGenerator(RandomSourceProvider random) {
+        return random.nextInt(100) == 0 ? new ObjectFallenTree(WoodType.BIRCH) : new LegacyBirchTree();
     }
 
     @Override
