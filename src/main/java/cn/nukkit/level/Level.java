@@ -4722,7 +4722,7 @@ public class Level implements Metadatable {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toUnmodifiableSet());
 
-                if (!chunksToSave.isEmpty()) {
+                if (!chunksToSave.isEmpty() && getAutoSave()) {
                     requireProvider().saveChunks(chunksToSave);
                 }
 

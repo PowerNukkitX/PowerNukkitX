@@ -67,6 +67,7 @@ public class PopulatorRegistry implements IRegistry<String, Populator, Class<? e
         this.register0(BastionRemnantPopulator.NAME, BastionRemnantPopulator.class);
         this.register0(DesertWellPopulator.NAME, DesertWellPopulator.class);
         this.register0(DesertPyramidPopulator.NAME, DesertPyramidPopulator.class);
+        this.register0(AncientCityPopulator.NAME, AncientCityPopulator.class);
         this.register0(FossilPopulator.NAME, FossilPopulator.class);
         this.register0(IglooPopulator.NAME, IglooPopulator.class);
         this.register0(MineshaftPopulator.NAME, MineshaftPopulator.class);

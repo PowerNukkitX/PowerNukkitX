@@ -28,6 +28,7 @@ import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.warden.WardenWarningData;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
@@ -334,6 +335,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
+    private final WardenWarningData wardenWarningData = new WardenWarningData();
     protected AtomicInteger shapeIds = new AtomicInteger(0);
     /**
      * Stores the current client input lock flags applied to this player.
@@ -5528,6 +5530,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID(), this.getLocatorBarColor());
         }
+    }
+
+    public WardenWarningData getWardenWarningData() {
+        return this.wardenWarningData;
     }
 
     /**
