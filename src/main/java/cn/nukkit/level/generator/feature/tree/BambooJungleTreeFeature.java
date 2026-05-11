@@ -30,12 +30,12 @@ public class BambooJungleTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public int getMin() {
-        return 10;
+        return -1;
     }
 
     @Override
     public int getMax() {
-        return 11;
+        return 1;
     }
 
     @Override

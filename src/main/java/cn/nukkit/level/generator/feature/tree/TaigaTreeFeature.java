@@ -38,11 +38,6 @@ public class TaigaTreeFeature extends GriddedFeature {
     }
 
     @Override
-    public int getSplit() {
-        return 2;
-    }
-
-    @Override
     public void apply(ChunkGenerateContext context) {
         super.apply(context);
         IChunk chunk = context.getChunk();

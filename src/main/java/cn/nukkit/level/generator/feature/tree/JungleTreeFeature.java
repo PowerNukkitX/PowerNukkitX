@@ -1,16 +1,12 @@
 package cn.nukkit.level.generator.feature.tree;
 
-import cn.nukkit.block.BlockJungleLeaves;
-import cn.nukkit.block.BlockJungleLog;
-import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.level.generator.feature.GriddedFeature;
+import cn.nukkit.level.generator.object.ObjectFancyOakTree;
 import cn.nukkit.level.generator.object.ObjectJungleTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectJungleBigTree;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
 import cn.nukkit.tags.BiomeTags;
-import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
 public class JungleTreeFeature extends GriddedFeature {
@@ -19,9 +15,10 @@ public class JungleTreeFeature extends GriddedFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return switch (random.nextInt(9)) {
-            case 0, 1, 3, 4, 5 -> new ObjectJungleBigTree(10, 20);
-            case 6 -> new ObjectJungleTree(4 + random.nextBoundedInt(7), 3);
+        return switch (random.nextInt(10)) {
+            case 0 -> new ObjectJungleBigTree(10, 20);
+            case 4, 5, 6 -> new ObjectJungleTree(4 + random.nextBoundedInt(7), 3);
+            case 7, 8 -> new ObjectFancyOakTree();
             default -> new ObjectJungleTree(7, 8);
         };
     }
