@@ -72,7 +72,6 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
-        //if (this.target == null) target = newTarget;
         if (newTarget == null || !newTarget.isAlive()) {
             tick1 = 0;
             tick2 = 0;
@@ -165,7 +164,6 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected void bowShoot(ItemBow bow, EntityLiving entity) {
-        //playBowAnimation(entity);
         double damage = 2;
         Enchantment bowDamage = bow.getEnchantment(Enchantment.ID_BOW_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
