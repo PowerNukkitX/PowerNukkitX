@@ -15,9 +15,7 @@ public class BirchForestTreeFeature extends LegacyTreeGeneratorFeature {
 
     @Override
     public LegacyTreeGenerator getGenerator(RandomSourceProvider random) {
-        if(random.nextInt(10) < 1) {
-            return new LegacyTallBirchTree();
-        } else return new LegacyBirchTree();
+        return new LegacyBirchTree();
     }
 
     @Override

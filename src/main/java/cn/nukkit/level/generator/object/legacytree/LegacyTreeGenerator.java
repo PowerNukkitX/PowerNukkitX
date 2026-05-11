@@ -35,7 +35,6 @@ public abstract class LegacyTreeGenerator {
     }
 
     protected boolean overridable(Block b) {
-        if (b instanceof BlockWood) return true;
         return switch (b.getId()) {
             case Block.AIR, BlockID.ACACIA_LEAVES,
                  BlockID.AZALEA_LEAVES,

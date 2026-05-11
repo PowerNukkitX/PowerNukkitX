@@ -43,7 +43,7 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ name().hashCode());
         int amount = NukkitMath.randomRange(random, getMin(), getMax());
         Vector3 v = new Vector3();
         BlockManager manager = new BlockManager(level);
