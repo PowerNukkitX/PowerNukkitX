@@ -68,13 +68,28 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (tick2 == 0) {
-            tick1++;
-        }
+        tick1++;
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         Entity newTarget = entity.getBehaviorGroup().getMemoryStorage().get(memory);
-        if (this.target == null) target = newTarget;
+        //if (this.target == null) target = newTarget;
+        if (newTarget == null || !newTarget.isAlive()) {
+            tick1 = 0;
+            tick2 = 0;
+            this.target = null;
+            return false;
+        }
+        if (this.target == null || this.target != newTarget) {
+            this.target = newTarget;
+            tick1 = 0;
+            tick2 = 0;
+        }
+        if (this.target != null && this.target.isAlive()) {
+            entity.setDataProperty(EntityDataTypes.TARGET_EID, this.target.getId());
+            entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK, true);
+        } else {
+            entity.setDataFlag(EntityFlag.FACING_TARGET_TO_RANGE_ATTACK, false);
+        }
         //some check
         if (!target.isAlive()) return false;
         else if (target instanceof Player player) {
@@ -150,7 +165,7 @@ public class BowShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected void bowShoot(ItemBow bow, EntityLiving entity) {
-        playBowAnimation(entity);
+        //playBowAnimation(entity);
         double damage = 2;
         Enchantment bowDamage = bow.getEnchantment(Enchantment.ID_BOW_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
