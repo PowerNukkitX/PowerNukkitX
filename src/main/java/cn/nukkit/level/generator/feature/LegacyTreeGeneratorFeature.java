@@ -61,11 +61,7 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
                 LegacyTreeGenerator generator = getGenerator(random);
                 if(generator == null) return;
                 generator.placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
-                for(Block block : object.getBlocks()) {
-                    if(block.getChunk().isGenerated()) {
-                        manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                    }
-                }
+                manager.merge(object);
             }
         }
         queueObject(chunk, manager);

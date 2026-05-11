@@ -270,7 +270,7 @@ public class BlockManager {
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate) {
-        this.applySubChunkUpdate(blockList, predicate, false);
+        this.applySubChunkUpdate(blockList, predicate, true);
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate, boolean queueSave) {
