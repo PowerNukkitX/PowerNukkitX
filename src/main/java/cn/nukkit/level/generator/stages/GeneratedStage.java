@@ -4,6 +4,7 @@ import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateStage;
+import cn.nukkit.level.generator.object.BlockManager;
 
 import java.util.concurrent.Executor;
 
@@ -15,6 +16,7 @@ public class GeneratedStage extends GenerateStage {
         IChunk chunk = context.getChunk();
         chunk.setChunkState(ChunkState.GENERATED);
         chunk.setChanged(false);
+        BlockManager.applyPendingSubChunkUpdates(context.getLevel(), chunk);
     }
 
     @Override
