@@ -32,7 +32,7 @@ public class BlockManager {
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
 
-    private final ObjectOpenHashSet<Runnable> hooks;
+    protected final ObjectOpenHashSet<Runnable> hooks;
 
     private long hashXYZ(int x, int y, int z, int layer) {
         return (((long) (x + 30_000_000) & 0x3FFFFFFL) << 37)
