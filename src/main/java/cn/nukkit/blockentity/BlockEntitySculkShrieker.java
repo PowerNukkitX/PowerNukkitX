@@ -214,7 +214,6 @@ public class BlockEntitySculkShrieker extends BlockEntity implements VibrationLi
                 Entity warden = Entity.createEntity(EntityID.WARDEN, new Position(x + 0.5, y, z + 0.5, level));
                 if (warden != null) {
                     warden.spawnToAll();
-                    level.addSound(warden, Sound.MOB_WARDEN_EMERGE);
                     return;
                 }
             }
