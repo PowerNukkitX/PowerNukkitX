@@ -5,11 +5,14 @@ import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.block.property.type.EnumPropertyType;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.TreeGenerator;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-public abstract class LegacyTreeGenerator {
+public abstract class LegacyTreeGenerator extends TreeGenerator {
     protected int treeHeight = 7;
+    protected boolean treeWithVines;
 
     public static void growTree(BlockManager level, int x, int y, int z, RandomSourceProvider random, WoodType type, boolean tall) {
         LegacyTreeGenerator tree;
@@ -35,7 +38,6 @@ public abstract class LegacyTreeGenerator {
     }
 
     protected boolean overridable(Block b) {
-        if (b instanceof BlockWood) return true;
         return switch (b.getId()) {
             case Block.AIR, BlockID.ACACIA_LEAVES,
                  BlockID.AZALEA_LEAVES,
@@ -75,6 +77,17 @@ public abstract class LegacyTreeGenerator {
         return WoodType.OAK;
     }
 
+    protected boolean canGenerateWithVines() {
+        return switch (this.getType()) {
+            case OAK, SPRUCE, JUNGLE, DARK_OAK -> true;
+            default -> false;
+        };
+    }
+
+    protected void setRandomTreeWithVines(RandomSourceProvider random) {
+        this.treeWithVines = this.canGenerateWithVines() && random.nextInt(TREE_WITH_VINES_CHANCE) == 0;
+    }
+
     public int getTreeHeight() {
         return treeHeight;
     }
@@ -97,8 +110,15 @@ public abstract class LegacyTreeGenerator {
         return true;
     }
 
+    @Override
+    public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
+        placeObject(level, position.getFloorX(), position.getFloorY(), position.getFloorZ(), rand);
+        return true;
+    }
+
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
 
+        this.setRandomTreeWithVines(random);
         this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - 1);
 
         for (int yy = y - 3 + this.getTreeHeight(); yy <= y + this.getTreeHeight(); ++yy) {
@@ -128,6 +148,9 @@ public abstract class LegacyTreeGenerator {
             Block b = level.getBlockIfCachedOrLoaded(x, y + yy, z);
             if (this.overridable(b)) {
                 level.setBlockStateAt(x, y + yy, z, getTrunkBlockState());
+                if (this.treeWithVines) {
+                    this.addVinesAroundLog(level, x, y + yy, z);
+                }
             }
         }
     }
