@@ -2,12 +2,16 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockState;
+import cn.nukkit.block.BlockVine;
+import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 
 import java.util.Random;
 
 public abstract class TreeGenerator extends ObjectGenerator {
+    protected static final int TREE_WITH_VINES_CHANCE = 20;
 
     /*
      * returns whether or not a tree can grow into a block
@@ -65,5 +69,21 @@ public abstract class TreeGenerator extends ObjectGenerator {
     protected void setDirtAt(BlockManager level, Vector3 pos) {
         level.setBlockStateAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), BlockID.DIRT);
     }
-}
 
+    protected void addVinesAroundLog(BlockManager level, int x, int y, int z) {
+        this.addVine(level, x - 1, y, z, 8);
+        this.addVine(level, x + 1, y, z, 2);
+        this.addVine(level, x, y, z - 1, 1);
+        this.addVine(level, x, y, z + 1, 4);
+    }
+
+    private void addVine(BlockManager level, int x, int y, int z, int meta) {
+        if (level.getBlockIdIfCachedOrLoaded(x, y, z).equals(Block.AIR)) {
+            level.setBlockStateAt(x, y, z, getVineState(meta));
+        }
+    }
+
+    protected static BlockState getVineState(int meta) {
+        return BlockVine.PROPERTIES.getBlockState(CommonBlockProperties.VINE_DIRECTION_BITS, meta);
+    }
+}

@@ -32,6 +32,7 @@ public class LegacyDarkOakTree extends LegacyTreeGenerator {
         int topSize = this.treeHeight - (int) (this.treeHeight * leafStartHeightMultiplier);
         int lRadius = baseLeafRadius + random.nextInt(2);
 
+        this.setRandomTreeWithVines(random);
         this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - random.nextInt(3));
 
         this.placeLeaves(level, topSize, lRadius, x, y, z, random);
@@ -49,6 +50,9 @@ public class LegacyDarkOakTree extends LegacyTreeGenerator {
                     Block b = level.getBlockIfCachedOrLoaded(x, y + yy, z);
                     if (this.overridable(b)) {
                         level.setBlockStateAt(x + xx, y + yy, z + zz, getTrunkBlockState());
+                        if (this.treeWithVines) {
+                            this.addVinesAroundLog(level, x + xx, y + yy, z + zz);
+                        }
                     }
                 }
             }
