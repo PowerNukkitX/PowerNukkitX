@@ -31,6 +31,7 @@ public class NormalTerrainStage extends GenerateStage {
     private static final int CELL_HEIGHT = 8;
     private static final int CELL_X_COUNT = 16 / CELL_XZ_SIZE;
     private static final int CELL_Z_COUNT = 16 / CELL_XZ_SIZE;
+    private static final int CORNER_FLOOD_SEED_MAX_Y = 192;
     private final ThreadLocal<NukkitRandom> random = ThreadLocal.withInitial(NukkitRandom::new);
 
     @Override
@@ -80,7 +81,8 @@ public class NormalTerrainStage extends GenerateStage {
                             final int cellIndex = cellIndex(cellXIndex, cellYIndex, cellZIndex);
                             final int cellX = cellXIndex * CELL_XZ_SIZE;
                             final int cellZ = cellZIndex * CELL_XZ_SIZE;
-                            if (!shouldGenerateMandatoryCell(mandatoryTopY, cellX, cellY, cellZ)) {
+                            if (!shouldGenerateMandatoryCell(mandatoryTopY, cellX, cellY, cellZ)
+                                    && !isCornerFloodSeedCell(cellXIndex, cellYIndex, cellY, cellZIndex)) {
                                 continue;
                             }
                             queued[cellIndex] = true;
@@ -229,6 +231,43 @@ public class NormalTerrainStage extends GenerateStage {
             }
         }
         return false;
+    }
+
+    private static boolean isCornerFloodSeedCell(int cellXIndex, int cellYIndex, int cellY, int cellZIndex) {
+        if (cellY > CORNER_FLOOD_SEED_MAX_Y) {
+            return false;
+        }
+        if (cellYIndex % 3 != 0) {
+            return false;
+        }
+        return isNorthWestCornerSeed(cellXIndex, cellZIndex)
+                || isNorthEastCornerSeed(cellXIndex, cellZIndex)
+                || isSouthWestCornerSeed(cellXIndex, cellZIndex)
+                || isSouthEastCornerSeed(cellXIndex, cellZIndex);
+    }
+
+    private static boolean isNorthWestCornerSeed(int cellXIndex, int cellZIndex) {
+        return (cellXIndex == 0 && cellZIndex == 0)
+                || (cellXIndex == 1 && cellZIndex == 0)
+                || (cellXIndex == 0 && cellZIndex == 1);
+    }
+
+    private static boolean isNorthEastCornerSeed(int cellXIndex, int cellZIndex) {
+        return (cellXIndex == CELL_X_COUNT - 1 && cellZIndex == 0)
+                || (cellXIndex == CELL_X_COUNT - 2 && cellZIndex == 0)
+                || (cellXIndex == CELL_X_COUNT - 1 && cellZIndex == 1);
+    }
+
+    private static boolean isSouthWestCornerSeed(int cellXIndex, int cellZIndex) {
+        return (cellXIndex == 0 && cellZIndex == CELL_Z_COUNT - 1)
+                || (cellXIndex == 1 && cellZIndex == CELL_Z_COUNT - 1)
+                || (cellXIndex == 0 && cellZIndex == CELL_Z_COUNT - 2);
+    }
+
+    private static boolean isSouthEastCornerSeed(int cellXIndex, int cellZIndex) {
+        return (cellXIndex == CELL_X_COUNT - 1 && cellZIndex == CELL_Z_COUNT - 1)
+                || (cellXIndex == CELL_X_COUNT - 2 && cellZIndex == CELL_Z_COUNT - 1)
+                || (cellXIndex == CELL_X_COUNT - 1 && cellZIndex == CELL_Z_COUNT - 2);
     }
 
     private static void enqueueCell(
