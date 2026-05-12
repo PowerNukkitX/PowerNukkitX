@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +35,17 @@ public class BlockFireflyBush extends BlockFlowable {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (!BlockSweetBerryBush.isSupportValid(down())) {
+                this.getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+        }
+        return super.onUpdate(type);
     }
 
     @Override
