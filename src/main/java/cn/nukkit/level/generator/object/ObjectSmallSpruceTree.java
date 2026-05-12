@@ -19,6 +19,7 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
     @Override
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int height = 6 + rand.nextInt(4);
+        boolean treeWithVines = rand.nextInt(TREE_WITH_VINES_CHANCE) == 0;
         int baseX = position.getFloorX();
         int baseY = position.getFloorY();
         int baseZ = position.getFloorZ();
@@ -36,6 +37,9 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
         int trunkHeight = height - rand.nextInt(3);
         for (int y = 0; y < trunkHeight; y++) {
             placeLogAt(level, new Vector3(baseX, baseY + y, baseZ));
+            if (treeWithVines) {
+                this.addVinesAroundLog(level, baseX, baseY + y, baseZ);
+            }
         }
 
         int topSize = height - (1 + rand.nextInt(2));
@@ -56,7 +60,7 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
                         continue;
                     }
 
-                    if (!level.getBlockIdIfCachedOrLoaded(xx, yyy, zz).equals(Block.AIR)) {
+                    if (!canGrowInto(level.getBlockIdIfCachedOrLoaded(xx, yyy, zz))) {
                         continue;
                     }
 
@@ -106,7 +110,7 @@ public class ObjectSmallSpruceTree extends TreeGenerator {
 
     private void placeLeafAt(BlockManager world, int x, int y, int z) {
         String material = world.getBlockIdIfCachedOrLoaded(x, y, z);
-        if (material.equals(Block.AIR) || material.equals(Block.SNOW_LAYER)) {
+        if (material.equals(Block.AIR) || material.equals(Block.SNOW_LAYER) || material.equals(Block.VINE)) {
             world.setBlockStateAt(new Vector3(x, y, z), SPRUCE_LEAVES);
         }
     }

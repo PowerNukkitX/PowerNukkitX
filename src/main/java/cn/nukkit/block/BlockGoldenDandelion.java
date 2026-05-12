@@ -18,4 +18,9 @@ public class BlockGoldenDandelion extends BlockFlower {
      public BlockGoldenDandelion(BlockState blockstate) {
          super(blockstate);
      }
+
+    @Override
+    public boolean canBeActivated() {
+        return false;
+    }
 }

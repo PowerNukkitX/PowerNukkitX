@@ -28,6 +28,7 @@ import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.entity.data.EntityFlag;
 import cn.nukkit.entity.data.PlayerFlag;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.warden.WardenWarningData;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
@@ -334,6 +335,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
+    private final WardenWarningData wardenWarningData = new WardenWarningData();
     protected AtomicInteger shapeIds = new AtomicInteger(0);
     /**
      * Stores the current client input lock flags applied to this player.
@@ -466,10 +468,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        // TODO: Hack client spams multiple left clicks so we need to skip them.
-        if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 1000) {
-            return;
-        }
+
 
         Block target = this.level.getBlock(pos);
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
@@ -541,6 +540,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
+    protected void resetBlockBreak() {
+        this.blockBreakProgress = 0;
+        this.breakingBlock = null;
+        this.breakingBlockFace = null;
+    }
+
     protected void onBlockBreakAbort(Vector3 pos) {
         if (pos.distanceSquared(this) < 1000) { // same as with ACTION_START_BREAK
             LevelEventPacket pk = new LevelEventPacket();
@@ -550,11 +555,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             pk.z = (float) pos.z;
             pk.data = 0;
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-            this.getLevel().sendBlocks(new Player[]{this}, new Vector3[]{pos}, UpdateBlockPacket.FLAG_NOGRAPHIC);
         }
-        this.blockBreakProgress = 0;
-        this.breakingBlock = null;
-        this.breakingBlockFace = null;
+        resetBlockBreak();
     }
 
     protected void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
@@ -571,6 +573,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (handItem != null && this.isSurvival()) {
                 this.getFoodData().exhaust(0.005);
                 if (handItem.equals(clone) && handItem.getCount() == clone.getCount()) {
+                    resetBlockBreak();
                     return;
                 }
 
@@ -582,6 +585,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)
                 this.level.sendBlocks(new Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            resetBlockBreak();
             return;
         }
 
@@ -597,6 +601,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 ((BlockEntitySpawnable) blockEntity).spawnTo(this);
             }
         }
+        resetBlockBreak();
     }
 
     private void setTitle(String text) {
@@ -5525,6 +5530,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID(), this.getLocatorBarColor());
         }
+    }
+
+    public WardenWarningData getWardenWarningData() {
+        return this.wardenWarningData;
     }
 
     /**

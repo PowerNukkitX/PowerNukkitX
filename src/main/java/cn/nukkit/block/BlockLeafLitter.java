@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.CommonPropertyMap;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,7 @@ public class BlockLeafLitter extends BlockFlowable {
     }
 
     public boolean isSupportValid(Block block) {
-        return block.isFullBlock();
+        return block.isFullBlock() && block.isSolid();
     }
 
     @Override
@@ -78,5 +79,16 @@ public class BlockLeafLitter extends BlockFlowable {
         }
 
         return false;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (!isSupportValid(getLevelBlock().down())) {
+                this.getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+        }
+        return 0;
     }
 }

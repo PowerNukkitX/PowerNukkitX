@@ -13,8 +13,10 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntArrayTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.UpdateSubChunkBlocksPacket;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
@@ -28,11 +30,13 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class BlockManager {
+    private static final String PENDING_SUB_CHUNK_UPDATES = "pendingSubChunkUpdates";
+
     private final Level level;
     private final Long2ObjectOpenHashMap<Block> caches;
     private final Long2ObjectOpenHashMap<Block> places;
 
-    private final ObjectOpenHashSet<Runnable> hooks;
+    protected final ObjectOpenHashSet<Runnable> hooks;
 
     private long hashXYZ(int x, int y, int z, int layer) {
         return (((long) (x + 30_000_000) & 0x3FFFFFFL) << 37)
@@ -266,7 +270,7 @@ public class BlockManager {
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate) {
-        this.applySubChunkUpdate(blockList, predicate, false);
+        this.applySubChunkUpdate(blockList, predicate, true);
     }
 
     public void applySubChunkUpdate(List<Block> blockList, Predicate<Block> predicate, boolean queueSave) {
@@ -305,7 +309,10 @@ public class BlockManager {
             final var key = entry.getKey();
             final var value = entry.getValue();
 
-            if (!key.isGenerated()) level.syncGenerateChunk(key.getX(), key.getZ());
+            if (!key.isGenerated()) {
+                queuePendingSubChunkUpdates(key, value);
+                return;
+            }
             key.batchProcess(unsafeChunk -> {
                 int[] highestNewColumnY = new int[16 * 16];
                 boolean[] touchedColumn = new boolean[16 * 16];
@@ -357,6 +364,47 @@ public class BlockManager {
         }
         places.clear();
         caches.clear();
+    }
+
+    private void queuePendingSubChunkUpdates(IChunk chunk, List<Block> blocks) {
+        synchronized (chunk) {
+            CompoundTag extraData = chunk.getExtraData();
+            ListTag<IntArrayTag> pending = extraData.containsList(PENDING_SUB_CHUNK_UPDATES, Tag.TAG_Int_Array)
+                    ? extraData.getList(PENDING_SUB_CHUNK_UPDATES, IntArrayTag.class)
+                    : new ListTag<>(Tag.TAG_Int_Array);
+            for (Block block : blocks) {
+                pending.add(new IntArrayTag(new int[] {
+                        block.getFloorX(),
+                        block.getFloorY(),
+                        block.getFloorZ(),
+                        block.layer,
+                        block.getBlockState().blockStateHash()
+                }));
+            }
+            extraData.putList(PENDING_SUB_CHUNK_UPDATES, pending);
+            chunk.setChanged();
+        }
+    }
+
+    public static void applyPendingSubChunkUpdates(Level level, IChunk chunk) {
+        if (!chunk.isGenerated()) {
+            return;
+        }
+
+        ListTag<IntArrayTag> pending;
+        synchronized (chunk) {
+            CompoundTag extraData = chunk.getExtraData();
+            if (!extraData.containsList(PENDING_SUB_CHUNK_UPDATES, Tag.TAG_Int_Array)) {
+                return;
+            }
+            pending = extraData.removeAndGet(PENDING_SUB_CHUNK_UPDATES);
+        }
+        if (pending == null || pending.size() == 0) {
+            return;
+        }
+
+        BlockManager pendingBlocks = BlockManager.fromTag(pending, new BlockManager(level));
+        pendingBlocks.applySubChunkUpdate(pendingBlocks.getBlocks(), null, true);
     }
 
     public int getMaxHeight() {

@@ -16,8 +16,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Requires SpaceMoveController + LiftController + SimpleSpaceAStarRouteFinder(HoveringPosEvaluator).
  */
 public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl {
-    private static final float SPEED_KNOB = 8.0f;
-
     private final float speed;
     private final int xzDist;
     private final int yDist;
@@ -86,9 +84,8 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
     }
 
     private void applyHoverSpeed(EntityIntelligent entity) {
-        float tuned = speed * SPEED_KNOB;
-        if (entity.getMovementSpeed() != tuned) {
-            entity.setMovementSpeed(tuned);
+        if (entity.getMovementSpeed() != speed) {
+            entity.setMovementSpeed(speed);
         }
     }
 
@@ -112,27 +109,20 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
             int colX = baseEx + rnd.nextInt(-xzDist, xzDist + 1);
             int colZ = baseEz + rnd.nextInt(-xzDist, xzDist + 1);
 
-            int surfaceY = level.getHighestBlockAt(colX, colZ);
-            if (surfaceY <= 0) {
+            int surfaceY = findSurfaceBelow(level, colX, colZ, entity.getFloorY() - 1);
+            if (surfaceY < level.getMinHeight()) {
                 continue;
             }
 
-            // Vertical band + yDist jitter
-            final double hoverFeetBase;
-            if (hoverMax <= hoverMin) {
-                hoverFeetBase = hoverMin;
-            } else {
-                hoverFeetBase = hoverMin + rnd.nextDouble() * (hoverMax - hoverMin);
-            }
-
-            int extraFeet = (yDist > 0) ? rnd.nextInt(-yDist, yDist + 1) : 0;
-            double hoverFeet = hoverFeetBase + extraFeet;
-
-            // Clamp to band
-            if (hoverFeet < hoverMin) hoverFeet = hoverMin;
-            if (hoverFeet > hoverMax) hoverFeet = hoverMax;
-
-            double feetY = surfaceY + 1.0 + hoverFeet + yOffset;
+            double minFeetY = surfaceY + 1.0 + hoverMin + yOffset;
+            double maxFeetY = surfaceY + 1.0 + hoverMax + yOffset;
+            double stepLimit = Math.max(0.4, Math.min(1.25, yDist * 0.35));
+            double maxStep = Math.max(0.4, Math.min(stepLimit, (maxFeetY - minFeetY) * 0.5));
+            double minStep = Math.min(0.35, maxStep);
+            double deltaY = rnd.nextDouble(minStep, maxStep) * (rnd.nextBoolean() ? 1 : -1);
+            double feetY = entity.y + deltaY;
+            if (feetY < minFeetY) feetY = Math.min(maxFeetY, minFeetY + rnd.nextDouble(0.0, maxStep));
+            if (feetY > maxFeetY) feetY = Math.max(minFeetY, maxFeetY - rnd.nextDouble(0.0, maxStep));
             double centerY = feetY + height * 0.5;
 
             // World Y bounds
@@ -140,11 +130,11 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
                 continue;
             }
 
-            Vector3 target = new Vector3(colX + 0.5, centerY, colZ + 0.5);
+            Vector3 target = new Vector3(colX + 0.5, feetY, colZ + 0.5);
 
             AxisAlignedBB bb = new SimpleAxisAlignedBB(
                     target.getX() - radius,
-                    target.getY() - height * 0.5,
+                    target.getY() + 0.01,
                     target.getZ() - radius,
                     target.getX() + radius,
                     target.getY() + height,
@@ -163,11 +153,20 @@ public class HoverRandomRoamExecutor implements IBehaviorExecutor, EntityControl
             return;
         }
 
-        // Fallback nudge up so it can eventually get unstuck
-        Vector3 fallback = entity.add(0, Math.max(1.0, hoverMin), 0);
+        Vector3 fallback = entity.getLocation();
         applyHoverSpeed(entity);
         setRouteTarget(entity, fallback);
         setLookTarget(entity, fallback);
         entity.getBehaviorGroup().setForceUpdateRoute(true);
+    }
+
+    private int findSurfaceBelow(Level level, int x, int z, int startY) {
+        int maxY = Math.min(level.getMaxHeight() - 2, startY);
+        for (int y = maxY; y >= level.getMinHeight(); y--) {
+            if (!level.getTickCachedBlock(x, y, z).canPassThrough() && level.getTickCachedBlock(x, y + 1, z).canPassThrough()) {
+                return y;
+            }
+        }
+        return level.getMinHeight() - 1;
     }
 }
