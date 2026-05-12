@@ -21,6 +21,7 @@ public class PlayerSkinProcessor extends DataPacketProcessor<PlayerSkinPacket> {
         Skin skin = pk.skin;
 
         if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to update skin while not spawned or dead", playerHandle.getUsername());
             return;
         }
 

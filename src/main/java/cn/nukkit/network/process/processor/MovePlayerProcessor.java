@@ -8,8 +8,10 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MovePlayerPacket pk) {
@@ -21,6 +23,7 @@ public class MovePlayerProcessor extends DataPacketProcessor<MovePlayerPacket> {
             return;
         }
         if (!Float.isFinite(pk.x) || !Float.isFinite(pk.y) || !Float.isFinite(pk.z) || !Float.isFinite(pk.yaw) || !Float.isFinite(pk.headYaw) || !Float.isFinite(pk.pitch)) {
+            log.debug("Player {} sent invalid movement values (NaN or Infinite)", playerHandle.getUsername());
             return;
         }
         Vector3 newPos = new Vector3(pk.x, pk.y - playerHandle.getBaseOffset(), pk.z);

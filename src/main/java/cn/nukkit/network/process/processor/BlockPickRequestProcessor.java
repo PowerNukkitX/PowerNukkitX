@@ -23,6 +23,7 @@ public class BlockPickRequestProcessor extends DataPacketProcessor<BlockPickRequ
         Block block = player.level.getBlock(pk.x, pk.y, pk.z, false);
 
         if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send a block pick request while not spawned or dead", playerHandle.getUsername());
             return;
         }
 

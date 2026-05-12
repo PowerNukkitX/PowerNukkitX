@@ -66,10 +66,12 @@ public class ItemStackRequestPacketProcessor extends DataPacketProcessor<ItemSta
         Player player = playerHandle.player;
 
         if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send an item stack request while not spawned or dead", playerHandle.getUsername());
             return;
         }
 
         if (pk.requests.size() > 128) {
+            log.debug("Player {} sent too many item stack requests ({})", playerHandle.getUsername(), pk.requests.size());
             return;
         }
 

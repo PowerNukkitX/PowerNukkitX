@@ -38,6 +38,7 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
         Player player = playerHandle.player;
         if (!Float.isFinite(pk.position.x) || !Float.isFinite(pk.position.y) || !Float.isFinite(pk.position.z) || !Float.isFinite(pk.yaw) || !Float.isFinite(pk.headYaw) || !Float.isFinite(pk.pitch)) {
+            log.debug("Player {} sent invalid movement values (NaN or Infinite)", playerHandle.getUsername());
             return;
         }
         if (!pk.blockActionData.isEmpty()) {
@@ -240,10 +241,12 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         if (pk.predictedVehicle != vehicle.getId()) return;
 
         if (!Float.isFinite(pk.position.x) || !Float.isFinite(pk.position.y) || !Float.isFinite(pk.position.z)) {
+            log.debug("Player {} sent invalid position values (NaN or Infinite)", player.getName());
             return;
         }
 
         if (pk.vehicleRotation != null && (!Float.isFinite(pk.vehicleRotation.x) || !Float.isFinite(pk.vehicleRotation.y))) {
+            log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
             return;
         }
 

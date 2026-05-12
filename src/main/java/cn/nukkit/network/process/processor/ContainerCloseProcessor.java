@@ -18,6 +18,7 @@ public class ContainerCloseProcessor extends DataPacketProcessor<ContainerCloseP
         Player player = playerHandle.player;
 
         if (pk.windowId < -2 || pk.windowId > 125) {
+            log.warn("Player {} sent an invalid window id {}", playerHandle.getUsername(), pk.windowId);
             return;
         }
 

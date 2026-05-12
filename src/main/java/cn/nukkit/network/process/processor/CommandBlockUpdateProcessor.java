@@ -12,12 +12,15 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.CommandBlockUpdatePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 public class CommandBlockUpdateProcessor extends DataPacketProcessor<CommandBlockUpdatePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull CommandBlockUpdatePacket pk) {
         if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+            log.debug("Player {} tried to update a command block while not spawned or dead", playerHandle.getUsername());
             return;
         }
 
