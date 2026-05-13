@@ -55,9 +55,9 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 BlockVector3 lastBreakPos = lastAction == null ? null : lastAction.getPosition();
                 if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
                     //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
-                    double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTimeNotInAir(player.getInventory().getItemInMainHand(), player);
-                    boolean fastBreak = Long.sum(player.lastBreak, (long) breakTime * 1000) > Long.sum(System.currentTimeMillis(), 1000);
-                    if(fastBreak && lastAction.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                    double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
+                    boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
+                    if(canCompleteBreak && lastAction.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
                         playerHandle.onBlockBreakComplete(lastBreakPos, BlockFace.fromIndex(lastAction.getFacing()));
                     } else {
                         playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
