@@ -5,7 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBush extends BlockFlowable {
+public class BlockBush extends BlockFlowable implements Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(BUSH);
 
@@ -34,7 +34,7 @@ public class BlockBush extends BlockFlowable {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (BlockSweetBerryBush.isSupportValid(down())) {
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }

@@ -37,7 +37,7 @@ public abstract class GriddedFeature extends ObjectGeneratorFeature {
                 int placeY = level.getHeightMap(placeX, placeZ);
 
                 if(!canSpawnHere(Registries.BIOME.get(level.getBiomeId(placeX, placeY, placeZ)))) continue;
-                if(isSupportValid(level.getBlock(placeX, placeY, placeZ))) {
+                if(isSupportDirt(level.getBlock(placeX, placeY, placeZ))) {
                     getGenerator(random).generate(object, random, new Vector3(placeX, placeY + 1, placeZ));
                 }
             }

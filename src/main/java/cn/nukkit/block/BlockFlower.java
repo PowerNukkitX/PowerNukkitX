@@ -6,7 +6,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.tags.BlockTags;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,17 +13,13 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * The default is red flower, but there are other flower variants
  */
-public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural {
+public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural, Supportable {
     public BlockFlower(BlockState blockstate) {
         super(blockstate);
     }
 
-    public static boolean isSupportValid(Block block) {
-        return block.hasTag(BlockTags.DIRT);
-    }
-
     public boolean canPlantOn(Block block) {
-        return isSupportValid(block);
+        return isSupportDirt(block);
     }
 
     @Override

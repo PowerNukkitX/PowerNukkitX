@@ -3,10 +3,9 @@ package cn.nukkit.level.generator.feature.decoration;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockDandelion;
-import cn.nukkit.block.BlockFlower;
-import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockPoppy;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.Supportable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
@@ -16,7 +15,7 @@ import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.random.RandomSourceProvider;
 
-public class ScatterOverworldFlowerFeature extends CountGenerateFeature {
+public class ScatterOverworldFlowerFeature extends CountGenerateFeature implements Supportable {
 
     public static final String NAME = "minecraft:scatter_overworld_flower_feature";
 
@@ -57,7 +56,7 @@ public class ScatterOverworldFlowerFeature extends CountGenerateFeature {
                     continue;
                 }
                 Block support = level.getBlockStateAt(x, y, z).toBlock(new Position(x, y, z, level));
-                if (BlockFlower.isSupportValid(support)) {
+                if (isSupportDirt(support)) {
                     object.setBlockStateAt(x, y + 1, z, state);
                 }
             }

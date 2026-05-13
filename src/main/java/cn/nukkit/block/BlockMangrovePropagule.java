@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
 import static cn.nukkit.block.property.CommonBlockProperties.PROPAGULE_STAGE;
 
-public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock {
+public class BlockMangrovePropagule extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Supportable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_PROPAGULE, HANGING, PROPAGULE_STAGE);
 
@@ -41,8 +41,8 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        //todo: 实现红树树苗放置逻辑
-        if (BlockFlower.isSupportValid(down())) {
+        //todo: Implement mangrove propagule placement logic.
+        if (isSupportDirt(down())) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -81,7 +81,7 @@ public class BlockMangrovePropagule extends BlockFlowable implements BlockFlower
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockFlower.isSupportValid(down())) {
+            if (!isSupportDirt(down())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

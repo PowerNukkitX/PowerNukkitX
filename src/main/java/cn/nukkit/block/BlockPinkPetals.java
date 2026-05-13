@@ -45,7 +45,7 @@ public class BlockPinkPetals extends BlockFlower {
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!isSupportValid(block.down())) {
+        if (!isSupportDirt(block.down())) {
             return false;
         }
 
