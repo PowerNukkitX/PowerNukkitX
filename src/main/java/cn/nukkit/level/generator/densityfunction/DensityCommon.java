@@ -4,6 +4,7 @@ import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.noise.minecraft.noise.NormalNoise;
 import cn.nukkit.math.NukkitMath;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.Arrays;
 import java.util.IdentityHashMap;
@@ -699,7 +700,7 @@ public final class DensityCommon {
             int blockZ = context.blockZ();
             int chunkX = blockX >> 4;
             int chunkZ = blockZ >> 4;
-            FlatCacheCell cell = s.getOrCreateCell(chunkX, chunkZ, wrapped);
+            FlatCacheCell cell = s.getOrCreateCell(chunkX, chunkZ);
             int localX = blockX - cell.firstBlockX;
             int localZ = blockZ - cell.firstBlockZ;
             if (localX >= 0 && localX < CHUNK_SIZE_BLOCKS
@@ -727,26 +728,30 @@ public final class DensityCommon {
 
     private static final class FlatCacheState {
         private final DensityFunction.MutableFunctionContext context = new DensityFunction.MutableFunctionContext();
-        private final Map<Long, FlatCacheCell> cells = new LinkedHashMap<>(64, 0.75f, true) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<Long, FlatCacheCell> eldest) {
-                return size() > 128;
-            }
-        };
+        private final Long2ObjectOpenHashMap<FlatCacheCell> cells = new Long2ObjectOpenHashMap<>();
 
-        private FlatCacheCell getOrCreateCell(int chunkX, int chunkZ, DensityFunction wrapped) {
+        private long lastKey = Long.MAX_VALUE;
+        private FlatCacheCell lastCell = null;
+        private FlatCacheCell getOrCreateCell(int chunkX, int chunkZ) {
+
             long key = (((long) chunkX) << 32) ^ (chunkZ & 0xFFFFFFFFL);
-            FlatCacheCell cell = cells.get(key);
-            if (cell != null) {
-                return cell;
+
+            if(key == lastKey) {
+                return lastCell;
+            }
+
+            lastKey = key;
+            lastCell = cells.get(key);
+            if (lastCell != null) {
+                return lastCell;
             }
 
             int firstBlockX = chunkX << 4;
             int firstBlockZ = chunkZ << 4;
             int valueCount = FlatCacheMarker.CHUNK_SIZE_BLOCKS * FlatCacheMarker.CHUNK_SIZE_BLOCKS;
-            cell = new FlatCacheCell(firstBlockX, firstBlockZ, new double[valueCount], new long[(valueCount + 63) >>> 6]);
-            cells.put(key, cell);
-            return cell;
+            lastCell = new FlatCacheCell(firstBlockX, firstBlockZ, new double[valueCount], new long[(valueCount + 63) >>> 6]);
+            cells.put(key, lastCell);
+            return lastCell;
         }
     }
 
@@ -827,23 +832,20 @@ public final class DensityCommon {
         }
 
         private static final class CacheAllInCellState {
-            private final Map<Long, CellValues> cells = new LinkedHashMap<>(256, 0.75f, true) {
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<Long, CellValues> eldest) {
-                    return size() > 1024;
-                }
-            };
+
+            private long lastKey = Long.MAX_VALUE;
+            private CellValues lastCell = null;
 
             private CellValues getOrCreateCell(int cellX, int cellY, int cellZ) {
                 long key = (((long) cellX & 0x1FFFFFL) << 42)
                         | (((long) cellY & 0x1FFFFFL) << 21)
                         | ((long) cellZ & 0x1FFFFFL);
-                CellValues values = cells.get(key);
-                if (values != null) {
-                    return values;
+                if(key == lastKey) {
+                    return lastCell;
                 }
-                values = new CellValues();
-                cells.put(key, values);
+                CellValues values = new CellValues();
+                lastKey = key;
+                lastCell = values;
                 return values;
             }
         }
@@ -902,24 +904,20 @@ public final class DensityCommon {
 
         private static final class InterpolatedState {
             private final MutableFunctionContext context = new MutableFunctionContext();
-            private final Map<Long, InterpolatedCell> cells = new LinkedHashMap<>(256, 0.75f, true) {
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<Long, InterpolatedCell> eldest) {
-                    return size() > 512;
-                }
-            };
+
+            private long lastKey = Long.MAX_VALUE;
+            private InterpolatedCell lastCell = null;
 
             private InterpolatedCell getOrCreateCell(int cellX, int cellY, int cellZ, DensityFunction wrapped) {
                 long key = (((long) cellX & 0x1FFFFFL) << 42) | (((long) cellY & 0x1FFFFFL) << 21) | ((long) cellZ & 0x1FFFFFL);
-                InterpolatedCell cell = cells.get(key);
-                if (cell != null) {
-                    return cell;
+                if(key == lastKey) {
+                    return lastCell;
                 }
 
                 int nextX = cellX + CELL_SIZE_XZ;
                 int nextY = cellY + CELL_SIZE_Y;
                 int nextZ = cellZ + CELL_SIZE_XZ;
-                cell = new InterpolatedCell(
+                lastCell = new InterpolatedCell(
                         wrapped.compute(context.set(cellX, cellY, cellZ)),
                         wrapped.compute(context.set(nextX, cellY, cellZ)),
                         wrapped.compute(context.set(cellX, nextY, cellZ)),
@@ -929,8 +927,8 @@ public final class DensityCommon {
                         wrapped.compute(context.set(cellX, nextY, nextZ)),
                         wrapped.compute(context.set(nextX, nextY, nextZ))
                 );
-                cells.put(key, cell);
-                return cell;
+                lastKey = key;
+                return lastCell;
             }
         }
     }
