@@ -41,11 +41,13 @@ import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.UnsafeChunk;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
 import cn.nukkit.level.generator.BiomedGenerator;
 import cn.nukkit.level.generator.Generator;
@@ -2306,7 +2308,11 @@ public class Level implements Metadatable {
                 chunk = getChunkIfLoaded(cx, cz);
             }
             if (chunk != null) {
-                fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
+                if(chunk.isFinished()) {
+                    fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
+                } else {
+                    fullState = new UnsafeChunk((Chunk) chunk).getBlockState(x & 0xF, y, z & 0xF, layer);
+                }
             }
         }
         return Registries.BLOCK.get(fullState, x, y, z, layer, this);

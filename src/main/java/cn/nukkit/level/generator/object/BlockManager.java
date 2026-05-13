@@ -177,7 +177,24 @@ public class BlockManager {
     }
 
     public void merge(BlockManager manager) {
-        manager.getBlocks().forEach(b -> this.setBlockStateAt(b, b.getBlockState()));
+        if (manager.places.isEmpty()) {
+            this.hooks.addAll(manager.getHooks());
+            return;
+        }
+        if (this.level == manager.level) {
+            this.places.putAll(manager.places);
+            this.caches.putAll(manager.places);
+        } else {
+            for (Block block : manager.places.values()) {
+                this.setBlockStateAt(
+                        block.getFloorX(),
+                        block.getFloorY(),
+                        block.getFloorZ(),
+                        block.layer,
+                        block.getBlockState()
+                );
+            }
+        }
         this.hooks.addAll(manager.getHooks());
     }
 
