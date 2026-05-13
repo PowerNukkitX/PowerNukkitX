@@ -98,11 +98,6 @@ public class BlockPumpkin extends BlockSolid implements Faceable, Natural {
     }
 
     @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
     public BlockFace getBlockFace() {
         return CommonPropertyMap.CARDINAL_BLOCKFACE.get(getPropertyValue(CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION));
     }
