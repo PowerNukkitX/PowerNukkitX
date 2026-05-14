@@ -1098,7 +1098,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
                 if (this.wasInSoulSandCompatible && !isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = false;
-                    this.setMovementSpeed(this.getMovementSpeed() / this.soulSpeedMultiplier);
+                    this.recalcMovementSpeedFromEffects();
                 } else if (!this.wasInSoulSandCompatible && isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = true;
                     this.setMovementSpeed(this.getMovementSpeed() * this.soulSpeedMultiplier);
