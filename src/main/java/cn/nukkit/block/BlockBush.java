@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +40,17 @@ public class BlockBush extends BlockFlowable {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        if (item.isShears() || item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
+            return new Item[]{
+                    toItem()
+            };
+        }
+
+        return Item.EMPTY_ARRAY;
     }
 
 }
