@@ -437,6 +437,13 @@ public class LevelDBChunkSerializer {
         if (extraData == null) return;
         long chunkKey = ((long) builder.getChunkX() & 0xffffffffL) << 32 | ((long) builder.getChunkZ() & 0xffffffffL);
 
+        LevelDBProvider provider = null;
+        if (builder.getLevelProvider() instanceof LevelDBProvider p) {
+            provider = p;
+        }
+
+        if (provider == null) return;
+
         // --- Scheduled Ticks ---
         if (extraData.contains("pendingScheduledTicks")) {
             ListTag<CompoundTag> scheduledTicks = extraData.getList("pendingScheduledTicks", CompoundTag.class);
@@ -454,7 +461,7 @@ public class LevelDBChunkSerializer {
                 scheduledList.add(info);
             }
             if (!scheduledList.isEmpty()) {
-                LevelDBProvider.getScheduledTicksMap().put(chunkKey, scheduledList);
+                provider.getScheduledTicksMap().put(chunkKey, scheduledList);
             }
         }
 
@@ -471,7 +478,7 @@ public class LevelDBChunkSerializer {
                 normalList.add(info);
             }
             if (!normalList.isEmpty()) {
-                LevelDBProvider.getNormalTicksMap().put(chunkKey, normalList);
+                provider.getNormalTicksMap().put(chunkKey, normalList);
             }
         }
     }
