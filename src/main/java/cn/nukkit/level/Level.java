@@ -291,6 +291,7 @@ public class Level implements Metadatable {
         randomTickBlocks.add(BlockID.OPEN_EYEBLOSSOM);
         randomTickBlocks.add(BlockID.WEEPING_VINES);
         randomTickBlocks.add(BlockID.WATER);
+        randomTickBlocks.add(BlockID.MANGROVE_PROPAGULE);
     }
 
     @NonComputationAtomic
@@ -3053,9 +3054,6 @@ public class Level implements Metadatable {
                     }
                 }
             } else {
-                if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
-                    player.getLevel().sendBlocks(new Player[]{player}, new Block[]{Block.get(BlockID.AIR, target)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
-                }
                 return null;
             }
         }
