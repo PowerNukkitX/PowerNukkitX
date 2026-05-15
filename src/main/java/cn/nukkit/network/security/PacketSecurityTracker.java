@@ -24,8 +24,7 @@ public final class PacketSecurityTracker {
      */
     public static final int BLOCK_DURATION_MS = 10_000;
 
-    private PacketSecurityTracker() {
-    }
+    private PacketSecurityTracker() {}
 
     public static void flag(InetSocketAddress address, String reason) {
         Server server = Server.getInstance();
@@ -40,7 +39,6 @@ public final class PacketSecurityTracker {
     }
 
     public static void blockMaliciousIP(Server server, InetAddress ip) {
-
         if (!server.getSettings().networkSettings().blockMaliciousIP()) return;
 
         if (server.getNetwork() != null) {
