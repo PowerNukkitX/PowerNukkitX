@@ -208,7 +208,7 @@ public class LevelDBProvider implements LevelProvider {
         List<LevelDBChunkSerializer.NormalTickInfo> normalList = this.normalTicksMap.remove(chunkKey);
 
         restoreScheduledTicks(level, chunk, scheduledList);
-        restoreNormalTicks(level, chunk, normalList);
+        restoreNormalTicks(level, normalList);
     }
 
     private static void restoreScheduledTicks(Level level, IChunk chunk, List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList) {
@@ -228,7 +228,7 @@ public class LevelDBProvider implements LevelProvider {
         }
     }
 
-    private static void restoreNormalTicks(Level level, IChunk chunk, List<LevelDBChunkSerializer.NormalTickInfo> normalList) {
+    private static void restoreNormalTicks(Level level, List<LevelDBChunkSerializer.NormalTickInfo> normalList) {
         if (normalList == null || normalList.isEmpty()) return;
 
         int batchSize = 32;
