@@ -25,8 +25,8 @@ public class MobEquipmentPacket extends DataPacket {
     public void decode(HandleByteBuf byteBuf) {
         this.eid = byteBuf.readEntityRuntimeId(); //EntityRuntimeID
         this.item = byteBuf.readCerealSlot();
-        this.inventorySlot = byteBuf.readByte();
-        this.hotbarSlot = byteBuf.readByte();
+        this.inventorySlot = byteBuf.readUnsignedByte();
+        this.hotbarSlot = byteBuf.readUnsignedByte();
         this.windowId = byteBuf.readByte();
     }
 
