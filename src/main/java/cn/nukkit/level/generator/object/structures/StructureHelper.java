@@ -121,13 +121,6 @@ public class StructureHelper extends BlockManager {
 
     @Override
     public void merge(BlockManager manager) {
-        manager.getBlocks().forEach(block -> super.setBlockStateAt(
-                block.getFloorX(),
-                block.getFloorY(),
-                block.getFloorZ(),
-                block.layer,
-                block.getBlockState()
-        ));
-        this.getHooks().addAll(manager.getHooks());
+        super.merge(manager);
     }
 }

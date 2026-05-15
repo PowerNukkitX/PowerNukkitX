@@ -26,7 +26,7 @@ public class MemorizedBlockSensor implements ISensor {
 
     @Override
     public void sense(EntityIntelligent entity) {
-        Class<? extends Block> blockClass = entity.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
+        Class<?> blockClass = entity.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
         if(blockClass == null) return;
         Block block = null;
         for(int x = -range; x<=range; x++) {

@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * The default is red flower, but there are other flower variants
  */
-public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural, Supportable {
+public abstract class BlockFlower extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural, Supportable, Pollinable {
     public BlockFlower(BlockState blockstate) {
         super(blockstate);
     }
