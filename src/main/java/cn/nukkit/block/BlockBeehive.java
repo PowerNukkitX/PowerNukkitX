@@ -169,7 +169,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             if (beehive != null) {
                 beehive.saveNBT();
                 if (!beehive.isHoneyEmpty() || !beehive.isEmpty()) {
-                    CompoundTag copy = beehive.namedTag.copy();
+                    CompoundTag copy = new CompoundTag();
                     copy.putByte("HoneyLevel", getHoneyLevel());
                     item.setCustomBlockData(copy);
                 }

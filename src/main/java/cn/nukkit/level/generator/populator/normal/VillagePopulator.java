@@ -54,6 +54,9 @@ public class VillagePopulator extends Populator {
         int originY = findGenerationY(chunk, level);
         StructureHelper helper = new StructureHelper(level, new BlockVector3(originX, originY, originZ));
         village.place(helper, random.fork());
+        if(level.getAutoSave()) {
+            chunk.getProvider().saveChunk(chunkX, chunkZ, chunk);
+        }
     }
 
     protected int findGenerationY(IChunk chunk, Level level) {

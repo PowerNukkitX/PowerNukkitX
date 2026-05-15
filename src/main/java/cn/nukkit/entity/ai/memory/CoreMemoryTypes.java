@@ -141,7 +141,7 @@ public interface CoreMemoryTypes {
 
         MemoryType<Entity> NEAREST_SHARED_ENTITY = new MemoryType<>("minecraft:nearest_shared_entity");
 
-        MemoryType<Class<? extends Block>> LOOKING_BLOCK = new MemoryType<>("minecraft:looking_block");
+        MemoryType<Class<?>> LOOKING_BLOCK = new MemoryType<>("minecraft:looking_block");
 
         MemoryType<Class<? extends Item>> LOOKING_ITEM = new MemoryType<>("minecraft:looking_item");
 

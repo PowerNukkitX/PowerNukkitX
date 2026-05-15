@@ -1,6 +1,8 @@
 package cn.nukkit.level.generator.feature.tree;
 
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.generator.feature.ObjectGeneratorFeature;
+import cn.nukkit.level.generator.object.ObjectFallenTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
 import cn.nukkit.utils.random.NukkitRandom;
@@ -17,7 +19,7 @@ public class IceSurfaceTreeFeature extends ObjectGeneratorFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return new ObjectSmallSpruceTree();
+        return random.nextInt(100) == 0 ? new ObjectFallenTree(WoodType.SPRUCE) : new ObjectSmallSpruceTree();
     }
 
     @Override

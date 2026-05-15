@@ -18,6 +18,7 @@ public class LegacySpruceTree extends LegacyTreeGenerator {
     @Override
     public void placeObject(BlockManager level, int x, int y, int z, RandomSourceProvider random) {
         this.treeHeight = random.nextInt(4) + 6;
+        this.setRandomTreeWithVines(random);
 
         int topSize = this.getTreeHeight() - (1 + random.nextInt(2));
         int lRadius = 2 + random.nextInt(2);

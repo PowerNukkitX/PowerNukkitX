@@ -9,8 +9,10 @@ import cn.nukkit.level.Location;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.MoveEntityAbsolutePacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+@Slf4j
 public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityAbsolutePacket> {
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MoveEntityAbsolutePacket pk) {
@@ -19,6 +21,10 @@ public class MoveEntityAbsoluteProcessor extends DataPacketProcessor<MoveEntityA
             return;
         }
         if (!playerHandle.packetRateLimiter.tryMovement()) {
+            return;
+        }
+        if (!Double.isFinite(pk.x) || !Double.isFinite(pk.y) || !Double.isFinite(pk.z) || !Double.isFinite(pk.yaw) || !Double.isFinite(pk.headYaw) || !Double.isFinite(pk.pitch)) {
+            log.debug("Player {} sent invalid movement values (NaN or Infinite)", playerHandle.getUsername());
             return;
         }
         Entity movedEntity = player.getLevel().getEntity(pk.eid);

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.feature.tree;
 
+import cn.nukkit.level.generator.object.ObjectFallenTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
-import cn.nukkit.level.generator.object.ObjectLegacyObjectWrapper;
 import cn.nukkit.level.generator.object.ObjectSavannaTree;
 import cn.nukkit.level.generator.object.legacytree.LegacyOakTree;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -12,7 +12,7 @@ public class SavannaMutatedTreeFeature extends SavannaTreeFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return random.nextInt(3) == 0 ? new ObjectLegacyObjectWrapper(new LegacyOakTree()) : new ObjectSavannaTree();
+        return random.nextInt(3) == 0 ? (random.nextInt(100) == 0 ? new ObjectFallenTree() : new LegacyOakTree()) : new ObjectSavannaTree();
     }
 
     @Override

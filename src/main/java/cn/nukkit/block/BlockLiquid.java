@@ -372,7 +372,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 if (block.layer == 0 && !block.isAir()) {
-                    this.level.useBreakOn(block, block instanceof BlockWeb ? Item.get(Item.WOODEN_SWORD) : null);
+                    this.level.useBreakOn(block, block instanceof BlockWeb ? Item.get(Item.WOODEN_SWORD) : Item.AIR);
                 }
                 this.level.setBlock(block, block.layer, getLiquidWithNewDepth(newFlowDecay), true, true);
                 this.level.scheduleUpdate(block, this.tickRate());
