@@ -24,6 +24,8 @@ import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -381,12 +383,13 @@ public class Chunk implements IChunk {
     public void populateSkyLight() {
         batchProcess(unsafe -> {
             // basic light calculation
+            Int2ObjectOpenHashMap<Block> CACHE = new Int2ObjectOpenHashMap<>();
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
                     int level = 15;
                     for(int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
-                        Block block = unsafe.getBlockState(x, y, z).toBlock();
-
+                        BlockState state = unsafe.getBlockState(x, y, z);
+                        Block block = CACHE.computeIfAbsent(state.blockStateHash(), key -> state.toBlock());
                         if (!block.isTransparent()) {
                             level = 0;
                         } else if (block.diffusesSkyLight()) {

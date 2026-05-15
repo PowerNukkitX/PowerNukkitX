@@ -33,6 +33,8 @@ import static cn.nukkit.network.protocol.AvailableCommandsPacket.*;
  * @see cn.nukkit.network.protocol.AvailableCommandsPacket
  */
 public enum CommandParamType {
+    /** Unknown argument type. */
+    UNKNOWN(ARG_TYPE_UNKNOWN),
     /** Integer argument type. */
     INT(ARG_TYPE_INT),
     /** Floating-point argument type. */
