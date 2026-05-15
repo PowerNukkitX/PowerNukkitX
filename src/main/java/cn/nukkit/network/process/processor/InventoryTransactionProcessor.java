@@ -51,6 +51,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
         Player player = playerHandle.player;
+
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send an inventory transaction while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
+
         if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM) {
             handleUseItem(playerHandle, pk);
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY) {
@@ -143,6 +149,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         Item item = player.getInventory().getItemInMainHand();
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
+                if (!player.canInteract(target, player.isCreative() ? 13 : 7)) {
+                    log.debug("Player {} tried to interact with entity {} out of range", player.getName(), target.getId());
+                    return;
+                }
                 PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
                 if (player.isSpectator() || (player.getDataFlag(EntityFlag.SILENT) && !(target instanceof InventoryHolder))) playerInteractEntityEvent.setCancelled();
                 playerHandle.setInteract();

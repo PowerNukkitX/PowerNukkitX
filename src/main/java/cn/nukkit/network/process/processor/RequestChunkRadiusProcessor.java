@@ -8,9 +8,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class RequestChunkRadiusProcessor extends DataPacketProcessor<RequestChunkRadiusPacket> {
 
+    private static final int MIN_CHUNK_RADIUS = 2;
+    private static final int MAX_CHUNK_RADIUS = 32;
+
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull RequestChunkRadiusPacket pk) {
-        playerHandle.player.setViewDistance(pk.radius);
+        int radius = Math.max(MIN_CHUNK_RADIUS, Math.min(pk.radius, MAX_CHUNK_RADIUS));
+        playerHandle.player.setViewDistance(radius);
     }
 
     @Override
