@@ -24,10 +24,17 @@ public class BlockRedMushroomBlock extends BlockMushroomBlock {
     }
 
     @Override
+    public Item toItem() {
+        final Item item = super.toItem();
+        item.setBlockUnsafe(item.getBlock().setPropertyValue(CommonBlockProperties.HUGE_MUSHROOM_BITS, 14));
+        return item;
+    }
+
+    @Override
     public Item[] getDrops(Item item) {
         if (ThreadLocalRandom.current().nextInt(1, 20) == 1) {
             return new Item[]{
-                    Item.get(RED_MUSHROOM_BLOCK)
+                    Item.get(RED_MUSHROOM)
             };
         } else {
             return Item.EMPTY_ARRAY;

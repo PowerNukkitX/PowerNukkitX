@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "Pelaajalta {%0} ei voi poistaa vaikutuksia, koska hänellä ei ole sellaisia",
   "commands.effect.notFound": "Hirviövaikutusta tunnuksella {%0} ei ole",
   "commands.effect.success": "Annettiin {%0} * {%1} pelaajalle {%2} for {%3} sekunniksi",
+  "commands.effect.success.infinite": "Annettiin {%0} * {%1} pelaajalle {%2} loputtomaksi ajaksi",
   "commands.effect.success.removed": "Otettiin {%0} pelaajalta {%1}",
   "commands.effect.success.removed.all": "Poistettiin kaikki vaikutukset pelaajalta {%0}",
   "commands.enchant.cantCombine": "Vaikutusta {%0} ei voi yhdistää vaikutukseen {%1}",

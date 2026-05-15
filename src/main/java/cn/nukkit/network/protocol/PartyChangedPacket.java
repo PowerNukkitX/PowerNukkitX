@@ -15,15 +15,20 @@ import lombok.ToString;
 @AllArgsConstructor
 public class PartyChangedPacket extends DataPacket {
     private String partyId;
+    private boolean isPartyLeader;
 
     @Override
     public void decode(HandleByteBuf byteBuf) {
-        setPartyId(byteBuf.readOptional(null, byteBuf::readString));
+        final boolean present = byteBuf.readBoolean();
+        if (present) {
+            setPartyId(byteBuf.readString());
+            setPartyLeader(byteBuf.readBoolean());
+        }
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
-        byteBuf.writeNotNull(partyId, byteBuf::writeString);
+
     }
 
     @Override

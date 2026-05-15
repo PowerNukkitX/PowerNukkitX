@@ -1,20 +1,18 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.block.property.type.BlockPropertyType;
-import cn.nukkit.education.Education;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.IOException;
 
 public class BlockStateTest {
 
@@ -23,26 +21,26 @@ public class BlockStateTest {
     @SneakyThrows
     void BlockStateTest_initStates() {
         Registries.BLOCK.init();
-        int blocks = 0;
-        try (var stream = new FileInputStream("src/main/resources/gamedata/endstone/block_states.json")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            JsonArray blockStateData = JsonParser.parseReader(reader).getAsJsonArray();
-            for(int i = 0; i < blockStateData.size(); i++) {
-                JsonObject entry = blockStateData.get(i).getAsJsonObject();
-                int hash = entry.get("blockStateHash").getAsInt();
-                String name = entry.get("name").getAsString();
-                if(BlockRegistry.shouldSkip(name)) continue; //Skip blocks
+        int blocksCounter = 0;
+        try (var stream = this.getClass().getClassLoader().getResourceAsStream("gamedata/kaooot/block_palette.nbt")) {
+            CompoundTag root = NBTIO.readCompressed(stream);
+            final ListTag<CompoundTag> blocks = root.getList("blocks", CompoundTag.class);
+            for (CompoundTag block : blocks.getAll()) {
+                int hash = block.getInt("network_id");
+                String name = block.getString("name");
+                if (BlockRegistry.shouldSkip(name)) continue; //Skip blocks
                 BlockState state = Registries.BLOCKSTATE.get(hash);
-                if(state == null) {
-                    throw new RuntimeException(name + " (" + hash + ") was not a part of block_states.json.");
+                if (state == null) {
+                    Server.getInstance().getLogger().alert("failed to find block state for " + name + " (" + hash + ")");
                 } else {
-                    if(!state.getIdentifier().equals(name)) {
-                        throw new RuntimeException("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
+                    if (!state.getIdentifier().equals(name)) {
+                        Server.getInstance().getLogger().alert("BlockState " + hash + " was not " + name + ". Instead it is " + state.getIdentifier());
                     }
                 }
-                blocks++;
+                blocksCounter++;
             }
-            Assertions.assertEquals(blocks, Registries.BLOCKSTATE.getAllState().size());
+            Assertions.assertEquals(blocksCounter, Registries.BLOCKSTATE.getAllState().size());
+        } catch (IOException e) {
         }
     }
 

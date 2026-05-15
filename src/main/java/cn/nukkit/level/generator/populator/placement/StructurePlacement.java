@@ -34,11 +34,12 @@ public class StructurePlacement {
     public boolean canGenerate(long levelSeed, RandomSourceProvider random, int chunkX, int chunkZ, BiomePicker<?> biomePicker) {
         int sampleX = (chunkX << 4) + 7;
         int sampleZ = (chunkZ << 4) + 7;
+        int sampleY = settings.biomeSampleY;
         int biome;
         if (biomePicker instanceof OverworldBiomePicker overworldBiomePicker) {
-            biome = overworldBiomePicker.pickRaw(sampleX, SEA_LEVEL, sampleZ).getBiomeId();
+            biome = overworldBiomePicker.pickRaw(sampleX, sampleY, sampleZ).getBiomeId();
         } else {
-            biome = biomePicker.pick(sampleX, SEA_LEVEL, sampleZ).getBiomeId();
+            biome = biomePicker.pick(sampleX, sampleY, sampleZ).getBiomeId();
         }
         return canGenerate(levelSeed, random, chunkX, chunkZ, biome);
     }
@@ -118,6 +119,8 @@ public class StructurePlacement {
         protected final int minDistance = 0;
         @Builder.Default
         protected final int maxDistance = 1;
+        @Builder.Default
+        protected final int biomeSampleY = SEA_LEVEL;
         @Builder.Default
         Function<Integer, Boolean> isBiomeValid = biomeId -> true;
     }

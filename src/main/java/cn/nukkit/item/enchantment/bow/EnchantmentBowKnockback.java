@@ -1,6 +1,7 @@
 package cn.nukkit.item.enchantment.bow;
 
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -25,4 +26,8 @@ public class EnchantmentBowKnockback extends EnchantmentBow {
         return 2;
     }
 
+    @Override
+    public void doAttack(EntityDamageByEntityEvent event) {
+        event.setKnockBack(event.getKnockBack() + this.getLevel() * 0.5f);
+    }
 }

@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
@@ -50,6 +51,12 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull InventoryTransactionPacket pk) {
         Player player = playerHandle.player;
+
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send an inventory transaction while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
+
         if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM) {
             handleUseItem(playerHandle, pk);
         } else if (pk.transactionType == InventoryTransactionPacket.TYPE_USE_ITEM_ON_ENTITY) {
@@ -142,6 +149,10 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
         Item item = player.getInventory().getItemInMainHand();
         switch (type) {
             case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT -> {
+                if (!player.canInteract(target, player.isCreative() ? 13 : 7)) {
+                    log.debug("Player {} tried to interact with entity {} out of range", player.getName(), target.getId());
+                    return;
+                }
                 PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(player, target, item, useItemOnEntityData.clickPos);
                 if (player.isSpectator() || (player.getDataFlag(EntityFlag.SILENT) && !(target instanceof InventoryHolder))) playerInteractEntityEvent.setCancelled();
                 playerHandle.setInteract();
@@ -220,12 +231,6 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
                 damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
                 float knockBack = 0.3f;
-                if (item.applyEnchantments()) {
-                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                    if (knockBackEnchantment != null) {
-                        knockBack += knockBackEnchantment.getLevel() * 0.1f;
-                    }
-                }
                 EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(player, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
                 entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
                 if (player.isSpectator()) entityDamageByEntityEvent.setCancelled();
@@ -312,8 +317,11 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 Block target = player.level.getBlock(blockVector.asVector3());
                 Block block = target.getSide(face);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_NOGRAPHIC);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_NOGRAPHIC, 1);
+                Set<Block> blocks = block.getLevelBlockAround(); //Also updates ghost blocks placed from blocks like doors and beds.
+                blocks.add(block);
+                var players = new Player[]{player};
+                player.getLevel().sendBlocks(players, blocks.toArray(Block[]::new), UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                player.getLevel().sendBlocks(players, blocks.stream().map(b -> b.getLevelBlock(1)).toArray(Block[]::new), UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK -> {
                 //Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK

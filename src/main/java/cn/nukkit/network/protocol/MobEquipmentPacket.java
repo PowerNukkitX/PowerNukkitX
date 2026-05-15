@@ -24,16 +24,16 @@ public class MobEquipmentPacket extends DataPacket {
     @Override
     public void decode(HandleByteBuf byteBuf) {
         this.eid = byteBuf.readEntityRuntimeId(); //EntityRuntimeID
-        this.item = byteBuf.readSlot();
-        this.inventorySlot = byteBuf.readByte();
-        this.hotbarSlot = byteBuf.readByte();
+        this.item = byteBuf.readCerealSlot();
+        this.inventorySlot = byteBuf.readUnsignedByte();
+        this.hotbarSlot = byteBuf.readUnsignedByte();
         this.windowId = byteBuf.readByte();
     }
 
     @Override
     public void encode(HandleByteBuf byteBuf) {
         byteBuf.writeEntityRuntimeId(this.eid); //EntityRuntimeID
-        byteBuf.writeSlot(this.item);
+        byteBuf.writeCerealSlot(this.item);
         byteBuf.writeByte((byte) this.inventorySlot);
         byteBuf.writeByte((byte) this.hotbarSlot);
         byteBuf.writeByte((byte) this.windowId);

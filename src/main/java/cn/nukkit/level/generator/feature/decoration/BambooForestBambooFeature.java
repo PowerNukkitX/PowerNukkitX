@@ -10,10 +10,10 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
-import cn.nukkit.utils.random.NukkitRandom;
 
 public class BambooForestBambooFeature extends SurfaceGenerateFeature {
 
+    private static final int BAMBOO_SHOOTS_PER_FEATURE = 4;
     private static final BlockState NO_LEAVE = BlockBamboo.PROPERTIES.getBlockState(CommonBlockProperties.BAMBOO_LEAF_SIZE.createValue(BambooLeafSize.NO_LEAVES));
     private static final BlockState SMALL_LEAVE = BlockBamboo.PROPERTIES.getBlockState(CommonBlockProperties.BAMBOO_LEAF_SIZE.createValue(BambooLeafSize.SMALL_LEAVES));
     private static final BlockState LARGE_LEAVE = BlockBamboo.PROPERTIES.getBlockState(CommonBlockProperties.BAMBOO_LEAF_SIZE.createValue(BambooLeafSize.LARGE_LEAVES));
@@ -27,9 +27,29 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
 
         if(!Registries.BIOME.get(manager.getLevel().getBiomeId(x, y, z)).getTags().contains(BiomeTags.BAMBOO)) return;
         this.random.setSeed(x + y + z);
+
+        for (int i = 0; i < BAMBOO_SHOOTS_PER_FEATURE; i++) {
+            int px = x;
+            int pz = z;
+            int py = y;
+            if (i > 0) {
+                px += random.nextInt(-3, 3);
+                pz += random.nextInt(-3, 3);
+                py = manager.getLevel().getHeightMap(px, pz) + 1;
+            }
+
+            this.placeBambooAt(manager, px, py, pz);
+        }
+    }
+
+    private void placeBambooAt(BlockManager manager, int x, int y, int z) {
+        if (!manager.getBlockIfCachedOrLoaded(x, y, z).isAir()
+                || !manager.getBlockIfCachedOrLoaded(x, y - 1, z).hasTag(BlockTags.DIRT)) {
+            return;
+        }
+
         int midX = x + 1;
         int midZ = z + 1;
-
         int rad = random.nextInt(0, 2);
         for(int _x = -rad - 1; _x <= rad; _x++) {
             for (int _z = -rad - 1; _z <= rad; _z++) {
@@ -52,12 +72,12 @@ public class BambooForestBambooFeature extends SurfaceGenerateFeature {
 
     @Override
     public int getBase() {
-        return 40;
+        return 240;
     }
 
     @Override
     public int getRandom() {
-        return 20;
+        return 80;
     }
 
     @Override

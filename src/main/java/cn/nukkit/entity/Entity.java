@@ -552,6 +552,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         this.entityDataMap.put(HEIGHT, this.getHeight());
         this.entityDataMap.put(WIDTH, this.getWidth());
         this.entityDataMap.put(STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
+        this.entityDataMap.put(RESERVED_139, 0L);
+        this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
 
         // =========================================================
         // Load Effects from NBT
@@ -943,7 +945,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         if (oldEffect != null && (
                 Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
                         (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
-                                effect.getDuration() < oldEffect.getDuration())
+                                (oldEffect.getDuration() == -1 || (effect.getDuration() != -1 && effect.getDuration() < oldEffect.getDuration())))
         )) {
             return;
         }
@@ -1618,13 +1620,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
 
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
-                if (effect.canTick()) {
-                    effect.apply(this, 1);
-                }
-                effect.setDuration(effect.getDuration() - tickDiff);
+                effect.onTick(this);
 
-                if (effect.getDuration() <= 0) {
-                    this.removeEffect(effect.getType());
+                if (!effect.isInfinite()) {
+                    effect.setDuration(effect.getDuration() - tickDiff);
+
+                    if (effect.getDuration() <= 0) {
+                        this.removeEffect(effect.getType());
+                    }
                 }
             }
         }
@@ -1725,8 +1728,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 }
             }
 
+            if (nearest == null) {
+                return hasUpdate;
+            }
+
             // Hard distance -> immediate despawn
-            if (nearest == null || nearestSq > hardDistSq) {
+            if (nearestSq > hardDistSq) {
                 this.despawnFromAll();
                 this.close();
                 return hasUpdate;
@@ -4650,7 +4657,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
         return onInteract(player, item);
     }
 
-    /** 
+    /**
      * return true if opening inventory, otherwise players inventory will be opnened. <p>
      * If inventory is restricted to owner no inventory UI is opened
      * */
@@ -5419,6 +5426,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 return false;
             }
             to = ev.getTo();
+        }
+
+        if (!to.getLevel().isChunkLoaded((int) to.getX() >> 4, (int) to.getZ() >> 4)) {
+            to.getLevel().loadChunk((int) to.getX() >> 4, (int) to.getZ() >> 4, true);
         }
 
         final Entity currentRide = getRiding();

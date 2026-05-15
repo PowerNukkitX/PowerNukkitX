@@ -48,7 +48,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         }
 
         itemRegistryPacket.setEntries(entries.toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
-        player.dataPacket(itemRegistryPacket);
+        player.dataPacketImmediately(itemRegistryPacket);
 
         log.debug("Sending actor identifiers");
         player.dataPacket(new AvailableEntityIdentifiersPacket());

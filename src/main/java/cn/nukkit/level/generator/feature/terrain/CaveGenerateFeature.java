@@ -371,7 +371,7 @@ public class CaveGenerateFeature extends GenerateFeature {
         }
 
         BiomeDefinition definition = Registries.BIOME.get(chunk.getBiomeId(x, y, z));
-        BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceMaterial.get().topBlock);
+        BlockState topBlock = Registries.BLOCKSTATE.get(definition.data.chunkGenData.get().surfaceBuilderData.get().surfaceMaterial.get().topBlock);
         chunk.setBlockState(x, y, z, topBlock);
     }
 }

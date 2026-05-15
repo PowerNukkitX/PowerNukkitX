@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 public abstract class MultiSpawnRule extends SpawnRule {
 
     private String entityId;
-    private int herdMin, herdMax;
+    private int herdMin, herdMax, weight;
 
     private final ObjectArraySet<SpawnRule> spawnRules;
 
@@ -26,6 +26,7 @@ public abstract class MultiSpawnRule extends SpawnRule {
                 this.entityId = rule.getEntityId();
                 this.herdMin = rule.getHerdMin();
                 this.herdMax = rule.getHerdMax();
+                this.weight = rule.getWeight();
                 return true;
             }
         }
@@ -45,5 +46,10 @@ public abstract class MultiSpawnRule extends SpawnRule {
     @Override
     public int getHerdMax() {
         return herdMax;
+    }
+
+    @Override
+    public int getWeight() {
+        return weight;
     }
 }

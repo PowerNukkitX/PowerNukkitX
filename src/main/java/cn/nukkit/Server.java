@@ -13,7 +13,7 @@ import cn.nukkit.config.ServerSettings;
 import cn.nukkit.config.YamlSnakeYamlConfigurer;
 import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
-import cn.nukkit.dispenser.DispenseBehaviorRegister;
+import cn.nukkit.block.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
@@ -132,10 +132,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -200,6 +197,7 @@ public class Server {
      * other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
+    private final ScheduledExecutorService levelTickExecutor;
     private SimpleCommandMap commandMap;
     private ResourcePackManager resourcePackManager;
     private ConsoleCommandSender consoleSender;
@@ -380,6 +378,11 @@ public class Server {
 
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()),
                 new ComputeThreadPoolThreadFactory(), null, false);
+        int levelWorkerThreads = this.settings.levelSettings().levelWorkerThreads();
+        if (levelWorkerThreads <= 0) {
+            levelWorkerThreads = Runtime.getRuntime().availableProcessors();
+        }
+        this.levelTickExecutor = new ScheduledThreadPoolExecutor(levelWorkerThreads, r -> new Thread(r, "Level Worker"));
 
         levelArray = Level.EMPTY_ARRAY;
 
@@ -887,17 +890,18 @@ public class Server {
             this.scheduler.mainThreadHeartbeat((int) (this.getNextTick() + 10000));
 
             log.debug("Unloading all levels");
+            //Chunks may still generate. Waiting for all generation tasks to complete
+            while(!this.getComputeThreadPool().isQuiescent()) Thread.sleep(1);
             for (Level level : this.levelArray) {
                 this.unloadLevel(level, true);
-                while (level.isThreadRunning())
-                    Thread.sleep(10); // TODO: This is just a workaround, we need to apply proper thread
-                                      // synchronization to ensure the level thread is stopped before proceeding with
-                                      // the shutdown process.
+                //Waiting for level to complete its last tick
+                while (level.isThreadRunning()) Thread.sleep(1);
             }
             if (positionTrackingService != null) {
                 log.debug("Closing position tracking service");
                 positionTrackingService.close();
             }
+            this.levelTickExecutor.shutdown();
 
             log.debug("Closing console");
             this.consoleThread.interrupt();
@@ -2880,6 +2884,10 @@ public class Server {
 
     public LangCode getLanguageCode() {
         return baseLangCode;
+    }
+
+    public ScheduledExecutorService getLevelTickExecutor() {
+        return levelTickExecutor;
     }
 
     public ServerSettings getSettings() {
