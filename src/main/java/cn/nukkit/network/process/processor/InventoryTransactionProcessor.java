@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Slf4j
 public class InventoryTransactionProcessor extends DataPacketProcessor<InventoryTransactionPacket> {
@@ -306,8 +307,11 @@ public class InventoryTransactionProcessor extends DataPacketProcessor<Inventory
                 }
                 Block target = player.level.getBlock(blockVector.asVector3());
                 Block block = target.getSide(face);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_NOGRAPHIC);
-                player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_NOGRAPHIC, 1);
+                Set<Block> blocks = block.getLevelBlockAround(); //Also updates ghost blocks placed from blocks like doors and beds.
+                blocks.add(block);
+                var players = new Player[]{player};
+                player.getLevel().sendBlocks(players, blocks.toArray(Block[]::new), UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                player.getLevel().sendBlocks(players, blocks.stream().map(b -> b.getLevelBlock(1)).toArray(Block[]::new), UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
             }
             case InventoryTransactionPacket.USE_ITEM_ACTION_BREAK_BLOCK -> {
                 //Creative mode use PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK

@@ -3054,9 +3054,6 @@ public class Level implements Metadatable {
                     }
                 }
             } else {
-                if ((item instanceof ItemBucket itemBucket) && itemBucket.isWater()) {
-                    player.getLevel().sendBlocks(new Player[]{player}, new Block[]{Block.get(BlockID.AIR, target)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
-                }
                 return null;
             }
         }
