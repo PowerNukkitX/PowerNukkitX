@@ -13,8 +13,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 public class NetworkSettings extends OkaeriConfig {
-    @Comment("pnx.settings.network.strictpackets")
-    boolean strictPackets = true;
     @Comment("pnx.settings.network.blockmaliciousip")
     boolean blockMaliciousIP = true;
     @Comment("pnx.settings.network.queryplugins")

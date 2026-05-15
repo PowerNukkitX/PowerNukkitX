@@ -44,7 +44,6 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         LoginData loginDataRaw;
         ClientChainData loginData;
-        if (Server.getInstance().getSettings().networkSettings().strictPackets()) {
             try {
                 loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
                 loginData = ClientChainData.of(loginDataRaw);
@@ -62,10 +61,6 @@ public class LoginHandler extends BedrockSessionPacketHandler {
                 session.close("§cPacket handling error");
                 return;
             }
-        } else {
-            loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
-            loginData = ClientChainData.of(loginDataRaw);
-        }
 
         //TODO: re-implement if possible
         //check the player login time
