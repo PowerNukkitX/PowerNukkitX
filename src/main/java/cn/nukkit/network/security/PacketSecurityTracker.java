@@ -28,10 +28,16 @@ public final class PacketSecurityTracker {
             log.warn("Malicious packet flagged (no IP address). Reason: {}", reason);
             return;
         }
+
         InetAddress ip = address.getAddress();
-        log.warn("Blocking IP {} for {} ms. Reason: {}", ip.getHostAddress(), BLOCK_DURATION_MS, reason);
+        blockMaliciousIP(ip);
+    }
+
+    public static void blockMaliciousIP(InetAddress ip) {
         Server server = Server.getInstance();
-        if (server != null && server.getNetwork() != null) {
+
+        if (!Server.getInstance().getSettings().networkSettings().blockMaliciousIP()) return;
+        if (server.getNetwork() != null) {
             server.getNetwork().blockAddress(ip, BLOCK_DURATION_MS);
         }
     }
