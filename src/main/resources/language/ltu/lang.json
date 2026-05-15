@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Įjungiamas Minecraft: BE serveris (versija: {%0}) (Vertimas: nogalosa.lt)",
   "nukkit.server.startFinished": "Baigta ({%0}s)! Jeigu reikia pagalbos, rašykite \"help\" arba \"?",
   "nukkit.server.tickOverload": "Nespėju atnaujinti! Ar serveris perkrautas?",
+  "nukkit.server.malicious-packet": "Aptiktas kenksmingas paketas (nėra IP adreso). Priežastis : {%0}",
   "potion.absorption": "Sugertis",
   "potion.blindness": "Aklumas",
   "potion.confusion": "Pykinimas",

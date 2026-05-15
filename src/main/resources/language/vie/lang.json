@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Đang bắt đầu máy chủ Minecraft: BE phiên bản {%0}",
   "nukkit.server.startFinished": "Xong({%0}s)! Để trợ giúp, nhập \"help\" hoặc \"?",
   "nukkit.server.tickOverload": "Không thể chịu nổi nữa! Quá tải cmnr :(",
+  "nukkit.server.malicious-packet": "Phát hiện gói tin độc hại (không có địa chỉ IP). Lý do : {%0}",
   "potion.absorption": "Hấp thụ",
   "potion.blindness": "Mù",
   "potion.confusion": "Choáng",

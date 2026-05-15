@@ -19,24 +19,30 @@ import java.net.InetSocketAddress;
  */
 @Slf4j
 public final class PacketSecurityTracker {
-    /** How long the offending IP is blocked, in milliseconds. */
+    /**
+     * How long the offending IP is blocked, in milliseconds.
+     */
     public static final int BLOCK_DURATION_MS = 10_000;
 
-    private PacketSecurityTracker() {}
+    private PacketSecurityTracker() {
+    }
+
     public static void flag(InetSocketAddress address, String reason) {
+        Server server = Server.getInstance();
+
         if (address == null) {
-            log.warn("Malicious packet flagged (no IP address). Reason: {}", reason);
+            log.warn(server.getLanguage().tr("nukkit.server.malicious-packet", reason));
             return;
         }
 
         InetAddress ip = address.getAddress();
-        blockMaliciousIP(ip);
+        blockMaliciousIP(server, ip);
     }
 
-    public static void blockMaliciousIP(InetAddress ip) {
-        Server server = Server.getInstance();
+    public static void blockMaliciousIP(Server server, InetAddress ip) {
 
-        if (!Server.getInstance().getSettings().networkSettings().blockMaliciousIP()) return;
+        if (!server.getSettings().networkSettings().blockMaliciousIP()) return;
+
         if (server.getNetwork() != null) {
             server.getNetwork().blockAddress(ip, BLOCK_DURATION_MS);
         }

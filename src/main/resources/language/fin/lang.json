@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Käynnistetään Minecraft BE palvelinta versiolle {%0}",
   "nukkit.server.startFinished": "Valmis ({%0}s)! Kirjoita \"help\" tai \"?\" saadaksesi apua",
   "nukkit.server.tickOverload": "Ei pysyä ylhäällä! Onko palvelin ylikuormitettu?",
+  "nukkit.server.malicious-packet": "Haitallinen paketti havaittu (ei IP-osoitetta). Syy : {%0}",
   "potion.absorption": "Imeytyminen",
   "potion.blindness": "Sokeus",
   "potion.confusion": "Pahoinvointi",

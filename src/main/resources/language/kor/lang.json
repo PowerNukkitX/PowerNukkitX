@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "마인크래프트: 포켓 에디션 (버전 {%0}용) 서버를 시작 중입니다...",
   "nukkit.server.startFinished": "완료 ({%0}초)! 도움말을 참조하시려면 \"help\" 또는 \"?\"를 입력해주세요",
   "nukkit.server.tickOverload": "유지할 수 없습니다! 서버가 과부하되었나요?",
+  "nukkit.server.malicious-packet": "악성 패킷이 감지되었습니다 (IP 주소 없음). 이유 : {%0}",
   "potion.absorption": "흡수",
   "potion.blindness": "실명",
   "potion.confusion": "멀미",

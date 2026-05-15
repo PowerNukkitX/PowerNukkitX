@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Memulai Minecraft: BE server versi {%0}",
   "nukkit.server.startFinished": "Selesai ({%0} detik)! Untuk bantuan, ketik \"help\" atau \"?",
   "nukkit.server.tickOverload": "Tidak dapat mengikuti! Apakah server kelebihan beban?",
+  "nukkit.server.malicious-packet": "Paket berbahaya terdeteksi (tidak ada alamat IP). Alasan : {%0}",
   "potion.absorption": "Penyerapan",
   "potion.blindness": "Buto",
   "potion.confusion": "Maul",

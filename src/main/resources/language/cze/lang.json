@@ -1150,6 +1150,7 @@
   "nukkit.server.start": "Zapínám Minecraft: BE server verze {%0}",
   "nukkit.server.startFinished": "Hotovo ({%0}s)! Pro nápovědu, napiš \"help\" nebo \"?",
   "nukkit.server.tickOverload": "Nelze pokračovat! Je server přetížen?",
+  "nukkit.server.malicious-packet": "Detekován škodlivý paket (žádná IP adresa). Důvod : {%0}",
   "potion.absorption": "Vstřebávání",
   "potion.blindness": "Slepota",
   "potion.confusion": "Nevolnost",

@@ -1158,6 +1158,7 @@
   "nukkit.server.start": "正在启动 Minecraft: BE {%0}",
   "nukkit.server.startFinished": "启动完成 ({%0}s)！如需帮助，请输入 \"help\" 或 \"?",
   "nukkit.server.tickOverload": "注意！服务器可能超载？",
+  "nukkit.server.malicious-packet": "检测到恶意数据包（无IP地址）。原因：{%0}",
   "nukkit.start.hardwareMonitorDisabled": "您的服务器暂不支持硬件数据监测，此功能已经关闭，这可能会影响性能。",
   "nukkit.start.invalid": "检测到使用了错误的启动命令，若您不是开发者，请使用PNX-CLI来启动PNX。",
   "nukkit.start.shaded1": "检测到您正在使用shaded包，此版本的PowerNukkitX仅供用作开发依赖使用，我们不推荐将其用于启动服务器。",

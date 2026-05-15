@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Iniciando Servidor de Minecraft: BE, versão {%0}",
   "nukkit.server.startFinished": "Finalizado ({%0}s)! Para ver a ajuda, escreva \"help\" ou \"?",
   "nukkit.server.tickOverload": "Não foi possível processar tudo a tempo! Será que o servidor está sobrecarregado?",
+  "nukkit.server.malicious-packet": "Pacote malicioso detectado (sem endereço IP). Motivo: {%0}",
   "potion.absorption": "Absorção",
   "potion.blindness": "Cegueira",
   "potion.confusion": "Náusea",

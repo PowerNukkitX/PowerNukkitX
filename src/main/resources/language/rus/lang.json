@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Запускается сервер Minecraft: BE версии {%0}",
   "nukkit.server.startFinished": "Загружено ({%0} секунд)! Для справки введите \"help\" или \"?",
   "nukkit.server.tickOverload": "Сервер перегружен!",
+  "nukkit.server.malicious-packet": "Обнаружен вредоносный пакет (нет IP-адреса). Причина : {%0}",
   "potion.absorption": "Поглощение",
   "potion.blindness": "Слепота",
   "potion.confusion": "Тошнота",

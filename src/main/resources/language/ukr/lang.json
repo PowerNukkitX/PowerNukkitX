@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Запуск сервера Minecraft: BE версії {%0}",
   "nukkit.server.startFinished": "Готово ({%0}с)! Для допомоги, наберіть \"help\" або \"?",
   "nukkit.server.tickOverload": "Зараз рухне! Ти що, сервер перевантажив?",
+  "nukkit.server.malicious-packet": "Виявлено шкідливий пакет (немає IP-адреси). Причина : {%0}",
   "potion.absorption": "Поглинання",
   "potion.blindness": "Сліпота",
   "potion.confusion": "Нудота",

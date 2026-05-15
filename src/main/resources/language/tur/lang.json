@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Minecraft: Bedrock Edition {%0} sunucusu başlatılıyor",
   "nukkit.server.startFinished": "Sunucu başlatıldı! ({%0}sn) Yardım için \"help\" veya \"?\" yaz",
   "nukkit.server.tickOverload": "Gecikme mevcut! Sunucu aşırı mı yüklendi?",
+  "nukkit.server.malicious-packet": "Kötü amaçlı paket tespit edildi (IP adresi yok). Sebep : {%0}",
   "potion.absorption": "Emiş",
   "potion.blindness": "Körlük",
   "potion.confusion": "Bulantı",

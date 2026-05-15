@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Startowanie Serwera Minecraft: BE na wersji {%0}",
   "nukkit.server.startFinished": "Ukonczono w ({%0} sekund)! Aby uzyskac pomoc wpisz help lub ?",
   "nukkit.server.tickOverload": "Nie nadazam! Serwer jest przeciazony!?",
+  "nukkit.server.malicious-packet": "Wykryto złośliwy pakiet (brak adresu IP). Powód : {%0}",
   "potion.absorption": "Absorbcja",
   "potion.blindness": "Slepota",
   "potion.confusion": "Dezorientacja",

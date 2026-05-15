@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Démarrage de Minecraft: BE version serveur {%0}",
   "nukkit.server.startFinished": "Fait en ({%0}s) ! Pour obtenir de l\u0027aide, tapez \"help\" ou \" ?",
   "nukkit.server.tickOverload": "Impossible de suivre ! Le serveur est-il surchargé ?",
+  "nukkit.server.malicious-packet": "Paquet suspect détecté (pas d'adresse IP). Raison: {%0}",
   "potion.absorption": "Absorption",
   "potion.blindness": "Cécité",
   "potion.confusion": "Nausée",

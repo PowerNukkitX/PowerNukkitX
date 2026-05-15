@@ -1151,6 +1151,7 @@
   "nukkit.server.start": "Minecraft: BEサーバー({%0}に対応)を起動しています",
   "nukkit.server.startFinished": "起動完了({%0}秒)！ \"help\"または\"?\"でヘルプを表示",
   "nukkit.server.tickOverload": "注意！ サーバーが高負荷になっている可能性があります",
+  "nukkit.server.malicious-packet": "不正なパケットが検出されました（IPアドレスなし）。理由 : {%0}",
   "potion.absorption": "衝撃吸収",
   "potion.blindness": "盲目",
   "potion.confusion": "吐き気",

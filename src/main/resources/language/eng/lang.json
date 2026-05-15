@@ -1239,6 +1239,7 @@
   "nukkit.server.start": "Starting Minecraft: BE server version {%0}",
   "nukkit.server.startFinished": "Done ({%0}s)! For help, type \"help\" or \"?",
   "nukkit.server.tickOverload": "Can\u0027t keep up! Is the server overloaded?",
+  "nukkit.server.malicious-packet": "Malicious packet flagged (no IP address). Reason : {%0}",
   "nukkit.start.hardwareMonitorDisabled": "Your server does not support hardware data monitoring. This function has been turned off, which may affect performance.",
   "nukkit.start.invalid": "Invalid start filed detected, please use PNX-CLI to start if you aren\u0027t a developer.",
   "nukkit.start.shaded1": "It is detected that you are using the shaded jar. This version of PowerNukkitX is only used for development dependency. We do not recommend using it to start the server.",

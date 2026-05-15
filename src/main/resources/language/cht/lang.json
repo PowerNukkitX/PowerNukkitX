@@ -1158,6 +1158,7 @@
   "nukkit.server.start": "正在啟動支援 Minecraft: BE {%0} 版本的伺服器",
   "nukkit.server.startFinished": "讀取完成 ({%0}s)！如需幫助，請輸入 \"help\" 或 \"?",
   "nukkit.server.tickOverload": "注意！伺服器有超載的可能",
+  "nukkit.server.malicious-packet": "偵測到惡意封包（無 IP 位址）。原因：{%0}",
   "nukkit.start.hardwareMonitorDisabled": "您的服務器暫不支持硬體數據監測，此功能已經關閉，這可能會影響效能。",
   "nukkit.start.invalid": "檢測到使用了錯誤的啟動命令，若您不是開發者，請使用PNX-CLI來啟動PNX。",
   "nukkit.start.shaded1": "檢測到您正在使用shaded包，此版本的PowerNukkitX僅供用作開發依賴使用，我們不推薦將其用於啟動服務器。",
