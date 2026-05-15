@@ -897,7 +897,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var revertPos = this.getLocation().clone();
         double distance = clientPos.distanceSquared(this);
         //before check
-        if (distance > 128) {
+        if (isCheckingMovement() && distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
             IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
@@ -1660,6 +1660,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setHorizontalFlySpeed(float speed) {
         this.horizontalFlySpeed = speed;
+        this.getAdventureSettings().update();
     }
 
     public float getHorizontalFlySpeed() {
@@ -1668,6 +1669,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setVerticalFlySpeed(float speed) {
         this.verticalFlySpeed = speed;
+        this.getAdventureSettings().update();
     }
 
     public float getVerticalFlySpeed() {

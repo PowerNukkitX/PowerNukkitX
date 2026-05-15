@@ -36,7 +36,7 @@ public class BeeMemorizedBlockSensor implements ISensor {
             return;
         }
 
-        Class<? extends Block> blockClass = entity.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
+        Class<?> blockClass = entity.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
         if (blockClass == null) {
             return;
         }
