@@ -2,8 +2,9 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
-import cn.nukkit.block.BlockFlower;
+import cn.nukkit.block.Pollinable;
 import cn.nukkit.block.BlockWitherRose;
+import cn.nukkit.block.Pollinable;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
@@ -230,8 +231,8 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                 }
             }
 
-            getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, searchHive ? BlockBeehive.class : BlockFlower.class);
-            Class<? extends Block> blockClass = this.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
+            getMemoryStorage().put(CoreMemoryTypes.LOOKING_BLOCK, searchHive ? BlockBeehive.class : Pollinable.class);
+            Class<?> blockClass = this.getMemoryStorage().get(CoreMemoryTypes.LOOKING_BLOCK);
             Block nearestBlock = this.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
 
             // Anti-stuck: if we chase the same target too long, clear it and let sensors pick another
@@ -249,7 +250,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                     stuckTicksOnTarget = 0;
                 }
 
-                int timeoutTicks = blockClass.isAssignableFrom(BlockFlower.class) ? 120 : 400;
+                int timeoutTicks = blockClass.isAssignableFrom(Pollinable.class) ? 120 : 400;
                 if (stuckTicksOnTarget > timeoutTicks) {
                     this.getMemoryStorage().clear(CoreMemoryTypes.NEAREST_BLOCK);
                     stuckTicksOnTarget = 0;
@@ -264,10 +265,10 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
                 return super.onUpdate(currentTick);
             }
 
-            if (blockClass.isAssignableFrom(BlockFlower.class)) {
+            if (blockClass.isAssignableFrom(Pollinable.class)) {
                 Block[] collisions = level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5), false, true);
-                BlockFlower flower = (BlockFlower) Arrays.stream(collisions)
-                        .filter(block -> block instanceof BlockFlower)
+                Block flower = Arrays.stream(collisions)
+                        .filter(block -> block instanceof Pollinable)
                         .findAny()
                         .orElse(null);
 

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +52,19 @@ public class BlockPodzol extends BlockDirt {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        if (item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
+            return new Item[]{
+                    this.toItem()
+            };
+        }
+
+        return new Item[]{
+                Block.get(BlockID.DIRT).toItem()
+        };
     }
 
 }

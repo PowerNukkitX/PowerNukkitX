@@ -15,7 +15,6 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -42,6 +41,7 @@ public final class Aquifer {
     private final DensityFunction preliminarySurfaceUpperBound;
     private final FluidStatus[] aquiferCache;
     private final long[] aquiferLocationCache;
+    private final short[] aquiferOffsetCache;
     private final FluidPicker globalFluidPicker;
     private final int skipSamplingAboveY;
     private final int minY;
@@ -56,6 +56,7 @@ public final class Aquifer {
     private final int preliminarySurfaceCellHeight;
     private final CachedPointContext cachedPointContext;
     private final Map<Long, Integer> preliminarySurfaceLevelCache;
+    private double cachedBarrierNoise;
     private boolean shouldScheduleFluidUpdate;
 
     public static FluidPicker overworldFluidPicker(int seaLevel) {
@@ -124,7 +125,8 @@ public final class Aquifer {
         int totalGridSize = this.gridSizeX * gridSizeY * this.gridSizeZ;
         this.aquiferCache = new FluidStatus[totalGridSize];
         this.aquiferLocationCache = new long[totalGridSize];
-        Arrays.fill(this.aquiferLocationCache, Long.MAX_VALUE);
+        this.aquiferOffsetCache = new short[totalGridSize];
+        this.preloadAquiferLocations(gridSizeY);
         int maxAdjustedSurfaceLevel = this.adjustSurfaceLevel(
                 this.maxPreliminarySurfaceLevel(
                         fromGridX(this.minGridX, 0),
@@ -180,23 +182,10 @@ public final class Aquifer {
                     int spacedGridY = yAnchor + y1;
                     int spacedGridZ = zAnchor + z1;
                     int index = this.getIndex(spacedGridX, spacedGridY, spacedGridZ);
-                    long existingLocation = this.aquiferLocationCache[index];
-                    long location;
-                    if (existingLocation != Long.MAX_VALUE) {
-                        location = existingLocation;
-                    } else {
-                        RandomSourceProvider random = RANDOM.get().setSeed(mixSeed(this.randomSeed, spacedGridX, spacedGridY, spacedGridZ));
-                        location = pack(
-                                fromGridX(spacedGridX, random.nextInt(X_RANGE)),
-                                fromGridY(spacedGridY, random.nextInt(Y_RANGE)),
-                                fromGridZ(spacedGridZ, random.nextInt(Z_RANGE))
-                        );
-                        this.aquiferLocationCache[index] = location;
-                    }
-
-                    int dx = unpackX(location) - posX;
-                    int dy = unpackY(location) - posY;
-                    int dz = unpackZ(location) - posZ;
+                    int packedOffset = this.aquiferOffsetCache[index];
+                    int dx = fromGridX(spacedGridX, unpackOffsetX(packedOffset)) - posX;
+                    int dy = fromGridY(spacedGridY, unpackOffsetY(packedOffset)) - posY;
+                    int dz = fromGridZ(spacedGridZ, unpackOffsetZ(packedOffset)) - posZ;
                     int newDistance = dx * dx + dy * dy + dz * dz;
                     if (distanceSqr1 >= newDistance) {
                         closestIndex4 = closestIndex3;
@@ -245,9 +234,9 @@ public final class Aquifer {
             return fluidState;
         }
 
-        double[] barrierNoiseValue = new double[]{Double.NaN};
+        this.cachedBarrierNoise = Double.NaN;
         FluidStatus closestStatus2 = this.getAquiferStatus(closestIndex2);
-        double barrier12 = similarity12 * this.calculatePressure(context, barrierNoiseValue, closestStatus1, closestStatus2);
+        double barrier12 = similarity12 * this.calculatePressure(context, closestStatus1, closestStatus2);
         if (density + barrier12 > 0.0) {
             this.shouldScheduleFluidUpdate = false;
             return BlockStone.PROPERTIES.getDefaultState();
@@ -256,7 +245,7 @@ public final class Aquifer {
         FluidStatus closestStatus3 = this.getAquiferStatus(closestIndex3);
         double similarity13 = similarity(distanceSqr1, distanceSqr3);
         if (similarity13 > 0.0) {
-            double barrier13 = similarity12 * similarity13 * this.calculatePressure(context, barrierNoiseValue, closestStatus1, closestStatus3);
+            double barrier13 = similarity12 * similarity13 * this.calculatePressure(context, closestStatus1, closestStatus3);
             if (density + barrier13 > 0.0) {
                 this.shouldScheduleFluidUpdate = false;
                 return BlockStone.PROPERTIES.getDefaultState();
@@ -265,7 +254,7 @@ public final class Aquifer {
 
         double similarity23 = similarity(distanceSqr2, distanceSqr3);
         if (similarity23 > 0.0) {
-            double barrier23 = similarity12 * similarity23 * this.calculatePressure(context, barrierNoiseValue, closestStatus2, closestStatus3);
+            double barrier23 = similarity12 * similarity23 * this.calculatePressure(context, closestStatus2, closestStatus3);
             if (density + barrier23 > 0.0) {
                 this.shouldScheduleFluidUpdate = false;
                 return BlockStone.PROPERTIES.getDefaultState();
@@ -297,9 +286,32 @@ public final class Aquifer {
         return (y * this.gridSizeZ + z) * this.gridSizeX + x;
     }
 
+    private void preloadAquiferLocations(int gridSizeY) {
+        RandomSourceProvider random = RANDOM.get();
+        for (int y = 0; y < gridSizeY; y++) {
+            int gridY = this.minGridY + y;
+            for (int z = 0; z < this.gridSizeZ; z++) {
+                int gridZ = this.minGridZ + z;
+                for (int x = 0; x < this.gridSizeX; x++) {
+                    int gridX = this.minGridX + x;
+                    random.setSeed(mixSeed(this.randomSeed, gridX, gridY, gridZ));
+                    int offsetX = random.nextInt(X_RANGE);
+                    int offsetY = random.nextInt(Y_RANGE);
+                    int offsetZ = random.nextInt(Z_RANGE);
+                    int index = (y * this.gridSizeZ + z) * this.gridSizeX + x;
+                    this.aquiferOffsetCache[index] = packOffset(offsetX, offsetY, offsetZ);
+                    this.aquiferLocationCache[index] = pack(
+                            fromGridX(gridX, offsetX),
+                            fromGridY(gridY, offsetY),
+                            fromGridZ(gridZ, offsetZ)
+                    );
+                }
+            }
+        }
+    }
+
     private double calculatePressure(
             DensityFunction.FunctionContext context,
-            double[] barrierNoiseValue,
             FluidStatus statusClosest1,
             FluidStatus statusClosest2
     ) {
@@ -342,10 +354,10 @@ public final class Aquifer {
             double amplitude = 2.0;
             double noiseValue;
             if (gradient >= -amplitude && gradient <= amplitude) {
-                double currentNoiseValue = barrierNoiseValue[0];
+                double currentNoiseValue = this.cachedBarrierNoise;
                 if (Double.isNaN(currentNoiseValue)) {
                     double barrierNoise = this.barrierNoise.compute(context);
-                    barrierNoiseValue[0] = barrierNoise;
+                    this.cachedBarrierNoise = barrierNoise;
                     noiseValue = barrierNoise;
                 } else {
                     noiseValue = currentNoiseValue;
@@ -530,6 +542,22 @@ public final class Aquifer {
 
     private static long pack(int x, int y, int z) {
         return ((long) (x & 0x3FFFFFF) << 38) | ((long) (z & 0x3FFFFFF) << 12) | (long) (y & 0xFFF);
+    }
+
+    private static short packOffset(int x, int y, int z) {
+        return (short) ((x << 8) | (y << 4) | z);
+    }
+
+    private static int unpackOffsetX(int packed) {
+        return packed >> 8 & 0xF;
+    }
+
+    private static int unpackOffsetY(int packed) {
+        return packed >> 4 & 0xF;
+    }
+
+    private static int unpackOffsetZ(int packed) {
+        return packed & 0xF;
     }
 
     private static int unpackX(long packed) {

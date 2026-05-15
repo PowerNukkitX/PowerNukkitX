@@ -5,6 +5,7 @@ import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.block.property.CommonBlockProperties.HANGING;
 import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
+import static cn.nukkit.block.property.CommonBlockProperties.PROPAGULE_STAGE;
 import static cn.nukkit.block.property.CommonBlockProperties.UPDATE_BIT;
 
 public class BlockMangroveLeaves extends BlockLeaves {
@@ -21,7 +24,8 @@ public class BlockMangroveLeaves extends BlockLeaves {
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_LEAVES, PERSISTENT_BIT, UPDATE_BIT);
 
     @Override
-    @NotNull public BlockProperties getProperties() {
+    @NotNull
+    public BlockProperties getProperties() {
         return PROPERTIES;
     }
 
@@ -35,7 +39,7 @@ public class BlockMangroveLeaves extends BlockLeaves {
 
     @Override
     public WoodType getType() {
-        return null;
+        return WoodType.MANGROVE;
     }
 
     @Override
@@ -76,7 +80,20 @@ public class BlockMangroveLeaves extends BlockLeaves {
 
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
-        //todo: 实现红树树叶催化
-        return false;
+        if (!item.isFertilizer() || !down().isAir()) {
+            return false;
+        }
+
+        if (player != null && !player.isCreative()) {
+            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+        }
+
+        this.level.addParticle(new BoneMealParticle(this));
+        BlockState propagule = BlockMangrovePropagule.PROPERTIES.getBlockState(
+                HANGING.createValue(true),
+                PROPAGULE_STAGE.createValue(0)
+        );
+        this.level.setBlock(down(), Block.get(propagule), true, true);
+        return true;
     }
 }
