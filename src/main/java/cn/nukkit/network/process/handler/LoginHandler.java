@@ -44,22 +44,27 @@ public class LoginHandler extends BedrockSessionPacketHandler {
 
         LoginData loginDataRaw;
         ClientChainData loginData;
-        try {
+        if (Server.getInstance().getSettings().networkSettings().strictPackets()) {
+            try {
+                loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
+                loginData = ClientChainData.of(loginDataRaw);
+            } catch (IllegalArgumentException e) {
+                // Malicious payload: oversize fields, too many keys, etc.
+                PacketSecurityTracker.flag(session.getAddress(), "LoginPacket: " + e.getMessage());
+                session.close("§cPacket handling error");
+                return;
+            } catch (SecurityException e) {
+                log.debug("Invalid login JWT from {}: {}", session.getAddress(), e.getMessage());
+                session.close("§cPacket handling error");
+                return;
+            } catch (Exception e) {
+                log.error("Unexpected error processing login from {}", session.getAddress(), e);
+                session.close("§cPacket handling error");
+                return;
+            }
+        } else {
             loginDataRaw = LoginData.processHandshake(pk, Server.getInstance().getSettings().baseSettings().xboxAuth());
             loginData = ClientChainData.of(loginDataRaw);
-        } catch (IllegalArgumentException e) {
-            // Malicious payload: oversize fields, too many keys, etc.
-            PacketSecurityTracker.flag(session.getAddress(), "LoginPacket: " + e.getMessage());
-            session.close("§cPacket handling error");
-            return;
-        } catch (SecurityException e) {
-            log.debug("Invalid login JWT from {}: {}", session.getAddress(), e.getMessage());
-            session.close("§cPacket handling error");
-            return;
-        } catch (Exception e) {
-            log.error("Unexpected error processing login from {}", session.getAddress(), e);
-            session.close("§cPacket handling error");
-            return;
         }
 
         //TODO: re-implement if possible

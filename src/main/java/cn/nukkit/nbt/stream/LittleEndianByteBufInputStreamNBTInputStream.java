@@ -12,6 +12,10 @@ import java.util.List;
 public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, AutoCloseable {
     private LittleEndianByteBufInputStream stream;
 
+    private static final int MAX_NBT_LIST_ENTRIES = 65_536;
+    private static final int MAX_NBT_BYTE_ARRAY = 1024 * 1024;
+    private static final int MAX_NBT_INT_ARRAY = 256 * 1024;
+
     public LittleEndianByteBufInputStreamNBTInputStream(LittleEndianByteBufInputStream stream) {
         this.stream = stream;
     }
@@ -132,6 +136,9 @@ public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, 
                     return new DoubleTag(readDouble());
                 case Tag.TAG_Byte_Array:
                     arraySize = this.readInt();
+                    if (arraySize < 0 || arraySize > MAX_NBT_BYTE_ARRAY) {
+                        throw new IOException("NBT byte array exceeds maximum allowed size: " + arraySize);
+                    }
                     byte[] bytes = new byte[arraySize];
                     this.readFully(bytes);
                     return new ByteArrayTag(bytes);
@@ -148,14 +155,19 @@ public class LittleEndianByteBufInputStreamNBTInputStream implements DataInput, 
                 case Tag.TAG_List:
                     int typeId = this.readUnsignedByte();
                     int listLength = this.readInt();
-                    List<Tag> list = new ArrayList<>(listLength);
-
+                    if (listLength < 0 || listLength > MAX_NBT_LIST_ENTRIES) {
+                        throw new IOException("NBT list exceeds maximum length: " + listLength);
+                    }
+                    List<Tag> list = new ArrayList<>(Math.min(listLength, 16));
                     for (int i = 0; i < listLength; ++i) {
                         list.add(this.deserialize(typeId, maxDepth - 1));
                     }
                     return new ListTag<>(typeId, list);
                 case Tag.TAG_Int_Array:
                     arraySize = this.readInt();
+                    if (arraySize < 0 || arraySize > MAX_NBT_INT_ARRAY) {
+                        throw new IOException("NBT int array exceeds maximum allowed size: " + arraySize);
+                    }
                     int[] ints = new int[arraySize];
 
                     for (int i = 0; i < arraySize; ++i) {

@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 public class NetworkSettings extends OkaeriConfig {
+    @Comment("pnx.settings.network.strictpackets")
+    boolean strictPackets = true;
     @Comment("pnx.settings.network.queryplugins")
     boolean queryPlugins = true;
     @Comment("pnx.settings.network.compressionlevel")
