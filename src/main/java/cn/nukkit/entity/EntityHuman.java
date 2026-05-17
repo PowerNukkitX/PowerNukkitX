@@ -134,7 +134,13 @@ public class EntityHuman extends EntityHumanType {
     public boolean entityBaseTick(int tickDiff) {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
         //handle human entity freeze
-        var collidedWithPowderSnow = this.getTickCachedCollisionBlocks().stream().anyMatch(block -> block.getId().equals(Block.POWDER_SNOW));
+        boolean collidedWithPowderSnow = false;
+        for (Block block : this.getTickCachedCollisionBlocks()) {
+            if (block.getId().equals(Block.POWDER_SNOW)) {
+                collidedWithPowderSnow = true;
+                break;
+            }
+        }
         if (this.getFreezingTicks() < 140 && collidedWithPowderSnow) {
             if (getFreezingTicks() == 0) {//玩家疾跑进来要设置为非疾跑，统一为默认速度0.1
                 this.setSprinting(false);

@@ -60,6 +60,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * @author CoolLoong (PNX Project)
@@ -502,10 +503,13 @@ public class LevelDBProvider implements LevelProvider {
     public void saveChunks(Collection<IChunk> chunks) {
         try (WriteBatch batch = storage.createBatch()) {
             WriteBatchHelper helper = new WriteBatchHelper();
-            CompletableFuture.runAsync(() -> chunks.parallelStream().filter(IChunk::hasChanged).forEach(chunk -> {
+            List<IChunk> changed = chunks.parallelStream()
+                    .filter(IChunk::hasChanged)
+                    .toList();
+            for (IChunk chunk : changed) {
                 LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
                 chunk.setChanged(false);
-            }), Server.getInstance().getComputeThreadPool()).join();
+            }
             helper.write(batch);
             helper.close();
             storage.writeBatch(batch);
@@ -899,7 +903,11 @@ public class LevelDBProvider implements LevelProvider {
         for (Map.Entry<String, Boolean> entry : worldData.getExperiments().getEntries().entrySet()) {
             experiments.putBoolean(entry.getKey(), entry.getValue());
         }
-        boolean hasExperiments = worldData.getExperiments().getEntries().values().stream().anyMatch(Boolean::booleanValue);
+        boolean hasExperiments = false;
+        for (boolean v : worldData.getExperiments().getEntries().values()) {
+            if (v) { hasExperiments = true; break; }
+        }
+
         if (hasExperiments) {
             experiments.putBoolean("experiments_ever_used", true);
             experiments.putBoolean("saved_with_toggled_experiments", true);

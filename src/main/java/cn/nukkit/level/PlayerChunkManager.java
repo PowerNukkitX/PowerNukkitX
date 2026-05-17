@@ -33,6 +33,8 @@ public final class PlayerChunkManager {
      * Chunks closer than this distance to the player are always considered to be in the field of view.
      */
     private static final double MIN_FOV_CHECK_DISTANCE = 4.0;
+    private double cachedDirX, cachedDirZ, cachedCosFov;
+    private double cachedYaw = Double.NaN;
 
     /**
      * Timeout for asynchronously loading a chunk before retrying or generating it, in microseconds.
@@ -42,22 +44,15 @@ public final class PlayerChunkManager {
     private final LongComparator chunkDistanceAndFovComparator = new LongComparator() {
         @Override
         public int compare(long chunkHash1, long chunkHash2) {
+            refreshFovCache();
             BlockVector3 floor = player.getPosition().asBlockVector3();
             int loaderChunkX = floor.x >> 4;
             int loaderChunkZ = floor.z >> 4;
 
-            int chunkX1 = Level.getHashX(chunkHash1);
-            int chunkZ1 = Level.getHashZ(chunkHash1);
-            int chunkX2 = Level.getHashX(chunkHash2);
-            int chunkZ2 = Level.getHashZ(chunkHash2);
-
-            int dx1 = chunkX1 - loaderChunkX;
-            int dz1 = chunkZ1 - loaderChunkZ;
-            int dx2 = chunkX2 - loaderChunkX;
-            int dz2 = chunkZ2 - loaderChunkZ;
-
-            double dist1 = Math.hypot(dx1, dz1);
-            double dist2 = Math.hypot(dx2, dz2);
+            int dx1 = Level.getHashX(chunkHash1) - loaderChunkX;
+            int dz1 = Level.getHashZ(chunkHash1) - loaderChunkZ;
+            int dx2 = Level.getHashX(chunkHash2) - loaderChunkX;
+            int dz2 = Level.getHashZ(chunkHash2) - loaderChunkZ;
 
             boolean inFov1 = isInPlayerFov(dx1, dz1);
             boolean inFov2 = isInPlayerFov(dx2, dz2);
@@ -65,24 +60,14 @@ public final class PlayerChunkManager {
             if (inFov1 && !inFov2) return -1;
             if (!inFov1 && inFov2) return 1;
 
-            return Double.compare(dist1, dist2);
+            return Double.compare(Math.hypot(dx1, dz1), Math.hypot(dx2, dz2));
         }
 
         private boolean isInPlayerFov(int dx, int dz) {
-            double yaw = player.getYaw();
-            double dirX = -Math.sin(Math.toRadians(yaw));
-            double dirZ = Math.cos(Math.toRadians(yaw));
-
             double len = Math.sqrt(dx * dx + dz * dz);
             if (len < MIN_FOV_CHECK_DISTANCE) return true;
-
-            double toChunkX = dx / len;
-            double toChunkZ = dz / len;
-
-            double dot = dirX * toChunkX + dirZ * toChunkZ;
-
-            double cosFov = Math.cos(Math.toRadians(player.getServer().getSettings().levelSettings().fieldOfView()));
-            return dot >= cosFov;
+            double dot = cachedDirX * (dx / len) + cachedDirZ * (dz / len);
+            return dot >= cachedCosFov;
         }
     };
 
@@ -168,10 +153,12 @@ public final class PlayerChunkManager {
 
     private void updateChunkSendingQueue() {
         chunkSendQueue.clear();
-        // Blocks that have already been sent will not be sent again
-        Sets.SetView<Long> difference = Sets.difference(inRadiusChunks, sentChunks);
-        for (Long v : difference) {
-            chunkSendQueue.enqueue(v.longValue());
+        LongIterator iter = inRadiusChunks.iterator();
+        while (iter.hasNext()) {
+            long hash = iter.nextLong();
+            if (!sentChunks.contains(hash)) {
+                chunkSendQueue.enqueue(hash);
+            }
         }
     }
 
@@ -191,13 +178,20 @@ public final class PlayerChunkManager {
     }
 
     private void removeOutOfRadiusChunks() {
-        Set<Long> difference = new HashSet<>(Sets.difference(sentChunks, inRadiusChunks));
-        // Unload blocks that are out of range
-        for (Long hash : difference) {
-            unloadChunkForPlayer(hash.longValue());
+        LongOpenHashSet toRemove = new LongOpenHashSet();
+        LongIterator iter = sentChunks.iterator();
+        while (iter.hasNext()) {
+            long hash = iter.nextLong();
+            if (!inRadiusChunks.contains(hash)) {
+                toRemove.add(hash);
+            }
         }
-        // The intersection of the remaining sentChunks and inRadiusChunks
-        sentChunks.removeAll(difference);
+        LongIterator removeIter = toRemove.iterator();
+        while (removeIter.hasNext()) {
+            long hash = removeIter.nextLong();
+            unloadChunkForPlayer(hash);
+            sentChunks.remove(hash);
+        }
     }
 
     private void loadQueuedChunks(int trySendChunkCountPerTick, boolean force) {
@@ -300,6 +294,17 @@ public final class PlayerChunkManager {
                 }
             }
         }
+    }
+
+    private void refreshFovCache() {
+        double yaw = player.getYaw();
+        if (yaw == cachedYaw) return;
+        cachedYaw = yaw;
+        double yawRad = Math.toRadians(yaw);
+        cachedDirX = -Math.sin(yawRad);
+        cachedDirZ = Math.cos(yawRad);
+        cachedCosFov = Math.cos(Math.toRadians(
+                player.getServer().getSettings().levelSettings().fieldOfView()));
     }
 
     private boolean ifChunkNotInRadius(int chunkX, int chunkZ, int radius) {
