@@ -1326,7 +1326,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.setGamemode(this.gamemode, false, null, true);
         this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
         this.spawnToAll();
-        Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
+
+        for (Entity entity : this.level.getEntities()) {
+            if (entity instanceof EntityBoss boss && entity.getViewers().containsKey(this.getLoaderId())) {
+                boss.addBossbar(this);
+            }
+        }
     }
 
     /**
@@ -2820,8 +2825,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void checkInteractNearby() {
         int interactDistance = isCreative() ? 5 : 3;
         if (canInteract(this, interactDistance)) {
-            if (getEntityPlayerLookingAt(interactDistance) != null) {
-                EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
+            EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
+            if (onInteract != null) {
                 setButtonText(onInteract.getInteractButtonText(this));
             } else {
                 setButtonText("");
@@ -5102,8 +5107,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     itemsWithMending.add(inventory.getHeldItemIndex());
                 }
                 if (!itemsWithMending.isEmpty()) {
-                    Random rand = new Random();
-                    Integer itemToRepair = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
+                    Integer itemToRepair = itemsWithMending.get(ThreadLocalRandom.current().nextInt(itemsWithMending.size()));
                     Item toRepair = inventory.getItem(itemToRepair);
                     if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
                         if (toRepair.getDamage() > 0) {

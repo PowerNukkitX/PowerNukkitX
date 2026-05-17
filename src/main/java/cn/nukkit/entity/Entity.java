@@ -5796,7 +5796,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
      * @return true if entity has a string tag
      */
     public boolean hasTag(String tag) {
-        return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
+        for (StringTag t : this.namedTag.getList("Tags", StringTag.class).getAll()) {
+            if (t.data.equals(tag)) return true;
+        }
+        return false;
     }
 
     /**

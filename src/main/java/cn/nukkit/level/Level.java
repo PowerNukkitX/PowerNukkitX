@@ -387,7 +387,7 @@ public class Level implements Metadatable {
     private int rainTime = 0;
     private boolean thundering = false;
     private int thunderTime = 0;
-    private Object2IntOpenHashMap<String> playerWeatherShowMap = new Object2IntOpenHashMap<String>();
+    private final Map<Player, Integer> playerWeatherShowMap = new ConcurrentHashMap<>();
 
     ///
 
@@ -982,15 +982,17 @@ public class Level implements Metadatable {
 
     public Map<Integer, Player> getChunkPlayers(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (this.chunkLoaders.containsKey(index)) {
-            return this.chunkLoaders.get(index).entrySet()
-                    .stream()
-                    .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
-                    .collect(HashMap::new, (m, e) -> {
-                        m.put(e.getKey(), (Player) e.getValue());
-                    }, HashMap::putAll);
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders == null || loaders.isEmpty()) {
+            return Collections.emptyMap();
         }
-        return Collections.emptyMap();
+        HashMap<Integer, Player> result = new HashMap<>();
+        for (var entry : loaders.entrySet()) {
+            if (entry.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)) {
+                result.put(entry.getKey(), p);
+            }
+        }
+        return result;
     }
 
     public ChunkLoader[] getChunkLoaders(int chunkX, int chunkZ) {
@@ -1171,31 +1173,34 @@ public class Level implements Metadatable {
             this.levelCurrentTick++;
 
             if (getGameRules().getBoolean(GameRule.DO_MOB_SPAWNING)) {
-                if (Arrays.stream(getEntities()).filter(entity -> entity.despawnable).toArray().length < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
+                int despawnableCount = 0;
+                for (Entity e : this.entities.values()) {
+                    if (e.despawnable) despawnableCount++;
+                }
+                if (despawnableCount < Server.getInstance().getSettings().levelSettings().entitySpawnCap()) {
                     getChunks().values().forEach(IChunk::doMobSpawning);
                 }
             }
 
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
-                Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
-                int chunkX = block.getFloorX() >> 4;
-                int chunkZ = block.getFloorZ() >> 4;
+                int chunkX = queuedUpdate.block.getFloorX() >> 4;
+                int chunkZ = queuedUpdate.block.getFloorZ() >> 4;
                 long hash = chunkHash(chunkX, chunkZ);
+                if (!isChunkInUse(hash)) continue;
 
-                // Only tick if the chunk is in use, helps to keep block ticks in sync when reload chunk
-                if (isChunkInUse(hash)) {
-                    BlockUpdateEvent event = new BlockUpdateEvent(block);
-                    this.server.getPluginManager().callEvent(event);
+                Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
+                BlockUpdateEvent event = new BlockUpdateEvent(block);
+                this.server.getPluginManager().callEvent(event);
 
-                    if (!event.isCancelled()) {
-                        block.onUpdate(BLOCK_UPDATE_NORMAL);
-                        if (queuedUpdate.neighbor != null) {
-                            block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
-                        }
+                if (!event.isCancelled()) {
+                    block.onUpdate(BLOCK_UPDATE_NORMAL);
+                    if (queuedUpdate.neighbor != null) {
+                        block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
                     }
                 }
             }
+
             if (!this.updateEntities.isEmpty()) {
                 CompletableFuture.runAsync(() -> updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
@@ -1268,12 +1273,13 @@ public class Level implements Metadatable {
                 this.checkSleep();
             }
 
-            for (long index : this.chunkPackets.keySet()) {
+            for (var entry : this.chunkPackets.entrySet()) {
+                long index = entry.getKey();
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
                 Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(Player.EMPTY_ARRAY);
                 if (chunkPlayers.length > 0) {
-                    for (var pk : this.chunkPackets.get(index)) {
+                    for (var pk : entry.getValue()) {
                         Server.broadcastPacket(chunkPlayers, pk);
                     }
                 }
@@ -1298,28 +1304,28 @@ public class Level implements Metadatable {
 
     private void checkWeather() {
         if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
-            for (String key : playerWeatherShowMap.keySet()) {
-                int intValue = playerWeatherShowMap.getInt(key);
-                if (intValue == 0) {
-                    Player player = server.getPlayer(key);
-                    if (player != null) {
+            for (var entry : playerWeatherShowMap.entrySet()) {
+                if (entry.getValue() == 0) {
+                    Player player = entry.getKey(); // plus de lookup par nom
+                    if (player != null && player.isOnline()) {
                         if (isRaining()) {
                             LevelEventPacket pk = new LevelEventPacket();
                             pk.evid = LevelEventPacket.EVENT_START_RAINING;
                             pk.data = rainTime;
                             player.dataPacket(pk);
-                            this.playerWeatherShowMap.put(key, 1);
+                            entry.setValue(1);
                             if (isThundering()) {
                                 LevelEventPacket pk2 = new LevelEventPacket();
                                 pk2.evid = LevelEventPacket.EVENT_START_THUNDERSTORM;
                                 pk2.data = thunderTime;
                                 player.dataPacket(pk2);
-                                this.playerWeatherShowMap.put(key, 2);
+                                entry.setValue(2);
                             }
                         }
                     }
                 }
             }
+
             // Tick Weather
             if (this.getDimension() == DIMENSION_OVERWORLD) {
                 if (getDayTime() == tickRate) {
@@ -1622,11 +1628,9 @@ public class Level implements Metadatable {
                         iter.remove();
                     }
 
-                    CompletableFuture.runAsync(() -> {
-                        for (Entity entity : chunk.getEntities().values()) {
-                            entity.scheduleUpdate();
-                        }
-                    });
+                    for (Entity entity : chunk.getEntities().values()) {
+                        entity.scheduleUpdate();
+                    }
 
                     chunk.getBlockUpdateScheduler().tick(this.getCurrentTick());
 
@@ -2710,7 +2714,7 @@ public class Level implements Metadatable {
         }
         EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
                 this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
+                Entity.getDefaultNBT(source, motion, ThreadLocalRandom.current().nextFloat() * 360, 0)
                         .putShort("Health", 5)
                         .putCompound("Item", NBTIO.putItemHelper(item))
                         .putShort("PickupDelay", delay)
@@ -4087,7 +4091,7 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.remove(entity.getId());
-            this.playerWeatherShowMap.removeInt(p.getName());
+            this.playerWeatherShowMap.remove(p);
             this.checkSleep();
         } else {
             entity.close();
@@ -4104,7 +4108,7 @@ public class Level implements Metadatable {
 
         if (entity instanceof Player p) {
             this.players.put(entity.getId(), p);
-            this.playerWeatherShowMap.put(p.getName(), 0);
+            this.playerWeatherShowMap.put(p, 0);
         }
         this.entities.put(entity.getId(), entity);
     }
@@ -4852,7 +4856,7 @@ public class Level implements Metadatable {
         }
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 1 : 0);
+            this.playerWeatherShowMap.put(p, raining ? 1 : 0);
             p.dataPacket(pk);
         }
 
@@ -4899,7 +4903,7 @@ public class Level implements Metadatable {
         }
 
         for (var p : this.getPlayers().values()) {
-            this.playerWeatherShowMap.put(p.getName(), raining ? 2 : 0);
+            this.playerWeatherShowMap.put(p, raining ? 2 : 0);
             p.dataPacket(pk);
         }
 
