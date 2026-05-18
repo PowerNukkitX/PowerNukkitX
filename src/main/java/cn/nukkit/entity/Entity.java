@@ -5228,12 +5228,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
                 this.motionY += dy;
                 this.motionZ += dz;
                 if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.ensurePhysicalMotionState();
+
                     entityPhysical.previousCurrentMotion.x = dx;
                     entityPhysical.previousCurrentMotion.y = dy;
                     entityPhysical.previousCurrentMotion.z = dz;
                 }
             } else {
                 if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.ensurePhysicalMotionState();
+
                     entityPhysical.previousCurrentMotion.x = 0;
                     entityPhysical.previousCurrentMotion.y = 0;
                     entityPhysical.previousCurrentMotion.z = 0;
