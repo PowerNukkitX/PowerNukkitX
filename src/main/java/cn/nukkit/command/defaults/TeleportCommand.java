@@ -10,6 +10,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.NukkitMath;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 
@@ -104,23 +105,15 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 Location victim = sender.getLocation();
                 Location target = destination.getFirst().setYaw(victim.getYaw()).setPitch(victim.getPitch());
-                boolean checkForBlocks = false;
-                if (list.hasResult(1)) {
-                    checkForBlocks = list.getResult(1);
+                boolean checkForBlocks = list.hasResult(1) ? list.getResult(1) : false;
+
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), destination.getFirst().getName()).output();
+                    return 0;
                 }
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        sender.asEntity().teleport(target);
-                        log.addSuccess("commands.tp.successVictim", destination.getFirst().getName());
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), destination.getFirst().getName()).output();
-                        return 0;
-                    }
-                } else {
-                    sender.asEntity().teleport(target);
-                    log.addSuccess("commands.tp.successVictim", destination.getFirst().getName());
-                }
-                log.output(true);
+
+                sender.asEntity().teleport(target);
+                log.addSuccess("commands.tp.successVictim", destination.getFirst().getName()).output(true);
                 return 1;
             }
             case "Entity->Entity" -> {
@@ -139,28 +132,18 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Entity target = destination.getFirst();
-                boolean checkForBlocks = false;
-                if (list.hasResult(3)) {
-                    checkForBlocks = list.getResult(3);
-                }
+                boolean checkForBlocks = list.hasResult(2) ? list.getResult(2) : false;
                 String message = victims.stream().map(Entity::getName).collect(Collectors.joining(", "));
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        for (Entity victim : victims) {
-                            victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
-                        }
-                        log.addSuccess("commands.tp.success", message, target.getName());
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail ", message, target.getName()).output();
-                        return 0;
-                    }
-                } else {
-                    for (Entity victim : victims) {
-                        victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
-                    }
-                    log.addSuccess("commands.tp.success", message, target.getName());
+
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", message, target.getName()).output();
+                    return 0;
                 }
-                log.output(true);
+
+                for (Entity victim : victims) {
+                    victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
+                }
+                log.addSuccess("commands.tp.success", message, target.getName()).output(true);
                 return victims.size();
             }
             case "Entity->Pos" -> {
@@ -170,37 +153,22 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(1);
-                double yRot = sender.getLocation().pitch;
-                if (list.hasResult(2)) {
-                    yRot = list.getResult(2);
-                }
-                double xRot = sender.getLocation().yaw;
-                if (list.hasResult(3)) {
-                    xRot = list.getResult(3);
-                }
-                boolean checkForBlocks = false;
-                if (list.hasResult(4)) {
-                    checkForBlocks = list.getResult(4);
-                }
+                double yRot = list.hasResult(2) ? list.getResult(2) : sender.getLocation().pitch;
+                double xRot = list.hasResult(3) ? list.getResult(3) : sender.getLocation().yaw;
+                boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
+
                 String message = victims.stream().map(Entity::getName).collect(Collectors.joining(", "));
                 Location target = Location.fromObject(pos, pos.level, xRot, yRot);
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        for (Entity victim : victims) {
-                            victim.teleport(target);
-                        }
-                        log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail ", message, target.toString()).output();
-                        return 0;
-                    }
-                } else {
-                    for (Entity victim : victims) {
-                        victim.teleport(target);
-                    }
-                    log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", message, NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    return 0;
                 }
-                log.output(true);
+
+                for (Entity victim : victims) {
+                    victim.teleport(target);
+                }
+                log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "Entity->Pos(FacingPos)" -> {
@@ -211,30 +179,20 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 Position pos = list.getResult(1);
                 Position lookAtPosition = list.getResult(3);
-                boolean checkForBlocks = false;
-                if (list.hasResult(4)) {
-                    checkForBlocks = list.getResult(4);
-                }
+                boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
+
                 String message = victims.stream().map(Entity::getName).collect(Collectors.joining(", "));
-                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        for (Entity victim : victims) {
-                            victim.teleport(target);
-                        }
-                        log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail ", message, target.getFloorX() + " " + target.getFloorY() + " " + target.getFloorZ()).output();
-                        return 0;
-                    }
-                } else {
-                    for (Entity victim : victims) {
-                        victim.teleport(target);
-                    }
-                    log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                Location target = getFacingLocation(pos, lookAtPosition);
+
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", message, NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    return 0;
                 }
-                log.output(true);
+
+                for (Entity victim : victims) {
+                    victim.teleport(target);
+                }
+                log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "Entity->Pos(FacingEntity)" -> {
@@ -254,30 +212,20 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position lookAtPosition = lookAtEntity.getFirst();
-                boolean checkForBlocks = false;
-                if (list.hasResult(4)) {
-                    checkForBlocks = list.getResult(4);
-                }
+                boolean checkForBlocks = list.hasResult(4) ? list.getResult(4) : false;
+
                 String message = victims.stream().map(Entity::getName).collect(Collectors.joining(", "));
-                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        for (Entity victim : victims) {
-                            victim.teleport(target);
-                        }
-                        log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail ", message, target.toString()).output();
-                        return 0;
-                    }
-                } else {
-                    for (Entity victim : victims) {
-                        victim.teleport(target);
-                    }
-                    log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                Location target = getFacingLocation(pos, lookAtPosition);
+
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", message, NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    return 0;
                 }
-                log.output(true);
+
+                for (Entity victim : victims) {
+                    victim.teleport(target);
+                }
+                log.addSuccess("commands.tp.success.coordinates", message, String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "->Pos" -> {
@@ -286,32 +234,18 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position pos = list.getResult(0);
-                double yRot = sender.getLocation().pitch;
-                if (list.hasResult(1)) {
-                    yRot = list.getResult(1);
-                }
-                double xRot = sender.getLocation().yaw;
-                if (list.hasResult(2)) {
-                    xRot = list.getResult(2);
-                }
-                boolean checkForBlocks = false;
-                if (list.hasResult(3)) {
-                    checkForBlocks = list.getResult(3);
-                }
+                double yRot = list.hasResult(1) ? list.getResult(1) : sender.getLocation().pitch;
+                double xRot = list.hasResult(2) ? list.getResult(2) : sender.getLocation().yaw;
+                boolean checkForBlocks = list.hasResult(3) ? list.getResult(3) : false;
+
                 Location target = Location.fromObject(pos, pos.level, xRot, yRot);
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        sender.asEntity().teleport(target);
-                        log.addSuccess("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail ", sender.getName(), target.toString()).output();
-                        return 0;
-                    }
-                } else {
-                    sender.asEntity().teleport(target);
-                    log.addSuccess("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", sender.getName(), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    return 0;
                 }
-                log.output(true);
+
+                sender.asEntity().teleport(target);
+                log.addSuccess("commands.tp.success.coordinates", sender.getName(), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "->Pos(FacingPos)" -> {
@@ -321,25 +255,16 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 Position pos = list.getResult(0);
                 Position lookAtPosition = list.getResult(2);
-                boolean checkForBlocks = false;
-                if (list.hasResult(3)) {
-                    checkForBlocks = list.getResult(3);
+                boolean checkForBlocks = list.hasResult(3) ? list.getResult(3) : false;
+
+                Location target = getFacingLocation(pos, lookAtPosition);
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    return 0;
                 }
-                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        sender.asEntity().teleport(target);
-                        log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail ", sender.asEntity().getName(), target.toString()).output();
-                        return 0;
-                    }
-                } else {
-                    sender.asEntity().teleport(target);
-                    log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                }
-                log.output(true);
+
+                sender.asEntity().teleport(target);
+                log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             case "->Pos(FacingEntity)" -> {
@@ -358,30 +283,30 @@ public class TeleportCommand extends VanillaCommand {
                     return 0;
                 }
                 Position lookAtPosition = lookAtEntity.getFirst();
-                boolean checkForBlocks = false;
-                if (list.hasResult(3)) {
-                    checkForBlocks = list.getResult(3);
+                boolean checkForBlocks = list.hasResult(3) ? list.getResult(3) : false;
+
+                Location target = getFacingLocation(pos, lookAtPosition);
+                if (isUnsafe(target, checkForBlocks)) {
+                    log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), NukkitMath.round(target.getX(), 2) + ", " + NukkitMath.round(target.getY(), 2) + ", " + NukkitMath.round(target.getZ(), 2)).output();
+                    return 0;
                 }
-                BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                Location target = Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
-                if (checkForBlocks) {
-                    if (!target.getLevelBlock().isSolid() && !target.add(0, 1, 0).getLevelBlock().isSolid()) {
-                        sender.asEntity().teleport(target);
-                        log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                    } else {
-                        log.addError("commands.tp.safeTeleportFail", sender.asEntity().getName(), target.toString()).output();
-                        return 0;
-                    }
-                } else {
-                    sender.asEntity().teleport(target);
-                    log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()), String.valueOf(target.getFloorY()), String.valueOf(target.getFloorZ()));
-                }
-                log.output(true);
+
+                sender.asEntity().teleport(target);
+                log.addSuccess("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(NukkitMath.round(target.getX(), 2)), String.valueOf(NukkitMath.round(target.getY(), 2)), String.valueOf(NukkitMath.round(target.getZ(), 2))).output(true);
                 return 1;
             }
             default -> {
                 return 0;
             }
         }
+    }
+
+    private boolean isUnsafe(Position target, boolean checkForBlocks) {
+        return checkForBlocks && (target.getLevelBlock().isSolid() || target.add(0, 1, 0).getLevelBlock().isSolid());
+    }
+
+    private Location getFacingLocation(Position pos, Position lookAtPosition) {
+        BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
+        return Location.fromObject(pos, pos.level, bv.getYaw(), bv.getPitch());
     }
 }
