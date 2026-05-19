@@ -219,9 +219,17 @@ public final class PlayerChunkManager {
                 try {
                     IChunk chunk = chunkTask.get(CHUNK_LOAD_TIMEOUT_MICROS, TimeUnit.MICROSECONDS);
                     if (chunk == null || !chunk.getChunkState().canSend()) {
-                        player.level.generateChunk(chunkX, chunkZ, force);
-                        enqueue.add(chunkHash);
-                        chunkLoadingQueue.remove(chunkHash);
+                        // Re-check current state as we may have checked a stale chunk state
+                        IChunk current = player.level.requireProvider().getLoadedChunk(chunkHash);
+                        if (current != null && current.getChunkState().canSend()) {
+                            chunkLoadingQueue.remove(chunkHash);
+                            player.level.registerChunkLoader(player, chunkX, chunkZ, false);
+                            chunkReadyToSend.enqueue(chunkHash);
+                        } else {
+                            player.level.generateChunk(chunkX, chunkZ, force);
+                            enqueue.add(chunkHash);
+                            chunkLoadingQueue.remove(chunkHash);
+                        }
                         continue;
                     }
                     chunkLoadingQueue.remove(chunkHash);
