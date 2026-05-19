@@ -5432,8 +5432,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
             to = ev.getTo();
         }
 
-        if (!to.getLevel().isChunkLoaded((int) to.getX() >> 4, (int) to.getZ() >> 4)) {
-            to.getLevel().loadChunk((int) to.getX() >> 4, (int) to.getZ() >> 4, true);
+        if (!to.getLevel().isChunkLoaded(to.getChunkX(), to.getChunkZ())) {
+            to.getLevel().loadChunk(to.getChunkX(), to.getChunkZ(), true);
         }
 
         final Entity currentRide = getRiding();

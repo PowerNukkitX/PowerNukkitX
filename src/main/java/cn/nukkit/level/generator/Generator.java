@@ -58,6 +58,11 @@ public abstract class Generator implements BlockID {
 
     protected IChunk syncGenerate(IChunk chunk, String to) {
         Preconditions.checkNotNull(to);
+        if (chunk.getChunkState().canSend()) {
+            log.warn("syncGenerate called on chunk ({}, {}) with state {}. This is a bug - please report it ASAP!",
+                    chunk.getX(), chunk.getZ(), chunk.getChunkState(), new RuntimeException("syncGenerate guard"));
+            return chunk;
+        }
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         final GenerateStage start = getStart(context);
         if (chunk.getChunkState().ordinal() < ChunkState.STARTED.ordinal()) {
@@ -101,6 +106,12 @@ public abstract class Generator implements BlockID {
 
     public final void asyncGenerate(IChunk chunk, String to, Consumer<ChunkGenerateContext> callback) {
         Preconditions.checkNotNull(to);
+        if (chunk.getChunkState().canSend()) {
+            log.warn("asyncGenerate called on chunk ({}, {}) with state {}. This is a bug - please report it ASAP!",
+                    chunk.getX(), chunk.getZ(), chunk.getChunkState(), new RuntimeException("asyncGenerate guard"));
+            callback.accept(new ChunkGenerateContext(this, level, chunk));
+            return;
+        }
         final ChunkGenerateContext context = new ChunkGenerateContext(this, level, chunk);
         final GenerateStage start = getStart(context);
         if (chunk.getChunkState().ordinal() < ChunkState.STARTED.ordinal()) {

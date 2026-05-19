@@ -25,6 +25,9 @@ public class FlatGenerateStage extends GenerateStage {
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
+        if (chunk.getChunkState().ordinal() >= ChunkState.POPULATED.ordinal()) {
+            return;
+        }
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 chunk.setHeightMap(x, z, 5);

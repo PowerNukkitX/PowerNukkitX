@@ -59,7 +59,9 @@ public final class LevelDBStorage {
                 .chunkX(x)
                 .chunkZ(z)
                 .levelProvider(levelProvider);
-        LevelDBChunkSerializer.INSTANCE.deserialize(this.db, builder);
+        if (!LevelDBChunkSerializer.INSTANCE.deserialize(this.db, builder)) {
+            return null;
+        }
         return builder.build();
     }
 
