@@ -156,13 +156,9 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
                         new Behavior(new PlaySoundExecutor(Sound.MOB_SKELETON_SAY),
                                 new RandomSoundEvaluator(), 5, 1),
 
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER,
+                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET,
                                 0.3f, 15, true, 30, 20),
-                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 4, 1),
-
-                        new Behavior(new BowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_GOLEM,
-                                0.3f, 15, true, 30, 20),
-                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM), 3, 1),
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 5, 1),
 
                         new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10),
                                 none(), 1, 1)
