@@ -21,6 +21,18 @@ public class MapInfoRequestProcessor extends DataPacketProcessor<MapInfoRequestP
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull MapInfoRequestPacket pk) {
         Player player = playerHandle.player;
+
+
+        if (pk.mapId <= 0) {
+            log.debug("Player {} sent an invalid map id {}", playerHandle.getUsername(), pk.mapId);
+            return;
+        }
+
+        if (!player.isAlive() || player.level == null) {
+            log.debug("Player {} tried to request map info while dead or without a level loaded", playerHandle.getUsername());
+            return;
+        }
+
         Item mapItem = null;
         int index = 0;
         var offhand = false;

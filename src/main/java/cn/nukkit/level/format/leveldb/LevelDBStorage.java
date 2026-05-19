@@ -22,21 +22,21 @@ import java.nio.file.Path;
 public final class LevelDBStorage {
     private final DB db;
     private final String path;
-    private int dimSum;
+    private int refCount;
 
     public DB getDb() {
         return this.db;
     }
 
-    public LevelDBStorage(int dimSum, String path) throws IOException {
-        this(dimSum, path, new Options()
+    public LevelDBStorage(int refCount, String path) throws IOException {
+        this(refCount, path, new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
                 .blockSize(64 * 1024));
     }
 
-    public LevelDBStorage(int dimSum, String pathFolder, Options options) throws IOException {
-        this.dimSum = dimSum;
+    public LevelDBStorage(int refCount, String pathFolder, Options options) throws IOException {
+        this.refCount = refCount;
         this.path = pathFolder;
         Path path = Path.of(pathFolder);
         File folder = path.toFile();
@@ -50,6 +50,10 @@ public final class LevelDBStorage {
         db = new Iq80DBFactory().open(dbFolder, options);
     }
 
+    public synchronized void incrementRefCount() {
+        this.refCount++;
+    }
+
     public IChunk readChunk(int x, int z, LevelProvider levelProvider) throws IOException {
         Chunk.Builder builder = Chunk.builder()
                 .chunkX(x)
@@ -59,13 +63,21 @@ public final class LevelDBStorage {
         return builder.build();
     }
 
+    WriteBatch createBatch() {
+        return this.db.createWriteBatch();
+    }
+
     public void writeChunk(IChunk chunk) throws IOException {
-        try (WriteBatch writeBatch = this.db.createWriteBatch()) {
+        try (WriteBatch writeBatch = createBatch()) {
             LevelDBChunkSerializer.INSTANCE.serialize(writeBatch, chunk);
-            WriteOptions writeOptions = new WriteOptions();
-            writeOptions.sync(false);
-            this.db.write(writeBatch, writeOptions);
+            writeBatch(writeBatch);
         }
+    }
+
+    void writeBatch(WriteBatch writeBatch) {
+        WriteOptions writeOptions = new WriteOptions();
+        writeOptions.sync(false);
+        this.db.write(writeBatch, writeOptions);
     }
 
     public CompoundTag readWorldDynamicProperties() {
@@ -91,13 +103,15 @@ public final class LevelDBStorage {
     }
 
     public synchronized void close() {
-        dimSum--;
-        if (dimSum <= 0) {
-            try {
-                db.close();
-                LevelDBProvider.CACHE.remove(path);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
+        synchronized (LevelDBProvider.CACHE) {
+            refCount--;
+            if (refCount <= 0) {
+                try {
+                    db.close();
+                    LevelDBProvider.CACHE.remove(path);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
             }
         }
     }

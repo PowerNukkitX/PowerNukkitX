@@ -6,6 +6,7 @@ import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
 import cn.nukkit.level.entity.condition.ConditionDifficultyFilter;
 import cn.nukkit.level.entity.condition.ConditionInAir;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnOnGround;
 import cn.nukkit.tags.BiomeTags;
 
@@ -16,13 +17,14 @@ public class SpawnRuleMagmaCube extends MultiSpawnRule {
                 new ConditionDifficultyFilter(),
                 new ConditionInAir(),
                 new ConditionSpawnOnGround(),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.MONSTER)
         }, new SpawnRuleMagmaCubeLess(), new SpawnRuleMagmaCubeMany());
     }
 
     private static class SpawnRuleMagmaCubeLess extends SpawnRule {
 
         public SpawnRuleMagmaCubeLess() {
-            super(Entity.MAGMA_CUBE, 1 ,4,
+            super(Entity.MAGMA_CUBE, 1 ,4, 10,
                     new ConditionBiomeFilter(BiomeTags.SPAWN_MAGMA_CUBES),
                     new ConditionDensityLimit(Entity.MAGMA_CUBE, 4));
         }
@@ -31,7 +33,7 @@ public class SpawnRuleMagmaCube extends MultiSpawnRule {
     private static class SpawnRuleMagmaCubeMany extends SpawnRule {
 
         public SpawnRuleMagmaCubeMany() {
-            super(Entity.MAGMA_CUBE, 2, 5,
+            super(Entity.MAGMA_CUBE, 2, 5, 100,
                     new ConditionBiomeFilter(BiomeTags.SPAWN_MANY_MAGMA_CUBES),
                     new ConditionDensityLimit(Entity.MAGMA_CUBE, 5));
         }

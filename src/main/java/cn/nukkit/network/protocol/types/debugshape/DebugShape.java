@@ -16,6 +16,7 @@ public class DebugShape {
     public Float scale;
     public Vector3f rotation;
     public Float totalTimeLeft;
+    public Float maximumRenderDistance;
     public Color color;
     public @Nullable Long attachedToEntityId;
     public String text;
@@ -24,4 +25,8 @@ public class DebugShape {
     public Float arrowHeadLength;
     public Float arrowHeadRadius;
     public Integer numSegments;
+    public boolean useRotation;
+    public Integer backgroundColor;
+    public boolean depthTest;
+    public boolean showBackface;
 }

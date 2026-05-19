@@ -41,15 +41,16 @@ public class ItemSuspiciousStew extends ItemFood {
     @Override
     public boolean onEaten(Player player) {
         Effect effect = switch(meta) {
-            case 0 -> Effect.get(EffectType.NIGHT_VISION).setDuration(4 * 20);
-            case 1 -> Effect.get(EffectType.JUMP_BOOST).setDuration(4 * 20);
+            case 0, 10 -> Effect.get(EffectType.NIGHT_VISION).setDuration(5 * 20);
+            case 1 -> Effect.get(EffectType.JUMP_BOOST).setDuration(5 * 20);
             case 2 -> Effect.get(EffectType.WEAKNESS).setDuration(7 * 20);
-            case 3 -> Effect.get(EffectType.BLINDNESS).setDuration(6 * 20);
-            case 4 -> Effect.get(EffectType.POISON).setDuration(10 * 20);
-            case 5 -> Effect.get(EffectType.SATURATION).setDuration(6 * 20);
-            case 6 -> Effect.get(EffectType.FIRE_RESISTANCE).setDuration(2 * 20);
-            case 7 -> Effect.get(EffectType.REGENERATION).setDuration(6 * 20);
-            case 8 -> Effect.get(EffectType.WITHER).setDuration(6 * 20);
+            case 3, 11 -> Effect.get(EffectType.BLINDNESS).setDuration(7 * 20);
+            case 4 -> Effect.get(EffectType.POISON).setDuration(11 * 20);
+            case 5, 6 -> Effect.get(EffectType.SATURATION).setDuration(3 * 20);
+            case 7 -> Effect.get(EffectType.FIRE_RESISTANCE).setDuration(3 * 20);
+            case 8 -> Effect.get(EffectType.REGENERATION).setDuration(7 * 20);
+            case 9 -> Effect.get(EffectType.WITHER).setDuration(7 * 20);
+            case 12 -> Effect.get(EffectType.NAUSEA).setDuration(7 * 20);
             default -> null;
         };
 

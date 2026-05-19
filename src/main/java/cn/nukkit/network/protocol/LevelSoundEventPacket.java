@@ -35,6 +35,7 @@ public class LevelSoundEventPacket extends DataPacket {
         this.isBabyMob = byteBuf.readBoolean();
         this.isGlobal = byteBuf.readBoolean();
         this.entityUniqueId = byteBuf.readLongLE();
+        byteBuf.readOptional(null, byteBuf::readVector3f);
     }
 
     @Override
@@ -46,6 +47,7 @@ public class LevelSoundEventPacket extends DataPacket {
         byteBuf.writeBoolean(this.isBabyMob);
         byteBuf.writeBoolean(this.isGlobal);
         byteBuf.writeLongLE(this.entityUniqueId);
+        byteBuf.writeBoolean(false);
     }
 
     @Override

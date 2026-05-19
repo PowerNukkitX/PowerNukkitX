@@ -20,9 +20,12 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -55,6 +58,7 @@ public class Chunk implements IChunk {
     protected final Long2ObjectNonBlockingMap<Entity> entities;
     protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
+    protected final BlockUpdateScheduler blockUpdateScheduler;
     //delay load block entity and entity
     protected final CompoundTag extraData;
     private volatile DensityCommon.ChunkCache densityChunkCache;
@@ -80,6 +84,7 @@ public class Chunk implements IChunk {
         this.entities = new Long2ObjectNonBlockingMap<>();
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
+        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
         this.extraData = new CompoundTag();
@@ -109,6 +114,7 @@ public class Chunk implements IChunk {
         this.entities = new Long2ObjectNonBlockingMap<>();
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
+        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
         this.extraData = extraData;
@@ -377,12 +383,13 @@ public class Chunk implements IChunk {
     public void populateSkyLight() {
         batchProcess(unsafe -> {
             // basic light calculation
+            Int2ObjectOpenHashMap<Block> CACHE = new Int2ObjectOpenHashMap<>();
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
                     int level = 15;
                     for(int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
-                        Block block = unsafe.getBlockState(x, y, z).toBlock();
-
+                        BlockState state = unsafe.getBlockState(x, y, z);
+                        Block block = CACHE.computeIfAbsent(state.blockStateHash(), key -> state.toBlock());
                         if (!block.isTransparent()) {
                             level = 0;
                         } else if (block.diffusesSkyLight()) {
@@ -571,14 +578,29 @@ public class Chunk implements IChunk {
                 }
 
                 if (applicableRules != null && !applicableRules.isEmpty()) {
-                    SpawnRule spawnRule = applicableRules.get(Utils.rand(0, applicableRules.size() - 1));
+                    int totalWeight = 0;
+                    for (SpawnRule rule : applicableRules) {
+                        totalWeight += rule.getWeight();
+                    }
+
+                    int selectedWeight = Utils.rand(1, totalWeight);
+                    SpawnRule spawnRule = applicableRules.get(applicableRules.size() - 1);
+                    for (SpawnRule rule : applicableRules) {
+                        selectedWeight -= rule.getWeight();
+                        if (selectedWeight <= 0) {
+                            spawnRule = rule;
+                            break;
+                        }
+                    }
+
                     int herd = Utils.rand(spawnRule.getHerdMin(), spawnRule.getHerdMax());
                     int herdSpread = spawnRule.getHerdMax() - spawnRule.getHerdMin();
 
                     for (int i = 0; i < herd; i++) {
                         Vector3 spawnPos = lookVec;
                         if (!EntityFlyable.class.isAssignableFrom(Registries.ENTITY.getEntityClass(spawnRule.getEntityId()))) {
-                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5, 0, 0.5);
+                            float offset = i / (100f * herd); //If a herd is spawned at the exact same position, they push themselves infinite
+                            spawnPos = level.getSafeSpawn(lookVec, herdSpread, true).add(0.5 + offset, 0, 0.5 + offset);
                         }
                         if (spawnedEntityCount >= maxEntityCount) {
                             break;
@@ -595,28 +617,11 @@ public class Chunk implements IChunk {
                 }
             }
         }
+    }
 
-        // Despawning
-        if (!spawnedEntities.isEmpty()) {
-            int randIndex = Utils.rand(0, spawnedEntities.size() - 1);
-            Entity randomEntity = spawnedEntities.stream().skip(randIndex).findFirst().orElse(null);
-            if (randomEntity != null) {
-                boolean anyNear = false;
-                for (Player player : level.getPlayers().values()) {
-                    if (player.distance(randomEntity) <= 54) {
-                        anyNear = true;
-                        break;
-                    }
-                }
-                if (!anyNear && randomEntity.getAge() > 6000) {
-                    try {
-                        randomEntity.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+    @Override
+    public BlockUpdateScheduler getBlockUpdateScheduler() {
+        return blockUpdateScheduler;
     }
 
     @Override

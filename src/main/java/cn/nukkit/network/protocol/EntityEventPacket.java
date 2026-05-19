@@ -88,6 +88,7 @@ public class EntityEventPacket extends DataPacket {
         this.eid = byteBuf.readEntityRuntimeId();
         this.event = byteBuf.readByte();
         this.data = byteBuf.readVarInt();
+        byteBuf.readOptional(null, byteBuf::readVector3f);
     }
 
     @Override
@@ -95,6 +96,7 @@ public class EntityEventPacket extends DataPacket {
         byteBuf.writeEntityRuntimeId(this.eid);
         byteBuf.writeByte((byte) this.event);
         byteBuf.writeVarInt(this.data);
+        byteBuf.writeBoolean(false);
     }
 
     @Override

@@ -22,6 +22,8 @@ import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import io.netty.util.internal.EmptyArrays;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,6 +82,10 @@ public abstract class Command {
     protected CommandData commandData;
 
     protected boolean serverSideOnly;
+
+    @Getter
+    @Setter
+    private boolean isUnregistered = false;
 
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
@@ -354,10 +360,11 @@ public abstract class Command {
      * @return true if unregistration succeeded, false otherwise
      */
     public boolean unregister(CommandMap commandMap) {
-        if (this.allowChangesFrom(commandMap)) {
+        if (this.allowChangesFrom(commandMap) && !this.isUnregistered()) {
             this.commandMap = null;
             this.activeAliases = this.aliases;
             this.label = this.nextLabel;
+            this.setUnregistered(true);
             return true;
         }
         return false;

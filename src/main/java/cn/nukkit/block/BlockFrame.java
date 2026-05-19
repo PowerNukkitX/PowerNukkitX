@@ -103,7 +103,7 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block support = this.getSideAtLayer(0, getFacing().getOpposite());
-            if (!support.isSolid() && !support.getId().equals(COBBLESTONE_WALL)) {
+            if (!support.isSolid() && !(support instanceof BlockWallBase)) {
                 this.level.useBreakOn(this);
                 return type;
             }

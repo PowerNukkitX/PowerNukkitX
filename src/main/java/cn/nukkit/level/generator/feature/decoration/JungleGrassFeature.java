@@ -15,18 +15,17 @@ public class JungleGrassFeature extends SurfaceGenerateFeature {
 
     @Override
     public void place(BlockManager manager, int x, int y, int z) {
-        random.setSeed(x + y + z);
         manager.setBlockStateAt(x, y, z, random.nextInt(7) == 0 ? FERN : SHORT_GRASS);
     }
 
     @Override
     public int getBase() {
-        return 10;
+        return 100;
     }
 
     @Override
     public int getRandom() {
-        return 0;
+        return 10;
     }
 
     @Override

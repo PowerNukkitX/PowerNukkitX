@@ -67,11 +67,11 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                     switch (biomeId) {
                         case SWAMPLAND -> {
                             if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
-                                if(y == SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
+                                if(y == SEA_LEVEL - 1) unsafeChunk.setBlockState(x, y, z, WATER, 0);
                         }
                         case MANGROVE_SWAMP -> {
                             if(holder.getSwampNoise().getValue(lx, y, lz) > 0)
-                                if(y >= SEA_LEVEL -2 && y <= SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
+                                if(y >= SEA_LEVEL -2 && y < SEA_LEVEL) unsafeChunk.setBlockState(x, y, z, WATER, 0);
                         }
                         case MESA_PLATEAU_STONE -> {
                             if(y > 97) {

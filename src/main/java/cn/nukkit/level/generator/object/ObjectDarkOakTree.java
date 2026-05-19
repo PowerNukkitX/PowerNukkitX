@@ -28,6 +28,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
     @Override
     public boolean generate(BlockManager level, RandomSourceProvider rand, Vector3 position) {
         int i = rand.nextInt(3) + rand.nextInt(2) + 6;
+        boolean treeWithVines = rand.nextInt(TREE_WITH_VINES_CHANCE) == 0;
         int j = position.getFloorX();
         int k = position.getFloorY();
         int l = position.getFloorZ();
@@ -64,10 +65,10 @@ public class ObjectDarkOakTree extends TreeGenerator {
                     Block material = level.getBlockIfCachedOrLoaded(blockpos1.getFloorX(), blockpos1.getFloorY(), blockpos1.getFloorZ());
 
                     if (canGrowInto(material.getId()) || material instanceof BlockLeaves) {
-                        this.placeLogAt(level, blockpos1);
-                        this.placeLogAt(level, blockpos1.east());
-                        this.placeLogAt(level, blockpos1.south());
-                        this.placeLogAt(level, blockpos1.east().south());
+                        this.placeLogAt(level, blockpos1, treeWithVines);
+                        this.placeLogAt(level, blockpos1.east(), treeWithVines);
+                        this.placeLogAt(level, blockpos1.south(), treeWithVines);
+                        this.placeLogAt(level, blockpos1.east().south(), treeWithVines);
                     }
                 }
 
@@ -168,15 +169,22 @@ public class ObjectDarkOakTree extends TreeGenerator {
     }
 
     private void placeLogAt(BlockManager worldIn, Vector3 pos) {
+        this.placeLogAt(worldIn, pos, false);
+    }
+
+    private void placeLogAt(BlockManager worldIn, Vector3 pos, boolean treeWithVines) {
         if (this.canGrowInto(worldIn.getBlockIdIfCachedOrLoaded(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()))) {
             worldIn.setBlockStateAt(pos, DARK_OAK_WOOD);
+            if (treeWithVines) {
+                this.addVinesAroundLog(worldIn, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+            }
         }
     }
 
     private void placeLeafAt(BlockManager worldIn, int x, int y, int z) {
         Vector3 blockpos = new Vector3(x, y, z);
         String material = worldIn.getBlockIdIfCachedOrLoaded(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
-        if (material.equals(Block.AIR)) {
+        if (material.equals(Block.AIR) || material.equals(Block.VINE)) {
             worldIn.setBlockStateAt(blockpos, DARK_OAK_LEAVES);
         }
     }

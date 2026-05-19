@@ -1,12 +1,14 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySwimmable;
 import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.ConditionalController;
 import cn.nukkit.entity.ai.controller.DiveController;
 import cn.nukkit.entity.ai.controller.FluctuateController;
 import cn.nukkit.entity.ai.controller.LookController;
@@ -17,10 +19,16 @@ import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.AnimalGrowExecutor;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
+import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.TemptExecutor;
+import cn.nukkit.entity.ai.executor.TurtleMoveToWaterExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.route.finder.impl.ConditionalAStarRouteFinder;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
+import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.entity.components.BreedableComponent;
@@ -31,6 +39,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,7 +180,12 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
                 ),
                 Set.of(
                     new Behavior(
-                        new FlatRandomRoamExecutor(0.4f, 12, 40, true, 100, true, 10),
+                        new TurtleMoveToWaterExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.1f),
+                            entity -> !entity.isInsideOfWater() && entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_BLOCK),
+                        5, 1
+                    ),
+                    new Behavior(
+                        new FlatRandomRoamExecutor(0.12f, 12, 40, true, 100, true, 10),
                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100),
                         4, 1
                     ),
@@ -189,23 +203,35 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
                         1, 1, 100
                     ),
                     new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                            (entity -> true),
+                        new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10),
+                            entity -> !entity.isInsideOfWater(),
+                        1, 1
+                    ),
+                    new Behavior(
+                        new SpaceRandomRoamExecutor(0.12f, 30, 15, 80, false, 160, false, 10),
+                            entity -> entity.isInsideOfWater(),
                         1, 1
                     )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(8, 0, 20)
+                    new NearestPlayerSensor(8, 0, 20),
+                    new BlockSensor(BlockFlowingWater.class, CoreMemoryTypes.NEAREST_BLOCK, 16, 5, 10)
                 ),
                 Set.of(
-                    new WalkController(),
                     new LookController(true, true),
-                    new FluctuateController(), new SpaceMoveController(),
-                    new DiveController()
+                    new ConditionalController(
+                        Pair.of(entity -> entity.isInsideOfWater(), new DiveController()),
+                        Pair.of(entity -> entity.isInsideOfWater(), new SpaceMoveController()),
+                        Pair.of(entity -> !entity.isInsideOfWater(), new WalkController()),
+                        Pair.of(entity -> !entity.isInsideOfWater(), new FluctuateController())
+                    )
                 ),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                new ConditionalAStarRouteFinder(
+                    this,
+                    Pair.of(entity -> !entity.isInsideOfWater(), new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)),
+                    Pair.of(entity -> entity.isInsideOfWater(), new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(), this))
+                ),
                 this
         );
     }
-
 }
