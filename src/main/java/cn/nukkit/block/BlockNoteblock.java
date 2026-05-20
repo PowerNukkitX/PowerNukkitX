@@ -80,10 +80,22 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
         return true;
     }
 
+    /**
+     * A note block can play when the block directly above it is air or a skull.
+     * Any other block above silences it entirely.
+     */
+    private boolean canPlay() {
+        Block above = this.up();
+        return above.isAir() || above instanceof BlockHead;
+    }
+
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player != null && player.isSneaking() || (this.up().isAir() && blockFace.equals(BlockFace.UP) && item.isBlock() && item.getBlock() instanceof BlockHead)) {
             return false;
+        }
+        if (!canPlay()) {
+            return true;
         }
         this.increaseStrength();
         this.emitSound(player);
@@ -99,7 +111,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @org.jetbrains.annotations.Nullable Player player, @NotNull PlayerInteractEvent.Action action) {
         onUpdate(Level.BLOCK_UPDATE_TOUCH);
         if (player != null && action == Action.LEFT_CLICK_BLOCK && player.isSurvival()) {
-            this.emitSound(player);
+            if (canPlay()) {
+                this.emitSound(player);
+            }
         }
     }
 
@@ -113,14 +127,34 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public Instrument getInstrument() {
+        Block above = this.up();
+        if (above instanceof BlockHead skull) {
+            int meta = 0;
+            if (skull.getBlockEntity() != null) {
+                meta = skull.getBlockEntity().namedTag.getByte("SkullType");
+            }
+            return switch (meta) {
+                case 0 -> Instrument.SKELETON;
+                case 1 -> Instrument.WITHER_SKELETON;
+                case 2 -> Instrument.ZOMBIE;
+                case 4 -> Instrument.CREEPER;
+                case 5 -> Instrument.ENDER_DRAGON;
+                case 6 -> Instrument.PIGLIN;
+                // meta 3 = Player Head: instrument depends on the note_block_sound NBT tag; defaults to HARP when the tag is absent. See https://minecraft.wiki/w/Note_Block
+                default -> Instrument.HARP;
+            };
+        }
+
         return switch (this.down()) {
-            case BlockWool ignored -> Instrument.GUITAR;
+            // --- Snare drum ---
             case BlockConcretePowder ignored -> Instrument.SNARE_DRUM;
             case BlockSand ignored -> Instrument.SNARE_DRUM;
             case BlockGravel ignored -> Instrument.SNARE_DRUM;
-            case BlockGlass ignored -> Instrument.SNARE_DRUM;
-            case BlockSeaLantern ignored -> Instrument.SNARE_DRUM;
-            case BlockBeacon ignored -> Instrument.SNARE_DRUM;
+            // --- Clicks and sticks (hi-hat) ---
+            case BlockGlass ignored -> Instrument.CLICKS_AND_STICKS;
+            case BlockSeaLantern ignored -> Instrument.CLICKS_AND_STICKS;
+            case BlockBeacon ignored -> Instrument.CLICKS_AND_STICKS;
+            // --- Bass drum (stone-type blocks) ---
             case BlockStone ignored -> Instrument.BASS_DRUM;
             case BlockBlackstone ignored -> Instrument.BASS_DRUM;
             case BlockNetherrack ignored -> Instrument.BASS_DRUM;
@@ -139,7 +173,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case BlockObserver ignored -> Instrument.BASS_DRUM;
             case BlockHardenedClay ignored -> Instrument.BASS_DRUM;
             case BlockPrismarine ignored -> Instrument.BASS_DRUM;
+            // --- Bells ---
             case BlockGoldBlock ignored -> Instrument.BELLS;
+            // --- Flute ---
             case BlockClay ignored -> Instrument.FLUTE;
             case BlockHoneycombBlock ignored -> Instrument.FLUTE;
             case BlockInfestedChiseledStoneBricks ignored -> Instrument.FLUTE;
@@ -148,34 +184,34 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case BlockInfestedDeepslate ignored -> Instrument.FLUTE;
             case BlockInfestedCrackedStoneBricks ignored -> Instrument.FLUTE;
             case BlockInfestedStoneBricks ignored -> Instrument.FLUTE;
+            // --- Chimes ---
             case BlockPackedIce ignored -> Instrument.CHIMES;
+            // --- Guitar ---
+            case BlockWool ignored -> Instrument.GUITAR;
+            // --- Xylophone ---
             case BlockBoneBlock ignored -> Instrument.XYLOPHONE;
+            // --- Iron xylophone ---
             case BlockIronBlock ignored -> Instrument.IRON_XYLOPHONE;
+            // --- Cow bell ---
             case BlockSoulSand ignored -> Instrument.COW_BELL;
+            // --- Didgeridoo ---
             case BlockPumpkin ignored -> Instrument.DIDGERIDOO;
+            // --- Bit ---
             case BlockEmeraldBlock ignored -> Instrument.BIT;
+            // --- Banjo ---
             case BlockHayBlock ignored -> Instrument.BANJO;
+            // --- Pling ---
             case BlockGlowstone ignored -> Instrument.PLING;
+            // --- Bass (double bass / wood-type blocks) ---
+            case BlockLog ignored -> Instrument.BASS;
+            case BlockPlanks ignored -> Instrument.BASS;
+            case BlockChest ignored -> Instrument.BASS;
+            case BlockCraftingTable ignored -> Instrument.BASS;
+            case BlockBookshelf ignored -> Instrument.BASS;
+            case BlockWoodenSlab ignored -> Instrument.BASS;
             case AbstractBlockShelf ignored -> Instrument.BASS;
-            default -> {
-                if (this.up() instanceof BlockHead skull) {
-                    int meta = 0;
-                    if (skull.getBlockEntity() != null) {
-                        meta = skull.getBlockEntity().namedTag.getByte("SkullType");
-                    }
-                    yield switch (meta) {
-                        case 0, 3 ->
-                                Instrument.SKELETON;   //skull with meta 3 is a steve head but the sound depends. More info at https://minecraft.wiki/w/Note_Block
-                        case 1 -> Instrument.WITHER_SKELETON;
-                        case 2 -> Instrument.ZOMBIE;
-                        case 4 -> Instrument.CREEPER;
-                        case 5 -> Instrument.ENDER_DRAGON;
-                        default -> Instrument.PIGLIN;
-                    };
-                } else {
-                    yield Instrument.HARP;
-                }
-            }
+            // --- Harp (default) ---
+            default -> Instrument.HARP;
         };
     }
 
@@ -212,7 +248,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
             if (this.isGettingPower()) {
                 if (!music.isPowered()) {
-                    this.emitSound();
+                    if (canPlay()) {
+                        this.emitSound();
+                    }
                 }
                 music.setPowered(true);
             } else {
