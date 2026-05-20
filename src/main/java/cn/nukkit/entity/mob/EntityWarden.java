@@ -55,6 +55,9 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected int lastCollideTime = getLevel().getTick();
     protected boolean waitForVibration = false;
 
+    private static final int DARKNESS_DURATION_TICKS = 260;
+    private static final int DARKNESS_RANGE = 20;
+
     public EntityWarden(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -71,7 +74,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                 this.tickSpread,
                 Set.of(
                         new Behavior((entity) -> {
-                            //刷新随机播放音效
+                            // Refresh and play sound
                             if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
                                 this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
                             else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.WARDEN_ANGER_VALUE))
@@ -81,7 +84,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             return false;
                         }, (entity) -> true, 1, 1, 20),
                         new Behavior((entity) -> {
-                            //刷新anger数值
+                            // Refresh Anger Value
                             var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
                             var iterator = angerValueMap.entrySet().iterator();
                             while (iterator.hasNext()) {
@@ -100,25 +103,17 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             return false;
                         }, (entity) -> true, 1, 1, 20),
                         new Behavior((entity) -> {
-                            //为玩家附加黑暗效果
+                            // Apply Darkness to nearby players
+                            final Effect effect = Effect.get(EffectType.DARKNESS).setDuration(DARKNESS_DURATION_TICKS);
                             for (var player : entity.level.getPlayers().values()) {
-                                if (!player.isIgnoredByEntities()
-                                        && entity.distanceSquared(player) <= 400) {
-                                    var effect = player.getEffect(EffectType.DARKNESS);
-                                    if (effect == null) {
-                                        effect = Effect.get(EffectType.DARKNESS);
-                                        effect.setDuration(260);
-                                        player.addEffect(effect);
-                                        continue;
-                                    }
-                                    effect.setDuration(effect.getDuration() + 260);
+                                if (!player.isIgnoredByEntities() && entity.distanceSquared(player) <= DARKNESS_RANGE * DARKNESS_RANGE) {
                                     player.addEffect(effect);
                                 }
                             }
                             return false;
                         }, (entity) -> true, 1, 1, 120),
                         new Behavior((entity) -> {
-                            //计算心跳间隔
+                            // Calculate Heartbeat Interval
                             this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
                             return false;
                         }, (entity) -> true, 1, 1, 20)),
@@ -196,7 +191,6 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected void initEntity() {
         super.initEntity();
         this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, 40);
-
         this.setDataProperty(ActorDataTypes.HEARTBEAT_SOUND_EVENT, SoundEvent.HEARTBEAT);
         this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
         this.setAmbientSoundInterval(8.0f);
