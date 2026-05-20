@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerChunkRequestEvent;
 import cn.nukkit.event.player.PlayerPreChunkRequestEvent;
-import cn.nukkit.level.format.ChunkState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.NetworkChunkPublisherUpdatePacket;
