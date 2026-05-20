@@ -219,11 +219,11 @@ public final class PlayerChunkManager {
             if (chunkTask.isDone()) {
                 try {
                     IChunk chunk = chunkTask.get(CHUNK_LOAD_TIMEOUT_MICROS, TimeUnit.MICROSECONDS);
+                    // Cached future may be stale - re-check in-memory map
                     if (chunk == null || !chunk.getChunkState().canSend()) {
-                        if (chunk != null && chunk.getChunkState().ordinal() > ChunkState.NEW.ordinal()) {
-                            log.warn("Loaded chunk ({}, {}) has non-sendable state {} - requesting generation. Level: {}",
-                                    chunkX, chunkZ, chunk.getChunkState(), player.level.getFolderName());
-                        }
+                        chunk = player.level.getChunkIfLoaded(chunkX, chunkZ);
+                    }
+                    if (chunk == null || !chunk.getChunkState().canSend()) {
                         player.level.generateChunk(chunkX, chunkZ, force);
                         enqueue.add(chunkHash);
                         chunkLoadingQueue.remove(chunkHash);
