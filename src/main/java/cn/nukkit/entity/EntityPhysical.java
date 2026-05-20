@@ -45,8 +45,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * Provide real-time latest collision box position
      */
     protected final AxisAlignedBB offsetBoundingBox;
-    protected final Vector3 previousCollideMotion;
-    protected final Vector3 previousCurrentMotion;
+    protected Vector3 previousCollideMotion;
+    protected Vector3 previousCurrentMotion;
     /**
      * The time of free fall of an object
      */

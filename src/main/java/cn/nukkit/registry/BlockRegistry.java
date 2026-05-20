@@ -1260,8 +1260,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CRIMSON_SHELF, BlockCrimsonShelf.class);
         register0(WARPED_SHELF, BlockWarpedShelf.class);
         register0(BAMBOO_SHELF, BlockBambooShelf.class);
-
-        register0(GOLDEN_DANDELION, BlockGoldenDandelion.class);
     }
 
     public void trim() {

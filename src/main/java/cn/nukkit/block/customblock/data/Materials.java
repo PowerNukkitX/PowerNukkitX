@@ -146,7 +146,7 @@ public class Materials implements NBTData {
             return this;
         }
 
-        private void apply(@NotNull CompoundTag tag) {
+        private void apply(@NotNull NbtMapBuilder tag) {
             if (this.ambientOcclusion != null) {
                 tag.putFloat("ambient_occlusion", this.ambientOcclusion);
             }
@@ -797,16 +797,14 @@ public class Materials implements NBTData {
         return this;
     }
 
-    private CompoundTag getOrCreateFaceTag(@NotNull String face) {
-        Tag existing = this.tag.get(face);
+    private NbtMapBuilder getOrCreateFaceTag(@NotNull String face) {
+        Object existing = this.tag.get(face);
 
-        if (existing instanceof CompoundTag compoundTag) {
-            return compoundTag;
+        if (existing instanceof NbtMap compoundTag) {
+            return compoundTag.toBuilder();
         }
 
-        CompoundTag faceTag = new CompoundTag();
-        this.tag.putCompound(face, faceTag);
-        return faceTag;
+        return NbtMap.builder();
     }
 
     /**
@@ -871,7 +869,7 @@ public class Materials implements NBTData {
         @Nullable TintMethod tintMethod,
         @Nullable Settings settings
     ) {
-        CompoundTag faceTag = this.getOrCreateFaceTag(face)
+        NbtMapBuilder faceTag = this.getOrCreateFaceTag(face)
             .putFloat("ambient_occlusion", ambientOcclusion)
             .putByte("packed_bools", packedBools.toByte())
             .putString("render_method", renderMethodName)

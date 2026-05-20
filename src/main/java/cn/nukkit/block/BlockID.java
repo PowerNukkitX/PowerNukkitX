@@ -2614,6 +2614,4 @@ public interface BlockID {
     String BAMBOO_SHELF = "minecraft:bamboo_shelf";
     String CRIMSON_SHELF = "minecraft:crimson_shelf";
     String WARPED_SHELF = "minecraft:warped_shelf";
-
-    String GOLDEN_DANDELION = "minecraft:golden_dandelion";
 }

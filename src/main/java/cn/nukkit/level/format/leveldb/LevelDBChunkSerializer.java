@@ -422,7 +422,7 @@ public class LevelDBChunkSerializer {
         NbtMapBuilder extraData = unsafe.getExtraData().toBuilder();
         extraData.putList("pendingScheduledTicks", NbtType.COMPOUND, scheduledTicks);
         extraData.putList("pendingNormalTickBlocks", NbtType.COMPOUND, normalTickBlocks);
-        unsafe.setExtraData(extraData.build());
+        unsafe.updateExtraData(extraData.build());
     }
 
     public static class ScheduledTickInfo {

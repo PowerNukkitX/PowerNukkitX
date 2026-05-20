@@ -13,10 +13,13 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.ActorBlockSyncMessageId;
 import org.cloudburstmc.protocol.bedrock.data.BlockChangeEntry;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateSubChunkBlocksPacket;
@@ -388,20 +391,20 @@ public class BlockManager {
 
     private void queuePendingSubChunkUpdates(IChunk chunk, List<Block> blocks) {
         synchronized (chunk) {
-            CompoundTag extraData = chunk.getExtraData();
-            ListTag<IntArrayTag> pending = extraData.containsList(PENDING_SUB_CHUNK_UPDATES, Tag.TAG_Int_Array)
-                    ? extraData.getList(PENDING_SUB_CHUNK_UPDATES, IntArrayTag.class)
-                    : new ListTag<>(Tag.TAG_Int_Array);
+            NbtMap extraData = chunk.getExtraData();
+            List<int[]> pending = extraData.containsKey(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY)
+                    ? extraData.getList(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY)
+                    : new ArrayList<>();
             for (Block block : blocks) {
-                pending.add(new IntArrayTag(new int[] {
+                pending.add(new int[] {
                         block.getFloorX(),
                         block.getFloorY(),
                         block.getFloorZ(),
                         block.layer,
                         block.getBlockState().blockStateHash()
-                }));
+                });
             }
-            extraData.putList(PENDING_SUB_CHUNK_UPDATES, pending);
+            chunk.setExtraData(extraData.toBuilder().putList(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY, pending).build());
             chunk.setChanged();
         }
     }
@@ -411,15 +414,16 @@ public class BlockManager {
             return;
         }
 
-        ListTag<IntArrayTag> pending;
+        List<int[]> pending;
         synchronized (chunk) {
-            CompoundTag extraData = chunk.getExtraData();
-            if (!extraData.containsList(PENDING_SUB_CHUNK_UPDATES, Tag.TAG_Int_Array)) {
+            NbtMap extraData = chunk.getExtraData();
+            if (!extraData.containsKey(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY)) {
                 return;
             }
-            pending = extraData.removeAndGet(PENDING_SUB_CHUNK_UPDATES);
+            pending = extraData.getList(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY);
+            chunk.setExtraData(NbtHelper.remove(extraData, PENDING_SUB_CHUNK_UPDATES));
         }
-        if (pending == null || pending.size() == 0) {
+        if (pending == null || pending.isEmpty()) {
             return;
         }
 

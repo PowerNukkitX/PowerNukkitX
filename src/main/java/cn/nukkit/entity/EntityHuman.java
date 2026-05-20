@@ -29,6 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX;
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.RESERVED_139;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
