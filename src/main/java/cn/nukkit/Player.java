@@ -28,6 +28,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.NameableComponent;
+import cn.nukkit.entity.data.warden.WardenWarningData;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXpOrb;
@@ -113,6 +114,7 @@ import cn.nukkit.utils.BlockIterator;
 import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.Identifier;
+import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
@@ -360,6 +362,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     private Color locatorBarColor;
     private final @NotNull PlayerInfo info;
+    private final WardenWarningData wardenWarningData = new WardenWarningData();
     protected AtomicInteger shapeIds = new AtomicInteger(0);
     /**
      * Stores the current client input lock flags applied to this player.
@@ -494,10 +497,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        // TODO: Hack client spams multiple left clicks so we need to skip them.
-        if ((this.lastBreakPosition.equals(blockPos) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 1000) {
-            return;
-        }
+
 
         Block target = this.level.getBlock(pos);
         PlayerInteractEvent playerInteractEvent = new PlayerInteractEvent(this, this.inventory.getItemInMainHand(), target, face,
@@ -567,17 +567,20 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.lastBreakPosition = blockPos;
     }
 
+    protected void resetBlockBreak() {
+        this.blockBreakProgress = 0;
+        this.breakingBlock = null;
+        this.breakingBlockFace = null;
+    }
+
     public void onBlockBreakAbort(Vector3 pos) {
         if (pos.distanceSquared(this) < 1000) { // same as with ACTION_START_BREAK
             final LevelEventPacket pk = new LevelEventPacket();
             pk.setType(LevelEvent.BLOCK_STOP_BREAK);
             pk.setPosition(pos.toNetwork());
             this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-            this.getLevel().sendBlocks(new Player[]{this}, new Vector3[]{pos}, Set.of(UpdateBlockPacket.Flag.NO_GRAPHIC));
         }
-        this.blockBreakProgress = 0;
-        this.breakingBlock = null;
-        this.breakingBlockFace = null;
+        resetBlockBreak();
     }
 
     public void onBlockBreakComplete(BlockVector3 blockPos, BlockFace face) {
@@ -594,6 +597,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (handItem != null && this.isSurvival()) {
                 this.getFoodData().exhaust(0.005);
                 if (handItem.equals(clone) && handItem.getCount() == clone.getCount()) {
+                    resetBlockBreak();
                     return;
                 }
 
@@ -605,6 +609,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 inventory.sendHeldItem(this.getViewers().values());
             } else if (handItem == null)
                 this.level.sendBlocks(new Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+            resetBlockBreak();
             return;
         }
 
@@ -620,6 +625,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 ((BlockEntitySpawnable) blockEntity).spawnTo(this);
             }
         }
+        resetBlockBreak();
     }
 
     private void setTitle(String text) {
@@ -912,7 +918,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var revertPos = this.getLocation().clone();
         double distance = clientPos.distanceSquared(this);
         //before check
-        if (distance > 128) {
+        if (isCheckingMovement() && distance > 128) {
             invalidMotion = true;
         } else if (this.chunk == null || !chunk.getChunkState().canSend()) {
             IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
@@ -1114,7 +1120,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
                 if (this.wasInSoulSandCompatible && !isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = false;
-                    this.setMovementSpeed(this.getMovementSpeed() / this.soulSpeedMultiplier);
+                    this.recalcMovementSpeedFromEffects();
                 } else if (!this.wasInSoulSandCompatible && isSoulSandCompatible) {
                     this.wasInSoulSandCompatible = true;
                     this.setMovementSpeed(this.getMovementSpeed() * this.soulSpeedMultiplier);
@@ -1500,6 +1506,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
+        if (this.namedTag.containsKey("CursorItem")) {
+            this.playerCursorInventory.setItem(0, ItemHelper.read(this.namedTag.getCompound("CursorItem")));
+        }
+
         this.addWindow(this.getInventory(), (byte) ContainerId.INVENTORY);
         //addDefaultWindows when the player doesn't have a spawn yet,
         // so we need to manually open it to add the player to the viewer
@@ -1670,6 +1680,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setHorizontalFlySpeed(float speed) {
         this.horizontalFlySpeed = speed;
+        this.getAdventureSettings().update();
     }
 
     public float getHorizontalFlySpeed() {
@@ -1678,6 +1689,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     public void setVerticalFlySpeed(float speed) {
         this.verticalFlySpeed = speed;
+        this.getAdventureSettings().update();
     }
 
     public float getVerticalFlySpeed() {
@@ -3580,6 +3592,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
         }
 
+        if (this.playerCursorInventory != null) {
+            Item item = this.playerCursorInventory.getItem(0);
+            if (!item.isNull()) {
+                this.namedTag.put("CursorItem", ItemHelper.write(item));
+            } else {
+                this.namedTag.remove("CursorItem");
+            }
+        }
+
         this.adventureSettings.saveNBT();
     }
 
@@ -4704,30 +4725,52 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return this.creativeOutputInventory;
     }
 
+    /**
+     * Moves items from open crafting grids and cursor back to player inventory
+     * <p>
+     * Usually already handled client-side through ItemStackRequestPackets.
+     * Items will be dropped when the inventory is full (unless they have ItemLockMode)
+     * This method mainly prevents preserving items (without any ItemLockMode) in cursor or crafting grid.
+     */
     @ApiStatus.Internal
     public void resetInventory() {
         if (spawned) {
-            Map<Integer, Item> contents = this.getCraftingGrid().getContents();
-            this.getCraftingGrid().clearAll();
-            List<Item> puts = new ArrayList<>(contents.values());
-
-            Map<Integer, Item> contents2 = this.getCursorInventory().getContents();
-            this.getCursorInventory().clearAll();
-            puts.addAll(contents2.values());
+            this.returnItemsFromInventory(this.getCraftingGrid());
+            this.returnItemsFromInventory(this.getCursorInventory());
 
             Optional<Inventory> topWindow = getTopWindow();
-            Inventory value;
             if (topWindow.isPresent()) {
-                value = topWindow.get();
+                Inventory value = topWindow.get();
                 if (value instanceof CraftTypeInventory || (value instanceof FakeInventory fakeInventory && fakeInventory.getFakeInventoryType().isCraftType())) {
-                    puts.addAll(value.getContents().values());
-                    value.clearAll();
+                    this.returnItemsFromInventory(value);
                 }
                 removeWindow(value);
             }
-            Item[] drops = getInventory().addItem(puts.toArray(Item.EMPTY_ARRAY));
-            for (Item drop : drops) {
-                this.dropItem(drop);
+        }
+    }
+
+    private void returnItemsFromInventory(Inventory inventory) {
+        String invName = inventory.getClass().getSimpleName();
+        for (Map.Entry<Integer, Item> entry : inventory.getContents().entrySet()) {
+            int slot = entry.getKey();
+            Item item = entry.getValue();
+            if (item.isNull()) {
+                continue;
+            }
+            Item[] remains = getInventory().addItem(item);
+            if (remains.length == 0) {
+                inventory.clear(slot);
+            } else {
+                Item remain = remains[0];
+                if (remain.getItemLockMode() == Item.ItemLockMode.NONE) {
+                    this.dropItem(remain);
+                    inventory.clear(slot);
+                } else if (remain.getCount() != item.getCount()) {
+                    log.debug("Partially moved {} to inventory of player {}. {} remains in {} slot {}", item, this.getName(), remain.getCount(), invName, slot);
+                    inventory.setItem(slot, remain);
+                } else {
+                    log.debug("Locked item {} in {} slot {} not moved: inventory of player {} is full and dropping locked items is forbidden. The item will persist", item, invName, slot, this.getName());
+                }
             }
         }
     }
@@ -5547,6 +5590,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getXUID(), this.getLocatorBarColor());
         }
+    }
+
+    public WardenWarningData getWardenWarningData() {
+        return this.wardenWarningData;
     }
 
     /**

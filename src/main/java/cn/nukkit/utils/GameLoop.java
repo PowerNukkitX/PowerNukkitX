@@ -18,9 +18,11 @@ import java.util.function.Consumer;
 @Slf4j
 public final class GameLoop {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final Object tickLock = new Object();
     private final Runnable onStart;
     private final Consumer<GameLoop> onTick;
     private final Runnable onStop;
+
     @Getter
     private final int loopCountPerSec;
     private final float[] tickSummary = new float[20];
@@ -65,6 +67,18 @@ public final class GameLoop {
         return sum / count;
     }
 
+    public void tick() {
+        synchronized (tickLock) {
+            if (!isRunning.get()) return;
+            long startTickTime = System.nanoTime();
+            onTick.accept(this);
+            tick++;
+            long timeTakenToTick = System.nanoTime() - startTickTime;
+            updateMSTP(timeTakenToTick, MSPTSummary);
+            updateTPS(timeTakenToTick);
+        }
+    }
+
     public void startLoop() {
         isRunning.set(true);
         onStart.run();
@@ -73,8 +87,11 @@ public final class GameLoop {
         while (isRunning.get()) {
             // Figure out how long it took to tick
             long startTickTime = System.nanoTime();
-            onTick.accept(this);
-            tick++;
+            synchronized (tickLock) {
+                if (!isRunning.get()) break;
+                onTick.accept(this);
+                tick++;
+            }
             long timeTakenToTick = System.nanoTime() - startTickTime;
             updateMSTP(timeTakenToTick, MSPTSummary);
             updateTPS(timeTakenToTick);
@@ -119,6 +136,14 @@ public final class GameLoop {
 
     public boolean isRunning() {
         return isRunning.get();
+    }
+
+    public void setRunning(boolean value) {
+        isRunning.set(value);
+    }
+
+    public Object getTickLock() {
+        return tickLock;
     }
 
     public static class GameLoopBuilder {

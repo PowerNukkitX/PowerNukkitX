@@ -10,6 +10,8 @@ import cn.nukkit.block.copper.lantern.*;
 import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.dispenser.BlockDispenser;
+import cn.nukkit.block.dispenser.BlockDropper;
 import cn.nukkit.block.shelf.*;
 import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
@@ -494,6 +496,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(GLOWINGOBSIDIAN, BlockGlowingobsidian.class);
         register0(GLOWSTONE, BlockGlowstone.class);
         register0(GOLD_BLOCK, BlockGoldBlock.class);
+        register0(GOLDEN_DANDELION, BlockGoldenDandelion.class);
         register0(GOLD_ORE, BlockGoldOre.class);
         register0(GOLDEN_RAIL, BlockGoldenRail.class);
         register0(GRANITE, BlockGranite.class);

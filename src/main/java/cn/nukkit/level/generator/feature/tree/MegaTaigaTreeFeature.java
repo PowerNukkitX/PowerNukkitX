@@ -27,11 +27,6 @@ public class MegaTaigaTreeFeature extends GriddedFeature {
     }
 
     @Override
-    public int getSplit() {
-        return 2;
-    }
-
-    @Override
     public int getDistanceToNextField() {
         return 1;
     }

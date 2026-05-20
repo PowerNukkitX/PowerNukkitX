@@ -11,16 +11,30 @@ import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.scheduler.AsyncTask;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.MapInfoRequestPacket;
 
 /**
  * @author Kaooot
  */
+@Slf4j
 public class MapInfoRequestHandler implements PacketHandler<MapInfoRequestPacket> {
 
     @Override
     public void handle(MapInfoRequestPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
+
+
+        if (packet.getMapUniqueID() <= 0) {
+            log.debug("Player {} sent an invalid map id {}", player.getName(), packet.getMapUniqueID());
+            return;
+        }
+
+        if (!player.isAlive() || player.level == null) {
+            log.debug("Player {} tried to request map info while dead or without a level loaded", player.getName());
+            return;
+        }
+
         Item mapItem = null;
         int index = 0;
         var offhand = false;

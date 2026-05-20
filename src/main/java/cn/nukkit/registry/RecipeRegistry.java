@@ -775,6 +775,10 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         }
                     }
                     case "furnace", "blast_furnace", "smoker", "campfire", "soul_campfire" -> {
+                        String recipeId = (String) recipe.get("id");
+                        UUID uuid = UUID.fromString((String) recipe.get("uuid"));
+                        int priority = (int) ((double) recipe.get("priority"));
+
                         List<Map<String, Object>> outputs = (List<Map<String, Object>>) recipe.get("output");
                         Map<String, Object> primaryResultData = outputs.removeFirst();
                         ItemDescriptor primaryResult = parseDescription(primaryResultData, ParseType.FURNACE_OUTPUT);
@@ -784,6 +788,19 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
                         for (Map<String, Object> input : inputs) {
                             ingredients.add(parseDescription(input, ParseType.FURNACE_INPUT));
                         }
+
+                        /*final ShapelessRecipe smeltingRecipe = new ShapelessRecipe(
+                                recipeId + "_" + block,
+                                uuid,
+                                priority,
+                                primaryResult.toItem(),
+                                ingredients,
+                                new RecipeUnlockingRequirement(
+                                        RecipeUnlockingRequirement.UnlockingContext.ALWAYS_UNLOCKED
+                                )
+                        );
+
+                        this.register(smeltingRecipe);*/
 
                         if (primaryResult instanceof ItemTagDescriptor tagDescriptor) {
                             final Set<String> ids = ItemTags.getItemSet(tagDescriptor.getItemTag());

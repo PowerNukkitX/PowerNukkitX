@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBarrel;
 import cn.nukkit.block.BlockChest;
 import cn.nukkit.block.BlockDecoratedPot;
-import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.block.dispenser.BlockDispenser;
 import cn.nukkit.block.BlockTrialSpawner;
 import cn.nukkit.block.copper.bulb.BlockCopperBulb;
 import cn.nukkit.blockentity.BlockEntityDecoratedPot;

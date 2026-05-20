@@ -23,6 +23,10 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
+    private static final int FIREBALL_COUNT = 3;
+    private static final int FIREBALL_INTERVAL = 6;
+    private static final int FIRE_SEQUENCE_DURATION = 20;
+
     protected MemoryType<? extends Entity> memory;
     protected float speed;
     protected int maxShootDistanceSquared;
@@ -37,6 +41,8 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
 
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
+    private int fireSequenceTick;
+    private int fireballsShot;
 
     /**
      * @param memory            <br>Used to read the memory of the attack target
@@ -86,7 +92,9 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         setLookTarget(entity, clone);
 
-        if (tick2 == 0 && tick1 > coolDownTick) {
+        tickFireSequence(entity);
+
+        if (tick2 == 0 && fireSequenceTick == 0 && tick1 > coolDownTick) {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
                 this.tick2++;
@@ -95,10 +103,8 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         } else if (tick2 != 0) {
             tick2++;
             if (tick2 > fireTick) {
-                for (int i = 0; i < 3; i++) {
-                    entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> shootFireball(entity), i * 6);
-                }
-                entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> stopOnFire(entity), 20);
+                startFireSequence();
+                tickFireSequence(entity);
                 tick2 = 0;
                 return target.getHealthCurrent() != 0;
             }
@@ -116,6 +122,7 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setEnablePitch(false);
         stopOnFire(entity);
+        resetShootState();
         this.target = null;
     }
 
@@ -129,7 +136,43 @@ public class BlazeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setEnablePitch(false);
         stopOnFire(entity);
+        resetShootState();
         this.target = null;
+    }
+
+    private void startFireSequence() {
+        this.fireSequenceTick = 1;
+        this.fireballsShot = 0;
+    }
+
+    private void tickFireSequence(EntityLiving entity) {
+        if (this.fireSequenceTick == 0) {
+            return;
+        }
+
+        int elapsedTick = this.fireSequenceTick - 1;
+        if (this.fireballsShot < FIREBALL_COUNT && elapsedTick == this.fireballsShot * FIREBALL_INTERVAL) {
+            shootFireball(entity);
+            this.fireballsShot++;
+        }
+
+        if (elapsedTick >= FIRE_SEQUENCE_DURATION) {
+            stopOnFire(entity);
+            resetFireSequence();
+            return;
+        }
+
+        this.fireSequenceTick++;
+    }
+
+    private void resetFireSequence() {
+        this.fireSequenceTick = 0;
+        this.fireballsShot = 0;
+    }
+
+    private void resetShootState() {
+        this.tick2 = 0;
+        resetFireSequence();
     }
 
     protected void shootFireball(EntityLiving entity) {

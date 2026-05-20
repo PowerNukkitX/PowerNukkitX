@@ -10,6 +10,6 @@ public class ConditionSpawnUnderwater extends Condition{
 
     @Override
     public boolean evaluate(Block block) {
-        return block.getId().equals(Block.WATER);
+        return block.getId().equals(Block.WATER) || block.getLevelBlockAtLayer(1).getId().equals(Block.WATER);
     }
 }

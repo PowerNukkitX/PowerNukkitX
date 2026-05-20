@@ -75,8 +75,20 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.rideJumping = new AtomicInteger(-1);
     }
 
+    void ensurePhysicalMotionState() {
+        if (this.previousCollideMotion == null) {
+            this.previousCollideMotion = new Vector3();
+        }
+
+        if (this.previousCurrentMotion == null) {
+            this.previousCurrentMotion = new Vector3();
+        }
+    }
+
     @Override
     public void asyncPrepare(int currentTick) {
+        this.ensurePhysicalMotionState();
+
         // Calculates whether expensive entity motion needs to be recalculated
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
         // Recalculate absolute position collision box
@@ -274,8 +286,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void addPreviousLiquidMovement() {
-        if (previousCurrentMotion != null)
-            addTmpMoveMotion(previousCurrentMotion);
+        this.ensurePhysicalMotionState();
+        addTmpMoveMotion(previousCurrentMotion);
     }
 
     protected void handleFloatingMovement() {
@@ -316,6 +328,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleCollideMovement(int currentTick) {
+        this.ensurePhysicalMotionState();
+
         if (!this.canBePushedByEntities()) {
             this.previousCollideMotion.setX(0);
             this.previousCollideMotion.setZ(0);

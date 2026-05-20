@@ -563,6 +563,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.entityDataMap.put(ActorDataTypes.HEIGHT, this.getHeight());
         this.entityDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
         this.entityDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
+        this.entityDataMap.put(ActorDataTypes.RESERVED_139, 0L);
+        this.entityDataMap.put(ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
 
         // =========================================================
         // Load Effects from NBT
@@ -954,7 +956,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (oldEffect != null && (
                 Math.abs(effect.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
                         (Math.abs(effect.getAmplifier()) == Math.abs(oldEffect.getAmplifier()) &&
-                                effect.getDuration() < oldEffect.getDuration())
+                                (oldEffect.getDuration() == -1 || (effect.getDuration() != -1 && effect.getDuration() < oldEffect.getDuration())))
         )) {
             return;
         }
@@ -1636,13 +1638,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
-                if (effect.canTick()) {
-                    effect.apply(this, 1);
-                }
-                effect.setDuration(effect.getDuration() - tickDiff);
+                effect.onTick(this);
 
-                if (effect.getDuration() <= 0) {
-                    this.removeEffect(effect.getType());
+                if (!effect.isInfinite()) {
+                    effect.setDuration(effect.getDuration() - tickDiff);
+
+                    if (effect.getDuration() <= 0) {
+                        this.removeEffect(effect.getType());
+                    }
                 }
             }
         }
@@ -1743,8 +1746,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 }
             }
 
+            if (nearest == null) {
+                return hasUpdate;
+            }
+
             // Hard distance -> immediate despawn
-            if (nearest == null || nearestSq > hardDistSq) {
+            if (nearestSq > hardDistSq) {
                 this.despawnFromAll();
                 this.close();
                 return hasUpdate;
@@ -1891,9 +1898,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
 
-    /// ///////////////////////////////////////////
-    /// /////////// RIDEABLE APIS /////////////////
-    /// ///////////////////////////////////////////
+    //////////////////////////////////////////////
+    ////////////// RIDEABLE APIS /////////////////
+    //////////////////////////////////////////////
 
     public boolean onRiderInput(Player rider, PlayerAuthInputPacket pk) {
         return false;
@@ -2228,9 +2235,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
 
-    /// ///////////////////////////////////////////
-    /// //////////// MOUNT CHAIN //////////////////
-    /// ///////////////////////////////////////////
+
+    //////////////////////////////////////////////
+    /////////////// MOUNT CHAIN //////////////////
+    //////////////////////////////////////////////
 
     public boolean mountEntity(Entity entity) {
         return mountEntity(entity, false);
@@ -2513,9 +2521,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
 
-    /// ///////////////////////////////////////////
-    /// ////////// DISMOUNT CHAIN /////////////////
-    /// ///////////////////////////////////////////
+    //////////////////////////////////////////////
+    ///////////// DISMOUNT CHAIN /////////////////
+    //////////////////////////////////////////////
 
     public boolean dismountEntity(Entity entity) {
         return this.dismountEntity(entity, true, true);
@@ -2648,9 +2656,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
 
-    /// ///////////////////////////////////////////
-    /// ///// PASSENGER SEAT META SYNC ////////////
-    /// ///////////////////////////////////////////
+    //////////////////////////////////////////////
+    //////// PASSENGER SEAT META SYNC ////////////
+    //////////////////////////////////////////////
 
     public Vector3f getSeatPosition(Entity passenger) {
         return Vector3f.fromNetwork(this.getDataProperty(ActorDataTypes.SEAT_OFFSET, this.getSeatOffsetFor(this.passengers.indexOf(passenger), passenger).toNetwork()));
@@ -2697,9 +2705,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
 
-    /// ///////////////////////////////////////////
-    /// //////// UPDATE LINK PACKETS //////////////
-    /// ///////////////////////////////////////////
+    //////////////////////////////////////////////
+    /////////// UPDATE LINK PACKETS //////////////
+    //////////////////////////////////////////////
 
     protected void broadcastLinkPacket(Entity rider, ActorLinkType type) {
         broadcastLinkPacket(rider, type, type != ActorLinkType.NONE);
@@ -5281,12 +5289,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 this.motionY += dy;
                 this.motionZ += dz;
                 if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.ensurePhysicalMotionState();
+
                     entityPhysical.previousCurrentMotion.x = dx;
                     entityPhysical.previousCurrentMotion.y = dy;
                     entityPhysical.previousCurrentMotion.z = dz;
                 }
             } else {
                 if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.ensurePhysicalMotionState();
+
                     entityPhysical.previousCurrentMotion.x = 0;
                     entityPhysical.previousCurrentMotion.y = 0;
                     entityPhysical.previousCurrentMotion.z = 0;

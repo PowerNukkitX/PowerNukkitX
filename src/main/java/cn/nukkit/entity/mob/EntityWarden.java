@@ -14,6 +14,7 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
 import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.WardenEmergingAnimationExecutor;
 import cn.nukkit.entity.ai.executor.WardenMeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.WardenRangedAttackExecutor;
 import cn.nukkit.entity.ai.executor.WardenSniffExecutor;
@@ -121,6 +122,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
                             return false;
                         }, (entity) -> true, 1, 1, 20)),
                 Set.of(
+                        new Behavior(new WardenEmergingAnimationExecutor(20 * 6), entity -> entity.getAge() < 20 * 6, 6),
                         new Behavior(
                                 new WardenViolentAnimationExecutor((int) (4.2 * 20)), all(
                                 (entity) -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true),

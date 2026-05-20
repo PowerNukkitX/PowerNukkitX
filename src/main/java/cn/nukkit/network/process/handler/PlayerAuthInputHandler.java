@@ -2,6 +2,7 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
+import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityPhysical;
@@ -18,12 +19,14 @@ import cn.nukkit.event.player.PlayerToggleSwimEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PacketHandlerRegistry;
 import cn.nukkit.network.process.PlayerSessionHolder;
-import org.cloudburstmc.math.vector.Vector2f;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.data.PlayerActionType;
 import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
@@ -34,12 +37,18 @@ import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 /**
  * @author Kaooot
  */
+@Slf4j
 public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPacket> {
 
     @Override
     public void handle(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-
+        Vector3f pos = Vector3f.fromNetwork(packet.getPosition());
+        Vector3f rot = Vector3f.fromNetwork(packet.getPosition());
+        if (!Float.isFinite(pos.getX()) || !Float.isFinite(pos.getY()) || !Float.isFinite(pos.getZ()) || !Float.isFinite(rot.getX()) || !Float.isFinite(rot.getY()) || !Float.isFinite(rot.getZ())) {
+            log.debug("Player {} sent invalid movement values (NaN or Infinite)", player.getName());
+            return;
+        }
         if (!packet.getPlayerActions().isEmpty()) {
             for (PlayerBlockActionData action : packet.getPlayerActions()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
@@ -48,22 +57,31 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
                 }
                 Vector3i blockPos = action.getBlockPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFace());
+                PlayerHandle playerHandle = new PlayerHandle(player);
+                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
+                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
+                    playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
+                }
 
-                Vector3i lastBreakPos = player.getLastBlockAction() == null ? null : player.getLastBlockAction().getBlockPosition();
+                PlayerBlockActionData lastAction = playerHandle.getLastBlockAction();
+                BlockVector3 lastBreakPos = lastAction == null ? null : BlockVector3.fromNetwork(lastAction.getBlockPosition());
                 if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
-                    player.onBlockBreakAbort(Vector3.fromNetwork(lastBreakPos.toFloat()));
+                    //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
+                    double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
+                    boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
+                    if(canCompleteBreak && lastAction.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                        player.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
+                    } else {
+                        playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
+                    }
                     player.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
                 }
 
                 switch (action.getAction()) {
-                    case START_DESTROY_BLOCK, CONTINUE_DESTROY_BLOCK ->
-                            player.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
-                    case ABORT_DESTROY_BLOCK, STOP_DESTROY_BLOCK ->
-                            player.onBlockBreakAbort(Vector3.fromNetwork(blockPos.toFloat()));
-                    case PREDICT_DESTROY_BLOCK -> {
-                        player.onBlockBreakAbort(Vector3.fromNetwork(blockPos.toFloat()));
-                        player.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
-                    }
+                    case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(Vector3.fromNetwork(blockPos.toFloat()), blockFace);
+                    case ABORT_DESTROY_BLOCK -> playerHandle.onBlockBreakAbort(Vector3.fromNetwork(blockPos.toFloat()));
+                    case PREDICT_DESTROY_BLOCK -> playerHandle.onBlockBreakComplete(BlockVector3.fromNetwork(blockPos), blockFace);
+
                 }
                 player.setLastBlockAction(action);
             }
@@ -237,6 +255,19 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
         if (pk.getClientPredictedVehicle() == 0) return;
         if (pk.getClientPredictedVehicle() != vehicle.getId()) return;
 
+        Vector3f pos = Vector3f.fromNetwork(pk.getPosition());
+
+        if (!Float.isFinite(pos.x) || !Float.isFinite(pos.y) || !Float.isFinite(pos.z)) {
+            log.debug("Player {} sent invalid position values (NaN or Infinite)", player.getName());
+            return;
+        }
+
+        Vector2f vehicleRotation = Vector2f.fromNetwork(pk.getVehicleRotation());
+
+        if (!Float.isFinite(vehicleRotation.x) || !Float.isFinite(vehicleRotation.y)) {
+            log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
+            return;
+        }
         Vector3 packetPosition = Vector3f.fromNetwork(pk.getPosition()).asVector3();
         Vector3 vehiclePosition = packetPosition;
         EntityBoat boat = vehicle instanceof EntityBoat entityBoat ? entityBoat : null;

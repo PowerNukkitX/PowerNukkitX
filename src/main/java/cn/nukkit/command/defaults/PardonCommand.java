@@ -17,7 +17,7 @@ import java.util.Map;
 public class PardonCommand extends VanillaCommand {
 
     public PardonCommand(String name) {
-        super(name, "unban a player");
+        super(name, "Unban a player");
         this.setPermission("nukkit.command.unban.player");
         this.setAliases(new String[]{"unban"});
         this.commandParameters.clear();

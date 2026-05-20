@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX;
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.RESERVED_139;
+
 /**
  * 用来提供给插件基础，以方便的使用带有智能的EntityHuman
  */
@@ -349,6 +352,9 @@ public class EntityIntelligentHuman extends EntityIntelligent implements EntityI
             }
 
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
+
+            this.entityDataMap.put(RESERVED_139, 0L);
+            this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
 
             final AddPlayerPacket pk = new AddPlayerPacket();
             pk.setActorData(this.entityDataMap);

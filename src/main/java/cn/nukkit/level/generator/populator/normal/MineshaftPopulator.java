@@ -92,7 +92,7 @@ public class MineshaftPopulator extends Populator {
                         piece.move(0, offset, 0);
                     }
                 } else {
-                    this.moveBelowSeaLevel(64, this.random, 10);
+                    this.moveBelowSeaLevel(this.random, 10);
                 }
             }
         }

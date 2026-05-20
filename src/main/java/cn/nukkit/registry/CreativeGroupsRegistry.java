@@ -161,8 +161,9 @@ public class CreativeGroupsRegistry {
                 String key = item.getIdentifier().toString();
                 String groupName = CreativeItemRegistry.ITEM_GROUP_MAP.get(key);
                 CreativeCategory fallbackCategory = getCategoryFromFallbackIndex(originalGroupId);
+                boolean noGroup = groupName == null || groupName.isBlank() || "NONE".equalsIgnoreCase(groupName);
 
-                if (groupName != null) {
+                if (!noGroup) {
                     Integer resolvedIndex = null;
                     CreativeCategory category = null;
 

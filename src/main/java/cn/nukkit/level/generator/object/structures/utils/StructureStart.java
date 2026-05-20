@@ -11,6 +11,8 @@ import org.cloudburstmc.nbt.NbtType;
 
 import java.util.List;
 
+import static cn.nukkit.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
+
 public abstract class StructureStart {
 
     protected final BlockManager level;
@@ -69,9 +71,9 @@ public abstract class StructureStart {
         return tag.build();
     }
 
-    protected void moveBelowSeaLevel(int max, RandomSourceProvider random, int min) {
-        int range = max - min;
-        int y = this.boundingBox.getYSpan() + 1;
+    protected void moveBelowSeaLevel(RandomSourceProvider random, int min) {
+        int range = SEA_LEVEL - min;
+        int y = this.boundingBox.getYSpan() - 64 + 1;
         if (y < range) {
             y += random.nextBoundedInt(range - y);
         }

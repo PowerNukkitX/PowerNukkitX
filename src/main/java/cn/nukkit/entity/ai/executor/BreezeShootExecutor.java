@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
+    private static final int SHOOT_SEQUENCE_END_DELAY = 20;
+
     protected MemoryType<? extends Entity> memory;
     protected float speed;
     protected int maxShootDistanceSquared;
@@ -36,6 +38,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
 
     private int tick1;//control the coolDownTick
     private int tick2;//control the pullBowTick
+    private int shootSequenceEndDelay;
 
     /**
      * @param memory            <br>Used to read the memory of the attack target
@@ -85,6 +88,8 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         setLookTarget(entity, clone);
 
+        tickShootSequenceEnd(entity);
+
         if (tick2 == 0 && tick1 > coolDownTick) {
             if (entity.distanceSquared(target) <= maxShootDistanceSquared) {
                 this.tick1 = 0;
@@ -95,7 +100,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
             tick2++;
             if (tick2 > attackDelay) {
                 shootWindcharge(entity);
-                entity.getLevel().getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE, () -> endShootSequence(entity), 20);
+                startShootSequenceEndDelay();
                 tick2 = 0;
                 return target.getHealthCurrent() != 0;
             }
@@ -112,6 +117,7 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setEnablePitch(false);
         endShootSequence(entity);
+        resetShootState();
         this.target = null;
     }
 
@@ -124,7 +130,28 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
         }
         entity.setEnablePitch(false);
         endShootSequence(entity);
+        resetShootState();
         this.target = null;
+    }
+
+    private void startShootSequenceEndDelay() {
+        this.shootSequenceEndDelay = SHOOT_SEQUENCE_END_DELAY;
+    }
+
+    private void tickShootSequenceEnd(Entity entity) {
+        if (this.shootSequenceEndDelay == 0) {
+            return;
+        }
+
+        this.shootSequenceEndDelay--;
+        if (this.shootSequenceEndDelay == 0) {
+            endShootSequence(entity);
+        }
+    }
+
+    private void resetShootState() {
+        this.tick2 = 0;
+        this.shootSequenceEndDelay = 0;
     }
 
     protected void shootWindcharge(EntityLiving entity) {
@@ -173,11 +200,12 @@ public class BreezeShootExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     private void startShootSequence(Entity entity) {
+        this.shootSequenceEndDelay = 0;
         entity.setDataProperty(ActorDataTypes.TARGET, this.target.getId());
         entity.level.addSound(entity, Sound.MOB_BREEZE_CHARGE);
     }
 
     private void endShootSequence(Entity entity) {
-
+        entity.setDataProperty(ActorDataTypes.TARGET, 0L);
     }
 }

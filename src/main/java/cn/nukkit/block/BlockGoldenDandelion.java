@@ -16,10 +16,15 @@ public class BlockGoldenDandelion extends BlockFlower {
     }
 
     public BlockGoldenDandelion() {
-        this(PROPERTIES.getDefaultState());
+        super(PROPERTIES.getDefaultState());
     }
 
-    public BlockGoldenDandelion(BlockState blockstate) {
-        super(blockstate);
+     public BlockGoldenDandelion(BlockState blockstate) {
+         super(blockstate);
+     }
+
+    @Override
+    public boolean canBeActivated() {
+        return false;
     }
 }

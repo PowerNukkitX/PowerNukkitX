@@ -13,6 +13,7 @@ import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import cn.nukkit.level.util.LevelDBKeyUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,21 +25,21 @@ import java.nio.file.Path;
 public final class LevelDBStorage {
     private final DB db;
     private final String path;
-    private int dimSum;
+    private int refCount;
 
     public DB getDb() {
         return this.db;
     }
 
-    public LevelDBStorage(int dimSum, String path) throws IOException {
-        this(dimSum, path, new Options()
+    public LevelDBStorage(int refCount, String path) throws IOException {
+        this(refCount, path, new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
                 .blockSize(64 * 1024));
     }
 
-    public LevelDBStorage(int dimSum, String pathFolder, Options options) throws IOException {
-        this.dimSum = dimSum;
+    public LevelDBStorage(int refCount, String pathFolder, Options options) throws IOException {
+        this.refCount = refCount;
         this.path = pathFolder;
         Path path = Path.of(pathFolder);
         File folder = path.toFile();
@@ -50,6 +51,10 @@ public final class LevelDBStorage {
         File dbFolder = path.resolve("db").toFile();
         if (!dbFolder.exists()) dbFolder.mkdirs();
         db = new Iq80DBFactory().open(dbFolder, options);
+    }
+
+    public synchronized void incrementRefCount() {
+        this.refCount++;
     }
 
     public IChunk readChunk(int x, int z, LevelProvider levelProvider) throws IOException {
@@ -103,13 +108,15 @@ public final class LevelDBStorage {
     }
 
     public synchronized void close() {
-        dimSum--;
-        if (dimSum <= 0) {
-            try {
-                db.close();
-                LevelDBProvider.CACHE.remove(path);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
+        synchronized (LevelDBProvider.CACHE) {
+            refCount--;
+            if (refCount <= 0) {
+                try {
+                    db.close();
+                    LevelDBProvider.CACHE.remove(path);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
             }
         }
     }

@@ -24,6 +24,11 @@ public class PlayerSkinHandler implements PacketHandler<PlayerSkinPacket> {
         Player player = playerHandle.player;
         SerializedSkin skin = packet.getSerializedSkin();
 
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to update skin while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
+
         if (!skin.isValid()) {
             log.warn("{}: PlayerSkinPacket with invalid skin", playerHandle.getUsername());
             return;

@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object.structures;
 
 import cn.nukkit.block.*;
+import cn.nukkit.block.dispenser.BlockDispenser;
 import cn.nukkit.block.property.enums.LeverDirection;
 import cn.nukkit.block.property.enums.MinecraftCardinalDirection;
 import cn.nukkit.blockentity.BlockEntity;

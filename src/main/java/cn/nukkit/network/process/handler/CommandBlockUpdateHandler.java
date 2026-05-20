@@ -12,17 +12,24 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.CommandBlockMode;
 import org.cloudburstmc.protocol.bedrock.packet.CommandBlockUpdatePacket;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Kaooot
  */
+@Slf4j
 public class CommandBlockUpdateHandler implements PacketHandler<CommandBlockUpdatePacket> {
 
     @Override
     public void handle(CommandBlockUpdatePacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+            log.debug("Player {} tried to update a command block while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
             if (packet.isBlock()) {
                 BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()));

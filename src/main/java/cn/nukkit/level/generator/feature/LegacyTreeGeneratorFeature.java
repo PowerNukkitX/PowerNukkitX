@@ -7,6 +7,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.GenerateFeature;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectGenerator;
+import cn.nukkit.level.generator.object.TreeGenerator;
 import cn.nukkit.level.generator.object.legacytree.LegacyTreeGenerator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -16,7 +18,7 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 
 public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
 
-    public abstract LegacyTreeGenerator getGenerator(RandomSourceProvider random);
+    public abstract TreeGenerator getGenerator(RandomSourceProvider random);
 
     public int getMin() {
         return 5;
@@ -40,7 +42,7 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ name().hashCode());
         int amount = NukkitMath.randomRange(random, getMin(), getMax());
         Vector3 v = new Vector3();
         BlockManager manager = new BlockManager(level);
@@ -53,17 +55,12 @@ public abstract class LegacyTreeGeneratorFeature extends GenerateFeature {
             }
             BlockManager object = new BlockManager(level);
             v.setComponents(x + (chunkX << 4), y, z + (chunkZ << 4));
-            if (!Registries.BIOME.containsTag(getRequiredTag(), level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ())))
-                continue;
-            if (isSupportValid(level.getBlock(v))) {
-                LegacyTreeGenerator generator = getGenerator(random);
-                if (generator == null) return;
-                generator.placeObject(object, v.getFloorX(), v.getFloorY() + 1, v.getFloorZ(), random);
-                for(Block block : object.getBlocks()) {
-                    if(block.getChunk().isGenerated()) {
-                        manager.setBlockStateAt(block.asBlockVector3(), block.getBlockState());
-                    }
-                }
+            if (!Registries.BIOME.containsTag(getRequiredTag(), level.getBiomeId(v.getFloorX(), v.getFloorY(), v.getFloorZ()))) continue;
+            if(isSupportValid(level.getBlock(v))) {
+                TreeGenerator generator = getGenerator(random);
+                if(generator == null) return;
+                generator.generate(object, random, new Vector3(v.getFloorX(), v.getFloorY() + 1, v.getFloorZ()));
+                manager.merge(object);
             }
         }
         queueObject(chunk, manager);

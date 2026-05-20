@@ -244,7 +244,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerSpawner(new SpawnRuleWitch());
         registerSpawner(new SpawnRuleWolf());
         registerSpawner(new SpawnRuleZombie());
-        registerSpawner(new SpawnRuleZombieVillager());
+        registerSpawner(new SpawnRuleZombiePigman());
 
         this.rebuildTag();
     }

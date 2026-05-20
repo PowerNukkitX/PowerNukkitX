@@ -24,11 +24,11 @@ public abstract class SurfaceGenerateFeature extends CountGenerateFeature {
         int worldX = (chunkX << 4) + x;
         int worldZ = (chunkZ << 4) + z;
         Position position = new Position(worldX, y, worldZ, chunk.getLevel());
-        while(!isSupportValid(chunk.getBlockState(x, y, z).toBlock(position)) && y > SEA_LEVEL) {
+        while(!isSupportValid(chunk.getBlockState(x, y, z).toBlock(position)) && y >= SEA_LEVEL - 1) {
             y--;
             position.setY(y);
         }
-        if (y >= SEA_LEVEL && isSupportValid(chunk.getBlockState(x, y, z).toBlock(position))) {
+        if (y >= SEA_LEVEL - 1 && isSupportValid(chunk.getBlockState(x, y, z).toBlock(position))) {
             BlockManager manager = new BlockManager(chunk.getLevel());
             BlockManager object = new BlockManager(chunk.getLevel());
             if(!manager.getBlockIfCachedOrLoaded(worldX, y + 1, worldZ).isAir()) return;

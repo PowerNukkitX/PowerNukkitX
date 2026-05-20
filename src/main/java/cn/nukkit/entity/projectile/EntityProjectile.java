@@ -23,10 +23,16 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.item.enchantment.Enchantment;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -47,6 +53,8 @@ public abstract class EntityProjectile extends Entity {
      * the initialization of the child classes.
      */
     private boolean noAge;
+
+    protected Enchantment[] enchantments;
 
     public EntityProjectile(IChunk chunk, NbtMap nbt) {
         this(chunk, nbt, null);
@@ -76,6 +84,14 @@ public abstract class EntityProjectile extends Entity {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
+    public Enchantment[] getEnchantments() {
+        return enchantments;
+    }
+
+    public void setEnchantments(Enchantment[] enchantments) {
+        this.enchantments = enchantments;
+    }
+
     @Override
     public NameableComponent getComponentNameable() {
         return DEFAULT_NOT_NAMEABLE;
@@ -98,11 +114,16 @@ public abstract class EntityProjectile extends Entity {
 
         float damage = this.getResultDamage(entity);
 
+        Map<EntityDamageEvent.DamageModifier, Float> damageMap = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
+        damageMap.put(EntityDamageEvent.DamageModifier.BASE, damage);
+
+        float knockBack = 0.3f;
+
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damageMap, knockBack, enchantments);
         } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damageMap, knockBack, enchantments);
         }
         if (entity.attack(ev)) {
             addHitEffect();
@@ -136,6 +157,15 @@ public abstract class EntityProjectile extends Entity {
         if (this.namedTag.containsKey("Age") && !this.noAge) {
             this.age = this.namedTag.getShort("Age");
         }
+
+        if (this.namedTag.containsKey("ench")) {
+            List<NbtMap> enchs = this.namedTag.getList("ench", NbtType.COMPOUND);
+            this.enchantments = new Enchantment[enchs.size()];
+            for (int i = 0; i < enchs.size(); i++) {
+                NbtMap entry = enchs.get(i);
+                this.enchantments[i] = Enchantment.getEnchantment(entry.getShort("id")).setLevel(entry.getShort("lvl"));
+            }
+        }
     }
 
     @Override
@@ -148,6 +178,18 @@ public abstract class EntityProjectile extends Entity {
         super.saveNBT();
         if (!this.noAge) {
             this.namedTag = this.namedTag.toBuilder().putShort("Age", (short) this.age).build();
+        }
+
+        if (this.enchantments != null && this.enchantments.length > 0) {
+            List<NbtMap> enchs = new ArrayList<>();
+            for (Enchantment enchantment : this.enchantments) {
+                enchs.add(NbtMap.builder()
+                        .putShort("id", (short) enchantment.getId())
+                        .putShort("lvl", (short) enchantment.getLevel())
+                        .build()
+                );
+            }
+            this.namedTag = this.namedTag.toBuilder().putList("ench", NbtType.COMPOUND, enchs).build();
         }
     }
 

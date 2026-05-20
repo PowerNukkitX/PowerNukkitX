@@ -67,6 +67,17 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
     public void handle(ItemStackRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
+
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send an item stack request while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
+
+        if (packet.getRequests().size() > 128) {
+            log.debug("Player {} sent too many item stack requests ({})", playerHandle.getUsername(), packet.getRequests().size());
+            return;
+        }
+
         List<ItemStackResponseInfo> responses = new ObjectArrayList<>();
 
         for (var request : packet.getRequests()) {

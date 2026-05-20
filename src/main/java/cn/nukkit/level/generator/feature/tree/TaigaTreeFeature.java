@@ -2,12 +2,14 @@ package cn.nukkit.level.generator.feature.tree;
 
 import cn.nukkit.block.BlockSnowLayer;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.ChunkGenerateContext;
 import cn.nukkit.level.generator.feature.GriddedFeature;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.level.generator.object.ObjectFallenTree;
 import cn.nukkit.level.generator.object.ObjectGenerator;
 import cn.nukkit.level.generator.object.ObjectSmallSpruceTree;
 import cn.nukkit.registry.Registries;
@@ -28,17 +30,12 @@ public class TaigaTreeFeature extends GriddedFeature {
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
-        return new ObjectSmallSpruceTree();
+        return random.nextInt(100) == 0 ? new ObjectFallenTree(WoodType.SPRUCE) : new ObjectSmallSpruceTree();
     }
 
     @Override
     public boolean canSpawnHere(BiomeDefinitionData definition) {
         return Registries.BIOME.containsTag(BiomeTags.TAIGA, definition);
-    }
-
-    @Override
-    public int getSplit() {
-        return 2;
     }
 
     @Override

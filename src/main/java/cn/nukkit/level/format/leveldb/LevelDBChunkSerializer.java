@@ -3,10 +3,8 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
@@ -34,6 +32,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import org.cloudburstmc.nbt.NBTInputStream;
 import org.cloudburstmc.nbt.NBTOutputStream;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.iq80.leveldb.DB;
@@ -398,60 +397,32 @@ public class LevelDBChunkSerializer {
         List<NbtMap> normalTickBlocks = new ObjectArrayList<>();
 
         Chunk chunk = unsafe.getChunk();
-        Set<BlockUpdateEntry> pending = chunk.getLevel().getPendingBlockUpdates(chunk);
-        pending.parallelStream().forEach(blockUpdateEntry -> {
+        long currentTick = chunk.getLevel().getCurrentTick();
+        Set<BlockUpdateEntry> pending = chunk.getBlockUpdateScheduler().getPendingBlockUpdates();
+        for (BlockUpdateEntry blockUpdateEntry : pending) {
             Block block = blockUpdateEntry.block;
-            String id = block.getId();
-            int x = block.getFloorX();
-            int y = block.getFloorY();
-            int z = block.getFloorZ();
-            handleCustomTickableBlock(id, x, y, z, scheduledTicks);
-            handleVanillaTickableBlock(id, x, y, z, normalTickBlocks);
-        });
+            int x = blockUpdateEntry.pos.getFloorX();
+            int y = blockUpdateEntry.pos.getFloorY();
+            int z = blockUpdateEntry.pos.getFloorZ();
+            int delay = (int) Math.max(1, blockUpdateEntry.delay - currentTick);
 
-        // Save both lists to extraData
-        unsafe.updateExtraData(
-                unsafe.getExtraData().toBuilder()
-                        .putList("pendingScheduledTicks", NbtType.COMPOUND, scheduledTicks)
-                        .putList("pendingNormalTickBlocks", NbtType.COMPOUND, normalTickBlocks)
-                        .build()
-        );
-    }
-
-    private void handleCustomTickableBlock(String id, int x, int y, int z, List<NbtMap> scheduledTicks) {
-        CustomBlockDefinition def = BlockRegistry.getCustomBlockDefinition(id);
-        if (def == null || def.tickSettings() == null) return;
-
-        NbtMap tag = NbtMap.builder()
-                .putInt("x", x)
-                .putInt("y", y)
-                .putInt("z", z)
-                .putString("id", id)
-                .putInt("layer", 0)
-                .putInt("delay", def.tickSettings().minTicks())
-                .putInt("priority", 0)
-                .putBoolean("checkBlockWhenUpdate", true)
-                .build();
-
-        scheduledTicks.add(tag);
-    }
-
-    private void handleVanillaTickableBlock(String id, int x, int y, int z, List<NbtMap> normalTickBlocks) {
-        switch (id) {
-            case BlockID.DAYLIGHT_DETECTOR, BlockID.DAYLIGHT_DETECTOR_INVERTED,
-                 BlockID.REDSTONE_WIRE, BlockID.REDSTONE_TORCH,
-                 BlockID.POWERED_REPEATER, BlockID.UNPOWERED_REPEATER,
-                 BlockID.POWERED_COMPARATOR, BlockID.UNPOWERED_COMPARATOR,
-                 BlockID.PISTON, BlockID.STICKY_PISTON -> {
-                NbtMap tag = NbtMap.builder()
-                        .putInt("x", x)
-                        .putInt("y", y)
-                        .putInt("z", z)
-                        .putString("id", id)
-                        .build();
-                normalTickBlocks.add(tag);
-            }
+            NbtMap tag = NbtMap.builder()
+                    .putInt("x", x)
+                    .putInt("y", y)
+                    .putInt("z", z)
+                    .putString("id", block.getId())
+                    .putInt("layer", block.layer)
+                    .putInt("delay", delay)
+                    .putInt("priority", blockUpdateEntry.priority)
+                    .putBoolean("checkBlockWhenUpdate", blockUpdateEntry.checkBlockWhenUpdate)
+                    .build();
+            scheduledTicks.add(tag);
         }
+
+        NbtMapBuilder extraData = unsafe.getExtraData().toBuilder();
+        extraData.putList("pendingScheduledTicks", NbtType.COMPOUND, scheduledTicks);
+        extraData.putList("pendingNormalTickBlocks", NbtType.COMPOUND, normalTickBlocks);
+        unsafe.setExtraData(extraData.build());
     }
 
     public static class ScheduledTickInfo {
@@ -468,6 +439,13 @@ public class LevelDBChunkSerializer {
     public static void deserializeBlockTicks(NbtMap extraData, IChunkBuilder builder) {
         if (extraData == null) return;
         long chunkKey = ((long) builder.getChunkX() & 0xffffffffL) << 32 | ((long) builder.getChunkZ() & 0xffffffffL);
+
+        LevelDBProvider provider = null;
+        if (builder.getLevelProvider() instanceof LevelDBProvider p) {
+            provider = p;
+        }
+
+        if (provider == null) return;
 
         // --- Scheduled Ticks ---
         if (extraData.containsKey("pendingScheduledTicks")) {
@@ -486,7 +464,7 @@ public class LevelDBChunkSerializer {
                 scheduledList.add(info);
             }
             if (!scheduledList.isEmpty()) {
-                LevelDBProvider.getScheduledTicksMap().put(chunkKey, scheduledList);
+                provider.getScheduledTicksMap().put(chunkKey, scheduledList);
             }
         }
 
@@ -503,7 +481,7 @@ public class LevelDBChunkSerializer {
                 normalList.add(info);
             }
             if (!normalList.isEmpty()) {
-                LevelDBProvider.getNormalTicksMap().put(chunkKey, normalList);
+                provider.getNormalTicksMap().put(chunkKey, normalList);
             }
         }
     }

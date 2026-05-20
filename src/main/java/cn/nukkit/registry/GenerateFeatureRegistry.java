@@ -142,7 +142,9 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(CoralMushroomFeature.NAME, CoralMushroomFeature.class);
             this.register(SeaAnemoneFeature.NAME, SeaAnemoneFeature.class);
             this.register(SeaPickleFeature.NAME, SeaPickleFeature.class);
+            this.register(OverworldUnderwaterMagmaFeature.NAME, OverworldUnderwaterMagmaFeature.class);
             this.register(OverworldCaveCarverFeature.NAME, OverworldCaveCarverFeature.class);
+            this.register(OverworldSurfaceSpringsFeature.NAME, OverworldSurfaceSpringsFeature.class);
             this.register(MonsterRoomFeature.NAME, MonsterRoomFeature.class);
             this.register(MossSnapToCeilingFeature.NAME, MossSnapToCeilingFeature.class);
             this.register(AzaleaRootSystemSnapToCeilingFeature.NAME, AzaleaRootSystemSnapToCeilingFeature.class);
@@ -150,6 +152,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(RandomClayWithDripleavesSnapToFloorFeature.NAME, RandomClayWithDripleavesSnapToFloorFeature.class);
             this.register(DripstoneClusterFeature.NAME, DripstoneClusterFeature.class);
             this.register(SculkPatchFeature.NAME, SculkPatchFeature.class);
+            this.register(GlowLichenFeature.NAME, GlowLichenFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

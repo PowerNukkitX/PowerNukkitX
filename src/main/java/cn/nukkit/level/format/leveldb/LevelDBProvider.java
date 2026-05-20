@@ -5,8 +5,6 @@ import cn.nukkit.api.UsedByReflection;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -17,10 +15,9 @@ import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.format.leveldb.LevelDBChunkSerializer.NormalTickInfo;
-import cn.nukkit.level.format.leveldb.LevelDBChunkSerializer.ScheduledTickInfo;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
@@ -57,7 +54,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -65,12 +62,12 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public class LevelDBProvider implements LevelProvider {
-    static final HashMap<String, LevelDBStorage> CACHE = new HashMap<>();
+    static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
     private static final byte[] levelDatMagic = new byte[]{10, 0, 0, 0, 68, 11, 0, 0};
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
-    private static final Map<Long, List<ScheduledTickInfo>> scheduledTicksMap = new HashMap<>();
-    private static final Map<Long, List<NormalTickInfo>> normalTicksMap = new HashMap<>();
+    private final Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> scheduledTicksMap = new ConcurrentHashMap<>();
+    private final Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> normalTicksMap = new ConcurrentHashMap<>();
     protected final LevelDat levelDat;
     protected final LevelDBStorage storage;
     protected final Level level;
@@ -90,13 +87,19 @@ public class LevelDBProvider implements LevelProvider {
     }
 
     public LevelDBProvider(Level level, String path) throws IOException {
-        this.storage = CACHE.computeIfAbsent(path, p -> {
-            try {
-                return new LevelDBStorage(level.getDimensionCount(), p, new Options().createIfMissing(true).compressionType(CompressionType.ZLIB_RAW).blockSize(64 * 1024));
-            } catch (IOException e) {
-                throw new UncheckedIOException("Failed to create LevelDBStorage instance", e);
-            }
-        });
+        synchronized (CACHE) {
+            this.storage = CACHE.computeIfAbsent(path, p -> {
+                try {
+                    return new LevelDBStorage(0, p, new Options()
+                            .createIfMissing(true)
+                            .compressionType(CompressionType.ZLIB_RAW)
+                            .blockSize(64 * 1024));
+                } catch (IOException e) {
+                    throw new UncheckedIOException("Failed to create LevelDBStorage instance", e);
+                }
+            });
+            this.storage.incrementRefCount();
+        }
         this.path = path;
         this.level = level;
         var levelDat = readLevelDat();
@@ -184,38 +187,41 @@ public class LevelDBProvider implements LevelProvider {
         return chunk;
     }
 
-    public static Map<Long, List<ScheduledTickInfo>> getScheduledTicksMap() {
+    public Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> getScheduledTicksMap() {
         return scheduledTicksMap;
     }
-
-    public static Map<Long, List<NormalTickInfo>> getNormalTicksMap() {
+    public Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> getNormalTicksMap() {
         return normalTicksMap;
     }
 
-    public static void restoreBlockTicks(Level level, IChunk chunk) {
-        long chunkKey = ((long) chunk.getX() & 0xffffffffL) << 32 | ((long) chunk.getZ() & 0xffffffffL);
+    public void restoreBlockTicks(Level level, IChunk chunk) {
+        long chunkKey = Level.chunkHash(chunk.getX(), chunk.getZ());
 
-        List<ScheduledTickInfo> scheduledList = LevelDBProvider.getScheduledTicksMap().remove(chunkKey);
-        List<NormalTickInfo> normalList = LevelDBProvider.getNormalTicksMap().remove(chunkKey);
+        List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList = this.scheduledTicksMap.remove(chunkKey);
+        List<LevelDBChunkSerializer.NormalTickInfo> normalList = this.normalTicksMap.remove(chunkKey);
 
-        restoreScheduledTicks(level, scheduledList);
-        restoreNormalTicks(level, chunk, normalList);
+        restoreScheduledTicks(level, chunk, scheduledList);
+        restoreNormalTicks(level, normalList);
     }
 
-    private static void restoreScheduledTicks(Level level, List<ScheduledTickInfo> scheduledList) {
+    private static void restoreScheduledTicks(Level level, IChunk chunk, List<LevelDBChunkSerializer.ScheduledTickInfo> scheduledList) {
         if (scheduledList == null || scheduledList.isEmpty()) return;
 
-        for (ScheduledTickInfo info : scheduledList) {
-            level.getScheduler().scheduleDelayedTask(() -> {
-                Block block = level.getBlock(info.x, info.y, info.z, info.layer);
-                if (block.getId().equals(info.id)) {
-                    level.scheduleUpdate(block, new Vector3(info.x, info.y, info.z), Math.max(info.delay, 1), info.priority, false, info.checkBlockWhenUpdate);
-                }
-            }, 1);
+        for (LevelDBChunkSerializer.ScheduledTickInfo info : scheduledList) {
+            Block block = level.getBlock(info.x, info.y, info.z, info.layer);
+            if (block.getId().equals(info.id)) {
+                chunk.getBlockUpdateScheduler().add(new BlockUpdateEntry(
+                        new Vector3(info.x, info.y, info.z),
+                        block,
+                        level.getCurrentTick() + Math.max(info.delay, 1),
+                        info.priority,
+                        info.checkBlockWhenUpdate
+                ));
+            }
         }
     }
 
-    private static void restoreNormalTicks(Level level, IChunk chunk, List<NormalTickInfo> normalList) {
+    private static void restoreNormalTicks(Level level, List<LevelDBChunkSerializer.NormalTickInfo> normalList) {
         if (normalList == null || normalList.isEmpty()) return;
 
         int batchSize = 32;
@@ -223,10 +229,10 @@ public class LevelDBProvider implements LevelProvider {
         for (int i = 0; i < total; i += batchSize) {
             int from = i;
             int to = Math.min(i + batchSize, total);
-            List<NormalTickInfo> sub = normalList.subList(from, to);
+            List<LevelDBChunkSerializer.NormalTickInfo> sub = normalList.subList(from, to);
 
             level.getScheduler().scheduleDelayedTask(() -> {
-                for (NormalTickInfo info : sub) {
+                for (LevelDBChunkSerializer.NormalTickInfo info : sub) {
                     Block block = level.getBlock(info.x, info.y, info.z);
                     if (block.getId().equals(info.id)) {
                         block.onUpdate(Level.BLOCK_UPDATE_NORMAL);

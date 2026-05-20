@@ -113,7 +113,7 @@ public class StrongholdPopulator extends Populator {
                     }
 
                     this.calculateBoundingBox();
-                    this.moveBelowSeaLevel(64, this.random, 10);
+                    this.moveBelowSeaLevel(this.random, 10);
                 } while (this.pieces.isEmpty() || start.portalRoomPiece == null);
 
                 StrongholdPopulator.this.discoveredStarts.add(this);

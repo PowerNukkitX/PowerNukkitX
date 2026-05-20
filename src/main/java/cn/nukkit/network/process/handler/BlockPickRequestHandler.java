@@ -26,6 +26,12 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
         final PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
         Block block = player.level.getBlock(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ(), false);
+
+        if (!player.spawned || !player.isAlive()) {
+            log.debug("Player {} tried to send a block pick request while not spawned or dead", playerHandle.getUsername());
+            return;
+        }
+
         if (block.distanceSquared(player) > 1000) {
             log.debug("{}: Block pick request for a block too far away", playerHandle.getUsername());
             return;

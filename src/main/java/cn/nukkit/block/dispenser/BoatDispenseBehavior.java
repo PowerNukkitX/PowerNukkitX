@@ -1,7 +1,6 @@
-package cn.nukkit.dispenser;
+package cn.nukkit.block.dispenser;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockFlowingWater;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityBoat;

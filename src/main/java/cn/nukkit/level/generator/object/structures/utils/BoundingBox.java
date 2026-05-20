@@ -61,7 +61,7 @@ public class BoundingBox implements AxisAlignedBB {
         this.z0 = z0;
         this.x1 = x1;
         this.z1 = z1;
-        this.y0 = 1;
+        this.y0 = -63;
         this.y1 = 512;
     }
 
