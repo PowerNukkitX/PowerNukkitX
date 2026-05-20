@@ -51,7 +51,7 @@ Browse [open issues](https://github.com/PowerNukkitX/PowerNukkitX/issues) and us
    - `buildFast` — apply incremental changes
    - `clean` — clean the build folder
 
-   To produce a distributable `powernukkitx.jar`, run the `shadowJar` task. The output will be placed in `build/libs/`.
+   To produce a distributable `powernukkitx.jar`, run the `shadowJar` task. The output will be placed in `build/`.
 
    ![Build tasks](https://github.com/PowerNukkitX/PowerNukkitX/raw/master/.github/img/001.png)
 
