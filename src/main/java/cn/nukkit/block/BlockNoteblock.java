@@ -127,91 +127,66 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public Instrument getInstrument() {
-        Block above = this.up();
-        if (above instanceof BlockHead skull) {
-            int meta = 0;
-            if (skull.getBlockEntity() != null) {
-                meta = skull.getBlockEntity().namedTag.getByte("SkullType");
-            }
-            return switch (meta) {
-                case 0 -> Instrument.SKELETON;
-                case 1 -> Instrument.WITHER_SKELETON;
-                case 2 -> Instrument.ZOMBIE;
-                case 4 -> Instrument.CREEPER;
-                case 5 -> Instrument.ENDER_DRAGON;
-                case 6 -> Instrument.PIGLIN;
-                // meta 3 = Player Head: instrument depends on the note_block_sound NBT tag; defaults to HARP when the tag is absent. See https://minecraft.wiki/w/Note_Block
+        return switch (this.up()) {
+            case BlockSkeletonSkull ignored -> Instrument.SKELETON;
+            case BlockWitherSkeletonSkull ignored -> Instrument.WITHER_SKELETON;
+            case BlockZombieHead ignored -> Instrument.ZOMBIE;
+            case BlockCreeperHead ignored -> Instrument.CREEPER;
+            case BlockDragonHead ignored -> Instrument.ENDER_DRAGON;
+            case BlockPiglinHead ignored -> Instrument.PIGLIN;
+            case BlockPlayerHead ignored -> Instrument.HARP;
+            default -> switch (this.down()) {
+                case BlockConcretePowder ignored -> Instrument.SNARE_DRUM;
+                case BlockSand ignored -> Instrument.SNARE_DRUM;
+                case BlockGravel ignored -> Instrument.SNARE_DRUM;
+                case BlockGlass ignored -> Instrument.CLICKS_AND_STICKS;
+                case BlockSeaLantern ignored -> Instrument.CLICKS_AND_STICKS;
+                case BlockBeacon ignored -> Instrument.CLICKS_AND_STICKS;
+                case BlockStone ignored -> Instrument.BASS_DRUM;
+                case BlockBlackstone ignored -> Instrument.BASS_DRUM;
+                case BlockNetherrack ignored -> Instrument.BASS_DRUM;
+                case BlockNylium ignored -> Instrument.BASS_DRUM;
+                case BlockObsidian ignored -> Instrument.BASS_DRUM;
+                case BlockQuartzBlock ignored -> Instrument.BASS_DRUM;
+                case BlockSandstone ignored -> Instrument.BASS_DRUM;
+                case BlockOre ignored -> Instrument.BASS_DRUM;
+                case BlockBrickBlock ignored -> Instrument.BASS_DRUM;
+                case BlockCoral ignored -> Instrument.BASS_DRUM;
+                case BlockRespawnAnchor ignored -> Instrument.BASS_DRUM;
+                case BlockBedrock ignored -> Instrument.BASS_DRUM;
+                case BlockConcrete ignored -> Instrument.BASS_DRUM;
+                case BlockStonecutter ignored -> Instrument.BASS_DRUM;
+                case BlockFurnace ignored -> Instrument.BASS_DRUM;
+                case BlockObserver ignored -> Instrument.BASS_DRUM;
+                case BlockHardenedClay ignored -> Instrument.BASS_DRUM;
+                case BlockPrismarine ignored -> Instrument.BASS_DRUM;
+                case BlockGoldBlock ignored -> Instrument.BELLS;
+                case BlockClay ignored -> Instrument.FLUTE;
+                case BlockHoneycombBlock ignored -> Instrument.FLUTE;
+                case BlockInfestedChiseledStoneBricks ignored -> Instrument.FLUTE;
+                case BlockInfestedMossyStoneBricks ignored -> Instrument.FLUTE;
+                case BlockInfestedStone ignored -> Instrument.FLUTE;
+                case BlockInfestedDeepslate ignored -> Instrument.FLUTE;
+                case BlockInfestedCrackedStoneBricks ignored -> Instrument.FLUTE;
+                case BlockInfestedStoneBricks ignored -> Instrument.FLUTE;
+                case BlockPackedIce ignored -> Instrument.CHIMES;
+                case BlockWool ignored -> Instrument.GUITAR;
+                case BlockBoneBlock ignored -> Instrument.XYLOPHONE;
+                case BlockIronBlock ignored -> Instrument.IRON_XYLOPHONE;
+                case BlockSoulSand ignored -> Instrument.COW_BELL;
+                case BlockPumpkin ignored -> Instrument.DIDGERIDOO;
+                case BlockEmeraldBlock ignored -> Instrument.BIT;
+                case BlockHayBlock ignored -> Instrument.BANJO;
+                case BlockGlowstone ignored -> Instrument.PLING;
+                case BlockLog ignored -> Instrument.BASS;
+                case BlockPlanks ignored -> Instrument.BASS;
+                case BlockChest ignored -> Instrument.BASS;
+                case BlockCraftingTable ignored -> Instrument.BASS;
+                case BlockBookshelf ignored -> Instrument.BASS;
+                case BlockWoodenSlab ignored -> Instrument.BASS;
+                case AbstractBlockShelf ignored -> Instrument.BASS;
                 default -> Instrument.HARP;
             };
-        }
-
-        return switch (this.down()) {
-            // --- Snare drum ---
-            case BlockConcretePowder ignored -> Instrument.SNARE_DRUM;
-            case BlockSand ignored -> Instrument.SNARE_DRUM;
-            case BlockGravel ignored -> Instrument.SNARE_DRUM;
-            // --- Clicks and sticks (hi-hat) ---
-            case BlockGlass ignored -> Instrument.CLICKS_AND_STICKS;
-            case BlockSeaLantern ignored -> Instrument.CLICKS_AND_STICKS;
-            case BlockBeacon ignored -> Instrument.CLICKS_AND_STICKS;
-            // --- Bass drum (stone-type blocks) ---
-            case BlockStone ignored -> Instrument.BASS_DRUM;
-            case BlockBlackstone ignored -> Instrument.BASS_DRUM;
-            case BlockNetherrack ignored -> Instrument.BASS_DRUM;
-            case BlockNylium ignored -> Instrument.BASS_DRUM;
-            case BlockObsidian ignored -> Instrument.BASS_DRUM;
-            case BlockQuartzBlock ignored -> Instrument.BASS_DRUM;
-            case BlockSandstone ignored -> Instrument.BASS_DRUM;
-            case BlockOre ignored -> Instrument.BASS_DRUM;
-            case BlockBrickBlock ignored -> Instrument.BASS_DRUM;
-            case BlockCoral ignored -> Instrument.BASS_DRUM;
-            case BlockRespawnAnchor ignored -> Instrument.BASS_DRUM;
-            case BlockBedrock ignored -> Instrument.BASS_DRUM;
-            case BlockConcrete ignored -> Instrument.BASS_DRUM;
-            case BlockStonecutter ignored -> Instrument.BASS_DRUM;
-            case BlockFurnace ignored -> Instrument.BASS_DRUM;
-            case BlockObserver ignored -> Instrument.BASS_DRUM;
-            case BlockHardenedClay ignored -> Instrument.BASS_DRUM;
-            case BlockPrismarine ignored -> Instrument.BASS_DRUM;
-            // --- Bells ---
-            case BlockGoldBlock ignored -> Instrument.BELLS;
-            // --- Flute ---
-            case BlockClay ignored -> Instrument.FLUTE;
-            case BlockHoneycombBlock ignored -> Instrument.FLUTE;
-            case BlockInfestedChiseledStoneBricks ignored -> Instrument.FLUTE;
-            case BlockInfestedMossyStoneBricks ignored -> Instrument.FLUTE;
-            case BlockInfestedStone ignored -> Instrument.FLUTE;
-            case BlockInfestedDeepslate ignored -> Instrument.FLUTE;
-            case BlockInfestedCrackedStoneBricks ignored -> Instrument.FLUTE;
-            case BlockInfestedStoneBricks ignored -> Instrument.FLUTE;
-            // --- Chimes ---
-            case BlockPackedIce ignored -> Instrument.CHIMES;
-            // --- Guitar ---
-            case BlockWool ignored -> Instrument.GUITAR;
-            // --- Xylophone ---
-            case BlockBoneBlock ignored -> Instrument.XYLOPHONE;
-            // --- Iron xylophone ---
-            case BlockIronBlock ignored -> Instrument.IRON_XYLOPHONE;
-            // --- Cow bell ---
-            case BlockSoulSand ignored -> Instrument.COW_BELL;
-            // --- Didgeridoo ---
-            case BlockPumpkin ignored -> Instrument.DIDGERIDOO;
-            // --- Bit ---
-            case BlockEmeraldBlock ignored -> Instrument.BIT;
-            // --- Banjo ---
-            case BlockHayBlock ignored -> Instrument.BANJO;
-            // --- Pling ---
-            case BlockGlowstone ignored -> Instrument.PLING;
-            // --- Bass (double bass / wood-type blocks) ---
-            case BlockLog ignored -> Instrument.BASS;
-            case BlockPlanks ignored -> Instrument.BASS;
-            case BlockChest ignored -> Instrument.BASS;
-            case BlockCraftingTable ignored -> Instrument.BASS;
-            case BlockBookshelf ignored -> Instrument.BASS;
-            case BlockWoodenSlab ignored -> Instrument.BASS;
-            case AbstractBlockShelf ignored -> Instrument.BASS;
-            // --- Harp (default) ---
-            default -> Instrument.HARP;
         };
     }
 
