@@ -79,8 +79,7 @@ public abstract class EntityProperty {
         ListTag<CompoundTag> listProperty = new ListTag<>();
         for (EntityProperty entityProperty : properties) {
             // Filter out properties not meant to sync to client
-            if (entityProperty instanceof BooleanEntityProperty boolProp && !boolProp.isClientSync()) continue;
-            if (entityProperty instanceof EnumEntityProperty enumProp && !enumProp.isClientSync()) continue;
+            if (!entityProperty.isClientSync()) continue;
 
             CompoundTag propertyTag = new CompoundTag();
             propertyTag.putString("name", entityProperty.getIdentifier());

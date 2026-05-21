@@ -6004,26 +6004,44 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     public PropertySyncData getClientSyncProperties() {
         List<EntityProperty> propertyDefs = EntityProperty.getEntityProperty(this.getIdentifier());
 
-        int[] intArray = propertyDefs.stream()
-                .filter(this::shouldSyncIntProperty)
-                .map(this::getIntPropertyValue)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .toArray();
+        List<Integer> intIndices = new ArrayList<>();
+        List<Integer> intValues = new ArrayList<>();
+        List<Integer> floatIndices = new ArrayList<>();
+        List<Float> floatValues = new ArrayList<>();
 
-        double[] doubleArray = propertyDefs.stream()
-                .filter(this::shouldSyncFloatProperty)
-                .map(this::getFloatPropertyValue)
-                .filter(Objects::nonNull)
-                .mapToDouble(Float::doubleValue)
-                .toArray();
+        int schemaIndex = 0;
+        for (EntityProperty prop : propertyDefs) {
+            if (!prop.isClientSync()) continue;
 
-        float[] floatArray = new float[doubleArray.length];
-        for (int i = 0; i < doubleArray.length; i++) {
-            floatArray[i] = (float) doubleArray[i];
+            if (shouldSyncIntProperty(prop)) {
+                Integer value = getIntPropertyValue(prop);
+                if (value != null) {
+                    intIndices.add(schemaIndex);
+                    intValues.add(value);
+                }
+                schemaIndex++;
+                continue;
+            }
+
+            if (shouldSyncFloatProperty(prop)) {
+                Float value = getFloatPropertyValue(prop);
+                if (value != null) {
+                    floatIndices.add(schemaIndex);
+                    floatValues.add(value);
+                }
+            }
+            schemaIndex++;
         }
 
-        return new PropertySyncData(intArray, floatArray);
+        int[] intIndexArray = intIndices.stream().mapToInt(Integer::intValue).toArray();
+        int[] intArray = intValues.stream().mapToInt(Integer::intValue).toArray();
+        int[] floatIndexArray = floatIndices.stream().mapToInt(Integer::intValue).toArray();
+        float[] floatArray = new float[floatValues.size()];
+        for (int i = 0; i < floatValues.size(); i++) {
+            floatArray[i] = floatValues.get(i);
+        }
+
+        return new PropertySyncData(intIndexArray, intArray, floatIndexArray, floatArray);
     }
 
     private boolean shouldSyncIntProperty(EntityProperty prop) {
@@ -6120,21 +6138,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID, 
     }
 
     private PropertySyncData propertySyncData() {
-        Collection<Integer> intValues = intProperties.values();
-        int[] intArray = new int[intValues.size()];
-        int i = 0;
-        for (Integer value : intValues) {
-            intArray[i++] = value;
-        }
-
-        Collection<Float> floatValues = floatProperties.values();
-        float[] floatArray = new float[floatValues.size()];
-        i = 0;
-        for (Float value : floatValues) {
-            floatArray[i++] = value;
-        }
-
-        return new PropertySyncData(intArray, floatArray);
+        return getClientSyncProperties();
     }
 
     public Map<Integer, Attribute> getAttributes() {

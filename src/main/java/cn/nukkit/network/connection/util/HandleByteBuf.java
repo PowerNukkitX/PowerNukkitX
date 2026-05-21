@@ -1740,12 +1740,12 @@ public class HandleByteBuf extends ByteBuf {
     public void writePropertySyncData(PropertySyncData data) {
         writeUnsignedVarInt(data.intProperties().length);
         for (int i = 0, len = data.intProperties().length; i < len; ++i) {
-            writeUnsignedVarInt(i);
+            writeUnsignedVarInt(data.intPropertyIndices()[i]);
             writeVarInt(data.intProperties()[i]);
         }
         writeUnsignedVarInt(data.floatProperties().length);
         for (int i = 0, len = data.floatProperties().length; i < len; ++i) {
-            writeUnsignedVarInt(i);
+            writeUnsignedVarInt(data.floatPropertyIndices()[i]);
             writeFloatLE(data.floatProperties()[i]);
         }
     }
