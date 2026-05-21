@@ -218,6 +218,10 @@ public final class PlayerChunkManager {
             if (chunkTask.isDone()) {
                 try {
                     IChunk chunk = chunkTask.get(CHUNK_LOAD_TIMEOUT_MICROS, TimeUnit.MICROSECONDS);
+                    // Cached future may be stale - re-check in-memory map
+                    if (chunk == null || !chunk.getChunkState().canSend()) {
+                        chunk = player.level.getChunkIfLoaded(chunkX, chunkZ);
+                    }
                     if (chunk == null || !chunk.getChunkState().canSend()) {
                         player.level.generateChunk(chunkX, chunkZ, force);
                         enqueue.add(chunkHash);

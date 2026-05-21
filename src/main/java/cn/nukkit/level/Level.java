@@ -4049,6 +4049,10 @@ public class Level implements Metadatable {
                     }
                     this.chunkSendQueue.remove(index);
                 } else if (!this.chunkGenerationQueue.containsKey(index)) {
+                    if (chunk.getChunkState().ordinal() > ChunkState.NEW.ordinal()) {
+                        log.warn("processChunkRequest: chunk ({}, {}) in level '{}' has non-sendable state {} - requesting generation.",
+                                x, z, getFolderName(), chunk.getChunkState());
+                    }
                     this.generateChunk(x, z, true);
                 }
             }
