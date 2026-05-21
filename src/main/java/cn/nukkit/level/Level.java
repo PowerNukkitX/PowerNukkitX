@@ -982,13 +982,12 @@ public class Level implements Metadatable {
 
     public Map<Integer, Player> getChunkPlayers(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (this.chunkLoaders.containsKey(index)) {
-            return this.chunkLoaders.get(index).entrySet()
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders != null) {
+            return loaders.entrySet()
                     .stream()
                     .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
-                    .collect(HashMap::new, (m, e) -> {
-                        m.put(e.getKey(), (Player) e.getValue());
-                    }, HashMap::putAll);
+                    .collect(HashMap::new, (m, e) -> m.put(e.getKey(), (Player) e.getValue()), HashMap::putAll);
         }
         return Collections.emptyMap();
     }
@@ -1015,13 +1014,16 @@ public class Level implements Metadatable {
     public void registerChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean autoLoad) {
         int hash = loader.getLoaderId();
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (!this.chunkLoaders.containsKey(index)) {
-            this.chunkLoaders.put(index, new HashMap<>());
-        } else if (this.chunkLoaders.get(index).containsKey(hash)) {
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders == null) {
+            loaders = new ConcurrentHashMap<>();
+            this.chunkLoaders.put(index, loaders);
+        }
+        if (loaders.containsKey(hash)) {
             return;
         }
 
-        this.chunkLoaders.get(index).put(hash, loader);
+        loaders.put(hash, loader);
 
         if (!this.loaders.containsKey(hash)) {
             this.loaderCounter.put(hash, 1);

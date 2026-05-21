@@ -31,6 +31,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import lombok.extern.slf4j.Slf4j;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
 
@@ -50,6 +51,7 @@ import java.util.Set;
  *
  * @author Cool_Loong
  */
+@Slf4j
 public class LevelDBChunkSerializer {
     public static final LevelDBChunkSerializer INSTANCE = new LevelDBChunkSerializer();
 
@@ -349,17 +351,28 @@ public class LevelDBChunkSerializer {
     }
 
     private void serializeTileAndEntity(WriteBatch writeBatch, IChunk chunk) {
-        //Write blockEntities
-        Collection<BlockEntity> blockEntities = chunk.getBlockEntities().values();
+        List<BlockEntity> blockEntitySnapshot = new ArrayList<>(chunk.getBlockEntities().values());
         ByteBuf tileBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(tileBuffer);
              final NBTOutputStream nbtOutputStream = new NBTOutputStream(bufOutputStream, ByteOrder.LITTLE_ENDIAN, false)) {
             byte[] key = LevelDBKeyUtil.BLOCK_ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-            if (blockEntities.isEmpty()) writeBatch.delete(key);
+            if (blockEntitySnapshot.isEmpty()) writeBatch.delete(key);
             else {
-                for (BlockEntity blockEntity : blockEntities) {
-                    blockEntity.saveNBT();
-                    nbtOutputStream.writeTag(blockEntity.namedTag);
+                for (BlockEntity blockEntity : blockEntitySnapshot) {
+                    try {
+                        CompoundTag tag = blockEntity.serializationSnapshot;
+                        if (tag != null) {
+                            blockEntity.serializationSnapshot = null;
+                        } else {
+                            blockEntity.saveNBT();
+                            tag = blockEntity.namedTag.copy();
+                        }
+                        nbtOutputStream.writeTag(tag);
+                    } catch (Exception e) {
+                        log.error("Failed to serialize block entity {} at {},{},{} in chunk [{},{}]",
+                                blockEntity.getSaveId(), (int) blockEntity.x, (int) blockEntity.y, (int) blockEntity.z,
+                                chunk.getX(), chunk.getZ(), e);
+                    }
                 }
                 writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
@@ -369,18 +382,30 @@ public class LevelDBChunkSerializer {
             tileBuffer.release();
         }
 
-        Collection<Entity> entities = chunk.getEntities().values();
+        List<Entity> entitySnapshot = new ArrayList<>(chunk.getEntities().values());
         ByteBuf entityBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
         try (final LittleEndianByteBufOutputStream bufOutputStream = new LittleEndianByteBufOutputStream(entityBuffer);
              final NBTOutputStream nbtOutputStream = new NBTOutputStream(bufOutputStream, ByteOrder.LITTLE_ENDIAN, false)) {
             byte[] key = LevelDBKeyUtil.ENTITIES.getKey(chunk.getX(), chunk.getZ(), chunk.getProvider().getDimensionData());
-            if (entities.isEmpty()) {
+            if (entitySnapshot.isEmpty()) {
                 writeBatch.delete(key);
             } else {
-                for (Entity e : entities) {
+                for (Entity e : entitySnapshot) {
                     if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
-                        e.saveNBT();
-                        nbtOutputStream.writeTag(e.namedTag);
+                        try {
+                            CompoundTag tag = e.serializationSnapshot;
+                            if (tag != null) {
+                                e.serializationSnapshot = null;
+                            } else {
+                                e.saveNBT();
+                                tag = e.namedTag.copy();
+                            }
+                            nbtOutputStream.writeTag(tag);
+                        } catch (Exception ex) {
+                            log.error("Failed to serialize entity {} at {},{},{} in chunk [{},{}]",
+                                    e.getIdentifier(), (int) e.x, (int) e.y, (int) e.z,
+                                    chunk.getX(), chunk.getZ(), ex);
+                        }
                     }
                 }
                 writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));

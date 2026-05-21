@@ -34,6 +34,8 @@ import cn.nukkit.lang.LangCode;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.LevelConfig;
@@ -1104,9 +1106,21 @@ public class Server {
 
         if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
-            CompletableFuture.runAsync(() -> {
-                this.doAutoSave();
-            });
+            for (Level level : this.levelArray) {
+                for (BlockEntity be : level.getBlockEntities().values()) {
+                    if (!be.closed) {
+                        be.saveNBT();
+                        be.serializationSnapshot = be.namedTag.copy();
+                    }
+                }
+                for (Entity entity : level.getEntities()) {
+                    if (!(entity instanceof Player) && !entity.closed) {
+                        entity.saveNBT();
+                        entity.serializationSnapshot = entity.namedTag.copy();
+                    }
+                }
+            }
+            CompletableFuture.runAsync(this::doAutoSave);
         }
 
         if (this.sendUsageTicker > 0 && --this.sendUsageTicker == 0) {
