@@ -4055,7 +4055,7 @@ public class Level implements Metadatable {
             final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
-                if (chunk.getChunkState().canSend()) {
+                if (chunk != null && chunk.getChunkState().canSend()) {
                     final var pair = this.requireProvider().requestChunkData(x, z);
                     for (Player player : Objects.requireNonNull(players).values()) {
                         if (player.isConnected()) {
@@ -4076,6 +4076,10 @@ public class Level implements Metadatable {
                     }
                     this.chunkSendQueue.remove(index);
                 } else if (!this.chunkGenerationQueue.containsKey(index)) {
+                    if (chunk.getChunkState().ordinal() > ChunkState.NEW.ordinal()) {
+                        log.warn("processChunkRequest: chunk ({}, {}) in level '{}' has non-sendable state {} - requesting generation.",
+                                x, z, getFolderName(), chunk.getChunkState());
+                    }
                     this.generateChunk(x, z, true);
                 }
             }

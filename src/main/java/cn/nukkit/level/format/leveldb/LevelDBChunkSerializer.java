@@ -81,13 +81,13 @@ public class LevelDBChunkSerializer {
 
     }
 
-    public void deserialize(DB db, IChunkBuilder builder) throws IOException {
+    public boolean deserialize(DB db, IChunkBuilder builder) throws IOException {
         byte[] versionValue = db.get(LevelDBKeyUtil.VERSION.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
         if (versionValue == null) {
             versionValue = db.get(LevelDBKeyUtil.LEGACY_VERSION.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
         }
         if (versionValue == null) {
-            return;
+            return false;
         }
         byte[] finalized = db.get(LevelDBKeyUtil.CHUNK_FINALIZED_STATE.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
         if (finalized == null) {
@@ -107,6 +107,7 @@ public class LevelDBChunkSerializer {
         deserializeTileAndEntity(db, builder, pnxExtraData);
         deserializeLight(db, builder, pnxExtraData);
         deserializeBlockTicks(pnxExtraData, builder);
+        return true;
     }
 
     //serialize chunk section light
