@@ -2816,11 +2816,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         final long creationTime = System.currentTimeMillis();
+        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime);
         final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
         packet.setCreationTime(creationTime);
         packet.setFromServer(true);
         this.session.sendPacketImmediately(packet);
-        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime);
 
         return true;
     }
