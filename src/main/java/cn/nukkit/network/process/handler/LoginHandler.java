@@ -2,13 +2,13 @@ package cn.nukkit.network.process.handler;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.event.player.PlayerPreLoginEvent;
 import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.process.auth.ClientSkinData;
-import cn.nukkit.network.process.auth.WaterdogData;
 import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
@@ -77,12 +77,18 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 return;
             }
 
+            final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
+            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(identityClaims);
+            server.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                holder.disconnect(DisconnectFailReason.UNKNOWN, event.getKickMessage());
+                return;
+            }
+
             if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
                 holder.disconnect(DisconnectFailReason.SERVER_FULL);
                 return;
             }
-
-            final ChainValidationResult.IdentityClaims identityClaims = result.identityClaims();
 
             if (!server.isWhitelisted(identityClaims.extraData.displayName.toLowerCase(Locale.ENGLISH))) {
                 holder.disconnect(DisconnectFailReason.NOT_ALLOWED);
@@ -147,12 +153,10 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             final JwtClaims claims = ctx.getJwtClaims();
             final ClientChainData clientChainData = ClientChainData.from(claims);
             if (clientChainData == null) {
-                System.out.println("chain is invalid");
                 return ClientJwtValidationResult.INVALID;
             }
             final SerializedSkin skin = ClientSkinData.readSkin(claims);
             if (skin == null) {
-                System.out.println("skin is invalid");
                 return ClientJwtValidationResult.INVALID;
             }
             return new ClientJwtValidationResult(
