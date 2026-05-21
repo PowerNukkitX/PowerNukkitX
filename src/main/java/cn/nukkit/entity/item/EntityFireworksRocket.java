@@ -11,10 +11,10 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.ItemHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -85,7 +85,7 @@ public class EntityFireworksRocket extends Entity {
         }
 
         this.setDataProperty(ActorDataTypes.HORSE_FLAGS, 16);
-        this.setDataProperty(ActorDataTypes.DISPLAY_OFFSET, new Vector3f(0, 1, 0));
+        this.setDataProperty(ActorDataTypes.DISPLAY_OFFSET, 1);
         this.setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) -1);
     }
 
@@ -139,6 +139,7 @@ public class EntityFireworksRocket extends Entity {
             hasUpdate = true;
             if (this.fireworkAge >= this.lifetime) {
                 final ActorEventPacket pk = new ActorEventPacket();
+                pk.setData(0);
                 pk.setTargetRuntimeID(this.getId());
                 pk.setType(ActorEvent.FIREWORKS_EXPLODE);
 
@@ -146,7 +147,6 @@ public class EntityFireworksRocket extends Entity {
                 Server.broadcastPacket(getViewers().values(), pk);
 
                 this.kill();
-                hasUpdate = true;
             }
         }
 

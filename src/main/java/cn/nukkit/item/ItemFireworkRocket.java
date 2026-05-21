@@ -118,7 +118,7 @@ public class ItemFireworkRocket extends Item {
                         )
                 ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
                 ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
-                ).putCompound("FireworkItem", ItemHelper.write(this, null))
+                ).putCompound("FireworkItem", ItemHelper.write(this))
                 .build();
 
         EntityFireworksRocket entity = (EntityFireworksRocket) Entity.createEntity(Entity.FIREWORKS_ROCKET, level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
@@ -136,7 +136,7 @@ public class ItemFireworkRocket extends Item {
                         )
                 ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
                 ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
-                ).putCompound("FireworkItem", ItemHelper.write(this, null))
+                ).putCompound("FireworkItem", ItemHelper.write(this))
                 .build();
 
         EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);
