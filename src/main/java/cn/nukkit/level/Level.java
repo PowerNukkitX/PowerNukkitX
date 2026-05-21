@@ -4053,7 +4053,7 @@ public class Level implements Metadatable {
             final Int2ObjectNonBlockingMap<Player> players = this.chunkSendQueue.get(index);
             if (players != null) {
                 IChunk chunk = this.getChunk(x, z);
-                if (chunk.getChunkState().canSend()) {
+                if (chunk != null && chunk.getChunkState().canSend()) {
                     final var pair = this.requireProvider().requestChunkData(x, z);
                     for (Player player : Objects.requireNonNull(players).values()) {
                         if (player.isConnected()) {
