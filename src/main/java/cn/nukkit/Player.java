@@ -318,7 +318,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * The entity that the player is attacked last.
      */
     protected Entity lastBeAttackEntity = null;
-    private final @NotNull PlayerHandle playerHandle = new PlayerHandle(this);
+    @Setter
+    @ApiStatus.Internal
+    private @NotNull PlayerHandle playerHandle;
     @Getter
     protected final PlayerChunkManager playerChunkManager;
     private boolean needDimensionChangeACK = false;
@@ -496,7 +498,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 && this.breakingBlockFace == face) {
             return;
         }
-
 
 
         Block target = this.level.getBlock(pos);
@@ -2335,10 +2336,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Get the network latency of the player.
      *
-     * @return int
+     * @return long
      */
-    public int getPing() {
-        return -1;
+    public long getPing() {
+        return this.playerHandle.getLatencyTimeInMS();
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -2813,6 +2814,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.ticksLived % 40 == 0 && foodData != null) {
             foodData.sendFood();
         }
+
+        final long creationTime = System.currentTimeMillis();
+        final NetworkStackLatencyPacket packet = new NetworkStackLatencyPacket();
+        packet.setCreationTime(creationTime);
+        packet.setFromServer(true);
+        this.session.sendPacketImmediately(packet);
+        this.playerHandle.setLastServerNetworkStackLatencyTimeInMS(creationTime);
 
         return true;
     }

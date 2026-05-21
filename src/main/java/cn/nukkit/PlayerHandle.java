@@ -17,6 +17,8 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.DummyBossBar;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.BiMap;
+import lombok.Getter;
+import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +34,14 @@ import java.util.UUID;
 public final class PlayerHandle {
     public final @NotNull Player player;
     public final @NotNull PacketRateLimiter packetRateLimiter;
+
+    @Getter
+    @Setter
+    private long lastServerNetworkStackLatencyTimeInMS;
+
+    @Getter
+    @Setter
+    private long latencyTimeInMS;
 
     public PlayerHandle(@NotNull Player player) {
         this.player = player;

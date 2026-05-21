@@ -64,6 +64,7 @@ public class PacketHandlerRegistry {
         register(StructureTemplateDataRequestPacket.class, new StructureTemplateDataRequestHandler());
         register(TextPacket.class, new TextHandler());
         register(TickSyncPacket.class, new TickSyncHandler());
+        register(NetworkStackLatencyPacket.class, new NetworkStackLatencyHandler());
     }
 
     private void register(Class<? extends BedrockPacket> clazz, PacketHandler packetHandler) {
