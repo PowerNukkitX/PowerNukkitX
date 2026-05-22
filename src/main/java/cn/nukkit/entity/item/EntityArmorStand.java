@@ -25,13 +25,12 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.ItemHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.packet.SetActorDataPacket;
 import org.jetbrains.annotations.NotNull;
-
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.List;
@@ -110,8 +109,9 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         this.equipmentInventory = new EntityEquipmentInventory(this);
         this.armorInventory = new EntityArmorInventory(this);
 
-        if (this.namedTag.containsKey(TAG_MAINHAND)) {
-            final Item mainhand = ItemHelper.read(this.namedTag.getCompound(TAG_MAINHAND));
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey(TAG_MAINHAND)) {
+            final Item mainhand = ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND));
             this.equipmentInventory.setItemInHand(mainhand, true);
             if (mainhand != null && !mainhand.isNull()) {
                 log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} initEntity: loaded mainhand {} x{}",
@@ -119,8 +119,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        if (this.namedTag.containsKey(TAG_OFFHAND)) {
-            final Item offhand = ItemHelper.read(this.namedTag.getCompound(TAG_OFFHAND));
+        if (nbtMap.containsKey(TAG_OFFHAND)) {
+            final Item offhand = ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND));
             this.equipmentInventory.setItemInOffhand(offhand, true);
             // [ITEM_DEBUG]
             if (offhand != null && !offhand.isNull()) {
@@ -129,8 +129,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        if (this.namedTag.containsKey(TAG_ARMOR)) {
-            List<NbtMap> armorList = this.namedTag.getList(TAG_ARMOR, NbtType.COMPOUND);
+        if (nbtMap.containsKey(TAG_ARMOR)) {
+            List<NbtMap> armorList = nbtMap.getList(TAG_ARMOR, NbtType.COMPOUND);
             for (NbtMap armorTag : armorList) {
                 final int slot = armorTag.getByte("Slot");
                 final Item armorItem = ItemHelper.read(armorTag);
@@ -143,8 +143,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
-        if (this.namedTag.containsKey(TAG_POSE_INDEX)) {
-            this.setPose(this.namedTag.getInt(TAG_POSE_INDEX));
+        if (nbtMap.containsKey(TAG_POSE_INDEX)) {
+            this.setPose(nbtMap.getInt(TAG_POSE_INDEX));
         }
     }
 
@@ -352,8 +352,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         super.saveNBT();
 
         if (this.equipmentInventory != null) {
-            this.namedTag.put(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null));
-            this.namedTag.put(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
+            this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null));
+            this.nbt.putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
         } else {
             // [ITEM_DEBUG] This means items in hand/offhand will NOT be saved
             log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: equipmentInventory is NULL, hand items will not be saved!",
@@ -365,14 +365,14 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             for (int i = 0; i < 4; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag = this.namedTag.toBuilder().putList(TAG_ARMOR, NbtType.COMPOUND, armorTag).build();
+            this.nbt.putList(TAG_ARMOR, NbtType.COMPOUND, armorTag);
         } else {
             // [ITEM_DEBUG] This means armor will NOT be saved
             log.debug("[ITEM_DEBUG] ArmorStand at {},{},{} saveNBT: armorInventory is NULL, armor will not be saved!",
                     (int) x, (int) y, (int) z);
         }
 
-        this.namedTag = this.namedTag.toBuilder().putInt(TAG_POSE_INDEX, this.getPose()).build();
+        this.nbt.putInt(TAG_POSE_INDEX, this.getPose());
     }
 
     @Override
@@ -500,11 +500,12 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         }
 
         if (source.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-            if (namedTag.getByte("InvulnerableTimer") > 0) {
+            final NbtMap nbtMap = this.getNbt();
+            if (nbtMap.getByte("InvulnerableTimer") > 0) {
                 source.setCancelled(true);
             }
             if (super.attack(source)) {
-                this.namedTag = namedTag.toBuilder().putByte("InvulnerableTimer", (byte) 9).build();
+                this.nbt.putByte("InvulnerableTimer", (byte) 9);
                 return true;
             }
             return false;
@@ -556,9 +557,10 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             setDataProperty(ActorDataTypes.HURT, hurtTime - 1, true);
             hasUpdate = true;
         }
-        hurtTime = namedTag.getByte("InvulnerableTimer");
+        final NbtMap nbtMap = this.getNbt();
+        hurtTime = nbtMap.getByte("InvulnerableTimer");
         if (hurtTime > 0 && age % 2 == 0) {
-            this.namedTag = namedTag.toBuilder().putByte("InvulnerableTimer", (byte) (hurtTime - 1)).build();
+            this.nbt.putByte("InvulnerableTimer", (byte) (hurtTime - 1));
         }
 
         return hasUpdate;

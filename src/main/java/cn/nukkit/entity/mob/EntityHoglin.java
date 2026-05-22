@@ -233,7 +233,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
                                 all(
                                         entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
                                         entity -> !isImmobile(),
-                                        entity -> !entity.namedTag.getBoolean("IsImmuneToZombification")
+                                        entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
                                 ),
                                 8, 1
                         ),

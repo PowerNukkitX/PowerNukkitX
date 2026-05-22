@@ -262,9 +262,9 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
         // Load items
         ensureInventories();
-        if (namedTag.containsKey("Inventory")) {
+        if (nbt.containsKey("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(new ObjectArrayList<>(namedTag.getList("Inventory", NbtType.COMPOUND)));
+            inv.load(new ObjectArrayList<>(getNbt().getList("Inventory", NbtType.COMPOUND)));
             syncEquippableInventories();
         }
     }
@@ -275,9 +275,8 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
         var inv = isChested() ? invChested : invNoChest;
         syncEquippableInventories();
-        this.namedTag = namedTag.toBuilder().putBoolean("Chested", isChested())
-                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()))
-                .build();
+        this.nbt.putBoolean("Chested", isChested())
+                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
     }
 
     @Override

@@ -179,6 +179,6 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     }
 
     public boolean isJohnny() {
-        return getNameTag().equals("Johnny") || (namedTag.containsKey("Johnny") && namedTag.getBoolean("Johnny"));
+        return getNameTag().equals("Johnny") || (nbt.containsKey("Johnny") && getNbt().getBoolean("Johnny"));
     }
 }

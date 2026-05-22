@@ -79,8 +79,9 @@ public class EntityAreaEffectCloud extends Entity {
         int[] color = new int[4];
         int count = 0;
 
-        if (namedTag.containsKey("ParticleColor")) {
-            int effectColor = namedTag.getInt("ParticleColor");
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("ParticleColor")) {
+            int effectColor = nbtMap.getInt("ParticleColor");
             color[0] = (effectColor & 0xFF000000) >> 24;
             color[1] = (effectColor & 0x00FF0000) >> 16;
             color[2] = (effectColor & 0x0000FF00) >> 8;
@@ -226,8 +227,9 @@ public class EntityAreaEffectCloud extends Entity {
         this.setSpawnTime(this.level.getCurrentTick(), false);
         this.setPickupCount(0, false);
 
+        final NbtMap nbtMap = this.getNbt();
         cloudEffects = new ArrayList<>(1);
-        for (NbtMap effectTag : namedTag.getList("mobEffects", NbtType.COMPOUND)) {
+        for (NbtMap effectTag : nbtMap.getList("mobEffects", NbtType.COMPOUND)) {
             Effect effect = Effect.get(effectTag.getByte("Id"))
                     .setAmbient(effectTag.getBoolean("Ambient"))
                     .setAmplifier(effectTag.getByte("Amplifier"))
@@ -235,62 +237,62 @@ public class EntityAreaEffectCloud extends Entity {
                     .setDuration(effectTag.getInt("Duration"));
             cloudEffects.add(effect);
         }
-        if (namedTag.containsKey("PotionId")) {
+        if (nbtMap.containsKey("PotionId")) {
             this.setParticleId(32, false);
-            int displayedPotionId = namedTag.getShort("PotionId");
+            int displayedPotionId = nbtMap.getShort("PotionId");
             setPotionId(displayedPotionId, false);
             recalculatePotionColor();
         } else {
             setDragonBreath();
         }
 
-        if (namedTag.containsKey("Duration")) {
-            setDuration(namedTag.getInt("Duration"), false);
+        if (nbtMap.containsKey("Duration")) {
+            setDuration(nbtMap.getInt("Duration"), false);
         } else {
             setDuration(600, false);
         }
-        if (namedTag.containsKey("DurationOnUse")) {
-            durationOnUse = namedTag.getInt("DurationOnUse");
+        if (nbtMap.containsKey("DurationOnUse")) {
+            durationOnUse = nbtMap.getInt("DurationOnUse");
         } else {
             durationOnUse = 0;
         }
-        if (namedTag.containsKey("ReapplicationDelay")) {
-            reapplicationDelay = namedTag.getInt("ReapplicationDelay");
+        if (nbtMap.containsKey("ReapplicationDelay")) {
+            reapplicationDelay = nbtMap.getInt("ReapplicationDelay");
         } else {
             reapplicationDelay = 0;
         }
-        if (namedTag.containsKey("InitialRadius")) {
-            initialRadius = namedTag.getFloat("InitialRadius");
+        if (nbtMap.containsKey("InitialRadius")) {
+            initialRadius = nbtMap.getFloat("InitialRadius");
         } else {
             initialRadius = 3.0F;
         }
-        if (namedTag.containsKey("Radius")) {
-            setRadius(namedTag.getFloat("Radius"), false);
+        if (nbtMap.containsKey("Radius")) {
+            setRadius(nbtMap.getFloat("Radius"), false);
         } else {
             setRadius(initialRadius, false);
         }
-        if (namedTag.containsKey("RadiusChangeOnPickup")) {
-            setRadiusChangeOnPickup(namedTag.getFloat("RadiusChangeOnPickup"), false);
+        if (nbtMap.containsKey("RadiusChangeOnPickup")) {
+            setRadiusChangeOnPickup(nbtMap.getFloat("RadiusChangeOnPickup"), false);
         } else {
             setRadiusChangeOnPickup(-0.5F, false);
         }
-        if (namedTag.containsKey("RadiusOnUse")) {
-            radiusOnUse = namedTag.getFloat("RadiusOnUse");
+        if (nbtMap.containsKey("RadiusOnUse")) {
+            radiusOnUse = nbtMap.getFloat("RadiusOnUse");
         } else {
             radiusOnUse = -0.5F;
         }
-        if (namedTag.containsKey("RadiusPerTick")) {
-            setRadiusPerTick(namedTag.getFloat("RadiusPerTick"), false);
+        if (nbtMap.containsKey("RadiusPerTick")) {
+            setRadiusPerTick(nbtMap.getFloat("RadiusPerTick"), false);
         } else {
             setRadiusPerTick(-0.005F, false);
         }
-        if (namedTag.containsKey("WaitTime")) {
-            setWaitTime(namedTag.getInt("WaitTime"), false);
+        if (nbtMap.containsKey("WaitTime")) {
+            setWaitTime(nbtMap.getInt("WaitTime"), false);
         } else {
             setWaitTime(10, false);
         }
-        if (namedTag.containsKey("Height")) {
-            setHeight(namedTag.getFloat("Height"));
+        if (nbtMap.containsKey("Height")) {
+            setHeight(nbtMap.getFloat("Height"));
         } else {
             setHeight(0.3F + (getRadius() / 2F));
         }
@@ -317,8 +319,7 @@ public class EntityAreaEffectCloud extends Entity {
                     .build()
             );
         }
-        this.namedTag = this.namedTag.toBuilder()
-                .putList("mobEffects", NbtType.COMPOUND, effectsTag)
+        this.nbt.putList("mobEffects", NbtType.COMPOUND, effectsTag)
                 .putInt("ParticleColor", getPotionColor())
                 .putInt("Duration", getDuration())
                 .putInt("DurationOnUse", durationOnUse)
@@ -329,8 +330,7 @@ public class EntityAreaEffectCloud extends Entity {
                 .putFloat("RadiusPerTick", getRadiusPerTick())
                 .putInt("WaitTime", getWaitTime())
                 .putFloat("InitialRadius", initialRadius)
-                .putInt("PotionId", getPotionId())
-                .build();
+                .putInt("PotionId", getPotionId());
     }
 
     @Override

@@ -104,19 +104,20 @@ public class EntityThrownTrident extends SlenderProjectile {
 
         this.closeOnCollide = false;
 
-        this.pickupMode = namedTag.containsKey(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
-        this.favoredSlot = namedTag.containsKey(TAG_FAVORED_SLOT) ? namedTag.getInt(TAG_FAVORED_SLOT) : -1;
-        this.player = !namedTag.containsKey(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
+        final NbtMap nbtMap = this.getNbt();
+        this.pickupMode = nbt.containsKey(TAG_PICKUP) ? nbtMap.getByte(TAG_PICKUP) : PICKUP_ANY;
+        this.favoredSlot = nbt.containsKey(TAG_FAVORED_SLOT) ? nbtMap.getInt(TAG_FAVORED_SLOT) : -1;
+        this.player = !nbt.containsKey(TAG_PLAYER) || nbtMap.getBoolean(TAG_PLAYER);
 
-        if (namedTag.containsKey(TAG_CREATIVE)) {
-            if (pickupMode == PICKUP_ANY && namedTag.getBoolean(TAG_CREATIVE)) {
+        if (nbt.containsKey(TAG_CREATIVE)) {
+            if (pickupMode == PICKUP_ANY && nbtMap.getBoolean(TAG_CREATIVE)) {
                 pickupMode = PICKUP_CREATIVE;
             }
-            namedTag.remove(TAG_CREATIVE);
+            nbt.remove(TAG_CREATIVE);
         }
 
-        if (namedTag.containsKey(TAG_TRIDENT)) {
-            this.trident = ItemHelper.read(namedTag.getCompound(TAG_TRIDENT));
+        if (nbt.containsKey(TAG_TRIDENT)) {
+            this.trident = ItemHelper.read(nbtMap.getCompound(TAG_TRIDENT));
             this.loyaltyLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_LOYALTY);
             this.hasChanneling = this.trident.hasEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
             this.riptideLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
@@ -129,15 +130,15 @@ public class EntityThrownTrident extends SlenderProjectile {
             this.impalingLevel = 0;
         }
 
-        if (namedTag.containsKey("CollisionPos")) {
-            List<Double> collisionPosList = this.namedTag.getList("CollisionPos", NbtType.DOUBLE);
+        if (nbt.containsKey("CollisionPos")) {
+            List<Double> collisionPosList = nbtMap.getList("CollisionPos", NbtType.DOUBLE);
             collisionPos = new Vector3(collisionPosList.get(0), collisionPosList.get(1), collisionPosList.get(2));
         } else {
             collisionPos = defaultCollisionPos.clone();
         }
 
-        if (namedTag.containsKey("StuckToBlockPos")) {
-            List<Integer> stuckToBlockPosList = this.namedTag.getList("StuckToBlockPos", NbtType.INT);
+        if (nbt.containsKey("StuckToBlockPos")) {
+            List<Integer> stuckToBlockPosList = nbtMap.getList("StuckToBlockPos", NbtType.INT);
             stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0), stuckToBlockPosList.get(1), stuckToBlockPosList.get(2));
         } else {
             stuckToBlockPos = defaultStuckToBlockPos.clone();
@@ -148,8 +149,7 @@ public class EntityThrownTrident extends SlenderProjectile {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag = this.namedTag.toBuilder()
-                .putCompound(TAG_TRIDENT, ItemHelper.write(this.trident, null))
+       this.nbt.putCompound(TAG_TRIDENT, ItemHelper.write(this.trident, null))
                 .putByte(TAG_PICKUP, (byte) this.pickupMode)
                 .putList("CollisionPos", NbtType.DOUBLE, Arrays.asList(
                                 this.collisionPos.x,
@@ -164,8 +164,7 @@ public class EntityThrownTrident extends SlenderProjectile {
                         )
                 )
                 .putInt(TAG_FAVORED_SLOT, this.favoredSlot)
-                .putBoolean(TAG_PLAYER, this.player)
-                .build();
+                .putBoolean(TAG_PLAYER, this.player);
     }
 
     public Item getItem() {

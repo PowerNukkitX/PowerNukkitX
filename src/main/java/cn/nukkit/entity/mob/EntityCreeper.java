@@ -145,7 +145,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
         if (!ev.isCancelled()) {
             this.setDataProperty(ActorDataTypes.SWELL, 1);
-            this.namedTag = this.namedTag.toBuilder().putBoolean("powered", true).build();
+            this.nbt.putBoolean("powered", true);
         }
     }
 
@@ -155,7 +155,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
         if (!ev.isCancelled()) {
             this.setDataProperty(ActorDataTypes.SWELL, powered ? 1 : 0);
-            this.namedTag = this.namedTag.toBuilder().putBoolean("powered", powered).build();
+            this.nbt.putBoolean("powered", powered);
         }
     }
 
@@ -168,7 +168,8 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.getBoolean("powered") || nbtMap.getBoolean("IsPowered")) {
             this.entityDataMap.put(ActorDataTypes.SWELL, 1);
         }
     }

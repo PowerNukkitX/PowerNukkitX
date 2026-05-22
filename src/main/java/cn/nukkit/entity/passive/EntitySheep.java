@@ -147,16 +147,16 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public void initEntity() {
         super.initEntity();
 
-        if (!this.namedTag.containsKey("Color")) {
+        if (!this.nbt.containsKey("Color")) {
             this.setColor(randomColor());
         } else {
-            this.setColor(this.namedTag.getByte("Color"));
+            this.setColor(this.getNbt().getByte("Color"));
         }
 
-        if (!this.namedTag.containsKey("Sheared")) {
-            this.namedTag = this.namedTag.toBuilder().putByte("Sheared", (byte) 0).build();
+        if (!this.nbt.containsKey("Sheared")) {
+            this.nbt.putByte("Sheared", (byte) 0).build();
         } else {
-            this.sheared = this.namedTag.getBoolean("Sheared");
+            this.sheared = this.getNbt().getBoolean("Sheared");
         }
 
         this.setDataFlag(ActorFlags.SHEARED, this.sheared);
@@ -166,9 +166,8 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag = this.namedTag.toBuilder().putByte("Color", (byte) this.color)
-                .putBoolean("Sheared", this.sheared)
-                .build();
+        this.nbt.putByte("Color", (byte) this.color)
+                .putBoolean("Sheared", this.sheared);
     }
 
     @Override
@@ -224,13 +223,13 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     }
 
     public int getColor() {
-        return namedTag.getByte("Color");
+        return this.getNbt().getByte("Color");
     }
 
     public void setColor(int color) {
         this.color = color;
         this.setDataProperty(ActorDataTypes.COLOR_INDEX, (byte) color);
-        this.namedTag = this.namedTag.toBuilder().putByte("Color", (byte) this.color).build();
+        this.nbt.putByte("Color", (byte) this.color);
     }
 
     public Item getWoolItem() {

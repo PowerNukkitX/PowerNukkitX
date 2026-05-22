@@ -294,9 +294,9 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
 
         // Load items
         ensureInventories();
-        if (namedTag.containsKey("Inventory")) {
+        if (nbt.containsKey("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(namedTag.getList("Inventory", NbtType.COMPOUND));
+            inv.load(getNbt().getList("Inventory", NbtType.COMPOUND));
             syncEquippableInventories();
         }
     }
@@ -307,9 +307,8 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
 
         var inv = isChested() ? invChested : invNoChest;
         syncEquippableInventories();
-        this.namedTag = namedTag.toBuilder().putBoolean("Chested", isChested())
-                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()))
-                .build();
+        this.nbt.putBoolean("Chested", isChested())
+                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
     }
 
     @Override

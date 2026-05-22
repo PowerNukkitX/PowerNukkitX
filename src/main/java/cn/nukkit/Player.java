@@ -657,11 +657,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void initEntity() {
         super.initEntity();
         Level level = null;
-        if (this.namedTag.containsKey("SpawnLevel")) {
-            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
+        final NbtMap nbtMap = this.getNbt();
+        if (this.nbt.containsKey("SpawnLevel")) {
+            level = this.server.getLevelByName(nbtMap.getString("SpawnLevel"));
         } else level = Server.getInstance().getDefaultLevel();
-        if (this.namedTag.containsKey("SpawnX") && this.namedTag.containsKey("SpawnY") && this.namedTag.containsKey("SpawnZ")) {
-            this.spawnPoint = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
+        if (this.nbt.containsKey("SpawnX") && this.nbt.containsKey("SpawnY") && this.nbt.containsKey("SpawnZ")) {
+            this.spawnPoint = new Position(nbtMap.getInt("SpawnX"), nbtMap.getInt("SpawnY"), nbtMap.getInt("SpawnZ"), level);
         } else {
             this.spawnPoint = level.getSafeSpawn();
             log.info("Player {} cannot find the saved spawnpoint, reset the spawnpoint to {} {} {} / {}", this.getName(), this.spawnPoint.x, this.spawnPoint.y, this.spawnPoint.z, this.spawnPoint.getLevel().getName());
@@ -671,12 +672,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.addDefaultWindows();
         this.loggedIn = true;
 
-        //TODO: Remove these
-        if (this.namedTag.containsKey("SpawnBlockLevel")) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "SpawnBlockLevel");
-        }
-        if (this.namedTag.containsKey("SpawnBlockPositionX") && this.namedTag.containsKey("SpawnBlockPositionY") && this.namedTag.containsKey("SpawnBlockPositionZ")) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "SpawnBlockPositionX", "SpawnBlockPositionY", "SpawnBlockPositionZ");
+        this.nbt.remove("SpawnBlockLevel");
+        if (this.nbt.containsKey("SpawnBlockPositionX") && this.nbt.containsKey("SpawnBlockPositionY") && this.nbt.containsKey("SpawnBlockPositionZ")) {
+            this.nbt.remove("SpawnBlockPositionX");
+            this.nbt.remove("SpawnBlockPositionY");
+            this.nbt.remove("SpawnBlockPositionZ");
         }
     }
 
@@ -1175,7 +1175,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         NbtMap nbt;
         if (oldPlayer != null) {
             oldPlayer.saveNBT();
-            nbt = oldPlayer.namedTag;
+            nbt = oldPlayer.getNbt();
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
             boolean existData = Server.getInstance().hasOfflinePlayerData(this.getName());
@@ -1246,46 +1246,46 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         super.init(this.level.getChunk(posList.get(0).intValue() >> 4, posList.get(2).intValue() >> 4, true), nbt);
 
-        if (!this.namedTag.containsKey("foodLevel")) {
-            this.namedTag = this.namedTag.toBuilder().putInt("foodLevel", 20).build();
+        if (!this.nbt.containsKey("foodLevel")) {
+            this.nbt.putInt("foodLevel", 20);
         }
-        int foodLevel = this.namedTag.getInt("foodLevel");
-        if (!this.namedTag.containsKey("foodSaturationLevel")) {
-            this.namedTag = this.namedTag.toBuilder().putFloat("foodSaturationLevel", 20).build();
+        final NbtMap nbtMap = this.getNbt();
+        int foodLevel = nbtMap.getInt("foodLevel");
+        if (!this.nbt.containsKey("foodSaturationLevel")) {
+            this.nbt.putFloat("foodSaturationLevel", 20);
         }
-        float foodSaturationLevel = this.namedTag.getFloat("foodSaturationLevel");
+        float foodSaturationLevel = nbtMap.getFloat("foodSaturationLevel");
         this.foodData = new PlayerFood(this, foodLevel, foodSaturationLevel);
 
         if (this.isSpectator()) {
             this.onGround = false;
         }
 
-        if (this.namedTag.containsKey("enchSeed")) {
-            this.enchSeed = this.namedTag.getInt("enchSeed");
+        if (this.nbt.containsKey("enchSeed")) {
+            this.enchSeed = nbtMap.getInt("enchSeed");
         } else {
             this.regenerateEnchantmentSeed();
-            this.namedTag = this.namedTag.toBuilder().putInt("enchSeed", this.enchSeed).build();
+            this.nbt.putInt("enchSeed", this.enchSeed);
         }
 
-        if (!this.namedTag.containsKey("TimeSinceRest")) {
-            this.namedTag = this.namedTag.toBuilder().putInt("TimeSinceRest", 0).build();
+        if (!this.nbt.containsKey("TimeSinceRest")) {
+            this.nbt.putInt("TimeSinceRest", 0);
         }
-        this.timeSinceRest = this.namedTag.getInt("TimeSinceRest");
+        this.timeSinceRest = nbtMap.getInt("TimeSinceRest");
 
-        if (!this.namedTag.containsKey("HasSeenCredits")) {
-            this.namedTag = this.namedTag.toBuilder().putBoolean("HasSeenCredits", false).build();
+        if (!this.nbt.containsKey("HasSeenCredits")) {
+            this.nbt.putBoolean("HasSeenCredits", false);
         }
-        this.hasSeenCredits = this.namedTag.getBoolean("HasSeenCredits");
+        this.hasSeenCredits = nbtMap.getBoolean("HasSeenCredits");
 
         // The elements in the following two lists correspond one-to-one.
-        if (!this.namedTag.containsKey("fogIdentifiers")) {
-            this.namedTag = this.namedTag.toBuilder().putList("fogIdentifiers", NbtType.STRING, new ObjectArrayList<>()).build();
+        if (!this.nbt.containsKey("fogIdentifiers")) {
+            this.nbt.putList("fogIdentifiers", NbtType.STRING, new ObjectArrayList<>());
         }
-        if (!this.namedTag.containsKey("userProvidedFogIds")) {
-            this.namedTag = this.namedTag.toBuilder().putList("userProvidedFogIds", NbtType.STRING, new ObjectArrayList<>()).build();
+        if (!this.nbt.containsKey("userProvidedFogIds")) {
+            this.nbt.putList("userProvidedFogIds", NbtType.STRING, new ObjectArrayList<>());
         }
-        var fogIdentifiers = this.namedTag.getList("fogIdentifiers", NbtType.STRING);
-        var userProvidedFogIds = this.namedTag.getList("userProvidedFogIds", NbtType.STRING);
+        var fogIdentifiers = nbtMap.getList("fogIdentifiers", NbtType.STRING);
         for (int i = 0; i < fogIdentifiers.size(); i++) {
             this.fogStack.add(i, fogIdentifiers.get(i));
         }
@@ -1507,8 +1507,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
-        if (this.namedTag.containsKey("CursorItem")) {
-            this.playerCursorInventory.setItem(0, ItemHelper.read(this.namedTag.getCompound("CursorItem")));
+        if (this.nbt.containsKey("CursorItem")) {
+            this.playerCursorInventory.setItem(0, ItemHelper.read(this.getNbt().getCompound("CursorItem")));
         }
 
         this.addWindow(this.getInventory(), (byte) ContainerId.INVENTORY);
@@ -1632,12 +1632,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @Override
     public Long getFirstPlayed() {
-        return this.namedTag != null ? this.namedTag.getLong("firstPlayed") : null;
+        return this.nbt != null ? this.getNbt().getLong("firstPlayed") : null;
     }
 
     @Override
     public Long getLastPlayed() {
-        return this.namedTag != null ? this.namedTag.getLong("lastPlayed") : null;
+        return this.nbt != null ? this.getNbt().getLong("lastPlayed") : null;
     }
 
     @Override
@@ -2492,7 +2492,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.setDataFlag(ActorFlags.HAS_COLLISION, true);
         }
 
-        this.namedTag = this.namedTag.toBuilder().putInt("playerGameType", this.gamemode).build();
+        this.nbt.putInt("playerGameType", this.gamemode);
 
         this.setAdventureSettings(ev.getNewAdventureSettings());
 
@@ -3489,7 +3489,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         // Otherwise shared inventories keep stale viewers after reconnects or UI transitions.
         this.removeAllWindows(false);
 
-        if (ev != null && ev.getAutoSave() && namedTag != null) {
+        if (ev != null && ev.getAutoSave() && this.nbt != null) {
             this.save();
         }
         super.close();
@@ -3576,24 +3576,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void saveNBT() {
         super.saveNBT();
         if (spawnPoint == null) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "SpawnX", "SpawnY", "SpawnZ", "SpawnLevel", "SpawnDimension");
+            this.nbt.remove("SpawnX");
+            this.nbt.remove("SpawnY");
+            this.nbt.remove("SpawnZ");
+            this.nbt.remove("SpawnLevel");
+            this.nbt.remove("SpawnDimension");
         } else {
-            this.namedTag = namedTag.toBuilder()
-                    .putInt("SpawnX", this.spawnPoint.getFloorX())
+            this.nbt.putInt("SpawnX", this.spawnPoint.getFloorX())
                     .putInt("SpawnY", this.spawnPoint.getFloorY())
-                    .putInt("SpawnZ", this.spawnPoint.getFloorZ())
-                    .build();
+                    .putInt("SpawnZ", this.spawnPoint.getFloorZ());
             if (this.spawnPoint.getLevel() != null && this.spawnPoint.getLevel().getProvider() != null) {
-                this.namedTag = this.namedTag.toBuilder()
-                        .putString("SpawnLevel", this.spawnPoint.getLevel().getName())
-                        .putInt("SpawnDimension", this.spawnPoint.getLevel().getDimension())
-                        .build();
+                this.nbt.putString("SpawnLevel", this.spawnPoint.getLevel().getName())
+                        .putInt("SpawnDimension", this.spawnPoint.getLevel().getDimension());
             } else {
                 if (this.server.getDefaultLevel() != null && this.server.getDefaultLevel().getProvider() != null) {
-                    this.namedTag = this.namedTag.toBuilder()
-                            .putString("SpawnLevel", this.server.getDefaultLevel().getName())
-                            .putInt("SpawnDimension", this.server.getDefaultLevel().getDimension())
-                            .build();
+                    this.nbt.putString("SpawnLevel", this.server.getDefaultLevel().getName())
+                            .putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
                 } else {
                     throw new IllegalStateException("Default level or default level provider is null");
                 }
@@ -3603,9 +3601,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.playerCursorInventory != null) {
             Item item = this.playerCursorInventory.getItem(0);
             if (!item.isNull()) {
-                this.namedTag.put("CursorItem", ItemHelper.write(item));
+                this.nbt.put("CursorItem", ItemHelper.write(item));
             } else {
-                this.namedTag.remove("CursorItem");
+                this.nbt.remove("CursorItem");
             }
         }
 
@@ -3618,15 +3616,14 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         saveNBT();
 
         if (this.level != null && this.level.getProvider() != null) {
-            this.namedTag = this.namedTag.toBuilder().putString("Level", this.level.getName()).build();
+            this.nbt.putString("Level", this.level.getName());
 
             final NbtMapBuilder achievementsBuilder = NbtMap.builder();
             for (String achievement : this.achievements) {
                 achievementsBuilder.putByte(achievement, (byte) 1);
             }
 
-            this.namedTag = this.namedTag.toBuilder()
-                    .putCompound("Achievements", achievementsBuilder.build())
+            this.nbt.putCompound("Achievements", achievementsBuilder.build())
                     .putInt("playerGameType", this.gamemode)
                     .putLong("lastPlayed", System.currentTimeMillis() / 1000)
                     .putString("lastIP", this.getAddress())
@@ -3643,14 +3640,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 fogIdentifiers.add(fog);
                 userProvidedFogIds.add(fog);
             });
-            this.namedTag = this.namedTag.toBuilder()
-                    .putList("fogIdentifiers", NbtType.STRING, fogIdentifiers)
+            this.nbt.putList("fogIdentifiers", NbtType.STRING, fogIdentifiers)
                     .putList("userProvidedFogIds", NbtType.STRING, userProvidedFogIds)
                     .putInt("TimeSinceRest", this.timeSinceRest)
                     .build();
 
-            if (!this.getName().isBlank() && this.namedTag != null) {
-                this.server.saveOfflinePlayerData(this.uuid, this.namedTag, async);
+            if (!this.getName().isBlank() && this.nbt != null) {
+                this.server.saveOfflinePlayerData(this.uuid, this.getNbt(), async);
             }
         }
     }

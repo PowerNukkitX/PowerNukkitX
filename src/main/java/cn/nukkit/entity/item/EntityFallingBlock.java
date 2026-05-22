@@ -100,17 +100,18 @@ public class EntityFallingBlock extends Entity {
     protected void initEntity() {
         super.initEntity();
 
-        if (namedTag != null) {
-            if (namedTag.containsKey("Block")) {
-                BlockState blockState = ItemHelper.getBlockStateHelper(namedTag.getCompound("Block"));
+        if (nbt != null) {
+            final NbtMap nbtMap = this.getNbt();
+            if (nbt.containsKey("Block")) {
+                BlockState blockState = ItemHelper.getBlockStateHelper(nbtMap.getCompound("Block"));
                 if (blockState == null) {
                     close();
                     return;
                 } else this.blockState = blockState;
             }
 
-            breakOnLava = namedTag.getBoolean("BreakOnLava");
-            breakOnGround = namedTag.getBoolean("BreakOnGround");
+            breakOnLava = nbtMap.getBoolean("BreakOnLava");
+            breakOnGround = nbtMap.getBoolean("BreakOnGround");
 
             setDataProperty(ActorDataTypes.VARIANT, blockState.blockStateHash());
         }
@@ -279,7 +280,7 @@ public class EntityFallingBlock extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = namedTag.toBuilder().putCompound("Block", blockState.getBlockStateTag()).build();
+        this.nbt.putCompound("Block", blockState.getBlockStateTag());
     }
 
     @Override

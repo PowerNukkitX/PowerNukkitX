@@ -45,8 +45,8 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     public void initEntity() {
         super.initEntity();
 
-        if (namedTag.containsKey("TNTFuse")) {
-            fuse = namedTag.getByte("TNTFuse");
+        if (this.nbt.containsKey("TNTFuse")) {
+            fuse = this.getNbt().getByte("TNTFuse");
         } else {
             fuse = 80;
         }
@@ -158,7 +158,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = super.namedTag.toBuilder().putInt("TNTFuse", this.fuse).build();
+        this.nbt.putInt("TNTFuse", this.fuse);
     }
 
 

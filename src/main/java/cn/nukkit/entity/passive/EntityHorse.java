@@ -320,8 +320,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
         // Load items
         ensureInventories();
-        if (namedTag.containsKey("Inventory")) {
-            entityInventory.load(namedTag.getList("Inventory", NbtType.COMPOUND));
+        if (nbt.containsKey("Inventory")) {
+            entityInventory.load(getNbt().getList("Inventory", NbtType.COMPOUND));
         }
 
         if (!hasVariant()) {
@@ -343,7 +343,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         super.saveNBT();
 
         var inv = getInventory();
-        this.namedTag = namedTag.toBuilder().putList("Inventory", NbtType.COMPOUND, inv.save(isChested())).build();
+        this.nbt.putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
     }
 
     @Override

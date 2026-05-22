@@ -252,7 +252,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                     }
                                     if (block != null && !block.isOccupied()) setBed(block);
                                 } else if (!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
-                                    this.namedTag = NbtHelper.remove(this.namedTag, "bed");
+                                    this.nbt.remove("bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 }
                             }
@@ -471,57 +471,58 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void initEntity() {
         super.initEntity();
         setTradingPlayer(0L);
-        if (!this.namedTag.containsKey("tradeSeed")) {
+        final NbtMap nbtMap = this.getNbt();
+        if (!nbtMap.containsKey("tradeSeed")) {
             this.setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
         } else {
-            this.tradeSeed = this.namedTag.getInt("tradeSeed");
+            this.tradeSeed =nbtMap.getInt("tradeSeed");
         }
-        if (!this.namedTag.containsKey("canTrade")) {
+        if (!nbtMap.containsKey("canTrade")) {
             this.setCanTrade(!(profession == 0 || profession == 14));
         } else {
-            this.canTrade = this.namedTag.getBoolean("canTrade");
+            this.canTrade =nbtMap.getBoolean("canTrade");
         }
-        if (!this.namedTag.containsKey("displayName") && profession != 0) {
+        if (!nbtMap.containsKey("displayName") && profession != 0) {
             this.setDisplayName(getProfessionName(profession));
         } else {
-            this.displayName = this.namedTag.getString("displayName");
+            this.displayName = nbtMap.getString("displayName");
         }
-        if (!this.namedTag.containsKey("tradeTier")) {
+        if (!nbtMap.containsKey("tradeTier")) {
             this.setTradeTier(1);
         } else {
-            this.tradeTier = this.namedTag.getInt("tradeTier");
+            this.tradeTier = nbtMap.getInt("tradeTier");
         }
-        if (!this.namedTag.containsKey("maxTradeTier")) {
+        if (!nbtMap.containsKey("maxTradeTier")) {
             this.setMaxTradeTier(5);
         } else {
-            var maxTradeTier = this.namedTag.getInt("maxTradeTier");
+            var maxTradeTier = nbtMap.getInt("maxTradeTier");
             this.maxTradeTier = maxTradeTier;
             this.setDataProperty(ActorDataTypes.MAX_TRADE_TIER, maxTradeTier);
         }
-        if (!this.namedTag.containsKey("tradeExp")) {
+        if (!nbtMap.containsKey("tradeExp")) {
             this.setTradeExp(0);
         } else {
-            var tradeExp = this.namedTag.getInt("tradeExp");
+            var tradeExp = nbtMap.getInt("tradeExp");
             this.tradeExp = tradeExp;
             this.setDataProperty(ActorDataTypes.TRADE_EXPERIENCE, tradeExp);
         }
-        if (this.namedTag.containsKey("clothing")) {
-            this.setDataProperty(ActorDataTypes.MARK_VARIANT, this.namedTag.getInt("clothing"));
+        if (nbtMap.containsKey("clothing")) {
+            this.setDataProperty(ActorDataTypes.MARK_VARIANT, nbtMap.getInt("clothing"));
         } else {
             BlockVector3 bv = asBlockVector3();
             this.setDataProperty(ActorDataTypes.MARK_VARIANT, Clothing.getClothing(getLevel().getBiomeId(bv.x, bv.y, bv.z)).ordinal());
         }
-        if (this.namedTag.containsKey("bed")) {
-            NbtMap compound = this.namedTag.getCompound("bed");
+        if (nbtMap.containsKey("bed")) {
+            NbtMap compound = nbtMap.getCompound("bed");
             Vector3 vector = new Vector3(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
             if (getLevel().getBlock(vector) instanceof BlockBed bed) {
                 setBed(bed);
             }
         }
         getMemoryStorage().put(CoreMemoryTypes.GOSSIP, new Object2ObjectArrayMap<>());
-        if (this.namedTag.containsKey("gossip")) {
+        if (nbtMap.containsKey("gossip")) {
             var gossipMap = getMemoryStorage().get(CoreMemoryTypes.GOSSIP);
-            NbtMap gossipTag = this.namedTag.getCompound("gossip");
+            NbtMap gossipTag =nbtMap.getCompound("gossip");
             for (String key : gossipTag.keySet()) {
                 List<Integer> gossipValues = gossipTag.getList(key, NbtType.INT);
                 IntArrayList valueMap = new IntArrayList();
@@ -529,26 +530,24 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 gossipMap.put(key, valueMap);
             }
         }
-        if (this.namedTag.containsKey("purifyPlayer")) {
-            NbtMapBuilder builder = this.namedTag.toBuilder();
-            String xuid = builder.remove("purifyPlayer").toString();
-            this.namedTag = builder.build();
+        if (nbtMap.containsKey("purifyPlayer")) {
+            String xuid = this.nbt.remove("purifyPlayer").toString();
             this.addGossip(xuid, Gossip.MAJOR_POSITIVE, 20);
             this.addGossip(xuid, Gossip.MINOR_POSITIVE, 25);
         }
-        if (this.namedTag.containsKey("siteBlock")) {
-            NbtMap tag = this.namedTag.getCompound("siteBlock");
+        if (nbtMap.containsKey("siteBlock")) {
+            NbtMap tag = nbtMap.getCompound("siteBlock");
             Vector3 vector3 = new Vector3(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
             Block block = getLevel().getBlock(vector3);
             setProfessionBlock(block);
         }
-        if (this.namedTag.containsKey("profession")) {
-            setProfession(this.namedTag.getInt("profession"), false);
+        if (nbtMap.containsKey("profession")) {
+            setProfession(nbtMap.getInt("profession"), false);
         }
         this.inventory = new EntityEquipmentInventory(this);
-        if (this.namedTag.containsKey("Inventory") && this.namedTag.get("Inventory") instanceof List<?>) {
+        if (nbtMap.containsKey("Inventory") && nbtMap.get("Inventory") instanceof List<?>) {
             var inventory = this.getInventory();
-            List<NbtMap> inventoryList = this.namedTag.getList("Inventory", NbtType.COMPOUND);
+            List<NbtMap> inventoryList = nbtMap.getList("Inventory", NbtType.COMPOUND);
             for (NbtMap item : inventoryList) {
                 int slot = item.getByte("Slot");
                 inventory.setItem(slot, ItemHelper.read(item));//inventory 0-39
@@ -638,8 +637,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     @Override
     public void saveNBT() {
         super.saveNBT();
-        final NbtMapBuilder builder = this.namedTag.toBuilder()
-                .putInt("profession", this.getProfession())
+        this.nbt.putInt("profession", this.getProfession())
                 .putBoolean("isTrade", this.canTrade())
                 .putString("displayName", this.getDisplayName())
                 .putInt("tradeTier", this.getTradeTier())
@@ -653,21 +651,21 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             gossipValues.addAll(v.getValue());
             gossipTag.putList(v.getKey(), NbtType.INT, gossipValues);
         }
-        builder.putCompound("gossip", gossipTag.build()).build();
+        this.nbt.putCompound("gossip", gossipTag.build()).build();
         if (getMemoryStorage().notEmpty(CoreMemoryTypes.OCCUPIED_BED)) {
             BlockBed bed = getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED);
-            builder.putCompound("bed", NbtMap.builder().putInt("x", bed.getFloorX()).putInt("y", bed.getFloorY()).putInt("z", bed.getFloorZ()).build());
+            this.nbt.putCompound("bed", NbtMap.builder().putInt("x", bed.getFloorX()).putInt("y", bed.getFloorY()).putInt("z", bed.getFloorZ()).build());
         }
         if (getMemoryStorage().notEmpty(CoreMemoryTypes.SITE_BLOCK)) {
             Block site = getMemoryStorage().get(CoreMemoryTypes.SITE_BLOCK);
-            builder.putCompound("siteBlock", NbtMap.builder().putInt("x", site.getFloorX()).putInt("y", site.getFloorY()).putInt("z", site.getFloorZ()).build());
+            this.nbt.putCompound("siteBlock", NbtMap.builder().putInt("x", site.getFloorX()).putInt("y", site.getFloorY()).putInt("z", site.getFloorZ()).build());
         }
         if (this.getInventory() != null) {
             final List<NbtMap> inventoryTag = new ObjectArrayList<>();
             for (var entry : getInventory().getContents().entrySet()) {
                 inventoryTag.add(ItemHelper.write(entry.getValue(), entry.getKey()));
             }
-            builder.putList("Inventory", NbtType.COMPOUND, inventoryTag);
+            this.nbt.putList("Inventory", NbtType.COMPOUND, inventoryTag);
         }
     }
 
@@ -741,7 +739,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setCanTrade(boolean canTrade) {
         this.canTrade = canTrade;
-        this.namedTag = this.namedTag.toBuilder().putBoolean("canTrade", canTrade).build();
+        this.nbt.putBoolean("canTrade", canTrade);
     }
 
     /**
@@ -756,7 +754,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-        this.namedTag = this.namedTag.toBuilder().putString("displayName", displayName).build();
+        this.nbt.putString("displayName", displayName);
     }
 
     /**
@@ -771,7 +769,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
      */
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
-        this.namedTag = this.namedTag.toBuilder().putInt("tradeTier", this.tradeTier).build();
+        this.nbt.putInt("tradeTier", this.tradeTier);
     }
 
     public void updateTrades(Player player) {
@@ -829,7 +827,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void setMaxTradeTier(int maxTradeTier) {
         this.maxTradeTier = maxTradeTier;
         this.setDataProperty(ActorDataTypes.MAX_TRADE_TIER, 5);
-        this.namedTag = this.namedTag.toBuilder().putInt("maxTradeTier", this.tradeTier).build();
+        this.nbt.putInt("maxTradeTier", this.tradeTier);
     }
 
     @Override
@@ -851,7 +849,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     public void setTradeExp(int tradeExp) {
         this.tradeExp = tradeExp;
         this.setDataProperty(ActorDataTypes.TRADE_EXPERIENCE, 10);
-        this.namedTag = this.namedTag.toBuilder().putInt("tradeExp", this.tradeTier).build();
+        this.nbt.putInt("tradeExp", this.tradeTier);
     }
 
 
@@ -878,7 +876,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     protected void setTradeSeed(int tradeSeed) {
         this.tradeSeed = tradeSeed;
-        this.namedTag = this.namedTag.toBuilder().putInt("tradeSeed", tradeSeed).build();
+        this.nbt.putInt("tradeSeed", tradeSeed);
     }
 
     public void addExperience(int xp) {

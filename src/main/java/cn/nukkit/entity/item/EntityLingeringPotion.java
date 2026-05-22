@@ -39,7 +39,7 @@ public class EntityLingeringPotion extends EntitySplashPotion {
     protected void splash(Entity collidedWith) {
         super.splash(collidedWith);
         saveNBT();
-        List<NbtMap> pos = namedTag.getList("Pos", NbtType.COMPOUND);
+        List<NbtMap> pos = this.getNbt().getList("Pos", NbtType.COMPOUND);
         EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
                 NbtMap.builder().putList("Pos", NbtType.COMPOUND, pos)
                         .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))

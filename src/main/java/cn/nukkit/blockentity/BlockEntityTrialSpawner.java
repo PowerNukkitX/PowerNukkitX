@@ -390,9 +390,8 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
                 return false;
             }
 
-            entity.namedTag = entity.namedTag.toBuilder().putBoolean("spawner", true)
-                    .putBoolean("trial_spawner", true)
-                    .build();
+            entity.getNbtBuilder().putBoolean("spawner", true)
+                    .putBoolean("trial_spawner", true);
             entity.setPersistent(true);
             entity.spawnToAll();
             getSpawnedEntities().add(entity.getId());

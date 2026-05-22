@@ -53,11 +53,11 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
         this.setDataFlag(ActorFlags.HAS_GRAVITY, false);
         this.setDataFlag(ActorFlags.HAS_COLLISION, false);
 
-        this.life = this.namedTag.getInt(TAG_LIFE, 0);
-        this.surviveAfterDeath = this.namedTag.getBoolean(TAG_SURVIVE_AFTER_DEATH);
+        this.life = this.getNbt().getInt(TAG_LIFE, 0);
+        this.surviveAfterDeath = this.getNbt().getBoolean(TAG_SURVIVE_AFTER_DEATH);
 
-        if (this.namedTag.containsKey(TAG_TARGET)) {
-            NbtMap targetTag = this.namedTag.getCompound(TAG_TARGET);
+        if (this.nbt.containsKey(TAG_TARGET)) {
+            NbtMap targetTag = this.getNbt().getCompound(TAG_TARGET);
             this.target = new Vector3(
                     targetTag.getDouble(TAG_TARGET_X),
                     targetTag.getDouble(TAG_TARGET_Y),
@@ -158,12 +158,11 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putInt(TAG_LIFE, this.life)
+        this.nbt.putInt(TAG_LIFE, this.life)
                 .putBoolean(TAG_SURVIVE_AFTER_DEATH, this.surviveAfterDeath)
                 .build();
         if (this.target != null) {
-            this.namedTag = this.namedTag.toBuilder().putCompound(TAG_TARGET, NbtMap.builder()
+            this.nbt.putCompound(TAG_TARGET, NbtMap.builder()
                             .putDouble(TAG_TARGET_X, this.target.x)
                             .putDouble(TAG_TARGET_Y, this.target.y)
                             .putDouble(TAG_TARGET_Z, this.target.z)

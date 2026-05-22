@@ -223,11 +223,12 @@ public class AdventureSettings implements Cloneable {
     public void saveNBT() {
         NbtMapBuilder abilityTag = NbtMap.builder();
         this.values.forEach((type, bool) -> abilityTag.putInt(type.name(), (bool ? 1 : 0)));
-        this.player.namedTag = this.player.namedTag.toBuilder()
-                .putList(KEY_ABILITIES, NbtType.COMPOUND, abilityTag.build())
-                .putString(KEY_PLAYER_PERMISSION, this.playerPermission.name())
-                .putString(KEY_COMMAND_PERMISSION, this.commandPermission.name())
-                .build();
+        this.player.setNbt(
+                this.player.getNbt().toBuilder()
+                        .putList(KEY_ABILITIES, NbtType.COMPOUND, abilityTag.build())
+                        .putString(KEY_PLAYER_PERMISSION, this.playerPermission.name())
+                        .putString(KEY_COMMAND_PERMISSION, this.commandPermission.name())
+        );
     }
 
     /**

@@ -219,11 +219,11 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         this.close();
         getArmorInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
         getEquipmentInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
-        EntityDrowned drowned = new EntityDrowned(this.getChunk(), this.namedTag);
+        EntityDrowned drowned = new EntityDrowned(this.getChunk(), this.getNbt());
         drowned.setPosition(this);
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();
-        drowned.namedTag = drowned.namedTag.toBuilder().putBoolean("Transformed", true).build();
+        drowned.getNbtBuilder().putBoolean("Transformed", true);
         drowned.level.addSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
     }
 }

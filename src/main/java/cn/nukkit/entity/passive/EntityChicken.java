@@ -191,8 +191,8 @@ public class EntityChicken extends EntityAnimal implements EntityWalkable, Clima
     @Override
     protected void initEntity() {
         super.initEntity();
-        if (namedTag.containsKey("variant")) {
-            setVariant(Variant.get(namedTag.getString("variant")));
+        if (nbt.containsKey("variant")) {
+            setVariant(Variant.get(getNbt().getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 
         this.initSoundVariantProperty();

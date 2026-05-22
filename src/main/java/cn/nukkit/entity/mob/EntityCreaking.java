@@ -113,8 +113,9 @@ public class EntityCreaking extends EntityMob {
     protected void initEntity() {
         this.setHealthMax(1);
         this.diffHandDamage = new float[]{2.5f, 3, 4.5f};
-        if (namedTag.containsKey("creakingHeart")) {
-            NbtMap tag = namedTag.getCompound("creakingHeart");
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("creakingHeart")) {
+            NbtMap tag = nbtMap.getCompound("creakingHeart");
             Vector3 vec = new Vector3(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
             if (getLevel().getBlock(vec, true) instanceof BlockCreakingHeart heart) {
                 heart.getOrCreateBlockEntity().setLinkedCreaking(this);
@@ -195,7 +196,7 @@ public class EntityCreaking extends EntityMob {
             tag.putInt("x", creakingHeart.getFloorX());
             tag.putInt("y", creakingHeart.getFloorY());
             tag.putInt("z", creakingHeart.getFloorZ());
-            this.namedTag = this.namedTag.toBuilder().putCompound("creakingHeart", tag.build()).build();
+            this.nbt.putCompound("creakingHeart", tag.build());
         }
         super.saveNBT();
     }

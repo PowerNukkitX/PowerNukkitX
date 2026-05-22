@@ -10,9 +10,9 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFlyable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.generator.densityfunction.DensityCommon;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.entity.spawners.SpawnRule;
+import cn.nukkit.level.generator.densityfunction.DensityCommon;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.registry.Registries;
@@ -606,7 +606,7 @@ public class Chunk implements IChunk {
                         Entity entity = Registries.ENTITY.provideEntity(spawnRule.getEntityId(), this, Entity.getDefaultNBT(spawnPos));
                         if (entity != null) {
                             spawnedEntityCount++;
-                            entity.namedTag = entity.namedTag.toBuilder().putString("SpawnReason", "NATURAL").build();
+                            entity.setNbt(entity.getNbt().toBuilder().putString("SpawnReason", "NATURAL"));
                             entity.despawnable = true;
                             entity.spawnToAll();
                         }

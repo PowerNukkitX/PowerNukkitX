@@ -59,16 +59,17 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         super.initEntity();
 
-        if (this.namedTag.containsKey(TAG_MAINHAND)) {
-            this.equipmentInventory.setItemInHand(ItemHelper.read(this.namedTag.getCompound(TAG_MAINHAND)), true);
+        final NbtMap nbtMap = this.getNbt();
+        if (this.nbt.containsKey(TAG_MAINHAND)) {
+            this.equipmentInventory.setItemInHand(ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND)), true);
         }
 
-        if (this.namedTag.containsKey(TAG_OFFHAND)) {
-            this.equipmentInventory.setItemInOffhand(ItemHelper.read(this.namedTag.getCompound(TAG_OFFHAND)), true);
+        if (this.nbt.containsKey(TAG_OFFHAND)) {
+            this.equipmentInventory.setItemInOffhand(ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND)), true);
         }
 
-        if (this.namedTag.containsKey(TAG_ARMOR)) {
-            List<NbtMap> armorList = this.namedTag.getList(TAG_ARMOR, NbtType.COMPOUND);
+        if (this.nbt.containsKey(TAG_ARMOR)) {
+            List<NbtMap> armorList = nbtMap.getList(TAG_ARMOR, NbtType.COMPOUND);
             for (NbtMap armorTag : armorList) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
@@ -102,16 +103,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null))
-                .putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null))
-                .build();
+        this.nbt.putCompound(TAG_MAINHAND, ItemHelper.write(this.equipmentInventory.getItemInHand(), null))
+                .putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
 
         if (this.armorInventory != null) {
             List<NbtMap> armorTag = new ObjectArrayList<>();
             for (int i = 0; i < 4; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag = this.namedTag.toBuilder().putList(TAG_ARMOR, NbtType.COMPOUND, armorTag).build();
+            this.nbt.putList(TAG_ARMOR, NbtType.COMPOUND, armorTag);
         }
     }
 

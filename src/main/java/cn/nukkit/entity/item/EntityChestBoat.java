@@ -114,8 +114,9 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
         this.inventory = new ChestBoatInventory(this);
 
-        if (this.namedTag.containsKey("Items") && this.namedTag.get("Items") instanceof List<?>) {
-            List<NbtMap> inventoryList = this.namedTag.getList("Items", NbtType.COMPOUND);
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("Items") && nbtMap.get("Items") instanceof List<?>) {
+            List<NbtMap> inventoryList = nbtMap.getList("Items", NbtType.COMPOUND);
             for (NbtMap item : inventoryList) {
                 this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
@@ -139,9 +140,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
                 }
             }
         }
-        this.namedTag = this.namedTag.toBuilder()
-                .putList("Items", NbtType.COMPOUND, serializedItems)
-                .build();
+        this.nbt.putList("Items", NbtType.COMPOUND, serializedItems);
     }
 
     @Override

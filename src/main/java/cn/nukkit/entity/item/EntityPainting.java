@@ -155,7 +155,7 @@ public class EntityPainting extends EntityHanging {
 
     @Override
     protected void initEntity() {
-        this.motive = getMotive(this.namedTag.getString("Motive"));
+        this.motive = getMotive(this.getNbt().getString("Motive"));
 
         if (this.motive != null) {
             BlockFace face = getHorizontalFacing();
@@ -196,7 +196,7 @@ public class EntityPainting extends EntityHanging {
         packet.setTargetRuntimeID(this.getId());
         packet.setPosition(Vector3f.from(this.x, this.y, this.z));
         packet.setDirection(this.getDirection().getHorizontalIndex());
-        packet.setMotif(this.namedTag.getString("Motive"));
+        packet.setMotif(this.getNbt().getString("Motive"));
         return packet;
     }
 
@@ -219,7 +219,7 @@ public class EntityPainting extends EntityHanging {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putString("Motive", this.motive.title).build();
+        this.nbt.putString("Motive", this.motive.title);
     }
 
     @Override
@@ -232,7 +232,7 @@ public class EntityPainting extends EntityHanging {
     }
 
     public Motive getMotive() {
-        return Motive.BY_NAME.get(namedTag.getString("Motive"));
+        return Motive.BY_NAME.get(this.getNbt().getString("Motive"));
     }
 
     @Override

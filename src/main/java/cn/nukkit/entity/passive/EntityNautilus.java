@@ -312,8 +312,8 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
 
         // Load items
         ensureInventories();
-        if (namedTag.containsKey("Inventory")) {
-            entityInventory.load(namedTag.getList("Inventory", NbtType.COMPOUND));
+        if (nbt.containsKey("Inventory")) {
+            entityInventory.load(getNbt().getList("Inventory", NbtType.COMPOUND));
         }
 
         // Init home memory
@@ -331,7 +331,7 @@ public class EntityNautilus extends EntityAnimal implements EntitySwimmable, Inv
         super.saveNBT();
 
         var inv = getInventory();
-        this.namedTag = namedTag.toBuilder().putList("Inventory", NbtType.COMPOUND, inv.save(false)).build();
+        this.nbt.putList("Inventory", NbtType.COMPOUND, inv.save(false));
     }
 
     @Override

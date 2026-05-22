@@ -147,7 +147,7 @@ public class EntityCamelHusk extends EntityCamel {
     public void initEntity() {
         super.initEntity();
 
-        boolean riderSpawned = this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED);
+        boolean riderSpawned = this.nbt != null && this.getNbt().getBoolean(NBT_RIDER_SPAWNED);
         if (!riderSpawned) {
             this.pendingInitialRiderSpawn = true;
         }
@@ -221,11 +221,11 @@ public class EntityCamelHusk extends EntityCamel {
 
     private void spawnInitialRiderIfNeeded() {
         if (this.closed || this.level == null) return;
-        if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
+        if (this.nbt != null && this.getNbt().getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null)
-                this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
+            if (this.nbt != null)
+                this.nbt.putBoolean(NBT_RIDER_SPAWNED, true);
             return;
         }
 
@@ -237,8 +237,8 @@ public class EntityCamelHusk extends EntityCamel {
         this.mountEntity(rider, true);
         this.mountEntity(passenger, true);
 
-        if (this.namedTag != null)
-            this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
+        if (this.nbt != null)
+            this.nbt.putBoolean(NBT_RIDER_SPAWNED, true);
     }
 
     private Entity createRiderEntity(String entityId) {

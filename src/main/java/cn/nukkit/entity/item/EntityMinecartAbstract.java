@@ -30,7 +30,6 @@ import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
@@ -720,10 +719,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private void prepareDataProperty() {
         setRollingAmplitude(0);
         setRollingDirection(1);
-        if (namedTag.containsKey("CustomDisplayTile")) {
-            if (namedTag.getBoolean("CustomDisplayTile")) {
-                int display = namedTag.getInt("DisplayTile");
-                int offSet = namedTag.getInt("DisplayOffset");
+        NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("CustomDisplayTile")) {
+            if (nbtMap.getBoolean("CustomDisplayTile")) {
+                int display = nbtMap.getInt("DisplayTile");
+                int offSet = nbtMap.getInt("DisplayOffset");
                 setDataProperty(ActorDataTypes.CUSTOM_DISPLAY, (byte) 1);
                 setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, display);
                 setDataProperty(ActorDataTypes.DISPLAY_OFFSET, offSet);
@@ -745,15 +745,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 || blockInside != null;
         int display;
         int offSet;
-       final NbtMapBuilder builder = this.namedTag.toBuilder()
-               .putBoolean("CustomDisplayTile", hasDisplay);
+        this.nbt.putBoolean("CustomDisplayTile", hasDisplay);
         if (hasDisplay) {
             display = blockInside.getRuntimeId();
             offSet = getDataProperty(ActorDataTypes.DISPLAY_OFFSET);
-            builder.putInt("DisplayTile", display);
-            builder.putInt("DisplayOffset", offSet);
+            this.nbt.putInt("DisplayTile", display);
+            this.nbt.putInt("DisplayOffset", offSet);
         }
-        this.namedTag = builder.build();
     }
 
     /**

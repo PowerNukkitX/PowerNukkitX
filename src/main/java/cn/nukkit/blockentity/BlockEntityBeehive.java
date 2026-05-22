@@ -150,7 +150,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.namedTag);
+        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.getNbt());
         if (!addOccupant(occupant)) {
             return null;
         }

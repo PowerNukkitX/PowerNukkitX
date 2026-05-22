@@ -100,42 +100,44 @@ public class EntityItem extends Entity {
         super.initEntity();
 
         this.setHealthMax(5);
-        this.setHealthCurrent(this.namedTag.getShort("Health"));
 
-        if (this.namedTag.containsKey("Age")) {
-            this.age = this.namedTag.getShort("Age");
+        final NbtMap nbtMap = this.getNbt();
+        this.setHealthCurrent(nbtMap.getShort("Health"));
+
+        if (nbtMap.containsKey("Age")) {
+            this.age = nbtMap.getShort("Age");
         }
 
-        if (this.namedTag.containsKey("ShouldDespawn")) {
-            this.shouldDespawn = this.namedTag.getBoolean("ShouldDespawn");
+        if (nbtMap.containsKey("ShouldDespawn")) {
+            this.shouldDespawn = nbtMap.getBoolean("ShouldDespawn");
         } else shouldDespawn = true;
 
-        if (this.namedTag.containsKey("DisplayOnly")) {
-            this.isDisplayOnly = this.namedTag.getBoolean("DisplayOnly");
+        if (nbtMap.containsKey("DisplayOnly")) {
+            this.isDisplayOnly = nbtMap.getBoolean("DisplayOnly");
         } else isDisplayOnly = false;
 
-        if (this.namedTag.containsKey("PickupDelay")) {
-            this.pickupDelay = this.namedTag.getShort("PickupDelay");
+        if (nbtMap.containsKey("PickupDelay")) {
+            this.pickupDelay =nbtMap.getShort("PickupDelay");
         }
 
-        if (this.namedTag.containsKey("Owner")) {
-            this.owner = this.namedTag.getString("Owner");
+        if (nbtMap.containsKey("Owner")) {
+            this.owner = nbtMap.getString("Owner");
         }
 
-        if (this.namedTag.containsKey("Thrower")) {
-            this.thrower = this.namedTag.getString("Thrower");
+        if (nbtMap.containsKey("Thrower")) {
+            this.thrower =nbtMap.getString("Thrower");
         }
 
-        if (!this.namedTag.containsKey("Item")) {
+        if (!nbtMap.containsKey("Item")) {
             this.close();
             return;
         }
 
-        if (this.namedTag.containsKey("Mergeable")) {
-            this.mergeItems = this.namedTag.getBoolean("Mergeable");
+        if (nbtMap.containsKey("Mergeable")) {
+            this.mergeItems = nbtMap.getBoolean("Mergeable");
         } else mergeItems = true;
 
-        this.item = ItemHelper.read(this.namedTag.getCompound("Item"));
+        this.item = ItemHelper.read(nbtMap.getCompound("Item"));
         this.setDataFlag(ActorFlags.HAS_GRAVITY, true);
 
         if (this.item.isLavaResistant()) {
@@ -311,9 +313,8 @@ public class EntityItem extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        final NbtMapBuilder builder = this.namedTag.toBuilder();
         if (this.item != null) { // Yes, a item can be null... I don't know what causes this, but it can happen.
-            builder.putCompound("Item", ItemHelper.write(this.item, -1))
+            this.nbt.putCompound("Item", ItemHelper.write(this.item, -1))
                     .putShort("Health", (short) this.getHealthCurrent())
                     .putShort("Age", (short) this.age)
                     .putShort("PickupDelay", (short) this.pickupDelay)
@@ -321,16 +322,15 @@ public class EntityItem extends Entity {
                     .putBoolean("DisplayOnly", this.isDisplayOnly);
 
             if (this.owner != null) {
-                builder.putString("Owner", this.owner);
+                this.nbt.putString("Owner", this.owner);
             }
 
             if (this.thrower != null) {
-                builder.putString("Thrower", this.thrower);
+                this.nbt.putString("Thrower", this.thrower);
             }
 
-            builder.putBoolean("Mergeable", this.mergeItems);
+            this.nbt.putBoolean("Mergeable", this.mergeItems);
         }
-        this.namedTag = builder.build();
     }
 
     @Override

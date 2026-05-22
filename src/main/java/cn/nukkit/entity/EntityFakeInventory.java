@@ -54,11 +54,12 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
         this.setDataFlag(ActorFlags.HAS_COLLISION, false);
         this.setDataFlag(ActorFlags.CAN_CLIMB, false);
 
-        if (this.namedTag.containsKey("ContainerSize")) {
-            this.containerSize = this.namedTag.getInt("ContainerSize");
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("ContainerSize")) {
+            this.containerSize = nbtMap.getInt("ContainerSize");
         }
-        if (this.namedTag.containsKey("displayName")) {
-            this.displayName = this.namedTag.getString("displayName");
+        if (nbtMap.containsKey("displayName")) {
+            this.displayName = nbtMap.getString("displayName");
             this.setNameTag(this.displayName);
         }
 

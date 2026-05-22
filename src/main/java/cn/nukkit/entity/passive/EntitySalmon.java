@@ -84,6 +84,6 @@ public class EntitySalmon extends EntityFish {
 
     //巨型体系
     public boolean isLarge() {
-        return this.namedTag.getBoolean("isLarge");
+        return this.getNbt().getBoolean("isLarge");
     }
 }

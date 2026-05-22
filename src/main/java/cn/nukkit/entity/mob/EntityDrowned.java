@@ -186,8 +186,8 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     }
 
     public boolean wasTransformed() {
-        if (this.namedTag.containsKey("Transformed")) {
-            return this.namedTag.getBoolean("Transformed");
+        if (this.nbt.containsKey("Transformed")) {
+            return this.getNbt().getBoolean("Transformed");
         }
         return false;
     }

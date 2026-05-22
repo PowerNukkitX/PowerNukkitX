@@ -84,7 +84,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         new Behavior(new PiglinTransformExecutor(), all(
                                 entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
-                                entity -> !entity.namedTag.getBoolean("IsImmuneToZombification")
+                                entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
                         ), 13, 1),
                         new Behavior(new PiglinTradeExecutor(), all(
                                 entity -> !getItemInOffhand().isNull(),
@@ -110,7 +110,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 8, 1),
                         new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                entity -> !entity.namedTag.getBoolean("CannotHunt"),
+                                entity -> !entity.getNbt().getBoolean("CannotHunt"),
                                 entity -> getItemInHand() instanceof ItemCrossbow,
                                 any(
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
@@ -126,7 +126,7 @@ public class EntityPiglin extends EntityMob implements EntityWalkable {
                         ), 5, 1),
                         new Behavior(new PiglinMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30), all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                                entity -> !entity.namedTag.getBoolean("CannotHunt"),
+                                entity -> !entity.getNbt().getBoolean("CannotHunt"),
                                 any(
                                         entity -> getMemoryStorage().get(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME) == 0,
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_HOGLIN_ATTACK_TIME, 6000)

@@ -263,18 +263,18 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     public void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.containsKey("LlamaStrength")) {
-            this.llamaStrength = this.namedTag.getInt("LlamaStrength");
+        if (this.nbt.containsKey("LlamaStrength")) {
+            this.llamaStrength = this.getNbt().getInt("LlamaStrength");
         } else {
             this.llamaStrength = ThreadLocalRandom.current().nextInt(1, 6);
-            this.namedTag = this.namedTag.toBuilder().putInt("LlamaStrength", this.llamaStrength).build();
+            this.nbt.putInt("LlamaStrength", this.llamaStrength);
         }
 
         // Load items
         ensureInventories();
-        if (namedTag.containsKey("Inventory")) {
+        if (nbt.containsKey("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(new ObjectArrayList<>(namedTag.getList("Inventory", NbtType.COMPOUND)));
+            inv.load(new ObjectArrayList<>(this.getNbt().getList("Inventory", NbtType.COMPOUND)));
             syncEquippableInventories();
         }
     }
@@ -285,9 +285,8 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
 
         var inv = isChested() ? invChested : invNoChest;
         syncEquippableInventories();
-        this.namedTag = namedTag.toBuilder().putBoolean("Chested", isChested())
-                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()))
-                .build();
+        this.nbt.putBoolean("Chested", isChested())
+                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
     }
 
     @Override

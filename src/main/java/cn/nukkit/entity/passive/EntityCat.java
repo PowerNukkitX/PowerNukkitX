@@ -149,8 +149,8 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
             this.setVariant(randomVariant());
         }
         // Update collar color
-        if (namedTag.containsKey("Color")) {
-            this.setColor(DyeColor.getByWoolData(namedTag.getByte("Color")));
+        if (this.nbt.containsKey("Color")) {
+            this.setColor(DyeColor.getByWoolData(this.getNbt().getByte("Color")));
         }
 
         this.initSoundVariantProperty();

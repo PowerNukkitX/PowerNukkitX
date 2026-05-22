@@ -171,7 +171,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                     }
 
                     if (ent != null) {
-                        ent.namedTag = ent.namedTag.toBuilder().putBoolean("spawner", true).build();
+                        ent.getNbtBuilder().putBoolean("spawner", true);
                         ent.spawnToAll();
                     }
 

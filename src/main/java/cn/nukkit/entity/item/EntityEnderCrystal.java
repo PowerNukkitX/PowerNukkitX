@@ -42,8 +42,9 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.containsKey("ShowBottom")) {
-            this.setShowBase(this.namedTag.getBoolean("ShowBottom"));
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("ShowBottom")) {
+            this.setShowBase(nbtMap.getBoolean("ShowBottom"));
         }
     }
 
@@ -51,7 +52,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag = this.namedTag.toBuilder().putBoolean("ShowBottom", this.showBase()).build();
+        this.nbt.putBoolean("ShowBottom", this.showBase());
     }
 
     @Override

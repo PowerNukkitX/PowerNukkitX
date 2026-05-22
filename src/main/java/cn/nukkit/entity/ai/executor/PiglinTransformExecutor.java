@@ -44,7 +44,7 @@ public class PiglinTransformExecutor implements EntityControl, IBehaviorExecutor
     private void transform(EntityIntelligent entity) {
         entity.saveNBT();
         entity.close();
-        EntityZombiePigman entityZombiePigman = new EntityZombiePigman(entity.getChunk(), entity.namedTag);
+        EntityZombiePigman entityZombiePigman = new EntityZombiePigman(entity.getChunk(), entity.getNbt());
         entityZombiePigman.setPosition(entity);
         entityZombiePigman.setRotation(entity.yaw, entity.pitch);
         entityZombiePigman.spawnToAll();

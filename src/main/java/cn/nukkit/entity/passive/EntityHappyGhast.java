@@ -62,10 +62,13 @@ import java.util.Set;
 public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, InventoryHolder {
     private static final String PROP_CAN_MOVE = "minecraft:can_move";
     public static final EntityProperty[] PROPERTIES = new EntityProperty[]{
-        new BooleanEntityProperty(PROP_CAN_MOVE, true, true)
+            new BooleanEntityProperty(PROP_CAN_MOVE, true, true)
     };
-    public EntityProperty[] getEntityProperties() { return PROPERTIES; }
-    
+
+    public EntityProperty[] getEntityProperties() {
+        return PROPERTIES;
+    }
+
 
     @Override
     @NotNull
@@ -99,7 +102,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 null,
                 1200f,
                 List.of(
-                    new AgeableComponent.FeedItem(ItemID.SNOWBALL)
+                        new AgeableComponent.FeedItem(ItemID.SNOWBALL)
                 ),
                 null,
                 null,
@@ -110,9 +113,9 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     @Override
     public @Nullable HomeComponent getComponentHome() {
         return new HomeComponent(
-                    32,
-                    HomeComponent.RestrictionType.RANDOM_MOVEMENT
-                );
+                32,
+                HomeComponent.RestrictionType.RANDOM_MOVEMENT
+        );
     }
 
     @Override
@@ -120,8 +123,8 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         super.initEntity();
         setDataFlag(ActorFlags.COLLIDABLE, true); //allow standing on them
         this.armorInventory = new EntityArmorInventory(this);
-        if (this.namedTag.containsKey("Armor")) {
-            List<NbtMap> armorList = this.namedTag.getList("Armor", NbtType.COMPOUND);
+        if (this.nbt.containsKey("Armor")) {
+            List<NbtMap> armorList = this.getNbt().getList("Armor", NbtType.COMPOUND);
             for (NbtMap armorTag : armorList) {
                 int slot = armorTag.getByte("Slot");
                 var item = ItemHelper.read(armorTag);
@@ -132,7 +135,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         }
 
         // Init home memory
-        if (this.namedTag.containsKey("HomeX")) {
+        if (this.nbt.containsKey("HomeX")) {
             this.initHome();
         } else {
             this.setHomePosition();
@@ -147,7 +150,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
             for (int i = 0; i < 5; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag = this.namedTag.toBuilder().putList("Armor", NbtType.COMPOUND, armorTag).build();
+            this.nbt.putList("Armor", NbtType.COMPOUND, armorTag);
         }
     }
 
@@ -184,40 +187,40 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
                 4,
                 List.of(
                         new RideableComponent.Seat(
-                            0,
-                            4,
-                            new Vector3f( 0.0f, 3.8f,  1.7f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                0,
+                                4,
+                                new Vector3f(0.0f, 3.8f, 1.7f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         ),
                         new RideableComponent.Seat(
-                            1,
-                            4,
-                            new Vector3f(-1.7f, 3.8f,  0.0f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                1,
+                                4,
+                                new Vector3f(-1.7f, 3.8f, 0.0f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         ),
                         new RideableComponent.Seat(
-                            2,
-                            4,
-                            new Vector3f( 0.0f, 3.8f, -1.7f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                2,
+                                4,
+                                new Vector3f(0.0f, 3.8f, -1.7f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         ),
                         new RideableComponent.Seat(
-                            3,
-                            4,
-                            new Vector3f( 1.7f, 3.8f,  0.0f),
-                            181.0f,
-                            null,
-                            8.0f,
-                            6.0f
+                                3,
+                                4,
+                                new Vector3f(1.7f, 3.8f, 0.0f),
+                                181.0f,
+                                null,
+                                8.0f,
+                                6.0f
                         )
                 )
         );
@@ -254,7 +257,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         return isBaby() ? 0.95f : 4f;
     }
 
-     @Override
+    @Override
     public boolean hasGravity() {
         return false;
     }
@@ -427,12 +430,12 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
             final double maxY = topY + 2.20;
 
             AxisAlignedBB box = new SimpleAxisAlignedBB(
-                this.getX() - half + pad,
-                minY,
-                this.getZ() - half + pad,
-                this.getX() + half - pad,
-                maxY,
-                this.getZ() + half - pad
+                    this.getX() - half + pad,
+                    minY,
+                    this.getZ() - half + pad,
+                    this.getX() + half - pad,
+                    maxY,
+                    this.getZ() + half - pad
             );
 
             for (Entity e : this.level.getNearbyEntitiesSafe(box, this)) {
@@ -455,23 +458,23 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     private static final Set<String> TEMPT_ITEMS = Set.of(
-        ItemID.SNOWBALL,
-        ItemID.HARNESS_BLACK,
-        ItemID.HARNESS_BLUE,
-        ItemID.HARNESS_BROWN,
-        ItemID.HARNESS_CYAN,
-        ItemID.HARNESS_GRAY,
-        ItemID.HARNESS_GREEN,
-        ItemID.HARNESS_LIGHT_BLUE,
-        ItemID.HARNESS_LIGHT_GRAY,
-        ItemID.HARNESS_LIME,
-        ItemID.HARNESS_MAGENTA,
-        ItemID.HARNESS_ORANGE,
-        ItemID.HARNESS_PINK,
-        ItemID.HARNESS_PURPLE,
-        ItemID.HARNESS_RED,
-        ItemID.HARNESS_WHITE,
-        ItemID.HARNESS_YELLOW
+            ItemID.SNOWBALL,
+            ItemID.HARNESS_BLACK,
+            ItemID.HARNESS_BLUE,
+            ItemID.HARNESS_BROWN,
+            ItemID.HARNESS_CYAN,
+            ItemID.HARNESS_GRAY,
+            ItemID.HARNESS_GREEN,
+            ItemID.HARNESS_LIGHT_BLUE,
+            ItemID.HARNESS_LIGHT_GRAY,
+            ItemID.HARNESS_LIME,
+            ItemID.HARNESS_MAGENTA,
+            ItemID.HARNESS_ORANGE,
+            ItemID.HARNESS_PINK,
+            ItemID.HARNESS_PURPLE,
+            ItemID.HARNESS_RED,
+            ItemID.HARNESS_WHITE,
+            ItemID.HARNESS_YELLOW
     );
 
     @Override
@@ -479,117 +482,118 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         return new BehaviorGroup(
                 this.tickSpread,
                 Set.of(
-                    new Behavior(
-                        new AnimalGrowExecutor(),
-                            all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
+                        new Behavior(
+                                new AnimalGrowExecutor(),
+                                all(
+                                        e -> e.isAgeable(),
+                                        e -> e.isBaby(),
+                                        e -> !e.isGrowthPaused(),
+                                        e -> e.getTicksGrowLeft() > 0
+                                ),
+                                1, 1, 1200
+                        )
                 ),
                 Set.of(
-                    new Behavior( // Return home if too far
-                        new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
-                        entity -> {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
+                        new Behavior( // Return home if too far
+                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getDefaultFlyingSpeed() * 8f, true),
+                                entity -> {
+                                    EntityHappyGhast g = (EntityHappyGhast) entity;
 
-                            if (!g.canMove()) return false;
-                            if (g.hasPassengers) return false;
+                                    if (!g.canMove()) return false;
+                                    if (g.hasPassengers) return false;
 
-                            Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                            if (home == null) return false;
+                                    Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                                    if (home == null) return false;
 
-                            double max = g.roamDistance();
-                            return entity.distanceSquared(home) > (max * max);
-                        },
-                        4, 1
-                    ),
-                    new Behavior(
-                        new FloatTemptExecutor(true, 16, 7.0f, TEMPT_ITEMS),
-                            entity -> {
-                                EntityHappyGhast g = (EntityHappyGhast) entity;
-                                if (!g.canMove()) return false;
-                                if (g.hasPassengers) return false;
-                                if (g.dismountUnlockDelayTicks > 0) return false;
-                                return TemptExecutor.hasTemptingPlayer(entity, true, 16, TEMPT_ITEMS);
-                            },
-                        3, 1
-                    ),
-                    new Behavior( // Hover roam near home
-                        new HoverRandomRoamExecutor(
-                            this.getDefaultFlyingSpeed(),
-                            roamDistance(),
-                            10, // TODO: Supposed to be 16, as we dont have leashable reduced a bit to not lost it
-                            (this.isBaby()) ? -1 : 0,
-                            (this.isBaby()) ? 1 : 6,
-                            (this.isBaby()) ? 4 : 14,
-                            160
-                        ),
-                        entity -> {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
-                            if (!g.canMove()) return false;
-                            if (g.hasPassengers) return false;
-                            return true;
-                        },
-                        2, 1
-                    ),
-                    new Behavior( // Look at nearest player
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                e -> ((EntityHappyGhast) e).getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                e -> {
-                                    EntityHappyGhast h = (EntityHappyGhast) e;
-                                    Player p = h.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                    return p != null && !h.isPassenger(p);
+                                    double max = g.roamDistance();
+                                    return entity.distanceSquared(home) > (max * max);
                                 },
-                                e -> {
-                                    EntityHappyGhast g = (EntityHappyGhast) e;
-                                    return !g.hasPassengers && g.dismountUnlockDelayTicks <= 0;
-                                }
-                            ),
-                        1, 1, 100
-                    )
+                                4, 1
+                        ),
+                        new Behavior(
+                                new FloatTemptExecutor(true, 16, 7.0f, TEMPT_ITEMS),
+                                entity -> {
+                                    EntityHappyGhast g = (EntityHappyGhast) entity;
+                                    if (!g.canMove()) return false;
+                                    if (g.hasPassengers) return false;
+                                    if (g.dismountUnlockDelayTicks > 0) return false;
+                                    return TemptExecutor.hasTemptingPlayer(entity, true, 16, TEMPT_ITEMS);
+                                },
+                                3, 1
+                        ),
+                        new Behavior( // Hover roam near home
+                                new HoverRandomRoamExecutor(
+                                        this.getDefaultFlyingSpeed(),
+                                        roamDistance(),
+                                        10, // TODO: Supposed to be 16, as we dont have leashable reduced a bit to not lost it
+                                        (this.isBaby()) ? -1 : 0,
+                                        (this.isBaby()) ? 1 : 6,
+                                        (this.isBaby()) ? 4 : 14,
+                                        160
+                                ),
+                                entity -> {
+                                    EntityHappyGhast g = (EntityHappyGhast) entity;
+                                    if (!g.canMove()) return false;
+                                    if (g.hasPassengers) return false;
+                                    return true;
+                                },
+                                2, 1
+                        ),
+                        new Behavior( // Look at nearest player
+                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
+                                all(
+                                        new ProbabilityEvaluator(4, 10),
+                                        e -> ((EntityHappyGhast) e).getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                        e -> {
+                                            EntityHappyGhast h = (EntityHappyGhast) e;
+                                            Player p = h.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                            return p != null && !h.isPassenger(p);
+                                        },
+                                        e -> {
+                                            EntityHappyGhast g = (EntityHappyGhast) e;
+                                            return !g.hasPassengers && g.dismountUnlockDelayTicks <= 0;
+                                        }
+                                ),
+                                1, 1, 100
+                        )
                 ),
                 Set.of(
-                    new NearestPlayerSensor(56, 0, 20),
-                    // Ensure HOME memory exists + stays valid
-                    new ISensor() {
-                        @Override
-                        public void sense(EntityIntelligent entity) {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
-                            if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK)) g.setHomePosition();
-                        }
+                        new NearestPlayerSensor(56, 0, 20),
+                        // Ensure HOME memory exists + stays valid
+                        new ISensor() {
+                            @Override
+                            public void sense(EntityIntelligent entity) {
+                                EntityHappyGhast g = (EntityHappyGhast) entity;
+                                if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_BLOCK))
+                                    g.setHomePosition();
+                            }
 
-                        @Override
-                        public int getPeriod() {
-                            return 60;
-                        }
-                    },
-                    new ISensor() {
-                        @Override
-                        public void sense(EntityIntelligent entity) {
-                            EntityHappyGhast g = (EntityHappyGhast) entity;
-                            if (g.dismountUnlockDelayTicks > 0 && !g.hasPassengers) g.dismountUnlockDelayTicks--;
-                            g.applyMobilityFromTopPresence(g.playerOnTopCached);
-                        }
+                            @Override
+                            public int getPeriod() {
+                                return 60;
+                            }
+                        },
+                        new ISensor() {
+                            @Override
+                            public void sense(EntityIntelligent entity) {
+                                EntityHappyGhast g = (EntityHappyGhast) entity;
+                                if (g.dismountUnlockDelayTicks > 0 && !g.hasPassengers) g.dismountUnlockDelayTicks--;
+                                g.applyMobilityFromTopPresence(g.playerOnTopCached);
+                            }
 
-                        @Override
-                        public int getPeriod() {
-                            return 1;
+                            @Override
+                            public int getPeriod() {
+                                return 1;
+                            }
                         }
-                    }
                 ),
                 Set.of(
-                    new SpaceMoveController(),
-                    new LookController(
-                        () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0,
-                        () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0
-                    ),
-                    new LiftController()
+                        new SpaceMoveController(),
+                        new LookController(
+                                () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0,
+                                () -> this.canMove() && !this.hasPassengers && this.dismountUnlockDelayTicks <= 0
+                        ),
+                        new LiftController()
                 ),
                 new SimpleSpaceAStarRouteFinder(new HoveringPosEvaluator(), this),
                 this

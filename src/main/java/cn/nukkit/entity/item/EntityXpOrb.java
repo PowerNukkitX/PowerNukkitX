@@ -116,17 +116,18 @@ public class EntityXpOrb extends Entity {
         setHealthMax(5);
         setHealthCurrent(5);
 
-        if (namedTag.containsKey("Health")) {
-            this.setHealthCurrent(namedTag.getShort("Health"));
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("Health")) {
+            this.setHealthCurrent(nbtMap.getShort("Health"));
         }
-        if (namedTag.containsKey("Age")) {
-            this.age = namedTag.getShort("Age");
+        if (nbtMap.containsKey("Age")) {
+            this.age = nbtMap.getShort("Age");
         }
-        if (namedTag.containsKey("PickupDelay")) {
-            this.pickupDelay = namedTag.getShort("PickupDelay");
+        if (nbtMap.containsKey("PickupDelay")) {
+            this.pickupDelay = nbtMap.getShort("PickupDelay");
         }
-        if (namedTag.containsKey("Value")) {
-            this.exp = namedTag.getShort("Value");
+        if (nbtMap.containsKey("Value")) {
+            this.exp = nbtMap.getShort("Value");
         }
 
         if (this.exp <= 0) {
@@ -247,12 +248,10 @@ public class EntityXpOrb extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putShort("Health", (short) getHealthCurrent())
+        this.nbt.putShort("Health", (short) getHealthCurrent())
                 .putShort("Age", (short) age)
                 .putShort("PickupDelay", (short) pickupDelay)
-                .putShort("Value", (short) exp)
-                .build();
+                .putShort("Value", (short) exp);
     }
 
     public int getExp() {

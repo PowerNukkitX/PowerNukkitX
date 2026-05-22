@@ -70,23 +70,23 @@ public class EntityTropicalfish extends EntityFish {
     @Override
     public void initEntity() {
         super.initEntity();
-        if (this.namedTag.containsKey("Variant")) {
-            this.variant = this.namedTag.getInt("Variant");
+        if (this.nbt.containsKey("Variant")) {
+            this.variant = this.getNbt().getInt("Variant");
         } else {
             this.variant = getRandomVariant();
         }
-        if (this.namedTag.containsKey("Mark_Variant")) {
-            this.mark_variant = this.namedTag.getInt("Mark_Variant");
+        if (this.nbt.containsKey("Mark_Variant")) {
+            this.mark_variant = this.getNbt().getInt("Mark_Variant");
         } else {
             this.mark_variant = getRandomMarkVariant();
         }
-        if (!this.namedTag.containsKey("Color")) {
+        if (!this.nbt.containsKey("Color")) {
             this.setColor(getRandomColor());
         } else {
-            this.setColor(this.namedTag.getByte("Color"));
+            this.setColor(this.getNbt().getByte("Color"));
         }
-        if (this.namedTag.containsKey("Color2")) {
-            this.color2 = this.namedTag.getInt("Color2");
+        if (this.nbt.containsKey("Color2")) {
+            this.color2 = this.getNbt().getInt("Color2");
         } else {
             this.color2 = getRandomColor2();
         }
@@ -115,7 +115,7 @@ public class EntityTropicalfish extends EntityFish {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag = this.namedTag.toBuilder().putByte("Color", (byte) this.color).build();
+        this.nbt.putByte("Color", (byte) this.color);
     }
 
     @Override
@@ -127,13 +127,13 @@ public class EntityTropicalfish extends EntityFish {
     }
 
     public int getColor() {
-        return namedTag.getByte("Color");
+        return getNbt().getByte("Color");
     }
 
     public void setColor(int color) {
         this.color = color;
         this.setDataProperty(ActorDataTypes.COLOR_INDEX, (byte) color);
-        this.namedTag = this.namedTag.toBuilder().putByte("Color", (byte) this.color).build();
+        this.nbt.putByte("Color", (byte) this.color);
     }
 
 }

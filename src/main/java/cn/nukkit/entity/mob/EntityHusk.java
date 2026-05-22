@@ -113,7 +113,7 @@ public class EntityHusk extends EntityZombie {
 
     @Override
     public Set<String> typeFamily() {
-        if (this.namedTag == null || !this.namedTag.getBoolean(NBT_HUSK_RIDER)) return Set.of("husk", "zombie", "undead", "monster", "mob");
+        if (this.nbt == null || !this.getNbt().getBoolean(NBT_HUSK_RIDER)) return Set.of("husk", "zombie", "undead", "monster", "mob");
         return Set.of("husk_rider", "husk", "zombie", "undead", "monster", "mob");
     }
 
@@ -135,7 +135,7 @@ public class EntityHusk extends EntityZombie {
     @Override
     protected void transform() {
         this.close();
-        EntityZombie drowned = new EntityZombie(this.getChunk(), this.namedTag);
+        EntityZombie drowned = new EntityZombie(this.getChunk(), this.getNbt());
         drowned.setPosition(this);
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();

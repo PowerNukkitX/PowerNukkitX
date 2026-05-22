@@ -38,14 +38,15 @@ public interface IHuman extends InventoryHolder {
         human.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0, 0).toNetwork(), false);
 
         if (!(human instanceof Player)) {
-            if (human.namedTag.containsKey("NameTag")) {
-                human.setNameTag(human.namedTag.getString("NameTag"));
+            final NbtMap nbtMap = human.getNbt();
+            if (human.nbt.containsKey("NameTag")) {
+                human.setNameTag(nbtMap.getString("NameTag"));
             }
 
-            if (human.namedTag.containsKey("Skin") && human.namedTag.get("Skin") instanceof NbtMap) {
+            if (human.nbt.containsKey("Skin") && nbtMap.get("Skin") instanceof NbtMap) {
                 final SerializedSkin.Builder builder = SerializedSkin.builder();
 
-                final NbtMap skinTag = human.namedTag.getCompound("Skin");
+                final NbtMap skinTag = nbtMap.getCompound("Skin");
                 NbtMapBuilder tagBuilder = skinTag.toBuilder();
                 if (!tagBuilder.containsKey("Transparent")) {
                     tagBuilder.putBoolean("Transparent", false);
@@ -173,25 +174,27 @@ public interface IHuman extends InventoryHolder {
                 new HumanEnderChestInventory(this)
         });
 
-        if (human.namedTag.containsKey("SelectedInventorySlot")) {
-            this.getInventory().setHeldItemSlot(NukkitMath.clamp(human.namedTag.getInt("SelectedInventorySlot"), 0, 8));
+        final NbtMap nbtMap = human.getNbt();
+
+        if (human.nbt.containsKey("SelectedInventorySlot")) {
+            this.getInventory().setHeldItemSlot(NukkitMath.clamp(nbtMap.getInt("SelectedInventorySlot"), 0, 8));
         }
 
-        if (human.namedTag.containsKey("Inventory") && human.namedTag.get("Inventory") instanceof List<?>) {
+        if (nbtMap.containsKey("Inventory") && nbtMap.get("Inventory") instanceof List<?>) {
             var inventory = this.getInventory();
-            List<NbtMap> inventoryList = human.namedTag.getList("Inventory", NbtType.COMPOUND);
+            List<NbtMap> inventoryList = nbtMap.getList("Inventory", NbtType.COMPOUND);
             for (NbtMap item : inventoryList) {
                 int slot = item.getByte("Slot");
                 inventory.setItem(slot, ItemHelper.read(item));//inventory 0-39
             }
         }
-        if (human.namedTag.containsKey("OffInventory")) {
+        if (nbtMap.containsKey("OffInventory")) {
             HumanOffHandInventory offhandInventory = getOffhandInventory();
-            NbtMap offHand = human.namedTag.getCompound("OffInventory");
+            NbtMap offHand = nbtMap.getCompound("OffInventory");
             offhandInventory.setItem(0, ItemHelper.read(offHand));//offinventory index 0
         }
-        if (human.namedTag.containsKey("EnderItems") && human.namedTag.get("EnderItems") instanceof List<?>) {
-            List<NbtMap> inventoryList = human.namedTag.getList("EnderItems", NbtType.COMPOUND);
+        if (nbtMap.containsKey("EnderItems") &&nbtMap.get("EnderItems") instanceof List<?>) {
+            List<NbtMap> inventoryList = nbtMap.getList("EnderItems", NbtType.COMPOUND);
             for (NbtMap item : inventoryList) {//enderItems index 0-26
                 ((EntityHumanType) human).getEnderChestInventory().setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
@@ -201,33 +204,31 @@ public interface IHuman extends InventoryHolder {
     default void saveHumanEntity(Entity human) {
         //EntityHumanType
         final List<NbtMap> inventoryTag = new ObjectArrayList<>();
-        final NbtMapBuilder builder = human.namedTag.toBuilder();
-
-        builder.putList("Inventory", NbtType.COMPOUND, inventoryTag).build(); // add empty
+        human.nbt.putList("Inventory", NbtType.COMPOUND, inventoryTag).build(); // add empty
         if (this.getInventory() != null) {
             for (var entry : getInventory().getContents().entrySet()) {
                 inventoryTag.add(ItemHelper.write(entry.getValue(), entry.getKey()));
             }
 
-            builder.putList("Inventory", NbtType.COMPOUND, inventoryTag).build(); // add contents
-            builder.putInt("SelectedInventorySlot", this.getInventory().getHeldItemIndex());
+            human.nbt.putList("Inventory", NbtType.COMPOUND, inventoryTag).build(); // add contents
+            human.nbt.putInt("SelectedInventorySlot", this.getInventory().getHeldItemIndex());
         }
 
         if (this.getOffhandInventory() != null) {
             Item item = this.getOffhandInventory().getItem(0);
-            builder.putCompound("OffInventory", ItemHelper.write(item, 0));
+            human.nbt.putCompound("OffInventory", ItemHelper.write(item, 0));
         }
 
-        builder.putList("EnderItems", NbtType.COMPOUND, new ObjectArrayList<>());
+        human.nbt.putList("EnderItems", NbtType.COMPOUND, new ObjectArrayList<>());
         if (this.getEnderChestInventory() != null) {
-            List<NbtMap> enderItems = new ObjectArrayList<>(human.namedTag.getList("EnderItems", NbtType.COMPOUND));
+            List<NbtMap> enderItems = new ObjectArrayList<>(human.getNbt().getList("EnderItems", NbtType.COMPOUND));
             for (int slot = 0; slot < this.getEnderChestInventory().getSize(); ++slot) {
                 Item item = this.getEnderChestInventory().getItem(slot);
                 if (!item.isNull()) {
                     enderItems.add(ItemHelper.write(item, slot));
                 }
             }
-            builder.putList("EnderItems", NbtType.COMPOUND, enderItems);
+            human.nbt.putList("EnderItems", NbtType.COMPOUND, enderItems);
         }
 
         //EntityHuman
@@ -305,9 +306,8 @@ public interface IHuman extends InventoryHolder {
                 skinTag.putString("PlayFabId", skin.getPlayFabId());
             }
 
-            builder.putCompound("Skin", skinTag.build());
+            human.nbt.putCompound("Skin", skinTag.build());
         }
-        human.namedTag = builder.build();
     }
 
     void setSkin(SerializedSkin skin);

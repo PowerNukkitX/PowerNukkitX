@@ -56,8 +56,8 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             if (variant != null) return variant;
         }
 
-        if (this.namedTag.containsKey(TAG_SLIME_SIZE)) {
-            return this.namedTag.getInt(TAG_SLIME_SIZE);
+        if (this.nbt.containsKey(TAG_SLIME_SIZE)) {
+            return this.getNbt().getInt(TAG_SLIME_SIZE);
         }
 
         return SIZE_BIG;
@@ -65,7 +65,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     public void setVariant(int variant) {
-        this.namedTag = this.namedTag.toBuilder().putInt(TAG_SLIME_SIZE, variant).build();
+        this.nbt.putInt(TAG_SLIME_SIZE, variant);
 
         if (getBehaviorGroup() != null) {
             getMemoryStorage().put(CoreMemoryTypes.VARIANT, variant);
@@ -78,7 +78,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             return true;
         }
 
-        return this.namedTag.containsKey(TAG_SLIME_SIZE);
+        return this.nbt.containsKey(TAG_SLIME_SIZE);
     }
 
     @Override
@@ -101,14 +101,14 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     protected void initEntity() {
-        if (!this.namedTag.containsKey(TAG_SLIME_SIZE)) {
-            this.namedTag = this.namedTag.toBuilder().putInt(TAG_SLIME_SIZE, randomVariant()).build();
+        if (!this.nbt.containsKey(TAG_SLIME_SIZE)) {
+            this.nbt.putInt(TAG_SLIME_SIZE, randomVariant());
         }
 
         super.initEntity();
 
         if (getBehaviorGroup() != null) {
-            getMemoryStorage().put(CoreMemoryTypes.VARIANT, this.namedTag.getInt(TAG_SLIME_SIZE));
+            getMemoryStorage().put(CoreMemoryTypes.VARIANT, this.getNbt().getInt(TAG_SLIME_SIZE));
         }
 
         if (getVariant() == SIZE_BIG) {
@@ -229,7 +229,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
     public void kill() {
         if (getVariant() != SIZE_SMALL) {
             for (int i = 1; i < Utils.rand(2, 5); i++) {
-                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), this.namedTag);
+                EntityMagmaCube magmaCube = new EntityMagmaCube(this.getChunk(), this.getNbt());
                 magmaCube.setPosition(this.add(Utils.rand(-0.5, 0.5), 0, Utils.rand(-0.5, 0.5)));
                 magmaCube.setRotation(this.yaw, this.pitch);
                 magmaCube.setVariant(getSmaller());

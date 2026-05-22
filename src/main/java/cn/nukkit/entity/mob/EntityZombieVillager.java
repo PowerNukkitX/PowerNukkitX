@@ -84,7 +84,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
                 if (!getDataFlag(ActorFlags.SHAKING)) {
                     setDataFlag(ActorFlags.SHAKING);
                     if (!player.isCreative()) {
-                        this.namedTag = this.namedTag.toBuilder().putString("purifyPlayer", player.getXUID()).build();
+                        this.nbt.putString("purifyPlayer", player.getXUID());
                         player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                     }
                     getLevel().addSound(this, Sound.MOB_ZOMBIE_REMEDY);
@@ -127,7 +127,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
         this.close();
         getArmorInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
         getEquipmentInventory().getContents().values().forEach(i -> getLevel().dropItem(this, i));
-        EntityVillagerV2 villager = new EntityVillagerV2(this.getChunk(), this.namedTag);
+        EntityVillagerV2 villager = new EntityVillagerV2(this.getChunk(), this.getNbt());
         villager.addEffect(Effect.get(EffectType.NAUSEA).setDuration(200));
         villager.setPosition(this);
         villager.setRotation(this.yaw, this.pitch);

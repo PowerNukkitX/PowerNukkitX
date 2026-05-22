@@ -195,15 +195,15 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         setInputControls(true);
 
         // EnableTrap
-        if (this.namedTag.containsKey("EnableTrap")) {
-            this.enableTrap = this.namedTag.getBoolean("EnableTrap");
+        if (this.nbt.containsKey("EnableTrap")) {
+            this.enableTrap = this.getNbt().getBoolean("EnableTrap");
         } else {
             this.enableTrap = true;
-            this.namedTag = this.namedTag.toBuilder().putBoolean("EnableTrap", true).build();
+            this.nbt.putBoolean("EnableTrap", true);
         }
 
         // SpawnReason
-        String reason = this.namedTag.containsKey("SpawnReason") ? this.namedTag.getString("SpawnReason") : null;
+        String reason = this.nbt.containsKey("SpawnReason") ? this.getNbt().getString("SpawnReason") : null;
         this.naturalSpawn = reason != null && reason.equalsIgnoreCase("NATURAL");
 
     }
@@ -273,7 +273,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         if (!this.enableTrap) return;
 
         this.enableTrap = false;
-        this.namedTag = this.namedTag.toBuilder().putBoolean("EnableTrap", false).build();
+        this.nbt.putBoolean("EnableTrap", false);
     }
 
     public boolean isStartedTrap() {
@@ -342,11 +342,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
 
     private void spawnPendingRider() {
         if (this.closed || this.level == null || this.isBaby()) return;
-        if (this.namedTag != null && this.namedTag.getBoolean(NBT_RIDER_SPAWNED)) return;
+        if (this.nbt != null && this.getNbt().getBoolean(NBT_RIDER_SPAWNED)) return;
 
         if (!this.passengers.isEmpty()) {
-            if (this.namedTag != null)
-                this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
+            if (this.nbt != null)
+                this.nbt.putBoolean(NBT_RIDER_SPAWNED, true);
             return;
         }
 
@@ -356,8 +356,8 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         this.mountEntity(rider, true);
         rider.spawnToAll();
 
-        if (this.namedTag != null)
-            this.namedTag = this.namedTag.toBuilder().putBoolean(NBT_RIDER_SPAWNED, true).build();
+        if (this.nbt != null)
+            this.nbt.putBoolean(NBT_RIDER_SPAWNED, true);
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {

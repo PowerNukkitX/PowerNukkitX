@@ -68,10 +68,11 @@ public class EntityBoat extends EntityVehicle {
     @Override
     protected void initEntity() {
         super.initEntity();
-        if (this.namedTag.containsKey("Variant")) {
-            woodID = this.namedTag.getInt("Variant");
-        } else if (this.namedTag.containsKey("woodID")) {
-            woodID = this.namedTag.getByte("woodID");
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.containsKey("Variant")) {
+            woodID = nbtMap.getInt("Variant");
+        } else if (nbtMap.containsKey("woodID")) {
+            woodID = nbtMap.getByte("woodID");
         }
 
         this.setDataFlag(ActorFlags.HAS_GRAVITY);
@@ -390,9 +391,8 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putInt("Variant", this.woodID)
-                .putByte("woodID", (byte) this.woodID) // compatibility cb nukkit
-                .build();
+        this.nbt.putInt("Variant", this.woodID)
+                .putByte("woodID", (byte) this.woodID); // compatibility cb nukkit
     }
 
     public int getVariant() {

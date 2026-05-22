@@ -93,13 +93,16 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         this.setHealthCurrent(20);
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
-        this.setVariant(this.namedTag.getInt("Variant"));
-        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT), this);
+
+        final NbtMap nbtMap = this.getNbt();
+
+        this.setVariant(nbtMap.getInt("Variant"));
+        this.dialog = new FormWindowDialog(nbtMap.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : nbtMap.getString(KEY_DIALOG_TITLE), nbtMap.getString(KEY_DIALOG_CONTENT), this);
         this.setNameTag(this.dialog.getTitle());
-        if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
-            this.dialog.setSkinData(this.namedTag.getString(KEY_DIALOG_SKINDATA));
-        if (!this.namedTag.getString(KEY_DIALOG_BUTTONS).isEmpty())
-            this.dialog.setButtonJSONData(this.namedTag.getString(KEY_DIALOG_BUTTONS));
+        if (!nbtMap.getString(KEY_DIALOG_SKINDATA).isEmpty())
+            this.dialog.setSkinData(nbtMap.getString(KEY_DIALOG_SKINDATA));
+        if (!nbtMap.getString(KEY_DIALOG_BUTTONS).isEmpty())
+            this.dialog.setButtonJSONData(nbtMap.getString(KEY_DIALOG_BUTTONS));
         this.dialog.addHandler((player, response) -> {
             if (response.getRequestType() == NpcRequestPacket.RequestType.SET_ACTIONS) {
                 if (!response.getData().isEmpty()) {
@@ -149,12 +152,11 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putString(KEY_DIALOG_TITLE, this.dialog.getTitle())
+        this.nbt.putString(KEY_DIALOG_TITLE, this.dialog.getTitle())
                 .putString(KEY_DIALOG_CONTENT, this.dialog.getContent())
                 .putString(KEY_DIALOG_SKINDATA, this.dialog.getSkinData())
                 .putString(KEY_DIALOG_BUTTONS, this.dialog.getButtonJSONData())
-                .putInt("Variant", this.variant)
-                .build();
+                .putInt("Variant", this.variant);
     }
 
     @Override

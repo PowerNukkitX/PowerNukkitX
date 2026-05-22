@@ -187,8 +187,8 @@ public class EntityCow extends EntityAnimal implements EntityWalkable, ClimateVa
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(namedTag.containsKey("variant")) {
-            setVariant(Variant.get(namedTag.getString("variant")));
+        if(nbt.containsKey("variant")) {
+            setVariant(Variant.get(getNbt().getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 
         this.initSoundVariantProperty();

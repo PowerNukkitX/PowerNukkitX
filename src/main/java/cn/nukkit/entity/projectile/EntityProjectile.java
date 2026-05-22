@@ -69,7 +69,7 @@ public abstract class EntityProjectile extends Entity {
     }
 
     protected double getDamage() {
-        return namedTag.containsKey("damage") ? namedTag.getDouble("damage") : getBaseDamage();
+        return nbt.containsKey("damage") ? getNbt().getDouble("damage") : getBaseDamage();
     }
 
     protected double getBaseDamage() {
@@ -154,12 +154,12 @@ public abstract class EntityProjectile extends Entity {
 
         this.setHealthMax(1);
         this.setHealthCurrent(1);
-        if (this.namedTag.containsKey("Age") && !this.noAge) {
-            this.age = this.namedTag.getShort("Age");
+        if (this.nbt.containsKey("Age") && !this.noAge) {
+            this.age = this.getNbt().getShort("Age");
         }
 
-        if (this.namedTag.containsKey("ench")) {
-            List<NbtMap> enchs = this.namedTag.getList("ench", NbtType.COMPOUND);
+        if (this.nbt.containsKey("ench")) {
+            List<NbtMap> enchs = this.getNbt().getList("ench", NbtType.COMPOUND);
             this.enchantments = new Enchantment[enchs.size()];
             for (int i = 0; i < enchs.size(); i++) {
                 NbtMap entry = enchs.get(i);
@@ -177,7 +177,7 @@ public abstract class EntityProjectile extends Entity {
     public void saveNBT() {
         super.saveNBT();
         if (!this.noAge) {
-            this.namedTag = this.namedTag.toBuilder().putShort("Age", (short) this.age).build();
+            this.nbt.putShort("Age", (short) this.age);
         }
 
         if (this.enchantments != null && this.enchantments.length > 0) {
@@ -189,7 +189,7 @@ public abstract class EntityProjectile extends Entity {
                         .build()
                 );
             }
-            this.namedTag = this.namedTag.toBuilder().putList("ench", NbtType.COMPOUND, enchs).build();
+            this.nbt.putList("ench", NbtType.COMPOUND, enchs);
         }
     }
 

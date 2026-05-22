@@ -125,7 +125,7 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
 
     private NbtMap getCleanedNBT(Entity entity) {
         entity.saveNBT();
-        final NbtMapBuilder builder = entity.namedTag.toBuilder();
+        final NbtMapBuilder builder = entity.getNbt().toBuilder();
         builder.remove("Pos");
         builder.remove("Motion");
         builder.remove("OnGround");

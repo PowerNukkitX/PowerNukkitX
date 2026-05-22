@@ -45,8 +45,8 @@ public class EntityEgg extends EntityProjectile implements ClimateVariant {
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(namedTag.containsKey("variant")) {
-            setVariant(Variant.get(namedTag.getString("variant")));
+        if(nbt.containsKey("variant")) {
+            setVariant(Variant.get(getNbt().getString("variant")));
         } else setVariant(Variant.TEMPERATE);
     }
 

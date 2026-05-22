@@ -281,13 +281,13 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
             this.setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
         }
         // Update CollarColor to Color
-        if (namedTag.containsKey("CollarColor")) {
-            this.setColor(DyeColor.getByWoolData(namedTag.getByte("CollarColor")));
+        if (nbt.containsKey("CollarColor")) {
+            this.setColor(DyeColor.getByWoolData(getNbt().getByte("CollarColor")));
         }
         this.armorInventory = new EntityArmorInventory(this);
 
-        if (this.namedTag.containsKey(TAG_ARMOR)) {
-            List<NbtMap> armorList = this.namedTag.getList(TAG_ARMOR, NbtType.COMPOUND);
+        if (this.nbt.containsKey(TAG_ARMOR)) {
+            List<NbtMap> armorList = this.getNbt().getList(TAG_ARMOR, NbtType.COMPOUND);
             for (NbtMap armorTag : armorList) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
@@ -337,7 +337,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
             for (int i = 0; i < 4; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.namedTag = this.namedTag.toBuilder().putList(TAG_ARMOR, NbtType.COMPOUND, armorTag).build();
+            this.nbt.putList(TAG_ARMOR, NbtType.COMPOUND, armorTag);
         }
     }
 

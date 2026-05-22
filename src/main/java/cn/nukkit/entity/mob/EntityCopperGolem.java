@@ -163,16 +163,17 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     @Override
     protected void initEntity() {
         super.initEntity();
-        if (!namedTag.containsKey("oxidationLevel")) {
-            this.namedTag = namedTag.toBuilder().putString("oxidationLevel", Oxidation.UNOXIDIZED.getName()).build();
+        final NbtMap nbtMap = this.getNbt();
+        if (!nbtMap.containsKey("oxidationLevel")) {
+            this.nbt.putString("oxidationLevel", Oxidation.UNOXIDIZED.getName());
         }
         this.inventory = new EntityEquipmentInventory(this);
 
-        if (this.namedTag.containsKey("Mainhand")) {
-            this.inventory.setItemInHand(ItemHelper.read(this.namedTag.getCompound("Mainhand")), true);
+        if (nbtMap.containsKey("Mainhand")) {
+            this.inventory.setItemInHand(ItemHelper.read(nbtMap.getCompound("Mainhand")), true);
         }
-        setOxidation(Oxidation.valueOf(namedTag.getString("oxidationLevel").toUpperCase()));
-        this.weatherTick = namedTag.getInt("weatheredTick");
+        setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase()));
+        this.weatherTick = nbtMap.getInt("weatheredTick");
         setEnumEntityProperty(PROPERTIES[0].getIdentifier(), "none");
     }
 
@@ -208,10 +209,9 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putCompound("Mainhand", ItemHelper.write(this.getInventory().getItem(0), null))
+        this.nbt.putCompound("Mainhand", ItemHelper.write(this.getInventory().getItem(0), null))
                 .putString("oxidationLevel", this.getOxidation().getName())
-                .putInt("weatheredTick", this.weatherTick)
-                .build();
+                .putInt("weatheredTick", this.weatherTick);
     }
 
     @Override
@@ -232,9 +232,10 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                 getLevel().addSound(this, Sound.COPPER_WAX_ON);
                 Server.broadcastPacket(getViewers().values(), new WaxOnParticle(getVector3()).encode()[0]);
             }
-        } else if(item.isAxe()) {
-            if(isWaxed()) {
-                if(player.getGamemode() != Player.CREATIVE) player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
+        } else if (item.isAxe()) {
+            if (isWaxed()) {
+                if (player.getGamemode() != Player.CREATIVE)
+                    player.getInventory().getItemInMainHand().setDamage(item.getDamage() + 1);
                 setWaxed(false);
                 getLevel().addSound(this, Sound.SCRAPE);
                 Server.broadcastPacket(getViewers().values(), new WaxOffParticle(this).encode()[0]);

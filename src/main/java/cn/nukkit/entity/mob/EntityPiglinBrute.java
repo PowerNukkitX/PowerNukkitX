@@ -72,7 +72,7 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
                         new Behavior(new PiglinTransformExecutor(), all(
                                 entity -> entity.getLevel().getDimension() != Level.DIMENSION_NETHER,
                                 entity -> !isImmobile(),
-                                entity -> !entity.namedTag.getBoolean("IsImmuneToZombification")
+                                entity -> !entity.getNbt().getBoolean("IsImmuneToZombification")
                         ), 12, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_ANGRY, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> isAngry()), 10, 1),
                         new Behavior(new PlaySoundExecutor(Sound.MOB_PIGLIN_AMBIENT, 0.8f, 1.2f, 0.8f, 0.8f), all(new RandomSoundEvaluator(), entity -> !isAngry()), 9, 1),

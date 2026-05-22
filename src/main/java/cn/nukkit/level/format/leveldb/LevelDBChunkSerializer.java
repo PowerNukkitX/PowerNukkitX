@@ -381,7 +381,7 @@ public class LevelDBChunkSerializer {
                 for (Entity e : entities) {
                     if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
                         e.saveNBT();
-                        nbtOutputStream.writeTag(e.namedTag);
+                        nbtOutputStream.writeTag(e.getNbt());
                     }
                 }
                 writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));

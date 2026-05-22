@@ -329,8 +329,8 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     public boolean isRevived() {
-        if (this.namedTag.containsKey("Revived")) {
-            return this.namedTag.getBoolean("Revived");
+        if (this.nbt.containsKey("Revived")) {
+            return this.getNbt().getBoolean("Revived");
         } else return false;
     }
 

@@ -80,7 +80,7 @@ public class EntityArrow extends SlenderProjectile {
     protected void initEntity() {
         super.initEntity();
 
-        this.pickupMode = namedTag.containsKey("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
+        this.pickupMode = nbt.containsKey("pickup") ? getNbt().getByte("pickup") : PICKUP_ANY;
     }
 
     public void setCritical() {
@@ -171,7 +171,7 @@ public class EntityArrow extends SlenderProjectile {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag = this.namedTag.toBuilder().putByte("pickup", (byte) this.pickupMode).build();
+        this.nbt.putByte("pickup", (byte) this.pickupMode);
     }
 
     public int getPickupMode() {

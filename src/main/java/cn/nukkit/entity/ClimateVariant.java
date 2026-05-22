@@ -36,7 +36,7 @@ public interface ClimateVariant {
         if (this instanceof Entity entity) {
             entity.setEnumEntityProperty(PROPERTY_STATE, variant.getName());
             entity.sendData(entity.getViewers().values().toArray(Player[]::new));
-            entity.namedTag = entity.namedTag.toBuilder().putString("variant", variant.getName()).build();
+            entity.nbt.putString("variant", variant.getName());
         }
     }
 

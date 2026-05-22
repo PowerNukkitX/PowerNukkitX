@@ -48,7 +48,7 @@ public class EntitySplashPotion extends EntityProjectile {
     protected void initEntity() {
         super.initEntity();
 
-        potionId = this.namedTag.getShort("PotionId");
+        potionId = this.getNbt().getShort("PotionId");
 
         this.entityDataMap.put(ActorDataTypes.AUX_VALUE_DATA, this.potionId);
 

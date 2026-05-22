@@ -90,17 +90,17 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     public void initEntity() {
         super.initEntity();
 
-        if (!this.namedTag.containsKey("Profession")) {
+        if (!this.nbt.containsKey("Profession")) {
             this.setProfession(PROFESSION_GENERIC);
         }
     }
 
     public int getProfession() {
-        return this.namedTag.getInt("Profession");
+        return this.getNbt().getInt("Profession");
     }
 
     public void setProfession(int profession) {
-        this.namedTag = this.namedTag.toBuilder().putInt("Profession", profession).build();
+        this.nbt.putInt("Profession", profession);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
 
     private void transform() {
         this.close();
-        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), this.namedTag);
+        EntityZombieVillager zombieVillager = new EntityZombieVillager(this.getChunk(), this.getNbt());
         zombieVillager.setPosition(this);
         zombieVillager.setRotation(this.yaw, this.pitch);
         zombieVillager.spawnToAll();

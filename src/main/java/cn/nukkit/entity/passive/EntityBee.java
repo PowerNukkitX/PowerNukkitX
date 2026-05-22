@@ -353,25 +353,25 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.containsKey("HomeHiveX")) {
-            this.homeHiveX = this.namedTag.getInt("HomeHiveX");
-            this.homeHiveY = this.namedTag.getInt("HomeHiveY");
-            this.homeHiveZ = this.namedTag.getInt("HomeHiveZ");
+        if (this.nbt.containsKey("HomeHiveX")) {
+            final NbtMap nbtMap = this.getNbt();
+            this.homeHiveX = nbtMap.getInt("HomeHiveX");
+            this.homeHiveY = nbtMap.getInt("HomeHiveY");
+            this.homeHiveZ = nbtMap.getInt("HomeHiveZ");
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-
         if (hasHomeHive()) {
-            this.namedTag = this.namedTag.toBuilder()
-                    .putInt("HomeHiveX", homeHiveX)
+            this.nbt.putInt("HomeHiveX", homeHiveX)
                     .putInt("HomeHiveY", homeHiveY)
-                    .putInt("HomeHiveZ", homeHiveZ)
-                    .build();
+                    .putInt("HomeHiveZ", homeHiveZ);
         } else {
-            this.namedTag = NbtHelper.remove(this.namedTag, "HomeHiveX", "HomeHiveY", "HomeHiveZ");
+            this.nbt.remove("HomeHiveX");
+            this.nbt.remove("HomeHiveY");
+            this.nbt.remove("HomeHiveZ");
         }
     }
 

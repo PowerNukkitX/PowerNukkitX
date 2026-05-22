@@ -85,8 +85,8 @@ public class EntityTnt extends Entity implements EntityExplosive {
     protected void initEntity() {
         super.initEntity();
 
-        if (namedTag.containsKey("Fuse")) {
-            fuse = namedTag.getByte("Fuse");
+        if (this.nbt.containsKey("Fuse")) {
+            fuse = this.getNbt().getByte("Fuse");
         } else {
             fuse = 80;
         }
@@ -105,7 +105,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = namedTag.toBuilder().putByte("Fuse", (byte) fuse).build();
+        this.nbt.putByte("Fuse", (byte) fuse);
     }
 
     @Override

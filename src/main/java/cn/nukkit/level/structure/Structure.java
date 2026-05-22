@@ -125,7 +125,7 @@ public class Structure extends AbstractStructure {
                         z <= location.z && z + sizeZ > location.z) {
                     // Position data for entity is also saved, see the comment above
                     entity.saveNBT();
-                    entities.add(entity.namedTag);
+                    entities.add(entity.getNbt());
                 }
             });
         }

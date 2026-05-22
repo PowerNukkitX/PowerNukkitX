@@ -38,12 +38,10 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -119,25 +117,26 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.namedTag.containsKey("HealF")) {
-            this.namedTag = this.namedTag.toBuilder().putFloat("Health", this.namedTag.getShort("HealF")).build();
-            this.namedTag = NbtHelper.remove(this.namedTag, "HealF");
+        final NbtMap nbtMap = this.getNbt();
+        if (this.nbt.containsKey("HealF")) {
+            this.nbt.putFloat("Health", nbtMap.getShort("HealF"));
+            this.nbt.remove("HealF");
         }
 
-        if (!this.namedTag.containsKey("Health") || !(this.namedTag.get("Health") instanceof Float)) {
-            this.namedTag = this.namedTag.toBuilder().putFloat("Health", this.getHealthMax()).build();
+        if (!this.nbt.containsKey("Health") || !(this.getNbt().get("Health") instanceof Float)) {
+            this.nbt.putFloat("Health", this.getHealthMax());
         }
 
         this.setHealthMax(this.getHealthMax());
-        setHealthCurrent(this.namedTag.getFloat("Health"));
+        setHealthCurrent(this.getNbt().getFloat("Health"));
 
         // Load Tame and Chest from NBT
-        if (this.namedTag.containsKey("Tamed")) {
-            boolean hasTagTamed = this.namedTag.getBoolean("Tamed");
+        if (this.nbt.containsKey("Tamed")) {
+            boolean hasTagTamed = nbtMap.getBoolean("Tamed");
             if (hasTagTamed || this.isTamed()) this.setDataFlag(ActorFlags.TAMED, true, false);
         }
-        if (this.namedTag.containsKey("Chested")) {
-            this.setDataFlag(ActorFlags.CHESTED, this.namedTag.getBoolean("Chested"), true);
+        if (this.nbt.containsKey("Chested")) {
+            this.setDataFlag(ActorFlags.CHESTED, nbtMap.getBoolean("Chested"), true);
         }
         updateInventoryFlags();
 
@@ -147,8 +146,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (this.canBeSaddled()) {
-            if (this.namedTag.containsKey("saddled")) {
-                this.setDataFlag(ActorFlags.SADDLED, this.namedTag.getBoolean("saddled"));
+            if (this.nbt.containsKey("saddled")) {
+                this.setDataFlag(ActorFlags.SADDLED, nbtMap.getBoolean("saddled"));
             } else {
                 this.setDataFlag(ActorFlags.SADDLED, false);
             }
@@ -156,7 +155,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (this.isBaby()) loadParentFromNBT();
 
-        if (!this.isPlayer && this.namedTag != null && this.namedTag.containsKey(NBT_RIDING_UUID)) {
+        if (!this.isPlayer && this.nbt != null && this.nbt.containsKey(NBT_RIDING_UUID)) {
             this.restoreMountTries = 60;
         }
     }
@@ -164,12 +163,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     protected void loadParentFromNBT() {
         if (!(this instanceof EntityIntelligent ei)) return;
-        if (this.namedTag == null) return;
+        if (this.nbt == null) return;
         if (!this.isBaby()) return;
         if (ei.getMemoryStorage().notEmpty(CoreMemoryTypes.PARENT)) return;
 
         UUID wanted = null;
-        String parentStr = this.namedTag.getString("Parent");
+        String parentStr = this.getNbt().getString("Parent");
         if (parentStr != null && !parentStr.isEmpty()) {
             try {
                 wanted = UUID.fromString(parentStr);
@@ -221,7 +220,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         var chosenUuid = chosen.getUniqueId();
         if (chosenUuid != null) {
-            this.namedTag = this.namedTag.toBuilder().putString("Parent", chosenUuid.toString()).build();
+            this.nbt.putString("Parent", chosenUuid.toString());
         }
     }
 
@@ -230,19 +229,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (restoreMountTries > 0) {
             restoreMountTries--;
             if ((restoreMountTries % 4) == 0) tryRestoreMountLink();
-            if (restoreMountTries == 0 && this.riding == null) this.namedTag.remove(NBT_RIDING_UUID);
+            if (restoreMountTries == 0 && this.riding == null) this.nbt.remove(NBT_RIDING_UUID);
         }
 
         return super.onUpdate(currentTick);
     }
 
     private void tryRestoreMountLink() {
-        String uuidStr = this.namedTag.getString(NBT_RIDING_UUID);
+        String uuidStr = this.getNbt().getString(NBT_RIDING_UUID);
         UUID wanted;
         try {
             wanted = UUID.fromString(uuidStr);
         } catch (IllegalArgumentException ignored) {
-            this.namedTag.remove(NBT_RIDING_UUID);
+            this.nbt.remove(NBT_RIDING_UUID);
             restoreMountTries = 0;
             return;
         }
@@ -275,26 +274,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        final NbtMapBuilder builder = this.namedTag.toBuilder();
-
-        builder.putFloat("Health", this.getHealthCurrent());
+        this.nbt.putFloat("Health", this.getHealthCurrent());
 
         if (!isAgeable()) return;
         if (!isBaby()) {
-            if (namedTag.containsKey(TAG_ENTITY_GROW_LEFT)) namedTag.remove(TAG_ENTITY_GROW_LEFT);
-            this.namedTag = builder.build();
+            if (this.nbt.containsKey(TAG_ENTITY_GROW_LEFT)) this.nbt.remove(TAG_ENTITY_GROW_LEFT);
             return;
         }
         ensureGrowLoaded();
         if (growDirty) {
-            builder.putInt(TAG_ENTITY_GROW_LEFT, Math.max(0, ticksGrowLeft));
+            this.nbt.putInt(TAG_ENTITY_GROW_LEFT, Math.max(0, ticksGrowLeft));
             growDirty = false;
         }
 
         if (this.canBeSaddled()) {
-            builder.putBoolean("saddled", isSaddled());
+            this.nbt.putBoolean("saddled", isSaddled());
         }
-        this.namedTag = builder.build();
     }
 
     public boolean hasLineOfSight(Entity target) {
@@ -795,7 +790,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this instanceof InventoryHolder holder) {
             if (holder.getInventory() instanceof HumanInventory inventory) {
                 return inventory.getItemInMainHand() instanceof ItemShield
-                    || inventory.getItemInOffhand() instanceof ItemShield;
+                        || inventory.getItemInOffhand() instanceof ItemShield;
             }
         }
         return false;
@@ -899,7 +894,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public boolean isPersistent() {
         return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
-                || (this.namedTag.containsKey("Persistent") && this.namedTag.getBoolean("Persistent"));
+                || (this.nbt.containsKey("Persistent") && this.getNbt().getBoolean("Persistent"));
     }
 
     public void preAttack(Player player) {
@@ -961,11 +956,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void initHome() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
 
-        if (ei.namedTag.containsKey("HomeX")) {
+        if (ei.nbt.containsKey("HomeX")) {
             Vector3 home = new Vector3(
-                    ei.namedTag.getDouble("HomeX"),
-                    ei.namedTag.getDouble("HomeY"),
-                    ei.namedTag.getDouble("HomeZ")
+                    ei.getNbt().getDouble("HomeX"),
+                    ei.getNbt().getDouble("HomeY"),
+                    ei.getNbt().getDouble("HomeZ")
             );
             ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, ei.level.getBlock(home));
         }
@@ -979,22 +974,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         int z = ei.getFloorZ();
         Block home = ei.level.getBlock(x, y, z);
 
-        ei.namedTag = ei.namedTag.toBuilder()
-                .putDouble("HomeX", home.x)
-                .putDouble("HomeY", home.y)
-                .putDouble("HomeZ", home.z)
-                .build();
+        ei.setNbt(
+                ei.nbt.putDouble("HomeX", home.x)
+                        .putDouble("HomeY", home.y)
+                        .putDouble("HomeZ", home.z)
+        );
         ei.getMemoryStorage().put(CoreMemoryTypes.NEAREST_BLOCK, home);
     }
 
     public Block getHomePosition() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return null;
-        if (!this.namedTag.containsKey("HomeX")) return null;
+        if (!this.nbt.containsKey("HomeX")) return null;
 
         Vector3 homeLoc = new Vector3(
-                this.namedTag.getDouble("HomeX"),
-                this.namedTag.getDouble("HomeY"),
-                this.namedTag.getDouble("HomeZ")
+                this.getNbt().getDouble("HomeX"),
+                this.getNbt().getDouble("HomeY"),
+                this.getNbt().getDouble("HomeZ")
         );
 
         return ei.level.getBlock(homeLoc);
