@@ -49,14 +49,14 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.namedTag.containsKey("Age")) {
-            this.age = this.namedTag.getInt("Age");
+        if (this.nbt.containsKey("Age")) {
+            this.age = this.getNbt().getInt("Age");
         } else {
             this.age = 0;
         }
 
-        if (this.namedTag.containsKey("ExitPortal")) {
-            List<Integer> exitPortalList = this.namedTag.getList("ExitPortal", NbtType.INT);
+        if (this.nbt.containsKey("ExitPortal")) {
+            List<Integer> exitPortalList = this.getNbt().getList("ExitPortal", NbtType.INT);
             this.exitPortal = new BlockVector3(exitPortalList.get(0), exitPortalList.get(1), exitPortalList.get(2));
         } else {
             this.exitPortal = defaultExitPortal.clone();
@@ -84,9 +84,8 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putInt("Age", this.age)
-                .putList("ExitPortal", NbtType.INT, Arrays.asList(this.exitPortal.x, this.exitPortal.y, this.exitPortal.z))
-                .build();
+        this.nbt.putInt("Age", this.age)
+                .putList("ExitPortal", NbtType.INT, Arrays.asList(this.exitPortal.x, this.exitPortal.y, this.exitPortal.z));
     }
 
     @Override

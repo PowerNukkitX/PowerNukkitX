@@ -85,10 +85,10 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @NotNull
     public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
-        if (blockEntity == null || !blockEntity.namedTag.containsKey("PlantBlock")) {
+        if (blockEntity == null || !blockEntity.getNbt().containsKey("PlantBlock")) {
             return Item.AIR;
         }
-        var plantBlockTag = blockEntity.namedTag.getCompound("PlantBlock");
+        var plantBlockTag = blockEntity.getNbt().getCompound("PlantBlock");
         var id = plantBlockTag.getString("itemId");
         var meta = plantBlockTag.getInt("itemMeta");
         return Item.get(id, meta);
@@ -102,7 +102,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         if (item.getBlock() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
             BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-            blockEntity.namedTag = blockEntity.namedTag.toBuilder().putCompound("PlantBlock", potBlock.getPlantBlockTag()).build();
+            blockEntity.setNbt(blockEntity.getNbt().toBuilder().putCompound("PlantBlock", potBlock.getPlantBlockTag()));
 
             setPropertyValue(CommonBlockProperties.UPDATE_BIT, true);
             getLevel().setBlock(this, this, true);
@@ -115,7 +115,9 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     public void removeFlower() {
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        blockEntity.namedTag = NbtHelper.remove(blockEntity.namedTag, "PlantBlock");
+        final NbtMapBuilder nbtMap = blockEntity.getNbt().toBuilder();
+        nbtMap.remove("PlantBlock");
+        blockEntity.setNbt(nbtMap);
 
         setPropertyValue(CommonBlockProperties.UPDATE_BIT, false);
         getLevel().setBlock(this, this, true);
@@ -125,7 +127,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public boolean hasFlower() {
         var blockEntity = getBlockEntity();
         if (blockEntity == null) return false;
-        return blockEntity.namedTag.containsKey("PlantBlock");
+        return blockEntity.getNbt().containsKey("PlantBlock");
     }
 
     @Override
@@ -178,8 +180,8 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity != null) {
             dropInside = true;
-            insideID = blockEntity.namedTag.getCompound("PlantBlock").getString("itemId");
-            insideMeta = blockEntity.namedTag.getCompound("PlantBlock").getInt("itemMeta");
+            insideID = blockEntity.getNbt().getCompound("PlantBlock").getString("itemId");
+            insideMeta = blockEntity.getNbt().getCompound("PlantBlock").getInt("itemMeta");
         }
         if (dropInside) {
             return new Item[]{

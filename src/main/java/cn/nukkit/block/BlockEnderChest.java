@@ -133,8 +133,8 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         }
 
         BlockEntityEnderChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.containsKey("Lock") && chest.namedTag.get("Lock") instanceof String
-                && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (chest.getNbt().containsKey("Lock") && chest.getNbt().get("Lock") instanceof String
+                && !chest.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

@@ -159,7 +159,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         if (isNotActivate(player)) return false;
 
         BlockEntityShulkerBox box = getOrCreateBlockEntity();
-        Block block = this.getSide(BlockFace.fromIndex(box.namedTag.getByte("facing")));
+        Block block = this.getSide(BlockFace.fromIndex(box.getNbt().getByte("facing")));
         if (!player.getDataFlag(ActorFlags.SILENT) && !this.canBeOpened(block)) {
             return false;
         }

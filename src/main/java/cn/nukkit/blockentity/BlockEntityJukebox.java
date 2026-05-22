@@ -26,8 +26,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (namedTag.containsKey("RecordItem")) {
-            this.recordItem = ItemHelper.read(namedTag.getCompound("RecordItem"));
+        if (nbt.containsKey("RecordItem")) {
+            this.recordItem = ItemHelper.read(getNbt().getCompound("RecordItem"));
         } else {
             this.recordItem = Item.AIR;
         }
@@ -79,7 +79,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putCompound("RecordItem", ItemHelper.write(this.recordItem, null)).build();
+        this.nbt.putCompound("RecordItem", ItemHelper.write(this.recordItem, null));
     }
 
     @Override

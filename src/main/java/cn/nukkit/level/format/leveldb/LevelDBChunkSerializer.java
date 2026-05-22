@@ -18,7 +18,6 @@ import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
-import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.Utils;
@@ -360,7 +359,7 @@ public class LevelDBChunkSerializer {
             else {
                 for (BlockEntity blockEntity : blockEntities) {
                     blockEntity.saveNBT();
-                    nbtOutputStream.writeTag(blockEntity.namedTag);
+                    nbtOutputStream.writeTag(blockEntity.getNbt());
                 }
                 writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }

@@ -31,12 +31,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!(this.namedTag.get("book") instanceof NbtMap)) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "book");
+        if (!(this.nbt.get("book") instanceof NbtMap)) {
+            this.nbt.remove("book");
         }
 
-        if (!(this.namedTag.get("page") instanceof Integer)) {
-          this.namedTag = NbtHelper.remove(this.namedTag, "page");
+        if (!(this.nbt.get("page") instanceof Integer)) {
+            this.nbt.remove("page");
         }
     }
 
@@ -69,22 +69,23 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     public boolean hasBook() {
-        return this.namedTag.containsKey("book") && this.namedTag.get("book") instanceof NbtMap;
+        return this.nbt.containsKey("book") && this.nbt.get("book") instanceof NbtMap;
     }
 
     public Item getBook() {
         if (!hasBook()) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            return ItemHelper.read(this.namedTag.getCompound("book"));
+            return ItemHelper.read(this.getNbt().getCompound("book"));
         }
     }
 
     public void setBook(Item item) {
         if (item.getId().equals(Item.WRITTEN_BOOK) || item.getId().equals(Item.WRITABLE_BOOK)) {
-            this.namedTag = this.namedTag.toBuilder().putCompound("book", ItemHelper.write(item, null)).build();
+            this.nbt.putCompound("book", ItemHelper.write(item, null));
         } else {
-            this.namedTag = NbtHelper.remove(this.namedTag, "book", "page");
+            this.nbt.remove("book");
+            this.nbt.remove("page");
         }
         updateTotalPages();
     }
@@ -106,12 +107,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     public void setRawPage(int page) {
-        this.namedTag = this.namedTag.toBuilder().putInt("page", Math.min(page, totalPages)).build();
+        this.nbt.putInt("page", Math.min(page, totalPages));
         this.getLevel().updateAround(this);
     }
 
     public int getRawPage() {
-        return this.namedTag.getInt("page");
+        return this.getNbt().getInt("page");
     }
 
     public int getTotalPages() {

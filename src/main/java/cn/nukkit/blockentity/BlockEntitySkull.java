@@ -24,22 +24,19 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        NbtMapBuilder builder = this.namedTag.toBuilder();
-        if (!namedTag.containsKey("SkullType")) {
-            builder.putByte("SkullType", (byte) 0);
+        if (!nbt.containsKey("SkullType")) {
+            nbt.putByte("SkullType", (byte) 0);
         }
-        if (!namedTag.containsKey("Rot")) {
-            builder.putByte("Rot", (byte) 0);
-        }
-
-        this.namedTag = builder.build();
-
-        if (namedTag.containsKey("MouthMoving")) {
-            mouthMoving = namedTag.getBoolean("MouthMoving");
+        if (!nbt.containsKey("Rot")) {
+            nbt.putByte("Rot", (byte) 0);
         }
 
-        if (namedTag.containsKey("MouthTickCount")) {
-            mouthTickCount = NukkitMath.clamp(namedTag.getInt("MouthTickCount"), 0, 60);
+        if (nbt.containsKey("MouthMoving")) {
+            mouthMoving = getNbt().getBoolean("MouthMoving");
+        }
+
+        if (nbt.containsKey("MouthTickCount")) {
+            mouthTickCount = NukkitMath.clamp(getNbt().getInt("MouthTickCount"), 0, 60);
         }
     }
 
@@ -97,11 +94,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putBoolean("MouthMoving", this.mouthMoving)
-                .putInt("MouthTickCount", mouthTickCount)
-                .build();
-        this.namedTag = NbtHelper.remove(this.namedTag, "Creator");
+        this.nbt.putBoolean("MouthMoving", this.mouthMoving)
+                .putInt("MouthTickCount", mouthTickCount);
+        this.nbt.remove("Creator");
     }
 
     @Override
@@ -112,8 +107,8 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public NbtMap getSpawnCompound() {
         return super.getSpawnCompound().toBuilder()
-                .putByte("SkullType", (Byte) this.namedTag.get("SkullType"))
-                .putByte("Rot", (Byte) this.namedTag.get("Rot"))
+                .putByte("SkullType", (Byte) this.nbt.get("SkullType"))
+                .putByte("Rot", (Byte) this.nbt.get("Rot"))
                 .putBoolean("MouthMoving", this.mouthMoving)
                 .putInt("MouthTickCount", mouthTickCount)
                 .build();

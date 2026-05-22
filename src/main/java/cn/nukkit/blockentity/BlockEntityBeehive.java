@@ -11,7 +11,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Identifier;
-import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,29 +55,29 @@ public class BlockEntityBeehive extends BlockEntity {
     public void loadNBT() {
         super.loadNBT();
         this.occupants = new ArrayList<>(4);
-        if (!this.namedTag.containsKey("ShouldSpawnBees")) {
-            this.namedTag = this.namedTag.toBuilder().putByte("ShouldSpawnBees", (byte) 0).build();
+        if (!this.nbt.containsKey("ShouldSpawnBees")) {
+            this.nbt.putByte("ShouldSpawnBees", (byte) 0);
         }
 
-        if (!this.namedTag.containsKey("Occupants")) {
-            this.namedTag = this.namedTag.toBuilder().putList("Occupants", NbtType.COMPOUND, new ObjectArrayList<>()).build();
+        if (!this.nbt.containsKey("Occupants")) {
+            this.nbt.putList("Occupants", NbtType.COMPOUND, new ObjectArrayList<>());
         } else {
-            List<NbtMap> occupantsTag = namedTag.getList("Occupants", NbtType.COMPOUND);
+            List<NbtMap> occupantsTag = getNbt().getList("Occupants", NbtType.COMPOUND);
             for (int i = 0; i < occupantsTag.size(); i++) {
                 this.occupants.add(new Occupant(occupantsTag.get(i)));
             }
         }
 
         // Backward compatibility
-        if (this.namedTag.containsKey("HoneyLevel")) {
+        if (this.nbt.containsKey("HoneyLevel")) {
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                int honeyLevel = this.getNbt().getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
-            this.namedTag = NbtHelper.remove(this.namedTag, "HoneyLevel");
+            this.nbt.remove("HoneyLevel");
         }
     }
 
@@ -89,18 +88,18 @@ public class BlockEntityBeehive extends BlockEntity {
         for (Occupant occupant : occupants) {
             occupantsTag.add(occupant.saveNBT());
         }
-        this.namedTag = this.namedTag.toBuilder().putList("Occupants", NbtType.COMPOUND, occupantsTag).build();
+        this.nbt.putList("Occupants", NbtType.COMPOUND, occupantsTag);
 
         // Backward compatibility
-        if (this.namedTag.containsKey("HoneyLevel")) {
+        if (this.nbt.containsKey("HoneyLevel")) {
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                int honeyLevel = this.getNbt().getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
             }
-            this.namedTag = NbtHelper.remove(this.namedTag, "HoneyLevel");
+            this.nbt.remove("HoneyLevel");
         }
     }
 
@@ -123,9 +122,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public boolean addOccupant(Occupant occupant) {
         occupants.add(occupant);
-        List<NbtMap> occupants = this.namedTag.getList("Occupants", NbtType.COMPOUND);
+        List<NbtMap> occupants = this.getNbt().getList("Occupants", NbtType.COMPOUND);
         occupants.add(occupant.saveNBT());
-        this.namedTag = this.namedTag.toBuilder().putList("Occupants", NbtType.COMPOUND, occupants).build();
+        this.nbt.putList("Occupants", NbtType.COMPOUND, occupants);
         scheduleUpdate();
         return true;
     }

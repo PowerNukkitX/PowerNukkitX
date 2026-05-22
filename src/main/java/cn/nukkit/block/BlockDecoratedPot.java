@@ -112,7 +112,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         }
 
         BlockEntityDecoratedPot blockEntity = getBlockEntity();
-        List<String> sherds = blockEntity == null ? null : blockEntity.namedTag.getList("sherds", NbtType.STRING);
+        List<String> sherds = blockEntity == null ? null : blockEntity.getNbt().getList("sherds", NbtType.STRING);
         var drops = new ArrayList<Item>(4);
         for (int i = 0; i < 4; i++) {
             String id = sherds != null && i < sherds.size() ? sherds.get(i) : ItemID.BRICK;

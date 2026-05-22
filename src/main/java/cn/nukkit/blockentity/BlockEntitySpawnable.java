@@ -23,7 +23,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
 
     public NbtMap getSpawnCompound() {
         return NbtMap.builder()
-                .putString("id", namedTag.getString("id"))
+                .putString("id", getNbt().getString("id"))
                 .putInt("x", getFloorX())
                 .putInt("y", getFloorY())
                 .putInt("z", getFloorZ())

@@ -33,27 +33,25 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        NbtMapBuilder builder = this.namedTag.toBuilder();
-        if (!namedTag.containsKey("Item")) {
+        if (!nbt.containsKey("Item")) {
             // [ITEM_DEBUG] Log when a frame loads without an Item tag (new or corrupted)
             log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: no 'Item' tag present, initializing to AIR. namedTag keys: {}",
-                    (int) x, (int) y, (int) z, namedTag.keySet());
-            builder.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
+                    (int) x, (int) y, (int) z, nbt.keySet());
+            this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         } else {
             // [ITEM_DEBUG] Log what item is loaded from NBT
-            Item loaded = ItemHelper.read(namedTag.getCompound("Item"));
+            Item loaded = ItemHelper.read(getNbt().getCompound("Item"));
             if (loaded != null && !loaded.isNull()) {
                 log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: loaded item {} x{}",
                         (int) x, (int) y, (int) z, loaded.getId(), loaded.getCount());
             }
         }
-        if (!namedTag.containsKey("ItemRotation")) {
-            builder.putByte("ItemRotation", (byte) 0);
+        if (!nbt.containsKey("ItemRotation")) {
+            this.nbt.putByte("ItemRotation", (byte) 0);
         }
-        if (!namedTag.containsKey("ItemDropChance")) {
-            builder.putFloat("ItemDropChance", 1.0f);
+        if (!nbt.containsKey("ItemDropChance")) {
+            this.nbt.putFloat("ItemDropChance", 1.0f);
         }
-        this.namedTag = builder.build();
         this.level.updateComparatorOutputLevel(this);
     }
 
@@ -68,17 +66,17 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public int getItemRotation() {
-        return this.namedTag.getByte("ItemRotation");
+        return this.getNbt().getByte("ItemRotation");
     }
 
     public void setItemRotation(int itemRotation) {
-        this.namedTag = this.namedTag.toBuilder().putByte("ItemRotation", (byte) itemRotation).build();
+        this.nbt.putByte("ItemRotation", (byte) itemRotation);
         this.level.updateComparatorOutputLevel(this);
         this.setDirty();
     }
 
     public Item getItem() {
-        return ItemHelper.read(this.namedTag.getCompound("Item"));
+        return ItemHelper.read(this.getNbt().getCompound("Item"));
     }
 
     public void setItem(Item item) {
@@ -99,7 +97,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                     setChanged, caller);
         }
 
-        this.namedTag = this.namedTag.toBuilder().putCompound("Item", ItemHelper.write(item)).build();
+        this.nbt.putCompound("Item", ItemHelper.write(item));
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
@@ -121,11 +119,11 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public float getItemDropChance() {
-        return this.namedTag.getFloat("ItemDropChance");
+        return getNbt().getFloat("ItemDropChance");
     }
 
     public void setItemDropChance(float chance) {
-        this.namedTag = this.namedTag.toBuilder().putFloat("ItemDropChance", chance).build();
+        this.nbt.putFloat("ItemDropChance", chance);
     }
 
     @Override
@@ -154,7 +152,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public NbtMap getSpawnCompound() {
-        if (!this.namedTag.containsKey("Item")) {
+        if (!this.nbt.containsKey("Item")) {
             // [ITEM_DEBUG] This should not normally happen — log it
             log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getSpawnCompound: 'Item' tag missing from namedTag, resetting to AIR",
                     (int) x, (int) y, (int) z);

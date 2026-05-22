@@ -29,11 +29,11 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
         this.inventory = new ShelfInventory(this);
 
-        if (!this.namedTag.containsKey("Items") || !(this.namedTag.get("Items") instanceof List<?>)) {
-            this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
+        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List<?>)) {
+            this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
         }
 
-        List<NbtMap> itemsTag = this.namedTag.getList("Items", NbtType.COMPOUND);
+        List<NbtMap> itemsTag = this.getNbt().getList("Items", NbtType.COMPOUND);
         for (int i = 0; i < itemsTag.size(); i++) {
             this.inventory.setItem(i, ItemHelper.read(itemsTag.get(i)));
         }
@@ -43,7 +43,7 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
+        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }

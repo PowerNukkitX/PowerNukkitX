@@ -34,23 +34,21 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        NbtMapBuilder builder = this.namedTag.toBuilder();
-        if (!namedTag.containsKey("Lock")) {
-            builder.putString("Lock", "");
+        if (!nbt.containsKey("Lock")) {
+            this.nbt.putString("Lock", "");
         }
 
-        if (!namedTag.containsKey("Levels")) {
-            builder.putInt("Levels", 0);
+        if (!nbt.containsKey("Levels")) {
+            this.nbt.putInt("Levels", 0);
         }
 
-        if (!namedTag.containsKey("Primary")) {
-            builder.putInt("Primary", 0);
+        if (!nbt.containsKey("Primary")) {
+            this.nbt.putInt("Primary", 0);
         }
 
-        if (!namedTag.containsKey("Secondary")) {
-            builder.putInt("Secondary", 0);
+        if (!nbt.containsKey("Secondary")) {
+            this.nbt.putInt("Secondary", 0);
         }
-        this.namedTag = builder.build();
     }
 
     @Override
@@ -62,10 +60,10 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public NbtMap getSpawnCompound() {
         return super.getSpawnCompound().toBuilder()
-                .putString("Lock", this.namedTag.getString("Lock"))
-                .putInt("Levels", this.namedTag.getInt("Levels"))
-                .putInt("primary", this.namedTag.getInt("Primary"))
-                .putInt("secondary", this.namedTag.getInt("Secondary"))
+                .putString("Lock", this.getNbt().getString("Lock"))
+                .putInt("Levels", this.getNbt().getInt("Levels"))
+                .putInt("primary", this.getNbt().getInt("Primary"))
+                .putInt("secondary", this.getNbt().getInt("Secondary"))
                 .build();
     }
 
@@ -200,39 +198,39 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     public int getPowerLevel() {
-        return namedTag.getInt("Levels");
+        return getNbt().getInt("Levels");
     }
 
     public void setPowerLevel(int level) {
         int currentLevel = getPowerLevel();
         if (level != currentLevel) {
-            this.namedTag = namedTag.toBuilder().putInt("Levels", level).build();
+            this.nbt.putInt("Levels", level);
             setDirty();
             this.spawnToAll();
         }
     }
 
     public int getPrimaryPower() {
-        return namedTag.getInt("Primary");
+        return getNbt().getInt("Primary");
     }
 
     public void setPrimaryPower(int power) {
         int currentPower = getPrimaryPower();
         if (power != currentPower) {
-            this.namedTag = namedTag.toBuilder().putInt("Primary", power).build();
+            this.nbt.putInt("Primary", power);
             setDirty();
             this.spawnToAll();
         }
     }
 
     public int getSecondaryPower() {
-        return namedTag.getInt("Secondary");
+        return getNbt().getInt("Secondary");
     }
 
     public void setSecondaryPower(int power) {
         int currentPower = getSecondaryPower();
         if (power != currentPower) {
-            this.namedTag = namedTag.toBuilder().putInt("Secondary", power).build();
+            this.nbt.putInt("Secondary", power);
             setDirty();
             this.spawnToAll();
         }
@@ -273,22 +271,22 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Beacon";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Beacon";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey("CustomName");
+        return this.nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 
     @Override

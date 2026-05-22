@@ -3,7 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -22,22 +21,22 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Enchanting Table";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Enchanting Table";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey("CustomName");
+        return this.nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-      this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
                 .putBoolean("isMovable", false);
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            c.putString("CustomName", this.getNbt().getString("CustomName"));
         }
 
         return c.build();

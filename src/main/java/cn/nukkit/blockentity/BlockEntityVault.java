@@ -83,14 +83,15 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         super.loadNBT();
         ensureCollections();
 
-        NbtMap config = namedTag.getCompound(TAG_CONFIG);
+        final NbtMap nbtMap = getNbt();
+        NbtMap config = nbtMap.getCompound(TAG_CONFIG);
         lootTable = config.containsKey(TAG_LOOT_TABLE) ? config.getString(TAG_LOOT_TABLE) : DEFAULT_LOOT_TABLE;
         overrideLootTableToDisplay = config.getString(TAG_OVERRIDE_LOOT_TABLE_TO_DISPLAY);
         activationRange = config.containsKey(TAG_ACTIVATION_RANGE) ? config.getDouble(TAG_ACTIVATION_RANGE) : DEFAULT_ACTIVATION_RANGE;
         deactivationRange = config.containsKey(TAG_DEACTIVATION_RANGE) ? config.getDouble(TAG_DEACTIVATION_RANGE) : DEFAULT_DEACTIVATION_RANGE;
         keyItem = config.containsKey(TAG_KEY_ITEM) ? ItemHelper.read(config.getCompound(TAG_KEY_ITEM)) : Item.get(ItemID.TRIAL_KEY);
 
-        NbtMap serverData = namedTag.getCompound(TAG_SERVER_DATA);
+        NbtMap serverData = nbtMap.getCompound(TAG_SERVER_DATA);
         rewardedPlayers.clear();
         rewardedPlayers.addAll(readStringSet(serverData, TAG_REWARDED_PLAYERS));
         stateUpdatingResumesAt = serverData.getLong(TAG_STATE_UPDATING_RESUMES_AT);
@@ -98,7 +99,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         itemsToEject.addAll(readItemList(serverData, TAG_ITEMS_TO_EJECT));
         totalEjectionsNeeded = serverData.getInt(TAG_TOTAL_EJECTIONS_NEEDED);
 
-        NbtMap sharedData = namedTag.getCompound(DATA);
+        NbtMap sharedData = nbtMap.getCompound(DATA);
         displayItem = sharedData.containsKey(TAG_DISPLAY_ITEM) ? ItemHelper.read(sharedData.getCompound(TAG_DISPLAY_ITEM)) : Item.get(BlockID.AIR);
         connectedPlayers.clear();
         connectedPlayers.addAll(readStringSet(sharedData, TAG_CONNECTED_PLAYERS));
@@ -114,11 +115,9 @@ public class BlockEntityVault extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putCompound(TAG_CONFIG, createConfigTag())
+        this.nbt.putCompound(TAG_CONFIG, createConfigTag())
                 .putCompound(TAG_SERVER_DATA, createServerDataTag())
-                .putCompound(DATA, createSharedDataTag())
-                .build();
+                .putCompound(DATA, createSharedDataTag());
     }
 
     @Override

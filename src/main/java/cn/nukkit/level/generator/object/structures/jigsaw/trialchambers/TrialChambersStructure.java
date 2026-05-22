@@ -751,7 +751,7 @@ public class TrialChambersStructure extends JigsawStructure {
                                 Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
                                 applyRandomEnchantment(item, entry.getEnchantments(), random);
                                 blockEntity.setItem(item);
-                                blockEntity.namedTag = blockEntity.namedTag.toBuilder().putList("sherds", NbtType.STRING, createSherds(random)).build();
+                                blockEntity.setNbt(blockEntity.getNbt().toBuilder().putList("sherds", NbtType.STRING, createSherds(random)));
                                 blockEntity.spawnToAll();
                                 return;
                             }

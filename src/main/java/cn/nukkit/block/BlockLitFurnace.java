@@ -17,8 +17,6 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
 public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
 
@@ -112,8 +110,8 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
             }
 
         BlockEntityFurnace furnace = getOrCreateBlockEntity();
-        if (furnace.namedTag.containsKey("Lock") && furnace.namedTag.get("Lock") instanceof String
-                && !furnace.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (furnace.getNbt().containsKey("Lock") && furnace.getNbt().get("Lock") instanceof String
+                && !furnace.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

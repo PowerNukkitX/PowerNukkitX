@@ -93,7 +93,7 @@ public abstract class BlockHead extends BlockTransparent implements RedstoneComp
         }
 
         BlockEntitySkull entity = getBlockEntity();
-        if (entity == null || entity.namedTag.getByte("SkullType") != 5) {
+        if (entity == null || entity.getNbt().getByte("SkullType") != 5) {
             return 0;
         }
 

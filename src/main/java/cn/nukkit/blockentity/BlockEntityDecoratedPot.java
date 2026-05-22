@@ -23,20 +23,20 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.containsKey("Item")) {
-            this.namedTag = namedTag.toBuilder().putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null)).build();
+        if (!nbt.containsKey("Item")) {
+            this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
     }
 
     @Override
     public NbtMap getSpawnCompound() {
         return super.getSpawnCompound().toBuilder()
-                .putList("sherds", NbtType.STRING, namedTag.getList("sherds", NbtType.STRING))
+                .putList("sherds", NbtType.STRING, getNbt().getList("sherds", NbtType.STRING))
                 .build();
     }
 
     public Item getItem() {
-        return ItemHelper.read(this.namedTag.getCompound("Item"));
+        return ItemHelper.read(this.getNbt().getCompound("Item"));
     }
 
     public void setItem(Item item) {
@@ -44,7 +44,7 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        this.namedTag = this.namedTag.toBuilder().putCompound("Item", ItemHelper.write(item, null)).build();
+        this.nbt.putCompound("Item", ItemHelper.write(item, null));
         if (setChanged) {
             this.setDirty();
         } else this.level.updateComparatorOutputLevel(this);
@@ -52,7 +52,7 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
 
     @Override
     public void close() {
-        if(isValid() && chunk.isLoaded() && level.isChunkInUse(chunk.getX(), chunk.getZ())) {
+        if (isValid() && chunk.isLoaded() && level.isChunkInUse(chunk.getX(), chunk.getZ())) {
             //Those also drop when broken in creative mode
             level.dropItem(this.add(HALF), this.getItem());
         }

@@ -54,7 +54,7 @@ public class ChunkConversion {
     private static List<NbtMap> cloneBlockEntities(IChunk chunk) {
         List<NbtMap> blockEntities = new ArrayList<>();
         for (BlockEntity be : chunk.getBlockEntities().values()) {
-            blockEntities.add(be.namedTag);
+            blockEntities.add(be.getNbt());
         }
         return blockEntities;
     }

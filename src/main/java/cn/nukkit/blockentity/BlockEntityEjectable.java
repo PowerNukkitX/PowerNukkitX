@@ -32,8 +32,8 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         super.loadNBT();
         this.inventory = createInventory();
 
-        if (!this.namedTag.containsKey("Items") || !(this.namedTag.get("Items") instanceof List)) {
-            this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.LIST, new ObjectArrayList<>()).build();
+        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List)) {
+            this.nbt.putList("Items", NbtType.LIST, new ObjectArrayList<>());
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -46,7 +46,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.namedTag.getList("Items", NbtType.COMPOUND);
+        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -61,7 +61,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         if (i < 0) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            NbtMap data = this.namedTag.getList("Items", NbtType.COMPOUND).get(i);
+            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -71,7 +71,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
         NbtMap d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.namedTag.getList("Items", NbtType.COMPOUND));
+        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 items.remove(i);
@@ -81,7 +81,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         } else {
             items.add(i, d);
         }
-        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, items).build();
+        this.nbt.putList("Items", NbtType.COMPOUND, items);
     }
 
     @Override
@@ -94,7 +94,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         NbtMapBuilder c = super.getSpawnCompound().toBuilder();
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName"));
         }
 
         return c.build();
@@ -103,7 +103,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
+        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -111,22 +111,22 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : getBlockEntityName();
+        return this.hasName() ? this.getNbt().getString("CustomName") : getBlockEntityName();
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey("CustomName");
+        return this.nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 
     @Override

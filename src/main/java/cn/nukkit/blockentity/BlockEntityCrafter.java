@@ -3,7 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 
 public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
@@ -28,16 +27,16 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.namedTag.containsKey("disabledSlots")) {
-            this.namedTag = this.namedTag.toBuilder().putShort("disabledSlots", (short) 0).build();
+        if (!this.nbt.containsKey("disabledSlots")) {
+            this.nbt.putShort("disabledSlots", (short) 0);
         }
-        this.getInventory().setLockedBitMask(this.namedTag.getShort("disabledSlots"));
+        this.getInventory().setLockedBitMask(this.getNbt().getShort("disabledSlots"));
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder().putShort("disabledSlots", (short) getInventory().getLockedBitMask()).build();
+        this.nbt.putShort("disabledSlots", (short) getInventory().getLockedBitMask());
     }
 
     @Override
@@ -52,21 +51,21 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Crafter";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Crafter";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey("CustomName");
+        return this.nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 }

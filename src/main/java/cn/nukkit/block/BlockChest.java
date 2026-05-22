@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Angelic47 (Nukkit Project)
@@ -233,8 +232,8 @@ public class BlockChest extends BlockTransparent implements Faceable, BlockEntit
             }
         }
 
-        if (chest.namedTag.containsKey("Lock") && chest.namedTag.get("Lock") instanceof String
-                && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
+        if (chest.getNbt().containsKey("Lock") && chest.getNbt().get("Lock") instanceof String
+                && !chest.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }
 

@@ -109,51 +109,50 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
 
     public BlockEntityTrialSpawner(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
-        this.entityId = this.namedTag.getString(TAG_TYPE_ID, EntityID.BREEZE);
+        this.entityId = this.getNbt().getString(TAG_TYPE_ID, EntityID.BREEZE);
     }
 
     @Override
     protected void initBlockEntity() {
-        final NbtMapBuilder builder = this.namedTag.toBuilder();
-        if (!this.namedTag.containsKey(TAG_SPAWN_RANGE) || !(this.namedTag.get(TAG_SPAWN_RANGE) instanceof Short)) {
-            builder.putShort(TAG_SPAWN_RANGE, (short) DEFAULT_SPAWN_RANGE);
+        if (!this.nbt.containsKey(TAG_SPAWN_RANGE) || !(this.nbt.get(TAG_SPAWN_RANGE) instanceof Short)) {
+            this.nbt.putShort(TAG_SPAWN_RANGE, (short) DEFAULT_SPAWN_RANGE);
         }
-        if (!this.namedTag.containsKey(TAG_REQUIRED_PLAYER_RANGE) || !(this.namedTag.get(TAG_REQUIRED_PLAYER_RANGE) instanceof Short)) {
-            builder.putShort(TAG_REQUIRED_PLAYER_RANGE, (short) DEFAULT_REQUIRED_PLAYER_RANGE);
+        if (!this.nbt.containsKey(TAG_REQUIRED_PLAYER_RANGE) || !(this.nbt.get(TAG_REQUIRED_PLAYER_RANGE) instanceof Short)) {
+            this.nbt.putShort(TAG_REQUIRED_PLAYER_RANGE, (short) DEFAULT_REQUIRED_PLAYER_RANGE);
         }
-        if (!this.namedTag.containsKey(TAG_TICKS_BETWEEN_SPAWN)) {
-            builder.putInt(TAG_TICKS_BETWEEN_SPAWN, DEFAULT_TICKS_BETWEEN_SPAWN);
+        if (!this.nbt.containsKey(TAG_TICKS_BETWEEN_SPAWN)) {
+            this.nbt.putInt(TAG_TICKS_BETWEEN_SPAWN, DEFAULT_TICKS_BETWEEN_SPAWN);
         }
-        if (!this.namedTag.containsKey(TAG_TARGET_COOLDOWN_LENGTH)) {
-            builder.putInt(TAG_TARGET_COOLDOWN_LENGTH, DEFAULT_TARGET_COOLDOWN_LENGTH);
+        if (!this.nbt.containsKey(TAG_TARGET_COOLDOWN_LENGTH)) {
+            this.nbt.putInt(TAG_TARGET_COOLDOWN_LENGTH, DEFAULT_TARGET_COOLDOWN_LENGTH);
         }
-        if (!this.namedTag.containsKey(TAG_TOTAL_MOBS)) {
-            builder.putDouble(TAG_TOTAL_MOBS, DEFAULT_TOTAL_MOBS);
+        if (!this.nbt.containsKey(TAG_TOTAL_MOBS)) {
+            this.nbt.putDouble(TAG_TOTAL_MOBS, DEFAULT_TOTAL_MOBS);
         }
-        if (!this.namedTag.containsKey(TAG_TOTAL_MOBS_ADDED_PER_PLAYER)) {
-            builder.putDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER);
+        if (!this.nbt.containsKey(TAG_TOTAL_MOBS_ADDED_PER_PLAYER)) {
+            this.nbt.putDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER);
         }
-        if (!this.namedTag.containsKey(TAG_SIMULTANEOUS_MOBS)) {
-            builder.putDouble(TAG_SIMULTANEOUS_MOBS, DEFAULT_SIMULTANEOUS_MOBS);
+        if (!this.nbt.containsKey(TAG_SIMULTANEOUS_MOBS)) {
+            this.nbt.putDouble(TAG_SIMULTANEOUS_MOBS, DEFAULT_SIMULTANEOUS_MOBS);
         }
-        if (!this.namedTag.containsKey(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER)) {
-            builder.putDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER);
+        if (!this.nbt.containsKey(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER)) {
+            this.nbt.putDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER);
         }
-        if (!this.namedTag.containsKey(TAG_SPAWN_BABY)) {
-            builder.putBoolean(TAG_SPAWN_BABY, false);
+        if (!this.nbt.containsKey(TAG_SPAWN_BABY)) {
+            this.nbt.putBoolean(TAG_SPAWN_BABY, false);
         }
-
-        this.entityId = this.namedTag.getString(TAG_TYPE_ID, EntityID.BREEZE);
-        this.spawnRange = this.namedTag.getShort(TAG_SPAWN_RANGE);
-        this.requiredPlayerRange = this.namedTag.getShort(TAG_REQUIRED_PLAYER_RANGE);
-        this.ticksBetweenSpawn = this.namedTag.getInt(TAG_TICKS_BETWEEN_SPAWN, DEFAULT_TICKS_BETWEEN_SPAWN);
-        this.targetCooldownLength = this.namedTag.getInt(TAG_TARGET_COOLDOWN_LENGTH, DEFAULT_TARGET_COOLDOWN_LENGTH);
-        this.totalMobs = this.namedTag.getDouble(TAG_TOTAL_MOBS, DEFAULT_TOTAL_MOBS);
-        this.totalMobsAddedPerPlayer = this.namedTag.getDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER);
-        this.simultaneousMobs = this.namedTag.getDouble(TAG_SIMULTANEOUS_MOBS, DEFAULT_SIMULTANEOUS_MOBS);
-        this.simultaneousMobsAddedPerPlayer = this.namedTag.getDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER);
-        this.spawnBaby = this.namedTag.getBoolean(TAG_SPAWN_BABY);
-        this.nextOminousProjectileTick = this.namedTag.getInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.level.getTick() + OMINOUS_PROJECTILE_INTERVAL_TICKS);
+        final NbtMap nbtMap = getNbt();
+        this.entityId = nbtMap.getString(TAG_TYPE_ID, EntityID.BREEZE);
+        this.spawnRange = nbtMap.getShort(TAG_SPAWN_RANGE);
+        this.requiredPlayerRange = nbtMap.getShort(TAG_REQUIRED_PLAYER_RANGE);
+        this.ticksBetweenSpawn = nbtMap.getInt(TAG_TICKS_BETWEEN_SPAWN, DEFAULT_TICKS_BETWEEN_SPAWN);
+        this.targetCooldownLength = nbtMap.getInt(TAG_TARGET_COOLDOWN_LENGTH, DEFAULT_TARGET_COOLDOWN_LENGTH);
+        this.totalMobs = nbtMap.getDouble(TAG_TOTAL_MOBS, DEFAULT_TOTAL_MOBS);
+        this.totalMobsAddedPerPlayer = nbtMap.getDouble(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, DEFAULT_TOTAL_MOBS_ADDED_PER_PLAYER);
+        this.simultaneousMobs = nbtMap.getDouble(TAG_SIMULTANEOUS_MOBS, DEFAULT_SIMULTANEOUS_MOBS);
+        this.simultaneousMobsAddedPerPlayer = nbtMap.getDouble(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, DEFAULT_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER);
+        this.spawnBaby = nbtMap.getBoolean(TAG_SPAWN_BABY);
+        this.nextOminousProjectileTick = nbtMap.getInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.level.getTick() + OMINOUS_PROJECTILE_INTERVAL_TICKS);
         resolveOminousProjectileSelection();
 
         this.state = this.entityId == null || this.entityId.isEmpty() ? STATE_INACTIVE : STATE_WAITING_FOR_PLAYERS;
@@ -512,11 +511,12 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     private void resolveOminousProjectileSelection() {
-        if (this.namedTag.containsKey(TAG_OMINOUS_LINGERING_POTION)) {
-            this.ominousLingeringPotion = PotionType.get(this.namedTag.getInt(TAG_OMINOUS_LINGERING_POTION));
+        final NbtMap nbtMap = getNbt();
+        if (this.nbt.containsKey(TAG_OMINOUS_LINGERING_POTION)) {
+            this.ominousLingeringPotion = PotionType.get(nbtMap.getInt(TAG_OMINOUS_LINGERING_POTION));
         }
-        if (this.namedTag.containsKey(TAG_OMINOUS_PROJECTILE_KIND)) {
-            this.ominousProjectileKind = this.namedTag.getString(TAG_OMINOUS_PROJECTILE_KIND);
+        if (this.nbt.containsKey(TAG_OMINOUS_PROJECTILE_KIND)) {
+            this.ominousProjectileKind = nbtMap.getString(TAG_OMINOUS_PROJECTILE_KIND);
         }
         if (this.ominousLingeringPotion != null && this.ominousProjectileKind != null && !this.ominousProjectileKind.isEmpty()) {
             return;
@@ -849,9 +849,7 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-
-        final NbtMapBuilder builder = this.namedTag.toBuilder();
-        builder.putString(TAG_TYPE_ID, this.entityId)
+        this.nbt.putString(TAG_TYPE_ID, this.entityId)
                 .putShort(TAG_SPAWN_RANGE, (short) this.spawnRange)
                 .putShort(TAG_REQUIRED_PLAYER_RANGE, (short) this.requiredPlayerRange)
                 .putInt(TAG_TICKS_BETWEEN_SPAWN, this.ticksBetweenSpawn)
@@ -863,12 +861,11 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
                 .putBoolean(TAG_SPAWN_BABY, this.spawnBaby)
                 .putInt(TAG_NEXT_OMINOUS_PROJECTILE_TICK, this.nextOminousProjectileTick);
         if (this.ominousLingeringPotion != null) {
-            builder.putInt(TAG_OMINOUS_LINGERING_POTION, this.ominousLingeringPotion.id());
+            this.nbt.putInt(TAG_OMINOUS_LINGERING_POTION, this.ominousLingeringPotion.id());
         }
         if (this.ominousProjectileKind != null) {
-            builder.putString(TAG_OMINOUS_PROJECTILE_KIND, this.ominousProjectileKind);
+            this.nbt.putString(TAG_OMINOUS_PROJECTILE_KIND, this.ominousProjectileKind);
         }
-        this.namedTag = builder.build();
     }
 
     @Override

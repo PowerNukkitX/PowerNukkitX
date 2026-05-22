@@ -30,30 +30,29 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.containsKey("Ringing") || !(namedTag.get("Ringing") instanceof Byte)) {
+        if (!nbt.containsKey("Ringing") || !(nbt.get("Ringing") instanceof Byte)) {
             ringing = false;
         } else {
-            ringing = namedTag.getBoolean("Ringing");
+            ringing = getNbt().getBoolean("Ringing");
         }
 
-        if (!namedTag.containsKey("Direction") || !(namedTag.get("Direction") instanceof Integer)) {
+        if (!nbt.containsKey("Direction") || !(nbt.get("Direction") instanceof Integer)) {
             direction = 255;
         } else {
-            direction = namedTag.getInt("Direction");
+            direction = getNbt().getInt("Direction");
         }
 
-        if (!namedTag.containsKey("Ticks") || !(namedTag.get("Ticks") instanceof Integer)) {
+        if (!nbt.containsKey("Ticks") || !(nbt.get("Ticks") instanceof Integer)) {
             ticks = 0;
         } else {
-            ticks = namedTag.getInt("Ticks");
+            ticks = getNbt().getInt("Ticks");
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putBoolean("Ringing", ringing)
+        this.nbt.putBoolean("Ringing", ringing)
                 .putInt("Direction", direction)
                 .putInt("Ticks", ticks)
                 .build();

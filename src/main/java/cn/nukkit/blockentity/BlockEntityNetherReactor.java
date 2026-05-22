@@ -49,13 +49,14 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         reactorState = NetherReactorState.READY;
-        if (namedTag.containsKey("Progress")) {
-            progress = (short) namedTag.getShort("Progress");
+        final NbtMap nbtMap = getNbt();
+        if (nbt.containsKey("Progress")) {
+            progress = (short) nbtMap.getShort("Progress");
         }
 
-        if (namedTag.containsKey("HasFinished") && namedTag.getBoolean("HasFinished")) {
+        if (nbt.containsKey("HasFinished") && nbtMap.getBoolean("HasFinished")) {
             reactorState = NetherReactorState.FINISHED;
-        } else if (namedTag.containsKey("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
+        } else if (nbt.containsKey("IsInitialized") && nbtMap.getBoolean("IsInitialized")) {
             reactorState = NetherReactorState.INITIALIZED;
         } else {
             reactorState = NetherReactorState.READY;
@@ -66,11 +67,9 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         NetherReactorState reactorState = getReactorState();
-        this.namedTag = this.namedTag.toBuilder()
-                .putShort("Progress", (short) getProgress())
+        this.nbt.putShort("Progress", (short) getProgress())
                 .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
-                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED)
-                .build();
+                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
     }
 
     @Override

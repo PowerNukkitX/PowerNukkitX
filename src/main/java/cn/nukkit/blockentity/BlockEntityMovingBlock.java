@@ -57,8 +57,9 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (namedTag.containsKey("movingBlock")) {
-            NbtMap movingBlock = namedTag.getCompound("movingBlock");
+        final NbtMap nbtMap = getNbt();
+        if (nbt.containsKey("movingBlock")) {
+            NbtMap movingBlock = nbtMap.getCompound("movingBlock");
             int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock);
             BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
             if(blockState==null){
@@ -73,16 +74,16 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             this.close();
         }
 
-        if (namedTag.containsKey("pistonPosX") && namedTag.containsKey("pistonPosY") && namedTag.containsKey("pistonPosZ")) {
-            this.piston = new BlockVector3(namedTag.getInt("pistonPosX"), namedTag.getInt("pistonPosY"), namedTag.getInt("pistonPosZ"));
+        if (nbt.containsKey("pistonPosX") && nbt.containsKey("pistonPosY") && nbt.containsKey("pistonPosZ")) {
+            this.piston = new BlockVector3(nbtMap.getInt("pistonPosX"), nbtMap.getInt("pistonPosY"), nbtMap.getInt("pistonPosZ"));
         } else {
             this.piston = new BlockVector3(0, -1, 0);
         }
     }
 
     public @Nullable NbtMap getMovingBlockEntityCompound() {
-        if (this.namedTag.containsKey("movingEntity")) {
-            return this.namedTag.getCompound("movingEntity");
+        if (this.nbt.containsKey("movingEntity")) {
+            return this.getNbt().getCompound("movingEntity");
         }
 
         return null;

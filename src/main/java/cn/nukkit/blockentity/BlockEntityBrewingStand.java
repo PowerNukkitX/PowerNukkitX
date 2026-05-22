@@ -55,42 +55,43 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void loadNBT() {
         super.loadNBT();
         inventory = new BrewingInventory(this);
-        if (!namedTag.containsKey("Items") || !(namedTag.get("Items") instanceof List<?>)) {
-            this.namedTag = namedTag.toBuilder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
+        if (!nbt.containsKey("Items") || !(nbt.get("Items") instanceof List<?>)) {
+            nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
         }
 
         for (int i = 0; i < getSize(); i++) {
             inventory.setItem(i, this.getItem(i));
         }
 
-        if (!namedTag.containsKey("CookTime") || namedTag.getShort("CookTime") > MAX_BREW_TIME) {
+        final NbtMap nbtMap = this.getNbt();
+        if (!nbt.containsKey("CookTime") || nbtMap.getShort("CookTime") > MAX_BREW_TIME) {
             this.brewTime = MAX_BREW_TIME;
         } else {
-            this.brewTime = namedTag.getShort("CookTime");
+            this.brewTime = nbtMap.getShort("CookTime");
         }
 
-        this.fuelAmount = namedTag.getShort("FuelAmount");
-        this.fuelTotal = namedTag.getShort("FuelTotal");
+        this.fuelAmount = nbtMap.getShort("FuelAmount");
+        this.fuelTotal = nbtMap.getShort("FuelTotal");
     }
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Brewing Stand";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Brewing Stand";
     }
 
     @Override
     public boolean hasName() {
-        return namedTag.containsKey("CustomName");
+        return nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
-            namedTag = NbtHelper.remove(namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 
     @Override
@@ -114,12 +115,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
                 .putShort("CookTime", (short) brewTime)
                 .putShort("FuelAmount", (short) this.fuelAmount)
-                .putShort("FuelTotal", (short) this.fuelTotal)
-                .build();
+                .putShort("FuelTotal", (short) this.fuelTotal);
         for (int index = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
         }
@@ -135,7 +134,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.namedTag.getList("Items", NbtType.COMPOUND);
+        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -150,7 +149,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         if (i < 0) {
             return Item.AIR;
         } else {
-            NbtMap data = this.namedTag.getList("Items", NbtType.COMPOUND).get(i);
+            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -160,7 +159,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
         NbtMap d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.namedTag.getList("Items", NbtType.COMPOUND));
+        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
 
         if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
             if (i >= 0) {
@@ -171,7 +170,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         } else {
             items.add(i, d);
         }
-        this.namedTag = this.namedTag.toBuilder().putList("Items", NbtType.COMPOUND, items).build();
+        this.nbt.putList("Items", NbtType.COMPOUND, items);
     }
 
     @Override
@@ -391,7 +390,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         }
 
         if (this.hasName()) {
-            nbt.putString("CustomName", namedTag.getString("CustomName"));
+            nbt.putString("CustomName", this.getNbt().getString("CustomName"));
         }
 
         return nbt.build();

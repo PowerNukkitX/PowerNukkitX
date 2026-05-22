@@ -79,92 +79,94 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         this.perm = new PermissibleBase(this);
         this.currentTick = 0;
 
-        if (this.namedTag.containsKey(TAG_POWERED)) {
-            this.powered = this.namedTag.getBoolean(TAG_POWERED);
+        if (this.nbt.containsKey(TAG_POWERED)) {
+            this.powered = this.getNbt().getBoolean(TAG_POWERED);
         } else {
             this.powered = false;
         }
 
-        if (this.namedTag.containsKey(TAG_CONDITIONAL_MODE)) {
-            this.conditionalMode = this.namedTag.getBoolean(TAG_CONDITIONAL_MODE);
+        if (this.nbt.containsKey(TAG_CONDITIONAL_MODE)) {
+            this.conditionalMode = this.getNbt().getBoolean(TAG_CONDITIONAL_MODE);
         } else {
             this.conditionalMode = false;
         }
 
-        if (this.namedTag.containsKey(TAG_AUTO)) {
-            this.auto = this.namedTag.getBoolean(TAG_AUTO);
+        final NbtMap nbtMap = getNbt();
+
+        if (this.nbt.containsKey(TAG_AUTO)) {
+            this.auto = nbtMap.getBoolean(TAG_AUTO);
         } else {
             this.auto = false;
         }
 
-        if (this.namedTag.containsKey(TAG_COMMAND)) {
-            setCommand(this.namedTag.getString(TAG_COMMAND));
+        if (this.nbt.containsKey(TAG_COMMAND)) {
+            setCommand(nbtMap.getString(TAG_COMMAND));
         } else {
             setCommand("");
         }
 
-        if (this.namedTag.containsKey(TAG_LAST_EXECUTION)) {
-            this.lastExecution = this.namedTag.getLong(TAG_LAST_EXECUTION);
+        if (this.nbt.containsKey(TAG_LAST_EXECUTION)) {
+            this.lastExecution = nbtMap.getLong(TAG_LAST_EXECUTION);
         } else {
             this.lastExecution = 0;
         }
 
-        if (this.namedTag.containsKey(TAG_TRACK_OUTPUT)) {
-            this.trackOutput = this.namedTag.getBoolean(TAG_TRACK_OUTPUT);
+        if (this.nbt.containsKey(TAG_TRACK_OUTPUT)) {
+            this.trackOutput = nbtMap.getBoolean(TAG_TRACK_OUTPUT);
         } else {
             this.trackOutput = true;
         }
 
-        if (this.namedTag.containsKey(TAG_LAST_OUTPUT)) {
-            this.lastOutput = this.namedTag.getString(TAG_LAST_OUTPUT);
+        if (this.nbt.containsKey(TAG_LAST_OUTPUT)) {
+            this.lastOutput = nbtMap.getString(TAG_LAST_OUTPUT);
         } else {
             this.lastOutput = null;
         }
 
-        if (this.namedTag.containsKey(TAG_LAST_OUTPUT_PARAMS)) {
-            this.lastOutputParams = this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING);
+        if (this.nbt.containsKey(TAG_LAST_OUTPUT_PARAMS)) {
+            this.lastOutputParams = nbtMap.getList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING);
         } else {
             this.lastOutputParams = new ObjectArrayList<>();
         }
 
-        if (this.namedTag.containsKey(TAG_LP_COMMAND_MODE)) {
-            this.lastOutputCommandMode = this.namedTag.getInt(TAG_LP_COMMAND_MODE);
+        if (this.nbt.containsKey(TAG_LP_COMMAND_MODE)) {
+            this.lastOutputCommandMode = nbtMap.getInt(TAG_LP_COMMAND_MODE);
         } else {
             this.lastOutputCommandMode = 0;
         }
 
-        if (this.namedTag.containsKey(TAG_LP_CONDIONAL_MODE)) {
-            this.lastOutputCondionalMode = this.namedTag.getBoolean(TAG_LP_CONDIONAL_MODE);
+        if (this.nbt.containsKey(TAG_LP_CONDIONAL_MODE)) {
+            this.lastOutputCondionalMode = nbtMap.getBoolean(TAG_LP_CONDIONAL_MODE);
         } else {
             this.lastOutputCondionalMode = true;
         }
 
-        if (this.namedTag.containsKey(TAG_LP_REDSTONE_MODE)) {
-            this.lastOutputRedstoneMode = this.namedTag.getBoolean(TAG_LP_REDSTONE_MODE);
+        if (this.nbt.containsKey(TAG_LP_REDSTONE_MODE)) {
+            this.lastOutputRedstoneMode = nbtMap.getBoolean(TAG_LP_REDSTONE_MODE);
         } else {
             this.lastOutputRedstoneMode = true;
         }
 
-        if (this.namedTag.containsKey(TAG_SUCCESS_COUNT)) {
-            this.successCount = this.namedTag.getInt(TAG_SUCCESS_COUNT);
+        if (this.nbt.containsKey(TAG_SUCCESS_COUNT)) {
+            this.successCount = nbtMap.getInt(TAG_SUCCESS_COUNT);
         } else {
             this.successCount = 0;
         }
 
-        if (this.namedTag.containsKey(TAG_CONDITION_MET)) {
-            this.conditionMet = this.namedTag.getBoolean(TAG_CONDITION_MET);
+        if (this.nbt.containsKey(TAG_CONDITION_MET)) {
+            this.conditionMet = nbtMap.getBoolean(TAG_CONDITION_MET);
         } else {
             this.conditionMet = false;
         }
 
-        if (this.namedTag.containsKey(TAG_TICK_DELAY)) {
-            this.tickDelay = this.namedTag.getInt(TAG_TICK_DELAY);
+        if (this.nbt.containsKey(TAG_TICK_DELAY)) {
+            this.tickDelay = nbtMap.getInt(TAG_TICK_DELAY);
         } else {
             this.tickDelay = 0;
         }
 
-        if (this.namedTag.containsKey(TAG_EXECUTE_ON_FIRST_TICK)) {
-            this.executingOnFirstTick = this.namedTag.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
+        if (this.nbt.containsKey(TAG_EXECUTE_ON_FIRST_TICK)) {
+            this.executingOnFirstTick = nbtMap.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
         } else {
             this.executingOnFirstTick = false;
         }
@@ -173,22 +175,21 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void saveNBT() {
         super.saveNBT();
-        final NbtMapBuilder builder = this.namedTag.toBuilder()
-                .putBoolean(TAG_POWERED, this.powered)
+        this.nbt.putBoolean(TAG_POWERED, this.powered)
                 .putBoolean(TAG_CONDITIONAL_MODE, this.conditionalMode)
                 .putBoolean(TAG_AUTO, this.auto);
         if (this.command != null && !this.command.isEmpty()) {
-            builder.putString(TAG_COMMAND, this.command);
+            this.nbt.putString(TAG_COMMAND, this.command);
         }
-        builder.putLong(TAG_LAST_EXECUTION, this.lastExecution)
+        this.nbt.putLong(TAG_LAST_EXECUTION, this.lastExecution)
                 .putBoolean(TAG_TRACK_OUTPUT, this.trackOutput);
         if (this.lastOutput != null && !this.lastOutput.isEmpty()) {
-            builder.putString(TAG_LAST_OUTPUT, this.lastOutput);
+            this.nbt.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            builder.putList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING, this.lastOutputParams);
+            this.nbt.putList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING, this.lastOutputParams);
         }
-        builder.putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode)
+        this.nbt.putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode)
                 .putBoolean(TAG_LP_CONDIONAL_MODE, this.lastOutputCondionalMode)
                 .putBoolean(TAG_LP_REDSTONE_MODE, this.lastOutputRedstoneMode)
                 .putInt(TAG_SUCCESS_COUNT, this.successCount)
@@ -196,7 +197,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 .putInt(TAG_VERSION, CURRENT_VERSION)
                 .putInt(TAG_TICK_DELAY, this.tickDelay)
                 .putBoolean(TAG_EXECUTE_ON_FIRST_TICK, this.executingOnFirstTick);
-        this.namedTag = builder.build();
     }
 
     @Override
@@ -239,20 +239,20 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @NotNull
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : "!";
+        return this.hasName() ? this.getNbt().getString(TAG_CUSTOM_NAME) : "!";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey(TAG_CUSTOM_NAME);
+        return this.nbt.containsKey(TAG_CUSTOM_NAME);
     }
 
     @Override
     public void setName(String name) {
         if (Strings.isNullOrEmpty(name)) {
-            this.namedTag.remove(TAG_CUSTOM_NAME);
+            this.nbt.remove(TAG_CUSTOM_NAME);
         } else {
-            this.namedTag = this.namedTag.toBuilder().putString(TAG_CUSTOM_NAME, name).build();
+            this.nbt.putString(TAG_CUSTOM_NAME, name);
         }
     }
 

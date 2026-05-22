@@ -30,7 +30,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public long id;
     public boolean movable;
     public boolean closed = false;
-    public NbtMap namedTag;
+    protected NbtMapBuilder nbt;
     protected Server server;
 
     public static BlockEntity createBlockEntity(String type, Position position, Object... args) {
@@ -103,23 +103,22 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         this.server = chunk.getProvider().getLevel().getServer();
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
-        this.namedTag = nbt;
-        if (namedTag.getString("id") == null || namedTag.getString("id").isEmpty()) {
+        this.setNbt(nbt.toBuilder());
+        final NbtMap nbtMap = this.getNbt();
+        if (nbtMap.getString("id") == null || nbtMap.getString("id").isEmpty()) {
             log.warn("Tried to create a block entity with an invalid id, {}", this.getClass().getSimpleName());
         }
-        this.name = this.namedTag.getString("id");
+        this.name = nbtMap.getString("id");
         this.id = BlockEntity.count++;
-        this.x = this.namedTag.getInt("x");
-        this.y = this.namedTag.getInt("y");
-        this.z = this.namedTag.getInt("z");
+        this.x = nbtMap.getInt("x");
+        this.y = nbtMap.getInt("y");
+        this.z = nbtMap.getInt("z");
 
-        if (namedTag.containsKey("isMovable")) {
-            this.movable = this.namedTag.getBoolean("isMovable");
+        if (this.nbt.containsKey("isMovable")) {
+            this.movable = nbtMap.getBoolean("isMovable");
         } else {
             this.movable = true;
-            this.namedTag = this.namedTag.toBuilder()
-                    .putBoolean("isMovable", true)
-                    .build();
+            this.nbt.putBoolean("isMovable", true);
         }
 
         this.initBlockEntity();
@@ -140,13 +139,11 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public void saveNBT() {
-        this.namedTag = this.namedTag.toBuilder()
-                .putString("id", this.getSaveId())
+        this.nbt.putString("id", this.getSaveId())
                 .putInt("x", (int) this.getX())
                 .putInt("y", (int) this.getY())
                 .putInt("z", (int) this.getZ())
-                .putBoolean("isMovable", this.movable)
-                .build();
+                .putBoolean("isMovable", this.movable);
     }
 
     public final String getSaveId() {
@@ -159,10 +156,12 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public NbtMap getCleanedNBT() {
         this.saveNBT();
-        NbtMapBuilder builder = this.namedTag.toBuilder();
-        this.namedTag = NbtHelper.remove(this.namedTag, "x", "y", "z", "id");
-        if (!builder.isEmpty()) {
-            return builder.build();
+        this.nbt.remove("id");
+        this.nbt.remove("x");
+        this.nbt.remove("y");
+        this.nbt.remove("z");
+        if (!this.nbt.isEmpty()) {
+            return getNbt();
         } else {
             return null;
         }
@@ -248,5 +247,17 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     @Override
     public final BlockEntity getLevelBlockEntity() {
         return super.getLevelBlockEntity();
+    }
+
+    public void setNbt(NbtMapBuilder builder) {
+        this.nbt = builder;
+    }
+
+    public NbtMap getNbt() {
+        return this.nbt.build();
+    }
+
+    public NbtMapBuilder getNbtBuilder() {
+        return this.nbt;
     }
 }

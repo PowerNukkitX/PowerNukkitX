@@ -50,88 +50,89 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.namedTag.containsKey(TAG_ANIMATION_MODE)) {
-            this.animationMode = AnimationMode.from(this.namedTag.getByte(TAG_ANIMATION_MODE));
+        final NbtMap nbtMap = getNbt();
+        if (this.nbt.containsKey(TAG_ANIMATION_MODE)) {
+            this.animationMode = AnimationMode.from(nbtMap.getByte(TAG_ANIMATION_MODE));
         } else {
             this.animationMode = AnimationMode.from(0);
         }
-        if (this.namedTag.containsKey(TAG_ANIMATION_SECONDS)) {
-            this.animationSeconds = this.namedTag.getFloat(TAG_ANIMATION_SECONDS);
+        if (this.nbt.containsKey(TAG_ANIMATION_SECONDS)) {
+            this.animationSeconds = nbtMap.getFloat(TAG_ANIMATION_SECONDS);
         } else {
             this.animationSeconds = 0f;
         }
-        if (this.namedTag.containsKey(TAG_DATA)) {
-            this.data = StructureBlockType.from(this.namedTag.getByte(TAG_DATA));
+        if (this.nbt.containsKey(TAG_DATA)) {
+            this.data = StructureBlockType.from(nbtMap.getByte(TAG_DATA));
         } else {
             this.data = StructureBlockType.from(1);
         }
-        if (this.namedTag.containsKey(TAG_DATA_FIELD)) {
-            this.dataField = this.namedTag.getString(TAG_DATA_FIELD);
+        if (this.nbt.containsKey(TAG_DATA_FIELD)) {
+            this.dataField = nbtMap.getString(TAG_DATA_FIELD);
         } else {
             this.dataField = "";
         }
-        if (this.namedTag.containsKey(TAG_IGNORE_ENTITIES)) {
-            this.ignoreEntities = this.namedTag.getBoolean(TAG_IGNORE_ENTITIES);
+        if (this.nbt.containsKey(TAG_IGNORE_ENTITIES)) {
+            this.ignoreEntities = nbtMap.getBoolean(TAG_IGNORE_ENTITIES);
         } else {
             this.ignoreEntities = false;
         }
-        if (this.namedTag.containsKey(TAG_INCLUDE_PLAYERS)) {
-            this.includePlayers = this.namedTag.getBoolean(TAG_INCLUDE_PLAYERS);
+        if (this.nbt.containsKey(TAG_INCLUDE_PLAYERS)) {
+            this.includePlayers = nbtMap.getBoolean(TAG_INCLUDE_PLAYERS);
         } else {
             this.includePlayers = false;
         }
-        if (this.namedTag.containsKey(TAG_INTEGRITY)) {
-            this.integrity = this.namedTag.getFloat(TAG_INTEGRITY);
+        if (this.nbt.containsKey(TAG_INTEGRITY)) {
+            this.integrity = nbtMap.getFloat(TAG_INTEGRITY);
         } else {
             this.integrity = 100f;
         }
-        if (this.namedTag.containsKey(TAG_IS_POWERED)) {
-            this.isPowered = this.namedTag.getBoolean(TAG_IS_POWERED);
+        if (this.nbt.containsKey(TAG_IS_POWERED)) {
+            this.isPowered = nbtMap.getBoolean(TAG_IS_POWERED);
         } else {
             this.isPowered = false;
         }
-        if (this.namedTag.containsKey(TAG_MIRROR)) {
-            this.mirror = Mirror.from(this.namedTag.getByte(TAG_MIRROR));
+        if (this.nbt.containsKey(TAG_MIRROR)) {
+            this.mirror = Mirror.from(nbtMap.getByte(TAG_MIRROR));
         } else {
             this.mirror = Mirror.from(0);
         }
-        if (this.namedTag.containsKey(TAG_REDSTONE_SAVEMODE)) {
-            this.redstoneSaveMode = StructureRedstoneSaveMode.from(this.namedTag.getByte(TAG_REDSTONE_SAVEMODE));
+        if (this.nbt.containsKey(TAG_REDSTONE_SAVEMODE)) {
+            this.redstoneSaveMode = StructureRedstoneSaveMode.from(nbtMap.getByte(TAG_REDSTONE_SAVEMODE));
         } else {
             this.redstoneSaveMode = StructureRedstoneSaveMode.from(0);
         }
-        if (this.namedTag.containsKey(TAG_REMOVE_BLOCKS)) {
-            this.removeBlocks = this.namedTag.getBoolean(TAG_REMOVE_BLOCKS);
+        if (this.nbt.containsKey(TAG_REMOVE_BLOCKS)) {
+            this.removeBlocks = nbtMap.getBoolean(TAG_REMOVE_BLOCKS);
         } else {
             this.removeBlocks = false;
         }
-        if (this.namedTag.containsKey(TAG_ROTATION)) {
-            this.rotation = Rotation.from(this.namedTag.getByte(TAG_ROTATION));
+        if (this.nbt.containsKey(TAG_ROTATION)) {
+            this.rotation = Rotation.from(nbtMap.getByte(TAG_ROTATION));
         } else {
             this.rotation = Rotation.from(0);
         }
-        if (this.namedTag.containsKey(TAG_SEED)) {
-            this.seed = this.namedTag.getLong(TAG_SEED);
+        if (this.nbt.containsKey(TAG_SEED)) {
+            this.seed = nbtMap.getLong(TAG_SEED);
         } else {
             this.seed = 0L;
         }
-        if (this.namedTag.containsKey(TAG_SHOW_BOUNDING_BOX)) {
-            this.showBoundingBox = this.namedTag.getBoolean(TAG_SHOW_BOUNDING_BOX);
+        if (this.nbt.containsKey(TAG_SHOW_BOUNDING_BOX)) {
+            this.showBoundingBox = nbtMap.getBoolean(TAG_SHOW_BOUNDING_BOX);
         } else {
             this.showBoundingBox = true;
         }
-        if (this.namedTag.containsKey(TAG_STRUCTURE_NAME)) {
-            this.structureName = this.namedTag.getString(TAG_STRUCTURE_NAME);
+        if (this.nbt.containsKey(TAG_STRUCTURE_NAME)) {
+            this.structureName = nbtMap.getString(TAG_STRUCTURE_NAME);
         } else {
             this.structureName = "";
         }
-        if (this.namedTag.containsKey(TAG_X_STRUCTURE_OFFSET) && this.namedTag.containsKey(TAG_Y_STRUCTURE_OFFSET) && this.namedTag.containsKey(TAG_Z_STRUCTURE_OFFSET)) {
-            this.offset = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Y_STRUCTURE_OFFSET), this.namedTag.getInt(TAG_Z_STRUCTURE_OFFSET));
+        if (this.nbt.containsKey(TAG_X_STRUCTURE_OFFSET) && this.nbt.containsKey(TAG_Y_STRUCTURE_OFFSET) && this.nbt.containsKey(TAG_Z_STRUCTURE_OFFSET)) {
+            this.offset = new BlockVector3(nbtMap.getInt(TAG_X_STRUCTURE_OFFSET), nbtMap.getInt(TAG_Y_STRUCTURE_OFFSET), nbtMap.getInt(TAG_Z_STRUCTURE_OFFSET));
         } else {
             this.offset = new BlockVector3(0, -1, 0);
         }
-        if (this.namedTag.containsKey(TAG_X_STRUCTURE_SIZE) && this.namedTag.containsKey(TAG_Y_STRUCTURE_SIZE) && this.namedTag.containsKey(TAG_Z_STRUCTURE_SIZE)) {
-            this.size = new BlockVector3(this.namedTag.getInt(TAG_X_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Y_STRUCTURE_SIZE), this.namedTag.getInt(TAG_Z_STRUCTURE_SIZE));
+        if (this.nbt.containsKey(TAG_X_STRUCTURE_SIZE) && this.nbt.containsKey(TAG_Y_STRUCTURE_SIZE) && this.nbt.containsKey(TAG_Z_STRUCTURE_SIZE)) {
+            this.size = new BlockVector3(nbtMap.getInt(TAG_X_STRUCTURE_SIZE), nbtMap.getInt(TAG_Y_STRUCTURE_SIZE), nbtMap.getInt(TAG_Z_STRUCTURE_SIZE));
         } else {
             this.size = new BlockVector3(5, 5, 5);
         }
@@ -167,8 +168,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putByte(TAG_ANIMATION_MODE, (byte) this.animationMode.ordinal())
+        this.nbt.putByte(TAG_ANIMATION_MODE, (byte) this.animationMode.ordinal())
                 .putFloat(TAG_ANIMATION_SECONDS, this.animationSeconds)
                 .putInt(TAG_DATA, this.data.ordinal())
                 .putString(TAG_DATA_FIELD, this.dataField)
@@ -188,8 +188,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
                 .putInt(TAG_Z_STRUCTURE_OFFSET, offset.z)
                 .putInt(TAG_X_STRUCTURE_SIZE, size.x)
                 .putInt(TAG_Y_STRUCTURE_SIZE, size.y)
-                .putInt(TAG_Z_STRUCTURE_SIZE, size.z)
-                .build();
+                .putInt(TAG_Z_STRUCTURE_SIZE, size.z);
     }
 
     @Override
@@ -201,20 +200,20 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @NotNull
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString(TAG_CUSTOM_NAME) : STRUCTURE_BLOCK;
+        return this.hasName() ? getNbt().getString(TAG_CUSTOM_NAME) : STRUCTURE_BLOCK;
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey(TAG_CUSTOM_NAME);
+        return this.nbt.containsKey(TAG_CUSTOM_NAME);
     }
 
     @Override
     public void setName(String name) {
         if (Strings.isNullOrEmpty(name)) {
-            this.namedTag.remove(TAG_CUSTOM_NAME);
+            this.nbt.remove(TAG_CUSTOM_NAME);
         } else {
-            this.namedTag = this.namedTag.toBuilder().putString(TAG_CUSTOM_NAME, name).build();
+            this.nbt.putString(TAG_CUSTOM_NAME, name);
         }
     }
 

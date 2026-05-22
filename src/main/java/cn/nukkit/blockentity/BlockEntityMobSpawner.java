@@ -58,49 +58,47 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
 
     public BlockEntityMobSpawner(IChunk chunk, NbtMap nbt) {
         super(chunk, nbt);
-        this.entityId = this.namedTag.getInt(TAG_ENTITY_ID);
+        this.entityId = this.getNbt().getInt(TAG_ENTITY_ID);
     }
 
     @Override
     protected void initBlockEntity() {
-        NbtMapBuilder builder = this.namedTag.toBuilder();
-        if (!this.namedTag.containsKey(TAG_SPAWN_RANGE) || !(this.namedTag.get(TAG_SPAWN_RANGE) instanceof Short)) {
-            builder.putShort(TAG_SPAWN_RANGE, (short) SPAWN_RANGE);
+        if (!this.nbt.containsKey(TAG_SPAWN_RANGE) || !(this.nbt.get(TAG_SPAWN_RANGE) instanceof Short)) {
+            this.nbt.putShort(TAG_SPAWN_RANGE, (short) SPAWN_RANGE);
         }
 
-        if (!this.namedTag.containsKey(TAG_MIN_SPAWN_DELAY) || !(this.namedTag.get(TAG_MIN_SPAWN_DELAY) instanceof Short)) {
-            builder.putShort(TAG_MIN_SPAWN_DELAY, (short) MIN_SPAWN_DELAY);
+        if (!this.nbt.containsKey(TAG_MIN_SPAWN_DELAY) || !(this.nbt.get(TAG_MIN_SPAWN_DELAY) instanceof Short)) {
+            this.nbt.putShort(TAG_MIN_SPAWN_DELAY, (short) MIN_SPAWN_DELAY);
         }
 
-        if (!this.namedTag.containsKey(TAG_MAX_SPAWN_DELAY) || !(this.namedTag.get(TAG_MAX_SPAWN_DELAY) instanceof Short)) {
-            builder.putShort(TAG_MAX_SPAWN_DELAY, (short) MAX_SPAWN_DELAY);
+        if (!this.nbt.containsKey(TAG_MAX_SPAWN_DELAY) || !(this.nbt.get(TAG_MAX_SPAWN_DELAY) instanceof Short)) {
+            this.nbt.putShort(TAG_MAX_SPAWN_DELAY, (short) MAX_SPAWN_DELAY);
         }
 
-        if (!this.namedTag.containsKey(TAG_MAX_NEARBY_ENTITIES) || !(this.namedTag.get(TAG_MAX_NEARBY_ENTITIES) instanceof Short)) {
-            builder.putShort(TAG_MAX_NEARBY_ENTITIES, (short) MAX_NEARBY_ENTITIES);
+        if (!this.nbt.containsKey(TAG_MAX_NEARBY_ENTITIES) || !(this.nbt.get(TAG_MAX_NEARBY_ENTITIES) instanceof Short)) {
+            this.nbt.putShort(TAG_MAX_NEARBY_ENTITIES, (short) MAX_NEARBY_ENTITIES);
         }
 
-        if (!this.namedTag.containsKey(TAG_REQUIRED_PLAYER_RANGE) || !(this.namedTag.get(TAG_REQUIRED_PLAYER_RANGE) instanceof Short)) {
-            builder.putShort(TAG_REQUIRED_PLAYER_RANGE, (short) REQUIRED_PLAYER_RANGE);
+        if (!this.nbt.containsKey(TAG_REQUIRED_PLAYER_RANGE) || !(this.nbt.get(TAG_REQUIRED_PLAYER_RANGE) instanceof Short)) {
+            this.nbt.putShort(TAG_REQUIRED_PLAYER_RANGE, (short) REQUIRED_PLAYER_RANGE);
         }
 
-        if (!this.namedTag.containsKey(TAG_MINIMUM_SPAWN_COUNT) || !(this.namedTag.get(TAG_MINIMUM_SPAWN_COUNT) instanceof Short)) {
-            builder.putShort(TAG_MINIMUM_SPAWN_COUNT, (short) MINIMUM_SPAWN_COUNT);
+        if (!this.nbt.containsKey(TAG_MINIMUM_SPAWN_COUNT) || !(this.nbt.get(TAG_MINIMUM_SPAWN_COUNT) instanceof Short)) {
+            this.nbt.putShort(TAG_MINIMUM_SPAWN_COUNT, (short) MINIMUM_SPAWN_COUNT);
         }
 
-        if (!this.namedTag.containsKey(TAG_MAXIMUM_SPAWN_COUNT) || !(this.namedTag.get(TAG_MAXIMUM_SPAWN_COUNT) instanceof Short)) {
-            builder.putShort(TAG_MAXIMUM_SPAWN_COUNT, (short) MAXIMUM_SPAWN_COUNT);
+        if (!this.nbt.containsKey(TAG_MAXIMUM_SPAWN_COUNT) || !(this.nbt.get(TAG_MAXIMUM_SPAWN_COUNT) instanceof Short)) {
+            this.nbt.putShort(TAG_MAXIMUM_SPAWN_COUNT, (short) MAXIMUM_SPAWN_COUNT);
         }
 
-        this.namedTag = builder.build();
-
-        this.spawnRange = this.namedTag.getShort(TAG_SPAWN_RANGE);
-        this.minSpawnDelay = this.namedTag.getShort(TAG_MIN_SPAWN_DELAY);
-        this.maxSpawnDelay = this.namedTag.getShort(TAG_MAX_SPAWN_DELAY);
-        this.maxNearbyEntities = this.namedTag.getShort(TAG_MAX_NEARBY_ENTITIES);
-        this.requiredPlayerRange = this.namedTag.getShort(TAG_REQUIRED_PLAYER_RANGE);
-        this.minSpawnCount = this.namedTag.getShort(TAG_MINIMUM_SPAWN_COUNT);
-        this.maxSpawnCount = this.namedTag.getShort(TAG_MAXIMUM_SPAWN_COUNT);
+        final NbtMap nbtMap = getNbt();
+        this.spawnRange = nbtMap.getShort(TAG_SPAWN_RANGE);
+        this.minSpawnDelay = nbtMap.getShort(TAG_MIN_SPAWN_DELAY);
+        this.maxSpawnDelay = nbtMap.getShort(TAG_MAX_SPAWN_DELAY);
+        this.maxNearbyEntities = nbtMap.getShort(TAG_MAX_NEARBY_ENTITIES);
+        this.requiredPlayerRange = nbtMap.getShort(TAG_REQUIRED_PLAYER_RANGE);
+        this.minSpawnCount = nbtMap.getShort(TAG_MINIMUM_SPAWN_COUNT);
+        this.maxSpawnCount = nbtMap.getShort(TAG_MAXIMUM_SPAWN_COUNT);
 
         this.scheduleUpdate();
         super.initBlockEntity();
@@ -184,8 +182,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag = this.namedTag.toBuilder()
-                .putInt(TAG_ENTITY_ID, this.entityId)
+        this.nbt.putInt(TAG_ENTITY_ID, this.entityId)
                 .putString(TAG_ID, BlockEntity.MOB_SPAWNER)
                 .putShort(TAG_SPAWN_RANGE, (short) this.spawnRange)
                 .putShort(TAG_MIN_SPAWN_DELAY, (short) this.minSpawnDelay)
@@ -193,8 +190,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                 .putShort(TAG_MAX_NEARBY_ENTITIES, (short) this.maxNearbyEntities)
                 .putShort(TAG_REQUIRED_PLAYER_RANGE, (short) this.requiredPlayerRange)
                 .putShort(TAG_MINIMUM_SPAWN_COUNT, (short) this.minSpawnCount)
-                .putShort(TAG_MAXIMUM_SPAWN_COUNT, (short) this.maxSpawnCount)
-                .build();
+                .putShort(TAG_MAXIMUM_SPAWN_COUNT, (short) this.maxSpawnCount);
     }
 
     @Override

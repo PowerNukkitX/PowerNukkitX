@@ -28,39 +28,36 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         int potionId;
-        NbtMapBuilder builder = this.namedTag.toBuilder();
-        if (!builder.containsKey("PotionId")) {
-            builder.putShort("PotionId", (short) 0xffff);
+        if (!this.nbt.containsKey("PotionId")) {
+            this.nbt.putShort("PotionId", (short) 0xffff);
         }
-        potionId = namedTag.getShort("PotionId");
+        potionId = getNbt().getShort("PotionId");
         int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
-        if (namedTag.getBoolean("SplashPotion")) {
+        if (getNbt().getBoolean("SplashPotion")) {
             potionType = PotionType.SPLASH.potionTypeData;
-            builder.remove("SplashPotion");
+            this.nbt.remove("SplashPotion");
         }
 
-        if (!builder.containsKey("PotionType")) {
-            builder.putShort("PotionType", (short) potionType);
+        if (!this.nbt.containsKey("PotionType")) {
+            this.nbt.putShort("PotionType", (short) potionType);
         }
-        this.namedTag = builder.build();
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        int potionId = namedTag.getShort("PotionId");
+        int potionId = getNbt().getShort("PotionId");
         int potionType = (potionId & 0xFFFF) == 0xFFFF ? PotionType.EMPTY.potionTypeData : PotionType.NORMAL.potionTypeData;
-        this.namedTag = namedTag.toBuilder().putShort("PotionId", (short) getPotionId())
-                .putShort("PotionType", (short) potionType)
-                .build();
+        this.nbt.putShort("PotionId", (short) getPotionId())
+                .putShort("PotionType", (short) potionType);
     }
 
     public int getPotionId() {
-        return namedTag.getShort("PotionId");
+        return getNbt().getShort("PotionId");
     }
 
     public void setPotionId(int potionId) {
-        this.namedTag = namedTag.toBuilder().putShort("PotionId", (short) potionId).build();
+        this.nbt.putShort("PotionId", (short) potionId);
         this.spawnToAll();
     }
 
@@ -69,11 +66,11 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public void setPotionType(int potionType) {
-        this.namedTag = this.namedTag.toBuilder().putShort("PotionType", (short) (potionType & 0xFFFF)).build();
+        this.nbt.putShort("PotionType", (short) (potionType & 0xFFFF));
     }
 
     public int getPotionType() {
-        return (short) (this.namedTag.getShort("PotionType") & 0xFFFF);
+        return (short) (this.getNbt().getShort("PotionType") & 0xFFFF);
     }
 
     public PotionType getType() {
@@ -85,12 +82,12 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public boolean isSplashPotion() {
-        return namedTag.getShort("PotionType") == PotionType.SPLASH.potionTypeData;
+        return getNbt().getShort("PotionType") == PotionType.SPLASH.potionTypeData;
     }
 
     public BlockColor getCustomColor() {
         if (isCustomColor()) {
-            int color = namedTag.getInt("CustomColor");
+            int color = getNbt().getInt("CustomColor");
 
             int red = (color >> 16) & 0xff;
             int green = (color >> 8) & 0xff;
@@ -103,7 +100,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public boolean isCustomColor() {
-        return namedTag.containsKey("CustomColor");
+        return nbt.containsKey("CustomColor");
     }
 
     public void setCustomColor(BlockColor color) {
@@ -113,13 +110,13 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public void setCustomColor(int r, int g, int b) {
         int color = (r << 16 | g << 8 | b) & 0xffffff;
 
-        this.namedTag = namedTag.toBuilder().putInt("CustomColor", color).build();
+        this.nbt.putInt("CustomColor", color);
 
         spawnToAll();
     }
 
     public void clearCustomColor() {
-        namedTag = NbtHelper.remove(namedTag, "CustomColor");
+        nbt.remove("CustomColor");
         spawnToAll();
     }
 
@@ -149,13 +146,14 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @Override
     public NbtMap getSpawnCompound() {
+        final NbtMap nbtMap = getNbt();
         NbtMapBuilder compoundTag = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable())
                 .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
-                .putShort("PotionId", namedTag.getShort("PotionId"))
-                .putShort("PotionType", namedTag.getShort("PotionType"));
-        if (namedTag.containsKey("CustomColor")) {
-            compoundTag.putInt("CustomColor", namedTag.getInt("CustomColor") << 8 >> 8);
+                .putShort("PotionId", nbtMap.getShort("PotionId"))
+                .putShort("PotionType", nbtMap.getShort("PotionType"));
+        if (nbt.containsKey("CustomColor")) {
+            compoundTag.putInt("CustomColor", nbtMap.getInt("CustomColor") << 8 >> 8);
         }
         return compoundTag.build();
     }

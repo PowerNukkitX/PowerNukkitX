@@ -50,24 +50,23 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         validBlocks = -1;
-        if (!namedTag.containsKey("Target")) {
-            this.namedTag = namedTag.toBuilder().putLong("Target", -1).build();
+        if (!nbt.containsKey("Target")) {
+            this.nbt = nbt.putLong("Target", -1);
             target = -1;
             targetEntity = null;
         } else {
-            target = namedTag.getLong("Target");
+            target = getNbt().getLong("Target");
         }
 
-        active = namedTag.getBoolean("Active");
+        active = getNbt().getBoolean("Active");
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
         Entity targetEntity = this.targetEntity;
-        this.namedTag = namedTag.toBuilder().putLong("Target", targetEntity != null ? targetEntity.getId() : -1)
-                .putBoolean("Active", active)
-                .build();
+        nbt.putLong("Target", targetEntity != null ? targetEntity.getId() : -1)
+                .putBoolean("Active", active);
     }
 
     @Override

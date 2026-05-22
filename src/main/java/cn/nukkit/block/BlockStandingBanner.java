@@ -161,12 +161,12 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         Item item = Item.get(ItemID.BANNER);
         if (banner != null) {
             item.setDamage(banner.getBaseColor() & 0xf);
-            int type = banner.namedTag.getInt("Type");
+            int type = banner.getNbt().getInt("Type");
             if (type > 0) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder())
                         .putInt("Type", type).build());
             }
-            List<NbtMap> patterns = new ObjectArrayList<>(banner.namedTag.getList("Patterns", NbtType.COMPOUND));
+            List<NbtMap> patterns = new ObjectArrayList<>(banner.getNbt().getList("Patterns", NbtType.COMPOUND));
             if (!patterns.isEmpty()) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder())
                         .putList("Patterns", NbtType.COMPOUND, patterns).build());

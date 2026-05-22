@@ -3,7 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.copper.golem.AbstractBlockCopperGolemStatue;
 import cn.nukkit.level.format.IChunk;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
 /**
  * @author Buddelbubi
@@ -18,7 +17,7 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.namedTag.containsKey("Pose", NbtType.INT)) {
+        if (this.nbt.containsKey("Pose")) {
             this.setPose(CopperPose.STANDING);
         }
     }
@@ -32,16 +31,16 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
     public NbtMap getSpawnCompound() {
         return super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", false)
-                .putInt("Pose", this.namedTag.getInt("Pose")
+                .putInt("Pose", this.getNbt().getInt("Pose")
                 ).build();
     }
 
     public void setPose(CopperPose pose) {
-        this.namedTag = this.namedTag.toBuilder().putInt("Pose", pose.ordinal()).build();
+        this.nbt.putInt("Pose", pose.ordinal());
     }
 
     public CopperPose getPose() {
-        return CopperPose.values()[this.namedTag.getInt("Pose")];
+        return CopperPose.values()[this.getNbt().getInt("Pose")];
     }
 
     public enum CopperPose {

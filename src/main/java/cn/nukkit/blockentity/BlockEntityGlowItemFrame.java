@@ -17,16 +17,16 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Glow Item Frame";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Glow Item Frame";
     }
 
     public boolean hasName() {
-        return namedTag.containsKey("CustomName");
+        return nbt.containsKey("CustomName");
     }
 
     @Override
     public NbtMap getSpawnCompound() {
-        if (!this.namedTag.containsKey("Item")) {
+        if (!this.nbt.containsKey("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();

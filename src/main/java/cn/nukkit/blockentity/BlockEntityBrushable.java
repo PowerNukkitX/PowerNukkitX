@@ -25,24 +25,24 @@ public class BlockEntityBrushable extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!namedTag.containsKey("item")) {
-            this.namedTag = namedTag.toBuilder().putCompound("item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null)).build();
+        if (!nbt.containsKey("item")) {
+            this.nbt.putCompound("item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
     }
 
     public Item getItem() {
-        NbtMap tag = this.namedTag.getCompound("item");
+        NbtMap tag = this.getNbt().getCompound("item");
         return ItemHelper.read(tag);
     }
 
     public void setItem(Item item) {
-        this.namedTag = this.namedTag.toBuilder().putCompound("item", ItemHelper.write(item, null)).build();
+        this.nbt.putCompound("item", ItemHelper.write(item, null));
     }
 
     @Override
     public NbtMap getSpawnCompound() {
         return super.getSpawnCompound().toBuilder()
-                .putCompound("item", this.namedTag.getCompound("item"))
+                .putCompound("item", this.getNbt().getCompound("item"))
                 .build();
     }
 }

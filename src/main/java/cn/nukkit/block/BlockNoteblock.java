@@ -162,7 +162,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
                 if (this.up() instanceof BlockHead skull) {
                     int meta = 0;
                     if (skull.getBlockEntity() != null) {
-                        meta = skull.getBlockEntity().namedTag.getByte("SkullType");
+                        meta = skull.getBlockEntity().getNbt().getByte("SkullType");
                     }
                     yield switch (meta) {
                         case 0, 3 ->

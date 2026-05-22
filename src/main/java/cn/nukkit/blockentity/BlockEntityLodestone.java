@@ -6,7 +6,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
-import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
@@ -31,15 +30,16 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (namedTag.containsKey("trackingHandler")) {
-            this.namedTag = namedTag.toBuilder().putCompound("trackingHandle", NbtHelper.remove(this.namedTag, "trackingHandler")).build();
+        if (nbt.containsKey("trackingHandler")) {
+            final NbtMap nbtMap = (NbtMap) this.nbt.remove("trackingHandler");
+            this.nbt.putCompound("trackingHandle", nbtMap).build();
         }
     }
 
     @NotNull
     public OptionalInt getTrackingHandler() {
-        if (namedTag.containsKey("trackingHandle")) {
-            return OptionalInt.of(namedTag.getInt("trackingHandle"));
+        if (nbt.containsKey("trackingHandle")) {
+            return OptionalInt.of(getNbt().getInt("trackingHandle"));
         }
         return OptionalInt.empty();
     }
@@ -57,7 +57,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
         }
 
         int handler = positionTrackingService.addOrReusePosition(floor);
-        this.namedTag = namedTag.toBuilder().putInt("trackingHandle", handler).build();
+        this.nbt.putInt("trackingHandle", handler);
         return handler;
     }
 

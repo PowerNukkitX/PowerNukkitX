@@ -279,7 +279,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
                 //Moveable Block Entity
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();
-                    nbt.putCompound("movingEntity", blockEntity.namedTag);
+                    nbt.putCompound("movingEntity", blockEntity.getNbt());
                     blockEntity.close();
                 }
                 oldPosList.add(oldPos);

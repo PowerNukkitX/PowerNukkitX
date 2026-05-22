@@ -15,7 +15,6 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -99,7 +98,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
         // Stagger their exit by giving each occupant a different ticksLeftToStay
         // and let BlockEntityBeehive.onUpdate() handle spawning them over time.
-        if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
+        if (beehive.getNbt().getByte("ShouldSpawnBees") > 0) {
             BlockEntityBeehive.Occupant[] occupants = beehive.getOccupants();
             int delayPerBee = 40; // 40 ticks
             int baseDelay = 20;   // small initial delay so they dont pop instantly on place
@@ -111,7 +110,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
                 index++;
             }
 
-            beehive.namedTag = beehive.namedTag.toBuilder().putByte("ShouldSpawnBees", (byte) 0).build();
+            beehive.setNbt(beehive.getNbt().toBuilder().putByte("ShouldSpawnBees", (byte) 0));
             beehive.scheduleUpdate();
         }
 
@@ -135,7 +134,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
     @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
-        if(player != null) this.getOrCreateBlockEntity().setInteractingEntity(player);
+        if (player != null) this.getOrCreateBlockEntity().setInteractingEntity(player);
         super.onTouch(vector, item, face, fx, fy, fz, player, action);
     }
 
@@ -170,8 +169,9 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             if (beehive != null) {
                 beehive.saveNBT();
                 if (!beehive.isHoneyEmpty() || !beehive.isEmpty()) {
-                    NbtMapBuilder copy = beehive.namedTag.toBuilder();
+                    NbtMapBuilder copy = beehive.getNbt().toBuilder();
                     copy.putByte("HoneyLevel", (byte) getHoneyLevel());
+                    beehive.setNbt(copy);
                     item.setCustomBlockData(copy.build());
                 }
             }

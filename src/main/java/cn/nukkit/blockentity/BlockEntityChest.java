@@ -8,7 +8,6 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
@@ -79,34 +78,34 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
                 this.pairWith(pair);
             }
 
-            NbtMapBuilder builder = this.namedTag.toBuilder();
             if (pair.doubleInventory != null) {
                 this.doubleInventory = pair.doubleInventory;
-                builder.putBoolean("pairlead", false);
+                this.nbt.putBoolean("pairlead", false);
             } else if (this.doubleInventory == null) {
-                builder.putBoolean("pairlead", true);
+                this.nbt.putBoolean("pairlead", true);
                 if ((pair.x + ((int) pair.z << 15)) > (this.x + ((int) this.z << 15))) { //Order them correctly
                     this.doubleInventory = new DoubleChestInventory(pair, this);
                 } else {
                     this.doubleInventory = new DoubleChestInventory(this, pair);
                 }
             }
-            this.namedTag = builder.build();
         } else {
-            if (level.isChunkLoaded(this.namedTag.getInt("pairx") >> 4, this.namedTag.getInt("pairz") >> 4)) {
+            if (level.isChunkLoaded(this.getNbt().getInt("pairx") >> 4, this.getNbt().getInt("pairz") >> 4)) {
                 this.doubleInventory = null;
-                this.namedTag = NbtHelper.remove(this.namedTag, "pairx", "pairz", "pairlead");
+                this.nbt.remove("pairx");
+                this.nbt.remove("pairz");
+                this.nbt.remove("pairlead");
             }
         }
     }
 
     public boolean isPaired() {
-        return this.namedTag.containsKey("pairx") && this.namedTag.containsKey("pairz");
+        return this.nbt.containsKey("pairx") && this.nbt.containsKey("pairz");
     }
 
     public BlockEntityChest getPair() {
         if (this.isPaired()) {
-            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
+            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(new Vector3(this.getNbt().getInt("pairx"), this.y, this.getNbt().getInt("pairz")));
             if (blockEntity instanceof BlockEntityChest) {
                 return (BlockEntityChest) blockEntity;
             }
@@ -120,17 +119,18 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             return false;
         }
 
+        final NbtMap nbtMap = getNbt();
         if (this.isPaired()) {
-            int x1 = this.namedTag.getInt("pairx");
-            int z1 = this.namedTag.getInt("pairz");
+            int x1 = nbtMap.getInt("pairx");
+            int z1 = nbtMap.getInt("pairz");
             if (!(chest.x == x1 && chest.z == z1)) {
                 return false;
             }
         }
 
         if (chest.isPaired()) {
-            int x2 = chest.namedTag.getInt("pairx");
-            int z2 = chest.namedTag.getInt("pairz");
+            int x2 = chest.getNbt().getInt("pairx");
+            int z2 = chest.getNbt().getInt("pairz");
             if (!(this.x == x2 && this.z == z2)) {
                 return false;
             }
@@ -146,14 +146,10 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public void createPair(BlockEntityChest chest) {
-        this.namedTag = this.namedTag.toBuilder()
-                .putInt("pairx", (int) chest.x)
-                .putInt("pairz", (int) chest.z)
-                .build();
-        chest.namedTag = chest.namedTag.toBuilder()
-                .putInt("pairx", (int) this.x)
-                .putInt("pairz", (int) this.z)
-                .build();
+        this.nbt.putInt("pairx", (int) chest.x)
+                .putInt("pairz", (int) chest.z);
+        chest.nbt.putInt("pairx", (int) this.x)
+                .putInt("pairz", (int) this.z);
     }
 
     public boolean unpair() {
@@ -163,12 +159,14 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         BlockEntityChest chest = this.getPair();
 
         this.doubleInventory = null;
-        this.namedTag = NbtHelper.remove(this.namedTag, "pairx", "pairz");
+        this.nbt.remove("pairx");
+        this.nbt.remove("pairz");
 
         this.spawnToAll();
 
         if (chest != null) {
-            chest.namedTag = NbtHelper.remove(chest.namedTag, "pairx", "pairz");
+            chest.nbt.remove("pairx");
+            chest.nbt.remove("pairz");
             chest.doubleInventory = null;
             chest.checkPairing();
             chest.spawnToAll();
@@ -183,12 +181,12 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         NbtMapBuilder spawnCompound = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable());
         if (this.isPaired()) {
-            spawnCompound.putBoolean("pairlead", this.namedTag.getBoolean("pairlead"))
-                    .putInt("pairx", this.namedTag.getInt("pairx"))
-                    .putInt("pairz", this.namedTag.getInt("pairz"));
+            spawnCompound.putBoolean("pairlead", this.getNbt().getBoolean("pairlead"))
+                    .putInt("pairx", this.getNbt().getInt("pairx"))
+                    .putInt("pairz", this.getNbt().getInt("pairz"));
         }
         if (this.hasName()) {
-            spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
+            spawnCompound.putString("CustomName", this.getNbt().getString("CustomName"));
         }
         return spawnCompound.build();
     }
@@ -203,22 +201,21 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Chest";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Chest";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey("CustomName");
+        return this.nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
-
-        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 
     @Override

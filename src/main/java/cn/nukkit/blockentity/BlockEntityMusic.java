@@ -3,7 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 public class BlockEntityMusic extends BlockEntity {
 
@@ -14,14 +13,12 @@ public class BlockEntityMusic extends BlockEntity {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        final NbtMapBuilder builder = NbtMap.builder();
-        if (!this.namedTag.containsKey("note")) {
-            builder.putByte("note", (byte) 0);
+        if (!this.nbt.containsKey("note")) {
+            this.nbt.putByte("note", (byte) 0);
         }
-        if (!this.namedTag.containsKey("powered")) {
-            builder.putBoolean("powered", false);
+        if (!this.nbt.containsKey("powered")) {
+            this.nbt.putBoolean("powered", false);
         }
-        this.namedTag = builder.build();
     }
 
     @Override
@@ -30,18 +27,18 @@ public class BlockEntityMusic extends BlockEntity {
     }
 
     public void changePitch() {
-        this.namedTag = this.namedTag.toBuilder().putByte("note", (byte) ((this.namedTag.getByte("note") + 1) % 25)).build();
+        this.nbt.putByte("note", (byte) ((this.getNbt().getByte("note") + 1) % 25));
     }
 
     public int getPitch() {
-        return this.namedTag.getByte("note");
+        return this.getNbt().getByte("note");
     }
 
     public void setPowered(boolean powered) {
-        this.namedTag = this.namedTag.toBuilder().putBoolean("powered", powered).build();
+        this.nbt.putBoolean("powered", powered);
     }
 
     public boolean isPowered() {
-        return this.namedTag.getBoolean("powered");
+        return this.getNbt().getBoolean("powered");
     }
 }

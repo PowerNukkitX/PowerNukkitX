@@ -23,28 +23,28 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable implements Block
         NbtMapBuilder spawnCompound = super.getSpawnCompound().toBuilder()
                 .putBoolean("isMovable", this.isMovable());
         if (this.hasName()) {
-            spawnCompound.put("CustomName", this.namedTag.get("CustomName"));
+            spawnCompound.put("CustomName", this.nbt.get("CustomName"));
         }
         return spawnCompound.build();
     }
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "EnderChest";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "EnderChest";
     }
 
     @Override
     public boolean hasName() {
-        return this.namedTag.containsKey("CustomName");
+        return this.nbt.containsKey("CustomName");
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            this.namedTag = NbtHelper.remove(this.namedTag, "CustomName");
+            this.nbt.remove("CustomName");
             return;
         }
 
-        this.namedTag = this.namedTag.toBuilder().putString("CustomName", name).build();
+        this.nbt.putString("CustomName", name);
     }
 }

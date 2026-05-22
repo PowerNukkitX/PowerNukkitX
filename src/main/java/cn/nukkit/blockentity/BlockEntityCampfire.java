@@ -44,12 +44,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         this.burnTime = new int[4];
         this.recipes = new CampfireRecipe[4];
         this.keepItem = new boolean[4];
+        final NbtMap nbtMap = getNbt();
         for (int i = 1; i <= burnTime.length; i++) {
-            burnTime[i - 1] = namedTag.getInt("ItemTime" + i);
-            keepItem[i - 1] = namedTag.getBoolean("KeepItem" + 1);
+            burnTime[i - 1] = nbtMap.getInt("ItemTime" + i);
+            keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + 1);
 
-            if (this.namedTag.containsKey("Item" + i) && this.namedTag.get("Item" + i) instanceof NbtMap nbtMap) {
-                inventory.setItem(i - 1, ItemHelper.read(nbtMap));
+            if (this.nbt.containsKey("Item" + i) && this.nbt.get("Item" + i) instanceof NbtMap itemNBT) {
+                inventory.setItem(i - 1, ItemHelper.read(itemNBT));
             }
         }
     }
@@ -128,13 +129,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                namedTag = NbtHelper.remove(namedTag, "Item" + i, "KeepItem" + i);
-                this.namedTag = namedTag.toBuilder().putInt("ItemTime" + i, 0).build();
+                this.nbt.remove("Item" + i);
+                this.nbt.remove("KeepItem" + i);
+                this.nbt.putInt("ItemTime" + i, 0);
             } else {
-                this.namedTag = namedTag.toBuilder().putCompound("Item" + i, ItemHelper.write(item, null))
+                this.nbt.putCompound("Item" + i, ItemHelper.write(item, null))
                         .putInt("ItemTime" + i, burnTime[i - 1])
-                        .putBoolean("KeepItem" + i, keepItem[i - 1])
-                        .build();
+                        .putBoolean("KeepItem" + i, keepItem[i - 1]);
             }
         }
     }
@@ -162,21 +163,21 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Campfire";
+        return this.hasName() ? this.getNbt().getString("CustomName") : "Campfire";
     }
 
     @Override
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            namedTag = NbtHelper.remove(namedTag, "CustomName");
+            nbt.remove("CustomName");
             return;
         }
-        this.namedTag = namedTag.toBuilder().putString("CustomName", name).build();
+        nbt.putString("CustomName", name);
     }
 
     @Override
     public boolean hasName() {
-        return namedTag.containsKey("CustomName");
+        return nbt.containsKey("CustomName");
     }
 
     @Override
@@ -208,7 +209,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         if (index < 0 || index >= getSize()) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            NbtMap data = this.namedTag.getCompound("Item" + (index + 1));
+            NbtMap data = this.getNbt().getCompound("Item" + (index + 1));
             return ItemHelper.read(data);
         }
     }
@@ -219,7 +220,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         }
 
         NbtMap nbt = ItemHelper.write(item, null);
-        this.namedTag = this.namedTag.toBuilder().putCompound("Item" + (index + 1), nbt).build();
+        this.nbt.putCompound("Item" + (index + 1), nbt);
     }
 
     @Override
