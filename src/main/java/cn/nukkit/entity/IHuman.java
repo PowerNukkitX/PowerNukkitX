@@ -157,6 +157,7 @@ public interface IHuman extends InventoryHolder {
                                 )
                         );
                     }
+                    builder.tintColors(pieceTintColors);
                 }
                 this.setSkin(builder.build());
             }
