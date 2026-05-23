@@ -3527,8 +3527,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         //close player network session
         log.debug("Closing player network session");
         log.debug(reason);
-        assert this.session != null;
-        this.session.disconnect(reason, false);
+        // true when the server closes the client connection
+        if (this.session.isConnected()) {
+            this.session.disconnect(reason, false);
+        }
     }
 
     public void unloadAllUsedChunk() {

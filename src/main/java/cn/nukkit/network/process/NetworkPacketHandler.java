@@ -47,4 +47,13 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         }
         return BedrockPacketHandler.super.handlePacket(packet);
     }
+
+    // client closes the connection
+    @Override
+    public void onDisconnect(String reason) {
+        if (this.session.getPlayer() != null) {
+            this.session.getPlayer().close(reason);
+        }
+        BedrockPacketHandler.super.onDisconnect(reason);
+    }
 }
