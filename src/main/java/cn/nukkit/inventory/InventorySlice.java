@@ -111,7 +111,7 @@ public class InventorySlice implements Inventory {
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getNamedTag() != null;
+        boolean checkTag = item.getNbt() != null;
         for (int i = startSlot; i < endSlot; ++i) {
             Item slot = rawInv.getItem(i);
             if (item.equals(slot, checkDamage, checkTag)) {

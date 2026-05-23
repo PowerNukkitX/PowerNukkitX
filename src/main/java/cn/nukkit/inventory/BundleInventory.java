@@ -29,7 +29,7 @@ public class BundleInventory extends BaseInventory {
     public BundleInventory(ItemBundle holder) {
         super(holder, ContainerType.NONE, 64);
         this.holder = holder;
-        NbtMapBuilder tagBuilder = holder.getOrCreateNamedTag().toBuilder();
+        NbtMapBuilder tagBuilder = holder.getOrCreateNbt().toBuilder();
         tagBuilder.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
         if (!tagBuilder.containsKey("storage_item_component_content")) {
             tagBuilder.putList("storage_item_component_content", NbtType.COMPOUND, new ObjectArrayList<>());
@@ -37,7 +37,7 @@ public class BundleInventory extends BaseInventory {
 
         final NbtMap tag = tagBuilder.build();
 
-        holder.setNamedTag(tag);
+        holder.setNbt(tag);
 
         List<NbtMap> list = tag.getList("storage_item_component_content", NbtType.COMPOUND);
         for (NbtMap compound : list) {

@@ -132,7 +132,7 @@ public class FireworkBuilder {
         this.explosions.forEach(explosions::add);
         this.fireworkTag = this.fireworkTag.toBuilder().putList("Explosions", NbtType.COMPOUND, explosions).build();
         NbtMap fireworks = NbtMap.builder().putCompound("Fireworks", this.fireworkTag).build();
-        this.itemFirework.setNamedTag(fireworks);
+        this.itemFirework.setNbt(fireworks);
 
         final NbtMap nbt = NbtMap.builder()
                 .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x, pos.y + 0.5, pos.z))
@@ -143,7 +143,7 @@ public class FireworkBuilder {
                 .build();
         EntityFireworksRocket eFirework = new EntityFireworksRocket(chunk, nbt);
         if (this.rider != null) eFirework.mountEntity(this.rider, false);
-        eFirework.setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, this.itemFirework.getNamedTag());
+        eFirework.setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, this.itemFirework.getNbt());
         return eFirework;
     }
 }

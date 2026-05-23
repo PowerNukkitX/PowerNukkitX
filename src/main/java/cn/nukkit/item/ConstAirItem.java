@@ -72,7 +72,7 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public Item setNamedTag(NbtMap tag) {
+    public Item setNbt(NbtMap tag) {
         return this;
     }
 

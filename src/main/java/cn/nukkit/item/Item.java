@@ -85,7 +85,7 @@ public abstract class Item implements Cloneable, ItemID {
     protected Block block = null;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
-    private NbtMap cachedNBT;
+    private NbtMapBuilder cachedNBT;
     private static int STACK_NETWORK_ID_COUNTER = 1;
 
     private static String DP_DEFAULT_GROUP_UUID() {
@@ -241,7 +241,7 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         return tag.containsKey("BlockEntityTag") && tag.get("BlockEntityTag") instanceof NbtMap;
 
     }
@@ -250,10 +250,10 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasCompoundTag()) {
             return this;
         }
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
 
         if (tag.containsKey("BlockEntityTag") && tag.get("BlockEntityTag") instanceof NbtMap) {
-            this.setNamedTag(NbtHelper.remove(tag, "BlockEntityTag"));
+            this.setNbt(NbtHelper.remove(tag, "BlockEntityTag"));
         }
 
         return this;
@@ -266,10 +266,10 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasCompoundTag()) {
             tag = NbtMap.EMPTY;
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
 
-        this.setNamedTag(tag.toBuilder().putCompound("BlockEntityTag", tags.build()).build());
+        this.setNbt(tag.toBuilder().putCompound("BlockEntityTag", tags.build()).build());
 
         return this;
     }
@@ -279,7 +279,7 @@ public abstract class Item implements Cloneable, ItemID {
             return null;
         }
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
 
         if (tag.containsKey("BlockEntityTag")) {
             return tag.getCompound("BlockEntityTag");
@@ -307,7 +307,7 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
 
         if (tag.containsKey("ench")) {
             Object enchTag = tag.get("ench");
@@ -331,7 +331,7 @@ public abstract class Item implements Cloneable, ItemID {
             return 0;
         }
 
-        for (NbtMap entry : this.getNamedTag().getList("ench", NbtType.COMPOUND)) {
+        for (NbtMap entry : this.getNbt().getList("ench", NbtType.COMPOUND)) {
             if (entry.getShort("id") == id) {
                 return entry.getShort("lvl");
             }
@@ -350,7 +350,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasEnchantments()) {
             return 0;
         }
-        for (NbtMap entry : this.getNamedTag().getList("custom_ench", NbtType.COMPOUND)) {
+        for (NbtMap entry : this.getNbt().getList("custom_ench", NbtType.COMPOUND)) {
             if (entry.getString("id").equals(id)) {
                 return entry.getShort("lvl");
             }
@@ -366,7 +366,7 @@ public abstract class Item implements Cloneable, ItemID {
             return null;
         }
 
-        for (NbtMap entry : this.getNamedTag().getList("custom_ench", NbtType.COMPOUND)) {
+        for (NbtMap entry : this.getNbt().getList("custom_ench", NbtType.COMPOUND)) {
             if (entry.getString("id").equals(id)) {
                 Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
                 if (e != null) {
@@ -421,7 +421,7 @@ public abstract class Item implements Cloneable, ItemID {
             return null;
         }
 
-        for (NbtMap entry : this.getNamedTag().getList("ench", NbtType.COMPOUND)) {
+        for (NbtMap entry : this.getNbt().getList("ench", NbtType.COMPOUND)) {
             if (entry.getShort("id") == id) {
                 Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
                 if (e != null) {
@@ -459,7 +459,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasCompoundTag()) {
             tag = NbtMap.EMPTY;
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
 
         final List<NbtMap> ench = tag.containsKey("ench") ? new ObjectArrayList<>(tag.getList("ench", NbtType.COMPOUND)) : new ObjectArrayList<>();
@@ -526,7 +526,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!ench.isEmpty()) {
             tag = tag.toBuilder().putList("ench", NbtType.COMPOUND, ench).build();
         }
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     private String setCustomEnchantDisplay(List<NbtMap> custom_ench) {
@@ -549,7 +549,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
         List<Enchantment> enchantments = new ArrayList<>();
 
-        List<NbtMap> ench = new ObjectArrayList<>(this.getNamedTag().getList("ench", NbtType.COMPOUND));
+        List<NbtMap> ench = new ObjectArrayList<>(this.getNbt().getList("ench", NbtType.COMPOUND));
         for (NbtMap entry : ench) {
             Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
             if (e != null) {
@@ -558,7 +558,7 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
         //custom ench
-        List<NbtMap> custom_ench = new ObjectArrayList<>(this.getNamedTag().getList("custom_ench", NbtType.COMPOUND));
+        List<NbtMap> custom_ench = new ObjectArrayList<>(this.getNbt().getList("custom_ench", NbtType.COMPOUND));
         for (NbtMap entry : custom_ench) {
             Enchantment e = Enchantment.getEnchantment(entry.getString("id"));
             if (e != null) {
@@ -590,9 +590,9 @@ public abstract class Item implements Cloneable, ItemID {
     public void removeEnchantment(int id) {
         if (!this.hasCompoundTag()) return;
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         if (!tag.containsKey("ench")) {
-            this.setNamedTag(tag);
+            this.setNbt(tag);
             return;
         }
 
@@ -610,7 +610,7 @@ public abstract class Item implements Cloneable, ItemID {
             tag = builder.build();
         }
 
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     public void removeEnchantment(@NotNull Identifier id) {
@@ -629,9 +629,9 @@ public abstract class Item implements Cloneable, ItemID {
     public void removeEnchantment(@NotNull String id) {
         if (!this.hasCompoundTag()) return;
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         if (!tag.containsKey("custom_ench")) {
-            this.setNamedTag(tag);
+            this.setNbt(tag);
             return;
         }
 
@@ -666,21 +666,21 @@ public abstract class Item implements Cloneable, ItemID {
             }
         }
 
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     public void removeAllEnchantments() {
         if (!this.hasCompoundTag()) return;
 
-        NbtMapBuilder builder = this.getNamedTag().toBuilder();
+        NbtMapBuilder builder = this.getNbt().toBuilder();
         builder.remove("ench");
         builder.remove("custom_ench");
-        this.setNamedTag(builder.build());
+        this.setNbt(builder.build());
     }
 
     public int getRepairCost() {
         if (this.hasCompoundTag()) {
-            NbtMap tag = this.getNamedTag();
+            NbtMap tag = this.getNbt();
             if (tag.containsKey("RepairCost")) {
                 Object repairCost = tag.get("RepairCost");
                 if (repairCost instanceof Integer repairCostAsInt) {
@@ -693,18 +693,18 @@ public abstract class Item implements Cloneable, ItemID {
 
     public Item setRepairCost(int cost) {
         if (cost <= 0 && this.hasCompoundTag()) {
-            final NbtMapBuilder builder = this.getNamedTag().toBuilder();
+            final NbtMapBuilder builder = this.getNbt().toBuilder();
             builder.remove("RepairCost");
-            return this.setNamedTag(builder.build());
+            return this.setNbt(builder.build());
         }
 
         NbtMap tag;
         if (!this.hasCompoundTag()) {
             tag = NbtMap.EMPTY;
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
-        return this.setNamedTag(tag.toBuilder().putInt("RepairCost", cost).build());
+        return this.setNbt(tag.toBuilder().putInt("RepairCost", cost).build());
     }
 
     public boolean hasCustomName() {
@@ -712,7 +712,7 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         if (tag.containsKey("display")) {
             Object tag1 = tag.get("display");
             return tag1 instanceof NbtMap && ((NbtMap) tag1).containsKey("Name") && ((NbtMap) tag1).get("Name") instanceof String;
@@ -726,7 +726,7 @@ public abstract class Item implements Cloneable, ItemID {
             return "";
         }
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         if (tag.containsKey("display")) {
             Object tag1 = tag.get("display");
             if (tag1 instanceof NbtMap && ((NbtMap) tag1).containsKey("Name") && ((NbtMap) tag1).get("Name") instanceof String) {
@@ -754,7 +754,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasCompoundTag()) {
             tag = NbtMap.EMPTY;
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
         if (tag.containsKey("display") && tag.get("display") instanceof NbtMap displayTag) {
             tag = tag.toBuilder().putCompound("display",
@@ -765,7 +765,7 @@ public abstract class Item implements Cloneable, ItemID {
                     NbtMap.builder().putString("Name", name).build()
             ).build();
         }
-        this.setNamedTag(tag);
+        this.setNbt(tag);
         return this;
     }
 
@@ -781,7 +781,7 @@ public abstract class Item implements Cloneable, ItemID {
             return this;
         }
 
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
 
         if (tag.containsKey("display") && tag.get("display") instanceof NbtMap display) {
             display = NbtHelper.remove(display, "Name");
@@ -789,7 +789,7 @@ public abstract class Item implements Cloneable, ItemID {
                 tag = NbtHelper.remove(tag, "display");
             }
 
-            this.setNamedTag(tag);
+            this.setNbt(tag);
         }
 
         return this;
@@ -803,7 +803,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return
      */
     public String[] getLore() {
-        Object tag = this.getNamedTagEntry("display");
+        Object tag = this.getNbtEntry("display");
         ArrayList<String> lines = new ArrayList<>();
 
         if (tag instanceof NbtMap nbt) {
@@ -826,14 +826,14 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.hasCompoundTag()) {
             tag = NbtMap.EMPTY;
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
         List<String> lore = new ObjectArrayList<>();
         lore.addAll(Arrays.asList(lines));
 
         tag = tag.toBuilder().putCompound("display", NbtMap.builder().putList("Lore", NbtType.STRING, lore).build()).build();
 
-        this.setNamedTag(tag);
+        this.setNbt(tag);
         return this;
     }
 
@@ -844,14 +844,14 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public Item removeDynamicProperty(String key) {
         if (!this.hasCompoundTag()) return this;
-        NbtMap root = this.getNamedTag();
+        NbtMap root = this.getNbt();
         NbtMap dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return this;
         NbtMap group = dyn.getCompound(DP_DEFAULT_GROUP_UUID());
         if (group == null || !group.containsKey(key)) return this;
 
         group.remove(key);
-        this.setNamedTag(root);
+        this.setNbt(root);
         return this;
     }
 
@@ -861,12 +861,12 @@ public abstract class Item implements Cloneable, ItemID {
      */
     public Item clearDynamicProperties() {
         if (!this.hasCompoundTag()) return this;
-        NbtMap root = this.getNamedTag();
+        NbtMap root = this.getNbt();
         NbtMap dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return this;
 
         dyn = dyn.toBuilder().putCompound(DP_DEFAULT_GROUP_UUID(), NbtMap.EMPTY).build();
-        this.setNamedTag(root);
+        this.setNbt(root);
         return this;
     }
 
@@ -1158,7 +1158,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private NbtMap ensureDynamicPropertiesGroup(String groupId) {
-        NbtMap root = this.getOrCreateNamedTag();
+        NbtMap root = this.getOrCreateNbt();
         NbtMap dyn = root.getCompound(DP_ROOT);
         NbtMap group = (dyn != null) ? dyn.getCompound(groupId) : null;
         if (group == null) group = NbtMap.EMPTY;
@@ -1166,7 +1166,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private NbtMap getDynamicPropertiesGroup(String groupId) {
-        NbtMap root = this.getNamedTag();
+        NbtMap root = this.getNbt();
         if (root == null || !root.containsKey(DP_ROOT)) return null;
         NbtMap dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return null;
@@ -1174,14 +1174,14 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     private void saveDynamicPropertiesGroup(String groupId, NbtMap group) {
-        NbtMap root = this.getOrCreateNamedTag();
+        NbtMap root = this.getOrCreateNbt();
         NbtMap dyn = root.getCompound(DP_ROOT);
         if (!root.containsKey(DP_ROOT) || dyn == null) {
             dyn = NbtMap.EMPTY;
         }
         NbtMapBuilder dynBuilder = dyn.toBuilder().putCompound(groupId, group);
         root = root.toBuilder().putCompound(DP_ROOT, dynBuilder.build()).build();
-        this.setNamedTag(root);
+        this.setNbt(root);
     }
 
     private Object findDynamicPropertyTagInConfiguredGroup(String key) {
@@ -1191,8 +1191,8 @@ public abstract class Item implements Cloneable, ItemID {
     }
     // Dynamic Properties Helpers end
 
-    public Object getNamedTagEntry(String name) {
-        NbtMap tag = this.getNamedTag();
+    public Object getNbtEntry(String name) {
+        NbtMap tag = this.getNbt();
         if (tag != null) {
             return tag.containsKey(name) ? tag.get(name) : null;
         }
@@ -1200,31 +1200,40 @@ public abstract class Item implements Cloneable, ItemID {
         return null;
     }
 
-    public Item setNamedTag(@Nullable NbtMap tag) {
-        this.cachedNBT = tag;
+    public Item setNbt(NbtMapBuilder builder) {
+        this.cachedNBT = builder;
+        this.tags = writeCompoundTag(builder.build());
+        return this;
+    }
+
+    public Item setNbt(@Nullable NbtMap tag) {
+        this.cachedNBT = tag == null ? NbtMap.builder() : tag.toBuilder();
         this.tags = writeCompoundTag(tag);
         return this;
     }
 
     @Nullable
-    public NbtMap getNamedTag() {
+    public NbtMap getNbt() {
         if (!this.hasCompoundTag()) {
             return null;
         }
 
         if (this.cachedNBT == null) {
-            this.cachedNBT = parseCompoundTag(this.tags);
+            final NbtMap parsed = parseCompoundTag(this.tags);
+            this.cachedNBT = parsed == null ? null : parsed.toBuilder();
+            return parsed != null ? this.cachedNBT.build() : null;
         }
-        return this.cachedNBT;
+        return this.cachedNBT.build();
     }
 
     public Item setCompoundTag(@Nullable NbtMap tag) {
-        return setNamedTag(tag);
+        return setNbt(tag);
     }
 
     public Item setCompoundTag(byte[] tags) {
         this.tags = tags;
-        this.cachedNBT = parseCompoundTag(tags);
+        final NbtMap parsed = parseCompoundTag(tags);
+        this.cachedNBT = parsed != null ? parsed.toBuilder() : null;
         return this;
     }
 
@@ -1234,21 +1243,22 @@ public abstract class Item implements Cloneable, ItemID {
 
     public boolean hasCompoundTag() {
         if (tags.length > 0) {
-            if (cachedNBT == null) cachedNBT = parseCompoundTag(tags);
-            return !cachedNBT.isEmpty();
+            final NbtMap parsed = parseCompoundTag(tags);
+            if (cachedNBT == null) cachedNBT = parsed == null ? null : parsed.toBuilder();
+            return cachedNBT != null && !cachedNBT.isEmpty();
         } else return false;
     }
 
-    public NbtMap getOrCreateNamedTag() {
+    public NbtMap getOrCreateNbt() {
         if (!hasCompoundTag()) {
-            setNamedTag(NbtMap.EMPTY);
-            cachedNBT = NbtMap.EMPTY;
-            return cachedNBT;
+            setNbt(NbtMap.EMPTY);
+            cachedNBT = NbtMap.builder();
+            return cachedNBT.build();
         }
-        return getNamedTag();
+        return getNbt();
     }
 
-    public Item clearNamedTag() {
+    public Item clearNbt() {
         this.tags = EmptyArrays.EMPTY_BYTES;
         this.cachedNBT = null;
         return this;
@@ -1604,7 +1614,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
 
         if (checkCompound && (this.hasCompoundTag() || item.hasCompoundTag())) {
-            return Objects.equals(this.getNamedTag(), item.getNamedTag());
+            return Objects.equals(this.getNbt(), item.getNbt());
         }
         return true;
     }
@@ -1625,8 +1635,8 @@ public abstract class Item implements Cloneable, ItemID {
             return false;
         }
 
-        NbtMap thisTags = this.getNamedTag();
-        NbtMap otherTags = item.getNamedTag();
+        NbtMap thisTags = this.getNbt();
+        NbtMap otherTags = item.getNbt();
         if (thisTags.equals(otherTags)) {
             return true;
         }
@@ -1680,7 +1690,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Controls what block types this block may be placed on.
      */
     public void addCanPlaceOn(Block block) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         List<String> canPlaceOn = tag.getList("CanPlaceOn", NbtType.STRING);
         canPlaceOn.add(block.toItem().getId());
         tag = tag.toBuilder().putList("CanPlaceOn", NbtType.STRING, canPlaceOn).build();
@@ -1694,7 +1704,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setCanPlaceOn(Block[] blocks) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         List<String> canPlaceOn = new ObjectArrayList<>();
         for (Block block : blocks) {
             canPlaceOn.add(block.toItem().getId());
@@ -1704,13 +1714,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setCanPlaceOn(List<String> canPlaceOn) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         tag = tag.toBuilder().putList("CanPlaceOn", NbtType.STRING, canPlaceOn).build();
         this.setCompoundTag(tag);
     }
 
     public List<String> getCanPlaceOn() {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         return tag.getList("CanPlaceOn", NbtType.STRING);
     }
 
@@ -1718,7 +1728,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Controls the types of blocks this block can break (in Adventure Mode). This effect does not change its normal breaking speed or loot.
      */
     public void addCanDestroy(Block block) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         List<String> canDestroy = tag.getList("CanDestroy", NbtType.STRING);
         canDestroy.add(block.toItem().getId());
         tag = tag.toBuilder().putList("CanDestroy", NbtType.STRING, canDestroy).build();
@@ -1732,7 +1742,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setCanDestroy(Block[] blocks) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         List<String> canDestroy = new ObjectArrayList<>();
         for (Block block : blocks) {
             canDestroy.add(block.toItem().getId());
@@ -1742,13 +1752,13 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setCanDestroyOn(List<String> canDestroy) {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         tag = tag.toBuilder().putList("CanDestroy", NbtType.STRING, canDestroy).build();
         this.setCompoundTag(tag);
     }
 
     public List<String> getCanDestroy() {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         return tag.getList("CanDestroy", NbtType.STRING);
     }
 
@@ -1764,7 +1774,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setItemLockMode(ItemLockMode mode) {
-        NbtMapBuilder builder = getOrCreateNamedTag().toBuilder();
+        NbtMapBuilder builder = getOrCreateNbt().toBuilder();
         if (mode == ItemLockMode.NONE) {
             builder.remove("minecraft:item_lock");
         } else {
@@ -1779,7 +1789,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return ItemLockMode
      */
     public ItemLockMode getItemLockMode() {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         if (tag.containsKey("minecraft:item_lock")) {
             return ItemLockMode.values()[tag.getByte("minecraft:item_lock")];
         }
@@ -1787,7 +1797,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public void setKeepOnDeath(boolean keepOnDeath) {
-        NbtMapBuilder builder = getOrCreateNamedTag().toBuilder();
+        NbtMapBuilder builder = getOrCreateNbt().toBuilder();
         if (keepOnDeath) {
             builder = builder.putByte("minecraft:keep_on_death", (byte) 1);
         } else {
@@ -1802,7 +1812,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return if item does not drop on death
      */
     public boolean keepOnDeath() {
-        NbtMap tag = getOrCreateNamedTag();
+        NbtMap tag = getOrCreateNbt();
         return tag.containsKey("minecraft:keep_on_death");
     }
 
@@ -2329,7 +2339,7 @@ public abstract class Item implements Cloneable, ItemID {
             pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if (!event.isCancelled()) {
             setDamageRaw(event.getNewDurability());
-            this.setNamedTag(this.getOrCreateNamedTag().toBuilder().putInt("Damage", event.getNewDurability()).build());
+            this.setNbt(this.getOrCreateNbt().toBuilder().putInt("Damage", event.getNewDurability()).build());
         }
     }
 
@@ -2592,7 +2602,7 @@ public abstract class Item implements Cloneable, ItemID {
             pluginManager.callEvent(event); //Method gets called on server start before plugin manager is initiated
         if (!event.isCancelled()) {
             setDamageRaw(event.getNewDurability());
-            this.setNamedTag(this.getOrCreateNamedTag().toBuilder().putInt("Damage", event.getNewDurability()).build());
+            this.setNbt(this.getOrCreateNbt().toBuilder().putInt("Damage", event.getNewDurability()).build());
         }
     }
 
@@ -2656,7 +2666,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public ItemData toNetwork() {
-        final boolean hasNbt = this.getNamedTag() != null;
+        final boolean hasNbt = this.getNbt() != null;
         if (this.getNetId() == 0 && !this.getIdentifier().equals(Item.AIR.getIdentifier())) {
             this.autoAssignStackNetworkId();
         }
@@ -2665,7 +2675,7 @@ public abstract class Item implements Cloneable, ItemID {
                 .definition(this.getItemDefinition())
                 .damage(this.getDamage())
                 .count(this.getCount())
-                .tag(this.getNamedTag())
+                .tag(this.getNbt())
                 .canPlace(!hasNbt ? new String[0] : this.getCanPlaceOn().toArray(String[]::new))
                 .canBreak(!hasNbt ? new String[0] : this.getCanDestroy().toArray(String[]::new))
                 .blockDefinition(new RuntimeBlockDefinition(this.block == null ? Block.get(Block.AIR).getRuntimeId() : this.getBlock().getRuntimeId()))
@@ -2680,7 +2690,7 @@ public abstract class Item implements Cloneable, ItemID {
         }
         final ItemDefinition definition = itemData.getDefinition();
         final Item item = Item.get(definition.getIdentifier(), itemData.getDamage(), itemData.getCount());
-        item.setNamedTag(itemData.getTag());
+        item.setNbt(itemData.getTag());
         final List<String> canPlaceOn = Arrays.stream(itemData.getCanPlace()).toList();
         final List<String> canDestroyOn = Arrays.stream(itemData.getCanBreak()).toList();
         if (!canPlaceOn.isEmpty()) {

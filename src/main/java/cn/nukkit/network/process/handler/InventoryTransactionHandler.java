@@ -337,9 +337,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 Item serverItemInHand = player.getInventory().getItemInMainHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
-                if (useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsKey("Damage"))) {
-                    if (useItemDataItem.getNamedTag().containsKey("Damage")) {
-                        useItemDataItem.setNamedTag(NbtHelper.remove(useItemDataItem.getNamedTag(), "Damage"));
+                if (useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNbt().containsKey("Damage"))) {
+                    if (useItemDataItem.getNbt().containsKey("Damage")) {
+                        useItemDataItem.setNbt(NbtHelper.remove(useItemDataItem.getNbt(), "Damage"));
                     }
                 }
 
@@ -429,9 +429,9 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                 Item serverItemInHand = player.getInventory().getItemInMainHand();
                 Vector3 directionVector = player.getDirectionVector();
                 // Removes Damage Tag that the client adds, but we do not store.
-                if (useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNamedTag().containsKey("Damage"))) {
-                    if (useItemDataItem.getNamedTag().containsKey("Damage")) {
-                        useItemDataItem.getNamedTag().remove("Damage");
+                if (useItemDataItem.hasCompoundTag() && (!serverItemInHand.hasCompoundTag() || !serverItemInHand.getNbt().containsKey("Damage"))) {
+                    if (useItemDataItem.getNbt().containsKey("Damage")) {
+                        useItemDataItem.getNbt().remove("Damage");
                     }
                 }
 

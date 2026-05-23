@@ -51,7 +51,7 @@ abstract public class ItemArmor extends Item {
 
     @Override
     public boolean isUnbreakable() {
-        final Object tag = this.getNamedTagEntry("Unbreakable");
+        final Object tag = this.getNbtEntry("Unbreakable");
         return tag instanceof Byte b && b > 0;
     }
 }

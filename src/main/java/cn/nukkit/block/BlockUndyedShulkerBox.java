@@ -100,7 +100,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         ShulkerBoxInventory inv = tile.getRealInventory();
 
         if (!inv.isEmpty()) {
-            NbtMap nbt = item.getNamedTag();
+            NbtMap nbt = item.getNbt();
             if (nbt == null) {
                 nbt = NbtMap.EMPTY;
             }
@@ -134,7 +134,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        NbtMap t = item.getNamedTag();
+        NbtMap t = item.getNbt();
 
         // This code gets executed when the player has broken the shulker box and placed it back (©Kevims 2020)
         if (t != null && t.containsKey("Items")) {

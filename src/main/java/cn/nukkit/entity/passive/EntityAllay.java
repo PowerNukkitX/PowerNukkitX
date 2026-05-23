@@ -126,7 +126,7 @@ public class EntityAllay extends EntityMob implements EntityFlyable {
                 setItemInHand(Item.AIR);
             } else {
                 setOwnerName(player.getName());
-                Item itemInHand = player.getInventory().getItemInMainHand().clone().clearNamedTag();
+                Item itemInHand = player.getInventory().getItemInMainHand().clone().clearNbt();
                 itemInHand.setCount(1);
                 setItemInHand(itemInHand);
             }

@@ -40,7 +40,7 @@ public class ItemWrittenBook extends ItemBookWritable {
 
     public Item writeBook(String author, String title, List<NbtMap> pages) {
         if (pages.size() > 50 || pages.isEmpty()) return this; //Minecraft does not support more than 50 pages
-        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder();
+        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder();
 
         tag.putString("author", author);
         tag.putString("title", title);
@@ -49,11 +49,11 @@ public class ItemWrittenBook extends ItemBookWritable {
         tag.putInt("generation", GENERATION_ORIGINAL);
         tag.putString("xuid", "");
 
-        return this.setNamedTag(tag.build());
+        return this.setNbt(tag.build());
     }
 
     public boolean signBook(String title, String author, String xuid, int generation) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder())
+        this.setNbt((this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder())
                 .putString("title", title)
                 .putString("author", author)
                 .putInt("generation", generation)
@@ -68,14 +68,14 @@ public class ItemWrittenBook extends ItemBookWritable {
      * Generations higher than 1 can not be copied.
      */
     public int getGeneration() {
-        return this.hasCompoundTag() ? this.getNamedTag().getInt("generation") : -1;
+        return this.hasCompoundTag() ? this.getNbt().getInt("generation") : -1;
     }
 
     /**
      * Sets the generation of a book.
      */
     public void setGeneration(int generation) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putInt("generation", generation).build());
+        this.setNbt((this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder()).putInt("generation", generation).build());
     }
 
     /**
@@ -84,41 +84,41 @@ public class ItemWrittenBook extends ItemBookWritable {
      * The author can be set to anything when signing a book.
      */
     public String getAuthor() {
-        return this.hasCompoundTag() ? this.getNamedTag().getString("author") : "";
+        return this.hasCompoundTag() ? this.getNbt().getString("author") : "";
     }
 
     /**
      * Sets the author of this book.
      */
     public void setAuthor(String author) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putString("author", author).build());
+        this.setNbt((this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder()).putString("author", author).build());
     }
 
     /**
      * Returns the title of this book.
      */
     public String getTitle() {
-        return this.hasCompoundTag() ? this.getNamedTag().getString("title") : "Written Book";
+        return this.hasCompoundTag() ? this.getNbt().getString("title") : "Written Book";
     }
 
     /**
      * Sets the title of this book.
      */
     public void setTitle(String title) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putString("title", title).build());
+        this.setNbt((this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder()).putString("title", title).build());
     }
 
     /**
      * Returns the author's XUID of this book.
      */
     public String getXUID() {
-        return this.hasCompoundTag() ? this.getNamedTag().getString("xuid") : "";
+        return this.hasCompoundTag() ? this.getNbt().getString("xuid") : "";
     }
 
     /**
      * Sets the author's XUID of this book.
      */
     public void setXUID(String title) {
-        this.setNamedTag((this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder()).putString("xuid", title).build());
+        this.setNbt((this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder()).putString("xuid", title).build());
     }
 }

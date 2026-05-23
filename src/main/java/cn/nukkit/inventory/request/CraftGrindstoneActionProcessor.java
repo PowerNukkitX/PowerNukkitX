@@ -94,7 +94,7 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
         }
         int resultExperience = recalculateResultExperience(inventory);
         Item result = firstItem.clone();
-        NbtMapBuilder tagBuilder = result.getNamedTag() == null ? NbtMap.builder() : result.getNamedTag().toBuilder();
+        NbtMapBuilder tagBuilder = result.getNbt() == null ? NbtMap.builder() : result.getNbt().toBuilder();
         tagBuilder.remove("ench");
         tagBuilder.remove("custom_ench");
         result.setCompoundTag(tagBuilder.build());

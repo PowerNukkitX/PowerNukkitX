@@ -40,10 +40,10 @@ public class ItemFilledMap extends Item {
     public ItemFilledMap(Integer meta, int count) {
         super(FILLED_MAP, meta, count, "Map");
         updateName();
-        if (!hasCompoundTag() || !getNamedTag().containsKey("map_uuid")) {
+        if (!hasCompoundTag() || !getNbt().containsKey("map_uuid")) {
             NbtMapBuilder tag = NbtMap.builder();
             tag.putLong("map_uuid", mapCount++);
-            this.setNamedTag(tag.build());
+            this.setNbt(tag.build());
         }
     }
 
@@ -80,7 +80,7 @@ public class ItemFilledMap extends Item {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(this.image, "png", baos);
 
-            this.setNamedTag(this.getNamedTag().toBuilder().putByteArray("Colors", baos.toByteArray()).build());
+            this.setNbt(this.getNbt().toBuilder().putByteArray("Colors", baos.toByteArray()).build());
         } catch (IOException e) {
             log.error("Error while adding an image to an ItemMap", e);
         }
@@ -88,7 +88,7 @@ public class ItemFilledMap extends Item {
 
     protected BufferedImage loadImageFromNBT() {
         try {
-            byte[] data = getNamedTag().getByteArray("Colors");
+            byte[] data = getNbt().getByteArray("Colors");
             image = ImageIO.read(new ByteArrayInputStream(data));
             return image;
         } catch (IOException e) {
@@ -99,23 +99,23 @@ public class ItemFilledMap extends Item {
     }
 
     public long getMapId() {
-        return getNamedTag().getLong("map_uuid");
+        return getNbt().getLong("map_uuid");
     }
 
     public int getMapWorld() {
-        return getNamedTag().getInt("map_level");
+        return getNbt().getInt("map_level");
     }
 
     public int getMapStartX() {
-        return getNamedTag().getInt("map_startX");
+        return getNbt().getInt("map_startX");
     }
 
     public int getMapStartZ() {
-        return getNamedTag().getInt("map_startZ");
+        return getNbt().getInt("map_startZ");
     }
 
     public int getMapScale() {
-        return getNamedTag().getInt("map_scale");
+        return getNbt().getInt("map_scale");
     }
 
     public void sendImage(Player player) {
@@ -171,8 +171,8 @@ public class ItemFilledMap extends Item {
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
             image.setRGB(0, 0, 128, 128, pixels, 0, 128);
 
-            this.setNamedTag(
-                    this.getNamedTag().toBuilder()
+            this.setNbt(
+                    this.getNbt().toBuilder()
                             .putInt("map_level", level.getId())
                             .putInt("map_startX", startX)
                             .putInt("map_startZ", startZ)

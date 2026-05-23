@@ -618,7 +618,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
         private static Item ominousBottle(int amplifier) {
             Item item = item(ItemID.OMINOUS_BOTTLE, amplifier, 1);
-            item.setNamedTag(NbtMap.builder().putInt("OminousBottleAmplifier", amplifier).build());
+            item.setNbt(NbtMap.builder().putInt("OminousBottleAmplifier", amplifier).build());
             return item;
         }
 

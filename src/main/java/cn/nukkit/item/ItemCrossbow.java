@@ -130,7 +130,7 @@ public class ItemCrossbow extends ItemTool {
                                     (float) (-player.pitch)
                             )
                     ).build();
-            Item item = Item.get(this.getNamedTag().getCompound("chargedItem").getString("Name"));
+            Item item = Item.get(this.getNbt().getCompound("chargedItem").getString("Name"));
             if (Objects.equals(item.getId(), Item.FIREWORK_ROCKET)) {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
@@ -139,7 +139,7 @@ public class ItemCrossbow extends ItemTool {
                 removeChargedItem(player);
             } else {
                 EntityArrow entity = new EntityArrow(player.chunk, nbt, player, true);
-                NbtMap chargedItem = this.getNamedTag().getCompound("chargedItem");
+                NbtMap chargedItem = this.getNbt().getCompound("chargedItem");
                 entity.setItem((ItemArrow) Item.get(chargedItem.getString("Name"), chargedItem.getShort("Damage"), chargedItem.getByte("Count")));
                 EntityShootCrossbowEvent entityShootBowEvent = new EntityShootCrossbowEvent(player, this, entity);
                 Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
@@ -167,7 +167,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public void removeChargedItem(Player player) {
-        this.setCompoundTag(NbtHelper.remove(this.getNamedTag(), "chargedItem"));
+        this.setCompoundTag(NbtHelper.remove(this.getNbt(), "chargedItem"));
         player.getInventory().setItemInMainHand(this);
     }
 
@@ -182,7 +182,7 @@ public class ItemCrossbow extends ItemTool {
 
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
-            NbtMapBuilder tag = this.getNamedTag() == null ? NbtMap.builder() : this.getNamedTag().toBuilder();
+            NbtMapBuilder tag = this.getNbt() == null ? NbtMap.builder() : this.getNbt().toBuilder();
             tag.putCompound("chargedItem", NbtMap.builder()
                     .putByte("Count", (byte) arrow.getCount())
                     .putShort("Damage", (short) arrow.getDamage())
@@ -197,7 +197,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public boolean isLoaded() {
-        Object itemInfo = this.getNamedTagEntry("chargedItem");
+        Object itemInfo = this.getNbtEntry("chargedItem");
         if (itemInfo == null) {
             return false;
         } else {

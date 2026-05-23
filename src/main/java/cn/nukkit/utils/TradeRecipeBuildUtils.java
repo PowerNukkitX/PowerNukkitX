@@ -33,7 +33,7 @@ public class TradeRecipeBuildUtils {
                 .putString("Name", buyA.getId())
                 .putBoolean("WasPickedUp", false);  // Is it a dropped item?
         if (buyA.hasCompoundTag()) {
-            buyABuilder.putCompound("tag", buyA.getNamedTag());
+            buyABuilder.putCompound("tag", buyA.getNbt());
         }
         final NbtMapBuilder outputBuilder = NbtMap.builder()
                 .putByte("Count", (byte) output.getCount())
@@ -41,7 +41,7 @@ public class TradeRecipeBuildUtils {
                 .putString("Name", output.getId())
                 .putBoolean("WasPickedUp", false);
         if (output.hasCompoundTag()) {
-            outputBuilder.putCompound("tag", output.getNamedTag());
+            outputBuilder.putCompound("tag", output.getNbt());
         }
         var cmp = NbtMap.builder()
                 .putCompound("buyA", buyABuilder.build())
@@ -68,7 +68,7 @@ public class TradeRecipeBuildUtils {
                 .putString("Name", buyA.getId())
                 .putBoolean("WasPickedUp", false);
         if (buyA.hasCompoundTag()) {
-            buyABuilder.putCompound("tag", buyA.getNamedTag());
+            buyABuilder.putCompound("tag", buyA.getNbt());
         }
         final NbtMapBuilder buyBBuilder = NbtMap.builder()
                 .putByte("Count", (byte) buyB.getCount())
@@ -76,7 +76,7 @@ public class TradeRecipeBuildUtils {
                 .putString("Name", buyB.getId())
                 .putBoolean("WasPickedUp", false);
         if (buyB.hasCompoundTag()) {
-            buyBBuilder.putCompound("tag", buyB.getNamedTag());
+            buyBBuilder.putCompound("tag", buyB.getNbt());
         }
         final NbtMapBuilder outputBuilder = NbtMap.builder()
                 .putByte("Count", (byte) output.getCount())
@@ -84,7 +84,7 @@ public class TradeRecipeBuildUtils {
                 .putString("Name", output.getId())
                 .putBoolean("WasPickedUp", false);
         if (output.hasCompoundTag()) {
-            outputBuilder.putCompound("tag", output.getNamedTag());
+            outputBuilder.putCompound("tag", output.getNbt());
         }
         var cmp = NbtMap.builder()
                 .putCompound("buyA", buyABuilder.build())

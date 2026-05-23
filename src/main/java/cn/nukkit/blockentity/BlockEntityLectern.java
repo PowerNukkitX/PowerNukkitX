@@ -6,7 +6,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.RedstoneComponent;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -125,7 +124,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         if (book.isNull() || !book.hasCompoundTag()) {
             totalPages = 0;
         } else {
-            totalPages = book.getNamedTag().getList("pages", NbtType.COMPOUND).size();
+            totalPages = book.getNbt().getList("pages", NbtType.COMPOUND).size();
         }
         RedstoneComponent.updateAroundRedstone(this);
     }

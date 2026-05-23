@@ -319,7 +319,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         Player player = sender.asPlayer();
 
         switch (list.getResult(1).toString()) {
-            case "nbt" -> player.sendMessage(player.getInventory().getItemInMainHand().getNamedTag().toString());
+            case "nbt" -> player.sendMessage(player.getInventory().getItemInMainHand().getNbt().toString());
             case "bundle" -> {
                 Item item = player.getInventory().getItemInMainHand();
                 if (item instanceof ItemBundle bundle)

@@ -14,7 +14,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.ItemHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -59,8 +58,8 @@ public class EntityFireworksRocket extends Entity {
             firework = new ItemFireworkRocket();
         }
 
-        if (!firework.hasCompoundTag() || !firework.getNamedTag().containsKey("Fireworks")) {
-            NbtMap tag = firework.getNamedTag();
+        if (!firework.hasCompoundTag() || !firework.getNbt().containsKey("Fireworks")) {
+            NbtMap tag = firework.getNbt();
             if (tag == null) {
                 tag = NbtMap.EMPTY;
             }
@@ -81,7 +80,7 @@ public class EntityFireworksRocket extends Entity {
                     .build()
             ).build();
 
-            firework.setNamedTag(tag);
+            firework.setNbt(tag);
         }
 
         this.setDataProperty(ActorDataTypes.HORSE_FLAGS, 16);

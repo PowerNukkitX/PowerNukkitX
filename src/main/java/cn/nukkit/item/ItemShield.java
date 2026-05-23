@@ -35,39 +35,39 @@ public class ItemShield extends ItemTool {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasBannerPattern() {
-        return this.hasCompoundTag() && (this.getNamedTag().containsKey("Base") ||
-                this.getNamedTag().containsKey("Type") || this.getNamedTag().containsKey("Patterns"));
+        return this.hasCompoundTag() && (this.getNbt().containsKey("Base") ||
+                this.getNbt().containsKey("Type") || this.getNbt().containsKey("Patterns"));
     }
 
     public @Nullable ItemBanner getBannerPattern() {
         if (!this.hasBannerPattern()) {
             return null;
         }
-        var tag = this.getNamedTag().toBuilder();
+        var tag = this.getNbt().toBuilder();
         var item = new ItemBanner();
-        tag.putAll(item.getNamedTag());
-        this.setNamedTag(tag.build());
-        if (this.getNamedTag().containsKey("Base")) {
-            item.setBaseColor(DyeColor.getByDyeData(this.getNamedTag().getInt("Base")));
+        tag.putAll(item.getNbt());
+        this.setNbt(tag.build());
+        if (this.getNbt().containsKey("Base")) {
+            item.setBaseColor(DyeColor.getByDyeData(this.getNbt().getInt("Base")));
         }
         return item;
     }
 
     public void setBannerPattern(@Nullable ItemBanner banner) {
         if (banner == null) {
-            this.clearNamedTag();
+            this.clearNbt();
             return;
         }
         NbtMap tag;
         if (!hasBannerPattern()) {
             tag = NbtMap.EMPTY;
         } else {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         }
         final NbtMapBuilder builder = tag.toBuilder();
-        builder.putAll(banner.getNamedTag());
+        builder.putAll(banner.getNbt());
         builder.putInt("Base", banner.getBaseColor());
-        this.setNamedTag(builder.build());
+        this.setNbt(builder.build());
     }
 
     @Override

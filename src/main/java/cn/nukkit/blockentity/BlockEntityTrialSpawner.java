@@ -731,12 +731,12 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
                 Enchantment.getEnchantment(Enchantment.ID_PROTECTION_PROJECTILE).setLevel(4, false),
                 Enchantment.getEnchantment(Enchantment.ID_PROTECTION_ALL).setLevel(4, false)
         );
-        NbtMapBuilder tag = item.getOrCreateNamedTag().toBuilder();
+        NbtMapBuilder tag = item.getOrCreateNbt().toBuilder();
         tag.putCompound("Trim", NbtMap.builder()
                 .putString("Material", "copper")
                 .putString("Pattern", trimPattern)
                 .build());
-        item.setNamedTag(tag.build());
+        item.setNbt(tag.build());
         return item;
     }
 

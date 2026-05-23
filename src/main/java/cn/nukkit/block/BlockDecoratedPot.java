@@ -52,8 +52,8 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         nbt.putString("id", BlockEntity.DECORATED_POT);
         nbt.putByte("isMovable", (byte) 1);
 
-        if (item.getNamedTag() != null) {
-            nbt.putAll(item.getNamedTag());
+        if (item.getNbt() != null) {
+            nbt.putAll(item.getNbt());
         }
 
         nbt.putInt("x", (int) this.x);

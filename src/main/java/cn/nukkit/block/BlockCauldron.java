@@ -244,7 +244,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 }
 
                 if (cauldron.isCustomColor()) {
-                    NbtMapBuilder compoundTag = item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder();
+                    NbtMapBuilder compoundTag = item.hasCompoundTag() ? item.getNbt().toBuilder() : NbtMap.builder();
                     compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
                     item.setCompoundTag(compoundTag.build());
                     player.getInventory().setItemInMainHand(item);
@@ -256,7 +256,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    NbtMap compoundTag = item.getNamedTag();
+                    NbtMap compoundTag = item.getNbt();
                     if (!compoundTag.containsKey("customColor")) {
                         break;
                     }

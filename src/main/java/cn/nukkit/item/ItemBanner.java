@@ -55,18 +55,18 @@ public class ItemBanner extends Item {
     }
 
     public int getType() {
-        return this.getOrCreateNamedTag().getInt("Type");
+        return this.getOrCreateNbt().getInt("Type");
     }
 
     public void setType(int type) {
-        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNamedTag().toBuilder() : NbtMap.builder();
+        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder();
         assert tag != null;
         tag.putInt("Type", type);
-        this.setNamedTag(tag.build());
+        this.setNbt(tag.build());
     }
 
     public void addPattern(BannerPattern bannerPattern) {
-        NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
+        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
         assert tag != null;
         List<NbtMap> patterns = new ObjectArrayList<>(tag.getList("Patterns", NbtType.COMPOUND));
         patterns.add(NbtMap.builder()
@@ -75,11 +75,11 @@ public class ItemBanner extends Item {
                 .build()
         );
         tag = tag.toBuilder().putList("Patterns", NbtType.COMPOUND, patterns).build();
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     public BannerPattern getPattern(int index) {
-        final NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
+        final NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
         assert tag != null;
         return BannerPattern.fromCompoundTag(tag.getList("Patterns", NbtType.COMPOUND).size() > index && index >= 0 ?
                 tag.getList("Patterns", NbtType.COMPOUND).get(index) :
@@ -87,20 +87,20 @@ public class ItemBanner extends Item {
     }
 
     public void removePattern(int index) {
-        NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
+        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
         assert tag != null;
         List<NbtMap> patterns = tag.getList("Patterns", NbtType.COMPOUND);
         if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     public int getPatternsSize() {
-        return (this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY).getList("Patterns", NbtType.COMPOUND).size();
+        return (this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY).getList("Patterns", NbtType.COMPOUND).size();
     }
 
     public boolean hasPattern() {
-        return (this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY).containsKey("Patterns");
+        return (this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY).containsKey("Patterns");
     }
 }

@@ -44,7 +44,7 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
     }
 
     public int getBundleId() {
-        return getNamedTag().getInt("bundle_id");
+        return getNbt().getInt("bundle_id");
     }
 
     @Override
@@ -57,21 +57,21 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         if (inventory == null) {
             NbtMap tag;
             inventory = new BundleInventory(this);
-            tag = this.getNamedTag();
-            this.setNamedTag(tag);
+            tag = this.getNbt();
+            this.setNbt(tag);
         }
         if (inventory.getHolder() != this) inventory.setHolder(this);
         return inventory;
     }
 
     public void saveNBT() {
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         List<NbtMap> items = new ObjectArrayList<>();
         for (var entry : getInventory().getContents().entrySet()) {
             items.add(entry.getKey(), ItemHelper.write(entry.getValue(), entry.getKey()));
         }
         tag = tag.toBuilder().putList("storage_item_component_content", NbtType.COMPOUND, items).build();
-        this.setNamedTag(tag);
+        this.setNbt(tag);
     }
 
     @Override

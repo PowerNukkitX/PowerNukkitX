@@ -39,7 +39,6 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.inventory.BlockInventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
@@ -3112,7 +3111,7 @@ public class Level implements Metadatable {
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
             if (player.isAdventure()) {
-                Object tag = item.getNamedTagEntry("CanPlaceOn");
+                Object tag = item.getNbtEntry("CanPlaceOn");
                 boolean canPlace = canChangeBlock;
                 if (tag instanceof List<?> listTag) {
                     for (Object v : listTag) {

@@ -96,7 +96,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 Item item = Item.get(name, damage, 1, nbt, false);
                 item.setCompoundTag(nbt);
                 if (ItemRegistry.getItemComponents().containsKey(name)) {
-                    item.setNamedTag(ItemRegistry.getItemComponents().getCompound(name).getCompound("components"));
+                    item.setNbt(ItemRegistry.getItemComponents().getCompound(name).getCompound("components"));
                 }
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;

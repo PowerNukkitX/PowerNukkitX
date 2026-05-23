@@ -11,7 +11,6 @@ import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.registry.Registries;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptor;
 
 import java.util.TreeMap;
 
@@ -35,7 +34,7 @@ public class ItemHelper {
             tag = tag.toBuilder().putByte("Slot", slot.byteValue()).build();
         }
         if (item.hasCompoundTag()) {
-            tag = tag.toBuilder().putCompound("tag", item.getNamedTag()).build();
+            tag = tag.toBuilder().putCompound("tag", item.getNbt()).build();
         }
         if (item.isBlock() && item.getBlockId().equals(item.getId())) {
             tag = tag.toBuilder().putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag()).build();
@@ -67,7 +66,7 @@ public class ItemHelper {
         Item item = Item.get(name, damage, amount);
         Object tagTag = tag.get("tag");
         if (!item.isNull() && tagTag instanceof NbtMap compoundTag && !compoundTag.isEmpty()) {
-            item.setNamedTag(compoundTag);
+            item.setNbt(compoundTag);
         }
 
         if (tag.containsKey("Block")) {
@@ -107,16 +106,16 @@ public class ItemHelper {
         } else {
             if (item.isNull()) {//write unknown item
                 item = new UnknownItem(BlockID.UNKNOWN, damage, amount);
-                item.setNamedTag(item.getOrCreateNamedTag().toBuilder()
+                item.setNbt(item.getOrCreateNbt().toBuilder()
                         .putCompound("Item", NbtMap.builder()
                                 .putString("Name", name)
                                 .build())
                         .build());
-            } else if (item.getId().equals(BlockID.UNKNOWN) && item.getOrCreateNamedTag().containsKey("Item")) {//restore unknown item
-                NbtMap removeTag = (NbtMap) item.getNamedTag().remove("Item");
+            } else if (item.getId().equals(BlockID.UNKNOWN) && item.getOrCreateNbt().containsKey("Item")) {//restore unknown item
+                NbtMap removeTag = (NbtMap) item.getNbt().remove("Item");
                 String originItemName = removeTag.getString("Name");
                 Item originItem = Item.get(originItemName, damage, amount);
-                originItem.setNamedTag(item.getNamedTag());
+                originItem.setNbt(item.getNbt());
                 item = originItem;
             }
         }

@@ -101,7 +101,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                 item.setDamage(compoundTag.getByte("Damage"));
                 item.setCount(compoundTag.getByte("Count"));
                 if (compoundTag.containsKey("tag", NbtType.COMPOUND)) {
-                    item.setNamedTag(compoundTag.getCompound("tag"));
+                    item.setNbt(compoundTag.getCompound("tag"));
                 }
                 this.items[i] = item;
             }
@@ -129,7 +129,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
                         .putByte("Damage", (byte) item.getDamage())
                         .putBoolean("WasPickedUp", false);
                 if (item.hasCompoundTag()) {
-                    compoundTag.putCompound("tag", item.getNamedTag());
+                    compoundTag.putCompound("tag", item.getNbt());
                 }
                 compoundTagListTag.add(compoundTag.build());
             }

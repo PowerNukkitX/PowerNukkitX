@@ -255,10 +255,10 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 repairCost = repairCost * 2 + 1;
             }
 
-            NbtMapBuilder namedTagBuilder = result.getNamedTag() == null ? NbtMap.builder() : result.getNamedTag().toBuilder();
+            NbtMapBuilder namedTagBuilder = result.getNbt() == null ? NbtMap.builder() : result.getNbt().toBuilder();
             namedTagBuilder.putInt("RepairCost", repairCost);
             namedTagBuilder.remove("ench");
-            result.setNamedTag(namedTagBuilder.build());
+            result.setNbt(namedTagBuilder.build());
             if (!enchantments.isEmpty()) {
                 result.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
             }
@@ -326,7 +326,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
     }
 
     private static int getRepairCost(Item item) {
-        return item.hasCompoundTag() && item.getNamedTag().containsKey("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
+        return item.hasCompoundTag() && item.getNbt().containsKey("RepairCost") ? item.getNbt().getInt("RepairCost") : 0;
     }
 
     private static String getRepairMaterial(Item target) {

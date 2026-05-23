@@ -61,7 +61,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         }
         if (recipeInput.containsKey("tag")) {
             NbtMap tag = recipeInput.getCompound("tag");
-            NbtMap compoundTag = input.getNamedTag();
+            NbtMap compoundTag = input.getNbt();
             if (!tag.equals(compoundTag)) {
                 log.error("The trade recipe tag does not match tag, expect {} actual {}", tag, compoundTag);
                 return true;
@@ -257,7 +257,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            NbtMap tag = equipment.getNamedTag();
+            NbtMap tag = equipment.getNbt();
             if (tag != null) {
                 result.setCompoundTag(tag);
             }
@@ -293,12 +293,12 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             NbtMap trim = NbtMap.builder().putString("Material", trimMaterial.getMaterialId())
                     .putString("Pattern", trimPattern.getPatternId())
                     .build();
-            NbtMap compound = ingredient.getNamedTag();
+            NbtMap compound = ingredient.getNbt();
             if (compound == null) {
-                compound = result.getOrCreateNamedTag();
+                compound = result.getOrCreateNbt();
             } else compound = NbtMap.fromMap(compound); // Ensure no cached CompoundTags are used double
             compound = compound.toBuilder().putCompound("Trim", trim).build();
-            result.setNamedTag(compound);
+            result.setNbt(compound);
             player.getCreativeOutputInventory().setItem(result);
             return null;
         }

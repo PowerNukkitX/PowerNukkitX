@@ -31,7 +31,7 @@ public abstract class ItemBookWritable extends Item {
     public boolean pageExists(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
-            NbtMap tag = this.getNamedTag();
+            NbtMap tag = this.getNbt();
             if (tag.containsKey("pages") && tag.get("pages") instanceof List<?>) {
                 return tag.getList("pages", NbtType.COMPOUND).size() > pageId;
             }
@@ -45,7 +45,7 @@ public abstract class ItemBookWritable extends Item {
     public String getPageText(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
-            NbtMap tag = this.getNamedTag();
+            NbtMap tag = this.getNbt();
             if (tag.containsKey("pages") && tag.get("pages") instanceof List<?>) {
                 List<NbtMap> pages = tag.getList("pages", NbtType.COMPOUND);
                 if (pages.size() > pageId) {
@@ -66,7 +66,7 @@ public abstract class ItemBookWritable extends Item {
         Preconditions.checkArgument(pageText.length() <= 256, "Text length " + pageText.length() + " is out of range");
         NbtMap tag;
         if (this.hasCompoundTag()) {
-            tag = this.getNamedTag();
+            tag = this.getNbt();
         } else if (pageText.isEmpty()) {
             return false;
         } else {
@@ -102,7 +102,7 @@ public abstract class ItemBookWritable extends Item {
      */
     public boolean addPage(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
-        NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
+        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
         List<NbtMap> pages;
         if (!tag.containsKey("pages") || !(tag.get("pages") instanceof List<?>)) {
             pages = new ObjectArrayList<>();
@@ -126,7 +126,7 @@ public abstract class ItemBookWritable extends Item {
     public boolean deletePage(int pageId) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
-            NbtMap tag = this.getNamedTag();
+            NbtMap tag = this.getNbt();
             if (tag.containsKey("pages") && tag.get("pages") instanceof List<?>) {
                 List<NbtMap> pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
                 if (pages.size() > pageId) {
@@ -155,7 +155,7 @@ public abstract class ItemBookWritable extends Item {
     public boolean insertPage(int pageId, String pageText) {
         Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
         Preconditions.checkArgument(pageText.length() <= 256, "Text length " + pageText.length() + " is out of range");
-        NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
+        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
         List<NbtMap> pages;
         if (!tag.containsKey("pages") || !(tag.get("pages") instanceof List<?>)) {
             pages = new ObjectArrayList<>();
@@ -185,7 +185,7 @@ public abstract class ItemBookWritable extends Item {
         Preconditions.checkArgument(pageId1 >= 0 && pageId1 < 50, "Page number " + pageId1 + " is out of range");
         Preconditions.checkArgument(pageId2 >= 0 && pageId2 < 50, "Page number " + pageId2 + " is out of range");
         if (this.hasCompoundTag()) {
-            NbtMap tag = this.getNamedTag();
+            NbtMap tag = this.getNbt();
             if (tag.containsKey("pages") && tag.get("pages") instanceof List<?>) {
                 List<NbtMap> pages = new ObjectArrayList<>(tag.getList("pages", NbtType.COMPOUND));
                 if (pages.size() > pageId1 && pages.size() > pageId2) {
@@ -204,12 +204,12 @@ public abstract class ItemBookWritable extends Item {
      * Returns an list containing all pages of this book.
      */
     public List<NbtMap> getPages() {
-        NbtMap tag = this.hasCompoundTag() ? this.getNamedTag() : NbtMap.EMPTY;
+        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
         List<NbtMap> pages;
         if (!tag.containsKey("pages") || !(tag.get("pages") instanceof List<?>)) {
             pages = new ObjectArrayList<>();
             tag = tag.toBuilder().putList("pages", NbtType.COMPOUND, pages).build();
-            this.setNamedTag(tag);
+            this.setNbt(tag);
         } else {
             pages = tag.getList("pages", NbtType.COMPOUND);
         }

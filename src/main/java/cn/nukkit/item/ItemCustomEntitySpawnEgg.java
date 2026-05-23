@@ -147,8 +147,8 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     }
 
     @Override
-    public Item setNamedTag(NbtMap tag) {
-        Item out = super.setNamedTag(tag);
+    public Item setNbt(NbtMap tag) {
+        Item out = super.setNbt(tag);
         selfHealIdentifierFromNamedTag();
         return out;
     }
@@ -165,7 +165,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
 
     // ---------- helpers ----------
     private void selfHealIdentifierFromNamedTag() {
-        NbtMap tag = this.getNamedTag();
+        NbtMap tag = this.getNbt();
         if (tag == null) return;
         NbtMap pnxExtra = tag.getCompound(ROOT_PNX_EXTRA);
         if (pnxExtra == null) return;
@@ -226,7 +226,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     public void resolveSpawnEgg(String resolvedId) {
         setItemIdReflect(this, resolvedId);
 
-        NbtMap root = this.getOrCreateNamedTag();
+        NbtMap root = this.getOrCreateNbt();
         NbtMap pnx = root.getCompound(ROOT_PNX_EXTRA);
         final NbtMapBuilder builder = root.toBuilder();
         if (pnx == null) {
@@ -247,7 +247,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
         }
         pnxBuilder.putCompound(COMP_CUSTOM_EGG, ceBuilder.build());
         builder.putCompound(ROOT_PNX_EXTRA, pnx).build();
-        this.setNamedTag(builder.build());
+        this.setNbt(builder.build());
     }
 
     @Override

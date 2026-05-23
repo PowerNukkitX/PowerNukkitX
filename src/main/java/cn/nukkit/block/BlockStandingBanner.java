@@ -118,11 +118,11 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
         NbtMapBuilder nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER).toBuilder()
                 .putInt("Base", item.getDamage() & 0xf);
 
-        Object type = item.getNamedTagEntry("Type");
+        Object type = item.getNbtEntry("Type");
         if (type instanceof Integer) {
             nbt.put("Type", type);
         }
-        Object patterns = item.getNamedTagEntry("Patterns");
+        Object patterns = item.getNbtEntry("Patterns");
         if (patterns instanceof List) {
             nbt.put("Patterns", patterns);
         }
@@ -163,12 +163,12 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
             item.setDamage(banner.getBaseColor() & 0xf);
             int type = banner.getNbt().getInt("Type");
             if (type > 0) {
-                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder())
+                item.setNbt((item.hasCompoundTag() ? item.getNbt().toBuilder() : NbtMap.builder())
                         .putInt("Type", type).build());
             }
             List<NbtMap> patterns = new ObjectArrayList<>(banner.getNbt().getList("Patterns", NbtType.COMPOUND));
             if (!patterns.isEmpty()) {
-                item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag().toBuilder() : NbtMap.builder())
+                item.setNbt((item.hasCompoundTag() ? item.getNbt().toBuilder() : NbtMap.builder())
                         .putList("Patterns", NbtType.COMPOUND, patterns).build());
             }
         }
