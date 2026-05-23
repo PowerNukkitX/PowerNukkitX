@@ -4582,7 +4582,7 @@ public class Level implements Metadatable {
         long index = Level.chunkHash(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             final IChunk chunk = this.getChunk(x, z, true);
-            if (chunk.getChunkState().canSend()) {
+            if (chunk != null && chunk.getChunkState().canSend()) {
                 this.chunkGenerationQueue.remove(index);
                 log.warn("generateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
                         x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("generateChunk guard triggered"));
@@ -4597,7 +4597,7 @@ public class Level implements Metadatable {
         if(isChunkGenerating(x, z) && getChunk(x, z, false).getChunkState() == ChunkState.NEW) removeFromGenerateList(x, z);
         if (this.chunkGenerationQueue.putIfAbsent(index, Boolean.TRUE) == null) {
             IChunk chunk = this.getChunk(x, z, true);
-            if (chunk.getChunkState().canSend()) {
+            if (chunk != null && chunk.getChunkState().canSend()) {
                 this.chunkGenerationQueue.remove(index);
                 log.warn("syncGenerateChunk called on already-sendable chunk ({}, {}) in level '{}' with state {}. This is a bug - please report it ASAP!",
                         x, z, getFolderName(), chunk.getChunkState(), new RuntimeException("syncGenerateChunk guard triggered"));
