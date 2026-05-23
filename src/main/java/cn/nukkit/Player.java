@@ -90,7 +90,6 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
-import cn.nukkit.network.connection.BedrockDisconnectReasons;
 import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.process.pack.InternalPackManager;
 import cn.nukkit.permission.PermissibleBase;
@@ -115,7 +114,6 @@ import cn.nukkit.utils.BossBarColor;
 import cn.nukkit.utils.DummyBossBar;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.PortalHelper;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
@@ -156,7 +154,6 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
-import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
@@ -3468,14 +3465,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
         unloadAllUsedChunk();
 
-        //send disconnection packet
-        DisconnectPacket packet = new DisconnectPacket();
-        if (reason == null || reason.isBlank()) {
-            reason = BedrockDisconnectReasons.DISCONNECTED;
-        }
-        packet.setMessages(new DisconnectPacketMessages(reason, ""));
-        this.sendPacketImmediately(packet);
-
         //call quit event
         PlayerQuitEvent ev = null;
         if (this.getName() != null && !this.getName().isEmpty()) {
@@ -3539,6 +3528,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         log.debug("Closing player network session");
         log.debug(reason);
         assert this.session != null;
+        this.session.disconnect(reason, false);
     }
 
     public void unloadAllUsedChunk() {
