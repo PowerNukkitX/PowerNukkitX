@@ -24,6 +24,7 @@ import cn.nukkit.utils.Utils;
 import com.google.common.base.Predicates;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -318,12 +319,9 @@ public class LevelDBChunkSerializer {
         byte[] tileBytes = db.get(LevelDBKeyUtil.BLOCK_ENTITIES.getKey(builder.getChunkX(), builder.getChunkZ(), dimensionInfo));
         if (tileBytes != null) {
             List<NbtMap> blockEntityTags = new ArrayList<>();
-            try (BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(tileBytes))) {
-                while (stream.available() > 0) {
-                    blockEntityTags.add(this.read(stream.readAllBytes()));
-                }
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
+            final ByteBuf buffer = Unpooled.wrappedBuffer(tileBytes);
+            while (buffer.isReadable()) {
+                blockEntityTags.add(this.read(buffer));
             }
             builder.blockEntities(blockEntityTags);
         }
@@ -332,12 +330,9 @@ public class LevelDBChunkSerializer {
         byte[] entityBytes = db.get(key);
         if (entityBytes == null) return;
         List<NbtMap> entityTags = new ArrayList<>();
-        try (BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(entityBytes))) {
-            while (stream.available() > 0) {
-                entityTags.add(this.read(stream.readAllBytes()));
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        final ByteBuf buffer = Unpooled.wrappedBuffer(entityBytes);
+        while (buffer.isReadable()) {
+            entityTags.add(this.read(buffer));
         }
         if (pnxExtraData == null) {
             db.delete(key);
@@ -486,8 +481,8 @@ public class LevelDBChunkSerializer {
         }
     }
 
-    private NbtMap read(byte[] data) {
-        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+    private NbtMap read(ByteBuf buffer) {
+        try (final ByteBufInputStream inputStream = new ByteBufInputStream(buffer);
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             return (NbtMap) nbtInputStream.readTag();
         } catch (IOException e) {
