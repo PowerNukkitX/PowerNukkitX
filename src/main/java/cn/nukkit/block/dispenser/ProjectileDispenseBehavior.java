@@ -8,6 +8,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import org.cloudburstmc.nbt.NbtMap;
 
+import java.util.Objects;
+
 /**
  * @author CreeperFace
  */
@@ -79,10 +81,10 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     protected NbtMap correctNBT(NbtMap nbt, Item item) {
         if (item != null) {
-            if (item.getId() == Item.SPLASH_POTION || item.getId() == Item.LINGERING_POTION) {
-                return nbt = nbt.toBuilder().putInt("PotionId", item.getDamage()).build();
+            if (Objects.equals(item.getId(), Item.SPLASH_POTION) || Objects.equals(item.getId(), Item.LINGERING_POTION)) {
+                return nbt.toBuilder().putInt("PotionId", item.getDamage()).build();
             }
         }
-        return NbtMap.EMPTY;
+        return nbt;
     }
 }
