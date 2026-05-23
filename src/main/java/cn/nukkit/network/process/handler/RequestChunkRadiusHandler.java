@@ -12,12 +12,16 @@ import org.cloudburstmc.protocol.bedrock.packet.RequestChunkRadiusPacket;
  */
 public class RequestChunkRadiusHandler implements PacketHandler<RequestChunkRadiusPacket> {
 
+    private static final int MIN_CHUNK_RADIUS = 2;
+    private static final int MAX_CHUNK_RADIUS = 32;
+
     @Override
     public void handle(RequestChunkRadiusPacket packet, PlayerSessionHolder holder, Server server) {
         if (!holder.getState().equals(SessionState.CHUNKS)) {
             holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
             return;
         }
-        holder.getPlayer().setViewDistance(packet.getChunkRadius());
+        final int radius = Math.max(MIN_CHUNK_RADIUS, Math.min(packet.getChunkRadius(), MAX_CHUNK_RADIUS));
+        holder.getPlayer().setViewDistance(radius);
     }
 }

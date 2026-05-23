@@ -3049,7 +3049,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.chunkRadius = clampedDistance;
 
         ChunkRadiusUpdatedPacket pk = new ChunkRadiusUpdatedPacket();
-        pk.setChunkRadius(distance);
+        pk.setChunkRadius(clampedDistance);
 
         this.sendPacket(pk);
         if (previousDistance != clampedDistance) {
