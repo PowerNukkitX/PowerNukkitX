@@ -19,13 +19,11 @@ import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.registry.BiomeRegistry;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.NukkitRandom;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 
 import java.util.List;
 
@@ -162,7 +160,8 @@ public class OceanRuinPopulator extends Populator {
                 List<ChunkPosition> adjacentChunks = Lists.newArrayList(ADJACENT_CHUNKS);
                 for (int i = 0; i < random.nextInt(4, 8); i++) {
                     ChunkPosition chunkPos = adjacentChunks.remove(random.nextBoundedInt(adjacentChunks.size() - 1));
-                    this.placeAdjacentRuin(level.getChunk(chunkX + chunkPos.x, chunkZ + chunkPos.z), random, isWarm, manager);
+                    IChunk adjacentChunk = level.getOrGenerateChunk(chunkX + chunkPos.x, chunkZ + chunkPos.z);
+                    this.placeAdjacentRuin(adjacentChunk, random, isWarm, manager);
                 }
             }
             for(Block block : manager.getBlocks()) {
@@ -193,6 +192,9 @@ public class OceanRuinPopulator extends Populator {
     }
 
     protected void placeAdjacentRuin(IChunk chunk, RandomSourceProvider random, boolean isWarm, BlockManager manager) {
+        if (chunk == null) {
+            return;
+        }
         PNXStructure template;
         int index;
 
@@ -211,6 +213,9 @@ public class OceanRuinPopulator extends Populator {
     }
 
     protected void placeRuin(PNXStructure template, IChunk chunk, int seed, boolean isLarge, int index, BlockManager manager) {
+        if (template == null || chunk == null) {
+            return;
+        }
         NukkitRandom random = new NukkitRandom(seed);
 
         BlockVector3 size = new BlockVector3(template.getSizeX(), template.getSizeY(), template.getSizeZ());

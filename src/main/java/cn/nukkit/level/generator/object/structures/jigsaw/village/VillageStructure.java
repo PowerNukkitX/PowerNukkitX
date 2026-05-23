@@ -27,14 +27,12 @@ import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.block.BlockState;
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -241,10 +239,7 @@ public abstract class VillageStructure extends JigsawStructure {
         for (long columnKey : lowestColumns.keySet()) {
             int x = (int) (columnKey >> 32);
             int z = (int) columnKey;
-            IChunk chunk = level.getChunk(x >> 4, z >> 4);
-            if (!chunk.isGenerated()) {
-                level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-            }
+            level.getOrGenerateChunk(x >> 4, z >> 4);
 
             int height = level.getHeightMap(x, z);
             Block topBlock = level.getBlock(x, height, z);
@@ -343,10 +338,7 @@ public abstract class VillageStructure extends JigsawStructure {
                 blockManager.unsetBlockStateAt(block);
                 continue;
             }
-            IChunk chunk = level.getChunk(block.getChunkX(), block.getChunkZ());
-            if (!chunk.isGenerated()) {
-                level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-            }
+            level.getOrGenerateChunk(block.getChunkX(), block.getChunkZ());
             int height = getPlacementY(level, block.getFloorX(), block.getFloorZ()) - 1;
             columnHeights.put(columnKey(block.getFloorX(), block.getFloorZ()), height);
             blockManager.unsetBlockStateAt(block);
@@ -362,10 +354,7 @@ public abstract class VillageStructure extends JigsawStructure {
         for (PNXStructure.Jigsaw jigsaw : jigsaws) {
             Integer height = columnHeights.get(columnKey(jigsaw.x, jigsaw.z));
             if (height == null) {
-                IChunk chunk = level.getChunk(jigsaw.x >> 4, jigsaw.z >> 4);
-                if (!chunk.isGenerated()) {
-                    level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-                }
+                level.getOrGenerateChunk(jigsaw.x >> 4, jigsaw.z >> 4);
                 height = getPlacementY(level, jigsaw.x, jigsaw.z) - 1;
             }
             jigsaw.y = height + 1;
@@ -409,10 +398,7 @@ public abstract class VillageStructure extends JigsawStructure {
         for (long columnKey : supportedColumns.keySet()) {
             int x = (int) (columnKey >> 32);
             int z = (int) columnKey;
-            IChunk chunk = level.getChunk(x >> 4, z >> 4);
-            if (!chunk.isGenerated()) {
-                level.syncGenerateChunk(chunk.getX(), chunk.getZ());
-            }
+            level.getOrGenerateChunk(x >> 4, z >> 4);
 
             for (int y = supportY - 1; y >= level.getMinHeight(); y--) {
                 Block worldBlock = blockManager.getBlockIfCachedOrLoaded(x, y, z);

@@ -4162,6 +4162,16 @@ public class Level implements Metadatable {
         return chunk;
     }
 
+    public @NotNull IChunk getOrGenerateChunk(int chunkX, int chunkZ) {
+        IChunk chunk = this.getChunk(chunkX, chunkZ, true);
+
+        if (!chunk.isGenerated() && !this.isChunkGenerating(chunkX, chunkZ)) {
+            this.syncGenerateChunk(chunkX, chunkZ);
+            chunk = this.getChunk(chunkX, chunkZ, true);
+        }
+        return chunk;
+    }
+
     public CompletableFuture<IChunk> getChunkAsync(int chunkX, int chunkZ) {
         return this.getChunkAsync(chunkX, chunkZ, false);
     }

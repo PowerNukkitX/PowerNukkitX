@@ -12,7 +12,6 @@ import cn.nukkit.level.generator.object.structures.utils.StructureStart;
 import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import com.google.common.collect.Lists;
-import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,6 @@ public class StrongholdPopulator extends Populator {
                     }
                 }
             }
-            boolean generated = false;
             List<Long> chunks = new ArrayList<>();
             for (Block block : object.getBlocks()) {
                 long hash = Level.chunkHash(block.getChunkX(), block.getChunkZ());
@@ -64,21 +62,9 @@ public class StrongholdPopulator extends Populator {
             for (Long hash : chunks) {
                 int cx = Level.getHashX(hash);
                 int cz = Level.getHashZ(hash);
-                IChunk chunk1 = level.getChunk(cx, cz);
-                if (chunk1 == chunk) continue;
-                if (!chunk1.isGenerated()) {
-                    level.syncGenerateChunk(cx, cz);
-                    generated = true;
-                }
+                level.getOrGenerateChunk(cx, cz);
             }
-            if (generated) {
-                NbtMap extra = chunk.getExtraData();
-                int attempt = extra.getInt("strongholdGeneratioAttepmt") + 1;
-                if (attempt < 5) {
-                    chunk.setExtraData(chunk.getExtraData().toBuilder().putInt("strongholdGeneratioAttepmt", attempt).build());
-                    apply(context);
-                }
-            } else queueObject(chunk, object);
+            queueObject(chunk, object);
         }
     }
 

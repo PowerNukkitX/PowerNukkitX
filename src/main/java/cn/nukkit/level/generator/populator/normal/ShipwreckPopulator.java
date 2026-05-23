@@ -141,18 +141,14 @@ public class ShipwreckPopulator extends Populator {
             Set<Long> indexes = Sets.newConcurrentHashSet();
 
             if (size.getX() > 16) {
-                IChunk ck = level.getChunk(chunkX + 1, chunkZ);
-                if (!ck.isGenerated()) {
-                    chunks.add(ck);
-                    indexes.add(Level.chunkHash(ck.getX(), chunkZ));
-                }
+                IChunk ck = level.getOrGenerateChunk(chunkX + 1, chunkZ);
+                chunks.add(ck);
+                indexes.add(Level.chunkHash(ck.getX(), chunkZ));
             }
             if (size.getZ() > 16) {
-                IChunk ck = level.getChunk(chunkX, chunkZ + 1);
-                if (!ck.isGenerated()) {
-                    chunks.add(ck);
-                    indexes.add(Level.chunkHash(chunkX, ck.getZ()));
-                }
+                IChunk ck = level.getOrGenerateChunk(chunkX, chunkZ + 1);
+                chunks.add(ck);
+                indexes.add(Level.chunkHash(chunkX, ck.getZ()));
             }
 
 

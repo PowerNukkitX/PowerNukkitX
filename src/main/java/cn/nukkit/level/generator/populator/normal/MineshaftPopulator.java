@@ -47,8 +47,7 @@ public class MineshaftPopulator extends Populator {
                     }
                 }
                 for (Block block : manager.getBlocks()) {
-                    if (!block.getChunk().isGenerated())
-                        block.getLevel().syncGenerateChunk(block.getChunkX(), block.getChunkZ());
+                    level.getOrGenerateChunk(block.getChunkX(), block.getChunkZ());
                     if (block.isAir()) {
                         if (level.getBlock(block).getId() == Block.WATER) {
                             manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
