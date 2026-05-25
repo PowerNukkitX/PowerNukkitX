@@ -7,6 +7,9 @@ import cn.nukkit.network.process.SessionState;
 import cn.nukkit.resourcepacks.ResourcePack;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PackType;
+import org.cloudburstmc.protocol.bedrock.data.payload.experiment.ExperimentToggle;
+import org.cloudburstmc.protocol.bedrock.data.payload.experiment.Experiments;
+import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackInstanceId;
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackClientResponsePacket;
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackDataInfoPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackStackPacket;
@@ -63,7 +66,7 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                 resourcePackStack.getTexturePackList().addAll(
                         Arrays.stream(server.getResourcePackManager().getResourceStack())
                                 .map(resourcePack ->
-                                        new ResourcePackStackPacket.Entry(
+                                        new PackInstanceId(
                                                 resourcePack.getPackId() + "_" + resourcePack.getPackVersion(),
                                                 resourcePack.getPackVersion(),
                                                 resourcePack.getSubPackName()
@@ -71,8 +74,10 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                                 ).toList()
                 );
                 resourcePackStack.setBaseGameVersion("*");
-                resourcePackStack.getExperiments().addAll(server.getExperiments());
-                resourcePackStack.setWereAnyExperimentsEverToggled(!server.getExperiments().isEmpty());
+                final Experiments experiments = new Experiments();
+                experiments.getToggles().addAll(server.getExperiments().stream().map(experiment -> new ExperimentToggle(experiment.getName(), experiment.isEnabled())).toList());
+                experiments.setExperimentsEverToggled(!server.getExperiments().isEmpty());
+                resourcePackStack.setExperiments(experiments);
 
                 holder.getSession().sendPacketImmediately(resourcePackStack);
             }

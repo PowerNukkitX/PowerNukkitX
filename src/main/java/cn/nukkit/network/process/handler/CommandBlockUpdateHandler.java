@@ -7,15 +7,15 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.CommonBlockProperties;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
-import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.protocol.bedrock.data.CommandBlockMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.command.BlockCommandData;
+import org.cloudburstmc.protocol.bedrock.data.payload.command.CommandBlockMode;
+import org.cloudburstmc.protocol.bedrock.data.payload.command.CommandBlockUpdateTargetType;
 import org.cloudburstmc.protocol.bedrock.packet.CommandBlockUpdatePacket;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Kaooot
@@ -31,13 +31,14 @@ public class CommandBlockUpdateHandler implements PacketHandler<CommandBlockUpda
             return;
         }
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
-            if (packet.isBlock()) {
-                BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(packet.getBlockPosition().getX(), packet.getBlockPosition().getY(), packet.getBlockPosition().getZ()));
+            if (packet.getTarget().getType().equals(CommandBlockUpdateTargetType.BLOCK)) {
+                final BlockCommandData blockCommandData = (BlockCommandData) packet.getTarget();
+                BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(new Vector3(blockCommandData.getBlockPosition().getX(), blockCommandData.getBlockPosition().getY(), blockCommandData.getBlockPosition().getZ()));
                 if (blockEntity instanceof BlockEntityCommandBlock commandBlock) {
                     Block cmdBlock = commandBlock.getLevelBlock();
 
                     //change commandblock type
-                    switch (packet.getCommandBlockMode()) {
+                    switch (blockCommandData.getCommandBlockMode()) {
                         case REPEATING:
                             if (cmdBlock.getId() != BlockID.REPEATING_COMMAND_BLOCK) {
                                 cmdBlock = Block.get(BlockID.REPEATING_COMMAND_BLOCK).setPropertyValues(cmdBlock.getPropertyValues());
@@ -57,7 +58,7 @@ public class CommandBlockUpdateHandler implements PacketHandler<CommandBlockUpda
                             break;
                     }
 
-                    boolean conditional = packet.isConditional();
+                    boolean conditional = blockCommandData.isConditional();
                     cmdBlock.setPropertyValue(CommonBlockProperties.CONDITIONAL_BIT, conditional);
 
                     commandBlock.setCommand(packet.getCommand());
@@ -65,12 +66,12 @@ public class CommandBlockUpdateHandler implements PacketHandler<CommandBlockUpda
                     commandBlock.setTrackOutput(packet.isTrackOutput());
                     commandBlock.setConditional(conditional);
                     commandBlock.setTickDelay((int) packet.getTickDelay());
-                    commandBlock.setExecutingOnFirstTick(packet.isShouldExecuteOnFirstTick());
+                    commandBlock.setExecutingOnFirstTick(packet.isExecuteOnFirstTick());
 
                     //redstone mode / auto
-                    boolean isRedstoneMode = packet.isRedstoneMode();
+                    boolean isRedstoneMode = blockCommandData.isRedstoneMode();
                     commandBlock.setAuto(!isRedstoneMode);
-                    if (!isRedstoneMode && packet.getCommandBlockMode().equals(CommandBlockMode.NORMAL)) {
+                    if (!isRedstoneMode && blockCommandData.getCommandBlockMode().equals(CommandBlockMode.NORMAL)) {
                         commandBlock.trigger();
                     }
                     commandBlock.getLevelBlockAround().forEach(b -> b.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone

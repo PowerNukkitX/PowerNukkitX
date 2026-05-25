@@ -65,7 +65,7 @@ public class HumanOffHandInventory extends BaseInventory {
         for (Player player : players) {
             if (player == this.getHolder()) {
                 final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-                inventoryContentPacket.setInventoryId(ContainerId.OFFHAND);
+                inventoryContentPacket.setContainerId(ContainerId.OFFHAND);
                 inventoryContentPacket.getSlots().add(item.toNetwork());
                 inventoryContentPacket.setFullContainerName(
                         new FullContainerName(

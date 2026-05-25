@@ -545,7 +545,7 @@ public abstract class BaseInventory implements Inventory {
                 this.close(player);
                 continue;
             }
-            pk.setInventoryId(id);
+            pk.setContainerId(id);
             player.sendPacket(pk);
         }
     }

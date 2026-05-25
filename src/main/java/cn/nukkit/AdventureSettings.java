@@ -7,8 +7,10 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.PlayerPermissionLevel;
-import org.cloudburstmc.protocol.bedrock.data.SerializedAbilitiesData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
+import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesData;
+import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesDataSerializedLayer;
+import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedLayer;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateAbilitiesPacket;
 import org.cloudburstmc.protocol.bedrock.packet.UpdateAdventureSettingsPacket;
 
@@ -194,8 +196,8 @@ public class AdventureSettings implements Cloneable {
         data.setPlayerPermissions(this.playerPermission);
         data.setCommandPermissions(this.commandPermission);
 
-        final SerializedAbilitiesData.SerializedLayer layer = new SerializedAbilitiesData.SerializedLayer();
-        layer.setSerializedLayer(SerializedAbilitiesData.SerializedLayer.SerializedAbilitiesLayer.BASE);
+        final SerializedAbilitiesDataSerializedLayer layer = new SerializedAbilitiesDataSerializedLayer();
+        layer.setSerializedLayer(SerializedLayer.BASE);
         layer.getAbilitiesSet().addAll(List.of(AbilitiesIndex.values()));
 
         for (final Type type : Type.values()) {

@@ -31,6 +31,7 @@ import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPresetPacket
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemVersion;
+import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
@@ -238,7 +239,7 @@ public class PlayerSessionHolder {
         packet.setRotation(Vector2f.from(this.player.getYaw(), this.player.getPitch()));
 
         packet.getSettings().setSeed(-1L);
-        packet.getSettings().getSpawnSettings().setDimension(Dimension.from(this.player.level.getDimension()));
+        packet.getSettings().getSpawnSettings().setDimension(DimensionType.from(this.player.level.getDimension()));
         packet.getSettings().getSpawnSettings().setType(SpawnBiomeType.DEFAULT);
         packet.getSettings().getSpawnSettings().setUserDefinedBiomeName("plains");
         packet.getSettings().setGeneratorType(GeneratorType.OVERWORLD);

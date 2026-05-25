@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.protocol.bedrock.data.Dimension;
+import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.packet.ClientboundMapItemDataPacket;
 
 import javax.imageio.ImageIO;
@@ -129,7 +129,7 @@ public class ItemFilledMap extends Item {
         final ClientboundMapItemDataPacket packet = new ClientboundMapItemDataPacket();
         packet.getTrackedEntityIds().add(this.getMapId());
         packet.setMapID(this.getMapId());
-        packet.setDimension(Dimension.from(player.getLevel().getDimension()));
+        packet.setDimension(DimensionType.from(player.getLevel().getDimension()));
         packet.setMapOrigin(Vector3i.from(player.getFloorX(), player.getFloorY(), player.getFloorZ()));
         packet.setScale(scale);
         packet.setTextureHeight(128);

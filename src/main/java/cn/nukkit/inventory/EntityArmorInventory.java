@@ -141,7 +141,7 @@ public class EntityArmorInventory extends BaseInventory {
             slots.add(this.getBoots().toNetwork());
 
             final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            inventoryContentPacket.setInventoryId(id);
+            inventoryContentPacket.setContainerId(id);
             inventoryContentPacket.setSlots(slots);
             inventoryContentPacket.setFullContainerName(
                     new FullContainerName(ContainerEnumName.ARMOR_CONTAINER, null)

@@ -597,7 +597,7 @@ public class HumanInventory extends BaseInventory {
             if (player.equals(this.getHolder())) {
                 final int id = ContainerId.ARMOR;
                 final InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-                inventoryContentPacket.setInventoryId(id);
+                inventoryContentPacket.setContainerId(id);
                 inventoryContentPacket.setSlots(Arrays.stream(armor).map(Item::toNetwork).toList());
                 inventoryContentPacket.setFullContainerName(
                         new FullContainerName(
@@ -731,7 +731,7 @@ public class HumanInventory extends BaseInventory {
                 if (this.getHolder() != player) this.close(player);
                 continue;
             }
-            inventoryContentPacket.setInventoryId(id);
+            inventoryContentPacket.setContainerId(id);
             inventoryContentPacket.setFullContainerName(
                     new FullContainerName(
                             this.getContainerEnumName(id),

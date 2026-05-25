@@ -90,12 +90,12 @@ import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
-import org.cloudburstmc.protocol.bedrock.data.Dimension;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.LevelEventType;
 import org.cloudburstmc.protocol.bedrock.data.MoveActorDeltaData;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUsePredictedResult;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.ItemUseTriggerType;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.transaction.data.ItemUseInventoryTransaction;
@@ -113,6 +113,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -123,7 +124,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.concurrent.ScheduledFuture;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -4039,7 +4039,7 @@ public class Level implements Metadatable {
                             levelChunkPacket = new LevelChunkPacket();
                             levelChunkPacket.setChunkX(x);
                             levelChunkPacket.setChunkZ(z);
-                            levelChunkPacket.setDimension(Dimension.from(this.getDimensionData().getDimensionId()));
+                            levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
                             levelChunkPacket.setSubChunksCount(pair.second());
                             levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/pair.first());
                             player.sendChunk(x, z, levelChunkPacket);

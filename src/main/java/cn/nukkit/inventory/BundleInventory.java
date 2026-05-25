@@ -108,7 +108,7 @@ public class BundleInventory extends BaseInventory {
                 this.close(player);
                 continue;
             }
-            pk.setInventoryId(id);
+            pk.setContainerId(id);
             player.sendPacket(pk);
         }
     }

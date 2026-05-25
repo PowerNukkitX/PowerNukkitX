@@ -154,6 +154,7 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandOriginType;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandOutputType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
+import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.shape.ShapeDataPayload;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.AuthorAndMessage;
 import org.cloudburstmc.protocol.bedrock.data.payload.text.MessageAndParams;
@@ -639,7 +640,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     //TODO: Needs a lot on dimension
     private void setDimension(int dimension) {
         final ChangeDimensionPacket packet = new ChangeDimensionPacket();
-        packet.setDimension(Dimension.from(dimension));
+        packet.setDimension(DimensionType.from(dimension));
         packet.setPosition(Vector3f.from(this.x, this.y, this.z));
         this.sendPacket(packet);
         this.needDimensionChangeACK = true;
@@ -745,7 +746,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                     )
             );
             setSpawnPositionPacket.setDimensionType(
-                    Dimension.from(
+                    DimensionType.from(
                             this.getSpawn().first().getLevel().getDimension()
                     )
             );
@@ -2248,7 +2249,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         final SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
         pk.setSpawnPositionType(SpawnPositionType.PLAYER_RESPAWN);
         pk.setBlockPosition(this.spawnPoint.toNetwork().toInt());
-        pk.setDimensionType(Dimension.from(this.spawnPoint.getLevel().getDimension()));
+        pk.setDimensionType(DimensionType.from(this.spawnPoint.getLevel().getDimension()));
         this.sendPacket(pk);
     }
 
@@ -4873,7 +4874,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             final SetSpawnPositionPacket packet = new SetSpawnPositionPacket();
             packet.setSpawnPositionType(SpawnPositionType.WORLD_SPAWN);
             packet.setBlockPosition(spawn.toNetwork().toInt());
-            packet.setDimensionType(Dimension.from(spawn.getLevel().getDimension()));
+            packet.setDimensionType(DimensionType.from(spawn.getLevel().getDimension()));
             this.sendPacket(packet);
 
             // Remove old chunks; snapshot under lock so tick() can't mutate sentChunks
