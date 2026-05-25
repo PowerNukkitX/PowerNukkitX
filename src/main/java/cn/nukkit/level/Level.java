@@ -113,6 +113,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.File;
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
@@ -982,9 +983,13 @@ public class Level implements Metadatable {
 
     public Map<Integer, Player> getChunkPlayers(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (this.chunkLoaders.containsKey(index)) {
-            return this.chunkLoaders.get(index).entrySet()
-                    .stream()
+        Map<Integer, ChunkLoader> loaders = this.chunkLoaders.get(index);
+        if (loaders != null) {
+            List<Map.Entry<Integer, ChunkLoader>> snapshot;
+            synchronized (loaders) {
+                snapshot = new ArrayList<>(loaders.entrySet());
+            }
+            return snapshot.stream()
                     .filter(e -> (e.getValue() instanceof Player p && p.getPlayerChunkManager().isSentChunk(index)))
                     .collect(HashMap::new, (m, e) -> {
                         m.put(e.getKey(), (Player) e.getValue());
@@ -1015,13 +1020,13 @@ public class Level implements Metadatable {
     public void registerChunkLoader(ChunkLoader loader, int chunkX, int chunkZ, boolean autoLoad) {
         int hash = loader.getLoaderId();
         long index = Level.chunkHash(chunkX, chunkZ);
-        if (!this.chunkLoaders.containsKey(index)) {
-            this.chunkLoaders.put(index, new HashMap<>());
-        } else if (this.chunkLoaders.get(index).containsKey(hash)) {
-            return;
+        Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.computeIfAbsent(index, k -> new HashMap<>());
+        synchronized (chunkLoadersIndex) {
+            if (chunkLoadersIndex.containsKey(hash)) {
+                return;
+            }
+            chunkLoadersIndex.put(hash, loader);
         }
-
-        this.chunkLoaders.get(index).put(hash, loader);
 
         if (!this.loaders.containsKey(hash)) {
             this.loaderCounter.put(hash, 1);
@@ -1045,9 +1050,14 @@ public class Level implements Metadatable {
 
         Map<Integer, ChunkLoader> chunkLoadersIndex = this.chunkLoaders.get(chunkHash);
         if (chunkLoadersIndex != null) {
-            ChunkLoader oldLoader = chunkLoadersIndex.remove(loaderId);
+            ChunkLoader oldLoader;
+            boolean empty;
+            synchronized (chunkLoadersIndex) {
+                oldLoader = chunkLoadersIndex.remove(loaderId);
+                empty = chunkLoadersIndex.isEmpty();
+            }
             if (oldLoader != null) {
-                if (chunkLoadersIndex.isEmpty()) {
+                if (empty) {
                     this.chunkLoaders.remove(chunkHash);
                     return this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload);
                 }
