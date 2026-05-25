@@ -281,7 +281,7 @@ public class BlockHopper extends BlockTransparent implements RedstoneComponent, 
             boolean pickedUpItem = false;
 
             for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
-                if (entity.isClosed() || !(entity instanceof EntityItem itemEntity))
+                if (entity == null || entity.isClosed() || !(entity instanceof EntityItem itemEntity))
                     continue;
 
                 if (itemEntity.isDisplayOnly())

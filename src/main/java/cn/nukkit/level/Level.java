@@ -170,7 +170,7 @@ public class Level implements Metadatable {
     // endregion finals - number finals
 
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
-    private static final Entity[] ENTITY_BUFFER = new Entity[512];
+    private static final ThreadLocal<Entity[]> ENTITY_BUFFER = ThreadLocal.withInitial(() -> new Entity[512]);
 
     static {
         randomTickBlocks.add(BlockID.GRASS_BLOCK);
@@ -3622,8 +3622,9 @@ public class Level implements Metadatable {
     }
 
     private ArrayList<Entity> addEntityToBuffer(int index, ArrayList<Entity> overflow, Entity ent) {
-        if (index < ENTITY_BUFFER.length) {
-            ENTITY_BUFFER[index] = ent;
+        Entity[] buf = ENTITY_BUFFER.get();
+        if (index < buf.length) {
+            buf[index] = ent;
         } else {
             if (overflow == null) overflow = new ArrayList<>(1024);
             overflow.add(ent);
@@ -3633,15 +3634,17 @@ public class Level implements Metadatable {
 
     private Entity[] getEntitiesFromBuffer(int index, ArrayList<Entity> overflow) {
         if (index == 0) return Entity.EMPTY_ARRAY;
+        Entity[] buf = ENTITY_BUFFER.get();
         Entity[] copy;
         if (overflow == null) {
-            copy = Arrays.copyOfRange(ENTITY_BUFFER, 0, index);
-            Arrays.fill(ENTITY_BUFFER, 0, index, null);
+            copy = Arrays.copyOfRange(buf, 0, index);
+            Arrays.fill(buf, 0, index, null);
         } else {
-            copy = new Entity[ENTITY_BUFFER.length + overflow.size()];
-            System.arraycopy(ENTITY_BUFFER, 0, copy, 0, ENTITY_BUFFER.length);
+            copy = new Entity[buf.length + overflow.size()];
+            System.arraycopy(buf, 0, copy, 0, buf.length);
+            Arrays.fill(buf, null);
             for (int i = 0; i < overflow.size(); i++) {
-                copy[ENTITY_BUFFER.length + i] = overflow.get(i);
+                copy[buf.length + i] = overflow.get(i);
             }
         }
         return copy;
