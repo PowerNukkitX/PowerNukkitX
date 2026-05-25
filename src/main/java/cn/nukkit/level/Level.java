@@ -1239,6 +1239,7 @@ public class Level implements Metadatable {
                             int chunkZ = Level.getHashZ(index);
                             if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
                                 IChunk chunk = this.getChunk(chunkX, chunkZ);
+                                if (chunk == null) continue;
                                 chunk.reObfuscateChunk();
                                 for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
                                     p.onChunkChanged(chunk);
