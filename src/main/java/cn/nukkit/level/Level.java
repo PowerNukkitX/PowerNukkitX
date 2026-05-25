@@ -4047,6 +4047,7 @@ public class Level implements Metadatable {
     }
 
     private void processChunkRequest() {
+        if (getProvider() == null) return;
         for (long index : this.chunkSendQueue.keySet()) {
             int x = getHashX(index);
             int z = getHashZ(index);
