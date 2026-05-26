@@ -166,7 +166,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public long getSpawnTime() {
-        return this.getDataProperty(ActorDataTypes.DATA_SPAWN_TIME_deprecated);
+        return this.getDataProperty(ActorDataTypes.DATA_SPAWN_TIME_DEPRECATED);
     }
 
     public void setSpawnTime(long spawnTime) {
@@ -174,7 +174,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public void setSpawnTime(long spawnTime, boolean send) {
-        this.setDataProperty(ActorDataTypes.DATA_SPAWN_TIME_deprecated, spawnTime, send);
+        this.setDataProperty(ActorDataTypes.DATA_SPAWN_TIME_DEPRECATED, spawnTime, send);
     }
 
     public int getDuration() {
