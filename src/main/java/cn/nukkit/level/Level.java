@@ -1023,15 +1023,14 @@ public class Level implements Metadatable {
             return;
         }
 
-        loaders.put(hash, loader);
-
-        if (!this.loaders.containsKey(hash)) {
-            this.loaderCounter.put(hash, 1);
-            synchronized (this.loaders) {
+        synchronized (this.loaders) {
+            loaders.put(hash, loader);
+            if (!this.loaders.containsKey(hash)) {
+                this.loaderCounter.put(hash, 1);
                 this.loaders.put(hash, loader);
+            } else {
+                this.loaderCounter.put(hash, this.loaderCounter.get(hash) + 1);
             }
-        } else {
-            this.loaderCounter.put(hash, this.loaderCounter.get(hash) + 1);
         }
 
         this.cancelUnloadChunkRequest(chunkX, chunkZ);
@@ -1054,14 +1053,14 @@ public class Level implements Metadatable {
                     return this.unloadChunkRequest(chunkX, chunkZ, isSafeUnload);
                 }
 
-                int count = this.loaderCounter.get(loaderId);
-                if (--count == 0) {
-                    this.loaderCounter.remove(loaderId);
-                    synchronized (this.loaders) {
+                synchronized (this.loaders) {
+                    int count = this.loaderCounter.get(loaderId);
+                    if (--count == 0) {
+                        this.loaderCounter.remove(loaderId);
                         this.loaders.remove(loaderId);
+                    } else {
+                        this.loaderCounter.put(loaderId, count);
                     }
-                } else {
-                    this.loaderCounter.put(loaderId, count);
                 }
                 return true;
             }
