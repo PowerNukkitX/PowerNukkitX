@@ -1074,6 +1074,7 @@ public enum Sound {
     NOTE_IRON_XYLOPHONE("note.iron_xylophone"),
     NOTE_PIGLIN("note.piglin"),
     NOTE_PLING("note.pling"),
+    NOTE_TRUMPET("note.trumpet"),
     NOTE_SKELETON("note.skeleton"),
     NOTE_SNARE("note.snare"),
     NOTE_WITHERSKELETON("note.witherskeleton"),
