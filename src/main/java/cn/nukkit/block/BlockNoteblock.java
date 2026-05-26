@@ -20,6 +20,7 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.sound.midi.Instrument;
 
 /**
  * @author Snake1999
@@ -185,12 +186,10 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
                 case BlockBookshelf ignored -> Instrument.BASS;
                 case BlockWoodenSlab ignored -> Instrument.BASS;
                 case AbstractBlockShelf ignored -> Instrument.BASS;
-                case BlockCopperBlock block -> switch (block) {
-                    case BlockExposedCopper ignored -> Instrument.TRUMPET_EXPOSED;
-                    case BlockWeatheredCopper ignored -> Instrument.TRUMPET_WEATHERED;
-                    case BlockOxidizedCopper ignored -> Instrument.TRUMPET_OXIDIZED;
-                    default -> Instrument.TRUMPET;
-                };
+                case BlockExposedCopper ignored -> Instrument.TRUMPET_EXPOSED;
+                case BlockWeatheredCopper ignored -> Instrument.TRUMPET_WEATHERED;
+                case BlockOxidizedCopper ignored -> Instrument.TRUMPET_OXIDIZED;
+                case BlockCopperBlock ignored -> Instrument.TRUMPET;
                 default -> Instrument.HARP;
             };
         };
