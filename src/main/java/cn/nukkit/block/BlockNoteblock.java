@@ -20,7 +20,6 @@ import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import javax.sound.midi.Instrument;
 
 /**
  * @author Snake1999
