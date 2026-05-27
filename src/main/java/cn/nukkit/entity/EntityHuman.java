@@ -7,6 +7,7 @@ import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
@@ -181,7 +182,7 @@ public class EntityHuman extends EntityHumanType {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
 
-            if (!this.skin.isValid()) {
+            if (!SkinUtils.isValid(this.skin)) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 

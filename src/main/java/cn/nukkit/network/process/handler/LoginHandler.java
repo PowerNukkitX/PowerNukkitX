@@ -9,6 +9,7 @@ import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.process.auth.ClientSkinData;
+import cn.nukkit.utils.SkinUtils;
 import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
@@ -156,7 +157,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 return ClientJwtValidationResult.INVALID;
             }
             final SerializedSkin skin = ClientSkinData.readSkin(claims);
-            if (skin == null) {
+            if (skin == null || !SkinUtils.isValid(skin)) {
                 return ClientJwtValidationResult.INVALID;
             }
             return new ClientJwtValidationResult(
