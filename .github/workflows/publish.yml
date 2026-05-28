@@ -178,7 +178,11 @@ jobs:
 
             LAST_SECTION=""
             while IFS= read -r msg; do
-              prefix=$(echo "$msg" | sed 's/:.*//' | sed 's/[^a-z-]//g' || echo "")
+              if echo "$msg" | grep -q ':'; then
+                prefix=$(echo "$msg" | sed 's/:.*//' | sed 's/[^a-z-]//g' || echo "")
+              else
+                prefix=""
+              fi
               case "$prefix" in
                 feat|feature) sec="### 🚀 Features";;
                 fix)          sec="### 🐛 Bug Fixes";;
@@ -188,7 +192,7 @@ jobs:
                 test)         sec="### 🧪 Tests";;
                 build|ci)     sec="### 🛠️ Build & CI";;
                 chore)        sec="### 🔧 Chores";;
-                *)            sec="";;
+                *)            sec="### 📦 Other";;
               esac
               if [ -n "$sec" ] && [ "$sec" != "$LAST_SECTION" ]; then
                 echo "" >> "$FILE"
