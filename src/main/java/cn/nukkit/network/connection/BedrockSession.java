@@ -72,6 +72,31 @@ import java.util.function.Consumer;
 
 @Slf4j
 public class BedrockSession {
+    // Coalescing
+    private static final int COALESCE_TARGET_BYTES = 1200;
+    private static final int COALESCE_MIN_BYTES = 256;
+
+    // Estimate sizes for paced bulk packets
+    private static final int RP_CHUNK_ESTIMATE = 64 * 1024;
+    private static final int CREATIVE_CONTENT_ESTIMATE = 192 * 1024;
+    private static final int ITEM_REGISTRY_ESTIMATE = 8 * 1024;
+
+    // Clamp bounds for pacing config
+    private static final int PACING_FLUSH_MIN = 1;
+    private static final int PACING_FLUSH_MAX = 20;
+    private static final int PACING_BYTES_MIN = 64 * 1024;
+    private static final int PACING_BYTES_MAX = 64 * 1024 * 1024;
+
+    // Clamp bounds for rate limiting
+    private static final int INBOUND_RATE_MIN = 100;
+    private static final int INBOUND_RATE_MAX = 10_000;
+    private static final int PACKETS_PER_TICK_MIN = 50;
+    private static final int PACKETS_PER_TICK_MAX = 5_000;
+
+    // OutboundScheduler limits
+    private static final int MIN_BYTES_PER_SEC = 1024;
+    private static final int MIN_BYTES_PER_PACKET = 32;
+
     private final AtomicBoolean closed = new AtomicBoolean();
     protected final BedrockPeer peer;
     protected final int subClientId;
@@ -122,8 +147,8 @@ public class BedrockSession {
         int pacingMaxBytesPerSecond = pc.maxBytesPerSec;
         this.scheduler = new OutboundScheduler(
                 pacingMaxBytesPerSecond,
-                1200,
-                256,
+                COALESCE_TARGET_BYTES,
+                COALESCE_MIN_BYTES,
                 pacingFlushIntervalMillis
         );
 
@@ -744,12 +769,12 @@ public class BedrockSession {
 
     private static int estimateBytes(DataPacket pk) {
         if (pk instanceof ResourcePackChunkDataPacket rp) {
-            return (rp.data != null ? rp.data.length : 64 * 1024);
+            return (rp.data != null ? rp.data.length : RP_CHUNK_ESTIMATE);
         }
         return switch (pk.pid()) {
-            case ProtocolInfo.CREATIVE_CONTENT_PACKET -> 192 * 1024;
-            case ProtocolInfo.ITEM_REGISTRY_PACKET -> 8 * 1024;
-            default -> 256;
+            case ProtocolInfo.CREATIVE_CONTENT_PACKET -> CREATIVE_CONTENT_ESTIMATE;
+            case ProtocolInfo.ITEM_REGISTRY_PACKET -> ITEM_REGISTRY_ESTIMATE;
+            default -> COALESCE_MIN_BYTES;
         };
     }
 
@@ -768,8 +793,8 @@ public class BedrockSession {
         var net = Server.getInstance().getSettings().networkSettings();
 
         boolean en = net.pacingEnabled();
-        int flush = clamp(net.pacingFlushIntervalMillis(), 1, 20);
-        int bps = clamp(net.pacingMaxBytesPerSecond(), 64 * 1024, 64 * 1024 * 1024); // allow up to 64 MiB/s
+        int flush = clamp(net.pacingFlushIntervalMillis(), PACING_FLUSH_MIN, PACING_FLUSH_MAX);
+        int bps = clamp(net.pacingMaxBytesPerSecond(), PACING_BYTES_MIN, PACING_BYTES_MAX);
 
         return new PacingConfig(en, flush, bps);
     }
@@ -780,8 +805,8 @@ public class BedrockSession {
     private RateLimitConfig loadRateLimitConfigSafely() {
         RateLimitSettings settings = Server.getInstance().getSettings().networkSettings().rateLimitSettings();
         boolean en = settings.rateLimitEnabled();
-        int maxInbound = clamp(settings.maxInboundPacketsPerSecond(), 100, 10_000);
-        int maxPerTick = clamp(settings.maxPacketsPerTick(), 50, 5_000);
+        int maxInbound = clamp(settings.maxInboundPacketsPerSecond(), INBOUND_RATE_MIN, INBOUND_RATE_MAX);
+        int maxPerTick = clamp(settings.maxPacketsPerTick(), PACKETS_PER_TICK_MIN, PACKETS_PER_TICK_MAX);
         return new RateLimitConfig(en, maxInbound, maxPerTick);
     }
 
@@ -816,7 +841,7 @@ public class BedrockSession {
                           int coalesceTargetBytes,
                           int coalesceMinBytes,
                           int flushIntervalMillis) {
-            this.maxBytesPerSec = Math.max(1024, maxBytesPerSec);
+            this.maxBytesPerSec = Math.max(MIN_BYTES_PER_SEC, maxBytesPerSec);
             this.burstBytes = this.maxBytesPerSec; // burst = 1 second budget
             this.coalesceTargetBytes = coalesceTargetBytes;
             this.coalesceMinBytes = coalesceMinBytes;
@@ -826,12 +851,12 @@ public class BedrockSession {
 
         synchronized void enqueueResourcePackChunk(DataPacket pk, int estimatedBytes) {
             this.rpQ.addLast(pk);
-            this.headBytes += Math.max(estimatedBytes, 32);
+            this.headBytes += Math.max(estimatedBytes, MIN_BYTES_PER_PACKET);
         }
 
         synchronized void enqueueRegistryBulk(DataPacket pk, int estimatedBytes) {
             this.registryQ.addLast(pk);
-            this.headBytes += Math.max(estimatedBytes, 32);
+            this.headBytes += Math.max(estimatedBytes, MIN_BYTES_PER_PACKET);
         }
 
         synchronized void tryPump(BedrockPeer peer, int subClientId, BedrockSession session) {

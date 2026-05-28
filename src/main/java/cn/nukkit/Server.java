@@ -168,6 +168,16 @@ import java.util.regex.Pattern;
 public class Server {
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
+
+    private static final long TICK_DURATION_MS = 50;
+    private static final int MAX_TPS = 20;
+    private static final long TICK_EARLY_THRESHOLD_MS = 25;
+    private static final long TICK_SLEEP_MIN_MS = 5;
+    private static final long TICK_RESYNC_THRESHOLD_MS = 1000;
+    private static final int TICK_TITLE_INTERVAL = 0b1111;
+    private static final int TICK_QUERY_INTERVAL = 0b111111111;
+    private static final int TICK_AUTOSAVE_INTERVAL = 511;
+
     private static Server instance = null;
 
     private BanList banByName;
@@ -600,26 +610,7 @@ public class Server {
 
         this.serverID = UUID.randomUUID();
         this.pluginManager.loadPlugins(this.pluginPath);
-        {// trim
-            Registries.POTION.trim();
-            Registries.PACKET.trim();
-            Registries.ENTITY.trim();
-            Registries.BLOCKENTITY.trim();
-            Registries.BLOCKSTATE.trim();
-            Registries.ITEM_RUNTIMEID.trim();
-            Registries.BLOCK.trim();
-            Registries.ITEM.trim();
-            Registries.CREATIVE.trim();
-            Registries.BIOME.trim();
-            Registries.FUEL.trim();
-            Registries.GENERATOR.trim();
-            Registries.POPULATOR.trim();
-            Registries.GENERATE_STAGE.trim();
-            Registries.STRUCTURE.trim();
-            Registries.EFFECT.trim();
-            Registries.RECIPE.trim();
-            Registries.VOXEL_SHAPE.trim();
-        }
+        trimRegistries();
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
@@ -798,49 +789,13 @@ public class Server {
         this.scoreboardManager.read();
 
         log.info("Reloading registries...");
-        {
-            Registries.POTION.reload();
-            Registries.PACKET.reload();
-            Registries.ENTITY.reload();
-            Registries.BLOCKENTITY.reload();
-            Registries.BLOCKSTATE.reload();
-            Registries.ITEM_RUNTIMEID.reload();
-            Registries.BLOCK.reload();
-            Registries.ITEM.reload();
-            Registries.CREATIVE.reload();
-            Registries.BIOME.reload();
-            Registries.FUEL.reload();
-            Registries.GENERATOR.reload();
-            Registries.GENERATE_STAGE.reload();
-            Registries.POPULATOR.reload();
-            Registries.GENERATE_FEATURE.reload();
-            Registries.STRUCTURE.reload();
-            Registries.EFFECT.reload();
-            Registries.RECIPE.reload();
-            Enchantment.reload();
-        }
+        reloadRegistries();
 
         this.pluginManager.loadPlugins(this.pluginPath);
         this.functionManager.reload();
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
-        {
-            Registries.POTION.trim();
-            Registries.PACKET.trim();
-            Registries.ENTITY.trim();
-            Registries.BLOCKENTITY.trim();
-            Registries.BLOCKSTATE.trim();
-            Registries.ITEM_RUNTIMEID.trim();
-            Registries.BLOCK.trim();
-            Registries.ITEM.trim();
-            Registries.CREATIVE.trim();
-            Registries.BIOME.trim();
-            Registries.FUEL.trim();
-            Registries.GENERATOR.trim();
-            Registries.GENERATE_STAGE.trim();
-            Registries.EFFECT.trim();
-            Registries.RECIPE.trim();
-        }
+        trimRegistries();
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         this.network.setState(NetworkState.STARTED);
     }
@@ -1010,12 +965,12 @@ public class Server {
                     level.doTick(currentTick);
                     int tickMs = (int) (System.currentTimeMillis() - levelTime);
                     level.tickRateTime = tickMs;
-                    if ((currentTick & 511) == 0) { // % 511
+                    if ((currentTick & TICK_AUTOSAVE_INTERVAL) == 0) {
                         level.tickRateOptDelay = level.recalcTickOptDelay();
                     }
 
                     if (getSettings().levelSettings().autoTickRate()) {
-                        if (tickMs < 50 && level.getTickRate() > baseTickRate) {
+                        if (tickMs < TICK_DURATION_MS && level.getTickRate() > baseTickRate) {
                             int r;
                             level.setTickRate(r = level.getTickRate() - 1);
                             if (r > baseTickRate) {
@@ -1023,13 +978,13 @@ public class Server {
                             }
                             log.debug("Raising level \"{}\" tick rate to {} ticks", level.getName(),
                                     level.getTickRate());
-                        } else if (tickMs >= 50) {
+                        } else if (tickMs >= TICK_DURATION_MS) {
                             int autoTickRateLimit = getSettings().levelSettings().autoTickRateLimit();
                             if (level.getTickRate() == baseTickRate) {
-                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / 50)));
+                                level.setTickRate(Math.max(baseTickRate + 1, Math.min(autoTickRateLimit, tickMs / TICK_DURATION_MS)));
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
                                         NukkitMath.round(tickMs, 2), level.getTickRate());
-                            } else if ((tickMs / level.getTickRate()) >= 50
+                            } else if ((tickMs / level.getTickRate()) >= TICK_DURATION_MS
                                     && level.getTickRate() < autoTickRateLimit) {
                                 level.setTickRate(level.getTickRate() + 1);
                                 log.debug("Level \"{}\" took {}ms, setting tick rate to {} ticks", level.getName(),
@@ -1068,16 +1023,16 @@ public class Server {
         long tickTime = System.currentTimeMillis();
 
         long time = tickTime - this.nextTick;
-        if (time < -25) {
+        if (time < -TICK_EARLY_THRESHOLD_MS) {
             try {
-                Thread.sleep(Math.max(5, -time - 25));
+                Thread.sleep(Math.max(TICK_SLEEP_MIN_MS, -time - TICK_EARLY_THRESHOLD_MS));
             } catch (InterruptedException e) {
                 log.debug("The thread {} got interrupted", Thread.currentThread().getName(), e);
             }
         }
 
         long tickTimeNano = System.nanoTime();
-        if ((tickTime - this.nextTick) < -25) {
+        if ((tickTime - this.nextTick) < -TICK_EARLY_THRESHOLD_MS) {
             return;
         }
 
@@ -1088,12 +1043,12 @@ public class Server {
 
         this.checkTickUpdates(this.tickCounter);
 
-        if ((this.tickCounter & 0b1111) == 0) {
+        if ((this.tickCounter & TICK_TITLE_INTERVAL) == 0) {
             this.titleTick();
-            this.maxTick = 20;
+            this.maxTick = MAX_TPS;
             this.maxUse = 0;
 
-            if ((this.tickCounter & 0b111111111) == 0) {
+            if ((this.tickCounter & TICK_QUERY_INTERVAL) == 0) {
                 try {
                     this.getPluginManager().callEvent(this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5));
                 } catch (Exception e) {
@@ -1115,13 +1070,13 @@ public class Server {
         }
 
         // Handle freezable array
-        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        int freezableArrayCompressTime = (int) (TICK_DURATION_MS - (System.currentTimeMillis() - tickTime));
         if (freezableArrayCompressTime > 4) {
             getFreezableArrayManager().setMaxCompressionTime(freezableArrayCompressTime).tick();
         }
 
         long nowNano = System.nanoTime();
-        float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
+        float tick = (float) Math.min(MAX_TPS, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
         float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
 
         if (this.maxTick > tick) {
@@ -1138,10 +1093,10 @@ public class Server {
         System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
         this.useAverage[this.useAverage.length - 1] = use;
 
-        if ((this.nextTick - tickTime) < -1000) {
+        if ((this.nextTick - tickTime) < -TICK_RESYNC_THRESHOLD_MS) {
             this.nextTick = tickTime;
         } else {
-            this.nextTick += 50;
+            this.nextTick += TICK_DURATION_MS;
         }
 
     }
@@ -1180,7 +1135,7 @@ public class Server {
         for (float aUseAverage : this.useAverage) {
             sum += aUseAverage;
         }
-        return ((float) Math.round(sum / count * 100)) / 100;
+        return (float) NukkitMath.round(sum / count, 2);
     }
 
     public String getCPULoad() {
@@ -1254,6 +1209,49 @@ public class Server {
 
     public long getLaunchTime() {
         return launchTime;
+    }
+
+    private static void trimRegistries() {
+        Registries.POTION.trim();
+        Registries.PACKET.trim();
+        Registries.ENTITY.trim();
+        Registries.BLOCKENTITY.trim();
+        Registries.BLOCKSTATE.trim();
+        Registries.ITEM_RUNTIMEID.trim();
+        Registries.BLOCK.trim();
+        Registries.ITEM.trim();
+        Registries.CREATIVE.trim();
+        Registries.BIOME.trim();
+        Registries.FUEL.trim();
+        Registries.GENERATOR.trim();
+        Registries.POPULATOR.trim();
+        Registries.GENERATE_STAGE.trim();
+        Registries.STRUCTURE.trim();
+        Registries.EFFECT.trim();
+        Registries.RECIPE.trim();
+        Registries.VOXEL_SHAPE.trim();
+    }
+
+    private static void reloadRegistries() {
+        Registries.POTION.reload();
+        Registries.PACKET.reload();
+        Registries.ENTITY.reload();
+        Registries.BLOCKENTITY.reload();
+        Registries.BLOCKSTATE.reload();
+        Registries.ITEM_RUNTIMEID.reload();
+        Registries.BLOCK.reload();
+        Registries.ITEM.reload();
+        Registries.CREATIVE.reload();
+        Registries.BIOME.reload();
+        Registries.FUEL.reload();
+        Registries.GENERATOR.reload();
+        Registries.GENERATE_STAGE.reload();
+        Registries.POPULATOR.reload();
+        Registries.GENERATE_FEATURE.reload();
+        Registries.STRUCTURE.reload();
+        Registries.EFFECT.reload();
+        Registries.RECIPE.reload();
+        Enchantment.reload();
     }
 
     // endregion

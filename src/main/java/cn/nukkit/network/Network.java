@@ -58,6 +58,10 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public class Network implements NetworkInterface {
+    public static final int RAKNET_SUPPORTED_PROTOCOL = 11;
+    public static final int BAN_FOREVER_YEAR = 9999;
+    public static final String FALLBACK_IP = "0.0.0.0";
+
     private final Server server;
     private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
     private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
@@ -102,7 +106,7 @@ public class Network implements NetworkInterface {
             oclass = NioDatagramChannel.class;
             eventloopgroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
         }
-        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
+        InetSocketAddress bindAddress = new InetSocketAddress(Strings.isNullOrEmpty(this.server.getIp()) ? FALLBACK_IP : this.server.getIp(), this.server.getPort());
 
         this.pong = new BedrockPong()
                 .edition("MCPE")
@@ -120,7 +124,7 @@ public class Network implements NetworkInterface {
         this.channel = (RakServerChannel) new ServerBootstrap()
                 .channelFactory(RakChannelFactory.server(oclass))
                 .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
-                .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[] {11})
+                .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[] {RAKNET_SUPPORTED_PROTOCOL})
                 .option(RakChannelOption.RAK_PACKET_LIMIT, server.getSettings().networkSettings().packetLimit())
                 .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, RakServerCookieMode.ACTIVE)
                 .group(eventloopgroup)
@@ -238,7 +242,7 @@ public class Network implements NetworkInterface {
      * @param address the address
      */
     public void blockAddress(InetAddress address) {
-        blockIpMap.put(address, LocalDateTime.of(9999, 1, 1, 0, 0));
+        blockIpMap.put(address, LocalDateTime.of(BAN_FOREVER_YEAR, 1, 1, 0, 0));
     }
 
     /**
