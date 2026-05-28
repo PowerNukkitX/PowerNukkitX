@@ -84,8 +84,8 @@ bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection"
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
-test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator" ]
-netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"                              ]
+test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator"              ]
+netty           = ["netty-epoll",      "netty-kqueue"                                                   ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]
