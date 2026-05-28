@@ -72,4 +72,4 @@ jobs:
 
       - run: chmod +x gradlew
 
-      - run: ./gradlew check -PskipTests --no-daemon --parallel --max-workers=2 --stacktrace
+      - run: ./gradlew check -PskipTests --no-configuration-cache --no-daemon --parallel --max-workers=2 --stacktrace
