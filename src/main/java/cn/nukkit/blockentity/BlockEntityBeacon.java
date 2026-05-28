@@ -156,9 +156,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
         int tileZ = getFloorZ();
 
         //Check every block from our y coord to the top of the world
-        for (int y = tileY + 1; y <= 255; y++) {
+        for (int y = tileY + 1; y < level.getMaxHeight(); y++) {
             Block test = level.getBlock(tileX, y, tileZ);
-            if (!test.isTransparent()) {
+            if (test.getLightFilter() > 1 && !test.getId().equals(Block.BEDROCK)) {
                 //There is no sky access
                 return false;
             }
