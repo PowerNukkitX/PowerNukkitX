@@ -139,14 +139,14 @@ jobs:
           cat > "changelogs/${TAG}.md" << EOF
           # Changelog - PowerNukkitX $TAG
 
-          | Info | Valeur |
-          |------|--------|
-          | Version PowerNukkitX | $TAG |
-          | Version API | $API_VERSION |
-          | Version Minecraft supportée | $MC_VERSION |
+          | Info | Value |
+          |------|-------|
+          | PowerNukkitX Version | $TAG |
+          | API Version | $API_VERSION |
+          | Supported Minecraft Version | $MC_VERSION |
 
           ## Notes
-          Consultez la [release GitHub](${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG) pour les notes de version détaillées.
+          See the [GitHub release](${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG) for detailed release notes.
           EOF
 
           echo "created=changelogs/${TAG}.md" >> $GITHUB_OUTPUT
@@ -179,9 +179,9 @@ jobs:
 
           | | |
           |---|---|
-          | **Version PowerNukkitX** | $TAG |
-          | **Version API** | $API_VERSION |
-          | **Version Minecraft supportée** | $MC_VERSION |
+          | **PowerNukkitX Version** | $TAG |
+          | **API Version** | $API_VERSION |
+          | **Supported Minecraft Version** | $MC_VERSION |
 
           ---
 
