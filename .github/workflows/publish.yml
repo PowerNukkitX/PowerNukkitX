@@ -58,7 +58,6 @@ jobs:
             echo "is_draft=${{ inputs.draft }}" >> $GITHUB_OUTPUT
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           else
-            # Extract version from commit title (r-X.Y.Z)
             COMMIT_MSG=$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")
             FIRST_LINE=$(echo "$COMMIT_MSG" | head -1)
             VERSION=""
@@ -111,10 +110,59 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Extract versions from source
+        id: versions
+        run: |
+          MC_VERSION=$(sed -n 's/.*MINECRAFT_VERSION_NETWORK = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/network/protocol/ProtocolInfo.java)
+          API_VERSION=$(sed -n 's/.*API_VERSION = dynamic("\([^"]*\)").*/\1/p' src/main/java/cn/nukkit/Nukkit.java)
+          echo "mc_version=$MC_VERSION" >> $GITHUB_OUTPUT
+          echo "api_version=$API_VERSION" >> $GITHUB_OUTPUT
+
       - uses: actions/download-artifact@v4
         with:
           name: powernukkitx.jar
           path: build
+
+      - name: Create changelog file
+        if: needs.publish.outputs.tag != 'nightly'
+        run: |
+          TAG="${{ needs.publish.outputs.tag }}"
+          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          API_VERSION="${{ steps.versions.outputs.api_version }}"
+
+          mkdir -p changelogs
+
+          cat > "changelogs/${TAG}.md" << EOF
+          # Changelog - PowerNukkitX $TAG
+
+          | Info | Valeur |
+          |------|--------|
+          | Version PowerNukkitX | $TAG |
+          | Version API | $API_VERSION |
+          | Version Minecraft supportée | $MC_VERSION |
+
+          ## Notes
+          Consultez la [release GitHub](${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG) pour les notes de version détaillées.
+          EOF
+
+          echo "created=changelogs/${TAG}.md" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changelog
+        if: needs.publish.outputs.tag != 'nightly'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add "changelogs/${{ needs.publish.outputs.tag }}.md"
+          if git diff --staged --quiet; then
+            echo "Changelog already exists, skipping commit"
+          else
+            git commit -m "docs: add changelog for ${{ needs.publish.outputs.tag }} [skip ci]"
+            git push
+          fi
 
       - name: Generate release notes
         id: notes
@@ -122,39 +170,46 @@ jobs:
           TAG="${{ needs.publish.outputs.tag }}"
           IS_DRAFT="${{ needs.publish.outputs.is_draft }}"
           IS_PRERELEASE="${{ needs.publish.outputs.is_prerelease }}"
+          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+          API_VERSION="${{ steps.versions.outputs.api_version }}"
 
-          if [ "$IS_DRAFT" = "true" ]; then
-            cat > release-notes.md << EOF
+          cat > release-notes.md << EOF
 
           ## 📦 PowerNukkitX $TAG
 
+          | | |
+          |---|---|
+          | **Version PowerNukkitX** | $TAG |
+          | **Version API** | $API_VERSION |
+          | **Version Minecraft supportée** | $MC_VERSION |
+
+          ---
+
+          EOF
+
+          if [ "$IS_DRAFT" = "true" ]; then
+            cat >> release-notes.md << EOF
           > [!IMPORTANT]
           > This release is a **draft** — pending review. Publish it manually from the Releases page once verified.
 
           **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
 
-          ---
           EOF
-          else
-            cat > release-notes.md << EOF
-
-          ## 📦 PowerNukkitX $TAG
-
-          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
-
-          ---
-          EOF
-
-            if [ "$IS_PRERELEASE" = "true" ]; then
-              cat >> release-notes.md << EOF
-
+          elif [ "$IS_PRERELEASE" = "true" ]; then
+            cat >> release-notes.md << EOF
           > [!WARNING]
           > This is a **dev build** — built automatically from the latest source. May be unstable.
           >
           > Report issues on [Discord](https://discord.gg/apwd7uauZg) or [GitHub Issues](https://github.com/${{ github.repository }}/issues).
 
+          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
           EOF
-            fi
+          else
+            cat >> release-notes.md << EOF
+          **Commit:** [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+          EOF
           fi
 
           LAST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
