@@ -135,32 +135,103 @@ jobs:
           API_VERSION="${{ steps.versions.outputs.api_version }}"
 
           mkdir -p changelogs
+          FILE="changelogs/${TAG}.md"
 
-          cat > "changelogs/${TAG}.md" << EOF
+          cat > "$FILE" << EOF
           # Changelog - PowerNukkitX $TAG
 
-          | Info | Value |
-          |------|-------|
+          > **Release:** [$TAG](${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG)
+
+          ## 📋 Release Info
+
+          | Property | Value |
+          |----------|-------|
           | PowerNukkitX Version | $TAG |
           | API Version | $API_VERSION |
           | Supported Minecraft Version | $MC_VERSION |
 
-          ## Notes
-          See the [GitHub release](${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG) for detailed release notes.
           EOF
 
-          echo "created=changelogs/${TAG}.md" >> $GITHUB_OUTPUT
+          LAST=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$LAST" ] && [ "$LAST" != "$TAG" ]; then
+            COMPARE=$(gh api "repos/${{ github.repository }}/compare/$LAST...${{ github.sha }}")
+
+            TOTAL_COMMITS=$(echo "$COMPARE" | jq '.total_commits')
+            FILES_CHANGED=$(echo "$COMPARE" | jq '.files | length')
+
+            echo "" >> "$FILE"
+            echo "## 📊 Summary" >> "$FILE"
+            echo "" >> "$FILE"
+            echo "| Metric | Value |" >> "$FILE"
+            echo "|--------|-------|" >> "$FILE"
+            echo "| Commits since $LAST | $TOTAL_COMMITS |" >> "$FILE"
+            echo "| Files changed | $FILES_CHANGED |" >> "$FILE"
+            echo "| Full diff | [$LAST...$TAG](${{ github.server_url }}/${{ github.repository }}/compare/$LAST...$TAG) |" >> "$FILE"
+            echo "" >> "$FILE"
+
+            echo "## ✨ Changes since $LAST" >> "$FILE"
+            echo "" >> "$FILE"
+
+            echo "$COMPARE" | jq -r '
+              .commits | reverse | .[].commit.message | split("\n")[0]
+            ' > /tmp/commits.txt
+
+            LAST_SECTION=""
+            while IFS= read -r msg; do
+              prefix=$(echo "$msg" | sed 's/:.*//' | sed 's/[^a-z-]//g' || echo "")
+              case "$prefix" in
+                feat|feature) sec="### 🚀 Features";;
+                fix)          sec="### 🐛 Bug Fixes";;
+                docs)         sec="### 📝 Documentation";;
+                refactor)     sec="### ♻️ Refactoring";;
+                perf)         sec="### ⚡ Performance";;
+                test)         sec="### 🧪 Tests";;
+                build|ci)     sec="### 🛠️ Build & CI";;
+                chore)        sec="### 🔧 Chores";;
+                *)            sec="";;
+              esac
+              if [ -n "$sec" ] && [ "$sec" != "$LAST_SECTION" ]; then
+                echo "" >> "$FILE"
+                echo "$sec" >> "$FILE"
+                echo "" >> "$FILE"
+                LAST_SECTION="$sec"
+              fi
+              if [ -n "$prefix" ]; then
+                body="${msg#*: }"
+              else
+                body="$msg"
+              fi
+              echo "- $body" >> "$FILE"
+            done < /tmp/commits.txt
+          else
+            echo "## ✨ Changes" >> "$FILE"
+            echo "" >> "$FILE"
+            echo "Initial release." >> "$FILE"
+          fi
+
+          echo "created=${FILE}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push changelog
         if: needs.publish.outputs.tag != 'nightly'
         run: |
+          TAG="${{ needs.publish.outputs.tag }}"
+          API_VERSION="${{ steps.versions.outputs.api_version }}"
+          MC_VERSION="${{ steps.versions.outputs.mc_version }}"
+
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add "changelogs/${{ needs.publish.outputs.tag }}.md"
+          git add "changelogs/${TAG}.md"
           if git diff --staged --quiet; then
             echo "Changelog already exists, skipping commit"
           else
-            git commit -m "docs: add changelog for ${{ needs.publish.outputs.tag }} [skip ci]"
+            git commit -m "docs: add changelog for PowerNukkitX ${TAG} [skip ci]
+
+        Release ${TAG}
+        - Minecraft: ${MC_VERSION}
+        - API: ${API_VERSION}
+        - See the full changelog at changelogs/${TAG}.md"
             git push
           fi
 
