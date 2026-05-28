@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "org.powernukkitx"
-version = "2.0.0-DEV-SNAPSHOT"
+version = providers.gradleProperty("buildVersion").orElse("nightly-SNAPSHOT").get()
 description = "powernukkitx"
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
@@ -65,6 +65,7 @@ dependencies {
     testImplementation(libs.bundles.test)
     testImplementation(libs.commonsio)
     testImplementation(libs.commonslang3)
+    
     testRuntimeOnly(libs.junit.platform.launcher)
 
     compileOnly(libs.lombok)
@@ -204,6 +205,9 @@ tasks.test {
     finalizedBy("jacocoTestReport") // report is always generated after tests run
 }
 
+tasks.withType<Test>().configureEach {
+    onlyIf { !project.hasProperty("skipTests") }
+}
 
 tasks.named<JacocoReport>("jacocoTestReport") {
     reports {

@@ -71,7 +71,8 @@ jline-reader         = { module = "org.jline:jline-reader",                     
 jline-terminal       = { module = "org.jline:jline-terminal",                       version.ref = "org-jline-jline-terminal"                        }
 jline-terminaljna    = { module = "org.jline:jline-terminal-jna",                   version.ref = "org-jline-jline-terminal-jna"                    }
 junit                = { module = "org.junit.jupiter:junit-jupiter",                version.ref = "org-junit-jupiter-junit-jupiter"                 }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher",  version.ref = "org-junit-platform-launcher"                    }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine",         version.ref = "org-junit-jupiter-junit-jupiter"                 }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher",  version.ref = "org-junit-platform-launcher"                     }
 lz4                  = { module = "at.yawk.lz4:lz4-java",                           version.ref = "org-lz4-lz4-java"                                }
 mockito              = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "org-mockito-mockito-junit-jupiter"               }
 jmh-core             = { module = "org.openjdk.jmh:jmh-core",                       version.ref = "org-openjdk-jmh-jmh-core"                        }
@@ -83,8 +84,8 @@ bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection"
 
 [bundles]
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljna",    "consoleappender"   ]
-test            = ["junit",             "mockito",          "jmh-core",             "jmh-generator"     ]
-netty           = ["netty-epoll",       "netty-kqueue"                                                  ]
+test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator" ]
+netty           = ["netty-raknet",      "netty-epoll",      "netty-kqueue"                              ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]
