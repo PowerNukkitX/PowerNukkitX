@@ -216,11 +216,11 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
     @Getter
     public static class SurfaceHolder extends RandomizedObjectHolder {
 
-        private SimplexF simplexF;
+        private NormalNoise noise;
 
         public SurfaceHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
-            this.simplexF = new SimplexF(randomSourceProvider.identical(), 1f, 2 / 4f, 1 / 10f);
+            this.noise = new NormalNoise(randomSourceProvider.identical(), -6, new float[] {1f, 1f, 1f});
         }
     }
 

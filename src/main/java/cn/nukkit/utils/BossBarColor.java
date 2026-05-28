@@ -13,5 +13,6 @@ public enum BossBarColor {
     GREEN,
     YELLOW,
     PURPLE,
+    REBECCA_PURPLE,
     WHITE
 }

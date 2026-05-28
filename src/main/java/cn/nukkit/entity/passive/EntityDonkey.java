@@ -334,7 +334,7 @@ public class EntityDonkey extends EntityAnimal implements EntityWalkable, Invent
 
         if (currentTick % 2 == 0 && getRideJumping() != null && currentTick - getRideJumping().get() > 5 && this.isOnGround()) {
             this.setDataFlag(EntityFlag.STANDING, false);
-            this.rideJumping.set(-1);
+            this.getRideJumping().set(-1);
         }
         return b;
     }

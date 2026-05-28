@@ -8,23 +8,35 @@ import java.util.function.ToDoubleFunction;
 public final class CubicSpline<C> {
 
     private final ToDoubleFunction<C> coordinate;
-    private final List<Point<C>> points;
+    private final double[] locations;
+    private final Value<C>[] values;
+    private final double[] derivatives;
     private final double minValue;
     private final double maxValue;
 
+    @SuppressWarnings("unchecked")
     private CubicSpline(ToDoubleFunction<C> coordinate, List<Point<C>> points) {
         if (points.size() < 2) {
             throw new IllegalArgumentException("CubicSpline needs at least two points");
         }
 
         this.coordinate = coordinate;
-        this.points = List.copyOf(points.stream().sorted(Comparator.comparingDouble(Point::location)).toList());
+        List<Point<C>> sortedPoints = List.copyOf(points.stream().sorted(Comparator.comparingDouble(Point::location)).toList());
+        int pointCount = sortedPoints.size();
+        this.locations = new double[pointCount];
+        this.values = (Value<C>[]) new Value<?>[pointCount];
+        this.derivatives = new double[pointCount];
 
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
-        for (Point<C> point : this.points) {
-            min = Math.min(min, point.value().minValue());
-            max = Math.max(max, point.value().maxValue());
+        for (int i = 0; i < pointCount; i++) {
+            Point<C> point = sortedPoints.get(i);
+            Value<C> value = point.value();
+            this.locations[i] = point.location();
+            this.values[i] = value;
+            this.derivatives[i] = point.derivative();
+            min = Math.min(min, value.minValue());
+            max = Math.max(max, value.maxValue());
         }
         this.minValue = min;
         this.maxValue = max;
@@ -36,32 +48,26 @@ public final class CubicSpline<C> {
 
     public double apply(C input) {
         double x = coordinate.applyAsDouble(input);
-        Point<C> first = points.getFirst();
-        if (x < first.location()) {
-            return first.value().apply(input);
+        int range = findRangeForLocation(locations, x);
+        if (range < 0) {
+            return values[0].apply(input);
         }
 
-        Point<C> last = points.getLast();
-        if (x > last.location()) {
-            return last.value().apply(input);
+        int last = locations.length - 1;
+        if (range == last) {
+            return values[last].apply(input);
         }
 
-        int low = 0;
-        int high = points.size() - 1;
-        while (high - low > 1) {
-            int mid = (low + high) >>> 1;
-            if (x < points.get(mid).location()) {
-                high = mid;
-            } else {
-                low = mid;
-            }
-        }
-
-        Point<C> p0 = points.get(low);
-        Point<C> p1 = points.get(high);
-        double y0 = p0.value().apply(input);
-        double y1 = p1.value().apply(input);
-        return hermite(x, p0.location(), y0, p0.derivative(), p1.location(), y1, p1.derivative());
+        double loc0 = locations[range];
+        double loc1 = locations[range + 1];
+        double locDist = loc1 - loc0;
+        double k = (x - loc0) / locDist;
+        double y0 = values[range].apply(input);
+        double y1 = values[range + 1].apply(input);
+        double yDist = y1 - y0;
+        double p = derivatives[range] * locDist - yDist;
+        double q = -derivatives[range + 1] * locDist + yDist;
+        return y0 + k * yDist + k * (1.0 - k) * (p + k * (q - p));
     }
 
     public double minValue() {
@@ -72,17 +78,22 @@ public final class CubicSpline<C> {
         return maxValue;
     }
 
-    private static double hermite(double x, double x0, double y0, double m0, double x1, double y1, double m1) {
-        double t = (x - x0) / (x1 - x0);
-        double t2 = t * t;
-        double t3 = t2 * t;
+    private static int findRangeForLocation(double[] locations, double x) {
+        int min = 0;
+        int length = locations.length;
 
-        double h00 = 2 * t3 - 3 * t2 + 1;
-        double h10 = t3 - 2 * t2 + t;
-        double h01 = -2 * t3 + 3 * t2;
-        double h11 = t3 - t2;
+        while (length > 0) {
+            int half = length >>> 1;
+            int mid = min + half;
+            if (x < locations[mid]) {
+                length = half;
+            } else {
+                min = mid + 1;
+                length -= half + 1;
+            }
+        }
 
-        return h00 * y0 + h10 * (x1 - x0) * m0 + h01 * y1 + h11 * (x1 - x0) * m1;
+        return min - 1;
     }
 
     public interface Value<C> {

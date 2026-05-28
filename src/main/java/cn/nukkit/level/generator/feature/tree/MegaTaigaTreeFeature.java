@@ -12,6 +12,7 @@ import cn.nukkit.utils.random.RandomSourceProvider;
 public class MegaTaigaTreeFeature extends GriddedFeature {
 
     public static final String NAME = "minecraft:mega_taiga_surface_trees_feature";
+    public static final String ALIAS = "minecraft:scatter_taiga_plant_feature";
 
     @Override
     public ObjectGenerator getGenerator(RandomSourceProvider random) {
@@ -23,11 +24,6 @@ public class MegaTaigaTreeFeature extends GriddedFeature {
     @Override
     public boolean canSpawnHere(BiomeDefinition definition) {
         return definition.getTags().contains(BiomeTags.TAIGA);
-    }
-
-    @Override
-    public int getSplit() {
-        return 2;
     }
 
     @Override

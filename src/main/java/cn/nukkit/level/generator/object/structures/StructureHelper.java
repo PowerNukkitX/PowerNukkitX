@@ -118,4 +118,9 @@ public class StructureHelper extends BlockManager {
         if(state.getIdentifier().equals(BlockID.STRUCTURE_VOID)) return;
         super.setBlockStateAt(x + origen.x, y + origen.y, z + origen.z, state);
     }
+
+    @Override
+    public void merge(BlockManager manager) {
+        super.merge(manager);
+    }
 }

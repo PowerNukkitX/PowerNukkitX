@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.block.property.enums.WoodType;
 import cn.nukkit.item.Item;
+import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.PERSISTENT_BIT;
@@ -41,5 +42,10 @@ public class BlockCherryLeaves extends BlockLeaves {
     @Override
     public Item toSapling() {
         return Item.get(CHERRY_SAPLING);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.PINK_BLOCK_COLOR;
     }
 }

@@ -6,11 +6,16 @@ import cn.nukkit.network.protocol.types.RecipeUnlockingRequirement;
 import cn.nukkit.recipe.*;
 import cn.nukkit.recipe.descriptor.DefaultDescriptor;
 import cn.nukkit.recipe.descriptor.ItemDescriptor;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -125,12 +130,16 @@ public class CraftingDataPacket extends DataPacket {
                 }
                 case FURNACE, SMOKER, BLAST_FURNACE, CAMPFIRE, SOUL_CAMPFIRE -> {
                     SmeltingRecipe smelting = (SmeltingRecipe) recipe;
-                    Item input = smelting.getInput().toItem();
-                    byteBuf.writeVarInt(input.getRuntimeId());
-                    if (recipe.getType().name().endsWith("_DATA")) {
-                        byteBuf.writeVarInt(input.getDamage());
+
+                    byteBuf.writeString(smelting.getRecipeId());
+                    List<ItemDescriptor> ingredients = List.of(smelting.getInput());
+                    byteBuf.writeUnsignedVarInt(ingredients.size());
+                    for (var ingredient : ingredients) {
+                        byteBuf.writeRecipeIngredient(ingredient);
                     }
+                    byteBuf.writeUnsignedVarInt(1);
                     byteBuf.writeSlot(smelting.getResult(), true);
+                    byteBuf.writeUUID(UUID.randomUUID());
                     switch (recipe.getType()) {
                         case FURNACE -> byteBuf.writeString(CRAFTING_TAG_FURNACE);
                         case SMOKER -> byteBuf.writeString(CRAFTING_TAG_SMOKER);
@@ -138,6 +147,9 @@ public class CraftingDataPacket extends DataPacket {
                         case CAMPFIRE -> byteBuf.writeString(CRAFTING_TAG_CAMPFIRE);
                         case SOUL_CAMPFIRE -> byteBuf.writeString(CRAFTING_TAG_SOUL_CAMPFIRE);
                     }
+                    byteBuf.writeVarInt(0);
+                    this.writeRequirement(byteBuf, RecipeUnlockingRequirement.INVALID);
+                    byteBuf.writeUnsignedVarInt(recipeNetworkId++);
                 }
             }
         }

@@ -6,6 +6,7 @@ import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityPhysical;
+import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.event.player.PlayerHackDetectedEvent;
 import cn.nukkit.event.player.PlayerJumpEvent;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -36,6 +37,10 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
     @Override
     public void handle(@NotNull PlayerHandle playerHandle, @NotNull PlayerAuthInputPacket pk) {
         Player player = playerHandle.player;
+        if (!Float.isFinite(pk.position.x) || !Float.isFinite(pk.position.y) || !Float.isFinite(pk.position.z) || !Float.isFinite(pk.yaw) || !Float.isFinite(pk.headYaw) || !Float.isFinite(pk.pitch)) {
+            log.debug("Player {} sent invalid movement values (NaN or Infinite)", playerHandle.getUsername());
+            return;
+        }
         if (!pk.blockActionData.isEmpty()) {
             for (PlayerBlockActionData action : pk.blockActionData.values()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
@@ -45,20 +50,29 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
                 BlockVector3 blockPos = action.getPosition();
                 BlockFace blockFace = BlockFace.fromIndex(action.getFacing());
 
-                BlockVector3 lastBreakPos = playerHandle.getLastBlockAction() == null ? null : playerHandle.getLastBlockAction().getPosition();
+                if (playerHandle.getLastBlockAction() != null && playerHandle.getLastBlockAction().getAction() == PlayerActionType.PREDICT_DESTROY_BLOCK &&
+                        action.getAction() == PlayerActionType.CONTINUE_DESTROY_BLOCK) {
+                    playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                }
+
+                PlayerBlockActionData lastAction = playerHandle.getLastBlockAction();
+                BlockVector3 lastBreakPos = lastAction == null ? null : lastAction.getPosition();
                 if (lastBreakPos != null && (lastBreakPos.getX() != blockPos.getX() || lastBreakPos.getY() != blockPos.getY() || lastBreakPos.getZ() != blockPos.getZ())) {
-                    playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
+                    //When a block is broken instantaneous, the client sometimes just sends a START_DESTROY_BLOCK, but never completes or aborts it. On the client side, the block is also broken.
+                    double breakTime = player.getLevel().getBlock(lastBreakPos.asVector3()).calculateBreakTime(player.getInventory().getItemInMainHand(), player);
+                    boolean canCompleteBreak = Long.sum(player.lastBreak, (long) (breakTime * 1000)) <= System.currentTimeMillis() + 50;
+                    if(canCompleteBreak && lastAction.getAction() == PlayerActionType.START_DESTROY_BLOCK) {
+                        playerHandle.onBlockBreakComplete(lastBreakPos, BlockFace.fromIndex(lastAction.getFacing()));
+                    } else {
+                        playerHandle.onBlockBreakAbort(lastBreakPos.asVector3());
+                    }
                     playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
                 }
 
                 switch (action.getAction()) {
-                    case START_DESTROY_BLOCK,CONTINUE_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
-                    case ABORT_DESTROY_BLOCK, STOP_DESTROY_BLOCK ->
-                            playerHandle.onBlockBreakAbort(blockPos.asVector3());
-                    case PREDICT_DESTROY_BLOCK-> {
-                        playerHandle.onBlockBreakAbort(blockPos.asVector3());
-                        playerHandle.onBlockBreakComplete(blockPos, blockFace);
-                    }
+                    case START_DESTROY_BLOCK -> playerHandle.onBlockBreakStart(blockPos.asVector3(), blockFace);
+                    case ABORT_DESTROY_BLOCK -> playerHandle.onBlockBreakAbort(blockPos.asVector3());
+                    case PREDICT_DESTROY_BLOCK -> playerHandle.onBlockBreakComplete(blockPos, blockFace);
                 }
                 playerHandle.setLastBlockAction(action);
             }
@@ -222,21 +236,70 @@ public class PlayerAuthInputProcessor extends DataPacketProcessor<PlayerAuthInpu
         Location clientLoc = Location.fromObject(clientPosition, player.level, yaw, pitch, headYaw);
 
         Entity vehicle = null;
-        if((vehicle = player.getRiding()) != null && (vehicle.hasWASDControls())) {
-          if(!check(clientLoc, player)) return;
-          if(vehicle.onRiderInput(player, pk)) return;
+        if ((vehicle = player.getRiding()) != null && vehicle.hasWASDControls()) {
+            syncVehiclePositionFromRiderInput(player, vehicle, pk);
+            if (vehicle.onRiderInput(player, pk)) return;
         }
 
         playerHandle.offerMovementTask(clientLoc);
     }
 
-    private static boolean check(Location clientLoc, Player player) {
-        var distance = clientLoc.distanceSquared(player);
-        var updatePosition = (float) Math.sqrt(distance) > 0.1f;
-        var updateRotation = (float) Math.abs(player.getPitch() - clientLoc.pitch) > 1
-                || (float) Math.abs(player.getYaw() - clientLoc.yaw) > 1
-                || (float) Math.abs(player.getHeadYaw() - clientLoc.headYaw) > 1;
-        return updatePosition || updateRotation;
+    private static void syncVehiclePositionFromRiderInput(Player player, Entity vehicle, PlayerAuthInputPacket pk) {
+        if (vehicle == null || !vehicle.isAlive()) return;
+        if (pk.predictedVehicle == 0) return;
+        if (pk.predictedVehicle != vehicle.getId()) return;
+
+        if (!Float.isFinite(pk.position.x) || !Float.isFinite(pk.position.y) || !Float.isFinite(pk.position.z)) {
+            log.debug("Player {} sent invalid position values (NaN or Infinite)", player.getName());
+            return;
+        }
+
+        if (pk.vehicleRotation != null && (!Float.isFinite(pk.vehicleRotation.x) || !Float.isFinite(pk.vehicleRotation.y))) {
+            log.debug("Player {} sent invalid vehicle rotation values (NaN or Infinite)", player.getName());
+            return;
+        }
+
+        Vector3 packetPosition = pk.position.asVector3();
+        Vector3 vehiclePosition = packetPosition;
+        EntityBoat boat = vehicle instanceof EntityBoat entityBoat ? entityBoat : null;
+
+        if (boat != null) {
+            double boatY = packetPosition.y - boat.getBaseOffset();
+            vehiclePosition = new Vector3(packetPosition.x, boatY, packetPosition.z);
+        }
+
+        double vehiclePitch = vehicle.getPitch();
+        double vehicleYaw = vehicle.getYaw();
+
+        if (pk.vehicleRotation != null) {
+            vehiclePitch = pk.vehicleRotation.x % 360;
+            vehicleYaw = pk.vehicleRotation.y % 360;
+        } else {
+            vehiclePitch = pk.pitch % 360;
+            vehicleYaw = pk.yaw % 360;
+        }
+
+        if (vehicleYaw < 0) vehicleYaw += 360;
+        if (vehiclePitch < 0) vehiclePitch += 360;
+
+        double distanceSquared = vehiclePosition.distanceSquared(vehicle);
+
+        if (distanceSquared > 0.0001d) {
+            vehicle.setPosition(vehiclePosition);
+        }
+
+        vehicle.setRotation(vehicleYaw, vehiclePitch);
+        vehicle.setHeadYaw(vehicleYaw);
+        vehicle.updateMovement();
+
+        if (boat != null) {
+            boat.updatePassengers(false, false);
+        } else {
+            player.setPosition(packetPosition);
+        }
+
+        player.setRotation(pk.yaw, pk.pitch);
+        player.setHeadYaw(pk.headYaw);
     }
 
     @Override

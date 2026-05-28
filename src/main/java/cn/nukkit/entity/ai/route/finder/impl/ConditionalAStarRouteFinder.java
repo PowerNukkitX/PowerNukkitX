@@ -19,6 +19,7 @@ public class ConditionalAStarRouteFinder implements IRouteFinder {
     private final EntityIntelligent entity;
     private Object2ObjectArrayMap<Predicate<EntityIntelligent>, IRouteFinder> routeFinders = new Object2ObjectArrayMap<>();
 
+    @SafeVarargs
     public ConditionalAStarRouteFinder(EntityIntelligent entity, Pair<Predicate<EntityIntelligent>, IRouteFinder>... routeFinders) {
         this.entity = entity;
         Arrays.stream(routeFinders).forEach(pair -> this.routeFinders.put(pair.first(), pair.second()));

@@ -310,8 +310,8 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     }
 
     @Override
-    public boolean dismountEntity(Entity entity, boolean sendLinks) {
-        boolean result = super.dismountEntity(entity, sendLinks);
+    public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
+        boolean result = super.dismountEntity(entity, sendLinks, riderInitiated);
 
         if (result && this.passengers.isEmpty()) {
             this.setHomePosition();

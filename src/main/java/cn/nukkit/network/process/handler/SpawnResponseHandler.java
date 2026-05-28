@@ -48,7 +48,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
         }
 
         itemRegistryPacket.setEntries(entries.toArray(ItemRegistryPacket.Entry.EMPTY_ARRAY));
-        player.dataPacket(itemRegistryPacket);
+        player.dataPacketImmediately(itemRegistryPacket);
 
         log.debug("Sending actor identifiers");
         player.dataPacket(new AvailableEntityIdentifiersPacket());
@@ -151,7 +151,7 @@ public class SpawnResponseHandler extends BedrockSessionPacketHandler {
 
     @Override
     public void handle(RequestChunkRadiusPacket pk) {
-        player.setViewDistance(Math.max(2, player.getViewDistance()));
+        player.setViewDistance(pk.radius);
     }
 
     @Override

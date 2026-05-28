@@ -5,6 +5,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
+import javax.annotation.Nullable;
+
 
 public class WaterFrostEvent extends BlockEvent implements Cancellable {
 
@@ -16,12 +18,12 @@ public class WaterFrostEvent extends BlockEvent implements Cancellable {
 
     protected final Entity entity;
 
-    public WaterFrostEvent(Block block, Entity entity) {
+    public WaterFrostEvent(Block block, @Nullable Entity entity) {
         super(block);
         this.entity = entity;
     }
 
-    public Entity getEntity() {
+    public @Nullable Entity getEntity() {
         return entity;
     }
 }

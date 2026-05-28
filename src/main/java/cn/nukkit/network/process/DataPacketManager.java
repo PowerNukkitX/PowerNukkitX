@@ -28,6 +28,7 @@ public final class DataPacketManager {
                 new MovePlayerProcessor(),
                 new PlayerAuthInputProcessor(),
                 new RequestAbilityProcessor(),
+                new RequestChunkRadiusProcessor(),
                 new MobEquipmentProcessor(),
                 new PlayerActionProcessor(),
                 new ModalFormResponseProcessor(),

@@ -11,20 +11,14 @@ import cn.nukkit.blockentity.BlockEntityBrushable;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.generator.object.BlockManager;
-import cn.nukkit.level.generator.object.RuledObjectGenerator;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.jigsaw.JigsawStructure;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.network.protocol.types.biome.BiomeDefinition;
-import cn.nukkit.registry.Registries;
-import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.random.RandomSourceProvider;
-import cn.nukkit.utils.random.Xoroshiro128;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +48,7 @@ import static cn.nukkit.block.BlockID.YELLOW_STAINED_GLASS_PANE;
  * @author Buddelbubi
  * @since 2026/03/31
  */
-public class TrailRuinsStructure extends JigsawStructure implements RuledObjectGenerator {
+public class TrailRuinsStructure extends JigsawStructure {
 
     private static final StructurePoolCollection COLLECTION;
     private final Map<BlockVector3, TrailRuinsLoot> pendingBrushLoot = new HashMap<>();
@@ -268,30 +262,6 @@ public class TrailRuinsStructure extends JigsawStructure implements RuledObjectG
 
     private static StructurePool.Entry entry(String structureName, int weight) {
         return new StructurePool.Entry(structureName, weight);
-    }
-
-    @Override
-    public String getName() {
-        return "trail_ruins";
-    }
-
-    protected static final int MIN_DISTANCE = 8;
-    protected static final int MAX_DISTANCE = 34;
-
-    @Override
-    public boolean canGenerateAt(Location location) {
-        int x = location.getFloorX();
-        int y = location.getFloorY();
-        int z = location.getFloorZ();
-        int chunkX = location.getChunkX();
-        int chunkZ = location.getChunkZ();
-        Level level = location.getLevel();
-        Xoroshiro128 random = new Xoroshiro128(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-
-        int biome = level.getBiomeId(x, y, z);
-        BiomeDefinition definition = Registries.BIOME.get(biome);
-        return definition.getTags().contains(BiomeTags.HAS_STRUCTURE_TRAIL_RUINS) &&
-                ((chunkX < 0 ? (chunkX - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkX / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkX && (chunkZ < 0 ? (chunkZ - MAX_DISTANCE - 1) / MAX_DISTANCE : chunkZ / MAX_DISTANCE) * MAX_DISTANCE + random.nextBoundedInt(MAX_DISTANCE - MIN_DISTANCE) == chunkZ);
     }
 
     private enum TrailRuinsLoot {

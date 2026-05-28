@@ -25,7 +25,9 @@ public class NormalPopulatorStage extends PopulatorStage {
             TrailRuinsPopulator.NAME,
             TrialChambersPopulator.NAME,
             VillagePopulator.NAME,
-            PopulatorRuinedPortal.NAME
+            WoodlandMansionPopulator.NAME,
+            PopulatorRuinedPortal.NAME,
+            AncientCityPopulator.NAME
     });
 
     @Override

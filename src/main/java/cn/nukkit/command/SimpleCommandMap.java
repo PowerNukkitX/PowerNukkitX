@@ -108,7 +108,6 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new FogCommand("fog"));
         this.register("nukkit", new PlayAnimationCommand("playanimation"));
         this.register("nukkit", new WorldCommand("world"));
-        this.register("nukkit", new TpsCommand("tps"));
         this.register("nukkit", new TickingAreaCommand("tickingarea"));
         this.register("nukkit", new TellrawCommand("tellraw"));
         this.register("nukkit", new TitlerawCommand("titleraw"));
@@ -412,10 +411,11 @@ public class SimpleCommandMap implements CommandMap {
         String[] args = parsed.toArray(EmptyArrays.EMPTY_STRINGS);
         Command target = this.getCommand(sentCommandLabel);
 
-        if (target == null) {
+        if (target == null || target.isUnregistered()) {
             sender.sendCommandOutput(new CommandOutputContainer(TextFormat.RED + "%commands.generic.unknown", new String[]{sentCommandLabel}, 0));
             return -1;
         }
+
         int output;
         try {
             if (target.hasParamTree()) {

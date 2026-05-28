@@ -10,6 +10,8 @@ import cn.nukkit.block.copper.lantern.*;
 import cn.nukkit.block.copper.lightningrod.*;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.block.customblock.CustomBlockDefinition;
+import cn.nukkit.block.dispenser.BlockDispenser;
+import cn.nukkit.block.dispenser.BlockDropper;
 import cn.nukkit.block.shelf.*;
 import cn.nukkit.education.Education;
 import cn.nukkit.item.ItemBlock;
@@ -51,7 +53,41 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
             "minecraft:deprecated_purpur_block_1",
-            "minecraft:deprecated_purpur_block_2"
+            "minecraft:deprecated_purpur_block_2",
+            "minecraft:polished_sulfur",
+            "minecraft:polished_sulfur_wall",
+            "minecraft:cinnabar_wall",
+            "minecraft:sulfur_bricks",
+            "minecraft:sulfur_brick_double_slab",
+            "minecraft:sulfur_slab",
+            "minecraft:sulfur_stairs",
+            "minecraft:cinnabar_double_slab",
+            "minecraft:polished_cinnabar_wall",
+            "minecraft:polished_cinnabar_wall",
+            "minecraft:polished_sulfur_stairs",
+            "minecraft:cinnabar_brick_double_slab",
+            "minecraft:polished_cinnabar_double_slab",
+            "minecraft:sulfur_wall",
+            "minecraft:chiseled_sulfur",
+            "minecraft:polished_cinnabar_slab",
+            "minecraft:polished_sulfur_double_slab",
+            "minecraft:sulfur_double_slab",
+            "minecraft:potent_sulfur",
+            "minecraft:cinnabar_brick_stairs",
+            "minecraft:cinnabar",
+            "minecraft:chiseled_cinnabar",
+            "minecraft:cinnabar_stairs",
+            "minecraft:sulfur_brick_wall",
+            "minecraft:polished_sulfur_slab",
+            "minecraft:sulfur",
+            "minecraft:sulfur_brick_slab",
+            "minecraft:polished_cinnabar_stairs",
+            "minecraft:cinnabar_brick_wall",
+            "minecraft:cinnabar_slab",
+            "minecraft:sulfur_brick_stairs",
+            "minecraft:cinnabar_bricks",
+            "minecraft:cinnabar_brick_slab",
+            "minecraft:polished_cinnabar"
     );
 
     @Override
@@ -460,6 +496,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(GLOWINGOBSIDIAN, BlockGlowingobsidian.class);
         register0(GLOWSTONE, BlockGlowstone.class);
         register0(GOLD_BLOCK, BlockGoldBlock.class);
+        register0(GOLDEN_DANDELION, BlockGoldenDandelion.class);
         register0(GOLD_ORE, BlockGoldOre.class);
         register0(GOLDEN_RAIL, BlockGoldenRail.class);
         register0(GRANITE, BlockGranite.class);

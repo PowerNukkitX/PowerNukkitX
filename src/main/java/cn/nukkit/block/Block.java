@@ -249,6 +249,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * @return The update type to continue ticking, or 0 to stop future ticks.
      */
     public int onUpdate(int type) {
+        if (isTickingDisabled()) return 0;
         if (type != Level.BLOCK_UPDATE_SCHEDULED) return 0;
 
         CustomBlockDefinition def = getCustomDefinition();
@@ -522,6 +523,27 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
 
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
+    }
+
+    /**
+     * Returns the level of snowlogging for this block.
+     * 0 means the block cannot be snowlogged.
+     */
+    public int getSnowloggingLevel() {
+        return 0;
+    }
+
+    /**
+     * Checks if this block is snowlogged.
+     * Returns {@code true} if this block supports snowlogging and has a snow layer on layer 0.
+     */
+    public boolean isSnowLogged() {
+        if (getSnowloggingLevel() == 0) return false;
+
+        Block snow = this.getLevelBlockAtLayer(0);
+        if (snow == null || snow.isAir()) return false;
+
+        return snow instanceof BlockSnowLayer;
     }
 
     /**
@@ -1751,6 +1773,42 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             return BlockRegistry.getCustomBlockDefinitionByIdStatic(customBlock.getId());
         }
         return null;
+    }
+
+    public static boolean isTickingDisabled(Level level, String id) {
+        if (level == null) return false;
+
+        List<String> disabledList = level.getServer().getSettings().chunkSettings().disableBlockTicking();
+        if (disabledList == null || disabledList.isEmpty()) return false;
+
+        String normalizedId = id.toLowerCase();
+        if (normalizedId.startsWith("minecraft:")) {
+            normalizedId = normalizedId.substring(10);
+        }
+        if (normalizedId.startsWith("flowing_")) {
+            normalizedId = normalizedId.substring(8);
+        }
+
+        for (String disabledId : disabledList) {
+            String normalizedDisabled = disabledId.toLowerCase();
+
+            if (normalizedDisabled.startsWith("minecraft:")) {
+                normalizedDisabled = normalizedDisabled.substring(10);
+            }
+            if (normalizedDisabled.startsWith("flowing_")) {
+                normalizedDisabled = normalizedDisabled.substring(8);
+            }
+
+            if (normalizedId.equals(normalizedDisabled)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isTickingDisabled() {
+        return isTickingDisabled(this.getLevel(), getId());
     }
 
     @Override

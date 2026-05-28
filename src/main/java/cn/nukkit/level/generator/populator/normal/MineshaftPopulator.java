@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.populator.normal;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockStone;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
@@ -53,7 +52,7 @@ public class MineshaftPopulator extends Populator {
                         if(level.getBlock(block).getId() == Block.WATER) {
                             manager.setBlockStateAt(block, BlockWater.PROPERTIES.getDefaultState());
                         } else if(block.up().getId() == Block.WATER) {
-                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data.chunkGenData.get().surfaceMaterial.get().seaFloorBlock));
+                            manager.setBlockStateAt(block, Registries.BLOCKSTATE.get(Registries.BIOME.get(level.getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ())).data.chunkGenData.get().surfaceBuilderData.get().surfaceMaterial.get().seaFloorBlock));
                         }
                     }
                 }
@@ -92,7 +91,7 @@ public class MineshaftPopulator extends Populator {
                         piece.move(0, offset, 0);
                     }
                 } else {
-                    this.moveBelowSeaLevel(64, this.random, 10);
+                    this.moveBelowSeaLevel(this.random, 10);
                 }
             }
         }

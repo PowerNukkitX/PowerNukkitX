@@ -47,6 +47,7 @@ public class ObjectJungleTree extends TreeGenerator {
         BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
 
         int i = rand.nextInt(maxTreeHeight) + this.minTreeHeight;
+        boolean treeWithVines = rand.nextInt(TREE_WITH_VINES_CHANCE) == 0;
         boolean flag = true;
 
         //Check the height of the tree and if exist block in it
@@ -120,20 +121,24 @@ public class ObjectJungleTree extends TreeGenerator {
                             //Add tree trunks
                             level.setBlockStateAt(up, metaWood);
                             if (j3 > 0) {
-                                if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(-1, j3, 0))) {
-                                    this.addVine(level, position.add(-1, j3, 0), 8);
-                                }
+                                if (treeWithVines) {
+                                    this.addVinesAroundLog(level, up.x, up.y, up.z);
+                                } else {
+                                    if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(-1, j3, 0))) {
+                                        this.addVine(level, position.add(-1, j3, 0), 8);
+                                    }
 
-                                if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(1, j3, 0))) {
-                                    this.addVine(level, position.add(1, j3, 0), 2);
-                                }
+                                    if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(1, j3, 0))) {
+                                        this.addVine(level, position.add(1, j3, 0), 2);
+                                    }
 
-                                if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(0, j3, -1))) {
-                                    this.addVine(level, position.add(0, j3, -1), 1);
-                                }
+                                    if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(0, j3, -1))) {
+                                        this.addVine(level, position.add(0, j3, -1), 1);
+                                    }
 
-                                if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(0, j3, 1))) {
-                                    this.addVine(level, position.add(0, j3, 1), 4);
+                                    if (rand.nextInt(3) > 0 && isAirBlock(level, position.add(0, j3, 1))) {
+                                        this.addVine(level, position.add(0, j3, 1), 4);
+                                    }
                                 }
                             }
                         }

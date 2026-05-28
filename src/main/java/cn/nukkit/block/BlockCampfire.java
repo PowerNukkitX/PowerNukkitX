@@ -169,11 +169,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             return;
         }
 
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
-        Server.getInstance().getPluginManager().callEvent(ev);
-        if (!ev.isCancelled() && entity.isAlive()) {
-            entity.setOnFire(ev.getDuration());
-        }
+        entity.attack(getDamageEvent(entity));
     }
 
     protected EntityDamageEvent getDamageEvent(Entity entity) {

@@ -58,7 +58,7 @@ public class InteractProcessor extends DataPacketProcessor<InteractPacket> {
                 if (!targetEntity.isRideable() || player.riding == null) {
                     return;
                 }
-                player.riding.dismountEntity(player);
+                player.riding.dismountEntity(player, true, true);
             }
             case InteractPacket.ACTION_OPEN_INVENTORY -> {
                 if (targetEntity.isRideable()) {

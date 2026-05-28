@@ -3,7 +3,6 @@ package cn.nukkit.network.process.processor;
 import cn.nukkit.Player;
 import cn.nukkit.PlayerHandle;
 import cn.nukkit.Server;
-import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.event.player.PlayerAnimationEvent;
 import cn.nukkit.network.process.DataPacketProcessor;
 import cn.nukkit.network.protocol.AnimatePacket;
@@ -35,13 +34,8 @@ public class AnimateProcessor extends DataPacketProcessor<AnimatePacket> {
         }
         animation = animationEvent.getAnimationType();
 
-        switch (animation) {
-            case ROW_RIGHT, ROW_LEFT -> {
-                if (player.riding instanceof EntityBoat boat) {
-                    boat.onPaddle(animation, 1); // TODO: Paddle time got removed from packet. Needs debugging!!
-                }
-                return;
-            }
+        if (animation == AnimatePacket.Action.SWING_ARM) {
+            player.interruptShieldBlockingForAttack();
         }
 
         pk = new AnimatePacket();

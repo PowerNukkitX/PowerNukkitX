@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,12 +29,28 @@ public class BlockBush extends BlockFlowable {
     }
 
     @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         if (BlockSweetBerryBush.isSupportValid(down())) {
             this.getLevel().setBlock(block, this, true);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        if (item.isShears() || item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
+            return new Item[]{
+                    toItem()
+            };
+        }
+
+        return Item.EMPTY_ARRAY;
     }
 
 }

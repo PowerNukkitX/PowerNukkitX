@@ -31,10 +31,9 @@ public abstract class BlockFallable extends BlockSolid {
                 if (event.isCancelled()) {
                     return type;
                 }
-
                 drop(new CompoundTag());
+                return type;
             }
-            return type;
         }
         return 0;
     }

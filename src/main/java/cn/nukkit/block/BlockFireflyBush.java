@@ -40,4 +40,9 @@ public class BlockFireflyBush extends BlockFlowable {
     public int getLightLevel() {
         return 2;
     }
+
+    @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
 }

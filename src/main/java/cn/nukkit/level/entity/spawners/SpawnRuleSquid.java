@@ -5,13 +5,14 @@ import cn.nukkit.level.entity.condition.ConditionAll;
 import cn.nukkit.level.entity.condition.ConditionAny;
 import cn.nukkit.level.entity.condition.ConditionBiomeFilter;
 import cn.nukkit.level.entity.condition.ConditionDensityLimit;
+import cn.nukkit.level.entity.condition.ConditionPopulationControl;
 import cn.nukkit.level.entity.condition.ConditionSpawnUnderwater;
 import cn.nukkit.tags.BiomeTags;
 
 public class SpawnRuleSquid extends SpawnRule {
 
     public SpawnRuleSquid() {
-        super(Entity.SQUID, 2, 4,
+        super(Entity.SQUID, 2, 4, 8,
                 new ConditionSpawnUnderwater(),
                 new ConditionAny(
                         new ConditionAll(
@@ -22,8 +23,9 @@ public class SpawnRuleSquid extends SpawnRule {
                                 new ConditionBiomeFilter(BiomeTags.RIVER),
                                 new ConditionDensityLimit(Entity.SQUID, 2, 64)
                         )
-                )
-                );
+                ),
+                new ConditionPopulationControl(ConditionPopulationControl.Category.ANIMAL)
+        );
     }
 
 }

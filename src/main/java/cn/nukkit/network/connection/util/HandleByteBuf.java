@@ -8,13 +8,20 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.math.*;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2f;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.LittleEndianByteBufInputStreamNBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.network.protocol.types.*;
+import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.ExperimentEntry;
+import cn.nukkit.network.protocol.types.PlayerInputTick;
+import cn.nukkit.network.protocol.types.PropertySyncData;
+import cn.nukkit.network.protocol.types.ScriptDebugShapeType;
 import cn.nukkit.network.protocol.types.ddui.DataStorePropertyType;
 import cn.nukkit.network.protocol.types.ddui.DataStorePropertyValue;
 import cn.nukkit.network.protocol.types.ddui.DataStoreUpdate;
@@ -39,8 +46,6 @@ import cn.nukkit.utils.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
-import java.util.HashMap;
-import java.util.Map;
 import io.netty.util.ByteProcessor;
 import io.netty.util.internal.ObjectUtil;
 import io.netty.util.internal.StringUtil;
@@ -1127,7 +1132,7 @@ public class HandleByteBuf extends ByteBuf {
             return Item.AIR;
         }
 
-        int count = readShortLE();
+        int count = readUnsignedShortLE();
         int damage = readUnsignedVarInt();
 
         Integer netId = null;
@@ -1188,7 +1193,7 @@ public class HandleByteBuf extends ByteBuf {
                 blockingTicks = stream.readLong();//blockingTicks
             }
             if (compoundTag != null) {
-                if(compoundTag.contains("__DamageConflict__")) {
+                if (compoundTag.contains("__DamageConflict__")) {
                     compoundTag.put("Damage", compoundTag.removeAndGet("__DamageConflict__"));
                 }
                 item.setCompoundTag(compoundTag);
@@ -1239,6 +1244,181 @@ public class HandleByteBuf extends ByteBuf {
         }
 
         writeVarInt(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0);
+
+        ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+        try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
+
+            int data = item.getDamage();
+            if (item.canTakeDamage() && data != 0) {
+                byte[] nbt = item.getCompoundTag();
+                CompoundTag tag;
+                if (nbt == null || nbt.length == 0) {
+                    tag = new CompoundTag();
+                } else {
+                    tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN);
+                }
+                if (tag.contains("Damage")) {
+                    tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
+                }
+                tag.putInt("Damage", data);
+                stream.writeShort(-1);
+                stream.writeByte(1); // Hardcoded in current version
+                stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+            } else if (item.hasCompoundTag()) {
+                stream.writeShort(-1);
+                stream.writeByte(1); // Hardcoded in current version
+                stream.write(NBTIO.write(item.getNamedTag(), ByteOrder.LITTLE_ENDIAN));
+            } else {
+                userDataBuf.writeShortLE(0);
+            }
+
+            List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");//write canPlace
+            stream.writeInt(canPlaceOn.size());
+            for (String string : canPlaceOn) {
+                stream.writeUTF(string);
+            }
+
+            List<String> canDestroy = extractStringList(item, "CanDestroy");//write canBreak
+            stream.writeInt(canDestroy.size());
+            for (String string : canDestroy) {
+                stream.writeUTF(string);
+            }
+
+            if (Objects.equals(item.getId(), ItemID.SHIELD)) {
+                stream.writeLong(0);//BlockingTicks // todo add BlockingTicks to Item Class. Find out what Blocking Ticks are
+            }
+
+            byte[] bytes = Utils.convertByteBuf2Array(userDataBuf);
+            writeByteArray(bytes);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write item user data", e);
+        } finally {
+            userDataBuf.release();
+        }
+    }
+
+    public Item readCerealSlot() {
+        return this.readCerealSlot(false);
+    }
+
+    public Item readCerealSlot(boolean instanceItem) {
+        int runtimeId = readShortLE();
+        int count = readUnsignedShortLE();
+        int damage = readUnsignedVarInt();
+
+        Integer netId = null;
+        if (!instanceItem) {
+            boolean hasNetId = readBoolean();
+            if (hasNetId) {
+                this.readUnsignedVarInt(); // net id type
+                netId = this.readVarInt();
+            }
+        }
+        int blockRuntimeId = this.readUnsignedVarInt();
+
+        long blockingTicks = 0;
+        CompoundTag compoundTag = null;
+        String[] canPlace;
+        String[] canBreak;
+        Item item;
+        if (runtimeId != 0) {
+            if (blockRuntimeId == 0) {
+                item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+            } else {
+                item = Item.get(Registries.ITEM_RUNTIMEID.getIdentifier(runtimeId), damage, count);
+                BlockState blockState = Registries.BLOCKSTATE.get(blockRuntimeId);
+                if (blockState != null) {
+                    item.setBlockUnsafe(blockState.toBlock());
+                }
+            }
+        } else {
+            item = Item.AIR;
+        }
+
+        if (netId != null) {
+            item.setNetId(netId);
+        }
+
+        byte[] bytes = new byte[readUnsignedVarInt()];
+        readBytes(bytes);
+        ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
+        buf.writeBytes(bytes);
+        if (!buf.isReadable()) {
+            return item;
+        }
+        try (LittleEndianByteBufInputStream stream = new LittleEndianByteBufInputStream(buf)) {
+            int nbtSize = stream.readShort();
+            if (nbtSize > 0) {
+                LittleEndianByteBufInputStreamNBTInputStream ls = new LittleEndianByteBufInputStreamNBTInputStream(stream);
+                compoundTag = (CompoundTag) ls.readTag();
+            } else if (nbtSize == -1) {
+                int tagCount = stream.readUnsignedByte();
+                if (tagCount != 1) throw new IllegalArgumentException("Expected 1 tag but got " + tagCount);
+                LittleEndianByteBufInputStreamNBTInputStream ls = new LittleEndianByteBufInputStreamNBTInputStream(stream);
+                compoundTag = (CompoundTag) ls.readTag();
+            }
+
+            canPlace = new String[stream.readInt()];
+            for (int i = 0; i < canPlace.length; i++) {
+                canPlace[i] = stream.readUTF();
+            }
+
+            canBreak = new String[stream.readInt()];
+            for (int i = 0; i < canBreak.length; i++) {
+                canBreak[i] = stream.readUTF();
+            }
+
+            if (Objects.equals(item.getId(), ItemID.SHIELD)) {
+                blockingTicks = stream.readLong();//blockingTicks
+            }
+            if (compoundTag != null) {
+                if (compoundTag.contains("__DamageConflict__")) {
+                    compoundTag.put("Damage", compoundTag.removeAndGet("__DamageConflict__"));
+                }
+                item.setCompoundTag(compoundTag);
+            }
+            Block[] canPlaces = new Block[canPlace.length];
+            for (int i = 0; i < canPlace.length; i++) {
+                canPlaces[i] = Block.get(canPlace[i]);
+            }
+            if (canPlaces.length > 0) {
+                item.setCanDestroy(canPlaces);
+            }
+            Block[] canBreaks = new Block[canBreak.length];
+            for (int i = 0; i < canBreak.length; i++) {
+                canBreaks[i] = Block.get(canBreak[i]);
+            }
+            if (canBreaks.length > 0) {
+                item.setCanPlaceOn(canBreaks);
+            }
+            return item;
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read item user data", e);
+        } finally {
+            buf.release();
+        }
+    }
+
+    public void writeCerealSlot(Item item) {
+        this.writeCerealSlot(item, false);
+    }
+
+    public void writeCerealSlot(Item item, boolean instanceItem) {
+        int networkId = item.getRuntimeId();
+        writeShortLE(networkId);//write item runtimeId
+        writeShortLE(item.getCount());//write item count
+        writeUnsignedVarInt(item.getDamage());//write damage value
+
+
+        if (!instanceItem) {
+            writeBoolean(item.isUsingNetId()); // isUsingNetId
+            if (item.isUsingNetId()) {
+                writeVarInt(0); // net id type
+                writeVarInt(item.getNetId()); // netId
+            }
+        }
+
+        writeUnsignedVarInt(item.isBlock() ? item.getBlockUnsafe().getRuntimeId() : 0);
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
@@ -1626,7 +1806,8 @@ public class HandleByteBuf extends ByteBuf {
 
     protected ItemStackRequestAction readRequestActionData(ItemStackRequestActionType type) {
         return switch (type) {
-            case CRAFT_REPAIR_AND_DISENCHANT -> new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
+            case CRAFT_REPAIR_AND_DISENCHANT ->
+                    new CraftGrindstoneAction(readUnsignedVarInt(), readByte(), readVarInt());
             case CRAFT_LOOM -> new CraftLoomAction(readString(), readUnsignedByte());
             case CRAFT_RECIPE_AUTO -> {
                 int recipeId = readUnsignedVarInt();
@@ -1912,7 +2093,7 @@ public class HandleByteBuf extends ByteBuf {
     }
 
     public void writeExperiments(List<ExperimentEntry> experiments) {
-        for(ExperimentEntry experiment : experiments) {
+        for (ExperimentEntry experiment : experiments) {
             this.writeString(experiment.name());
             this.writeBoolean(experiment.enabled());
         }

@@ -38,6 +38,11 @@ public class BlockNetherSprouts extends BlockHanging {
     }
 
     @Override
+    public int getSnowloggingLevel() {
+        return 1;
+    }
+
+    @Override
     public int getBurnChance() {
         return 5;
     }

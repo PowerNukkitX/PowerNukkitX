@@ -46,7 +46,6 @@ public class IcebergFeature extends GenerateFeature {
 
         int originX = (chunkX << 4) + nextIntExclusive(16);
         int originZ = (chunkZ << 4) + nextIntExclusive(16);
-        int originY = SEA_LEVEL + 1;
         if (!isValidIcebergBiome(level.getBiomeId(originX, SEA_LEVEL, originZ))) {
             return;
         }
@@ -80,7 +79,7 @@ public class IcebergFeature extends GenerateFeature {
                             : heightDependentRadiusRound(yOff, overWaterHeight, width);
                     if (isEllipse || xo < radius) {
                         generateIcebergBlock(
-                                manager, originX, originY, originZ, overWaterHeight, xo, yOff, zo, radius, a,
+                                manager, originX, SEA_LEVEL, originZ, overWaterHeight, xo, yOff, zo, radius, a,
                                 isEllipse, shapeEllipseC, shapeAngle, snowOnTop, localIceberg
                         );
                     }
@@ -95,7 +94,7 @@ public class IcebergFeature extends GenerateFeature {
                     int radius = heightDependentRadiusSteep(-yOff, underWaterHeight, width);
                     if (xo < radius) {
                         generateIcebergBlock(
-                                manager, originX, originY, originZ, underWaterHeight, xo, yOff, zo, radius, newA,
+                                manager, originX, SEA_LEVEL, originZ, underWaterHeight, xo, yOff, zo, radius, newA,
                                 isEllipse, shapeEllipseC, shapeAngle, snowOnTop, localIceberg
                         );
                     }
@@ -103,11 +102,11 @@ public class IcebergFeature extends GenerateFeature {
             }
         }
 
-        smooth(localIceberg, manager, originX, originY, originZ, width, overWaterHeight, isEllipse, shapeEllipseA);
+        smooth(localIceberg, manager, originX, SEA_LEVEL, originZ, width, overWaterHeight, isEllipse, shapeEllipseA);
 
         boolean doCutOut = isEllipse ? nukkitRandom.nextDouble() > 0.1 : nukkitRandom.nextDouble() > 0.7;
         if (doCutOut) {
-            generateCutOut(manager, width, overWaterHeight, originX, originY, originZ, isEllipse, shapeEllipseA, shapeAngle, shapeEllipseC);
+            generateCutOut(manager, width, overWaterHeight, originX, SEA_LEVEL, originZ, isEllipse, shapeEllipseA, shapeAngle, shapeEllipseC);
         }
 
         generateBlueIce(manager, originX, originZ);

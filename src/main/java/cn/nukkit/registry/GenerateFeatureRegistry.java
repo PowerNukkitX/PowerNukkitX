@@ -10,7 +10,9 @@ import cn.nukkit.level.generator.feature.ore.*;
 import cn.nukkit.level.generator.feature.river.ClayGenerateFeature;
 import cn.nukkit.level.generator.feature.river.GravelGenerateFeature;
 import cn.nukkit.level.generator.feature.river.SandGenerateFeature;
+import cn.nukkit.level.generator.feature.terrain.CaveExtraUndergroundFeature;
 import cn.nukkit.level.generator.feature.terrain.CaveGenerateFeature;
+import cn.nukkit.level.generator.feature.terrain.CanyonCarverFeature;
 import cn.nukkit.level.generator.feature.tree.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
@@ -72,6 +74,8 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(GravelGenerateFeature.NAME, GravelGenerateFeature.class);
             this.register(SandGenerateFeature.NAME, SandGenerateFeature.class);
             this.register(CaveGenerateFeature.NAME, CaveGenerateFeature.class);
+            this.register(CaveExtraUndergroundFeature.NAME, CaveExtraUndergroundFeature.class);
+            this.register(CanyonCarverFeature.NAME, CanyonCarverFeature.class);
             this.register(FlowerForestFoliageFeature.NAME, FlowerForestFoliageFeature.class);
             this.register(ForestFlowerFoliageFeature.NAME, ForestFlowerFoliageFeature.class);
             this.register(SeagrassRiverGenerateFeature.NAME, SeagrassRiverGenerateFeature.class);
@@ -90,6 +94,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(IcePatchFeature.NAME, IcePatchFeature.class);
             this.register(IcebergFeature.NAME, IcebergFeature.class);
             this.register(MegaTaigaTreeFeature.NAME, MegaTaigaTreeFeature.class);
+            this.register(MegaTaigaTreeFeature.ALIAS, MegaTaigaTreeFeature.class);
             this.register(CherryTreeFeature.NAME, CherryTreeFeature.class);
             this.register(BirchForestTreeFeature.NAME, BirchForestTreeFeature.class);
             this.register(ForestFoliageFeature.NAME, ForestFoliageFeature.class);
@@ -137,7 +142,9 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(CoralMushroomFeature.NAME, CoralMushroomFeature.class);
             this.register(SeaAnemoneFeature.NAME, SeaAnemoneFeature.class);
             this.register(SeaPickleFeature.NAME, SeaPickleFeature.class);
+            this.register(OverworldUnderwaterMagmaFeature.NAME, OverworldUnderwaterMagmaFeature.class);
             this.register(OverworldCaveCarverFeature.NAME, OverworldCaveCarverFeature.class);
+            this.register(OverworldSurfaceSpringsFeature.NAME, OverworldSurfaceSpringsFeature.class);
             this.register(MonsterRoomFeature.NAME, MonsterRoomFeature.class);
             this.register(MossSnapToCeilingFeature.NAME, MossSnapToCeilingFeature.class);
             this.register(AzaleaRootSystemSnapToCeilingFeature.NAME, AzaleaRootSystemSnapToCeilingFeature.class);
@@ -145,6 +152,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(RandomClayWithDripleavesSnapToFloorFeature.NAME, RandomClayWithDripleavesSnapToFloorFeature.class);
             this.register(DripstoneClusterFeature.NAME, DripstoneClusterFeature.class);
             this.register(SculkPatchFeature.NAME, SculkPatchFeature.class);
+            this.register(GlowLichenFeature.NAME, GlowLichenFeature.class);
         } catch (RegisterException e) {
             throw new RuntimeException(e);
         }

@@ -119,7 +119,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerInternal(new EntityDefinition(FALLING_BLOCK, "", 66, false, false), EntityFallingBlock.class);
         registerInternal(new EntityDefinition(XP_BOTTLE, "", 68, false, true), EntityXpBottle.class);
         registerInternal(new EntityDefinition(XP_ORB, "", 69, false, true), EntityXpOrb.class);
-//        registerInternal(new EntityDefinition(EYE_OF_ENDER_SIGNAL, "", 70, false, false), EntityEyeOfEnderSignal.class);
+        registerInternal(new EntityDefinition(EYE_OF_ENDER_SIGNAL, "", 70, false, false), EntityEyeOfEnderSignal.class);
         registerInternal(new EntityDefinition(ENDER_CRYSTAL, "", 71, false, true), EntityEnderCrystal.class);
         registerInternal(new EntityDefinition(FIREWORKS_ROCKET, "", 72, false, true), EntityFireworksRocket.class);
         registerInternal(new EntityDefinition(THROWN_TRIDENT, "", 73, false, false), EntityThrownTrident.class);
@@ -243,7 +243,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         registerSpawner(new SpawnRuleWitch());
         registerSpawner(new SpawnRuleWolf());
         registerSpawner(new SpawnRuleZombie());
-        registerSpawner(new SpawnRuleZombieVillager());
+        registerSpawner(new SpawnRuleZombiePigman());
 
         this.rebuildTag();
     }
@@ -569,7 +569,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             }
 
             BufferedInputStream bis = new BufferedInputStream(inputStream);
-            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+            CompoundTag nbt = NBTIO.readCompressed(bis);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
 
             // Add fake inventory entity definition

@@ -46,6 +46,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,6 +56,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 public class EntityCamel extends EntityAnimal implements InventoryHolder {
     @Override
     @NotNull public String getIdentifier() {
@@ -168,12 +170,12 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
     @Override
     protected @Nullable MovementComponent getComponentMovement() {
-        return MovementComponent.value(0.09f);
+        return MovementComponent.value(0.15f);
     }
 
     @Override
-    public float getSpeedMultiplier() {
-        return 2.0f;
+    public float getSprintMultiplier() {
+        return 2.5f;
     }
 
     @Override

@@ -27,6 +27,7 @@ public class PlaySoundPacket extends DataPacket {
         byteBuf.writeBlockVector3(this.x * 8, this.y * 8, this.z * 8);
         byteBuf.writeFloatLE(this.volume);
         byteBuf.writeFloatLE(this.pitch);
+        byteBuf.writeBoolean(false);
     }
 
     @Override

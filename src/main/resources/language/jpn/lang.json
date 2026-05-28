@@ -314,6 +314,7 @@
   "commands.effect.failure.notActive.all": "{%0} は効果を受けていないので、除去できませんでした",
   "commands.effect.notFound": "ID  {%0} というモブのエフェクトはありません",
   "commands.effect.success": "{%2} に {%0} * {%1} を {%3} 秒間与えました",
+  "commands.effect.success.infinite": "{%0} * {%1} を {%2} に無期限で与えました",
   "commands.effect.success.removed": "{%1} から {%0} を除去しました",
   "commands.effect.success.removed.all": "{%0} からすべての効果を除去しました",
   "commands.enchant.cantCombine": "{%0} は {%1} と組み合わせることはできません",

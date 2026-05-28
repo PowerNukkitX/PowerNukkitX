@@ -270,4 +270,6 @@ public interface EntityDataTypes {
     EntityDataType<Integer> AIM_ASSIST_PRIORITY_PRESET_ID = new EntityDataType<>(0, "AIM_ASSIST_PRIORITY_PRESET_ID", 136);
     EntityDataType<Integer> AIM_ASSIST_PRIORITY_CATEGORY_ID = new EntityDataType<>(0, "AIM_ASSIST_PRIORITY_CATEGORY_ID", 137);
     EntityDataType<Long> AIM_ASSIST_PRIORITY_ACTOR_ID = new EntityDataType<>(0L, "AIM_ASSIST_PRIORITY_ACTOR_ID", 138);
+    EntityDataType<Long> RESERVED_139 = new EntityDataType<>(0L, "RESERVED_139", 139);
+    EntityDataType<Float> NAMEPLATE_RENDER_DISTANCE_MAX = new EntityDataType<>(0f, "NAMEPLATE_RENDER_DISTANCE_MAX", 140);
 }

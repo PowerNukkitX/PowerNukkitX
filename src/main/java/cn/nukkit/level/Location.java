@@ -108,6 +108,27 @@ public class Location extends Position {
         return this;
     }
 
+    public static double calculateYawFacing(double fromX, double fromZ, double toX, double toZ) {
+        double dx = toX - fromX;
+        double dz = toZ - fromZ;
+
+        return Math.toDegrees(Math.atan2(-dx, dz));
+    }
+
+    public static double calculateYawFacing(Vector3 from, Vector3 to) {
+        return calculateYawFacing(from.getX(), from.getZ(), to.getX(), to.getZ());
+    }
+
+    public Location setYawFacing(double x, double z) {
+        this.yaw = calculateYawFacing(this.x, this.z, x, z);
+        this.headYaw = this.yaw;
+        return this;
+    }
+
+    public Location setYawFacing(Vector3 target) {
+        return this.setYawFacing(target.getX(), target.getZ());
+    }
+
     @Override
     public Location setX(double x) {
         super.setX(x);

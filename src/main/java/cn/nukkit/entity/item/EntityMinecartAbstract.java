@@ -163,8 +163,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 // Activate the minecart/TNT
                 if (block instanceof BlockActivatorRail activator && activator.isActive()) {
                     activate(dx, dy, dz, activator.isActive());
-                    if (this.isRideable() && this.getRiding() != null) {
-                        this.dismountEntity(this.getRiding());
+                    if (this.isRideable() && this.getPassenger() != null) {
+                        this.dismountEntity(this.getPassenger(), true, false);
                     }
                 }
                 if (block instanceof BlockDetectorRail detector && !detector.isActive()) {
@@ -295,7 +295,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         super.close();
 
         for (Entity passenger : new ArrayList<>(this.passengers)) {
-            dismountEntity(passenger);
+            dismountEntity(passenger, true, false);
         }
     }
 
