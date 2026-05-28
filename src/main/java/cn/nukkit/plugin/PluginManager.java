@@ -218,6 +218,10 @@ public class PluginManager {
 
                                 //Completely different API version
                                 if (!Objects.equals(Integer.valueOf(versionArray[0]), Integer.valueOf(apiVersion[0]))) {
+                                    if (server.getSettings().miscSettings().bypassAPICheck()) {
+                                        compatible = 3;
+                                        continue;
+                                    }
                                     compatible = 1;
                                     break;
                                 }
@@ -235,6 +239,9 @@ public class PluginManager {
                                 if (compatible == 1) {
                                     log.error("The major version is not compatible, and the plugin will not load!");
                                     continue;
+                                }
+                                if (compatible == 3) {
+                                    log.warn("The major version is not compatible, but bypass api check is enabled. This plugin might not work properly.");
                                 }
                             }
 
