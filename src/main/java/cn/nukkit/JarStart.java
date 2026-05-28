@@ -8,6 +8,9 @@ public final class JarStart {
 
     public static void main(String[] args) {
         try {
+
+
+            
             Thread.currentThread().getContextClassLoader().loadClass("joptsimple.OptionSpec");
         } catch (ClassNotFoundException | java.lang.NoClassDefFoundError e) {
             // There are no libs now. It means that even logger cannot be used.
