@@ -96,7 +96,7 @@ jobs:
           else
             VERSION="${{ steps.meta.outputs.tag }}-SNAPSHOT"
           fi
-          ./gradlew publish --no-configuration-cache -PbuildVersion="$VERSION"
+          ./gradlew shadowJar --no-configuration-cache -PbuildVersion="$VERSION"
         env:
           PNX_REPO_USERNAME: ${{ secrets.PNX_REPO_USERNAME }}
           PNX_REPO_PASSWORD: ${{ secrets.PNX_REPO_PASSWORD }}
