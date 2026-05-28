@@ -10,7 +10,7 @@ import cn.nukkit.network.process.SessionState;
 import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.process.auth.ClientSkinData;
 import cn.nukkit.utils.SkinUtils;
-import lombok.Value;
+
 import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
 import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
@@ -19,20 +19,28 @@ import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
 import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
+
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.jwt.consumer.JwtContext;
+import org.jose4j.jws.JsonWebSignature;
+import org.jose4j.jwx.HeaderParameterNames;
 import org.jose4j.lang.JoseException;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+
 import java.util.Locale;
+
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Kaooot
  */
+@Slf4j
 public class LoginHandler implements PacketHandler<LoginPacket> {
 
     @Override
@@ -65,15 +73,14 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         final boolean xboxAuthRequired = server.getSettings().baseSettings().xboxAuth();
-        if (xboxAuthRequired && (type.equals(PlayerAuthenticationType.SELF_SIGNED)) ||
-                packet.getToken() == null || packet.getToken().isEmpty()) {
+        if (xboxAuthRequired && packet.getToken() == null || packet.getToken().isEmpty()) {
             holder.disconnect(notAuthenticated);
             return;
         }
 
         try {
-            final ChainValidationResult result = EncryptionUtils.validateToken(type, packet.getToken());
-            if (xboxAuthRequired && !result.signed()) {
+            final ChainValidationResult result = this.validateLoginToken(type, packet.getToken());
+            if (xboxAuthRequired && !result.signed() && !server.getSettings().baseSettings().waterdogpe()) {
                 holder.disconnect(notAuthenticated);
                 return;
             }
@@ -103,7 +110,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 return;
             }
 
-            final ClientJwtValidationResult clientJwtValidationResult = this.validateClientJwt(packet, holder, server, identityClaims.parsedIdentityPublicKey());
+            final ClientJwtValidationResult clientJwtValidationResult = this.validateClientJwt(packet, identityClaims.parsedIdentityPublicKey());
             if (!clientJwtValidationResult.isValid()) {
                 holder.disconnect(DisconnectFailReason.INVALID_PLATFORM_SKIN);
                 return;
@@ -136,12 +143,30 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 holder.sendResourcePacksInfo(server);
             }
         } catch (InvalidJwtException | JoseException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.debug("Error while validating jwt", e);
             holder.disconnect(notAuthenticated);
-            return;
         }
     }
 
-    private ClientJwtValidationResult validateClientJwt(LoginPacket packet, PlayerSessionHolder holder, Server server, PublicKey identityPublicKey) {
+    private ChainValidationResult validateLoginToken(PlayerAuthenticationType type, String token) throws InvalidJwtException, JoseException, NoSuchAlgorithmException, InvalidKeySpecException {
+        if (type.equals(PlayerAuthenticationType.SELF_SIGNED)) {
+            final JsonWebSignature signature = new JsonWebSignature();
+            signature.setCompactSerialization(token);
+
+            final PublicKey selfSignedKey = EncryptionUtils.parseKey(signature.getHeader(HeaderParameterNames.X509_URL));
+            final JwtContext context = new JwtConsumerBuilder()
+                    .setVerificationKey(selfSignedKey)
+                    .setSkipAllValidators()
+                    .setRequireExpirationTime()
+                    .setSkipDefaultAudienceValidation()
+                    .build()
+                    .process(token);
+
+            return new ChainValidationResult(false, context);
+        } else return EncryptionUtils.validateToken(type, token);
+    }
+
+    private ClientJwtValidationResult validateClientJwt(LoginPacket packet, PublicKey identityPublicKey) {
         final String clientJwt = packet.getClientJwt();
         if (clientJwt == null || clientJwt.isEmpty()) {
             return ClientJwtValidationResult.INVALID;
@@ -165,9 +190,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                     clientChainData,
                     skin
             );
-        } catch (InvalidJwtException ignored) {
-
-        }
+        } catch (InvalidJwtException ignored) {}
         return ClientJwtValidationResult.INVALID;
     }
 
