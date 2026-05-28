@@ -3,7 +3,9 @@ name: PowerNukkitX Build
 on:
   pull_request:
     branches:
+      - master
       - r/**
+      - b/**
     paths:
       - 'src/**'
       - 'build.gradle.kts'
