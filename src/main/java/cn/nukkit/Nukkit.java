@@ -264,7 +264,7 @@ public class Nukkit {
 
     private static String getVersion() {
         if (GIT_INFO == null) {
-            return "2.0.0-DEV-SNAPSHOT";
+            return "3.0.0-DEV-SNAPSHOT";
         }
 
         String version = GIT_INFO.getProperty("git.build.version");
@@ -272,7 +272,7 @@ public class Nukkit {
             version = GIT_INFO.getProperty("git.commit.id.describe");
         }
 
-        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "2.0.0-DEV-SNAPSHOT";
+        return (version != null && !version.isEmpty() && !version.equals("unspecified")) ? version : "3.0.0-DEV-SNAPSHOT";
     }
 
     private static String getGitCommit() {
