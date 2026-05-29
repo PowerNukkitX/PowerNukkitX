@@ -81,7 +81,7 @@ public record CustomBlockDefinition(String identifier, NbtMap nbt, @Nullable Blo
         protected Builder(CustomBlock customBlock) {
             this.identifier = customBlock.getId();
             this.customBlock = customBlock;
-            var components = this.nbt.getCompound("components");
+            NbtMapBuilder components = this.nbt.getCompound("components").toBuilder();
 
             // Set default components using static default values
             NbtMap defaults = createDefaultComponents(
@@ -101,7 +101,7 @@ public record CustomBlockDefinition(String identifier, NbtMap nbt, @Nullable Blo
             final NbtMapBuilder builder = this.nbt.toBuilder();
 
             // Sets the default geometry
-            builder.putCompound("components", components.toBuilder().putCompound("minecraft:geometry", createDefaultGeometry(null)).build());
+            builder.putCompound("components", components.putCompound("minecraft:geometry", createDefaultGeometry(null)).build());
 
             // Set the category of the block in the creation column
             builder.putCompound("menu_category", createDefaultMenuCategory());
