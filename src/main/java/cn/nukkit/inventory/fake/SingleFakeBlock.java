@@ -9,6 +9,7 @@ import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.RuntimeBlockDefinition;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.cloudburstmc.math.vector.Vector3i;
@@ -71,7 +72,7 @@ public class SingleFakeBlock implements FakeBlock {
 
             final BlockActorDataPacket blockActorDataPacket = new BlockActorDataPacket();
             blockActorDataPacket.setBlockPosition(vector3i);
-            blockActorDataPacket.setActorDataTags(this.getBlockEntityDataAt(position, titleName));
+            blockActorDataPacket.setActorDataTags(this.getBlockEntityDataAt(position, titleName).toNetwork());
 
             player.sendPacket(blockActorDataPacket);
         });
@@ -85,11 +86,10 @@ public class SingleFakeBlock implements FakeBlock {
         lastPositions.remove(player);
     }
 
-    protected NbtMap getBlockEntityDataAt(Vector3 position, String title) {
-        return BlockEntity.getDefaultCompound(position, title).toBuilder()
+    protected CompoundTag getBlockEntityDataAt(Vector3 position, String title) {
+        return BlockEntity.getDefaultCompound(position, title)
                 .putBoolean("isMovable", true)
-                .putString("CustomName", title)
-                .build();
+                .putString("CustomName", title);
     }
 
     public HashSet<Vector3> createAndGetLastPositions(Player player) {

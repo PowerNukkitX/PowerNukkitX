@@ -1,11 +1,11 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityHangingSign extends BlockEntitySign {
-    public BlockEntityHangingSign(IChunk chunk, NbtMap nbt) {
+    public BlockEntityHangingSign(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -15,11 +15,11 @@ public class BlockEntityHangingSign extends BlockEntitySign {
     }
 
     public boolean hasName() {
-        return nbt.containsKey("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder().putString("id", BlockEntity.HANGING_SIGN).build();
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound().putString("id", BlockEntity.HANGING_SIGN);
     }
 }

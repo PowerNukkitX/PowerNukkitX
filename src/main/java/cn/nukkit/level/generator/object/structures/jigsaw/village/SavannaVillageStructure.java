@@ -13,6 +13,7 @@ import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePool;
 import cn.nukkit.level.generator.object.structures.jigsaw.pool.StructurePoolCollection;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import org.cloudburstmc.nbt.NbtMap;
 
@@ -70,7 +71,7 @@ public class SavannaVillageStructure extends VillageStructure {
             }
             BlockEntityBanner banner = bannerBlock.getBlockEntity();
             if (banner == null) {
-                banner = bannerBlock.createBlockEntity(NbtMap.builder().putInt("Base", DyeColor.BROWN.getDyeData() & 0x0f).build());
+                banner = bannerBlock.createBlockEntity(new CompoundTag().putInt("Base", DyeColor.BROWN.getDyeData() & 0x0f));
             }
             banner.setBaseColor(DyeColor.BROWN);
             banner.spawnToAll();

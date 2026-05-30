@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
@@ -30,7 +31,7 @@ public class EntityMinecart extends EntityMinecartAbstract {
         return MINECART;
     }
 
-    public EntityMinecart(IChunk chunk, NbtMap nbt) {
+    public EntityMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

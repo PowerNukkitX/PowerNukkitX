@@ -3,14 +3,13 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockEntityEnchantTable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
-    public BlockEntityEnchantTable(IChunk chunk, NbtMap nbt) {
+    public BlockEntityEnchantTable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -26,7 +25,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
@@ -40,15 +39,15 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder c = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = super.getSpawnCompound()
                 .putBoolean("isMovable", false);
 
         if (this.hasName()) {
             c.putString("CustomName", this.getNbt().getString("CustomName"));
         }
 
-        return c.build();
+        return c;
     }
 
     @Override

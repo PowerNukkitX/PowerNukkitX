@@ -15,7 +15,7 @@ import cn.nukkit.entity.custom.CustomEntityComponents;
 import cn.nukkit.entity.custom.CustomEntityDefinition.Meta;
 import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.EffectType;
-import cn.nukkit.entity.passive.EntityVillager;
+import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.entity.passive.EntityWanderingTrader;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
@@ -38,6 +38,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +77,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private int shieldAttackInterruptTicks = 0;
     private boolean shieldReblockAfterAttack = false;
 
-    public EntityLiving(IChunk chunk, NbtMap nbt) {
+    public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -117,26 +119,25 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected void initEntity() {
         super.initEntity();
 
-        final NbtMap nbtMap = this.getNbt();
-        if (this.nbt.containsKey("HealF")) {
-            this.nbt.putFloat("Health", nbtMap.getShort("HealF"));
+        if (this.nbt.contains("HealF")) {
+            this.nbt.putFloat("Health", this.nbt.getShort("HealF"));
             this.nbt.remove("HealF");
         }
 
-        if (!this.nbt.containsKey("Health") || !(this.getNbt().get("Health") instanceof Float)) {
+        if (!this.nbt.contains("Health") || !(this.nbt.get("Health") instanceof FloatTag)) {
             this.nbt.putFloat("Health", this.getHealthMax());
         }
 
         this.setHealthMax(this.getHealthMax());
-        setHealthCurrent(this.getNbt().getFloat("Health"));
+        setHealthCurrent(this.nbt.getFloat("Health"));
 
         // Load Tame and Chest from NBT
-        if (this.nbt.containsKey("Tamed")) {
-            boolean hasTagTamed = nbtMap.getBoolean("Tamed");
+        if (this.nbt.contains("Tamed")) {
+            boolean hasTagTamed = this.nbt.getBoolean("Tamed");
             if (hasTagTamed || this.isTamed()) this.setDataFlag(ActorFlags.TAMED, true, false);
         }
-        if (this.nbt.containsKey("Chested")) {
-            this.setDataFlag(ActorFlags.CHESTED, nbtMap.getBoolean("Chested"), true);
+        if (this.nbt.contains("Chested")) {
+            this.setDataFlag(ActorFlags.CHESTED, this.nbt.getBoolean("Chested"), true);
         }
         updateInventoryFlags();
 
@@ -146,8 +147,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         if (this.canBeSaddled()) {
-            if (this.nbt.containsKey("saddled")) {
-                this.setDataFlag(ActorFlags.SADDLED, nbtMap.getBoolean("saddled"));
+            if (this.nbt.contains("saddled")) {
+                this.setDataFlag(ActorFlags.SADDLED, this.nbt.getBoolean("saddled"));
             } else {
                 this.setDataFlag(ActorFlags.SADDLED, false);
             }
@@ -155,10 +156,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (this.isBaby()) loadParentFromNBT();
 
-        if (!this.isPlayer && this.nbt != null && this.nbt.containsKey(NBT_RIDING_UUID)) {
+        if (!this.isPlayer && this.nbt != null && this.nbt.contains(NBT_RIDING_UUID)) {
             this.restoreMountTries = 60;
         }
     }
+
 
 
     protected void loadParentFromNBT() {
@@ -278,7 +280,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (!isAgeable()) return;
         if (!isBaby()) {
-            if (this.nbt.containsKey(TAG_ENTITY_GROW_LEFT)) this.nbt.remove(TAG_ENTITY_GROW_LEFT);
+            if (this.nbt.contains(TAG_ENTITY_GROW_LEFT)) this.nbt.remove(TAG_ENTITY_GROW_LEFT);
             return;
         }
         ensureGrowLoaded();
@@ -894,7 +896,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public boolean isPersistent() {
         return (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false))
-                || (this.nbt.containsKey("Persistent") && this.getNbt().getBoolean("Persistent"));
+                || (this.nbt.contains("Persistent") && this.getNbt().getBoolean("Persistent"));
     }
 
     public void preAttack(Player player) {
@@ -956,7 +958,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void initHome() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return;
 
-        if (ei.nbt.containsKey("HomeX")) {
+        if (ei.nbt.contains("HomeX")) {
             Vector3 home = new Vector3(
                     ei.getNbt().getDouble("HomeX"),
                     ei.getNbt().getDouble("HomeY"),
@@ -984,7 +986,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public Block getHomePosition() {
         if (!this.hasHome() || !(this instanceof EntityIntelligent ei)) return null;
-        if (!this.nbt.containsKey("HomeX")) return null;
+        if (!this.nbt.contains("HomeX")) return null;
 
         Vector3 homeLoc = new Vector3(
                 this.getNbt().getDouble("HomeX"),
@@ -1340,7 +1342,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     protected boolean requiresSneakToNameTag(@NotNull Player player) {
-        if (this instanceof EntityVillager || this instanceof EntityWanderingTrader) return true;
+        if (this instanceof EntityVillagerV2 || this instanceof EntityWanderingTrader) return true;
         if (this.isRideable()) {
             if (!this.requireSaddleToMount()) return true;
             if (this.isSaddled()) return true;

@@ -4,6 +4,7 @@ import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ public class EntityTraderLlama extends EntityCreature implements IEntityNPC {
         return TRADER_LLAMA;
     }
 
-    public EntityTraderLlama(IChunk chunk, NbtMap nbt) {
+    public EntityTraderLlama(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

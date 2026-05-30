@@ -9,11 +9,11 @@ import cn.nukkit.entity.passive.EntityAllay;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 public abstract class EntityGolem extends EntityIntelligent implements EntityWalkable, EntityCanAttack {
 
-    public EntityGolem(IChunk chunk, NbtMap nbt) {
+    public EntityGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

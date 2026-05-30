@@ -9,6 +9,10 @@ import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.entity.mob.EntityVex;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
@@ -66,17 +70,19 @@ public class VexSummonExecutor extends FangLineExecutor {
         vexLocation.x += ThreadLocalRandom.current().nextFloat(2);
         vexLocation.y += ThreadLocalRandom.current().nextFloat(2);
         vexLocation.z += ThreadLocalRandom.current().nextFloat(2);
-        final NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                vexLocation.x,
-                                vexLocation.y,
-                                vexLocation.z
-                        )
-                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
-                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
-                                (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw, 0f
-                        )
-                ).build();
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(vexLocation.x))
+                        .add(new DoubleTag(vexLocation.y))
+                        .add(new DoubleTag(vexLocation.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
+                        .add(new FloatTag(0f)));
+
         Entity vexEntity = Entity.createEntity(EntityID.VEX, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
         if (vexEntity instanceof EntityVex vex) {
             vex.setIllager((EntityEvocationIllager) entity);

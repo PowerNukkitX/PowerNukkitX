@@ -34,6 +34,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
@@ -54,7 +55,7 @@ public class EntityCamelHusk extends EntityCamel {
         return CAMEL_HUSK;
     }
 
-    public EntityCamelHusk(IChunk chunk, NbtMap nbt) {
+    public EntityCamelHusk(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -242,7 +243,7 @@ public class EntityCamelHusk extends EntityCamel {
     }
 
     private Entity createRiderEntity(String entityId) {
-        NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
+        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
 
         if (entityId.equals(Entity.HUSK)) {
             Item ironSpear = Item.get(Item.IRON_SPEAR, 0, 1);
@@ -254,7 +255,7 @@ public class EntityCamelHusk extends EntityCamel {
             nbt.putCompound("Mainhand", ItemHelper.write(bow));
         }
 
-        Entity newEntity = Entity.createEntity(entityId, this.getChunk(), nbt.build());
+        Entity newEntity = Entity.createEntity(entityId, this.getChunk(), nbt);
         return newEntity;
     }
 

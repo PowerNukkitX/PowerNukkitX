@@ -14,11 +14,10 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.tags.BlockTags;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +35,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     private int validBlocks;
 
 
-    public BlockEntityConduit(IChunk chunk, NbtMap nbt) {
+    public BlockEntityConduit(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -50,7 +49,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         validBlocks = -1;
-        if (!nbt.containsKey("Target")) {
+        if (!nbt.contains("Target")) {
             this.nbt = nbt.putLong("Target", -1);
             target = -1;
             targetEntity = null;
@@ -357,12 +356,12 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder tag = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag tag = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Active", this.active);
         Entity targetEntity = this.targetEntity;
         tag.putLong("Target", targetEntity != null ? targetEntity.getId() : -1);
-        return tag.build();
+        return tag;
     }
 }

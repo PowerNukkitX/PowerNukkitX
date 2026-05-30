@@ -7,6 +7,7 @@ import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
@@ -44,7 +45,7 @@ public class EntityHuman extends EntityHumanType {
     protected byte[] rawUUID;
     protected SerializedSkin skin;
 
-    public EntityHuman(IChunk chunk, NbtMap nbt) {
+    public EntityHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

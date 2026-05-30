@@ -4,13 +4,13 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDaylightDetector;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public class BlockEntityDaylightDetector extends BlockEntity {
 
 
-    public BlockEntityDaylightDetector(IChunk chunk, NbtMap nbt) {
+    public BlockEntityDaylightDetector(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

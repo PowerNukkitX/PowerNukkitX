@@ -10,10 +10,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 
 import javax.annotation.Nullable;
@@ -26,17 +25,17 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
-    public BlockEntityItemFrame(IChunk chunk, NbtMap nbt) {
+    public BlockEntityItemFrame(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsKey("Item")) {
+        if (!nbt.contains("Item")) {
             // [ITEM_DEBUG] Log when a frame loads without an Item tag (new or corrupted)
             log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} loadNBT: no 'Item' tag present, initializing to AIR. namedTag keys: {}",
-                    (int) x, (int) y, (int) z, nbt.keySet());
+                    (int) x, (int) y, (int) z, nbt.getTags().keySet());
             this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         } else {
             // [ITEM_DEBUG] Log what item is loaded from NBT
@@ -46,10 +45,10 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                         (int) x, (int) y, (int) z, loaded.getId(), loaded.getCount());
             }
         }
-        if (!nbt.containsKey("ItemRotation")) {
+        if (!nbt.contains("ItemRotation")) {
             this.nbt.putByte("ItemRotation", (byte) 0);
         }
-        if (!nbt.containsKey("ItemDropChance")) {
+        if (!nbt.contains("ItemDropChance")) {
             this.nbt.putFloat("ItemDropChance", 1.0f);
         }
         this.level.updateComparatorOutputLevel(this);
@@ -151,18 +150,18 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        if (!this.nbt.containsKey("Item")) {
+    public CompoundTag getSpawnCompound() {
+        if (!this.nbt.contains("Item")) {
             // [ITEM_DEBUG] This should not normally happen — log it
             log.debug("[ITEM_DEBUG] ItemFrame at {},{},{} getSpawnCompound: 'Item' tag missing from namedTag, resetting to AIR",
                     (int) x, (int) y, (int) z);
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
-        NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
+        CompoundTag tag = super.getSpawnCompound();
 
         if (!item.isNull()) {
-            NbtMapBuilder builder = ItemHelper.write(item, null).toBuilder();
+            CompoundTag builder = ItemHelper.write(item, null);
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
@@ -171,12 +170,12 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 builder.putString("Name", namespacedId);
             }
             if (item instanceof ItemBlock) {
-                builder.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+                builder.putCompound("Block", CompoundTag.fromNetwork(item.getBlockUnsafe().getBlockState().getBlockStateTag()));
             }
-            tag.putCompound("Item", builder.build())
+            tag.putCompound("Item", builder)
                     .putByte("ItemRotation", (byte) this.getItemRotation());
         }
-        return tag.build();
+        return tag;
     }
 
     public int getAnalogOutput() {

@@ -17,16 +17,14 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -48,7 +46,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     @Getter
     private EntityArmorInventory armorInventory;
 
-    public EntityMob(IChunk chunk, NbtMap nbt) {
+    public EntityMob(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -59,18 +57,18 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         super.initEntity();
 
-        final NbtMap nbtMap = this.getNbt();
-        if (this.nbt.containsKey(TAG_MAINHAND)) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (this.nbt.contains(TAG_MAINHAND)) {
             this.equipmentInventory.setItemInHand(ItemHelper.read(nbtMap.getCompound(TAG_MAINHAND)), true);
         }
 
-        if (this.nbt.containsKey(TAG_OFFHAND)) {
+        if (this.nbt.contains(TAG_OFFHAND)) {
             this.equipmentInventory.setItemInOffhand(ItemHelper.read(nbtMap.getCompound(TAG_OFFHAND)), true);
         }
 
-        if (this.nbt.containsKey(TAG_ARMOR)) {
-            List<NbtMap> armorList = nbtMap.getList(TAG_ARMOR, NbtType.COMPOUND);
-            for (NbtMap armorTag : armorList) {
+        if (this.nbt.containsList(TAG_ARMOR)) {
+            ListTag<CompoundTag> armorList = nbtMap.getList(TAG_ARMOR, CompoundTag.class);
+            for (CompoundTag armorTag : armorList.getAll()) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
         }
@@ -107,11 +105,11 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 .putCompound(TAG_OFFHAND, ItemHelper.write(this.equipmentInventory.getItemInOffhand(), null));
 
         if (this.armorInventory != null) {
-            List<NbtMap> armorTag = new ObjectArrayList<>();
+            ListTag<CompoundTag> armorTag = new ListTag<>();
             for (int i = 0; i < 4; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.nbt.putList(TAG_ARMOR, NbtType.COMPOUND, armorTag);
+            this.nbt.putList(TAG_ARMOR, armorTag);
         }
     }
 

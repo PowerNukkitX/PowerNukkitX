@@ -1,6 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.level.DimensionData;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.List;
@@ -33,11 +34,11 @@ public interface IChunkBuilder {
 
     IChunkBuilder heightMap(short[] heightMap);
 
-    IChunkBuilder entities(List<NbtMap> entities);
+    IChunkBuilder entities(List<CompoundTag> entities);
 
-    IChunkBuilder blockEntities(List<NbtMap> blockEntities);
+    IChunkBuilder blockEntities(List<CompoundTag> blockEntities);
 
-    IChunkBuilder extraData(NbtMap extraData);
+    IChunkBuilder extraData(CompoundTag extraData);
 
     IChunk build();
 

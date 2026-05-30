@@ -44,6 +44,7 @@ import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.InternalPlugin;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -72,7 +73,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         return ENDER_DRAGON;
     }
 
-    public EntityEnderDragon(IChunk chunk, NbtMap nbt) {
+    public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -329,7 +330,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     public boolean isRevived() {
-        if (this.nbt.containsKey("Revived")) {
+        if (this.nbt.contains("Revived")) {
             return this.getNbt().getBoolean("Revived");
         } else return false;
     }

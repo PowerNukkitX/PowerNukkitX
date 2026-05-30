@@ -35,9 +35,9 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Setter;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.packet.LevelEventGenericPacket;
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +75,7 @@ public class EntityCreaking extends EntityMob {
     @Setter
     protected BlockEntityCreakingHeart creakingHeart;
 
-    public EntityCreaking(IChunk chunk, NbtMap nbt) {
+    public EntityCreaking(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -113,9 +113,9 @@ public class EntityCreaking extends EntityMob {
     protected void initEntity() {
         this.setHealthMax(1);
         this.diffHandDamage = new float[]{2.5f, 3, 4.5f};
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("creakingHeart")) {
-            NbtMap tag = nbtMap.getCompound("creakingHeart");
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.containsCompound("creakingHeart")) {
+            CompoundTag tag = nbtMap.getCompound("creakingHeart");
             Vector3 vec = new Vector3(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
             if (getLevel().getBlock(vec, true) instanceof BlockCreakingHeart heart) {
                 heart.getOrCreateBlockEntity().setLinkedCreaking(this);
@@ -192,11 +192,10 @@ public class EntityCreaking extends EntityMob {
     @Override
     public void saveNBT() {
         if (creakingHeart != null) {
-            NbtMapBuilder tag = NbtMap.builder();
-            tag.putInt("x", creakingHeart.getFloorX());
-            tag.putInt("y", creakingHeart.getFloorY());
-            tag.putInt("z", creakingHeart.getFloorZ());
-            this.nbt.putCompound("creakingHeart", tag.build());
+            this.nbt.putCompound("creakingHeart", new CompoundTag()
+                    .putInt("x", creakingHeart.getFloorX())
+                    .putInt("y", creakingHeart.getFloorY())
+                    .putInt("z", creakingHeart.getFloorZ()));
         }
         super.saveNBT();
     }

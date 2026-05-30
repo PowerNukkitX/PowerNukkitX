@@ -13,7 +13,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.packet.NpcRequestPacket;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
     protected int variant = 0;
 
 
-    public EntityNpc(IChunk chunk, NbtMap nbt) {
+    public EntityNpc(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -94,7 +94,7 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
 
-        final NbtMap nbtMap = this.getNbt();
+        final CompoundTag nbtMap = this.getNbt();
 
         this.setVariant(nbtMap.getInt("Variant"));
         this.dialog = new FormWindowDialog(nbtMap.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : nbtMap.getString(KEY_DIALOG_TITLE), nbtMap.getString(KEY_DIALOG_CONTENT), this);

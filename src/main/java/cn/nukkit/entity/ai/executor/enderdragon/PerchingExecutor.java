@@ -12,6 +12,10 @@ import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.entity.item.EntityAreaEffectCloud;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 
@@ -42,21 +46,26 @@ public class PerchingExecutor implements EntityControl, IBehaviorExecutor {
                     Location location = entity.getLocation().add(toPlayerVector.multiply(10));
                     location.y = location.level.getHighestBlockAt(location.toHorizontal()) + 1;
                     EntityAreaEffectCloud areaEffectCloud = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, location.getChunk(),
-                            NbtMap.builder()
-                                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                            location.x,
-                                            location.y,
-                                            location.z
-                                    ))
-                                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                                    .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
+                            new CompoundTag().putList("Pos", new ListTag<>()
+                                            .add(new DoubleTag(location.x))
+                                            .add(new DoubleTag(location.y))
+                                            .add(new DoubleTag(location.z))
+                                    )
+                                    .putList("Rotation", new ListTag<>()
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0))
+                                    )
+                                    .putList("Motion", new ListTag<>()
+                                            .add(new DoubleTag(0))
+                                            .add(new DoubleTag(0))
+                                            .add(new DoubleTag(0))
+                                    )
                                     .putInt("Duration", 60)
                                     .putFloat("InitialRadius", 6)
                                     .putFloat("Radius", 6)
                                     .putFloat("Height", 1)
                                     .putFloat("RadiusChangeOnPickup", 0)
                                     .putFloat("RadiusPerTick", 0)
-                                    .build()
                     );
 
                     List<Effect> effects = PotionType.get(PotionType.HARMING.id()).getEffects(PotionApplicationMode.DRINK);

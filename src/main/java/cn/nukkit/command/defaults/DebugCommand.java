@@ -24,6 +24,8 @@ import cn.nukkit.level.generator.biome.result.OverworldBiomeResult;
 import cn.nukkit.level.structure.AbstractStructure;
 import cn.nukkit.level.structure.JeStructure;
 import cn.nukkit.level.structure.StructureAPI;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LongTag;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginManager;
@@ -284,9 +286,10 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "regenerate" -> level.regenerateChunk(chunk.getX(), chunk.getZ());
             case "resend" -> level.requestChunk(chunk.getX(), chunk.getZ(), player);
             case "queue" -> {
-                NbtMap extra = chunk.getExtraData();
-                if (extra.containsKey("structureAnchor")) {
-                    for (long hash : extra.getList("structureAnchor", NbtType.LONG)) {
+                CompoundTag extra = chunk.getExtraData();
+                if (extra.contains("structureAnchor")) {
+                    for (LongTag tag : extra.getList("structureAnchor", LongTag.class).getAll()) {
+                        long hash = tag.getData();
                         IChunk target = level.getChunk(Level.getHashX(hash), Level.getHashZ(hash));
                         if (target != null && target != chunk)
                             player.sendMessage(target.getX() + " " + target.getZ());
@@ -332,8 +335,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             }
             case "data" -> {
                 Item item = player.getInventory().getItemInMainHand();
-                NbtMap nbt = ItemHelper.write(item);
-                player.sendMessage(nbt.toString());
+                CompoundTag nbt = ItemHelper.write(item);
+                player.sendMessage(nbt.toSNBT());
             }
         }
         return 1;

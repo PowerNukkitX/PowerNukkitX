@@ -13,6 +13,10 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.random.RandomSourceProvider;
@@ -426,13 +430,18 @@ public class MineshaftPieces {
                     IChunk chunk = level.getChunk(vec.x >> 4, vec.z >> 4);
                     if (chunk != null) {
                         EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
-                                chunk, NbtMap.builder()
-                                        .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                                vec.getX() + 0.5, vec.getY() + 0.0625D, vec.getZ() + 0.5
-                                        ))
-                                        .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                                        .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
-                                        .build()
+                                chunk, new CompoundTag()
+                                        .putList("Pos", new ListTag<>()
+                                                .add(new DoubleTag(vec.getX() + 0.5))
+                                                .add(new DoubleTag(vec.getY() + 0.0625D))
+                                                .add(new DoubleTag(vec.getZ() + 0.5)))
+                                        .putList("Motion", new ListTag<>()
+                                                .add(new DoubleTag(0))
+                                                .add(new DoubleTag(0))
+                                                .add(new DoubleTag(0)))
+                                        .putList("Rotation", new ListTag<>()
+                                                .add(new FloatTag(0))
+                                                .add(new FloatTag(0)))
                         );
                         new ChestPopulator().create(minecart.getInventory(), random);
                         minecart.spawnToAll();

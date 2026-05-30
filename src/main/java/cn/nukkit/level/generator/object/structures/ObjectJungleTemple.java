@@ -249,11 +249,10 @@ public class ObjectJungleTemple extends ObjectGenerator {
             }
             if(block instanceof BlockStickyPiston piston) {
                 builder.addHook(() -> {
-                    var nbt = BlockEntity.getDefaultCompound(piston, BlockEntity.PISTON_ARM).toBuilder()
+                    var nbt = BlockEntity.getDefaultCompound(piston, BlockEntity.PISTON_ARM)
                             .putInt("facing", piston.getBlockFace().getIndex())
                             .putBoolean("Sticky", piston.sticky)
-                            .putBoolean("powered", piston.isGettingPower())
-                            .build();
+                            .putBoolean("powered", piston.isGettingPower());
                     piston.createBlockEntity(nbt);
                 });
             }

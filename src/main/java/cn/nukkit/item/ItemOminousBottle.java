@@ -56,7 +56,7 @@ public class ItemOminousBottle extends Item {
         }
 
         int amplifier = this.getDamage();
-        if (this.hasCompoundTag() && this.getNbt().containsKey(TAG_OMINOUS_BOTTLE_AMPLIFIER)) {
+        if (this.hasNbt() && this.getNbt().containsInt(TAG_OMINOUS_BOTTLE_AMPLIFIER)) {
             amplifier = this.getNbt().getInt(TAG_OMINOUS_BOTTLE_AMPLIFIER);
         }
         amplifier = Math.clamp(amplifier, 0, 4);

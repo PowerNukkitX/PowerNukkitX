@@ -11,10 +11,11 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.bow.EnchantmentBow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -88,24 +89,20 @@ public class ItemBow extends ItemTool {
             } else return false;
         }
 
-        final NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                player.x,
-                                player.y + player.getEyeHeight(),
-                                player.z
-                        )
-                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
-                                -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI),
-                                -Math.sin(player.pitch / 180 * Math.PI),
-                                Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)
-                        )
-                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
-                                (player.yaw > 180 ? 360 : 0) - (float) player.yaw,
-                                (float) -player.pitch
-                        )
-                ).putShort("Fire", (short) (flame ? 45 * 60 : 0))
-                .putDouble("damage", damage)
-                .build();
+        final CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(player.x))
+                        .add(new DoubleTag(player.y + player.getEyeHeight()))
+                        .add(new DoubleTag(player.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
+                        .add(new FloatTag((float) -player.pitch)))
+                .putShort("Fire", (short) (flame ? 45 * 60 : 0))
+                .putDouble("damage", damage);
 
         double p = (double) ticksUsed / 20;
         final double maxForce = 3.5;

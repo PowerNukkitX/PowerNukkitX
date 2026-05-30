@@ -14,6 +14,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
@@ -36,7 +37,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
 
     private int fuse;
 
-    public EntityTntMinecart(IChunk chunk, NbtMap nbt) {
+    public EntityTntMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         super.setDisplayBlock(Block.get(BlockID.TNT), false);
     }
@@ -45,7 +46,7 @@ public class EntityTntMinecart extends EntityMinecartAbstract implements EntityE
     public void initEntity() {
         super.initEntity();
 
-        if (this.nbt.containsKey("TNTFuse")) {
+        if (this.nbt.contains("TNTFuse")) {
             fuse = this.getNbt().getByte("TNTFuse");
         } else {
             fuse = 80;

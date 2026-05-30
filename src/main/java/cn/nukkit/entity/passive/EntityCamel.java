@@ -42,6 +42,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
@@ -65,7 +66,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
         return CAMEL;
     }
 
-    public EntityCamel(IChunk chunk, NbtMap nbt) {
+    public EntityCamel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -297,8 +298,8 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
 
         // Load items
         ensureInventories();
-        if (nbt.containsKey("Inventory")) {
-            entityInventory.load(getNbt().getList("Inventory", NbtType.COMPOUND));
+        if (nbt.containsList("Inventory")) {
+            entityInventory.load(nbt.getList("Inventory", CompoundTag.class).getAll());
         }
     }
 
@@ -313,7 +314,7 @@ public class EntityCamel extends EntityAnimal implements InventoryHolder {
         super.saveNBT();
 
         var inv = getInventory();
-        this.nbt.putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
+        nbt.putList("Inventory", inv.save(isChested()));
     }
 
     @Override

@@ -90,7 +90,7 @@ public class TagCommand extends VanillaCommand {
             case "list" -> {
                 Set<String> tagSet = new HashSet<>();
                 for (Entity entity : entities) {
-                    tagSet.addAll(new HashSet<>(entity.getAllTags()));
+                    tagSet.addAll(entity.getAllTags().stream().map(t -> t.data).collect(Collectors.toSet()));
                 }
                 int tagCount = tagSet.size();
                 String tagStr = tagSet.stream().collect(Collectors.joining(" "));

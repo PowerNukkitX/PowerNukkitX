@@ -8,9 +8,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.RedstoneComponent;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,13 +63,15 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
             return false;
         }
 
-        NbtMapBuilder nbt = NbtMap.builder();
+        CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
-        BlockEntityStructBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build());
+        BlockEntityStructBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);
         return blockEntity != null;
     }
 

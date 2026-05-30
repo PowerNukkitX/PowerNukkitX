@@ -1,8 +1,8 @@
 package cn.nukkit;
 
 import cn.nukkit.metadata.MetadataValue;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
-import org.cloudburstmc.nbt.NbtMap;
 
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public class OfflinePlayer implements IPlayer {
     private final Server server;
-    private final NbtMap namedTag;
+    private final CompoundTag namedTag;
 
     /**
      * Initializes the object {@code OfflinePlayer}.
@@ -38,23 +38,21 @@ public class OfflinePlayer implements IPlayer {
     public OfflinePlayer(Server server, UUID uuid, String name) {
         this.server = server;
 
-        NbtMap tag;
+        CompoundTag tag;
 
         if (uuid != null) {
             tag = this.server.getOfflinePlayerData(uuid, false);
 
-            if (tag == null) tag = NbtMap.EMPTY;
+            if (tag == null) tag = new CompoundTag();
 
-            tag = tag.toBuilder()
-                    .putLong("UUIDMost", uuid.getMostSignificantBits())
-                    .putLong("UUIDLeast", uuid.getLeastSignificantBits())
-                    .build();
+            tag.putLong("UUIDMost", uuid.getMostSignificantBits())
+                    .putLong("UUIDLeast", uuid.getLeastSignificantBits());
         } else if (name != null) {
             tag = this.server.getOfflinePlayerData(name, false);
 
-            if (tag == null) tag = NbtMap.EMPTY;
+            if (tag == null) tag = new CompoundTag();
 
-            tag = tag.toBuilder().putString("NameTag", name).build();
+            tag.putString("NameTag", name);
         } else {
             throw new IllegalArgumentException("Name and UUID cannot both be null");
         }
@@ -69,7 +67,7 @@ public class OfflinePlayer implements IPlayer {
 
     @Override
     public String getName() {
-        if (namedTag != null && namedTag.containsKey("NameTag")) {
+        if (namedTag != null && namedTag.contains("NameTag")) {
             return namedTag.getString("NameTag");
         }
         return null;

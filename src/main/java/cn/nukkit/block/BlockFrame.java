@@ -14,9 +14,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -260,17 +259,19 @@ public class BlockFrame extends BlockTransparent implements BlockEntityHolder<Bl
 
         setBlockFace(face);
         setStoringMap(Objects.equals(item.getId(), ItemID.FILLED_MAP));
-        NbtMapBuilder nbt = NbtMap.builder()
+        CompoundTag nbt = new CompoundTag()
                 .putByte("ItemRotation", (byte) 0)
                 .putFloat("ItemDropChance", 1.0f);
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
         level.setBlock(block, this, false, true);
         BlockFrame levelBlock = (BlockFrame) block.getLevelBlock();
         BlockEntityItemFrame frame = levelBlock.getBlockEntity();
         if (frame == null) {
-            frame = levelBlock.createBlockEntity(nbt.build());
+            frame = levelBlock.createBlockEntity(nbt);
         }
 
         this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_PLACE);

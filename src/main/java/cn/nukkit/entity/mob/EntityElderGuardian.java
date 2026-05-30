@@ -31,6 +31,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
@@ -55,7 +56,7 @@ public class EntityElderGuardian extends EntityMob implements EntitySwimmable {
         return ELDER_GUARDIAN;
     }
 
-    public EntityElderGuardian(IChunk chunk, NbtMap nbt) {
+    public EntityElderGuardian(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

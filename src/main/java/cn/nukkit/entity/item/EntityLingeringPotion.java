@@ -5,12 +5,13 @@ import cn.nukkit.entity.effect.Effect;
 import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -21,11 +22,11 @@ public class EntityLingeringPotion extends EntitySplashPotion {
         return LINGERING_POTION;
     }
 
-    public EntityLingeringPotion(IChunk chunk, NbtMap nbt) {
+    public EntityLingeringPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public EntityLingeringPotion(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityLingeringPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -39,13 +40,19 @@ public class EntityLingeringPotion extends EntitySplashPotion {
     protected void splash(Entity collidedWith) {
         super.splash(collidedWith);
         saveNBT();
-        List<NbtMap> pos = this.getNbt().getList("Pos", NbtType.COMPOUND);
+        ListTag<?> pos = (ListTag<?>) nbt.getList("Pos", CompoundTag.class).copy();
         EntityAreaEffectCloud entity = (EntityAreaEffectCloud) Entity.createEntity(Entity.AREA_EFFECT_CLOUD, getChunk(),
-                NbtMap.builder().putList("Pos", NbtType.COMPOUND, pos)
-                        .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
-                        .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                        .putShort("PotionId", (short) potionId)
-                        .build()
+                new CompoundTag().putList("Pos", pos)
+                        .putList("Rotation", new ListTag<>()
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0))
+                        )
+                        .putList("Motion", new ListTag<>()
+                                .add(new DoubleTag(0))
+                                .add(new DoubleTag(0))
+                                .add(new DoubleTag(0))
+                        )
+                        .putShort("PotionId", potionId)
         );
 
         List<Effect> effects = PotionType.get(potionId).getEffects(PotionApplicationMode.LINGERING);

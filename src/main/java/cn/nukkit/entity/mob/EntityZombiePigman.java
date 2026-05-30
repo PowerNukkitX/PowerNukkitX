@@ -31,6 +31,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -52,7 +53,7 @@ public class EntityZombiePigman extends EntityMob implements EntityWalkable, Ent
     }
 
 
-    public EntityZombiePigman(IChunk chunk, NbtMap nbt) {
+    public EntityZombiePigman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

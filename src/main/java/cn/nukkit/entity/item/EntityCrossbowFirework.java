@@ -2,7 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -14,7 +14,7 @@ public class EntityCrossbowFirework extends EntityFireworksRocket {
     private final int lifetime;
     private int fireworkAge = 0;
 
-    public EntityCrossbowFirework(IChunk chunk, NbtMap nbt) {
+    public EntityCrossbowFirework(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         this.lifetime = 10 + RANDOM.nextInt(13);
     }

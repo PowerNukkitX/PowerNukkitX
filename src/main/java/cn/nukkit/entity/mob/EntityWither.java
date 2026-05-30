@@ -42,6 +42,10 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -69,7 +73,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         return WITHER;
     }
 
-    public EntityWither(IChunk chunk, NbtMap nbt) {
+    public EntityWither(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -407,15 +411,18 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
                         }
                         Block pos = check.getSide(blockFace, 2);
-                        final NbtMap nbt = NbtMap.builder()
-                                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                                pos.x + 0.5,
-                                                pos.y + 0.5,
-                                                pos.z + 0.5
-                                        )
-                                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
-                                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
-                                ).build();
+                        CompoundTag nbt = new CompoundTag()
+                                .putList("Pos", new ListTag<DoubleTag>()
+                                        .add(new DoubleTag(pos.x + 0.5))
+                                        .add(new DoubleTag(pos.y))
+                                        .add(new DoubleTag(pos.z + 0.5)))
+                                .putList("Motion", new ListTag<DoubleTag>()
+                                        .add(new DoubleTag(0))
+                                        .add(new DoubleTag(0))
+                                        .add(new DoubleTag(0)))
+                                .putList("Rotation", new ListTag<FloatTag>()
+                                        .add(new FloatTag(0f))
+                                        .add(new FloatTag(0f)));
 
                         Entity wither = Entity.createEntity(EntityID.WITHER, check.level.getChunk(check.getChunkX(), check.getChunkZ()), nbt);
                         wither.spawnToAll();

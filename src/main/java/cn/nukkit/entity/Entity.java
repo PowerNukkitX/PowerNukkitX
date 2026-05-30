@@ -65,6 +65,12 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.NumberTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.EntityRegistry;
 import cn.nukkit.registry.Registries;
@@ -107,6 +113,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.random.RandomGenerator;
+
+import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.AIR_SUPPLY;
 
 /**
  * @author MagicDroidX
@@ -191,7 +199,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public int inPortalTicks = 0;
     public int freezingTicks = 0;//0 - 140
     public float scale = 1;
-    protected NbtMapBuilder nbt;
+    protected CompoundTag nbt;
     public boolean isCollided = false;
     public boolean isCollidedHorizontally = false;
     public boolean isCollidedVertically = false;
@@ -271,7 +279,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.name;
     }
 
-    public Entity(IChunk chunk, NbtMap nbt) {
+    public Entity(IChunk chunk, CompoundTag nbt) {
         initEntityProperties(this.getIdentifier());
         if (!(this instanceof Player)) {
             this.init(chunk, nbt);
@@ -329,14 +337,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return the entity
      */
     @Nullable
-    public static Entity createEntity(int type, @NotNull IChunk chunk, @NotNull NbtMap nbt, @Nullable Object... args) {
+    public static Entity createEntity(int type, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         String entityIdentifier = Registries.ENTITY.getEntityIdentifier(type);
         if (entityIdentifier == null) return null;
         return Registries.ENTITY.provideEntity(entityIdentifier, chunk, nbt, args);
     }
 
     @Nullable
-    public static Entity createEntity(@NotNull String identifier, @NotNull IChunk chunk, @NotNull NbtMap nbt, @Nullable Object... args) {
+    public static Entity createEntity(@NotNull String identifier, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         Identifier.assertValid(identifier);
         return Registries.ENTITY.provideEntity(identifier, chunk, nbt, args);
     }
@@ -357,12 +365,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @see #getDefaultNBT(Vector3, Vector3, float, float)
      */
     @NotNull
-    public static NbtMap getDefaultNBT(@NotNull Vector3 pos) {
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos) {
         return getDefaultNBT(pos, null);
     }
 
     @NotNull
-    public static NbtMap getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion) {
         Location loc = pos instanceof Location ? (Location) pos : null;
 
         if (loc != null) {
@@ -382,16 +390,19 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return the default nbt
      */
     @NotNull
-    public static NbtMap getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
-        return NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x, pos.y, pos.z))
-                .putList("Motion", NbtType.DOUBLE, Arrays.asList(
-                        motion != null ? motion.x : 0,
-                        motion != null ? motion.y : 0,
-                        motion != null ? motion.z : 0
-                ))
-                .putList("Rotation", NbtType.FLOAT, Arrays.asList(yaw, pitch))
-                .build();
+    public static CompoundTag getDefaultNBT(@NotNull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+        return new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x))
+                        .add(new DoubleTag(pos.y))
+                        .add(new DoubleTag(pos.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(motion != null ? motion.x : 0))
+                        .add(new DoubleTag(motion != null ? motion.y : 0))
+                        .add(new DoubleTag(motion != null ? motion.z : 0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(yaw))
+                        .add(new FloatTag(pitch)));
     }
 
     /**
@@ -543,9 +554,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Load or generate UUID for non-player entities
         // =========================================================
-        final NbtMap nbtMap = this.getNbt();
+        final CompoundTag nbtMap = this.getNbt();
         if (!(this instanceof Player)) {
-            if (this.nbt.containsKey("uuid")) {
+            if (this.nbt.contains("uuid")) {
                 this.entityUniqueId = UUID.fromString(nbtMap.getString("uuid"));
             } else {
                 this.entityUniqueId = UUID.randomUUID();
@@ -556,7 +567,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // Initialize entity data defaults first
         // =========================================================
         this.entityDataMap.getOrCreateFlags();
-        this.entityDataMap.put(ActorDataTypes.AIR_SUPPLY, nbtMap.getShort("Air"));
+        this.entityDataMap.put(AIR_SUPPLY, nbtMap.getShort("Air"));
         this.entityDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
         this.entityDataMap.put(ActorDataTypes.NAME, "");
         this.entityDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
@@ -570,9 +581,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Load Effects from NBT
         // =========================================================
-        if (this.nbt.containsKey("ActiveEffects")) {
-            List<NbtMap> effects = nbtMap.getList("ActiveEffects", NbtType.COMPOUND);
-            for (NbtMap e : effects) {
+        if (this.nbt.contains("ActiveEffects")) {
+            ListTag<CompoundTag> effects = nbtMap.getList("ActiveEffects", CompoundTag.class);
+            for (CompoundTag e : effects.getAll()) {
                 Effect effect = Effect.get(e.getByte("Id"));
                 if (effect == null) continue;
 
@@ -587,15 +598,15 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Load Custom name from NBT
         // =========================================================
-        if (this.nbt.containsKey("CustomName")) {
+        if (this.nbt.contains("CustomName")) {
             String name = nbtMap.getString("CustomName");
             if (name != null) {
                 this.setNameTag(name);
             }
-            if (this.nbt.containsKey("CustomNameVisible")) {
+            if (this.nbt.contains("CustomNameVisible")) {
                 this.setNameTagVisible(nbtMap.getBoolean("CustomNameVisible"));
             }
-            if (this.nbt.containsKey("CustomNameAlwaysVisible")) {
+            if (this.nbt.contains("CustomNameAlwaysVisible")) {
                 this.setNameTagAlwaysVisible(nbtMap.getBoolean("CustomNameAlwaysVisible"));
             }
         }
@@ -603,9 +614,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Load Attributes from NBT
         // =========================================================
-        if (this.nbt.containsKey("Attributes")) {
-            List<NbtMap> attributes = nbtMap.getList("Attributes", NbtType.COMPOUND);
-            for (var nbt : attributes) {
+        if (this.nbt.contains("Attributes")) {
+            ListTag<CompoundTag> attributes = nbtMap.getList("Attributes", CompoundTag.class);
+            for (var nbt : attributes.getAll()) {
                 Attribute attribute = Attribute.fromNBT(nbt);
                 this.attributes.put(attribute.getId(), attribute);
             }
@@ -633,7 +644,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.applyInitialPowerJumpFlags();
     }
 
-    protected final void init(IChunk chunk, NbtMap nbt) {
+    protected final void init(IChunk chunk, CompoundTag nbt) {
         if ((chunk == null || chunk.getProvider() == null)) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
@@ -641,27 +652,25 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
         this.justCreated = true;
-        setNbt(nbt.toBuilder());
-
-        final NbtMap nbtMap = this.getNbt();
+        this.nbt = nbt;
 
         // Restore entity properties from NBT (overwriting defaults)
-        if (this.nbt.containsKey("IntProperties")) {
-            NbtMap intProps = nbtMap.getCompound("IntProperties");
-            for (Map.Entry<String, Object> entry : intProps.entrySet()) {
+        if (this.nbt.contains("IntProperties")) {
+            CompoundTag intProps = this.nbt.getCompound("IntProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : intProps.getTags().entrySet()) {
                 String key = entry.getKey();
-                if (entry.getValue() instanceof Number number) {
-                    this.intProperties.put(key, number.intValue());
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.intProperties.put(key, numTag.getData().intValue());
                 }
             }
         }
 
-        if (this.nbt.containsKey("FloatProperties")) {
-            NbtMap floatProps = nbtMap.getCompound("FloatProperties");
-            for (Map.Entry<String, Object> entry : floatProps.entrySet()) {
+        if (this.nbt.contains("FloatProperties")) {
+            CompoundTag floatProps = this.nbt.getCompound("FloatProperties");
+            for (Map.Entry<String, cn.nukkit.nbt.tag.Tag> entry : floatProps.getTags().entrySet()) {
                 String key = entry.getKey();
-                if (entry.getValue() instanceof Number number) {
-                    this.floatProperties.put(key, number.floatValue());
+                if (entry.getValue() instanceof NumberTag<?> numTag) {
+                    this.floatProperties.put(key, numTag.getData().floatValue());
                 }
             }
         }
@@ -671,61 +680,61 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.server = chunk.getProvider().getLevel().getServer();
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-        List<Double> posList = nbtMap.getList("Pos", NbtType.DOUBLE);
-        List<Float> rotationList = nbtMap.getList("Rotation", NbtType.FLOAT);
-        List<Double> motionList = nbtMap.getList("Motion", NbtType.DOUBLE);
+        ListTag<DoubleTag> posList = this.nbt.getList("Pos", DoubleTag.class);
+        ListTag<FloatTag> rotationList = this.nbt.getList("Rotation", FloatTag.class);
+        ListTag<DoubleTag> motionList = this.nbt.getList("Motion", DoubleTag.class);
         this.setPositionAndRotation(
                 this.temporalVector.setComponents(
-                        posList.get(0),
-                        posList.get(1),
-                        posList.get(2)
+                        posList.get(0).data,
+                        posList.get(1).data,
+                        posList.get(2).data
                 ),
-                rotationList.get(0),
-                rotationList.get(1)
+                rotationList.get(0).data,
+                rotationList.get(1).data
         );
 
         this.setMotion(this.temporalVector.setComponents(
-                motionList.get(0),
-                motionList.get(1),
-                motionList.get(2)
+                motionList.get(0).data,
+                motionList.get(1).data,
+                motionList.get(2).data
         ));
 
-        if (!this.nbt.containsKey("FallDistance")) {
+        if (!this.nbt.contains("FallDistance")) {
             this.nbt.putFloat("FallDistance", 0);
         }
-        this.fallDistance = this.getNbt().getFloat("FallDistance");
-        this.highestPosition = this.y + this.getNbt().getFloat("FallDistance");
+        this.fallDistance = this.nbt.getFloat("FallDistance");
+        this.highestPosition = this.y + this.nbt.getFloat("FallDistance");
 
-        if (!this.nbt.containsKey("Fire") || this.getNbt().getShort("Fire") > 32767) {
-            this.nbt.putShort("Fire", (short) 0);
+        if (!this.nbt.contains("Fire") || this.nbt.getShort("Fire") > 32767) {
+            this.nbt.putShort("Fire", 0);
         }
-        this.fireTicks = this.getNbt().getShort("Fire");
+        this.fireTicks = this.nbt.getShort("Fire");
 
-        if (!this.nbt.containsKey("Air")) {
-            this.nbt.putShort("Air", (short) 300);
+        if (!this.nbt.contains("Air")) {
+            this.nbt.putShort("Air", 300);
         }
-        if (!this.nbt.containsKey("OnGround")) {
+        if (!this.nbt.contains("OnGround")) {
             this.nbt.putBoolean("OnGround", false);
         }
-        this.onGround = this.getNbt().getBoolean("OnGround");
+        this.onGround = this.nbt.getBoolean("OnGround");
 
-        if (!this.nbt.containsKey("Invulnerable")) {
+        if (!this.nbt.contains("Invulnerable")) {
             this.nbt.putBoolean("Invulnerable", false);
         }
-        this.invulnerable = this.getNbt().getBoolean("Invulnerable");
+        this.invulnerable = this.nbt.getBoolean("Invulnerable");
 
-        if (!this.nbt.containsKey("Scale")) {
+        if (!this.nbt.contains("Scale")) {
             this.nbt.putFloat("Scale", 1);
         }
-        this.scale = this.getNbt().getFloat("Scale");
-        if (!this.nbt.containsKey("Despawnable")) {
+        this.scale = this.nbt.getFloat("Scale");
+        if (!this.nbt.contains("Despawnable")) {
             boolean persistent =
                     (isCustomEntity() && meta().getBoolean(CustomEntityComponents.PERSISTENT, false)) ||
-                            this.getNbt().getBoolean("Persistent");
+                            this.nbt.getBoolean("Persistent");
 
             this.nbt.putBoolean("Despawnable", !persistent);
         }
-        this.despawnable = this.getNbt().getBoolean("Despawnable");
+        this.despawnable = this.nbt.getBoolean("Despawnable");
         try {
             this.initEntity();
             if (this.initialized) {
@@ -1092,9 +1101,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (!(this instanceof Player)) {
             this.nbt.putString("identifier", this.getIdentifier());
             if (!this.getNameTag().isEmpty()) {
-                this.nbt.putString("CustomName", this.getNameTag())
-                        .putBoolean("CustomNameVisible", this.isNameTagVisible())
-                        .putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());
+                this.nbt.putString("CustomName", this.getNameTag());
+                this.nbt.putBoolean("CustomNameVisible", this.isNameTagVisible());
+                this.nbt.putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());
             } else {
                 this.nbt.remove("CustomName");
                 this.nbt.remove("CustomNameVisible");
@@ -1106,59 +1115,72 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.nbt.putString("uuid", this.entityUniqueId.toString());
         }
 
-        this.nbt.putList("Pos", NbtType.DOUBLE, Arrays.asList(this.x, this.y, this.z));
-        this.nbt.putList("Motion", NbtType.DOUBLE, Arrays.asList(this.motionX, this.motionY, this.motionZ));
-        this.nbt.putList("Rotation", NbtType.FLOAT, Arrays.asList((float) this.yaw, (float) this.pitch));
-        this.nbt.putFloat("FallDistance", this.fallDistance)
-                .putShort("Fire", (short) this.fireTicks)
-                .putShort("Air", this.getDataProperty(ActorDataTypes.AIR_SUPPLY, (short) 0))
-                .putBoolean("OnGround", this.onGround)
-                .putBoolean("Invulnerable", this.invulnerable)
-                .putBoolean("Despawnable", this.despawnable)
-                .putFloat("Scale", this.scale);
+        this.nbt.putList("Pos", new ListTag<DoubleTag>()
+                .add(new DoubleTag(this.x))
+                .add(new DoubleTag(this.y))
+                .add(new DoubleTag(this.z))
+        );
+
+        this.nbt.putList("Motion", new ListTag<DoubleTag>()
+                .add(new DoubleTag(this.motionX))
+                .add(new DoubleTag(this.motionY))
+                .add(new DoubleTag(this.motionZ))
+        );
+
+        this.nbt.putList("Rotation", new ListTag<FloatTag>()
+                .add(new FloatTag((float) this.yaw))
+                .add(new FloatTag((float) this.pitch))
+        );
+
+        this.nbt.putFloat("FallDistance", this.fallDistance);
+        this.nbt.putShort("Fire", this.fireTicks);
+        this.nbt.putShort("Air", this.getDataProperty(AIR_SUPPLY, (short) 0));
+        this.nbt.putBoolean("OnGround", this.onGround);
+        this.nbt.putBoolean("Invulnerable", this.invulnerable);
+        this.nbt.putBoolean("Despawnable", this.despawnable);
+        this.nbt.putFloat("Scale", this.scale);
 
         if (!this.effects.isEmpty()) {
-            final List<NbtMap> list = new ObjectArrayList<>();
+            ListTag<CompoundTag> list = new ListTag<>();
             for (Effect effect : this.effects.values()) {
-                list.add(NbtMap.builder()
-                        .putByte("Id", effect.getId().byteValue())
-                        .putByte("Amplifier", (byte) effect.getAmplifier())
+                list.add(new CompoundTag()
+                        .putByte("Id", effect.getId())
+                        .putByte("Amplifier", effect.getAmplifier())
                         .putInt("Duration", effect.getDuration())
                         .putBoolean("Ambient", false)
                         .putBoolean("ShowParticles", effect.isVisible())
-                        .build()
                 );
             }
 
-            this.nbt.putList("ActiveEffects", NbtType.COMPOUND, list);
+            this.nbt.putList("ActiveEffects", list);
         } else {
             this.nbt.remove("ActiveEffects");
         }
 
         if (!this.attributes.isEmpty()) {
-            List<NbtMap> attributes = new ObjectArrayList<>();
+            ListTag<CompoundTag> attributes = new ListTag<>();
             for (var attribute : this.attributes.values()) {
-                NbtMap nbt = Attribute.toNBT(attribute);
+                CompoundTag nbt = Attribute.toNBT(attribute);
                 attributes.add(nbt);
             }
-            this.nbt.putList("Attributes", NbtType.COMPOUND, attributes);
+            this.nbt.putList("Attributes", attributes);
         } else {
             this.nbt.remove("Attributes");
         }
 
         // Save intProperties & boolProperties
-        NbtMapBuilder intProps = NbtMap.builder();
+        CompoundTag intProps = new CompoundTag();
         for (Map.Entry<String, Integer> entry : intProperties.entrySet()) {
             intProps.putInt(entry.getKey(), entry.getValue());
         }
-        this.nbt.putCompound("IntProperties", intProps.build());
+        this.nbt.putCompound("IntProperties", intProps);
 
         // Save floatProperties
-        NbtMapBuilder floatProps = NbtMap.builder();
+        CompoundTag floatProps = new CompoundTag();
         for (Map.Entry<String, Float> entry : floatProperties.entrySet()) {
             floatProps.putFloat(entry.getKey(), entry.getValue());
         }
-        this.nbt.putCompound("FloatProperties", floatProps.build());
+        this.nbt.putCompound("FloatProperties", floatProps);
     }
 
     /**
@@ -3687,7 +3709,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public final boolean isGrowthPaused() {
         if (!isAgeable() || !isBaby()) return false;
-        return this.nbt.containsKey(TAG_ENTITY_GROW_PAUSED) && this.getNbt().getBoolean(TAG_ENTITY_GROW_PAUSED);
+        return this.nbt.contains(TAG_ENTITY_GROW_PAUSED) && this.getNbt().getBoolean(TAG_ENTITY_GROW_PAUSED);
     }
 
     /**
@@ -3721,7 +3743,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 ticksGrowLeft = -1;
                 growDirty = true;
             } else {
-                if (!this.nbt.containsKey(Entity.TAG_ENTITY_BIRTH_DATE)) {
+                if (!this.nbt.contains(Entity.TAG_ENTITY_BIRTH_DATE)) {
                     long nowSec = System.currentTimeMillis() / 1000L;
                     this.nbt.putLong(Entity.TAG_ENTITY_BIRTH_DATE, nowSec);
                 }
@@ -3794,7 +3816,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
 
-        int left = this.nbt.containsKey(TAG_ENTITY_GROW_LEFT) ? this.getNbt().getInt(TAG_ENTITY_GROW_LEFT) : total;
+        int left = this.nbt.contains(TAG_ENTITY_GROW_LEFT) ? this.getNbt().getInt(TAG_ENTITY_GROW_LEFT) : total;
 
         if (left < 0 || left > total) left = total;
         ticksGrowLeft = left;
@@ -3854,7 +3876,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             return;
         }
 
-        if (!nbt.containsKey(TAG_ENTITY_GROW_LEFT)) {
+        if (!nbt.contains(TAG_ENTITY_GROW_LEFT)) {
             setDataFlag(ActorFlags.BABY, false, false);
             setScale(1f);
             ticksGrowLeft = -1;
@@ -4452,7 +4474,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     protected void initSoundVariantProperty() {
         String soundVariant;
-        if (this.nbt.containsKey(NBT_SOUND_VARIANT)) {
+        if (this.nbt.contains(NBT_SOUND_VARIANT)) {
             soundVariant = this.getNbt().getString(NBT_SOUND_VARIANT);
         } else {
             soundVariant = this.getRandomSoundVariant();
@@ -5768,18 +5790,16 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * Add a tag to the entity
      */
     public void addTag(String tag) {
-        final List<String> tags = this.getNbt().getList("Tags", NbtType.STRING);
-        tags.add(tag);
-        this.nbt.putList("Tags", NbtType.STRING, tags);
+        this.nbt.putList("Tags", this.nbt.getList("Tags", StringTag.class).add(new StringTag(tag)));
     }
 
     /**
      * Remove tag from entity if exist
      */
     public void removeTag(String tag) {
-        List<String> tags = this.getNbt().getList("Tags", NbtType.STRING);
-        tags.remove(tag);
-        this.nbt = this.nbt.putList("Tags", NbtType.STRING, tags);
+        ListTag<StringTag> tags = this.nbt.getList("Tags", StringTag.class);
+        tags.remove(new StringTag(tag));
+        this.nbt.putList("Tags", tags);
     }
 
     /**
@@ -5794,14 +5814,14 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      * @return true if entity has a string tag
      */
     public boolean hasTag(String tag) {
-        return this.getNbt().getList("Tags", NbtType.STRING).stream().anyMatch(t -> t.equals(tag));
+        return this.getNbt().getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
     /**
      * @return List of tags for the entity
      */
-    public List<String> getAllTags() {
-        return this.getNbt().getList("Tags", NbtType.STRING);
+    public List<StringTag> getAllTags() {
+        return this.getNbt().getList("Tags", StringTag.class).getAll();
     }
 
     public float getFreezingEffectStrength() {
@@ -6191,15 +6211,12 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
 
-    public void setNbt(NbtMapBuilder builder) {
-        this.nbt = builder;
+    public void setNbt(CompoundTag compoundTag) {
+        this.nbt = compoundTag;
     }
 
-    public NbtMap getNbt() {
-        return this.nbt.build();
-    }
-
-    public NbtMapBuilder getNbtBuilder() {
+    public CompoundTag getNbt() {
         return this.nbt;
     }
+
 }

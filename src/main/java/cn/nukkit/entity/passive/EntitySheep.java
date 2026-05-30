@@ -38,6 +38,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
@@ -63,7 +64,7 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public boolean sheared = false;
     public int color = 0;
 
-    public EntitySheep(IChunk chunk, NbtMap nbt) {
+    public EntitySheep(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -147,14 +148,14 @@ public class EntitySheep extends EntityAnimal implements EntityWalkable, EntityS
     public void initEntity() {
         super.initEntity();
 
-        if (!this.nbt.containsKey("Color")) {
+        if (!this.nbt.contains("Color")) {
             this.setColor(randomColor());
         } else {
             this.setColor(this.getNbt().getByte("Color"));
         }
 
-        if (!this.nbt.containsKey("Sheared")) {
-            this.nbt.putByte("Sheared", (byte) 0).build();
+        if (!this.nbt.contains("Sheared")) {
+            this.nbt.putByte("Sheared", (byte) 0);
         } else {
             this.sheared = this.getNbt().getBoolean("Sheared");
         }

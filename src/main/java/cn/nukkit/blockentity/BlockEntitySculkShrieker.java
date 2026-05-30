@@ -19,7 +19,7 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,7 +43,7 @@ public class BlockEntitySculkShrieker extends BlockEntity implements VibrationLi
     private int shriekEndTick;
 
 
-    public BlockEntitySculkShrieker(IChunk chunk, NbtMap nbt) {
+    public BlockEntitySculkShrieker(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

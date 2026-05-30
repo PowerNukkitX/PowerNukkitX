@@ -29,6 +29,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class EntityGuardian extends EntityMob implements EntitySwimmable {
         return GUARDIAN;
     }
 
-    public EntityGuardian(IChunk chunk, NbtMap nbt) {
+    public EntityGuardian(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

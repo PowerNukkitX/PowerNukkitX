@@ -19,8 +19,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.math.vector.Vector2f;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.InputInteractionModel;
 import org.cloudburstmc.protocol.bedrock.data.InputMode;
@@ -58,7 +58,7 @@ public class EntityBoat extends EntityVehicle {
     protected boolean sinking = true;
     private int ticksInWater;
 
-    public EntityBoat(IChunk chunk, NbtMap nbt) {
+    public EntityBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         this.setHealthMax(40);
@@ -68,10 +68,10 @@ public class EntityBoat extends EntityVehicle {
     @Override
     protected void initEntity() {
         super.initEntity();
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("Variant")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("Variant")) {
             woodID = nbtMap.getInt("Variant");
-        } else if (nbtMap.containsKey("woodID")) {
+        } else if (nbtMap.contains("woodID")) {
             woodID = nbtMap.getByte("woodID");
         }
 

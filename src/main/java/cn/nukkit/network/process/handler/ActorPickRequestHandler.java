@@ -8,6 +8,7 @@ import cn.nukkit.event.player.PlayerEntityPickEvent;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.SpawnEggPickable;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import cn.nukkit.utils.Identifier;
@@ -59,7 +60,7 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
         }
 
         if (packet.isWithData()) {
-            final NbtMap nbt = this.getCleanedNBT(entity);
+            final CompoundTag nbt = this.getCleanedNBT(entity);
             if (nbt != null) {
                 ((SpawnEggPickable) item).setEntityNBT(nbt);
                 item.setLore("+(DATA)");
@@ -123,16 +124,12 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
         }
     }
 
-    private NbtMap getCleanedNBT(Entity entity) {
+    private CompoundTag getCleanedNBT(Entity entity) {
         entity.saveNBT();
-        final NbtMapBuilder builder = entity.getNbt().toBuilder();
-        builder.remove("Pos");
-        builder.remove("Motion");
-        builder.remove("OnGround");
-        builder.remove("Rotation");
-        builder.remove("uuid");
-        if (!builder.isEmpty()) {
-            return builder.build();
+        CompoundTag tag = entity.getNbt().copy();
+        tag.remove("Pos", "Motion", "OnGround", "Rotation", "uuid");
+        if (!tag.getTags().isEmpty()) {
+            return tag;
         } else {
             return null;
         }

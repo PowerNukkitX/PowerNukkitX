@@ -35,6 +35,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
@@ -59,7 +60,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
         return STRIDER;
     }
 
-    public EntityStrider(IChunk chunk, NbtMap nbt) {
+    public EntityStrider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -283,7 +284,7 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     public void setRideableType(SpawnRiderType type) {
         this.jockeyType = (type == null ? SpawnRiderType.NORMAL : type);
         if (this.nbt != null) {
-            this.nbt.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId()).build();
+            this.nbt.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
         }
     }
 
@@ -319,14 +320,14 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        final NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
+        final CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
 
         if (this.jockeyType == SpawnRiderType.PIGLIN_JOCKEY) {
             Item stick = Item.get(Item.WARPED_FUNGUS_ON_A_STICK, 0, 1);
             nbt.putCompound("Mainhand", ItemHelper.write(stick));
         }
 
-        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt.build());
+        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
         if (rider == null) return null;
         return rider;
     }
@@ -389,12 +390,12 @@ public class EntityStrider extends EntityAnimal implements EntityWalkable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.nbt != null && this.nbt.containsKey(NBT_RIDEABLE_TYPE)) {
+        if (this.nbt != null && this.nbt.contains(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.getNbt().getInt(NBT_RIDEABLE_TYPE));
         } else {
             this.jockeyType = rollInitialRideableType();
             if (this.nbt != null) {
-                this.nbt.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId()).build();
+                this.nbt.putInt(NBT_RIDEABLE_TYPE, this.jockeyType.getId());
             }
         }
 

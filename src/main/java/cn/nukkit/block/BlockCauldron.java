@@ -20,10 +20,8 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.NbtHelper;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -244,25 +242,25 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                 }
 
                 if (cauldron.isCustomColor()) {
-                    NbtMapBuilder compoundTag = item.hasCompoundTag() ? item.getNbt().toBuilder() : NbtMap.builder();
+                    CompoundTag compoundTag = item.hasNbt() ? item.getNbt().copy() : new CompoundTag();
                     compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
-                    item.setCompoundTag(compoundTag.build());
+                    item.setNbt(compoundTag);
                     player.getInventory().setItemInMainHand(item);
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
                     this.level.setBlock(this, this, true, true);
                     this.level.addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
                 } else {
-                    if (!item.hasCompoundTag()) {
+                    if (!item.hasNbt()) {
                         break;
                     }
 
-                    NbtMap compoundTag = item.getNbt();
-                    if (!compoundTag.containsKey("customColor")) {
+                    CompoundTag compoundTag = item.getNbt();
+                    if (!compoundTag.contains("customColor")) {
                         break;
                     }
 
-                    compoundTag = NbtHelper.remove(compoundTag, "customColor");
-                    item.setCompoundTag(compoundTag);
+                    compoundTag.remove("customColor");
+                    item.setNbt(compoundTag);
                     player.getInventory().setItemInMainHand(item);
 
                     setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
@@ -538,13 +536,14 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
-        NbtMap nbt = NbtMap.builder()
+        CompoundTag nbt = new CompoundTag()
                 .putShort("PotionId", (short) -1)
-                .putByte("SplashPotion", (byte) 0)
-                .build();
+                .putByte("SplashPotion", (byte) 0);
 
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;

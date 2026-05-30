@@ -23,6 +23,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
         return MAGMA_CUBE;
     }
 
-    public EntityMagmaCube(IChunk chunk, NbtMap nbt) {
+    public EntityMagmaCube(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -56,7 +57,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             if (variant != null) return variant;
         }
 
-        if (this.nbt.containsKey(TAG_SLIME_SIZE)) {
+        if (this.nbt.contains(TAG_SLIME_SIZE)) {
             return this.getNbt().getInt(TAG_SLIME_SIZE);
         }
 
@@ -78,7 +79,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
             return true;
         }
 
-        return this.nbt.containsKey(TAG_SLIME_SIZE);
+        return this.nbt.contains(TAG_SLIME_SIZE);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class EntityMagmaCube extends EntityMob implements EntityWalkable, Entity
 
     @Override
     protected void initEntity() {
-        if (!this.nbt.containsKey(TAG_SLIME_SIZE)) {
+        if (!this.nbt.contains(TAG_SLIME_SIZE)) {
             this.nbt.putInt(TAG_SLIME_SIZE, randomVariant());
         }
 

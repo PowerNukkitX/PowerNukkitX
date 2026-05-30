@@ -12,6 +12,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -33,7 +34,7 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
      */
     protected boolean detonated = false;
 
-    public EntityEnderCrystal(IChunk chunk, NbtMap nbt) {
+    public EntityEnderCrystal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -42,8 +43,8 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
     protected void initEntity() {
         super.initEntity();
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("ShowBottom")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("ShowBottom")) {
             this.setShowBase(nbtMap.getBoolean("ShowBottom"));
         }
     }

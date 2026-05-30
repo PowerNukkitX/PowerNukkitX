@@ -8,7 +8,7 @@ import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,8 +44,8 @@ public abstract class BlockBrushable extends BlockFallable implements BlockEntit
     }
 
     @Override
-    protected EntityFallingBlock createFallingEntity(NbtMap customNbt) {
-        customNbt = customNbt.toBuilder().putBoolean("BreakOnGround", true).build();
+    protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
+        customNbt = customNbt.copy().putBoolean("BreakOnGround", true);
         return super.createFallingEntity(customNbt);
     }
 

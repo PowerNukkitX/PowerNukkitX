@@ -7,6 +7,7 @@ import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.config.category.network.RateLimitSettings;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.player.PlayerCreationEvent;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.TrimData;
 import cn.nukkit.registry.ItemRegistry;
 import cn.nukkit.registry.ItemRuntimeIdRegistry;
@@ -324,14 +325,14 @@ public class PlayerSessionHolder {
         final List<ItemDefinition> itemDefinitions = new ObjectArrayList<>();
 
         for (ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
-            NbtMapBuilder tag = NbtMap.builder();
+            CompoundTag tag = new CompoundTag();
             if (ItemRegistry.getItemComponents().containsKey(data.identifier())) {
                 NbtMap itemTag = ItemRegistry.getItemComponents().getCompound(data.identifier());
-                tag.putCompound("components", itemTag.getCompound("components"));
+                tag.putCompound("components", CompoundTag.fromNetwork(itemTag.getCompound("components")));
             } else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
-                tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt().toBuilder();
+                tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
             }
-            final NbtMap components = tag.build();
+            final NbtMap components = tag.toNetwork();
             itemDefinitions.add(
                     new SimpleItemDefinition(
                             data.identifier(),

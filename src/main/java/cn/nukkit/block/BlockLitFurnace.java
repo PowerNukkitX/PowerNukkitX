@@ -10,11 +10,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
@@ -80,7 +80,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        NbtMapBuilder nbt = NbtMap.builder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -90,7 +90,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
             nbt.putAll(item.getCustomBlockData());
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntity
             }
 
         BlockEntityFurnace furnace = getOrCreateBlockEntity();
-        if (furnace.getNbt().containsKey("Lock") && furnace.getNbt().get("Lock") instanceof String
+        if (furnace.getNbt().contains("Lock") && furnace.getNbt().get("Lock") instanceof StringTag
                 && !furnace.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }

@@ -10,6 +10,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.GenericParticle;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -20,11 +21,11 @@ public class EntityWindCharge extends EntityProjectile {
 
     private Entity directionChanged;
 
-    public EntityWindCharge(IChunk chunk, NbtMap nbt) {
+    public EntityWindCharge(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityWindCharge(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityWindCharge(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 

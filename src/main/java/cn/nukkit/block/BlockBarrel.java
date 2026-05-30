@@ -8,11 +8,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -75,18 +75,20 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
             }
         }
 
-        NbtMapBuilder nbt = NbtMap.builder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>());
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            Map<String, Object> customData = item.getCustomBlockData();
-            nbt.putAll(customData);
+            Map<String, Tag> customData = item.getCustomBlockData().getTags();
+            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
+                nbt.put(tag.getKey(), tag.getValue());
+            }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -95,7 +97,7 @@ public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHold
 
         BlockEntityBarrel barrel = getOrCreateBlockEntity();
 
-        if (barrel.getNbt().containsKey("Lock") && barrel.getNbt().get("Lock") instanceof String
+        if (barrel.getNbt().contains("Lock") && barrel.getNbt().get("Lock") instanceof StringTag
                 && !barrel.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }

@@ -11,7 +11,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
@@ -31,11 +31,11 @@ public class EntityTnt extends Entity implements EntityExplosive {
     protected int fuse;
     protected Entity source;
 
-    public EntityTnt(IChunk chunk, NbtMap nbt) {
+    public EntityTnt(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityTnt(IChunk chunk, NbtMap nbt, Entity source) {
+    public EntityTnt(IChunk chunk, CompoundTag nbt, Entity source) {
         super(chunk, nbt);
         this.source = source;
     }
@@ -85,7 +85,7 @@ public class EntityTnt extends Entity implements EntityExplosive {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.nbt.containsKey("Fuse")) {
+        if (this.nbt.contains("Fuse")) {
             fuse = this.getNbt().getByte("Fuse");
         } else {
             fuse = 80;

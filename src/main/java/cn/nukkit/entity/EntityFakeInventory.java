@@ -7,6 +7,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 public class EntityFakeInventory extends Entity implements InventoryHolder {
 
-    public EntityFakeInventory(IChunk chunk, NbtMap nbt) {
+    public EntityFakeInventory(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -54,11 +55,11 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
         this.setDataFlag(ActorFlags.HAS_COLLISION, false);
         this.setDataFlag(ActorFlags.CAN_CLIMB, false);
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("ContainerSize")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.containsInt("ContainerSize")) {
             this.containerSize = nbtMap.getInt("ContainerSize");
         }
-        if (nbtMap.containsKey("displayName")) {
+        if (nbtMap.containsString("displayName")) {
             this.displayName = nbtMap.getString("displayName");
             this.setNameTag(this.displayName);
         }

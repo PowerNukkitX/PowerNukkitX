@@ -10,6 +10,10 @@ import cn.nukkit.level.generator.object.structures.utils.NukkitCollections;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -188,11 +192,18 @@ public class OceanMonumentPieces {
                 IChunk chunk = level.getChunk(worldX >> 4, worldZ >> 4);
                 if (chunk != null) {
                     EntityElderGuardian guardian = (EntityElderGuardian) Entity.createEntity(Entity.ELDER_GUARDIAN,
-                            chunk, NbtMap.builder()
-                                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(worldX + 0.5, (double) worldY, worldZ + 0.5))
-                                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                                    .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
-                                    .build()
+                            chunk, new CompoundTag()
+                                    .putList("Pos", new ListTag<>()
+                                            .add(new DoubleTag(worldX + 0.5))
+                                            .add(new DoubleTag(worldY))
+                                            .add(new DoubleTag(worldZ + 0.5)))
+                                    .putList("Motion", new ListTag<>()
+                                            .add(new DoubleTag(0))
+                                            .add(new DoubleTag(0))
+                                            .add(new DoubleTag(0)))
+                                    .putList("Rotation", new ListTag<>()
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0)))
                     );
                     if (guardian != null) {
                         guardian.setPersistent(true);

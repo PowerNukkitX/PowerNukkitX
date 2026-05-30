@@ -42,6 +42,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -73,7 +74,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
         new EnumEntityProperty("minecraft:sound_variant", SOUND_VARIANTS, "default", true)
     };
 
-    public EntityPig(IChunk chunk, NbtMap nbt) {
+    public EntityPig(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -222,7 +223,7 @@ public class EntityPig extends EntityAnimal implements EntityWalkable, ClimateVa
     public void initEntity() {
         super.initEntity();
 
-        if(nbt.containsKey("variant")) {
+        if(nbt.contains("variant")) {
             setVariant(Variant.get(getNbt().getString("variant")));
         } else setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
 

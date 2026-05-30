@@ -36,6 +36,7 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -54,7 +55,7 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     protected int lastCollideTime = getLevel().getTick();
     protected boolean waitForVibration = false;
 
-    public EntityWarden(IChunk chunk, NbtMap nbt) {
+    public EntityWarden(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

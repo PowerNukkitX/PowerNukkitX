@@ -5,7 +5,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.AgeableComponent;
 import cn.nukkit.item.Item;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * Handles real-time growth progression for ageable baby entities.
@@ -25,16 +25,16 @@ public class AnimalGrowExecutor implements IBehaviorExecutor {
         int left = entity.getTicksGrowLeft();
         if (left < 0) return false;
 
-        final NbtMap nbtMap = entity.getNbt();
+        final CompoundTag nbtMap = entity.getNbt();
 
-        if (!nbtMap.containsKey(Entity.TAG_ENTITY_BIRTH_DATE)) return false;
+        if (!nbtMap.contains(Entity.TAG_ENTITY_BIRTH_DATE)) return false;
         long birthSec = nbtMap.getLong(Entity.TAG_ENTITY_BIRTH_DATE);
         if (birthSec <= 0) return false;
 
         long nowSec = System.currentTimeMillis() / 1000L;
 
         long lastSyncSec;
-        if (nbtMap.containsKey(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC)) {
+        if (nbtMap.contains(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC)) {
             lastSyncSec = nbtMap.getLong(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC);
             if (lastSyncSec < birthSec) lastSyncSec = birthSec;
         } else {
@@ -51,7 +51,7 @@ public class AnimalGrowExecutor implements IBehaviorExecutor {
         int deltaTicks = (deltaTicksLong > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) deltaTicksLong;
 
         entity.reduceGrowLeft(deltaTicks);
-        entity.getNbtBuilder().putLong(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC, nowSec);
+        entity.getNbt().putLong(EntityLiving.TAG_ENTITY_GROW_LAST_SYNC, nowSec);
 
         // If fully grown, finalize + particles + drop items
         if (entity.getTicksGrowLeft() == 0) {

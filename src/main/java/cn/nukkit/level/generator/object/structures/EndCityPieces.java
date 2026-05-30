@@ -24,6 +24,7 @@ import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -272,7 +273,7 @@ public final class EndCityPieces {
             if (level.getBlock(bannerPos.getX(), bannerPos.getY(), bannerPos.getZ()) instanceof BlockStandingBanner bannerBlock) {
                 BlockEntityBanner banner = bannerBlock.getBlockEntity();
                 if (banner == null) {
-                    banner = bannerBlock.createBlockEntity(NbtMap.builder().putInt("Base", DyeColor.PURPLE.getDyeData() & 0x0f).build());
+                    banner = bannerBlock.createBlockEntity(new CompoundTag().putInt("Base", DyeColor.PURPLE.getDyeData() & 0x0f));
                 }
                 banner.setBaseColor(DyeColor.PURPLE);
                 banner.spawnToAll();
@@ -302,7 +303,7 @@ public final class EndCityPieces {
                     shulkerPos.getY(),
                     shulkerPos.getZ() + 0.5,
                     level
-            )); 
+            ));
             if (shulker != null) {
                 shulker.setPersistent(true);
                 shulker.spawnToAll();

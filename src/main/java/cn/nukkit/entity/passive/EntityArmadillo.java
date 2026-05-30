@@ -44,6 +44,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.cloudburstmc.nbt.NbtMap;
@@ -66,7 +67,7 @@ public class EntityArmadillo extends EntityAnimal {
     };
     private final static String PROPERTY_STATE = "minecraft:armadillo_state";
 
-    public EntityArmadillo(IChunk chunk, NbtMap nbt) {
+    public EntityArmadillo(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -7,10 +7,10 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.HashUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 
@@ -25,7 +25,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     //true if the piston is extending instead of withdrawing.
     protected boolean expanding;
 
-    public BlockEntityMovingBlock(IChunk chunk, NbtMap nbt) {
+    public BlockEntityMovingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -57,13 +57,12 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        final NbtMap nbtMap = getNbt();
-        if (nbt.containsKey("movingBlock")) {
-            NbtMap movingBlock = nbtMap.getCompound("movingBlock");
-            int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock);
+        if (nbt.contains("movingBlock")) {
+            CompoundTag movingBlock = nbt.getCompound("movingBlock");
+            int blockhash = HashUtils.fnv1a_32_nbt_palette(movingBlock.toNetwork());
             BlockState blockState = Registries.BLOCKSTATE.get(blockhash);
             if(blockState==null){
-                log.error("Can't load moving block {}",movingBlock);
+                log.error("Can't load moving block {}",movingBlock.toSNBT());
             }else{
                 this.block = blockState.toBlock();
             }
@@ -74,16 +73,16 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             this.close();
         }
 
-        if (nbt.containsKey("pistonPosX") && nbt.containsKey("pistonPosY") && nbt.containsKey("pistonPosZ")) {
-            this.piston = new BlockVector3(nbtMap.getInt("pistonPosX"), nbtMap.getInt("pistonPosY"), nbtMap.getInt("pistonPosZ"));
+        if (nbt.contains("pistonPosX") && nbt.contains("pistonPosY") && nbt.contains("pistonPosZ")) {
+            this.piston = new BlockVector3(nbt.getInt("pistonPosX"), nbt.getInt("pistonPosY"), nbt.getInt("pistonPosZ"));
         } else {
             this.piston = new BlockVector3(0, -1, 0);
         }
     }
 
-    public @Nullable NbtMap getMovingBlockEntityCompound() {
-        if (this.nbt.containsKey("movingEntity")) {
-            return this.getNbt().getCompound("movingEntity");
+    public @Nullable CompoundTag getMovingBlockEntityCompound() {
+        if (this.nbt.contains("movingEntity")) {
+            return this.nbt.getCompound("movingEntity");
         }
 
         return null;

@@ -7,10 +7,8 @@ import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -62,8 +60,8 @@ public class BlockTrappedChest extends BlockChest {
         }
 
         this.getLevel().setBlock(block, this, true, true);
-        NbtMapBuilder nbt = NbtMap.builder()
-                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+        CompoundTag nbt = new CompoundTag()
+                .putList("Items", new ListTag<CompoundTag>())
                 .putString("id", BlockEntity.CHEST)
                 .putInt("x", (int) this.x)
                 .putInt("y", (int) this.y)
@@ -77,7 +75,7 @@ public class BlockTrappedChest extends BlockChest {
             nbt.putAll(item.getCustomBlockData());
         }
 
-        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt.build());
+        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
 
         if (blockEntity == null) {
             return false;

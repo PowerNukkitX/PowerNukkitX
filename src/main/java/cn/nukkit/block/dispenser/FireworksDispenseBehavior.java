@@ -5,8 +5,8 @@ import cn.nukkit.entity.item.EntityFireworksRocket;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 
 public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
@@ -21,9 +21,9 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
         BlockFace opposite = face.getOpposite();
         Vector3 pos = block.getSide(face).add(0.5 + opposite.getXOffset() * 0.2, 0.5 + opposite.getYOffset() * 0.2, 0.5 + opposite.getZOffset() * 0.2);
 
-        NbtMapBuilder nbt = Entity.getDefaultNBT(pos).toBuilder();
+        CompoundTag nbt = Entity.getDefaultNBT(pos);
         nbt.putCompound("FireworkItem", ItemHelper.write(item));
-        EntityFireworksRocket firework = new EntityFireworksRocket(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt.build());
+        EntityFireworksRocket firework = new EntityFireworksRocket(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt);
         firework.spawnToAll();
 
         return null;

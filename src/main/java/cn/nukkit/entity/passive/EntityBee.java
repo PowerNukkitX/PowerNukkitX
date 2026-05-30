@@ -32,6 +32,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +77,7 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     private int currentFlowerY = Integer.MIN_VALUE;
     private int currentFlowerZ = Integer.MIN_VALUE;
 
-    public EntityBee(IChunk chunk, NbtMap nbt) {
+    public EntityBee(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -353,8 +354,8 @@ public class EntityBee extends EntityAnimal implements EntityFlyable {
     protected void initEntity() {
         super.initEntity();
 
-        if (this.nbt.containsKey("HomeHiveX")) {
-            final NbtMap nbtMap = this.getNbt();
+        if (this.nbt.contains("HomeHiveX")) {
+            final CompoundTag nbtMap = this.getNbt();
             this.homeHiveX = nbtMap.getInt("HomeHiveX");
             this.homeHiveY = nbtMap.getInt("HomeHiveY");
             this.homeHiveZ = nbtMap.getInt("HomeHiveZ");

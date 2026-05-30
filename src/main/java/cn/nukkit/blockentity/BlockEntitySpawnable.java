@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
@@ -11,7 +12,7 @@ import org.cloudburstmc.protocol.bedrock.packet.BlockActorDataPacket;
  */
 public abstract class BlockEntitySpawnable extends BlockEntity {
 
-    public BlockEntitySpawnable(IChunk chunk, NbtMap nbt) {
+    public BlockEntitySpawnable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -21,13 +22,13 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         this.spawnToAll();
     }
 
-    public NbtMap getSpawnCompound() {
-        return NbtMap.builder()
+
+    public CompoundTag getSpawnCompound() {
+        return new CompoundTag()
                 .putString("id", getNbt().getString("id"))
                 .putInt("x", getFloorX())
                 .putInt("y", getFloorY())
-                .putInt("z", getFloorZ())
-                .build();
+                .putInt("z", getFloorZ());
     }
 
     public void spawnTo(Player player) {
@@ -42,14 +43,14 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         return getSpawnPacket(null);
     }
 
-    public BlockActorDataPacket getSpawnPacket(NbtMap nbt) {
+    public BlockActorDataPacket getSpawnPacket(CompoundTag nbt) {
         if (nbt == null) {
             nbt = this.getSpawnCompound();
         }
 
         final BlockActorDataPacket packet = new BlockActorDataPacket();
         packet.setBlockPosition(Vector3i.from(this.getFloorX(), this.getFloorY(), this.getFloorZ()));
-        packet.setActorDataTags(nbt);
+        packet.setActorDataTags(nbt.toNetwork());
 
         return packet;
     }

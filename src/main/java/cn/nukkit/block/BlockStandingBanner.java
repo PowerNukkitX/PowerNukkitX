@@ -10,13 +10,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -115,20 +114,20 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
             }
         }
 
-        NbtMapBuilder nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER).toBuilder()
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BANNER)
                 .putInt("Base", item.getDamage() & 0xf);
 
         Object type = item.getNbtEntry("Type");
-        if (type instanceof Integer) {
-            nbt.put("Type", type);
+        if (type instanceof IntTag tag) {
+            nbt.put("Type", tag.copy());
         }
         Object patterns = item.getNbtEntry("Patterns");
-        if (patterns instanceof List) {
-            nbt.put("Patterns", patterns);
+        if (patterns instanceof ListTag<?> tag) {
+            nbt.put("Patterns", tag.copy());
         }
 
         try {
-            createBlockEntity(nbt.build());
+            createBlockEntity(nbt);
             return true;
         } catch (Exception e) {
             log.error("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
@@ -163,13 +162,13 @@ public class BlockStandingBanner extends BlockTransparent implements Faceable, B
             item.setDamage(banner.getBaseColor() & 0xf);
             int type = banner.getNbt().getInt("Type");
             if (type > 0) {
-                item.setNbt((item.hasCompoundTag() ? item.getNbt().toBuilder() : NbtMap.builder())
-                        .putInt("Type", type).build());
+                item.setNbt((item.hasNbt() ? item.getNbt().copy() : new CompoundTag())
+                        .putInt("Type", type));
             }
-            List<NbtMap> patterns = new ObjectArrayList<>(banner.getNbt().getList("Patterns", NbtType.COMPOUND));
-            if (!patterns.isEmpty()) {
-                item.setNbt((item.hasCompoundTag() ? item.getNbt().toBuilder() : NbtMap.builder())
-                        .putList("Patterns", NbtType.COMPOUND, patterns).build());
+            ListTag<?> patterns = banner.getNbt().getList("Patterns");
+            if (patterns.size() > 0) {
+                item.setNbt((item.hasNbt() ? item.getNbt().copy() : new CompoundTag())
+                        .putList("Patterns", (ListTag<?>) patterns.copy()));
             }
         }
         return item;

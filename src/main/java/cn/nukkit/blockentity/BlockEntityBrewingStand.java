@@ -15,19 +15,16 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.recipe.ContainerRecipe;
 import cn.nukkit.recipe.MixRecipe;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 
 import java.util.HashSet;
-import java.util.List;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable implements RecipeInventoryHolder, BlockEntityInventoryHolder {
 
@@ -39,7 +36,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public int fuelTotal;
     public int fuelAmount;
 
-    public BlockEntityBrewingStand(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBrewingStand(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -55,16 +52,16 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void loadNBT() {
         super.loadNBT();
         inventory = new BrewingInventory(this);
-        if (!nbt.containsKey("Items") || !(nbt.get("Items") instanceof List<?>)) {
-            nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!nbt.containsList("Items", Tag.TAG_Compound)) {
+            nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
         for (int i = 0; i < getSize(); i++) {
             inventory.setItem(i, this.getItem(i));
         }
 
-        final NbtMap nbtMap = this.getNbt();
-        if (!nbt.containsKey("CookTime") || nbtMap.getShort("CookTime") > MAX_BREW_TIME) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (!nbt.contains("CookTime") || nbtMap.getShort("CookTime") > MAX_BREW_TIME) {
             this.brewTime = MAX_BREW_TIME;
         } else {
             this.brewTime = nbtMap.getShort("CookTime");
@@ -81,7 +78,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
 
     @Override
     public boolean hasName() {
-        return nbt.containsKey("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
@@ -115,7 +112,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound))
                 .putShort("CookTime", (short) brewTime)
                 .putShort("FuelAmount", (short) this.fuelAmount)
                 .putShort("FuelTotal", (short) this.fuelTotal);
@@ -134,7 +131,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -149,7 +146,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         if (i < 0) {
             return Item.AIR;
         } else {
-            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -157,9 +154,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        NbtMap d = ItemHelper.write(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.getId() == BlockID.AIR || item.getCount() <= 0) {
             if (i >= 0) {
@@ -170,7 +167,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
         } else {
             items.add(i, d);
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, items);
+        this.nbt.putList("Items", items);
     }
 
     @Override
@@ -379,8 +376,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder nbt = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag nbt = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putShort("FuelTotal", (short) this.fuelTotal)
                 .putShort("FuelAmount", (short) this.fuelAmount);
@@ -393,7 +390,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Rec
             nbt.putString("CustomName", this.getNbt().getString("CustomName"));
         }
 
-        return nbt.build();
+        return nbt;
     }
 
     @Override

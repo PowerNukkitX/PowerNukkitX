@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 
 /**
@@ -10,7 +11,7 @@ import org.cloudburstmc.nbt.NbtMap;
 public abstract class EntityHanging extends Entity {
     protected int direction;
 
-    public EntityHanging(IChunk chunk, NbtMap nbt) {
+    public EntityHanging(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -21,10 +22,10 @@ public abstract class EntityHanging extends Entity {
         this.setHealthMax(1);
         this.setHealthCurrent(1);
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("Direction")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("Direction")) {
             this.direction = nbtMap.getByte("Direction");
-        } else if (nbtMap.containsKey("Dir")) {
+        } else if (nbtMap.contains("Dir")) {
             int d = nbtMap.getByte("Dir");
             if (d == 2) {
                 this.direction = 0;

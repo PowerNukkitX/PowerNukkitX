@@ -9,16 +9,15 @@ import cn.nukkit.inventory.MinecartChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.MinecartType;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
 
     protected MinecartChestInventory inventory;
 
-    public EntityChestMinecart(IChunk chunk, NbtMap nbt) {
+    public EntityChestMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setDisplayBlock(Block.get(Block.CHEST), false);
     }
@@ -96,10 +95,10 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
         super.initEntity();
 
         this.inventory = new MinecartChestInventory(this);
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("Items") && nbtMap.get("Items") instanceof List<?>) {
-            List<NbtMap> inventoryList = nbtMap.getList("Items", NbtType.COMPOUND);
-            for (NbtMap item : inventoryList) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.containsList("Items")) {
+            ListTag<CompoundTag> inventoryList = nbtMap.getList("Items", CompoundTag.class);
+            for (CompoundTag item : inventoryList.getAll()) {
                 this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
@@ -113,7 +112,7 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
     public void saveNBT() {
         super.saveNBT();
 
-        final List<NbtMap> serializedItems = new ObjectArrayList<>();
+        final ListTag<CompoundTag> serializedItems = new ListTag<>(Tag.TAG_Compound);
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);
@@ -122,6 +121,6 @@ public class EntityChestMinecart extends EntityMinecartAbstract implements Inven
                 }
             }
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, serializedItems);
+        this.nbt.putList("Items", serializedItems);
     }
 }

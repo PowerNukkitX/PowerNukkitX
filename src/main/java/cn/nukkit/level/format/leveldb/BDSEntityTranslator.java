@@ -1,45 +1,52 @@
 package cn.nukkit.level.format.leveldb;
 
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
-
-import java.util.Arrays;
-import java.util.List;
 
 public final class BDSEntityTranslator {
-    public static NbtMap translate(NbtMap from) {
-        NbtMapBuilder linkedCompoundTag = NbtMap.builder();
-        if (from.containsKey("identifier")) {
+    public static CompoundTag translate(CompoundTag from) {
+        LinkedCompoundTag linkedCompoundTag = new LinkedCompoundTag();
+        if (from.contains("identifier")) {
             String identifier = from.getString("identifier");
             int entityNetworkId = Registries.ENTITY.getEntityNetworkId(identifier);
             if (entityNetworkId == 0) return null;
             linkedCompoundTag.putString("identifier", identifier);
         }
-        if (from.containsKey("Pos", NbtType.LIST)) {
-            final List<Float> pos = from.getList("Pos", NbtType.FLOAT);
-            final List<Double> target = new DoubleArrayList();
-            for (Float value : pos) {
-                target.add(value.doubleValue());
+        if (from.containsList("Pos", Tag.TAG_Float)) {
+            ListTag<FloatTag> pos = from.getList("Pos", FloatTag.class);
+            ListTag<DoubleTag> target = new ListTag<>();
+            for (var v : pos.getAll()) {
+                target.add(new DoubleTag(v.data));
             }
-            linkedCompoundTag.putList("Pos", NbtType.DOUBLE, target);
+            linkedCompoundTag.putList("Pos", target);
         } else {
-            linkedCompoundTag.putList("Pos", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0));
+            ListTag<DoubleTag> target = new ListTag<>();
+            target.add(new DoubleTag(0));
+            target.add(new DoubleTag(0));
+            target.add(new DoubleTag(0));
+            linkedCompoundTag.putList("Pos", target);
         }
-        if (from.containsKey("Motion", NbtType.LIST)) {
-            final List<Float> pos = from.getList("Motion", NbtType.FLOAT);
-            final List<Double> target = new DoubleArrayList();
-            for (Float value : pos) {
-                target.add(value.doubleValue());
+        if (from.containsList("Motion", Tag.TAG_Float)) {
+            ListTag<FloatTag> pos = from.getList("Motion", FloatTag.class);
+            ListTag<DoubleTag> target = new ListTag<>();
+            for (var v : pos.getAll()) {
+                target.add(new DoubleTag(v.data));
             }
-            from = from.toBuilder().putList("Motion", NbtType.DOUBLE, target).build();
-            linkedCompoundTag.putList("Pos", NbtType.DOUBLE, target);
+            from.putList("Motion", target);
+            linkedCompoundTag.putList("Pos", target);
         } else {
-            linkedCompoundTag.putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0));
+            ListTag<DoubleTag> target = new ListTag<>();
+            target.add(new DoubleTag(0));
+            target.add(new DoubleTag(0));
+            target.add(new DoubleTag(0));
+            linkedCompoundTag.putList("Motion", target);
         }
-        linkedCompoundTag.putList("Rotation", NbtType.DOUBLE, from.getList("Rotation", NbtType.DOUBLE));
-        return linkedCompoundTag.build();
+        linkedCompoundTag.putList("Rotation", from.getList("Rotation"));
+        return linkedCompoundTag;
     }
 }

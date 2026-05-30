@@ -33,6 +33,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -52,7 +53,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         return CREEPER;
     }
 
-    public EntityCreeper(IChunk chunk, NbtMap nbt) {
+    public EntityCreeper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -168,7 +169,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     protected void initEntity() {
         super.initEntity();
 
-        final NbtMap nbtMap = this.getNbt();
+        final CompoundTag nbtMap = this.getNbt();
         if (nbtMap.getBoolean("powered") || nbtMap.getBoolean("IsPowered")) {
             this.entityDataMap.put(ActorDataTypes.SWELL, 1);
         }

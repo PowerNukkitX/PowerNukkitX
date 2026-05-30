@@ -31,6 +31,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -73,7 +74,7 @@ public class EntityShulker extends EntityMob implements EntityVariant {
         );
     }
 
-    public EntityShulker(IChunk chunk, NbtMap nbt) {
+    public EntityShulker(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

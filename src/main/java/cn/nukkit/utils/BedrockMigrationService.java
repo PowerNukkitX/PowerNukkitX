@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.leveldb.LevelDBProvider;
+import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -25,7 +26,7 @@ public class BedrockMigrationService {
         this.server = server;
     }
 
-    public NbtMap migrate(UUID uuid) {
+    public CompoundTag migrate(UUID uuid) {
 
         server.getLogger().debug("Started Migration for " + uuid);
 
@@ -47,7 +48,11 @@ public class BedrockMigrationService {
                 return null;
             }
 
-            NbtMap identity = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(identityBytes)).readTag();
+            NbtMap identity;
+            try (var inputStream = new ByteArrayInputStream(identityBytes);
+                 var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                identity = (NbtMap) nbtInputStream.readTag();
+            }
 
             String serverId = identity.getString("ServerId");
 
@@ -61,13 +66,17 @@ public class BedrockMigrationService {
                 return null;
             }
 
-            NbtMap gameplay = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(gameplayBytes)).readTag();
+            NbtMap gameplay;
+            try (var inputStream = new ByteArrayInputStream(gameplayBytes);
+                 var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                gameplay = (NbtMap) nbtInputStream.readTag();
+            }
 
             NbtMap converted = convertBedrockNBT(gameplay, level);
 
             server.getLogger().debug("Migration Successful for " + uuid);
 
-            return converted;
+            return CompoundTag.fromNetwork(converted);
 
         } catch (Exception e) {
             server.getLogger().error("Migration failed for " + uuid, e);
@@ -228,9 +237,10 @@ public class BedrockMigrationService {
         return pnx.build();
     }
 
-    private NbtMap convertItem(NbtMap item, int slot) {
+    private NbtMap convertItem(NbtMap rawItem, int slot) {
+        CompoundTag item = CompoundTag.fromNetwork(rawItem);
 
-        if (!item.containsKey("Name")) return null;
+        if (!item.contains("Name")) return null;
 
         String name = item.getString("Name");
 
@@ -241,19 +251,19 @@ public class BedrockMigrationService {
         Item nukkitItem = Item.get(name);
 
         if (nukkitItem == null) {
-            if (!item.containsKey("Slot")) {
-                item = item.toBuilder().putByte("Slot", (byte) slot).build();
+            if (!item.contains("Slot")) {
+                item.putByte("Slot", slot);
             }
-            return item;
+            return item.toNetwork();
         }
 
         nukkitItem.setCount(item.getByte("Count"));
 
-        if (item.containsKey("tag")) {
-            nukkitItem.setCompoundTag(item.getCompound("tag"));
+        if (item.contains("tag")) {
+            nukkitItem.setNbt(item.getCompound("tag"));
         }
 
-        return ItemHelper.write(nukkitItem, slot);
+        return ItemHelper.write(nukkitItem, slot).toNetwork();
     }
 
     public boolean hasBedrockData(UUID uuid) {
@@ -274,7 +284,11 @@ public class BedrockMigrationService {
             }
 
             // Deeper Validation
-            NbtMap identity = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(identityBytes)).readTag();
+            NbtMap identity;
+            try (var inputStream = new ByteArrayInputStream(identityBytes);
+                 var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                identity = (NbtMap) nbtInputStream.readTag();
+            }
 
             String serverId = identity.getString("ServerId");
 

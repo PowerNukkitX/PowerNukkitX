@@ -8,8 +8,7 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.DoubleChestInventory;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Objects;
 
@@ -19,7 +18,7 @@ import java.util.Objects;
 public class BlockEntityChest extends BlockEntitySpawnableContainer {
     protected DoubleChestInventory doubleInventory = null;
 
-    public BlockEntityChest(IChunk chunk, NbtMap nbt) {
+    public BlockEntityChest(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -100,7 +99,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     public boolean isPaired() {
-        return this.nbt.containsKey("pairx") && this.nbt.containsKey("pairz");
+        return this.nbt.contains("pairx") && this.nbt.contains("pairz");
     }
 
     public BlockEntityChest getPair() {
@@ -119,7 +118,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
             return false;
         }
 
-        final NbtMap nbtMap = getNbt();
+        final CompoundTag nbtMap = getNbt();
         if (this.isPaired()) {
             int x1 = nbtMap.getInt("pairx");
             int z1 = nbtMap.getInt("pairz");
@@ -177,8 +176,8 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder spawnCompound = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag spawnCompound = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable());
         if (this.isPaired()) {
             spawnCompound.putBoolean("pairlead", this.getNbt().getBoolean("pairlead"))
@@ -188,15 +187,16 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
         if (this.hasName()) {
             spawnCompound.putString("CustomName", this.getNbt().getString("CustomName"));
         }
-        return spawnCompound.build();
+        return spawnCompound;
     }
 
     @Override
-    public NbtMap getCleanedNBT() {
-        final NbtMapBuilder builder = super.getCleanedNBT().toBuilder();
-        builder.remove("pairx");
-        builder.remove("pairz");
-        return builder.build();
+    public CompoundTag getCleanedNBT() {
+        final CompoundTag cleaned = super.getCleanedNBT();
+        if (cleaned != null) {
+            cleaned.remove("pairx", "pairz");
+        }
+        return cleaned;
     }
 
     @Override
@@ -206,7 +206,7 @@ public class BlockEntityChest extends BlockEntitySpawnableContainer {
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override

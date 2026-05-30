@@ -4,9 +4,9 @@ import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemMusicDisc;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.packet.PlaySoundPacket;
 import org.cloudburstmc.protocol.bedrock.packet.StopSoundPacket;
 
@@ -19,14 +19,14 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     private Item recordItem;
 
-    public BlockEntityJukebox(IChunk chunk, NbtMap nbt) {
+    public BlockEntityJukebox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (nbt.containsKey("RecordItem")) {
+        if (nbt.contains("RecordItem")) {
             this.recordItem = ItemHelper.read(getNbt().getCompound("RecordItem"));
         } else {
             this.recordItem = Item.AIR;
@@ -83,9 +83,9 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
-                .putCompound("RecordItem", ItemHelper.write(this.recordItem, null)).build();
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
+                .putCompound("RecordItem", ItemHelper.write(this.recordItem, null));
     }
 
     @Override

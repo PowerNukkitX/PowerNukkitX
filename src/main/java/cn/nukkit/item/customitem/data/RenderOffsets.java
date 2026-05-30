@@ -1,14 +1,11 @@
 package cn.nukkit.item.customitem.data;
 
 import cn.nukkit.math.Vector3f;
-import lombok.Getter;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * RenderOffsets是设置 render_offsets 项目组件。可以设置参数来偏移物品的在不同视角下的呈现方式。
@@ -17,9 +14,8 @@ import java.util.List;
  */
 
 
-@Getter
 public class RenderOffsets {
-    private NbtMap nbt = NbtMap.EMPTY;
+    public final CompoundTag nbt = new CompoundTag();
 
     /**
      * 设置自定义物品在不同视角下的渲染偏移量
@@ -32,30 +28,25 @@ public class RenderOffsets {
      * @param offHandThirdPerson  设置第三人称副手物品的偏移量<br>Set the offset of the third person offhand item
      */
     public RenderOffsets(@Nullable Offset mainHandFirstPerson, @Nullable Offset mainHandThirdPerson, @Nullable Offset offHandFirstPerson, @Nullable Offset offHandThirdPerson) {
-        final NbtMapBuilder builder = this.nbt.toBuilder();
         if (mainHandFirstPerson != null || mainHandThirdPerson != null) {
-            final NbtMapBuilder mainHandBuilder = NbtMap.builder();
-
+            this.nbt.putCompound("main_hand", new CompoundTag());
             if (mainHandFirstPerson != null) {
-                mainHandBuilder.putCompound("first_person", xyzToCompoundTag(mainHandFirstPerson.getPosition(), mainHandFirstPerson.getRotation(), mainHandFirstPerson.getScale()));
+                this.nbt.getCompound("main_hand").putCompound("first_person", xyzToCompoundTag(mainHandFirstPerson.getPosition(), mainHandFirstPerson.getRotation(), mainHandFirstPerson.getScale()));
             }
             if (mainHandThirdPerson != null) {
-                mainHandBuilder.putCompound("third_person", xyzToCompoundTag(mainHandThirdPerson.getPosition(), mainHandThirdPerson.getRotation(), mainHandThirdPerson.getScale()));
+                this.nbt.getCompound("main_hand").putCompound("third_person", xyzToCompoundTag(mainHandThirdPerson.getPosition(), mainHandThirdPerson.getRotation(), mainHandThirdPerson.getScale()));
             }
-            builder.putCompound("main_hand", mainHandBuilder.build());
         }
         if (offHandFirstPerson != null || offHandThirdPerson != null) {
-            final NbtMapBuilder offhandBuilder = NbtMap.builder();
+            this.nbt.putCompound("off_hand", new CompoundTag());
             if (offHandFirstPerson != null) {
-                offhandBuilder.putCompound("first_person", xyzToCompoundTag(offHandFirstPerson.getPosition(), offHandFirstPerson.getRotation(), offHandFirstPerson.getScale()));
+                this.nbt.getCompound("off_hand").putCompound("first_person", xyzToCompoundTag(offHandFirstPerson.getPosition(), offHandFirstPerson.getRotation(), offHandFirstPerson.getScale()));
             }
             if (offHandThirdPerson != null) {
-                offhandBuilder.putCompound("third_person", xyzToCompoundTag(offHandThirdPerson.getPosition(), offHandThirdPerson.getRotation(), offHandThirdPerson.getScale()));
+                this.nbt.getCompound("off_hand").putCompound("third_person", xyzToCompoundTag(offHandThirdPerson.getPosition(), offHandThirdPerson.getRotation(), offHandThirdPerson.getScale()));
             }
-            builder.putCompound("off_hand", offhandBuilder.build());
         } else if (mainHandFirstPerson == null && mainHandThirdPerson == null)
             throw new IllegalArgumentException("Do not allow all parameters to be empty, if you do not want to specify, please do not use the renderOffsets method");
-        this.nbt = builder.build();
     }
 
     /**
@@ -94,19 +85,28 @@ public class RenderOffsets {
         return scaleOffset(multiplier);
     }
 
-    private NbtMap xyzToCompoundTag(Vector3f pos, Vector3f rot, Vector3f sc) {
-        var result = NbtMap.EMPTY;
+    private CompoundTag xyzToCompoundTag(Vector3f pos, Vector3f rot, Vector3f sc) {
+        var result = new CompoundTag();
         if (pos != null) {
-            final List<Float> position = Arrays.asList(pos.x, pos.y, pos.z);
-            result = result.toBuilder().putList("position", NbtType.FLOAT, position).build();
+            var position = new ListTag<FloatTag>();
+            position.add(new FloatTag(pos.x));
+            position.add(new FloatTag(pos.y));
+            position.add(new FloatTag(pos.z));
+            result.putList("position", position);
         }
         if (rot != null) {
-            final List<Float> rotation = Arrays.asList(rot.x, rot.y, rot.z);
-            result = result.toBuilder().putList("rotation", NbtType.FLOAT, rotation).build();
+            var rotation = new ListTag<FloatTag>();
+            rotation.add(new FloatTag(rot.x));
+            rotation.add(new FloatTag(rot.y));
+            rotation.add(new FloatTag(rot.z));
+            result.putList("rotation", rotation);
         }
         if (sc != null) {
-            final List<Float> scale = Arrays.asList(sc.x, sc.y, sc.z);
-            result = result.toBuilder().putList("scale", NbtType.FLOAT, scale).build();
+            var scale = new ListTag<FloatTag>();
+            scale.add(new FloatTag(sc.x));
+            scale.add(new FloatTag(sc.y));
+            scale.add(new FloatTag(sc.z));
+            result.putList("scale", scale);
         }
         return result;
     }

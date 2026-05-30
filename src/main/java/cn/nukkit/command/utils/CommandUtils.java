@@ -2,6 +2,7 @@ package cn.nukkit.command.utils;
 
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.customitem.CustomItem;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 
 /**
@@ -46,10 +47,10 @@ public final class CommandUtils {
     }
 
     public static boolean isHiddenInCommands(CustomItem item) {
-        NbtMap nbt = item.getDefinition().nbt();
-        NbtMap components = nbt.getCompound("components");
-        if (components.containsKey("item_properties")) {
-            NbtMap itemProps = components.getCompound("item_properties");
+        CompoundTag nbt = item.getDefinition().nbt();
+        CompoundTag components = nbt.getCompound("components");
+        if (components.containsCompound("item_properties")) {
+            CompoundTag itemProps = components.getCompound("item_properties");
             return itemProps.getByte("is_hidden_in_commands") == 1;
         }
         return false;

@@ -18,6 +18,8 @@ import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;
 import cn.nukkit.level.format.palette.Palette;
 import cn.nukkit.level.util.LevelDBKeyUtil;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.Utils;
@@ -27,18 +29,15 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import org.cloudburstmc.nbt.NBTInputStream;
 import org.cloudburstmc.nbt.NBTOutputStream;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -96,14 +95,14 @@ public class LevelDBChunkSerializer {
             builder.state(ChunkState.values()[i + 1]);
         }
         byte[] extraData = db.get(LevelDBKeyUtil.PNX_EXTRA_DATA.getKey(builder.getChunkX(), builder.getChunkZ(), builder.getDimensionData()));
-        NbtMap pnxExtraData = null;
+        CompoundTag pnxExtraData = null;
         if (extraData != null) {
             builder.extraData(pnxExtraData = this.readBigEndian(extraData));
         }
-        deserializeBlock(db, builder, pnxExtraData);
-        deserializeHeightAndBiome(db, builder, pnxExtraData);
+        deserializeBlock(db, builder);
+        deserializeHeightAndBiome(db, builder);
         deserializeTileAndEntity(db, builder, pnxExtraData);
-        deserializeLight(db, builder, pnxExtraData);
+        deserializeLight(db, builder);
         deserializeBlockTicks(pnxExtraData, builder);
         return true;
     }
@@ -133,7 +132,7 @@ public class LevelDBChunkSerializer {
         }
     }
 
-    private void deserializeLight(DB db, IChunkBuilder builder, NbtMap pnxExtraData) {
+    private void deserializeLight(DB db, IChunkBuilder builder) {
         DimensionData dimensionInfo = builder.getDimensionData();
         var minSectionY = dimensionInfo.getMinSectionY();
         for (int ySection = minSectionY; ySection <= dimensionInfo.getMaxSectionY(); ySection++) {
@@ -185,7 +184,7 @@ public class LevelDBChunkSerializer {
     }
 
     //serialize chunk section
-    private void deserializeBlock(DB db, IChunkBuilder builder, NbtMap pnxExtraData) {
+    private void deserializeBlock(DB db, IChunkBuilder builder) {
         DimensionData dimensionInfo = builder.getDimensionData();
         ChunkSection[] sections = new ChunkSection[dimensionInfo.getChunkSectionCount()];
         var minSectionY = dimensionInfo.getMinSectionY();
@@ -260,7 +259,7 @@ public class LevelDBChunkSerializer {
     }
 
     //read biomeAndHeight
-    private void deserializeHeightAndBiome(DB db, IChunkBuilder builder, NbtMap pnxExtraData) {
+    private void deserializeHeightAndBiome(DB db, IChunkBuilder builder) {
         ByteBuf heightAndBiomesBuffer = null;
         try {
             DimensionData dimensionInfo = builder.getDimensionData();
@@ -314,11 +313,11 @@ public class LevelDBChunkSerializer {
         }
     }
 
-    private void deserializeTileAndEntity(DB db, IChunkBuilder builder, NbtMap pnxExtraData) {
+    private void deserializeTileAndEntity(DB db, IChunkBuilder builder, CompoundTag pnxExtraData) {
         DimensionData dimensionInfo = builder.getDimensionData();
         byte[] tileBytes = db.get(LevelDBKeyUtil.BLOCK_ENTITIES.getKey(builder.getChunkX(), builder.getChunkZ(), dimensionInfo));
         if (tileBytes != null) {
-            List<NbtMap> blockEntityTags = new ArrayList<>();
+            List<CompoundTag> blockEntityTags = new ArrayList<>();
             final ByteBuf buffer = Unpooled.wrappedBuffer(tileBytes);
             while (buffer.isReadable()) {
                 blockEntityTags.add(this.read(buffer));
@@ -329,14 +328,14 @@ public class LevelDBChunkSerializer {
         byte[] key = LevelDBKeyUtil.ENTITIES.getKey(builder.getChunkX(), builder.getChunkZ(), dimensionInfo);
         byte[] entityBytes = db.get(key);
         if (entityBytes == null) return;
-        List<NbtMap> entityTags = new ArrayList<>();
+        List<CompoundTag> entityTags = new ArrayList<>();
         final ByteBuf buffer = Unpooled.wrappedBuffer(entityBytes);
         while (buffer.isReadable()) {
             entityTags.add(this.read(buffer));
         }
         if (pnxExtraData == null) {
             db.delete(key);
-            List<NbtMap> list = entityTags.stream().map(BDSEntityTranslator::translate).filter(Predicates.notNull()).toList();
+            List<CompoundTag> list = entityTags.stream().map(BDSEntityTranslator::translate).filter(Predicates.notNull()).toList();
             builder.entities(list);
         } else {
             builder.entities(entityTags);
@@ -354,7 +353,7 @@ public class LevelDBChunkSerializer {
             else {
                 for (BlockEntity blockEntity : blockEntities) {
                     blockEntity.saveNBT();
-                    nbtOutputStream.writeTag(blockEntity.getNbt());
+                    nbtOutputStream.writeTag(blockEntity.getNbt().toNetwork());
                 }
                 writeBatch.put(key, Utils.convertByteBuf2Array(tileBuffer));
             }
@@ -375,7 +374,7 @@ public class LevelDBChunkSerializer {
                 for (Entity e : entities) {
                     if (!(e instanceof Player) && !e.closed && e.canBeSavedWithChunk()) {
                         e.saveNBT();
-                        nbtOutputStream.writeTag(e.getNbt());
+                        nbtOutputStream.writeTag(e.getNbt().toNetwork());
                     }
                 }
                 writeBatch.put(key, Utils.convertByteBuf2Array(entityBuffer));
@@ -388,8 +387,8 @@ public class LevelDBChunkSerializer {
     }
 
     private void serializeBlockTicks(UnsafeChunk unsafe) {
-        List<NbtMap> scheduledTicks = new ObjectArrayList<>();
-        List<NbtMap> normalTickBlocks = new ObjectArrayList<>();
+        ListTag<CompoundTag> scheduledTicks = new ListTag<>();
+        ListTag<CompoundTag> normalTickBlocks = new ListTag<>();
 
         Chunk chunk = unsafe.getChunk();
         long currentTick = chunk.getLevel().getCurrentTick();
@@ -401,7 +400,7 @@ public class LevelDBChunkSerializer {
             int z = blockUpdateEntry.pos.getFloorZ();
             int delay = (int) Math.max(1, blockUpdateEntry.delay - currentTick);
 
-            NbtMap tag = NbtMap.builder()
+            CompoundTag tag = new CompoundTag()
                     .putInt("x", x)
                     .putInt("y", y)
                     .putInt("z", z)
@@ -409,15 +408,13 @@ public class LevelDBChunkSerializer {
                     .putInt("layer", block.layer)
                     .putInt("delay", delay)
                     .putInt("priority", blockUpdateEntry.priority)
-                    .putBoolean("checkBlockWhenUpdate", blockUpdateEntry.checkBlockWhenUpdate)
-                    .build();
+                    .putBoolean("checkBlockWhenUpdate", blockUpdateEntry.checkBlockWhenUpdate);
             scheduledTicks.add(tag);
         }
 
-        NbtMapBuilder extraData = unsafe.getExtraData().toBuilder();
-        extraData.putList("pendingScheduledTicks", NbtType.COMPOUND, scheduledTicks);
-        extraData.putList("pendingNormalTickBlocks", NbtType.COMPOUND, normalTickBlocks);
-        unsafe.updateExtraData(extraData.build());
+        CompoundTag extraData = unsafe.getExtraData();
+        extraData.putList("pendingScheduledTicks", scheduledTicks);
+        extraData.putList("pendingNormalTickBlocks", normalTickBlocks);
     }
 
     public static class ScheduledTickInfo {
@@ -431,7 +428,7 @@ public class LevelDBChunkSerializer {
         public String id;
     }
 
-    public static void deserializeBlockTicks(NbtMap extraData, IChunkBuilder builder) {
+    public static void deserializeBlockTicks(CompoundTag extraData, IChunkBuilder builder) {
         if (extraData == null) return;
         long chunkKey = ((long) builder.getChunkX() & 0xffffffffL) << 32 | ((long) builder.getChunkZ() & 0xffffffffL);
 
@@ -443,10 +440,10 @@ public class LevelDBChunkSerializer {
         if (provider == null) return;
 
         // --- Scheduled Ticks ---
-        if (extraData.containsKey("pendingScheduledTicks")) {
-            List<NbtMap> scheduledTicks = extraData.getList("pendingScheduledTicks", NbtType.COMPOUND);
+        if (extraData.contains("pendingScheduledTicks")) {
+            ListTag<CompoundTag> scheduledTicks = extraData.getList("pendingScheduledTicks", CompoundTag.class);
             List<ScheduledTickInfo> scheduledList = new ArrayList<>();
-            for (NbtMap tag : scheduledTicks) {
+            for (CompoundTag tag : scheduledTicks.getAll()) {
                 ScheduledTickInfo info = new ScheduledTickInfo();
                 info.x = tag.getInt("x");
                 info.y = tag.getInt("y");
@@ -464,10 +461,10 @@ public class LevelDBChunkSerializer {
         }
 
         // --- Normal Tick Blocks ---
-        if (extraData.containsKey("pendingNormalTickBlocks")) {
-            List<NbtMap> normalTicks = extraData.getList("pendingNormalTickBlocks", NbtType.COMPOUND);
+        if (extraData.contains("pendingNormalTickBlocks")) {
+            ListTag<CompoundTag> normalTicks = extraData.getList("pendingNormalTickBlocks", CompoundTag.class);
             List<NormalTickInfo> normalList = new ArrayList<>();
-            for (NbtMap tag : normalTicks) {
+            for (CompoundTag tag : normalTicks.getAll()) {
                 NormalTickInfo info = new NormalTickInfo();
                 info.x = tag.getInt("x");
                 info.y = tag.getInt("y");
@@ -481,16 +478,16 @@ public class LevelDBChunkSerializer {
         }
     }
 
-    private NbtMap read(ByteBuf buffer) {
+    private CompoundTag read(ByteBuf buffer) {
         try (final ByteBufInputStream inputStream = new ByteBufInputStream(buffer);
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
-            return (NbtMap) nbtInputStream.readTag();
+            return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read nbt", e);
         }
     }
 
-    private NbtMap readBigEndian(byte[] data) {
+    private CompoundTag readBigEndian(byte[] data) {
         try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
              final NBTInputStream nbtInputStream = NbtUtils.createReader(inputStream)) {
             final int id = inputStream.read();
@@ -498,16 +495,16 @@ public class LevelDBChunkSerializer {
             if (type == null || !type.equals(NbtType.COMPOUND)) {
                 return null;
             }
-            return (NbtMap) nbtInputStream.readValue(type);
+            return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readValue(type));
         } catch (IOException e) {
             throw new IllegalStateException("Failed to read big endian nbt", e);
         }
     }
 
-    public byte[] writeBigEndian(NbtMap nbtMap) {
+    public byte[] writeBigEndian(CompoundTag nbtMap) {
         try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
              final NBTOutputStream nbtOutputStream = NbtUtils.createWriter(outputStream)) {
-            nbtOutputStream.writeTag(nbtMap);
+            nbtOutputStream.writeTag(nbtMap.toNetwork());
             return outputStream.toByteArray();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to write big endian nbt", e);

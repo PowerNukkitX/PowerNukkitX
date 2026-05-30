@@ -10,7 +10,7 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +21,7 @@ import java.util.Set;
  * @since 21.06.2016
  */
 
+@Deprecated
 public class EntityVillager extends EntityCreature implements IEntityNPC {
     @Override
     @NotNull
@@ -36,7 +37,7 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     public static final int PROFESSION_GENERIC = 5;
 
 
-    public EntityVillager(IChunk chunk, NbtMap nbt) {
+    public EntityVillager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -90,7 +91,7 @@ public class EntityVillager extends EntityCreature implements IEntityNPC {
     public void initEntity() {
         super.initEntity();
 
-        if (!this.nbt.containsKey("Profession")) {
+        if (!this.nbt.contains("Profession")) {
             this.setProfession(PROFESSION_GENERIC);
         }
     }

@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,17 +48,12 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public Item setCompoundTag(byte[] tags) {
+    public Item setNbtBytes(byte[] tags) {
         return this;
     }
 
     @Override
-    public Item setCompoundTag(NbtMap tag) {
-        return this;
-    }
-
-    @Override
-    public Item setCustomBlockData(NbtMap compoundTag) {
+    public Item setCustomBlockData(CompoundTag compoundTag) {
         return this;
     }
 
@@ -72,7 +68,7 @@ public class ConstAirItem extends Item {
     }
 
     @Override
-    public Item setNbt(NbtMap tag) {
+    public Item setNbt(CompoundTag tag) {
         return this;
     }
 

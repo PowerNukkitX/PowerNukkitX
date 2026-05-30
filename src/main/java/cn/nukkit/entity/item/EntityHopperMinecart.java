@@ -18,6 +18,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.MinecartType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -43,7 +45,7 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     private boolean disabled;
     private AxisAlignedBB pickupArea;
 
-    public EntityHopperMinecart(IChunk chunk, NbtMap nbt) {
+    public EntityHopperMinecart(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         setDisplayBlock(Block.get(Block.HOPPER), false);
     }
@@ -146,10 +148,9 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void initEntity() {
         this.inventory = new MinecartHopperInventory(this);
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("Items") && nbtMap.get("Items") instanceof List<?>) {
-            List<NbtMap> inventoryList = nbtMap.getList("Items", NbtType.COMPOUND);
-            for (NbtMap item : inventoryList) {
+        if (this.nbt.contains("Items") && this.nbt.get("Items") instanceof ListTag) {
+            ListTag<CompoundTag> inventoryList = this.nbt.getList("Items", CompoundTag.class);
+            for (CompoundTag item : inventoryList.getAll()) {
                 this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
@@ -188,15 +189,15 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
     @Override
     public void saveNBT() {
         super.saveNBT();
-        final List<NbtMap> itemsSerialized = new ObjectArrayList<>();
+        this.nbt.putList("Items",new ListTag<CompoundTag>());
         if (this.inventory != null) {
             for (int slot = 0; slot < 5; ++slot) {
                 Item item = this.inventory.getItem(slot);
                 if (item != null && !item.isNull()) {
-                    itemsSerialized.add(ItemHelper.write(item, slot));
+                    this.nbt.getList("Items", CompoundTag.class)
+                            .add(ItemHelper.write(item, slot));
                 }
             }
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, itemsSerialized);
     }
 }

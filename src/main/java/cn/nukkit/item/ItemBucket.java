@@ -353,7 +353,7 @@ public class ItemBucket extends Item {
 
             if (fishEntity instanceof EntityVariant variant
                     && this.getNbt() != null
-                    && this.getNbt().containsKey("Variant")) {
+                    && this.getNbt().contains("Variant")) {
                 variant.setVariant(getNbt().getInt("Variant"));
             }
 

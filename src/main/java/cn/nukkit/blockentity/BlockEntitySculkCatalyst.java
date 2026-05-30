@@ -2,7 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author Kevims KCodeYT
@@ -12,7 +12,7 @@ import org.cloudburstmc.nbt.NbtMap;
 public class BlockEntitySculkCatalyst extends BlockEntity {
 
 
-    public BlockEntitySculkCatalyst(IChunk chunk, NbtMap nbt) {
+    public BlockEntitySculkCatalyst(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

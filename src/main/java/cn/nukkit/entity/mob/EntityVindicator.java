@@ -26,6 +26,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -49,7 +50,7 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
         return VINDICATOR;
     }
 
-    public EntityVindicator(IChunk chunk, NbtMap nbt) {
+    public EntityVindicator(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -179,6 +180,6 @@ public class EntityVindicator extends EntityIllager implements EntityWalkable {
     }
 
     public boolean isJohnny() {
-        return getNameTag().equals("Johnny") || (nbt.containsKey("Johnny") && getNbt().getBoolean("Johnny"));
+        return getNameTag().equals("Johnny") || (nbt.contains("Johnny") && getNbt().getBoolean("Johnny"));
     }
 }

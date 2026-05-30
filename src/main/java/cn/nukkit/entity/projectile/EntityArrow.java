@@ -6,7 +6,7 @@ import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.item.ItemArrow;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -30,15 +30,15 @@ public class EntityArrow extends SlenderProjectile {
 
     protected ItemArrow item;
 
-    public EntityArrow(IChunk chunk, NbtMap nbt) {
+    public EntityArrow(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityArrow(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         this(chunk, nbt, shootingEntity, false);
     }
 
-    public EntityArrow(IChunk chunk, NbtMap nbt, Entity shootingEntity, boolean critical) {
+    public EntityArrow(IChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
         super(chunk, nbt, shootingEntity);
         this.setCritical(critical);
     }
@@ -80,7 +80,7 @@ public class EntityArrow extends SlenderProjectile {
     protected void initEntity() {
         super.initEntity();
 
-        this.pickupMode = nbt.containsKey("pickup") ? getNbt().getByte("pickup") : PICKUP_ANY;
+        this.pickupMode = nbt.contains("pickup") ? getNbt().getByte("pickup") : PICKUP_ANY;
     }
 
     public void setCritical() {

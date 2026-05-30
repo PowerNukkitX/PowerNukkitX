@@ -10,6 +10,7 @@ import cn.nukkit.event.entity.ItemDespawnEvent;
 import cn.nukkit.event.entity.ItemSpawnEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
@@ -44,7 +45,7 @@ public class EntityItem extends Entity {
     private boolean shouldDespawn;
     private boolean isDisplayOnly;
 
-    public EntityItem(IChunk chunk, NbtMap nbt) {
+    public EntityItem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -101,39 +102,39 @@ public class EntityItem extends Entity {
 
         this.setHealthMax(5);
 
-        final NbtMap nbtMap = this.getNbt();
+        final CompoundTag nbtMap = this.getNbt();
         this.setHealthCurrent(nbtMap.getShort("Health"));
 
-        if (nbtMap.containsKey("Age")) {
+        if (nbtMap.contains("Age")) {
             this.age = nbtMap.getShort("Age");
         }
 
-        if (nbtMap.containsKey("ShouldDespawn")) {
+        if (nbtMap.contains("ShouldDespawn")) {
             this.shouldDespawn = nbtMap.getBoolean("ShouldDespawn");
         } else shouldDespawn = true;
 
-        if (nbtMap.containsKey("DisplayOnly")) {
+        if (nbtMap.contains("DisplayOnly")) {
             this.isDisplayOnly = nbtMap.getBoolean("DisplayOnly");
         } else isDisplayOnly = false;
 
-        if (nbtMap.containsKey("PickupDelay")) {
+        if (nbtMap.contains("PickupDelay")) {
             this.pickupDelay =nbtMap.getShort("PickupDelay");
         }
 
-        if (nbtMap.containsKey("Owner")) {
+        if (nbtMap.contains("Owner")) {
             this.owner = nbtMap.getString("Owner");
         }
 
-        if (nbtMap.containsKey("Thrower")) {
+        if (nbtMap.contains("Thrower")) {
             this.thrower =nbtMap.getString("Thrower");
         }
 
-        if (!nbtMap.containsKey("Item")) {
+        if (!nbtMap.contains("Item")) {
             this.close();
             return;
         }
 
-        if (nbtMap.containsKey("Mergeable")) {
+        if (nbtMap.contains("Mergeable")) {
             this.mergeItems = nbtMap.getBoolean("Mergeable");
         } else mergeItems = true;
 

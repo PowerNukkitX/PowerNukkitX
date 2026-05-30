@@ -14,17 +14,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.tags.BlockTags;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -100,23 +98,22 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
         ShulkerBoxInventory inv = tile.getRealInventory();
 
         if (!inv.isEmpty()) {
-            NbtMap nbt = item.getNbt();
+            CompoundTag nbt = item.getNbt();
             if (nbt == null) {
-                nbt = NbtMap.EMPTY;
+                nbt = new CompoundTag();
             }
 
-            List<NbtMap> items = new ObjectArrayList<>();
+            ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
 
             for (int it = 0; it < inv.getSize(); it++) {
                 if (!inv.getItem(it).isNull()) {
-                    NbtMap d = ItemHelper.write(inv.getItem(it), it);
+                    CompoundTag d = ItemHelper.write(inv.getItem(it), it);
                     items.add(d);
                 }
             }
 
             nbt.put("Items", items);
-
-            item.setCompoundTag(nbt);
+            item.setNbt(nbt);
         }
 
         if (tile.hasName()) {
@@ -128,25 +125,27 @@ public class BlockUndyedShulkerBox extends BlockTransparent implements BlockEnti
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        NbtMapBuilder nbt = NbtMap.builder();
+        CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        NbtMap t = item.getNbt();
+        CompoundTag t = item.getNbt();
 
         // This code gets executed when the player has broken the shulker box and placed it back (©Kevims 2020)
-        if (t != null && t.containsKey("Items")) {
-            nbt.putList("Items", NbtType.COMPOUND, t.getList("Items", NbtType.COMPOUND));
+        if (t != null && t.containsList("Items", Tag.TAG_Compound)) {
+            nbt.putList("Items", (ListTag<? extends Tag>) t.getList("Items", CompoundTag.class).copy());
         }
 
         // This code gets executed when the player has copied the shulker box in creative mode (©Kevims 2020)
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
         nbt.putByte("facing", (byte) face.getIndex());
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

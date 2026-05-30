@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockStructureVoid;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
@@ -17,7 +18,7 @@ public abstract class AbstractStructure {
     protected String name;
 
     public static AbstractStructure fromNbt(NbtMap tag) {
-        if (tag.containsKey("format_version")) return Structure.fromNbtAsync(tag).join();
+        if (tag.containsKey("format_version")) return Structure.fromNbtAsync(CompoundTag.fromNetwork(tag)).join();
         if (tag.containsKey("PNX")) return PNXStructure.fromNbtAsync(tag).join();
         if (tag.containsKey("DataVersion")) return JeStructure.fromNbtAsync(tag).join();
         return null;
@@ -31,7 +32,7 @@ public abstract class AbstractStructure {
         this.name = name;
     }
 
-    public abstract NbtMap toNBT();
+    public abstract Object toNBT();
 
     public abstract void place(Position pos, boolean includeEntities, BlockManager blockManager);
 

@@ -18,6 +18,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,7 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
     protected HumanEnderChestInventory enderChestInventory;
     protected HumanOffHandInventory offhandInventory;
 
-    public EntityHumanType(IChunk chunk, NbtMap nbt) {
+    public EntityHumanType(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

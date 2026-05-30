@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.customitem.data.CreativeCategory;
 import cn.nukkit.item.customitem.data.CreativeGroup;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MapParsingUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -94,9 +95,9 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 byte[] nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
                 String name = tag.get("id").toString();
                 Item item = Item.get(name, damage, 1, nbt, false);
-                item.setCompoundTag(nbt);
+                item.setNbtBytes(nbt);
                 if (ItemRegistry.getItemComponents().containsKey(name)) {
-                    item.setNbt(ItemRegistry.getItemComponents().getCompound(name).getCompound("components"));
+                    item.setNbt(CompoundTag.fromNetwork(ItemRegistry.getItemComponents().getCompound(name).getCompound("components")));
                 }
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {
                     item = Item.AIR;
@@ -105,7 +106,11 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 var isBlock = tag.containsKey("block_state_b64");
                 if (isBlock) {
                     byte[] blockTag = Base64.getDecoder().decode(tag.get("block_state_b64").toString());
-                    NbtMap blockCompoundTag = (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(blockTag)).readTag();
+                    NbtMap blockCompoundTag;
+                    try (var inputStream = new ByteArrayInputStream(blockTag);
+                         var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                        blockCompoundTag = (NbtMap) nbtInputStream.readTag();
+                    }
                     int blockHash = blockCompoundTag.getInt("network_id");
                     BlockState block = Registries.BLOCKSTATE.get(blockHash);
                     if (block == null) {

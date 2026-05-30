@@ -28,6 +28,7 @@ import cn.nukkit.entity.effect.EffectType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -49,7 +50,7 @@ public class EntityWitherSkeleton extends EntityMob implements EntityWalkable, E
         return WITHER_SKELETON;
     }
 
-    public EntityWitherSkeleton(IChunk chunk, NbtMap nbt) {
+    public EntityWitherSkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

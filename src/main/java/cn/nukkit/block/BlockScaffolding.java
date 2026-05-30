@@ -9,7 +9,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import static cn.nukkit.block.property.CommonBlockProperties.STABILITY;
@@ -140,9 +140,9 @@ public class BlockScaffolding extends BlockFallable {
     }
 
     @Override
-    protected EntityFallingBlock createFallingEntity(NbtMap customNbt) {
+    protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         setPropertyValues(STABILITY.createValue(0), STABILITY_CHECK.createValue(false));
-        customNbt = customNbt.toBuilder().putBoolean("BreakOnLava", true).build();
+        customNbt.putBoolean("BreakOnLava", true);
         return super.createFallingEntity(customNbt);
     }
 

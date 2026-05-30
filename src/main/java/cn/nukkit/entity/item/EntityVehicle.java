@@ -11,7 +11,7 @@ import cn.nukkit.event.vehicle.VehicleDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyByEntityEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyEvent;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 /**
@@ -21,7 +21,7 @@ public abstract class EntityVehicle extends Entity implements EntityInteractable
 
     protected boolean rollingDirection = true;
 
-    public EntityVehicle(IChunk chunk, NbtMap nbt) {
+    public EntityVehicle(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

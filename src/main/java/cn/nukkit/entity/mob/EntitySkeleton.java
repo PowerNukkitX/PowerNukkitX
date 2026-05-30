@@ -28,6 +28,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class EntitySkeleton extends EntityMob implements EntityWalkable, EntityS
     }
 
 
-    public EntitySkeleton(IChunk chunk, NbtMap nbt) {
+    public EntitySkeleton(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

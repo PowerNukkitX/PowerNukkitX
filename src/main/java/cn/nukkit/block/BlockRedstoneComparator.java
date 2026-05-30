@@ -8,11 +8,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemComparator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.RedstoneComponent;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
@@ -198,7 +198,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         }
 
         try {
-            createBlockEntity(NbtMap.builder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build());
+            createBlockEntity(new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound)));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {}", getBlockEntityType(), getLocation(), e);
             level.setBlock(layer0, 0, layer0, true);

@@ -1,8 +1,7 @@
 package cn.nukkit.item.utils;
 
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Identifier;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -11,12 +10,11 @@ import java.util.function.Consumer;
 
 public final class DiggerEntry {
     private Integer speed;
-    private String blockId;
+    private String  blockId;
     private final Set<String> tags = new LinkedHashSet<>();
-    private final NbtMapBuilder states = NbtMap.builder();
+    private final CompoundTag states = new CompoundTag();
 
-    private DiggerEntry() {
-    }
+    private DiggerEntry() {}
 
     public static DiggerEntry block(String blockId, int speed) {
         DiggerEntry e = new DiggerEntry();
@@ -112,21 +110,20 @@ public final class DiggerEntry {
         return this;
     }
 
-    public DiggerEntry states(Consumer<NbtMap> builder) {
-        if (builder != null) builder.accept(states.build());
+    public DiggerEntry states(Consumer<CompoundTag> builder) {
+        if (builder != null) builder.accept(states);
         return this;
     }
 
-    public NbtMap toNbt() {
-        NbtMap block = NbtMap.builder()
+    public CompoundTag toNbt() {
+        CompoundTag block = new CompoundTag()
                 .putString("name", blockId == null ? "" : blockId)
-                .putCompound("states", states.isEmpty() ? NbtMap.EMPTY : states.build())
-                .putString("tags", buildTagsExpression())
-                .build();
-        return NbtMap.builder()
+                .putCompound("states", states.isEmpty() ? new CompoundTag() : states.copy())
+                .putString("tags", buildTagsExpression());
+
+        return new CompoundTag()
                 .putCompound("block", block)
-                .putInt("speed", speed != null ? speed : 0)
-                .build();
+                .putInt("speed", speed != null ? speed : 0);
     }
 
     private String buildTagsExpression() {

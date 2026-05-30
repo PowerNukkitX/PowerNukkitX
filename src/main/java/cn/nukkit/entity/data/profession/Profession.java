@@ -1,11 +1,10 @@
 package cn.nukkit.entity.data.profession;
 
 import cn.nukkit.level.Sound;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.HashMap;
-import java.util.List;
 
 public abstract class Profession {
 
@@ -36,8 +35,8 @@ public abstract class Profession {
         this.workSound = workSound;
     }
 
-    public List<NbtMap> buildTrades(int seed) {
-        return new ObjectArrayList<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        return new ListTag<>();
     }
 
 

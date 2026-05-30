@@ -14,13 +14,13 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public boolean finished = true;
 
-    public BlockEntityPistonArm(IChunk chunk, NbtMap nbt) {
+    public BlockEntityPistonArm(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -129,9 +129,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.scheduleUpdate();
     }
 
-    /**
-     * The piston extension process lasts 2gt.
-     */
+    /** The piston extension process lasts 2gt. */
     @Override
     public boolean onUpdate() {
 
@@ -162,12 +160,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     moved.setLevel(this.level);
                     this.level.setBlock(movingBlock, 1, Block.get(BlockID.AIR), true, false);
                     // Common Block Updates
-                    var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound().toBuilder();
+                    var movedBlockEntity = movingBlockBlockEntity.getMovingBlockEntityCompound();
                     if (moved instanceof BlockEntityHolder<?> holder && movedBlockEntity != null) {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
                         movedBlockEntity.putInt("y", movingBlock.getFloorY());
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
-                        BlockEntityHolder.setBlockAndCreateEntity(holder, false, true, movedBlockEntity.build());
+                        BlockEntityHolder.setBlockAndCreateEntity(holder, false, true, movedBlockEntity);
                     } else this.level.setBlock(movingBlock, moved, true, true);
                     // Piston Update
                     moved.onUpdate(Level.BLOCK_UPDATE_MOVED);
@@ -202,18 +200,17 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        final NbtMap nbtMap = getNbt();
-        this.state = nbtMap.getByte("State");
-        this.newState = nbtMap.getByte("NewState");
-        if (nbt.containsKey("Progress"))
-            this.progress = nbtMap.getFloat("Progress");
-        if (nbt.containsKey("LastProgress"))
-            this.lastProgress = nbtMap.getFloat("LastProgress");
-        this.sticky = nbtMap.getBoolean("Sticky");
-        this.extending = nbtMap.getBoolean("Extending");
-        this.powered = nbtMap.getBoolean("powered");
-        if (nbt.containsKey("facing")) {
-            this.facing = BlockFace.fromIndex(nbtMap.getInt("facing"));
+        this.state = this.nbt.getByte("State");
+        this.newState = this.nbt.getByte("NewState");
+        if (nbt.contains("Progress"))
+            this.progress = nbt.getFloat("Progress");
+        if (nbt.contains("LastProgress"))
+            this.lastProgress = nbt.getFloat("LastProgress");
+        this.sticky = nbt.getBoolean("Sticky");
+        this.extending = nbt.getBoolean("Extending");
+        this.powered = nbt.getBoolean("powered");
+        if (nbt.contains("facing")) {
+            this.facing = BlockFace.fromIndex(nbt.getInt("facing"));
         } else {
             var block = this.getLevelBlock();
             if (block instanceof Faceable faceable)
@@ -222,18 +219,18 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.facing = BlockFace.NORTH;
         }
         attachedBlocks = new ObjectArrayList<>();
-        if (nbt.containsKey("AttachedBlocks")) {
-            var blocks = nbtMap.getList("AttachedBlocks", NbtType.INT);
+        if (nbt.contains("AttachedBlocks")) {
+            var blocks = nbt.getList("AttachedBlocks", IntTag.class);
             if (blocks != null && blocks.size() > 0) {
                 for (int i = 0; i < blocks.size(); i += 3) {
                     this.attachedBlocks.add(new BlockVector3(
-                            blocks.get(i),
-                            blocks.get(i + 1),
-                            blocks.get(i + 2)
+                            blocks.get(i).data,
+                            blocks.get(i + 1).data,
+                            blocks.get(i + 2).data
                     ));
                 }
             }
-        } else this.nbt.putList("AttachedBlocks", NbtType.INT, new IntArrayList());
+        } else nbt.putList("AttachedBlocks", new ListTag<>());
 
         // If the chunk was unloaded mid-move, resume ticking so the movement can complete.
         if (this.state == 1 || this.state == 3 || (this.progress > 0f && this.progress < 1f)) {
@@ -243,15 +240,15 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putByte("State", this.state)
-                .putByte("NewState", this.newState)
-                .putFloat("Progress", this.progress)
-                .putFloat("LastProgress", this.lastProgress)
-                .putBoolean("powered", this.powered)
-                .putList("AttachedBlocks", NbtType.INT, getAttachedBlocks())
-                .putInt("facing", this.facing.getIndex())
-                .putBoolean("Sticky", this.sticky)
-                .putBoolean("Extending", this.extending);
+        this.nbt.putByte("State", this.state);
+        this.nbt.putByte("NewState", this.newState);
+        this.nbt.putFloat("Progress", this.progress);
+        this.nbt.putFloat("LastProgress", this.lastProgress);
+        this.nbt.putBoolean("powered", this.powered);
+        this.nbt.putList("AttachedBlocks", getAttachedBlocks());
+        this.nbt.putInt("facing", this.facing.getIndex());
+        this.nbt.putBoolean("Sticky", this.sticky);
+        this.nbt.putBoolean("Extending", this.extending);
     }
 
     @Override
@@ -260,25 +257,24 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return blockId.equals(BlockID.PISTON) || blockId.equals(BlockID.STICKY_PISTON);
     }
 
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putBoolean("isMovable", this.movable)
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)
-                .putList("AttachedBlocks", NbtType.INT, getAttachedBlocks())
-                .putList("BreakBlocks", NbtType.INT, new IntArrayList())
+                .putList("AttachedBlocks", getAttachedBlocks())
+                .putList("BreakBlocks", new ListTag<>())
                 .putBoolean("Sticky", this.sticky)
                 .putByte("State", this.state)
-                .putByte("NewState", this.newState)
-                .build();
+                .putByte("NewState", this.newState);
     }
 
-    protected List<Integer> getAttachedBlocks() {
-        var attachedBlocks = new IntArrayList();
+    protected ListTag<IntTag> getAttachedBlocks() {
+        var attachedBlocks = new ListTag<IntTag>();
         for (var block : this.attachedBlocks) {
-            attachedBlocks.add(block.x);
-            attachedBlocks.add(block.y);
-            attachedBlocks.add(block.z);
+            attachedBlocks.add(new IntTag(block.x));
+            attachedBlocks.add(new IntTag(block.y));
+            attachedBlocks.add(new IntTag(block.z));
         }
         return attachedBlocks;
     }

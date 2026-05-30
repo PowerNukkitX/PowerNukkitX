@@ -1,15 +1,12 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.BlockStandingBanner;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.utils.DyeColor;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Objects;
 
 import static cn.nukkit.block.property.CommonBlockProperties.GROUND_SIGN_DIRECTION;
@@ -59,48 +56,44 @@ public class ItemBanner extends Item {
     }
 
     public void setType(int type) {
-        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder();
-        assert tag != null;
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
         tag.putInt("Type", type);
-        this.setNbt(tag.build());
+        this.setNbt(tag);
     }
 
     public void addPattern(BannerPattern bannerPattern) {
-        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
-        assert tag != null;
-        List<NbtMap> patterns = new ObjectArrayList<>(tag.getList("Patterns", NbtType.COMPOUND));
-        patterns.add(NbtMap.builder()
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
+        ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
+        patterns.add(new CompoundTag()
                 .putInt("Color", bannerPattern.color().getDyeData() & 0x0f)
-                .putString("Pattern", bannerPattern.type().getCode())
-                .build()
-        );
-        tag = tag.toBuilder().putList("Patterns", NbtType.COMPOUND, patterns).build();
+                .putString("Pattern", bannerPattern.type().getCode()));
+        tag.putList("Patterns", patterns);
         this.setNbt(tag);
     }
 
     public BannerPattern getPattern(int index) {
-        final NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
-        assert tag != null;
-        return BannerPattern.fromCompoundTag(tag.getList("Patterns", NbtType.COMPOUND).size() > index && index >= 0 ?
-                tag.getList("Patterns", NbtType.COMPOUND).get(index) :
-                NbtMap.EMPTY);
+        final CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
+        ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
+        return BannerPattern.fromCompoundTag(patterns.size() > index && index >= 0 ?
+                patterns.get(index) :
+                new CompoundTag());
     }
 
     public void removePattern(int index) {
-        NbtMap tag = this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY;
-        assert tag != null;
-        List<NbtMap> patterns = tag.getList("Patterns", NbtType.COMPOUND);
+        CompoundTag tag = this.hasNbt() ? this.getNbt() : new CompoundTag();
+        ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
         if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
+        tag.putList("Patterns", patterns);
         this.setNbt(tag);
     }
 
     public int getPatternsSize() {
-        return (this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY).getList("Patterns", NbtType.COMPOUND).size();
+        return (this.hasNbt() ? this.getNbt() : new CompoundTag()).getList("Patterns", CompoundTag.class).size();
     }
 
     public boolean hasPattern() {
-        return (this.hasCompoundTag() ? this.getNbt() : NbtMap.EMPTY).containsKey("Patterns");
+        return (this.hasNbt() ? this.getNbt() : new CompoundTag()).contains("Patterns");
     }
 }

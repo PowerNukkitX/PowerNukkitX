@@ -3,11 +3,11 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.CrafterInventory;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 
-    public BlockEntityCrafter(IChunk chunk, NbtMap nbt) {
+    public BlockEntityCrafter(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -17,17 +17,16 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putInt("crafting_ticks_remaining", 0)
-                .putShort("disabled_slots", (short) getInventory().getLockedBitMask())
-                .build();
+                .putShort("disabled_slots", (short) getInventory().getLockedBitMask());
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.nbt.containsKey("disabledSlots")) {
+        if (!this.nbt.contains("disabledSlots")) {
             this.nbt.putShort("disabledSlots", (short) 0);
         }
         this.getInventory().setLockedBitMask(this.getNbt().getShort("disabledSlots"));
@@ -56,7 +55,7 @@ public class BlockEntityCrafter extends BlockEntitySpawnableContainer {
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override

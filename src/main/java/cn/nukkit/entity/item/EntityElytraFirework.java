@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
@@ -17,7 +18,7 @@ public class EntityElytraFirework extends EntityFireworksRocket {
     private Player followingPlayer;
     private int fireworkAge = 0;
 
-    public EntityElytraFirework(IChunk chunk, NbtMap nbt, @Nullable Player player) {
+    public EntityElytraFirework(IChunk chunk, CompoundTag nbt, @Nullable Player player) {
         super(chunk, nbt);
         this.followingPlayer = player;
         this.lifetime = 20 + RANDOM.nextInt(13);

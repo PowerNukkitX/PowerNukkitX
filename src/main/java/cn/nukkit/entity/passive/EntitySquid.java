@@ -16,6 +16,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,7 @@ public class EntitySquid extends EntityAnimal implements EntitySwimmable {
         return SQUID;
     }
 
-    public EntitySquid(IChunk chunk, NbtMap nbt) {
+    public EntitySquid(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

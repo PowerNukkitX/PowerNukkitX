@@ -42,6 +42,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -64,7 +65,7 @@ public class EntityHoglin extends EntityMob implements EntityWalkable {
         return HOGLIN;
     }
 
-    public EntityHoglin(IChunk chunk, NbtMap nbt) {
+    public EntityHoglin(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

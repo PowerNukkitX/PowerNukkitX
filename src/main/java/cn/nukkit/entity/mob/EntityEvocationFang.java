@@ -7,6 +7,7 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
 import org.cloudburstmc.nbt.NbtMap;
@@ -25,7 +26,7 @@ public class EntityEvocationFang extends EntityMob implements EntityWalkable {
     @Setter
     private EntityEvocationIllager evocationIllager;
 
-    public EntityEvocationFang(IChunk chunk, NbtMap nbt) {
+    public EntityEvocationFang(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -10,6 +10,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -29,6 +33,7 @@ import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public interface IHuman extends InventoryHolder {
     int NETWORK_ID = 257;
@@ -38,28 +43,27 @@ public interface IHuman extends InventoryHolder {
         human.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0, 0).toNetwork(), false);
 
         if (!(human instanceof Player)) {
-            final NbtMap nbtMap = human.getNbt();
-            if (human.nbt.containsKey("NameTag")) {
+            final CompoundTag nbtMap = human.getNbt();
+            if (human.nbt.contains("NameTag")) {
                 human.setNameTag(nbtMap.getString("NameTag"));
             }
 
-            if (human.nbt.containsKey("Skin") && nbtMap.get("Skin") instanceof NbtMap) {
+            if (human.nbt.containsCompound("Skin")) {
                 final SerializedSkin.Builder builder = SerializedSkin.builder();
 
-                final NbtMap skinTag = nbtMap.getCompound("Skin");
-                NbtMapBuilder tagBuilder = skinTag.toBuilder();
-                if (!tagBuilder.containsKey("Transparent")) {
-                    tagBuilder.putBoolean("Transparent", false);
+                final CompoundTag skinTag = nbtMap.getCompound("Skin");
+                if (!skinTag.contains("Transparent")) {
+                    skinTag.putBoolean("Transparent", false);
                 }
-                if (tagBuilder.containsKey("ModelId")) {
+                if (skinTag.contains("ModelId")) {
                     builder.skinId(skinTag.getString("ModelId"));
                 }
-                if (tagBuilder.containsKey("PlayFabId")) {
+                if (skinTag.contains("PlayFabId")) {
                     builder.playFabId(skinTag.getString("PlayFabId"));
                 }
-                if (tagBuilder.containsKey("Data")) {
+                if (skinTag.contains("Data")) {
                     byte[] data = skinTag.getByteArray("Data");
-                    if (tagBuilder.containsKey("SkinImageWidth") && tagBuilder.containsKey("SkinImageHeight")) {
+                    if (skinTag.contains("SkinImageWidth") && skinTag.contains("SkinImageHeight")) {
                         int width = skinTag.getInt("SkinImageWidth");
                         int height = skinTag.getInt("SkinImageHeight");
                         builder.skinData(ImageData.of(width, height, data));
@@ -67,12 +71,12 @@ public interface IHuman extends InventoryHolder {
                         builder.skinData(ImageData.of(data));
                     }
                 }
-                if (tagBuilder.containsKey("CapeId")) {
+                if (skinTag.contains("CapeId")) {
                     builder.capeId(skinTag.getString("CapeId"));
                 }
-                if (tagBuilder.containsKey("CapeData")) {
+                if (skinTag.contains("CapeData")) {
                     byte[] data = skinTag.getByteArray("CapeData");
-                    if (tagBuilder.containsKey("CapeImageWidth") && tagBuilder.containsKey("CapeImageHeight")) {
+                    if (skinTag.contains("CapeImageWidth") && skinTag.contains("CapeImageHeight")) {
                         int width = skinTag.getInt("CapeImageWidth");
                         int height = skinTag.getInt("CapeImageHeight");
                         builder.capeData(ImageData.of(width, height, data));
@@ -80,33 +84,33 @@ public interface IHuman extends InventoryHolder {
                         builder.capeData(ImageData.of(data));
                     }
                 }
-                if (tagBuilder.containsKey("GeometryName")) {
+                if (skinTag.contains("GeometryName")) {
                     builder.geometryName(skinTag.getString("GeometryName"));
                 }
-                if (tagBuilder.containsKey("SkinResourcePatch")) {
+                if (skinTag.contains("SkinResourcePatch")) {
                     builder.skinResourcePatch(new String(skinTag.getByteArray("SkinResourcePatch"), StandardCharsets.UTF_8));
                 }
-                if (tagBuilder.containsKey("GeometryData")) {
+                if (skinTag.contains("GeometryData")) {
                     builder.geometryData(new String(skinTag.getByteArray("GeometryData"), StandardCharsets.UTF_8));
                 }
-                if (tagBuilder.containsKey("SkinAnimationData")) {
+                if (skinTag.contains("SkinAnimationData")) {
                     builder.animationData(new String(skinTag.getByteArray("SkinAnimationData"), StandardCharsets.UTF_8));
-                } else if (tagBuilder.containsKey("AnimationData")) { // backwards compatible
+                } else if (skinTag.contains("AnimationData")) { // backwards compatible
                     builder.animationData(new String(skinTag.getByteArray("AnimationData"), StandardCharsets.UTF_8));
                 }
-                if (tagBuilder.containsKey("PremiumSkin")) {
+                if (skinTag.contains("PremiumSkin")) {
                     builder.premium(skinTag.getBoolean("PremiumSkin"));
                 }
-                if (tagBuilder.containsKey("PersonaSkin")) {
+                if (skinTag.contains("PersonaSkin")) {
                     builder.persona(skinTag.getBoolean("PersonaSkin"));
                 }
-                if (tagBuilder.containsKey("CapeOnClassicSkin")) {
+                if (skinTag.contains("CapeOnClassicSkin")) {
                     builder.capeOnClassic(skinTag.getBoolean("CapeOnClassicSkin"));
                 }
-                if (tagBuilder.containsKey("AnimatedImageData")) {
+                if (skinTag.contains("AnimatedImageData")) {
                     final List<AnimationData> animations = new ObjectArrayList<>();
-                    List<NbtMap> list = skinTag.getList("AnimatedImageData", NbtType.COMPOUND);
-                    for (NbtMap animationTag : list) {
+                    ListTag<CompoundTag> list = skinTag.getList("AnimatedImageData", CompoundTag.class);
+                    for (CompoundTag animationTag : list.getAll()) {
                         float frames = animationTag.getFloat("Frames");
                         int type = animationTag.getInt("Type");
                         byte[] image = animationTag.getByteArray("Image");
@@ -124,16 +128,16 @@ public interface IHuman extends InventoryHolder {
                     }
                     builder.animations(animations);
                 }
-                if (tagBuilder.containsKey("ArmSize")) {
+                if (skinTag.contains("ArmSize")) {
                     builder.armSize(skinTag.getString("ArmSize"));
                 }
-                if (tagBuilder.containsKey("SkinColor")) {
+                if (skinTag.contains("SkinColor")) {
                     builder.skinColor(skinTag.getString("SkinColor"));
                 }
-                if (tagBuilder.containsKey("PersonaPieces")) {
-                    List<NbtMap> pieces = skinTag.getList("PersonaPieces", NbtType.COMPOUND);
+                if (skinTag.contains("PersonaPieces")) {
+                    ListTag<CompoundTag> pieces = skinTag.getList("PersonaPieces", CompoundTag.class);
                     final List<PersonaPieceData> personaPieces = new ObjectArrayList<>();
-                    for (NbtMap piece : pieces) {
+                    for (CompoundTag piece : pieces.getAll()) {
                         personaPieces.add(
                                 new PersonaPieceData(
                                         piece.getString("PieceId"),
@@ -146,14 +150,14 @@ public interface IHuman extends InventoryHolder {
                     }
                     builder.personaPieces(personaPieces);
                 }
-                if (tagBuilder.containsKey("PieceTintColors")) {
+                if (skinTag.contains("PieceTintColors")) {
                     final List<PersonaPieceTintData> pieceTintColors = new ObjectArrayList<>();
-                    List<NbtMap> tintColors = skinTag.getList("PieceTintColors", NbtType.COMPOUND);
-                    for (NbtMap tintColor : tintColors) {
+                    ListTag<CompoundTag> tintColors = skinTag.getList("PieceTintColors", CompoundTag.class);
+                    for (CompoundTag tintColor : tintColors.getAll()) {
                         pieceTintColors.add(
                                 new PersonaPieceTintData(
                                         tintColor.getString("PieceType"),
-                                        tintColor.getList("Colors", NbtType.STRING)
+                                        tintColor.getList("Colors", StringTag.class).getAll().stream().map(StringTag::parseValue).toList()
                                 )
                         );
                     }
@@ -175,28 +179,28 @@ public interface IHuman extends InventoryHolder {
                 new HumanEnderChestInventory(this)
         });
 
-        final NbtMap nbtMap = human.getNbt();
+        final CompoundTag nbtMap = human.getNbt();
 
-        if (human.nbt.containsKey("SelectedInventorySlot")) {
+        if (human.nbt.contains("SelectedInventorySlot")) {
             this.getInventory().setHeldItemSlot(NukkitMath.clamp(nbtMap.getInt("SelectedInventorySlot"), 0, 8));
         }
 
-        if (nbtMap.containsKey("Inventory") && nbtMap.get("Inventory") instanceof List<?>) {
+        if (nbtMap.containsList("Inventory")) {
             var inventory = this.getInventory();
-            List<NbtMap> inventoryList = nbtMap.getList("Inventory", NbtType.COMPOUND);
-            for (NbtMap item : inventoryList) {
+            ListTag<CompoundTag> inventoryList = nbtMap.getList("Inventory", CompoundTag.class);
+            for (CompoundTag item : inventoryList.getAll()) {
                 int slot = item.getByte("Slot");
                 inventory.setItem(slot, ItemHelper.read(item));//inventory 0-39
             }
         }
-        if (nbtMap.containsKey("OffInventory")) {
+        if (nbtMap.contains("OffInventory")) {
             HumanOffHandInventory offhandInventory = getOffhandInventory();
-            NbtMap offHand = nbtMap.getCompound("OffInventory");
+            CompoundTag offHand = nbtMap.getCompound("OffInventory");
             offhandInventory.setItem(0, ItemHelper.read(offHand));//offinventory index 0
         }
-        if (nbtMap.containsKey("EnderItems") &&nbtMap.get("EnderItems") instanceof List<?>) {
-            List<NbtMap> inventoryList = nbtMap.getList("EnderItems", NbtType.COMPOUND);
-            for (NbtMap item : inventoryList) {//enderItems index 0-26
+        if (nbtMap.containsList("EnderItems")) {
+            ListTag<CompoundTag> inventoryList = nbtMap.getList("EnderItems", CompoundTag.class);
+            for (CompoundTag item : inventoryList.getAll()) {//enderItems index 0-26
                 ((EntityHumanType) human).getEnderChestInventory().setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
@@ -204,14 +208,12 @@ public interface IHuman extends InventoryHolder {
 
     default void saveHumanEntity(Entity human) {
         //EntityHumanType
-        final List<NbtMap> inventoryTag = new ObjectArrayList<>();
-        human.nbt.putList("Inventory", NbtType.COMPOUND, inventoryTag).build(); // add empty
+        final ListTag<CompoundTag> inventoryTag = new ListTag<>(Tag.TAG_Compound);
+        human.nbt.putList("Inventory", inventoryTag);
         if (this.getInventory() != null) {
             for (var entry : getInventory().getContents().entrySet()) {
                 inventoryTag.add(ItemHelper.write(entry.getValue(), entry.getKey()));
             }
-
-            human.nbt.putList("Inventory", NbtType.COMPOUND, inventoryTag).build(); // add contents
             human.nbt.putInt("SelectedInventorySlot", this.getInventory().getHeldItemIndex());
         }
 
@@ -220,22 +222,21 @@ public interface IHuman extends InventoryHolder {
             human.nbt.putCompound("OffInventory", ItemHelper.write(item, 0));
         }
 
-        human.nbt.putList("EnderItems", NbtType.COMPOUND, new ObjectArrayList<>());
+        human.nbt.putList("EnderItems", new ListTag<>(Tag.TAG_Compound));
         if (this.getEnderChestInventory() != null) {
-            List<NbtMap> enderItems = new ObjectArrayList<>(human.getNbt().getList("EnderItems", NbtType.COMPOUND));
+            ListTag<CompoundTag> enderItems = human.getNbt().getList("EnderItems", CompoundTag.class);
             for (int slot = 0; slot < this.getEnderChestInventory().getSize(); ++slot) {
                 Item item = this.getEnderChestInventory().getItem(slot);
                 if (!item.isNull()) {
                     enderItems.add(ItemHelper.write(item, slot));
                 }
             }
-            human.nbt.putList("EnderItems", NbtType.COMPOUND, enderItems);
         }
 
         //EntityHuman
         var skin = getSkin();
         if (skin != null) {
-            NbtMapBuilder skinTag = NbtMap.builder()
+            CompoundTag skinTag = new CompoundTag()
                     .putByteArray("Data", skin.getSkinData().getImage())
                     .putInt("SkinImageWidth", skin.getSkinData().getWidth())
                     .putInt("SkinImageHeight", skin.getSkinData().getHeight())
@@ -255,59 +256,49 @@ public interface IHuman extends InventoryHolder {
 
             List<AnimationData> animations = skin.getAnimations();
             if (!animations.isEmpty()) {
-                List<NbtMap> animationsTag = new ObjectArrayList<>();
+                ListTag<CompoundTag> animationsTag = new ListTag<>();
                 for (AnimationData animation : animations) {
-                    animationsTag.add(
-                            NbtMap.builder()
-                                    .putFloat("Frames", animation.getFrames())
-                                    .putInt("Type", animation.getTextureType().ordinal())
-                                    .putInt("ImageWidth", animation.getImage().getWidth())
-                                    .putInt("ImageHeight", animation.getImage().getHeight())
-                                    .putInt("AnimationExpression", animation.getExpressionType().ordinal())
-                                    .putByteArray("Image", animation.getImage().getImage())
-                                    .build()
-                    );
+                    animationsTag.add(new CompoundTag()
+                            .putFloat("Frames", animation.getFrames())
+                            .putInt("Type", animation.getTextureType().ordinal())
+                            .putInt("ImageWidth", animation.getImage().getWidth())
+                            .putInt("ImageHeight", animation.getImage().getHeight())
+                            .putInt("AnimationExpression", animation.getExpressionType().ordinal())
+                            .putByteArray("Image", animation.getImage().getImage()));
                 }
-                skinTag.putList("AnimatedImageData", NbtType.COMPOUND, animationsTag);
+                skinTag.putList("AnimatedImageData", animationsTag);
             }
 
             List<PersonaPieceData> personaPieces = skin.getPersonaPieces();
             if (!personaPieces.isEmpty()) {
-                List<NbtMap> piecesTag = new ObjectArrayList<>();
+                ListTag<CompoundTag> piecesTag = new ListTag<>();
                 for (PersonaPieceData piece : personaPieces) {
-                    piecesTag.add(
-                            NbtMap.builder()
-                                    .putString("PieceId", piece.getId())
-                                    .putString("PieceType", piece.getType())
-                                    .putString("PackId", piece.getPackId())
-                                    .putBoolean("IsDefault", piece.isDefault())
-                                    .putString("ProductId", piece.getProductId())
-                                    .build()
-                    );
+                    piecesTag.add(new CompoundTag().putString("PieceId", piece.getId())
+                            .putString("PieceType", piece.getType())
+                            .putString("PackId", piece.getPackId())
+                            .putBoolean("IsDefault", piece.isDefault())
+                            .putString("ProductId", piece.getProductId()));
                 }
-                skinTag.putList("PersonaPieces", NbtType.COMPOUND, piecesTag);
+                skinTag.putList("PersonaPieces", piecesTag);
             }
             List<PersonaPieceTintData> tints = skin.getTintColors();
             if (!tints.isEmpty()) {
-                List<NbtMap> tintsTag = new ObjectArrayList<>();
+                ListTag<CompoundTag> tintsTag = new ListTag<>();
                 for (PersonaPieceTintData tint : tints) {
-                    List<String> colors = new ObjectArrayList<>();
-                    colors.addAll(tint.getColors());
-                    tintsTag.add(
-                            NbtMap.builder()
-                                    .putString("PieceType", tint.getType())
-                                    .putList("Colors", NbtType.STRING, colors)
-                                    .build()
-                    );
+                    ListTag<StringTag> colors = new ListTag<>();
+                    colors.setAll(tint.getColors().stream().map(StringTag::new).collect(Collectors.toList()));
+                    tintsTag.add(new CompoundTag()
+                            .putString("PieceType", tint.getType())
+                            .putList("Colors", colors));
                 }
-                skinTag.putList("PieceTintColors", NbtType.COMPOUND, tintsTag);
+                skinTag.putList("PieceTintColors", tintsTag);
             }
 
             if (!skin.getPlayFabId().isEmpty()) {
                 skinTag.putString("PlayFabId", skin.getPlayFabId());
             }
 
-            human.nbt.putCompound("Skin", skinTag.build());
+            human.getNbt().putCompound("Skin", skinTag);
         }
     }
 

@@ -41,10 +41,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +60,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         return LLAMA;
     }
 
-    public EntityLlama(IChunk chunk, NbtMap nbt) {
+    public EntityLlama(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -263,7 +261,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
     public void initEntity() {
         super.initEntity();
 
-        if (this.nbt.containsKey("LlamaStrength")) {
+        if (this.nbt.contains("LlamaStrength")) {
             this.llamaStrength = this.getNbt().getInt("LlamaStrength");
         } else {
             this.llamaStrength = ThreadLocalRandom.current().nextInt(1, 6);
@@ -272,9 +270,9 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
 
         // Load items
         ensureInventories();
-        if (nbt.containsKey("Inventory")) {
+        if (nbt.containsList("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(new ObjectArrayList<>(this.getNbt().getList("Inventory", NbtType.COMPOUND)));
+            inv.load(this.getNbt().getList("Inventory", CompoundTag.class).getAll());
             syncEquippableInventories();
         }
     }
@@ -286,7 +284,7 @@ public class EntityLlama extends EntityAnimal implements EntityWalkable, Invento
         var inv = isChested() ? invChested : invNoChest;
         syncEquippableInventories();
         this.nbt.putBoolean("Chested", isChested())
-                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
+                .putList("Inventory", inv.save(isChested()));
     }
 
     @Override

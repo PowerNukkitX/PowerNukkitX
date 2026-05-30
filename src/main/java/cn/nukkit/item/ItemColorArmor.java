@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import org.cloudburstmc.nbt.NbtMap;
@@ -58,9 +59,9 @@ abstract public class ItemColorArmor extends ItemArmor {
      */
     public ItemColorArmor setColor(int r, int g, int b) {
         int rgb = r << 16 | g << 8 | b;
-        NbtMapBuilder tag = this.hasCompoundTag() ? this.getNbt().toBuilder() : NbtMap.builder();
+        CompoundTag tag = this.getOrCreateNbt();
         tag.putInt("customColor", rgb);
-        this.setNbt(tag.build());
+        this.setNbt(tag);
         return this;
     }
 
@@ -70,9 +71,9 @@ abstract public class ItemColorArmor extends ItemArmor {
      * @return - BlockColor, or null if item has no color
      */
     public BlockColor getColor() {
-        if (!this.hasCompoundTag()) return null;
-        NbtMap tag = this.getNbt();
-        if (!tag.containsKey("customColor")) return null;
+        if (!this.hasNbt()) return null;
+        CompoundTag tag = this.getNbt();
+        if (!tag.containsInt("customColor")) return null;
         int rgb = tag.getInt("customColor");
         return new BlockColor(rgb);
     }

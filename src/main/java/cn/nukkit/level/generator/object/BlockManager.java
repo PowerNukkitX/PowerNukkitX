@@ -12,6 +12,10 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntArrayTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.NbtHelper;
 import cn.nukkit.utils.RuntimeBlockDefinition;
@@ -391,20 +395,20 @@ public class BlockManager {
 
     private void queuePendingSubChunkUpdates(IChunk chunk, List<Block> blocks) {
         synchronized (chunk) {
-            NbtMap extraData = chunk.getExtraData();
-            List<int[]> pending = extraData.containsKey(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY)
-                    ? extraData.getList(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY)
-                    : new ArrayList<>();
+            CompoundTag extraData = chunk.getExtraData();
+            ListTag<IntArrayTag> pending = extraData.containsList(PENDING_SUB_CHUNK_UPDATES, Tag.TAG_Int_Array)
+                    ? extraData.getList(PENDING_SUB_CHUNK_UPDATES, IntArrayTag.class)
+                    : new ListTag<>(Tag.TAG_Int_Array);
             for (Block block : blocks) {
-                pending.add(new int[] {
+                pending.add(new IntArrayTag(new int[] {
                         block.getFloorX(),
                         block.getFloorY(),
                         block.getFloorZ(),
                         block.layer,
                         block.getBlockState().blockStateHash()
-                });
+                }));
             }
-            chunk.setExtraData(extraData.toBuilder().putList(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY, pending).build());
+            extraData.putList(PENDING_SUB_CHUNK_UPDATES, pending);
             chunk.setChanged();
         }
     }
@@ -414,16 +418,15 @@ public class BlockManager {
             return;
         }
 
-        List<int[]> pending;
+        ListTag<IntArrayTag> pending;
         synchronized (chunk) {
-            NbtMap extraData = chunk.getExtraData();
-            if (!extraData.containsKey(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY)) {
+            CompoundTag extraData = chunk.getExtraData();
+            if (!extraData.containsList(PENDING_SUB_CHUNK_UPDATES, Tag.TAG_Int_Array)) {
                 return;
             }
-            pending = extraData.getList(PENDING_SUB_CHUNK_UPDATES, NbtType.INT_ARRAY);
-            chunk.setExtraData(NbtHelper.remove(extraData, PENDING_SUB_CHUNK_UPDATES));
+            pending = extraData.removeAndGet(PENDING_SUB_CHUNK_UPDATES);
         }
-        if (pending == null || pending.isEmpty()) {
+        if (pending == null || pending.size() == 0) {
             return;
         }
 
@@ -453,13 +456,14 @@ public class BlockManager {
         return list;
     }
 
-    public static BlockManager fromTag(List<int[]> tag, BlockManager level) {
-        for (var data : tag) {
-            int x = data[0];
-            int y = data[1];
-            int z = data[2];
-            int layer = data[3];
-            int blockHash = data[4];
+    public static BlockManager fromTag(ListTag<IntArrayTag> tag, BlockManager level) {
+        for(var data : tag.getAll()) {
+            int[] array = data.getData();
+            int x = array[0];
+            int y = array[1];
+            int z = array[2];
+            int layer = array[3];
+            int blockHash = array[4];
             BlockState state = Registries.BLOCKSTATE.get(blockHash);
             level.setBlockStateAt(x, y, z, layer, state);
         }

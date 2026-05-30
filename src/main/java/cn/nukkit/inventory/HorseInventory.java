@@ -10,6 +10,8 @@ import cn.nukkit.entity.components.InventoryComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Sound;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.nbt.NbtMap;
@@ -382,18 +384,19 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         }
     }
 
-    public void load(List<NbtMap> inventoryTag) {
+    public void load(Collection<CompoundTag> inventoryTag) {
         if (inventoryTag == null) return;
 
         EquippableComponent eq = this.getEquippableDefinition();
         int equipCount = eq != null ? eq.getEquipCount() : 0;
         int base = getStorageBaseUiSlot();
 
-        for (int i = 0; i < inventoryTag.size(); i++) {
-            NbtMap entry = inventoryTag.get(i);
-            int slot = entry.containsKey("Slot") ? (entry.getByte("Slot") & 0xff) : i;
+        int i = 0;
+        for (CompoundTag entry : inventoryTag) {
+            int slot = entry.contains("Slot") ? (entry.getByte("Slot") & 0xff) : i;
 
             Item it = ItemHelper.read(entry);
+            i++;
             if (it == null || it.isNull()) continue;
 
             // 1) Equippable by UI slotNumber
@@ -419,8 +422,8 @@ public class HorseInventory<T extends EntityCreature & InventoryHolder> extends 
         }
     }
 
-    public List<NbtMap> save(boolean includeStorage) {
-        final List<NbtMap> inventoryTag = new ObjectArrayList<>();
+    public ListTag<CompoundTag> save(boolean includeStorage) {
+        final ListTag<CompoundTag> inventoryTag = new ListTag<>();
 
         EquippableComponent eq = this.getEquippableDefinition();
         int equipCount = eq != null ? eq.getEquipCount() : 0;

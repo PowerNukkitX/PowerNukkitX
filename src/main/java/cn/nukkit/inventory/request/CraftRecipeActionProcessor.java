@@ -12,6 +12,7 @@ import cn.nukkit.inventory.SmithingInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentHelper;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.types.TrimData;
 import cn.nukkit.recipe.Input;
 import cn.nukkit.recipe.Recipe;
@@ -24,8 +25,6 @@ import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
 import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
 import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
@@ -50,7 +49,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
 
-    public boolean checkTrade(NbtMap recipeInput, Item input, int subtract) {
+    public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
         String id = input.getId();
         int damage = input.getDamage();
         int count = input.getCount();
@@ -59,9 +58,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             log.error("The trade recipe does not match, expect {} actual {}, count {}", recipeInput, input, required);
             return true;
         }
-        if (recipeInput.containsKey("tag")) {
-            NbtMap tag = recipeInput.getCompound("tag");
-            NbtMap compoundTag = input.getNbt();
+        if (recipeInput.containsCompound("tag")) {
+            CompoundTag tag = recipeInput.getCompound("tag");
+            CompoundTag compoundTag = input.getNbt();
             if (!tag.equals(compoundTag)) {
                 log.error("The trade recipe tag does not match tag, expect {} actual {}", tag, compoundTag);
                 return true;
@@ -107,7 +106,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             }
             return null;
         } else if (action.getRecipeNetworkId() >= TradeRecipeBuildUtils.TRADE_RECIPEID) {//handle village trade recipe
-            NbtMap tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
+            CompoundTag tradeRecipe = TradeRecipeBuildUtils.RECIPE_MAP.get(action.getRecipeNetworkId());
             if (tradeRecipe == null) {
                 log.error("Can't find trade recipe from netId {}", action.getRecipeNetworkId());
                 return context.error();
@@ -124,11 +123,11 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 log.error("Can't find trade input!");
                 return context.error();
             }
-            boolean ca = tradeRecipe.containsKey("buyA");
-            boolean cb = tradeRecipe.containsKey("buyB");
+            boolean ca = tradeRecipe.contains("buyA");
+            boolean cb = tradeRecipe.contains("buyB");
 
-            int reductionA = (int) (reputation * (tradeRecipe.containsKey("priceMultiplierA", NbtType.FLOAT) ? tradeRecipe.getFloat("priceMultiplierA") : 0));
-            int reductionB = (int) (reputation * (tradeRecipe.containsKey("priceMultiplierB", NbtType.FLOAT) ? tradeRecipe.getFloat("priceMultiplierB") : 0));
+            int reductionA = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierA") ? tradeRecipe.getFloat("priceMultiplierA") : 0));
+            int reductionB = (int) (reputation * (tradeRecipe.containsFloat("priceMultiplierB") ? tradeRecipe.getFloat("priceMultiplierB") : 0));
 
             if (ca && cb) {
                 if ((first.isNull() || second.isNull())) {
@@ -152,10 +151,10 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 }
             }
             if (ca) {
-                int traderExp = tradeRecipe.containsKey("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
-                int rewardExp = tradeRecipe.containsKey("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
+                int traderExp = tradeRecipe.contains("traderExp") ? tradeRecipe.getInt("traderExp") : 0;
+                int rewardExp = tradeRecipe.contains("rewardExp") ? tradeRecipe.getInt("rewardExp") : 0;
                 player.addExperience(rewardExp * action.getNumberOfRequestedCrafts());
-                tradeRecipe = tradeRecipe.toBuilder().putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts()).build();
+                tradeRecipe.putInt("uses", tradeRecipe.getInt("uses") + action.getNumberOfRequestedCrafts());
                 if (inventory.getHolder() instanceof EntityVillagerV2 villager) {
                     villager.addExperience(traderExp * action.getNumberOfRequestedCrafts());
                     villager.addGossip(player.getXUID(), EntityVillagerV2.Gossip.TRADING, 2);
@@ -219,8 +218,8 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 if (recipe instanceof UserDataShapelessRecipe) {
                     for (Item[] row : data) {
                         for (Item inputItem : row) {
-                            if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
-                                output.setCompoundTag(inputItem.getCompoundTag());
+                            if (!inputItem.isNull() && inputItem.hasNbt()) {
+                                output.setNbtBytes(inputItem.getCompoundTag());
                                 break;
                             }
                         }
@@ -257,9 +256,9 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         match &= expectTemplate.match(template);
         if (match) {
             Item result = recipe.getResult().clone();
-            NbtMap tag = equipment.getNbt();
+            CompoundTag tag = equipment.getNbt();
             if (tag != null) {
-                result.setCompoundTag(tag);
+                result.setNbt(tag);
             }
             player.getCreativeOutputInventory().setItem(result);
             return null;
@@ -290,14 +289,13 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             TrimPattern trimPattern = find1.get();
             TrimMaterial trimMaterial = find2.get();
             Item result = equipment.clone();
-            NbtMap trim = NbtMap.builder().putString("Material", trimMaterial.getMaterialId())
-                    .putString("Pattern", trimPattern.getPatternId())
-                    .build();
-            NbtMap compound = ingredient.getNbt();
+            CompoundTag trim = new CompoundTag().putString("Material", trimMaterial.getMaterialId())
+                    .putString("Pattern", trimPattern.getPatternId());
+            CompoundTag compound = ingredient.getNbt();
             if (compound == null) {
                 compound = result.getOrCreateNbt();
-            } else compound = NbtMap.fromMap(compound); // Ensure no cached CompoundTags are used double
-            compound = compound.toBuilder().putCompound("Trim", trim).build();
+            } else compound = compound.copy(); // Ensure no cached CompoundTags are used double
+            compound.putCompound("Trim", trim);
             result.setNbt(compound);
             player.getCreativeOutputInventory().setItem(result);
             return null;

@@ -10,20 +10,16 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Identifier;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static cn.nukkit.block.property.CommonBlockProperties.HONEY_LEVEL;
 
@@ -39,7 +35,7 @@ public class BlockEntityBeehive extends BlockEntity {
     @Setter
     private Entity interactingEntity;
 
-    public BlockEntityBeehive(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBeehive(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -55,24 +51,24 @@ public class BlockEntityBeehive extends BlockEntity {
     public void loadNBT() {
         super.loadNBT();
         this.occupants = new ArrayList<>(4);
-        if (!this.nbt.containsKey("ShouldSpawnBees")) {
-            this.nbt.putByte("ShouldSpawnBees", (byte) 0);
+        if (!this.nbt.contains("ShouldSpawnBees")) {
+            this.nbt.putByte("ShouldSpawnBees", 0);
         }
 
-        if (!this.nbt.containsKey("Occupants")) {
-            this.nbt.putList("Occupants", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!this.nbt.contains("Occupants")) {
+            this.nbt.putList("Occupants", new ListTag<>());
         } else {
-            List<NbtMap> occupantsTag = getNbt().getList("Occupants", NbtType.COMPOUND);
+            ListTag<CompoundTag> occupantsTag = nbt.getList("Occupants", CompoundTag.class);
             for (int i = 0; i < occupantsTag.size(); i++) {
                 this.occupants.add(new Occupant(occupantsTag.get(i)));
             }
         }
 
         // Backward compatibility
-        if (this.nbt.containsKey("HoneyLevel")) {
+        if (this.nbt.contains("HoneyLevel")) {
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.getNbt().getByte("HoneyLevel");
+                int honeyLevel = this.nbt.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
@@ -84,17 +80,17 @@ public class BlockEntityBeehive extends BlockEntity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        List<NbtMap> occupantsTag = new ObjectArrayList<>();
+        ListTag<CompoundTag> occupantsTag = new ListTag<>();
         for (Occupant occupant : occupants) {
             occupantsTag.add(occupant.saveNBT());
         }
-        this.nbt.putList("Occupants", NbtType.COMPOUND, occupantsTag);
+        this.nbt.putList("Occupants", occupantsTag);
 
         // Backward compatibility
-        if (this.nbt.containsKey("HoneyLevel")) {
+        if (this.nbt.contains("HoneyLevel")) {
             Block block = getBlock();
             if (block instanceof BlockBeehive beehive) {
-                int honeyLevel = this.getNbt().getByte("HoneyLevel");
+                int honeyLevel = this.nbt.getByte("HoneyLevel");
                 beehive.setBlockFace(beehive.getBlockFace());
                 beehive.setHoneyLevel(honeyLevel);
                 beehive.getLevel().setBlock(beehive, beehive, true, true);
@@ -122,9 +118,9 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public boolean addOccupant(Occupant occupant) {
         occupants.add(occupant);
-        List<NbtMap> occupants = this.getNbt().getList("Occupants", NbtType.COMPOUND);
+        ListTag<CompoundTag> occupants = this.nbt.getList("Occupants", CompoundTag.class);
         occupants.add(occupant.saveNBT());
-        this.nbt.putList("Occupants", NbtType.COMPOUND, occupants);
+        this.nbt.putList("Occupants", occupants);
         scheduleUpdate();
         return true;
     }
@@ -149,7 +145,7 @@ public class BlockEntityBeehive extends BlockEntity {
 
     public Occupant addOccupant(Entity entity, int ticksLeftToStay, boolean hasNectar, boolean playSound) {
         entity.saveNBT();
-        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.getNbt());
+        Occupant occupant = new Occupant(ticksLeftToStay, entity.getIdentifier(), hasNectar, entity.getNbt().copy());
         if (!addOccupant(occupant)) {
             return null;
         }
@@ -225,12 +221,12 @@ public class BlockEntityBeehive extends BlockEntity {
 
     @Override
     public void onBreak(boolean isSilkTouch) {
-        if (!isSilkTouch) {
+        if(!isSilkTouch) {
             Entity interactingEntity = getInteractingEntity();
-            for (Occupant occupant : getOccupants()) {
-                if (spawnOccupant(occupant) instanceof EntityBee bee && interactingEntity != null) {
-                    if (getInteractingEntity() instanceof Player player) {
-                        if (player.isSurvival() || player.isAdventure()) {
+            for(Occupant occupant : getOccupants()) {
+                if(spawnOccupant(occupant) instanceof EntityBee bee && interactingEntity != null) {
+                    if(getInteractingEntity() instanceof Player player) {
+                        if(player.isSurvival() || player.isAdventure()) {
                             bee.setAngryOnTarget(player);
                         }
                     } else bee.setAngryOnTarget(interactingEntity);
@@ -249,7 +245,7 @@ public class BlockEntityBeehive extends BlockEntity {
             occupant.setActorIdentifier("minecraft:bee");
         }
 
-        NbtMap saveData = occupant.saveData;
+        CompoundTag saveData = occupant.saveData.copy();
 
         Position lookAt;
         Position spawnPosition;
@@ -261,12 +257,17 @@ public class BlockEntityBeehive extends BlockEntity {
                     face.getZOffset() * 0.25 - face.getXOffset() * 0.5
             );
 
-            saveData = saveData.toBuilder()
-                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(spawnPosition.x, spawnPosition.y, spawnPosition.z))
-                    .build();
-            saveData = saveData.toBuilder()
-                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                    .build();
+            saveData.putList("Pos", new ListTag<DoubleTag>()
+                    .add(new DoubleTag(spawnPosition.x))
+                    .add(new DoubleTag(spawnPosition.y))
+                    .add(new DoubleTag(spawnPosition.z))
+            );
+
+            saveData.putList("Motion", new ListTag<DoubleTag>()
+                    .add(new DoubleTag(0))
+                    .add(new DoubleTag(0))
+                    .add(new DoubleTag(0))
+            );
 
             lookAt = getSide(face, 2);
         } else {
@@ -291,7 +292,10 @@ public class BlockEntityBeehive extends BlockEntity {
 
         yaw = -yaw * 180f / (float) Math.PI;
 
-        saveData = saveData.toBuilder().putList("Rotation", NbtType.FLOAT, Arrays.asList(yaw, 0f)).build();
+        saveData.putList("Rotation", new ListTag<FloatTag>()
+                .add(new FloatTag(yaw))
+                .add(new FloatTag(0))
+        );
 
         Entity entity = Entity.createEntity(occupant.actorIdentifier, spawnPosition.getChunk(), saveData);
         if (entity != null) {
@@ -384,48 +388,48 @@ public class BlockEntityBeehive extends BlockEntity {
 
         private int ticksLeftToStay;
         private String actorIdentifier;
-        private NbtMap saveData;
+        private CompoundTag saveData;
         private Sound workSound = Sound.BLOCK_BEEHIVE_WORK;
         private float workSoundPitch = 1;
         private boolean hasNectar;
         private boolean muted;
 
 
-        public Occupant(int ticksLeftToStay, String actorIdentifier, boolean hasNectar, NbtMap saveData) {
+        public Occupant(int ticksLeftToStay, String actorIdentifier, boolean hasNectar, CompoundTag saveData) {
             this.ticksLeftToStay = ticksLeftToStay;
             this.actorIdentifier = actorIdentifier;
             this.hasNectar = hasNectar;
             this.saveData = saveData;
         }
 
-        private Occupant(NbtMap saved) {
+        private Occupant(CompoundTag saved) {
             this.ticksLeftToStay = saved.getInt("TicksLeftToStay");
             this.actorIdentifier = saved.getString("ActorIdentifier");
-            this.saveData = saved.getCompound("SaveData");
-            if (saved.containsKey("WorkSound")) {
+            this.saveData = saved.getCompound("SaveData").copy();
+            if (saved.contains("WorkSound")) {
                 try {
                     this.workSound = Sound.valueOf(saved.getString("WorkSound"));
                 } catch (IllegalArgumentException ignored) {
 
                 }
             }
-            if (saved.containsKey("WorkSoundPitch")) {
+            if (saved.contains("WorkSoundPitch")) {
                 this.workSoundPitch = saved.getFloat("WorkSoundPitch");
             }
             this.hasNectar = saved.getBoolean("HasNectar");
             this.muted = saved.getBoolean("Muted");
         }
 
-        public NbtMap saveNBT() {
-            return NbtMap.builder()
-                    .putString("ActorIdentifier", actorIdentifier)
+        public CompoundTag saveNBT() {
+            CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putString("ActorIdentifier", actorIdentifier)
                     .putInt("TicksLeftToStay", ticksLeftToStay)
                     .putCompound("SaveData", saveData)
                     .putString("WorkSound", workSound.name())
                     .putFloat("WorkSoundPitch", workSoundPitch)
                     .putBoolean("HasNectar", hasNectar)
-                    .putBoolean("Muted", muted)
-                    .build();
+                    .putBoolean("Muted", muted);
+            return compoundTag;
         }
 
         public boolean getHasNectar() {
@@ -452,12 +456,12 @@ public class BlockEntityBeehive extends BlockEntity {
             this.actorIdentifier = actorIdentifier;
         }
 
-        public NbtMap getSaveData() {
-            return saveData;
+        public CompoundTag getSaveData() {
+            return saveData.copy();
         }
 
-        public void setSaveData(NbtMap saveData) {
-            this.saveData = saveData;
+        public void setSaveData(CompoundTag saveData) {
+            this.saveData = saveData.copy();
         }
 
         public Sound getWorkSound() {
@@ -511,7 +515,7 @@ public class BlockEntityBeehive extends BlockEntity {
         protected Occupant clone() {
             try {
                 Occupant occupant = (Occupant) super.clone();
-                occupant.saveData = this.saveData;
+                occupant.saveData = this.saveData.copy();
                 return occupant;
             } catch (CloneNotSupportedException e) {
                 throw new InternalError("Unexpected exception", e);

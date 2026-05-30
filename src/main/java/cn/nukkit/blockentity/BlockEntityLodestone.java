@@ -4,11 +4,11 @@ import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -23,22 +23,21 @@ import java.util.OptionalInt;
 public class BlockEntityLodestone extends BlockEntitySpawnable {
 
 
-    public BlockEntityLodestone(IChunk chunk, NbtMap nbt) {
+    public BlockEntityLodestone(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (nbt.containsKey("trackingHandler")) {
-            final NbtMap nbtMap = (NbtMap) this.nbt.remove("trackingHandler");
-            this.nbt.putCompound("trackingHandle", nbtMap).build();
+        if (nbt.contains("trackingHandler")) {
+            this.nbt.put("trackingHandle", this.nbt.removeAndGet("trackingHandler"));
         }
     }
 
     @NotNull
     public OptionalInt getTrackingHandler() {
-        if (nbt.containsKey("trackingHandle")) {
+        if (nbt.contains("trackingHandle")) {
             return OptionalInt.of(getNbt().getInt("trackingHandle"));
         }
         return OptionalInt.empty();

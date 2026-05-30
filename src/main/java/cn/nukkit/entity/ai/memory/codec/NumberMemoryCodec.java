@@ -1,30 +1,31 @@
 package cn.nukkit.entity.ai.memory.codec;
 
 
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.NumberTag;
 
 @SuppressWarnings("unchecked")
 public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
     public NumberMemoryCodec(String key) {
         super(
-                tag -> tag.containsKey(key) ? (Data) tag.get(key) : null,
+                tag -> tag.containsNumber(key) ? (Data) ((NumberTag<?>) tag.get(key)).getData() : null,
                 (data, tag) -> newTag(data, key, tag)
         );
     }
 
-    protected static NbtMap newTag(Number data, String key, NbtMap tag) {
+    protected static CompoundTag newTag(Number data, String key, CompoundTag tag) {
         if (data instanceof Byte) {
-            return tag.toBuilder().putDouble(key, data.byteValue()).build();
+            return tag.putByte(key, data.byteValue());
         } else if (data instanceof Short) {
-            return tag.toBuilder().putDouble(key, data.shortValue()).build();
+            return tag.putShort(key, data.shortValue());
         } else if (data instanceof Integer) {
-            return tag.toBuilder().putDouble(key, data.intValue()).build();
+            return tag.putInt(key, data.intValue());
         } else if (data instanceof Long) {
-            return tag.toBuilder().putDouble(key, data.longValue()).build();
+            return tag.putLong(key, data.longValue());
         } else if (data instanceof Float) {
-            return tag.toBuilder().putDouble(key, data.floatValue()).build();
+            return tag.putFloat(key, data.floatValue());
         } else if (data instanceof Double) {
-            return tag.toBuilder().putDouble(key, data.doubleValue()).build();
+            return tag.putDouble(key, data.doubleValue());
         } else {
             throw new IllegalArgumentException("Unknown number type: " + data.getClass().getName());
         }

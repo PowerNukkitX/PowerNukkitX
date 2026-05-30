@@ -22,6 +22,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.BlockRegistry;
 import cn.nukkit.registry.Registries;
@@ -1000,7 +1001,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                     .map(Effect::getAmplifier).orElse(0);
         }
 
-        NbtMap digger = item.getCustomItemComponent("minecraft:digger");
+        CompoundTag digger = item.getCustomItemComponent("minecraft:digger");
         boolean hasCustomDigger = digger != null;
         boolean correctTool = correctTool0(getToolType(), item, this);
 
@@ -1667,7 +1668,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 Item itemInHand = player.getInventory().getItemInMainHand();
                 if(itemInHand.isNull()) return false;
 
-                Object tag = itemInHand.getNbtEntry("CanDestroy");
+                CompoundTag tag = (CompoundTag) itemInHand.getNbtEntry("CanDestroy");
                 boolean canBreak = false;
                 if (tag instanceof List<?> list) {
                     for (Object v : list) {
@@ -1757,7 +1758,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         if (this instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() != null) {
             var clonedBlock = this.clone();
             clonedBlock.position(pos);
-            NbtMap tag = holder.getBlockEntity().getCleanedNBT();
+            CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
             //方块实体要求direct=true
             return BlockEntityHolder.setBlockAndCreateEntity((BlockEntityHolder<?>) clonedBlock, false, update, tag) != null;
         } else {

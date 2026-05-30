@@ -67,6 +67,10 @@ import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.registry.Registries;
@@ -1383,11 +1387,13 @@ public class Level implements Metadatable {
             var b = this.getBlock(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
             if (b.getProperties() != BlockTallGrass.PROPERTIES && !(b instanceof BlockFlowingWater))
                 vector.y += 1;
-            final NbtMap nbt = NbtMap.builder()
-                    .putList("Pos", NbtType.DOUBLE, List.of(vector.x, vector.y, vector.z))
-                    .putList("Motion", NbtType.DOUBLE, List.of(0.0, 0.0, 0.0))
-                    .putList("Rotation", NbtType.DOUBLE, List.of(0.0, 0.0, 0.0))
-                    .build();
+            CompoundTag nbt = new CompoundTag()
+                    .putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(vector.x))
+                            .add(new DoubleTag(vector.y)).add(new DoubleTag(vector.z)))
+                    .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(0))
+                            .add(new DoubleTag(0)).add(new DoubleTag(0)))
+                    .putList("Rotation", new ListTag<FloatTag>().add(new FloatTag(0))
+                            .add(new FloatTag(0)));
 
             EntityLightningBolt bolt = new EntityLightningBolt(chunk, nbt);
             LightningStrikeEvent ev = new LightningStrikeEvent(this, bolt);
@@ -2693,12 +2699,10 @@ public class Level implements Metadatable {
         EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
                 this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
                 Entity.getDefaultNBT(source, motion, new Random().nextFloat() * 360, 0)
-                        .toBuilder()
                         .putShort("Health", (short) 5)
                         .putCompound("Item", ItemHelper.write(item))
                         .putShort("PickupDelay", (short) delay)
                         .putBoolean("ShouldDespawn", item.shouldDespawn())
-                        .build()
         );
 
         if (itemEntity != null) {
@@ -2734,15 +2738,17 @@ public class Level implements Metadatable {
             }
         }
 
-        NbtMap itemTag = ItemHelper.write(item);
+        CompoundTag itemTag = ItemHelper.write(item);
         EntityItem itemEntity = (EntityItem) Entity.createEntity(Entity.ITEM,
-                (Position) this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
-                NbtMap.builder().putList("Pos", NbtType.DOUBLE, List.of(source.getX(), source.getY(), source.getZ()))
-                        .putList("Motion", NbtType.DOUBLE, List.of(motion.x, motion.y, motion.z))
-                        .putList("Rotation", NbtType.FLOAT, List.of(ThreadLocalRandom.current().nextFloat() * 360f, 0f))
-                        .putShort("Health", (short) 5)
-                        .putCompound("Item", itemTag)
-                        .putShort("PickupDelay", (short) delay));
+                this.getChunk((int) source.getX() >> 4, (int) source.getZ() >> 4, true),
+                new CompoundTag().putList("Pos", new ListTag<DoubleTag>().add(new DoubleTag(source.getX()))
+                                .add(new DoubleTag(source.getY())).add(new DoubleTag(source.getZ())))
+                        .putList("Motion", new ListTag<DoubleTag>().add(new DoubleTag(motion.x))
+                                .add(new DoubleTag(motion.y)).add(new DoubleTag(motion.z)))
+                        .putList("Rotation", new ListTag<FloatTag>()
+                                .add(new FloatTag(ThreadLocalRandom.current().nextFloat() * 360))
+                                .add(new FloatTag(0)))
+                        .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 
         if (itemEntity != null) {
             itemEntity.spawnToAll();
@@ -2943,14 +2949,14 @@ public class Level implements Metadatable {
         List<Integer> drops = EntityXpOrb.splitIntoOrbSizes(exp);
         List<EntityXpOrb> entities = new ArrayList<>(drops.size());
         for (int split : drops) {
-            NbtMap nbt = Entity.getDefaultNBT(source, motion == null ? new Vector3(
-                                    (rand.nextDouble() * 0.2 - 0.1) * 2,
-                                    rand.nextDouble() * 0.4,
-                                    (rand.nextDouble() * 0.2 - 0.1) * 2) : motion,
-                            rand.nextFloat() * 360f, 0).toBuilder()
-                    .putShort("Value", (short) split)
-                    .putShort("PickupDelay", (short) delay)
-                    .build();
+            CompoundTag nbt = Entity.getDefaultNBT(source, motion == null ? new Vector3(
+                            (rand.nextDouble() * 0.2 - 0.1) * 2,
+                            rand.nextDouble() * 0.4,
+                            (rand.nextDouble() * 0.2 - 0.1) * 2) : motion,
+                    rand.nextFloat() * 360f, 0);
+
+            nbt.putShort("Value", split);
+            nbt.putShort("PickupDelay", delay);
 
             EntityXpOrb entity = (EntityXpOrb) Entity.createEntity(Entity.XP_ORB, this.getChunk(source.getChunkX(), source.getChunkZ()), nbt);
             if (entity != null) {

@@ -12,13 +12,10 @@ import cn.nukkit.item.ItemEnchantedBook;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 import static cn.nukkit.block.property.CommonBlockProperties.BOOKS_STORED;
 
@@ -60,14 +57,16 @@ public class BlockChiseledBookshelf extends BlockBookshelf implements BlockEntit
         } else {
             setBlockFace(BlockFace.SOUTH);
         }
-        NbtMapBuilder nbt = NbtMap.builder();
+        CompoundTag nbt = new CompoundTag();
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

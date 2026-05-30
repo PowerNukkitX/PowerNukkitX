@@ -20,6 +20,10 @@ import cn.nukkit.level.generator.populator.Populator;
 import cn.nukkit.level.generator.populator.placement.StructurePlacement;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
@@ -92,18 +96,32 @@ public class IglooPopulator extends Populator {
 
                 BOTTOM.preparePlace(new Position(vec.x, vec.y, vec.z, level), object);
                 object.addHook(() -> {
-                    final NbtMap nbt = NbtMap.builder()
-                            .putList("Pos", NbtType.DOUBLE, Arrays.asList(vec.x + 2.5, vec.y + 1.0, vec.z + 1.5))
-                            .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                            .putList("Rotation", NbtType.FLOAT, Arrays.asList(new Random().nextFloat() * 360, 0f))
-                            .build();
+                    CompoundTag nbt = new CompoundTag()
+                            .putList("Pos", new ListTag<DoubleTag>()
+                                    .add(new DoubleTag( vec.x + 2.5))
+                                    .add(new DoubleTag(vec.y + 1))
+                                    .add(new DoubleTag(vec.z + 1.5)))
+                            .putList("Motion", new ListTag<DoubleTag>()
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0)))
+                            .putList("Rotation", new ListTag<FloatTag>()
+                                    .add(new FloatTag(new Random().nextFloat() * 360))
+                                    .add(new FloatTag(0)));
                     EntityVillagerV2 entity = (EntityVillagerV2) Entity.createEntity(Entity.VILLAGER_V2, chunk, nbt);
                     entity.setProfession(random.nextInt(Profession.getProfessions().size()), true);
-                    final NbtMap nbt2 = NbtMap.builder()
-                            .putList("Pos", NbtType.DOUBLE, Arrays.asList(vec.x + 4.5, vec.y + 1.0, vec.z + 1.5))
-                            .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                            .putList("Rotation", NbtType.FLOAT, Arrays.asList(new Random().nextFloat() * 360, 0f))
-                            .build();
+                    CompoundTag nbt2 = new CompoundTag()
+                            .putList("Pos", new ListTag<DoubleTag>()
+                                    .add(new DoubleTag( vec.x + 4.5))
+                                    .add(new DoubleTag(vec.y + 1))
+                                    .add(new DoubleTag(vec.z + 1.5)))
+                            .putList("Motion", new ListTag<DoubleTag>()
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0)))
+                            .putList("Rotation", new ListTag<FloatTag>()
+                                    .add(new FloatTag(new Random().nextFloat() * 360))
+                                    .add(new FloatTag(0)));
                     EntityZombieVillagerV2 entity2 = (EntityZombieVillagerV2) Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, nbt2);
                     entity2.spawnToAll();
                 });
@@ -125,7 +143,7 @@ public class IglooPopulator extends Populator {
                 }
                 if (block instanceof BlockBed bed) {
                     object.addHook(() -> {
-                        bed.createBlockEntity(NbtMap.builder().putByte("color", (byte) 14).build());
+                        bed.createBlockEntity(new CompoundTag().putByte("color", 14));
                     });
                 }
                 if (block instanceof BlockFlowerPot pot) {
