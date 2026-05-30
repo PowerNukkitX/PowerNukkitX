@@ -64,9 +64,9 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
             this.setNameTag(this.displayName);
         }
 
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CONTAINER.getId());
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.containerSize);
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CONTAINER.getId());
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.containerSize);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     public int getContainerSize() {

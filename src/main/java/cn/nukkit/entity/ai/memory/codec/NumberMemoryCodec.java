@@ -4,11 +4,17 @@ package cn.nukkit.entity.ai.memory.codec;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.NumberTag;
 
+import java.util.function.Function;
+
 @SuppressWarnings("unchecked")
 public class NumberMemoryCodec<Data extends Number> extends MemoryCodec<Data> {
     public NumberMemoryCodec(String key) {
+        this(key, number -> (Data) number);
+    }
+
+    public NumberMemoryCodec(String key, Function<Number, Data> converter) {
         super(
-                tag -> tag.containsNumber(key) ? (Data) ((NumberTag<?>) tag.get(key)).getData() : null,
+                tag -> tag.containsNumber(key) ? converter.apply(((NumberTag<?>) tag.get(key)).getData()) : null,
                 (data, tag) -> newTag(data, key, tag)
         );
     }

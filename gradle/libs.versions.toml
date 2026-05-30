@@ -4,7 +4,7 @@
 [versions]
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 pnx-terra-binary                                = "6.6.1-BETA"
-fastreflection                                  = "8733a599fa"
+fastreflection                                  = "1.0.3"
 com-github-oshi-oshi-core                       = "6.4.10"
 com-google-code-findbugs-jsr305                 = "3.0.2"
 com-google-code-gson-gson                       = "2.10.1"
@@ -44,7 +44,7 @@ bedrock-protocol                                = "3.0.0.Beta7-Debug-SNAPSHOT"
 okaeri               = { module = "eu.okaeri:okaeri-configs-core",                  version.ref = "eu-okaeri-core"                                  }
 terra                = { module = "org.powernukkitx:Terra",                         version.ref = "pnx-terra-binary"                                }
 libdeflate           = { module = "org.powernukkitx:libdeflate-java",               version.ref = "libdeflate-java"                                 }
-fastreflection       = { module = "com.github.AllayMC:fast-reflection",             version.ref = "fastreflection"                                  }
+fastreflection       = { module = "me.sunlan:fast-reflection",                      version.ref = "fastreflection"                                  }
 oshi                 = { module = "com.github.oshi:oshi-core",                      version.ref = "com-github-oshi-oshi-core"                       }
 jsr305               = { module = "com.google.code.findbugs:jsr305",                version.ref = "com-google-code-findbugs-jsr305"                 }
 gson                 = { module = "com.google.code.gson:gson",                      version.ref = "com-google-code-gson-gson"                       }

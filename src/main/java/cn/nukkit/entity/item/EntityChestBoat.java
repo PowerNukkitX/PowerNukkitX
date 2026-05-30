@@ -81,7 +81,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         packet.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
         packet.setRotation(Vector2f.from(this.pitch, this.yaw));
-        packet.setActorData(this.entityDataMap);
+        packet.setActorData(this.actorDataMap);
 
         for (int i = 0; i < this.passengers.size(); i++) {
             packet.getActorLinks().add(
@@ -120,9 +120,9 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
             }
         }
 
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CHEST_BOAT.ordinal());
-        entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
-        entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CHEST_BOAT.ordinal());
+        actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     @Override

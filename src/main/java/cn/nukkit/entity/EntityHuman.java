@@ -23,7 +23,6 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesData;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesDataSerializedLayer;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedLayer;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
@@ -192,11 +191,11 @@ public class EntityHuman extends EntityHumanType {
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
-            this.entityDataMap.put(RESERVED_139, 0L);
-            this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 0L);
+            this.actorDataMap.put(RESERVED_139, 0L);
+            this.actorDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 0L);
 
             final AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-            addPlayerPacket.setActorData(this.entityDataMap);
+            addPlayerPacket.setActorData(this.actorDataMap);
             addPlayerPacket.setUuid(this.getUniqueId());
             addPlayerPacket.setPlayerName(this.getName());
             addPlayerPacket.setTargetActorID(this.getId());

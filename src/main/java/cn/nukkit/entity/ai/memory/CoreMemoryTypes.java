@@ -301,7 +301,7 @@ public interface CoreMemoryTypes {
      * Represents a variant of the entity and is bound to {@link ActorDataTypes#VARIANT}.
      */
     MemoryType<Integer> VARIANT = new MemoryType<Integer>("minecraft:variant")
-            .withCodec(new NumberMemoryCodec<Integer>("Variant")
+            .withCodec(new NumberMemoryCodec<Integer>("Variant", Number::intValue)
                     .onInit((data, entity) -> {
                         if (data != null) entity.setDataProperty(ActorDataTypes.VARIANT, data);
                     })
@@ -310,7 +310,7 @@ public interface CoreMemoryTypes {
      * Represents a mark variant of the entity and is bound to {@link ActorDataTypes#MARK_VARIANT}.
      */
     MemoryType<Integer> MARK_VARIANT = new MemoryType<Integer>("minecraft:mark_variant")
-            .withCodec(new NumberMemoryCodec<Integer>("MarkVariant")
+            .withCodec(new NumberMemoryCodec<Integer>("MarkVariant", Number::intValue)
                     .onInit((data, entity) -> {
                         if (data != null) entity.setDataProperty(ActorDataTypes.MARK_VARIANT, data);
                     })
@@ -320,7 +320,7 @@ public interface CoreMemoryTypes {
      * Wolf collar, Cat collar, Sheep wool, Tropical Fish base color
      */
     MemoryType<Byte> COLOR = new MemoryType<Byte>("minecraft:color")
-            .withCodec(new NumberMemoryCodec<Byte>("Color")
+            .withCodec(new NumberMemoryCodec<Byte>("Color", Number::byteValue)
                     .onInit((data, entity) -> {
                         if (data != null) entity.setDataProperty(ActorDataTypes.COLOR_INDEX, data);
                     })
@@ -330,7 +330,7 @@ public interface CoreMemoryTypes {
      * Tropical Fish secondary color
      */
     MemoryType<Byte> COLOR2 = new MemoryType<Byte>("minecraft:color2")
-            .withCodec(new NumberMemoryCodec<Byte>("Color2")
+            .withCodec(new NumberMemoryCodec<Byte>("Color2", Number::byteValue)
                     .onInit((data, entity) -> {
                         if (data != null) entity.setDataProperty(ActorDataTypes.COLOR_2_INDEX, data);
                     })
