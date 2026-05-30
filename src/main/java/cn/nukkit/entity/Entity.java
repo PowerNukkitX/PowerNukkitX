@@ -119,7 +119,7 @@ import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.AIR_SU
 @Slf4j
 public abstract class Entity extends Location implements Metadatable, EntityID {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
-    protected final ActorDataMap entityDataMap = new ActorDataMap();
+    protected final ActorDataMap actorDataMap = new ActorDataMap();
     public static AtomicLong entityCount = new AtomicLong(1);
     public final List<Entity> passengers = new ArrayList<>();
     public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -563,17 +563,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Initialize entity data defaults first
         // =========================================================
-        this.entityDataMap.getOrCreateFlags();
-        this.entityDataMap.put(AIR_SUPPLY, nbtMap.getShort("Air"));
-        this.entityDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
-        this.entityDataMap.put(ActorDataTypes.NAME, "");
-        this.entityDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
-        this.entityDataMap.put(ActorDataTypes.SCALE, 1f);
-        this.entityDataMap.put(ActorDataTypes.HEIGHT, this.getHeight());
-        this.entityDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
-        this.entityDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
-        this.entityDataMap.put(ActorDataTypes.RESERVED_139, 0L);
-        this.entityDataMap.put(ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
+        this.actorDataMap.getOrCreateFlags();
+        this.actorDataMap.put(AIR_SUPPLY, nbtMap.getShort("Air"));
+        this.actorDataMap.put(ActorDataTypes.AIR_SUPPLY_MAX, (short) 400);
+        this.actorDataMap.put(ActorDataTypes.NAME, "");
+        this.actorDataMap.put(ActorDataTypes.LEASH_HOLDER, -1L);
+        this.actorDataMap.put(ActorDataTypes.SCALE, 1f);
+        this.actorDataMap.put(ActorDataTypes.HEIGHT, this.getHeight());
+        this.actorDataMap.put(ActorDataTypes.WIDTH, this.getWidth());
+        this.actorDataMap.put(ActorDataTypes.STRUCTURAL_INTEGRITY, (int) this.getHealthCurrent());
+        this.actorDataMap.put(ActorDataTypes.RESERVED_139, 0L);
+        this.actorDataMap.put(ActorDataTypes.NAMEPLATE_RENDER_DISTANCE_MAX, 64.0f);
 
         // =========================================================
         // Load Effects from NBT
@@ -625,7 +625,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         // =========================================================
         // Send initial data + default flags
         // =========================================================
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), actorDataMap);
         if (this.isFireImmune()) {
             this.setFireImmune(true);
         }
@@ -792,18 +792,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setSneaking(boolean value) {
-        boolean changed = this.getEntityDataMap().getOrCreateFlags().contains(ActorFlags.SNEAKING) ^ value;
+        boolean changed = this.getActorDataMap().getOrCreateFlags().contains(ActorFlags.SNEAKING) ^ value;
 
         if (changed) {
-            this.getEntityDataMap().setFlag(ActorFlags.SNEAKING, value);
+            this.getActorDataMap().setFlag(ActorFlags.SNEAKING, value);
         }
 
         recalculateBoundingBox(false);
-        float newHeight = (float) this.getEntityDataMap().getOrDefault(ActorDataTypes.HEIGHT, getCurrentHeight());
+        float newHeight = (float) this.getActorDataMap().getOrDefault(ActorDataTypes.HEIGHT, getCurrentHeight());
 
         if (changed) {
             ActorDataMap delta = new ActorDataMap();
-            delta.put(ActorDataTypes.FLAGS, this.getEntityDataMap().getFlags());
+            delta.put(ActorDataTypes.FLAGS, this.getActorDataMap().getFlags());
             delta.putType(ActorDataTypes.HEIGHT, newHeight);
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), delta);
         } else {
@@ -1010,13 +1010,13 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         );
 
         boolean change = false;
-        if (!this.getEntityDataMap().containsKey(ActorDataTypes.HEIGHT) || this.getEntityDataMap().get(ActorDataTypes.HEIGHT) != entityHeight) {
+        if (!this.getActorDataMap().containsKey(ActorDataTypes.HEIGHT) || this.getActorDataMap().get(ActorDataTypes.HEIGHT) != entityHeight) {
             change = true;
-            this.getEntityDataMap().put(ActorDataTypes.HEIGHT, entityHeight);
+            this.getActorDataMap().put(ActorDataTypes.HEIGHT, entityHeight);
         }
-        if (!this.getEntityDataMap().containsKey(ActorDataTypes.WIDTH) || this.getEntityDataMap().get(ActorDataTypes.WIDTH) != this.getWidth()) {
+        if (!this.getActorDataMap().containsKey(ActorDataTypes.WIDTH) || this.getActorDataMap().get(ActorDataTypes.WIDTH) != this.getWidth()) {
             change = true;
-            this.getEntityDataMap().put(ActorDataTypes.WIDTH, this.getWidth());
+            this.getActorDataMap().put(ActorDataTypes.WIDTH, this.getWidth());
         }
         if (send && change) {
             sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.copyEntityData(ActorDataTypes.WIDTH, ActorDataTypes.HEIGHT));
@@ -1026,8 +1026,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     private ActorDataMap copyEntityData(ActorDataType<?>... types) {
         final ActorDataMap map = new ActorDataMap();
         for (ActorDataType<?> type : types) {
-            if (this.entityDataMap.containsKey(type)) {
-                map.put(type, this.entityDataMap.get(type));
+            if (this.actorDataMap.containsKey(type)) {
+                map.put(type, this.actorDataMap.get(type));
             }
         }
         return map;
@@ -1255,7 +1255,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             );
         }
 
-        addActorPacket.setActorData(this.entityDataMap);
+        addActorPacket.setActorData(this.actorDataMap);
 
         int controlSeat = getControllingSeatIndex();
         for (int i = 0; i < this.passengers.size(); i++) {
@@ -1309,7 +1309,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void sendData(Player player, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(data == null ? this.entityDataMap : data);
+        packet.setActorData(data == null ? this.actorDataMap : data);
         packet.setTargetRuntimeID(this.getId());
         packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
@@ -1323,7 +1323,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void sendData(Player[] players, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(data == null ? this.entityDataMap : data);
+        packet.setActorData(data == null ? this.actorDataMap : data);
         packet.setTargetRuntimeID(this.getId());
         packet.getSyncedProperties().getFloatProperties().addAll(this.propertySyncData().getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(this.propertySyncData().getIntProperties());
@@ -4204,7 +4204,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (!hasJumpStrength()) return;
 
         this.setDataFlag(ActorFlags.CAN_POWER_JUMP, true);
-        this.entityDataMap.put(ActorDataTypes.CHARGE_AMOUNT, (byte) 0);
+        this.actorDataMap.put(ActorDataTypes.CHARGE_AMOUNT, (byte) 0);
     }
 
     public boolean hasGroundInputControlsMeta() {
@@ -5624,10 +5624,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         for (var e : maps.entrySet()) {
             ActorDataType<?> key = e.getKey();
             Object value = e.getValue();
-            if (this.getEntityDataMap().containsKey(key) && this.getEntityDataMap().get(key).equals(value)) {
+            if (this.getActorDataMap().containsKey(key) && this.getActorDataMap().get(key).equals(value)) {
                 continue;
             }
-            this.getEntityDataMap().put(key, value);
+            this.getActorDataMap().put(key, value);
             sendMap.put(key, value);
         }
         if (send) {
@@ -5640,11 +5640,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public boolean setDataProperty(ActorDataType<?> key, Object value, boolean send) {
-        if (this.getEntityDataMap().containsKey(key) && this.getEntityDataMap().get(key).equals(value)) {
+        if (this.getActorDataMap().containsKey(key) && this.getActorDataMap().get(key).equals(value)) {
             return false;
         }
 
-        this.getEntityDataMap().put(key, value);
+        this.getActorDataMap().put(key, value);
         if (send) {
             ActorDataMap map = new ActorDataMap();
             map.put(key, value);
@@ -5653,18 +5653,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return true;
     }
 
-    public ActorDataMap getEntityDataMap() {
-        return this.entityDataMap;
+    public ActorDataMap getActorDataMap() {
+        return this.actorDataMap;
     }
 
     @Nullable
     public <T> T getDataProperty(ActorDataType<T> key) {
-        return !this.getEntityDataMap().containsKey(key) ? null : this.getEntityDataMap().get(key);
+        return !this.getActorDataMap().containsKey(key) ? null : this.getActorDataMap().get(key);
     }
 
     @NotNull
     public <T> T getDataProperty(ActorDataType<T> key, T d) {
-        return (T) this.getEntityDataMap().getOrDefault(key, d);
+        return (T) this.getActorDataMap().getOrDefault(key, d);
     }
 
     public void setDataFlag(ActorFlags entityFlag) {
@@ -5676,21 +5676,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     }
 
     public void setDataFlag(ActorFlags entityFlag, boolean value, boolean send) {
-        if (this.getEntityDataMap().getOrCreateFlags().contains(entityFlag) ^ value) {
-            this.getEntityDataMap().setFlag(entityFlag, value);
+        if (this.getActorDataMap().getOrCreateFlags().contains(entityFlag) ^ value) {
+            this.getActorDataMap().setFlag(entityFlag, value);
             if (send) {
-                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getEntityDataMap());
+                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
             }
         }
     }
 
     public void setDataFlags(EnumSet<ActorFlags> entityFlags) {
-        this.getEntityDataMap().putFlags(entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getEntityDataMap());
+        this.getActorDataMap().putFlags(entityFlags);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
     }
 
     public boolean getDataFlag(ActorFlags id) {
-        return this.getEntityDataMap().getOrCreateFlags().contains(id);
+        return this.getActorDataMap().getOrCreateFlags().contains(id);
     }
 
     @Override

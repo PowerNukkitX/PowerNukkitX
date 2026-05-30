@@ -836,7 +836,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     private void setBlockingFlags(boolean blocking, boolean transitionBlocking) {
-        EnumSet<ActorFlags> ext = this.getEntityDataMap().getOrCreateFlags();
+        EnumSet<ActorFlags> ext = this.getActorDataMap().getOrCreateFlags();
 
         boolean changed = false;
 
@@ -856,7 +856,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         this.setDataFlags(ext);
 
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.entityDataMap);
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.actorDataMap);
     }
 
     private void tickShieldBlockingState(int tickDiff) {

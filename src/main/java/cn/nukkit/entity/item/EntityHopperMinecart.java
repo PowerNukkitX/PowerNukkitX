@@ -22,14 +22,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.MinecartType;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class EntityHopperMinecart extends EntityMinecartAbstract implements InventoryHolder, BlockHopper.IHopper {
 
@@ -155,9 +150,9 @@ public class EntityHopperMinecart extends EntityMinecartAbstract implements Inve
             }
         }
 
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 11);
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) 11);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
 
         this.updatePickupArea();
 

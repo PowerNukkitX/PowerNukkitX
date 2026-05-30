@@ -14,8 +14,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -401,7 +399,7 @@ public class EntityItem extends Entity {
     @Override
     public BedrockPacket createAddEntityPacket() {
         final AddItemActorPacket addItemActorPacket = new AddItemActorPacket();
-        addItemActorPacket.setEntityData(this.entityDataMap);
+        addItemActorPacket.setEntityData(this.actorDataMap);
         addItemActorPacket.setTargetActorID(this.getId());
         addItemActorPacket.setTargetRuntimeID(this.getId());
         addItemActorPacket.setItem(this.getItem().toNetwork());

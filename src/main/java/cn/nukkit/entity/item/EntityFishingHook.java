@@ -23,7 +23,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -292,8 +291,8 @@ public class EntityFishingHook extends SlenderProjectile {
         if (this.shootingEntity != null) {
             ownerId = this.shootingEntity.getId();
         }
-        this.entityDataMap.put(ActorDataTypes.OWNER, ownerId);
-        pk.setActorData(this.entityDataMap);
+        this.actorDataMap.put(ActorDataTypes.OWNER, ownerId);
+        pk.setActorData(this.actorDataMap);
         return pk;
     }
 

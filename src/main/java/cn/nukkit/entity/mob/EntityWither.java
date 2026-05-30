@@ -60,7 +60,6 @@ import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -235,7 +234,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         packet.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth()).toNetwork()
         );
-        packet.setActorData(this.getEntityDataMap());
+        packet.setActorData(this.getActorDataMap());
         packet.setTargetActorID(this.getId());
         packet.setTargetRuntimeID(this.getId());
         packet.setActorType("minecraft:wither");

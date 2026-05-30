@@ -8,7 +8,6 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -135,7 +134,7 @@ public class EntityXpOrb extends Entity {
             this.exp = 1;
         }
 
-        this.entityDataMap.put(ActorDataTypes.VALUE, this.exp);
+        this.actorDataMap.put(ActorDataTypes.VALUE, this.exp);
 
         //call event item spawn event
     }

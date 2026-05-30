@@ -20,6 +20,7 @@ import cn.nukkit.form.window.Form;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.ModalFormCancelReason;
 import org.cloudburstmc.protocol.bedrock.packet.ModalFormResponsePacket;
 
 /**
@@ -46,22 +47,27 @@ public class ModalFormResponseHandler implements PacketHandler<ModalFormResponse
             return;
         }
 
-        if (packet.getJsonResponse().length() > 1024 || packet.getFormCancelReason().isEmpty()) {
+        String jsonResponse = packet.getJsonResponse();
+        ModalFormCancelReason cancelReason = packet.getFormCancelReason().orElse(null);
+
+        if (jsonResponse != null && jsonResponse.length() > 1024) {
             player.close("§cPacket handling error");
             return;
         }
 
+        String formData = jsonResponse == null ? "" : jsonResponse.trim();
+
         if (playerHandle.getFormWindows().containsKey(packet.getFormID())) {
             Form<?> window = playerHandle.getFormWindows().remove(packet.getFormID());
 
-            Response response = window.respond(player, packet.getJsonResponse().trim(), packet.getFormCancelReason().get());
+            Response response = window.respond(player, formData, cancelReason);
 
             PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(player, packet.getFormID(), window, response);
             player.getServer().getPluginManager().callEvent(event);
         } else if (playerHandle.getServerSettings().containsKey(packet.getFormID())) {
             Form<?> window = playerHandle.getServerSettings().get(packet.getFormID());
 
-            Response response = window.respond(player, packet.getJsonResponse().trim(), packet.getFormCancelReason().get());
+            Response response = window.respond(player, formData, cancelReason);
 
             PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(player, packet.getFormID(), window, response);
             player.getServer().getPluginManager().callEvent(event);

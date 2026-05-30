@@ -170,7 +170,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
         final CompoundTag nbtMap = this.getNbt();
         if (nbtMap.getBoolean("powered") || nbtMap.getBoolean("IsPowered")) {
-            this.entityDataMap.put(ActorDataTypes.SWELL, 1);
+            this.actorDataMap.put(ActorDataTypes.SWELL, 1);
         }
     }
 
