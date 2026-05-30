@@ -159,12 +159,19 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public NbtList toNetwork() {
-        List<Object> networkValues = new ArrayList<>(size());
-        for(var entry : getAll()) {
+        if (list.isEmpty()) {
+            return new NbtList(NbtType.byId(type), List.of());
+        }
+        List<Object> networkValues = new ArrayList<>(list.size());
+        for (var entry : getAll()) {
             networkValues.add(entry.toNetwork());
         }
-        return new NbtList(NbtType.byId(type), networkValues);
+        // Infer the NbtType from the actual runtime class of the converted value,
+        // not from the Nukkit type byte — avoids any id mapping mismatch.
+        NbtType nbtType = NbtType.byClass(networkValues.get(0).getClass());
+        return new NbtList(nbtType, networkValues);
     }
 
     @Override
