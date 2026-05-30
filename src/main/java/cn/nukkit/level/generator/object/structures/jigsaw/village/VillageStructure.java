@@ -13,12 +13,12 @@ import cn.nukkit.block.BlockSnowLayer;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.generator.object.BlockManager;
 import cn.nukkit.level.generator.object.RandomizableContainer;
 import cn.nukkit.level.generator.object.structures.StructureHelper;
@@ -78,17 +78,37 @@ public abstract class VillageStructure extends JigsawStructure {
                 .filter(BlockUnknown.class::isInstance)
                 .forEach(block -> level.setBlock(block, BlockAir.STATE.toBlock(block), true, true));
 
+        int jigsawCount = 0;
+        double jigsawSumX = 0, jigsawSumZ = 0;
         for (Block block : placedBlocks) {
-            if (!(level.getBlock(block) instanceof BlockJigsaw)) {
+            if (!(block instanceof BlockJigsaw)) {
                 continue;
             }
             level.setBlock(block, BlockAir.STATE.toBlock(block), true, true);
+            int spawnX = block.getFloorX();
+            int spawnZ = block.getFloorZ();
+            int safeY = findSafeSpawnY(level, spawnX, block.getFloorY(), spawnZ, 2);
             Entity villager = Entity.createEntity(
                     Entity.VILLAGER_V2,
-                    new Position(block.getFloorX() + 0.5, block.getFloorY(), block.getFloorZ() + 0.5, level)
+                    new Position(spawnX + 0.5, safeY, spawnZ + 0.5, level)
             );
             if (villager != null) {
                 villager.spawnToAll();
+            }
+            jigsawSumX += spawnX;
+            jigsawSumZ += spawnZ;
+            jigsawCount++;
+        }
+
+        if (jigsawCount > 0) {
+            int centerX = (int) (jigsawSumX / jigsawCount);
+            int centerZ = (int) (jigsawSumZ / jigsawCount);
+            int baseY = level.getHighestBlockAt(centerX, centerZ) + 1;
+            int golemY = findSafeSpawnY(level, centerX, baseY, centerZ, 3);
+            Entity golem = Entity.createEntity(EntityID.IRON_GOLEM,
+                    new Position(centerX + 0.5, golemY, centerZ + 0.5, level));
+            if (golem != null) {
+                golem.spawnToAll();
             }
         }
     }
@@ -437,6 +457,17 @@ public abstract class VillageStructure extends JigsawStructure {
             return height + 1;
         }
         return getTerrainY(level, x, z) + 1;
+    }
+
+    private int findSafeSpawnY(Level level, int x, int startY, int z, int entityHeight) {
+        outer:
+        for (int y = startY; y <= startY + 16; y++) {
+            for (int dy = 0; dy < entityHeight; dy++) {
+                if (level.getBlock(x, y + dy, z).isSolid()) continue outer;
+            }
+            return y;
+        }
+        return startY;
     }
 
     protected boolean isReplaceableTerrainCover(Block block) {
