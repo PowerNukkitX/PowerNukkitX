@@ -36,6 +36,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,17 +69,24 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
                                 all(
                                         entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true),
                                         any(
-                                                entity -> getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER) != null && getLevel().raycastBlocks(this, getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER)).isEmpty(),
-                                                entity -> getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null && getLevel().raycastBlocks(this, getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)).isEmpty()
+                                                entity -> !entity.getMemoryStorage().get(CoreMemoryTypes.EXPLODE_CANCELLABLE),
+                                                all(
+                                                        new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                                        entity -> hasClearLineOfSight(entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER))
+                                                ),
+                                                all(
+                                                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                                        entity -> hasClearLineOfSight(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
+                                                )
                                         )
                                 ), 4, 1
                         ),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, true, 16f, 3f, true), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
                         ), 3, 1),
                         new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, true, 16f, 3f), all(
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
+                                new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),   
                                 entity -> {
                                     if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
                                     Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
@@ -109,6 +117,11 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         );
     }
 
+    private boolean hasClearLineOfSight(Entity target) {
+        return target != null && this.getLevel().raycastBlocks(this, target).stream()
+                .noneMatch(block -> this.getLevel().blocksBlockSight(block, false, false));
+    }
+
 
     @Override
     public float getWidth() {
@@ -136,7 +149,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
     }
 
     public boolean isPowered() {
-        return getDataProperty(ActorDataTypes.SWELL) > 0;
+        return getDataFlag(ActorFlags.POWERED);
     }
 
     public void setPowered(EntityLightningStrike bolt) {
@@ -144,7 +157,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(ActorDataTypes.SWELL, 1);
+            this.setDataFlag(ActorFlags.POWERED, true);
             this.nbt.putBoolean("powered", true);
         }
     }
@@ -154,7 +167,7 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(ActorDataTypes.SWELL, powered ? 1 : 0);
+            this.setDataFlag(ActorFlags.POWERED, powered);
             this.nbt.putBoolean("powered", powered);
         }
     }
@@ -170,8 +183,9 @@ public class EntityCreeper extends EntityMob implements EntityWalkable, EntityIn
 
         final CompoundTag nbtMap = this.getNbt();
         if (nbtMap.getBoolean("powered") || nbtMap.getBoolean("IsPowered")) {
-            this.actorDataMap.put(ActorDataTypes.SWELL, 1);
+            this.setDataFlag(ActorFlags.POWERED, true, false);
         }
+        this.actorDataMap.put(ActorDataTypes.SWELL, (byte) 0);
     }
 
     @Override
