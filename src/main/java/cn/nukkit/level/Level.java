@@ -75,6 +75,7 @@ import cn.nukkit.utils.*;
 import cn.nukkit.utils.collection.nb.Int2ObjectNonBlockingMap;
 import cn.nukkit.utils.collection.nb.Long2ObjectNonBlockingMap;
 import com.google.common.base.Preconditions;
+import io.netty.buffer.ByteBufAllocator;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -903,7 +904,7 @@ public class Level implements Metadatable {
     public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, MolangVariableMap molangVariables, Player... players) {
         final SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
         packet.setActorId(uniqueEntityId);
-        packet.setDimensionId(this.getDimension());
+        packet.setDimensionId(DimensionType.from(this.getDimension()));
         packet.setPosition(pos.toNetwork());
         packet.setEffectName(identifier);
         packet.setMolangVariables(
@@ -4039,10 +4040,12 @@ public class Level implements Metadatable {
                             levelChunkPacket = new LevelChunkPacket();
                             levelChunkPacket.setChunkX(x);
                             levelChunkPacket.setChunkZ(z);
+                            levelChunkPacket.setClientNeedsToRequestSubChunks(true);
+                            levelChunkPacket.setClientRequestSubChunkLimit(pair.second());
+                            levelChunkPacket.setSerializedChunkData(ByteBufAllocator.DEFAULT.ioBuffer());
                             levelChunkPacket.setDimension(DimensionType.from(this.getDimensionData().getDimensionId()));
-                            levelChunkPacket.setSubChunksCount(pair.second());
-                            levelChunkPacket.setSerializedChunkData(/*Unpooled.buffer()*/pair.first());
                             player.sendChunk(x, z, levelChunkPacket);
+                            System.out.println(levelChunkPacket);
                             //player.refreshBlockEntity(chunk);
                         }
                     }

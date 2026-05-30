@@ -190,6 +190,7 @@ public class LevelDBProvider implements LevelProvider {
     public Map<Long, List<LevelDBChunkSerializer.ScheduledTickInfo>> getScheduledTicksMap() {
         return scheduledTicksMap;
     }
+
     public Map<Long, List<LevelDBChunkSerializer.NormalTickInfo>> getNormalTicksMap() {
         return normalTicksMap;
     }
@@ -314,70 +315,28 @@ public class LevelDBProvider implements LevelProvider {
             throw new ChunkException("Invalid Chunk Set");
         }
         AtomicReference<ByteBuf> data = new AtomicReference<>();
-        AtomicReference<Integer> subChunkCountRef = new AtomicReference<>();
+        AtomicReference<Integer> clientRequestSubChunkLimitRef = new AtomicReference<>();
         chunk.batchProcess(unsafeChunk -> {
-            final var byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+            final var buffer = ByteBufAllocator.DEFAULT.ioBuffer();
             try {
                 final ChunkSection[] sections = unsafeChunk.getSections();
-                int subChunkCount = unsafeChunk.getDimensionData().getChunkSectionCount();
-                while (subChunkCount-- != 0) {
-                    if (sections[subChunkCount] != null) {
+                int clientRequestSubChunkLimit = this.getDimensionData().getMaxSectionY();
+                for (int i = 0; i < unsafeChunk.getDimensionData().getChunkSectionCount(); i++) {
+                    if (sections[i] == null || sections[i].isEmpty()) {
+                        clientRequestSubChunkLimit = i;
                         break;
                     }
                 }
-                int total = subChunkCount + 1;
-                //write block
-                if (level != null && level.isAntiXrayEnabled()) {
-                    for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
-                        }
-                        assert sections[i] != null;
-                        sections[i].writeObfuscatedToBuf(level, byteBuf);
-                    }
-                } else {
-                    for (int i = 0; i < total; i++) {
-                        if (sections[i] == null) {
-                            sections[i] = new ChunkSection((byte) (i + getDimensionData().getMinSectionY()));
-                        }
-                        assert sections[i] != null;
-                        sections[i].writeToBuf(byteBuf);
-                    }
+                for (int i = 0; i < clientRequestSubChunkLimit; i++) {
+                    sections[i].biomes().writeToNetwork(buffer, Integer::intValue);
                 }
-
-                // Write biomes
-                for (int i = 0; i < total; i++) {
-                    sections[i].biomes().writeToNetwork(byteBuf, Integer::intValue);
-                }
-
-                // Block entities
-                final List<NbtMap> tagList = new ObjectArrayList<>();
-                for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
-                    if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
-                        tagList.add(blockEntitySpawnable.getSpawnCompound());
-                        //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
-                        level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
-                    }
-                }
-                try (ByteBufOutputStream stream = new ByteBufOutputStream(byteBuf); final NBTOutputStream outputStream = NbtUtils.createNetworkWriter(stream)) {
-                    if (tagList.isEmpty()) {
-                        stream.writeByte(0);
-                        VarInts.writeUnsignedInt(byteBuf, 0);
-                    } else {
-                        for (NbtMap nbtMap : tagList) {
-                            outputStream.writeTag(nbtMap);
-                        }
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                data.set(byteBuf.copy());
-                subChunkCountRef.set(total);
+                data.set(buffer);
+                clientRequestSubChunkLimitRef.set(clientRequestSubChunkLimit);
             } finally {
-                byteBuf.release();
+                buffer.release();
             }
         });
-        return Pair.of(data.get(), subChunkCountRef.get());
+        return Pair.of(data.get(), clientRequestSubChunkLimitRef.get());
     }
 
 

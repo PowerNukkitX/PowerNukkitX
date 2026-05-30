@@ -3,8 +3,9 @@ package cn.nukkit.level.format;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockState;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.bitarray.BitArrayVersion;
 import cn.nukkit.level.format.palette.BlockPalette;
@@ -13,9 +14,23 @@ import cn.nukkit.level.util.NibbleArray;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.registry.Registries;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import lombok.Value;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.nbt.NBTOutputStream;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.data.HeightMapDataType;
+import org.cloudburstmc.protocol.bedrock.data.SubChunkData;
+import org.cloudburstmc.protocol.bedrock.data.SubChunkRequestResult;
+import org.cloudburstmc.protocol.common.util.VarInts;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -133,7 +148,7 @@ public record ChunkSection(byte y,
         blockLayer[1].setNeedReObfuscate();
     }
 
-    public void writeToBuf(ByteBuf byteBuf) {
+    private void writeToBuf(ByteBuf byteBuf) {
         byteBuf.writeByte(VERSION);
         //block layer count
         byteBuf.writeByte(LAYER_COUNT);
@@ -143,7 +158,7 @@ public record ChunkSection(byte y,
         blockLayer[1].writeToNetwork(byteBuf, BlockState::blockStateHash);
     }
 
-    public void writeObfuscatedToBuf(Level level, ByteBuf byteBuf) {
+    private void writeObfuscatedToBuf(Level level, ByteBuf byteBuf) {
         byteBuf.writeByte(VERSION);
         //block layer count
         byteBuf.writeByte(LAYER_COUNT);
@@ -151,5 +166,93 @@ public record ChunkSection(byte y,
 
         blockLayer[0].writeObfuscatedToNetwork(level, blockChanges, byteBuf, BlockState::blockStateHash);
         blockLayer[1].writeObfuscatedToNetwork(level, blockChanges, byteBuf, BlockState::blockStateHash);
+    }
+
+    public SubChunkData serialize(IChunk chunk, Vector3i position, Level level) {
+        if (this.isEmpty()) {
+            final SubChunkData subChunkData = new SubChunkData();
+            subChunkData.setPosition(position);
+            subChunkData.setData(Unpooled.EMPTY_BUFFER);
+            subChunkData.setSubChunkRequestResult(SubChunkRequestResult.SUCCESS_ALL_AIR);
+            subChunkData.setHeightMapDataType(HeightMapDataType.NO_DATA);
+            subChunkData.setRenderHeightMapDataType(HeightMapDataType.NO_DATA);
+            return subChunkData;
+        }
+
+        final ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
+        if (level != null && level.isAntiXrayEnabled()) {
+            this.writeObfuscatedToBuf(level, buffer);
+        } else {
+            this.writeToBuf(buffer);
+        }
+        this.serializeBlockActors(chunk, level, buffer);
+
+        final HeightMapData heightMapData = HeightMapData.compute(chunk, this.y);
+        final SubChunkData subChunkData = new SubChunkData();
+        subChunkData.setPosition(position);
+        subChunkData.setData(buffer);
+        subChunkData.setSubChunkRequestResult(SubChunkRequestResult.SUCCESS);
+        subChunkData.setHeightMapDataType(heightMapData.getType());
+        subChunkData.setHeightMapData(heightMapData.getBuffer());
+        subChunkData.setRenderHeightMapDataType(subChunkData.getHeightMapDataType());
+        subChunkData.setRenderHeightMapData(subChunkData.getHeightMapData());
+        return subChunkData;
+    }
+
+    private void serializeBlockActors(IChunk chunk, Level level, ByteBuf buffer) {
+        final List<NbtMap> tagList = new ObjectArrayList<>();
+        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+            if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable &&
+                    blockEntitySpawnable.getChunkSectionY() == this.y) {
+                tagList.add(blockEntitySpawnable.getSpawnCompound());
+                //Adding NBT to a chunk pack does not show some block entities, and you have to send block entity packets to the player
+                level.addChunkPacket(blockEntitySpawnable.getChunkX(), blockEntitySpawnable.getChunkZ(), blockEntitySpawnable.getSpawnPacket());
+            }
+        }
+        try (ByteBufOutputStream stream = new ByteBufOutputStream(buffer);
+             final NBTOutputStream outputStream = NbtUtils.createNetworkWriter(stream)) {
+            if (tagList.isEmpty()) {
+                stream.writeByte(0);
+                VarInts.writeUnsignedInt(buffer, 0);
+            } else {
+                for (NbtMap nbtMap : tagList) {
+                    outputStream.writeTag(nbtMap);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Value
+    private static class HeightMapData {
+        ByteBuf buffer;
+        HeightMapDataType type;
+
+        private static HeightMapData compute(IChunk chunk, int y) {
+            boolean areAllTooLow = true;
+            boolean areAllTooHigh = true;
+            final ByteBuf heightMapDataBuffer = ByteBufAllocator.DEFAULT.ioBuffer();
+            for (int z = 0; z < 16; z++) {
+                for (int x = 0; x < 16; x++) {
+                    final int blockY = chunk.getHeightMap(x, z);
+                    final int subChunkY = blockY >> 4;
+                    if (subChunkY > y) {
+                        areAllTooLow = false;
+                        heightMapDataBuffer.writeByte(16);
+                    } else if (subChunkY < y) {
+                        areAllTooHigh = false;
+                        heightMapDataBuffer.writeByte(-1);
+                    } else {
+                        areAllTooLow = false;
+                        areAllTooHigh = false;
+                        heightMapDataBuffer.writeByte(blockY - (y << 4));
+                    }
+                }
+            }
+            final HeightMapDataType heightMapDataType = areAllTooLow ? HeightMapDataType.TOO_LOW : areAllTooHigh ?
+                    HeightMapDataType.TOO_HIGH : HeightMapDataType.HAS_DATA;
+            return new HeightMapData(heightMapDataBuffer, heightMapDataType);
+        }
     }
 }
