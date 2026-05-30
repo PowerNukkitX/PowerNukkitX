@@ -903,7 +903,7 @@ public class Level implements Metadatable {
     public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, MolangVariableMap molangVariables, Player... players) {
         final SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
         packet.setActorId(uniqueEntityId);
-        packet.setDimensionId(this.getDimension());
+        packet.setDimensionId(DimensionType.from(this.getDimension()));
         packet.setPosition(pos.toNetwork());
         packet.setEffectName(identifier);
         packet.setMolangVariables(
