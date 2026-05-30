@@ -536,10 +536,11 @@ public class PluginManager {
     }
 
     public void beforeStopPlugins() {
-        ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
+        List<Plugin> plugins = new ArrayList<>(this.getPlugins().values());
+        ListIterator<Plugin> iterator = plugins.listIterator(plugins.size());
 
-        while (plugins.hasPrevious()) {
-            Plugin previous = plugins.previous();
+        while (iterator.hasPrevious()) {
+            Plugin previous = iterator.previous();
             if (previous != InternalPlugin.INSTANCE && previous.isEnabled()) {
                 try {
                     previous.beforeStop();

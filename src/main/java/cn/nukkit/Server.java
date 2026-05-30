@@ -177,7 +177,7 @@ public class Server {
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
     private boolean hasStopped = false;
-    private boolean hasBeforeStopped = false;
+    private final AtomicBoolean hasBeforeStopped = new AtomicBoolean(false);
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
@@ -932,8 +932,7 @@ public class Server {
     }
 
     private void beforeStop() {
-        if (!this.hasBeforeStopped) {
-            this.hasBeforeStopped = true;
+        if (this.hasBeforeStopped.compareAndSet(false, true)) {
             this.pluginManager.beforeStopPlugins();
         }
     }
