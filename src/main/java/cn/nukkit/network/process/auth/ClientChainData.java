@@ -1,5 +1,6 @@
 package cn.nukkit.network.process.auth;
 
+import cn.nukkit.Server;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import lombok.Value;
 import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
@@ -161,7 +162,7 @@ public class ClientChainData {
                 selfSignedId,
                 serverAddress,
                 thirdPartyName,
-                trustedSkin,
+                trustedSkin || Server.getInstance().getSettings().playerSettings().forceSkinTrusted(),
                 uiProfile,
                 map.containsKey("IsEduMode"),
                 waterdogData

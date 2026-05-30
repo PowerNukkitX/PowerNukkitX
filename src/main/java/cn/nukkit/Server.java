@@ -15,6 +15,7 @@ import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
@@ -1591,35 +1592,35 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, this.playerList.values());
     }
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Color color) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, players);
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Color color, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, players);
     }
 
@@ -1634,7 +1635,7 @@ public class Server {
      * @param xboxUserId xbox user id
      * @param players    players to send packet
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
         final PlayerListPacket pk = new PlayerListPacket();
         pk.setAction(PlayerListPacketType.ADD);
 
@@ -1644,7 +1645,8 @@ public class Server {
         entry.setXblXUID(xboxUserId);
         entry.setPlatformChatId("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        entry.setSkin(skin);
+        entry.setSkin(skin.getSkin());
+        entry.setTrustedSkin(skin.isTrusted());
         entry.setPlayerColor(color);
 
         pk.getEntries().add(entry);
@@ -1652,9 +1654,9 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color, Collection<Player> players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Collection<Player> players) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 
@@ -1706,7 +1708,8 @@ public class Server {
             entry.setXblXUID(value.getXUID());
             entry.setPlatformChatId("");
             entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-            entry.setSkin(value.getSkin());
+            entry.setSkin(value.getSkin().getSkin());
+            entry.setTrustedSkin(value.getSkin().isTrusted());
             entry.setPlayerColor(value.getLocatorBarColor());
         }
         player.sendPacket(pk);

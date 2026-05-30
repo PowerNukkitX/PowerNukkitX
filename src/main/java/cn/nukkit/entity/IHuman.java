@@ -1,6 +1,7 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.inventory.HumanEnderChestInventory;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.inventory.HumanOffHandInventory;
@@ -161,14 +162,15 @@ public interface IHuman extends InventoryHolder {
                     }
                     builder.tintColors(pieceTintColors);
                 }
-                this.setSkin(builder.build());
+                boolean trusted = skinTag.getBoolean("IsTrustedSkin");
+                this.setSkin(new Skin(builder.build(), trusted));
             }
 
             if (this.getSkin() == null) {
-                this.setSkin(SerializedSkin.builder().build());
+                this.setSkin(new Skin(SerializedSkin.builder().build()));
             }
             this.setUniqueId(Utils.dataToUUID(String.valueOf(human.getId()).getBytes(StandardCharsets.UTF_8),
-                    this.getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));
+                    this.getSkin().getSkin().getSkinData().getImage(), human.getNameTag().getBytes(StandardCharsets.UTF_8)));
         }
 
         this.setInventories(new Inventory[]{
@@ -233,26 +235,28 @@ public interface IHuman extends InventoryHolder {
 
         //EntityHuman
         var skin = getSkin();
-        if (skin != null) {
+        var serializedSkin = skin.getSkin();
+        if (serializedSkin != null) {
             CompoundTag skinTag = new CompoundTag()
-                    .putByteArray("Data", skin.getSkinData().getImage())
-                    .putInt("SkinImageWidth", skin.getSkinData().getWidth())
-                    .putInt("SkinImageHeight", skin.getSkinData().getHeight())
-                    .putString("ModelId", skin.getSkinId())
-                    .putString("CapeId", skin.getCapeId())
-                    .putByteArray("CapeData", skin.getCapeData().getImage())
-                    .putInt("CapeImageWidth", skin.getCapeData().getWidth())
-                    .putInt("CapeImageHeight", skin.getCapeData().getHeight())
-                    .putByteArray("SkinResourcePatch", skin.getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
-                    .putByteArray("GeometryData", skin.getGeometryData().getBytes(StandardCharsets.UTF_8))
-                    .putByteArray("SkinAnimationData", skin.getAnimationData().getBytes(StandardCharsets.UTF_8))
-                    .putBoolean("PremiumSkin", skin.isPremium())
-                    .putBoolean("PersonaSkin", skin.isPersona())
-                    .putBoolean("CapeOnClassicSkin", skin.isCapeOnClassic())
-                    .putString("ArmSize", skin.getArmSize())
-                    .putString("SkinColor", skin.getSkinColor());
+                    .putByteArray("Data", serializedSkin.getSkinData().getImage())
+                    .putInt("SkinImageWidth", serializedSkin.getSkinData().getWidth())
+                    .putInt("SkinImageHeight", serializedSkin.getSkinData().getHeight())
+                    .putString("ModelId", serializedSkin.getSkinId())
+                    .putString("CapeId", serializedSkin.getCapeId())
+                    .putByteArray("CapeData", serializedSkin.getCapeData().getImage())
+                    .putInt("CapeImageWidth", serializedSkin.getCapeData().getWidth())
+                    .putInt("CapeImageHeight", serializedSkin.getCapeData().getHeight())
+                    .putByteArray("SkinResourcePatch", serializedSkin.getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
+                    .putByteArray("GeometryData", serializedSkin.getGeometryData().getBytes(StandardCharsets.UTF_8))
+                    .putByteArray("SkinAnimationData", serializedSkin.getAnimationData().getBytes(StandardCharsets.UTF_8))
+                    .putBoolean("PremiumSkin", serializedSkin.isPremium())
+                    .putBoolean("PersonaSkin", serializedSkin.isPersona())
+                    .putBoolean("CapeOnClassicSkin", serializedSkin.isCapeOnClassic())
+                    .putString("ArmSize", serializedSkin.getArmSize())
+                    .putString("SkinColor", serializedSkin.getSkinColor())
+                    .putBoolean("IsTrustedSkin", skin.isTrusted());
 
-            List<AnimationData> animations = skin.getAnimations();
+            List<AnimationData> animations = serializedSkin.getAnimations();
             if (!animations.isEmpty()) {
                 ListTag<CompoundTag> animationsTag = new ListTag<>();
                 for (AnimationData animation : animations) {
@@ -267,7 +271,7 @@ public interface IHuman extends InventoryHolder {
                 skinTag.putList("AnimatedImageData", animationsTag);
             }
 
-            List<PersonaPieceData> personaPieces = skin.getPersonaPieces();
+            List<PersonaPieceData> personaPieces = serializedSkin.getPersonaPieces();
             if (!personaPieces.isEmpty()) {
                 ListTag<CompoundTag> piecesTag = new ListTag<>();
                 for (PersonaPieceData piece : personaPieces) {
@@ -279,7 +283,7 @@ public interface IHuman extends InventoryHolder {
                 }
                 skinTag.putList("PersonaPieces", piecesTag);
             }
-            List<PersonaPieceTintData> tints = skin.getTintColors();
+            List<PersonaPieceTintData> tints = serializedSkin.getTintColors();
             if (!tints.isEmpty()) {
                 ListTag<CompoundTag> tintsTag = new ListTag<>();
                 for (PersonaPieceTintData tint : tints) {
@@ -292,17 +296,17 @@ public interface IHuman extends InventoryHolder {
                 skinTag.putList("PieceTintColors", tintsTag);
             }
 
-            if (!skin.getPlayFabId().isEmpty()) {
-                skinTag.putString("PlayFabId", skin.getPlayFabId());
+            if (!serializedSkin.getPlayFabId().isEmpty()) {
+                skinTag.putString("PlayFabId", serializedSkin.getPlayFabId());
             }
 
             human.getNbt().putCompound("Skin", skinTag);
         }
     }
 
-    void setSkin(SerializedSkin skin);
+    void setSkin(Skin skin);
 
-    SerializedSkin getSkin();
+    Skin getSkin();
 
     UUID getUniqueId();
 

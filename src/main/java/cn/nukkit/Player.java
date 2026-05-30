@@ -28,6 +28,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.NameableComponent;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.entity.data.warden.WardenWarningData;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
@@ -409,7 +410,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         buffer.putLong(this.uuid.getMostSignificantBits());
         buffer.putLong(this.uuid.getLeastSignificantBits());
         this.rawUUID = buffer.array();
-        this.setSkin(info.getSkin());
+        this.setSkin(new Skin(info.getSkin(), info.clientChainData.isTrustedSkin()));
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
         this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
         this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();
@@ -2001,13 +2002,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public void setSkin(SerializedSkin skin) {
+    public void setSkin(Skin skin) {
         super.setSkin(skin);
+        SerializedSkin serializedSkin = skin.getSkin();
         if (this.spawned) {
             var skinPacket = new PlayerSkinPacket();
             skinPacket.setUuid(this.getUniqueId());
-            skinPacket.setSerializedSkin(this.getSkin());
-            skinPacket.setNewSkinName(this.getSkin().getSkinId());
+            skinPacket.setSerializedSkin(serializedSkin);
+            skinPacket.setNewSkinName(serializedSkin.getSkinId());
+            skinPacket.setTrustedSkin(skin.isTrusted());
             skinPacket.setOldSkinName("");
             Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
         }

@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
@@ -42,7 +43,7 @@ import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.RESERV
 public class EntityHuman extends EntityHumanType {
     protected UUID uuid;
     protected byte[] rawUUID;
-    protected SerializedSkin skin;
+    protected Skin skin;
 
     public EntityHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -93,11 +94,11 @@ public class EntityHuman extends EntityHumanType {
         return 1.62f;
     }
 
-    public SerializedSkin getSkin() {
+    public Skin getSkin() {
         return skin;
     }
 
-    public void setSkin(SerializedSkin skin) {
+    public void setSkin(Skin skin) {
         this.skin = skin;
     }
 
@@ -182,7 +183,7 @@ public class EntityHuman extends EntityHumanType {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
 
-            if (!SkinUtils.isValid(this.skin)) {
+            if (!SkinUtils.isValid(this.skin.getSkin())) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
