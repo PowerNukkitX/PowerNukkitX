@@ -6,8 +6,8 @@ import cn.nukkit.entity.components.NameableComponent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +34,7 @@ public class EntityXpOrb extends Entity {
     private int pickupDelay;
     private int exp;
 
-    public EntityXpOrb(IChunk chunk, NbtMap nbt) {
+    public EntityXpOrb(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -116,17 +116,17 @@ public class EntityXpOrb extends Entity {
         setHealthMax(5);
         setHealthCurrent(5);
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("Health")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("Health")) {
             this.setHealthCurrent(nbtMap.getShort("Health"));
         }
-        if (nbtMap.containsKey("Age")) {
+        if (nbtMap.contains("Age")) {
             this.age = nbtMap.getShort("Age");
         }
-        if (nbtMap.containsKey("PickupDelay")) {
+        if (nbtMap.contains("PickupDelay")) {
             this.pickupDelay = nbtMap.getShort("PickupDelay");
         }
-        if (nbtMap.containsKey("Value")) {
+        if (nbtMap.contains("Value")) {
             this.exp = nbtMap.getShort("Value");
         }
 
@@ -134,7 +134,7 @@ public class EntityXpOrb extends Entity {
             this.exp = 1;
         }
 
-        this.entityDataMap.put(ActorDataTypes.VALUE, this.exp);
+        this.actorDataMap.put(ActorDataTypes.VALUE, this.exp);
 
         //call event item spawn event
     }

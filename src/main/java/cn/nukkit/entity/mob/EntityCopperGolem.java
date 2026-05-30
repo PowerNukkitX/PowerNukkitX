@@ -57,12 +57,12 @@ import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.random.NukkitRandom;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import lombok.Getter;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,7 +92,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
             }, "unoxidized", true),
     };
 
-    public EntityCopperGolem(IChunk chunk, NbtMap nbt) {
+    public EntityCopperGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -163,13 +163,13 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
     @Override
     protected void initEntity() {
         super.initEntity();
-        final NbtMap nbtMap = this.getNbt();
-        if (!nbtMap.containsKey("oxidationLevel")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (!nbtMap.contains("oxidationLevel")) {
             this.nbt.putString("oxidationLevel", Oxidation.UNOXIDIZED.getName());
         }
         this.inventory = new EntityEquipmentInventory(this);
 
-        if (nbtMap.containsKey("Mainhand")) {
+        if (nbtMap.contains("Mainhand")) {
             this.inventory.setItemInHand(ItemHelper.read(nbtMap.getCompound("Mainhand")), true);
         }
         setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase()));
@@ -341,7 +341,7 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder {
                         block.level.setBlock(copperBlock, Block.get(copperBlock.getId().replace("_block", "") + "_chest"));
                         block.level.addParticle(new DestroyBlockParticle(copperBlock.add(0.5, 0.5, 0.5), block));
                         block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(null, copperBlock.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
-                        NbtMap nbt = Entity.getDefaultNBT(pumpkin.add(0.5, 0, 0.5f));
+                        CompoundTag nbt = Entity.getDefaultNBT(pumpkin.add(0.5, 0, 0.5f));
                         EntityCopperGolem copperGolem = (EntityCopperGolem) Entity.createEntity(EntityID.COPPER_GOLEM, block.level.getChunk(block.getChunkX(), block.getChunkZ()), nbt);
                         copperGolem.setOxidation(Oxidation.getGolemOxidation(copperBlock.getOxidizationLevel()));
                         copperGolem.spawnToAll();

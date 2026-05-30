@@ -24,8 +24,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +45,7 @@ public class EntityGhast extends EntityMob implements EntityFlyable {
         return GHAST;
     }
 
-    public EntityGhast(IChunk chunk, NbtMap nbt) {
+    public EntityGhast(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

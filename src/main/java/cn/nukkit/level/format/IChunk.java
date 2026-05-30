@@ -7,8 +7,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
@@ -234,9 +234,9 @@ public interface IChunk {
 
     short[] getHeightMapArray();
 
-    NbtMap getExtraData();
+    CompoundTag getExtraData();
 
-    void setExtraData(NbtMap extraData);
+    void setExtraData(CompoundTag extraData);
 
     boolean hasChanged();
 

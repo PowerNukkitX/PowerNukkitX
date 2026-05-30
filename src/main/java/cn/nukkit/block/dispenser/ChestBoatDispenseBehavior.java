@@ -12,9 +12,8 @@ public class ChestBoatDispenseBehavior extends BoatDispenseBehavior{
     @Override
     protected void spawnBoatEntity(Level level, Vector3 pos, Item item) {
         EntityChestBoat boat = new EntityChestBoat(level.getChunk(pos.getChunkX(), pos.getChunkZ()),
-                Entity.getDefaultNBT(pos).toBuilder()
+                Entity.getDefaultNBT(pos)
                         .putInt("Variant", ((ItemChestBoat) item).getBoatId())
-                        .build()
         );
         boat.spawnToAll();
     }

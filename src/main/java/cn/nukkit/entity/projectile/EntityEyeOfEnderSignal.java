@@ -7,6 +7,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -31,11 +32,11 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
     private int life;
     private boolean surviveAfterDeath;
 
-    public EntityEyeOfEnderSignal(IChunk chunk, NbtMap nbt) {
+    public EntityEyeOfEnderSignal(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityEyeOfEnderSignal(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityEyeOfEnderSignal(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -56,8 +57,8 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
         this.life = this.getNbt().getInt(TAG_LIFE, 0);
         this.surviveAfterDeath = this.getNbt().getBoolean(TAG_SURVIVE_AFTER_DEATH);
 
-        if (this.nbt.containsKey(TAG_TARGET)) {
-            NbtMap targetTag = this.getNbt().getCompound(TAG_TARGET);
+        if (this.nbt.contains(TAG_TARGET)) {
+            CompoundTag targetTag = this.getNbt().getCompound(TAG_TARGET);
             this.target = new Vector3(
                     targetTag.getDouble(TAG_TARGET_X),
                     targetTag.getDouble(TAG_TARGET_Y),
@@ -158,16 +159,13 @@ public class EntityEyeOfEnderSignal extends EntityProjectile {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putInt(TAG_LIFE, this.life)
-                .putBoolean(TAG_SURVIVE_AFTER_DEATH, this.surviveAfterDeath)
-                .build();
+        this.nbt.putInt(TAG_LIFE, this.life);
+        this.nbt.putBoolean(TAG_SURVIVE_AFTER_DEATH, this.surviveAfterDeath);
         if (this.target != null) {
-            this.nbt.putCompound(TAG_TARGET, NbtMap.builder()
-                            .putDouble(TAG_TARGET_X, this.target.x)
-                            .putDouble(TAG_TARGET_Y, this.target.y)
-                            .putDouble(TAG_TARGET_Z, this.target.z)
-                            .build())
-                    .build();
+            this.nbt.putCompound(TAG_TARGET, new CompoundTag()
+                    .putDouble(TAG_TARGET_X, this.target.x)
+                    .putDouble(TAG_TARGET_Y, this.target.y)
+                    .putDouble(TAG_TARGET_Z, this.target.z));
         }
     }
 

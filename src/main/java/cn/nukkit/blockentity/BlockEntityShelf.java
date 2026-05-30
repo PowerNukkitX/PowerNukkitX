@@ -5,13 +5,9 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.ShelfInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
-
-import java.util.List;
 
 /**
  * @author Buddelbubi
@@ -19,7 +15,7 @@ import java.util.List;
  */
 public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
-    public BlockEntityShelf(IChunk chunk, NbtMap nbt) {
+    public BlockEntityShelf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -29,11 +25,11 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
 
         this.inventory = new ShelfInventory(this);
 
-        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List<?>)) {
-            this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!this.nbt.containsList("Items")) {
+            this.nbt.putList("Items", new ListTag<CompoundTag>());
         }
 
-        List<NbtMap> itemsTag = this.getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> itemsTag = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < itemsTag.size(); i++) {
             this.inventory.setItem(i, ItemHelper.read(itemsTag.get(i)));
         }
@@ -43,7 +39,7 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        this.nbt.putList("Items", new ListTag<CompoundTag>());
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -71,15 +67,15 @@ public class BlockEntityShelf extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
-        List<NbtMap> items = new ObjectArrayList<>();
+    public CompoundTag getSpawnCompound() {
+        CompoundTag tag = super.getSpawnCompound();
+        ListTag<CompoundTag> items = new ListTag<>();
         for (int i = 0; i < getSize(); i++) {
             Item item = this.inventory.getItem(i);
             items.add(ItemHelper.write(item, i));
         }
-        tag.put("Items", items);
-        return tag.build();
+        tag.putList("Items", items);
+        return tag;
     }
 
     @Override

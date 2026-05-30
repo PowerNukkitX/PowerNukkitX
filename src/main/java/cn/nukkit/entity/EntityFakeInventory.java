@@ -7,7 +7,8 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 public class EntityFakeInventory extends Entity implements InventoryHolder {
 
-    public EntityFakeInventory(IChunk chunk, NbtMap nbt) {
+    public EntityFakeInventory(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -54,18 +55,18 @@ public class EntityFakeInventory extends Entity implements InventoryHolder {
         this.setDataFlag(ActorFlags.HAS_COLLISION, false);
         this.setDataFlag(ActorFlags.CAN_CLIMB, false);
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("ContainerSize")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.containsInt("ContainerSize")) {
             this.containerSize = nbtMap.getInt("ContainerSize");
         }
-        if (nbtMap.containsKey("displayName")) {
+        if (nbtMap.containsString("displayName")) {
             this.displayName = nbtMap.getString("displayName");
             this.setNameTag(this.displayName);
         }
 
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CONTAINER.getId());
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.containerSize);
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CONTAINER.getId());
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.containerSize);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     public int getContainerSize() {

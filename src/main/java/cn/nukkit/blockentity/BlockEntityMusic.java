@@ -2,21 +2,21 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityMusic extends BlockEntity {
 
-    public BlockEntityMusic(IChunk chunk, NbtMap nbt) {
+    public BlockEntityMusic(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.nbt.containsKey("note")) {
+        if (!this.nbt.contains("note")) {
             this.nbt.putByte("note", (byte) 0);
         }
-        if (!this.nbt.containsKey("powered")) {
+        if (!this.nbt.contains("powered")) {
             this.nbt.putBoolean("powered", false);
         }
     }

@@ -1,8 +1,8 @@
 package cn.nukkit.block.customblock.data;
 
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 
 public interface NBTData {
-    NbtMap toCompoundTag();
+    CompoundTag toCompoundTag();
 }

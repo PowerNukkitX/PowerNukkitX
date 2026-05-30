@@ -14,8 +14,8 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +110,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
                 index++;
             }
 
-            beehive.setNbt(beehive.getNbt().toBuilder().putByte("ShouldSpawnBees", (byte) 0));
+            beehive.getNbt().putByte("ShouldSpawnBees", (byte) 0);
             beehive.scheduleUpdate();
         }
 
@@ -134,7 +134,7 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
 
     @Override
     public void onTouch(@NotNull Vector3 vector, @NotNull Item item, @NotNull BlockFace face, float fx, float fy, float fz, @Nullable Player player, PlayerInteractEvent.@NotNull Action action) {
-        if (player != null) this.getOrCreateBlockEntity().setInteractingEntity(player);
+        if(player != null) this.getOrCreateBlockEntity().setInteractingEntity(player);
         super.onTouch(vector, item, face, fx, fy, fz, player, action);
     }
 
@@ -169,10 +169,9 @@ public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHol
             if (beehive != null) {
                 beehive.saveNBT();
                 if (!beehive.isHoneyEmpty() || !beehive.isEmpty()) {
-                    NbtMapBuilder copy = beehive.getNbt().toBuilder();
-                    copy.putByte("HoneyLevel", (byte) getHoneyLevel());
-                    beehive.setNbt(copy);
-                    item.setCustomBlockData(copy.build());
+                    CompoundTag copy = new CompoundTag();
+                    copy.putByte("HoneyLevel", getHoneyLevel());
+                    item.setCustomBlockData(copy);
                 }
             }
         }

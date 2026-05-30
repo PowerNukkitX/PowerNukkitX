@@ -54,6 +54,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.Pair;
 import org.cloudburstmc.nbt.NbtMap;
@@ -75,7 +76,7 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
 
     private final static float[] DIFF_DAMAGE = new float[]{2, 2, 2};
 
-    public EntityAxolotl(IChunk chunk, NbtMap nbt) {
+    public EntityAxolotl(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -222,12 +223,11 @@ public class EntityAxolotl extends EntityAnimal implements EntitySwimmable, Enti
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
-        if (Objects.equals(item.getId(), Item.WATER_BUCKET)) {
+        if(Objects.equals(item.getId(), Item.WATER_BUCKET)) {
             Item bucket = Item.get(Item.AXOLOTL_BUCKET);
-            final NbtMap tag = NbtMap.builder()
-                    .putInt("Variant", getVariant())
-                    .build();
-            bucket.setCompoundTag(tag);
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("Variant", getVariant());
+            bucket.setNbt(tag);
             player.getInventory().setItemInMainHand(bucket);
             this.close();
         }

@@ -11,10 +11,10 @@ import cn.nukkit.entity.projectile.EntitySmallFireball;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
-
-import java.util.Arrays;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 
 public class WitherShootExecutor implements EntityControl, IBehaviorExecutor {
 
@@ -53,23 +53,19 @@ public class WitherShootExecutor implements EntityControl, IBehaviorExecutor {
     protected void spawn(Entity entity, boolean charged) {
         Location fireballLocation = entity.getLocation();
         fireballLocation.add(entity.getDirectionVector());
-        final NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                fireballLocation.x,
-                                fireballLocation.y,
-                                fireballLocation.z
-                        )
-                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
-                                -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI),
-                                -Math.sin(entity.pitch / 180 * Math.PI),
-                                Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)
-                        )
-                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
-                                (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw,
-                                (float) -entity.pitch
-                        )
-                ).putDouble("damage", 2)
-                .build();
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(fireballLocation.x))
+                        .add(new DoubleTag(fireballLocation.y))
+                        .add(new DoubleTag(fireballLocation.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
+                        .add(new FloatTag((float) -entity.pitch)))
+                .putDouble("damage", 2);
 
         Entity projectile = Entity.createEntity(charged ? EntityID.WITHER_SKULL_DANGEROUS : EntityID.WITHER_SKULL, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
         if (projectile == null) {

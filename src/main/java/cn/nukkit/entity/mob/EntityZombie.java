@@ -36,8 +36,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
+
 import org.cloudburstmc.protocol.bedrock.packet.TakeItemActorPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +55,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
     }
 
 
-    public EntityZombie(IChunk chunk, NbtMap nbt) {
+    public EntityZombie(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -223,7 +224,7 @@ public class EntityZombie extends EntityMob implements EntityWalkable, EntitySmi
         drowned.setPosition(this);
         drowned.setRotation(this.yaw, this.pitch);
         drowned.spawnToAll();
-        drowned.getNbtBuilder().putBoolean("Transformed", true);
+        drowned.getNbt().putBoolean("Transformed", true);
         drowned.level.addSound(drowned, Sound.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED);
     }
 }

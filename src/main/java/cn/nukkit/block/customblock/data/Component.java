@@ -2,10 +2,9 @@ package cn.nukkit.block.customblock.data;
 
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Builder;
 import lombok.Getter;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import javax.annotation.Nullable;
 
@@ -13,7 +12,8 @@ import javax.annotation.Nullable;
 @Builder
 @Getter
 public class Component implements NBTData {
-    private NbtMap result = NbtMap.EMPTY;
+
+    private final CompoundTag result = new CompoundTag();
     @Nullable
     CollisionBox collisionBox;
     @Nullable
@@ -43,67 +43,58 @@ public class Component implements NBTData {
     @Nullable
     Vector3f rotation;
 
-    public NbtMap toCompoundTag() {
-        final NbtMapBuilder builder = this.result.toBuilder();
+    public CompoundTag toCompoundTag() {
         if (unitCube != null) {
-            builder.putCompound("minecraft:unit_cube", NbtMap.EMPTY);
+            this.result.putCompound("minecraft:unit_cube", new CompoundTag());
         }
         if (collisionBox != null) {
-            builder.putCompound("minecraft:collision_box", collisionBox.toCompoundTag());
+            this.result.putCompound("minecraft:collision_box", collisionBox.toCompoundTag());
         }
         if (selectionBox != null) {
-            builder.putCompound("minecraft:selection_box", selectionBox.toCompoundTag());
+            this.result.putCompound("minecraft:selection_box", selectionBox.toCompoundTag());
         }
         if (craftingTable != null) {
-            builder.putCompound("minecraft:crafting_table", craftingTable.toCompoundTag());
+            this.result.putCompound("minecraft:crafting_table", craftingTable.toCompoundTag());
         }
         if (destructibleByMining != null) {
-            builder.putCompound("minecraft:destructible_by_mining", NbtMap.builder()
-                    .putFloat("value", destructibleByMining)
-                    .build());
+            this.result.putCompound("minecraft:destructible_by_mining", new CompoundTag()
+                    .putFloat("value", destructibleByMining));
         }
         if (destructibleByExplosion != null) {
-            builder.putCompound("minecraft:destructible_by_explosion", NbtMap.builder()
-                    .putInt("explosion_resistance", destructibleByExplosion)
-                    .build());
+            this.result.putCompound("minecraft:destructible_by_explosion", new CompoundTag()
+                    .putInt("explosion_resistance", destructibleByExplosion));
         }
         if (displayName != null) {
-            builder.putCompound("minecraft:display_name", NbtMap.builder()
-                    .putString("value", displayName)
-                    .build());//todo 验证
+            this.result.putCompound("minecraft:display_name", new CompoundTag()
+                    .putString("value", displayName));//todo 验证
         }
         if (lightEmission != null) {
-            builder.putCompound("minecraft:light_emission", NbtMap.builder()
-                    .putByte("emission", lightEmission.byteValue())
-                    .build());
+            this.result.putCompound("minecraft:light_emission", new CompoundTag()
+                    .putByte("emission", lightEmission.byteValue()));
         }
         if (lightDampening != null) {
-            builder.putCompound("minecraft:light_dampening", NbtMap.builder()
-                    .putByte("lightLevel", lightDampening.byteValue())
-                    .build());
+            this.result.putCompound("minecraft:light_dampening", new CompoundTag()
+                    .putByte("lightLevel", lightDampening.byteValue()));
         }
         if (friction != null) {
-            builder.putCompound("minecraft:friction", NbtMap.builder()
-                    .putFloat("value", (float) Math.min(friction, 0.9))
-                    .build());
+            this.result.putCompound("minecraft:friction", new CompoundTag()
+                    .putFloat("value", (float) Math.min(friction, 0.9)));
         }
         if (this.geometry != null) {
-            builder.putCompound("minecraft:geometry", geometry.toCompoundTag());
-            builder.remove("minecraft:unit_cube");
+            this.result.putCompound("minecraft:geometry", geometry.toCompoundTag());
+            this.result.remove("minecraft:unit_cube");
         }
         if (materialInstances != null) {
-            builder.putCompound("minecraft:material_instances", NbtMap.builder()
-                    .putCompound("mappings", NbtMap.EMPTY)
-                    .putCompound("materials", materialInstances.toCompoundTag())
-                    .build());
+            this.result.putCompound("minecraft:material_instances", new CompoundTag()
+                    .putCompound("mappings", new CompoundTag())
+                    .putCompound("materials", materialInstances.toCompoundTag()));
         }
         if (transformation != null) {
-            builder.putCompound("minecraft:transformation", transformation.toCompoundTag());
+            this.result.putCompound("minecraft:transformation", transformation.toCompoundTag());
         }
         if (rotation != null) {
-            builder.putCompound("minecraft:transformation", new Transformation(new Vector3(0, 0, 0), new Vector3(1, 1, 1), rotation.asVector3()).toCompoundTag());
+            this.result.putCompound("minecraft:transformation", new Transformation(new Vector3(0, 0, 0), new Vector3(1, 1, 1), rotation.asVector3()).toCompoundTag());
         }
-        this.result = builder.build();
         return this.result;
     }
 }

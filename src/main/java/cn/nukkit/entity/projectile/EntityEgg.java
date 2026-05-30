@@ -9,6 +9,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -34,18 +35,18 @@ public class EntityEgg extends EntityProjectile implements ClimateVariant {
         return EGG;
     }
 
-    public EntityEgg(IChunk chunk, NbtMap nbt) {
+    public EntityEgg(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityEgg(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityEgg(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
-        if(nbt.containsKey("variant")) {
+        if(nbt.contains("variant")) {
             setVariant(Variant.get(getNbt().getString("variant")));
         } else setVariant(Variant.TEMPERATE);
     }
@@ -118,15 +119,15 @@ public class EntityEgg extends EntityProjectile implements ClimateVariant {
         }
         if (chicks > 0) {
             for (int i = 0; i < chicks; i++) {
-                NbtMapBuilder nbt = Entity.getDefaultNBT(
+                CompoundTag nbt = Entity.getDefaultNBT(
                         this.add(0, 0.5, 0),
                         null,
                         0,
                         0
-                ).toBuilder();
+                );
                 String variant = this.getVariant().getName();
                 nbt.putString("variant", variant);
-                Entity entity = Entity.createEntity(Entity.CHICKEN, this.level.getChunk((int)this.x >> 4, (int)this.z >> 4), nbt.build());
+                Entity entity = Entity.createEntity(Entity.CHICKEN, this.level.getChunk((int)this.x >> 4, (int)this.z >> 4), nbt);
                 if (entity != null) {
                     entity.setDataFlag(ActorFlags.BABY, true);
                     entity.setScale(0.5f);

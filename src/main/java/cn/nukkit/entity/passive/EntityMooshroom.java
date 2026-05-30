@@ -35,6 +35,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +56,7 @@ public class EntityMooshroom extends EntityAnimal implements EntityWalkable, Ent
     }
     
 
-    public EntityMooshroom(IChunk chunk, NbtMap nbt) {
+    public EntityMooshroom(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

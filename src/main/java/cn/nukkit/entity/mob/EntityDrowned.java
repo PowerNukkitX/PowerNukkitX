@@ -35,8 +35,9 @@ import cn.nukkit.item.ItemTrident;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
         return DROWNED;
     }
 
-    public EntityDrowned(IChunk chunk, NbtMap nbt) {
+    public EntityDrowned(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -186,7 +187,7 @@ public class EntityDrowned extends EntityZombie implements EntitySwimmable, Enti
     }
 
     public boolean wasTransformed() {
-        if (this.nbt.containsKey("Transformed")) {
+        if (this.nbt.contains("Transformed")) {
             return this.getNbt().getBoolean("Transformed");
         }
         return false;

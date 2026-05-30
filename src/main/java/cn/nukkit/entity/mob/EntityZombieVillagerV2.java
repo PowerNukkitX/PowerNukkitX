@@ -6,7 +6,8 @@ import cn.nukkit.entity.EntityWalkable;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +20,7 @@ public class EntityZombieVillagerV2 extends EntityMob implements EntityWalkable,
     }
     
 
-    public EntityZombieVillagerV2(IChunk chunk, NbtMap nbt) {
+    public EntityZombieVillagerV2(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

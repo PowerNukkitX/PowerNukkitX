@@ -41,6 +41,9 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -76,7 +79,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         return HAPPY_GHAST;
     }
 
-    public EntityHappyGhast(IChunk chunk, NbtMap nbt) {
+    public EntityHappyGhast(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -123,9 +126,9 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         super.initEntity();
         setDataFlag(ActorFlags.COLLIDABLE, true); //allow standing on them
         this.armorInventory = new EntityArmorInventory(this);
-        if (this.nbt.containsKey("Armor")) {
-            List<NbtMap> armorList = this.getNbt().getList("Armor", NbtType.COMPOUND);
-            for (NbtMap armorTag : armorList) {
+        if (this.nbt.contains("Armor")) {
+            ListTag<CompoundTag> armorList = this.getNbt().getList("Armor", CompoundTag.class);
+            for (CompoundTag armorTag : armorList.getAll()) {
                 int slot = armorTag.getByte("Slot");
                 var item = ItemHelper.read(armorTag);
 
@@ -135,7 +138,7 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
         }
 
         // Init home memory
-        if (this.nbt.containsKey("HomeX")) {
+        if (this.nbt.contains("HomeX")) {
             this.initHome();
         } else {
             this.setHomePosition();
@@ -146,11 +149,11 @@ public class EntityHappyGhast extends EntityAnimal implements EntityFlyable, Inv
     public void saveNBT() {
         super.saveNBT();
         if (this.armorInventory != null) {
-            List<NbtMap> armorTag = new ObjectArrayList<>();
+            ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
             for (int i = 0; i < 5; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.nbt.putList("Armor", NbtType.COMPOUND, armorTag);
+            this.nbt.putList("Armor", armorTag);
         }
     }
 

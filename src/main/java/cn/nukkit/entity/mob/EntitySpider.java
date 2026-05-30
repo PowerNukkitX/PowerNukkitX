@@ -31,13 +31,13 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.tags.BiomeTags;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +60,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
 
-    public EntitySpider(IChunk chunk, NbtMap nbt) {
+    public EntitySpider(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -286,26 +286,24 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        NbtMapBuilder builder = Entity.getDefaultNBT(this.getLocation()).toBuilder();
+        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
 
         switch (this.jockeyType) {
             case SKELETON_JOCKEY, STRAY_JOCKEY, BOGGED_JOCKEY, PARCHED_JOCKEY -> {
                 Item bow = Item.get(Item.BOW, 0, 1);
-                builder.putCompound("Mainhand", ItemHelper.write(bow));
+                nbt.put("Mainhand", ItemHelper.write(bow));
             }
             case WITHER_SKELETON_JOCKEY -> {
                 Item sword = Item.get(Item.STONE_SWORD, 0, 1);
-                builder.putCompound("Mainhand", ItemHelper.write(sword));
+                nbt.put("Mainhand", ItemHelper.write(sword));
             }
-            default -> {
-            }
+            default -> {}
         }
 
-        Entity rider = Entity.createEntity(entityId, this.getChunk(), builder.build());
+        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
         if (rider == null) return null;
         return rider;
     }
-
     private boolean isUnderground() {
         if (this.level == null) return false;
 
@@ -356,7 +354,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
 
-        if (this.nbt != null && this.nbt.containsKey(NBT_RIDEABLE_TYPE)) {
+        if (this.nbt != null && this.nbt.contains(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.getNbt().getInt(NBT_RIDEABLE_TYPE));
         } else {
             this.jockeyType = rollInitialRideableType();

@@ -14,6 +14,7 @@ import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightningBolt;
 import cn.nukkit.level.entity.spawners.*;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -301,7 +302,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         return Collections.unmodifiableMap(CLASS);
     }
 
-    public Entity provideEntity(String id, @NotNull IChunk chunk, @NotNull NbtMap nbt, @Nullable Object... args) {
+    public Entity provideEntity(String id, @NotNull IChunk chunk, @NotNull CompoundTag nbt, @Nullable Object... args) {
         Class<? extends Entity> clazz = getEntityClass(id);
         if (clazz == null) return null;
 
@@ -386,7 +387,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
     public void register(EntityDefinition key, Class<? extends Entity> value) throws RegisterException {
         if (CLASS.putIfAbsent(key.id(), value) == null) {
             try {
-                FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, NbtMap.class)));
+                FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class)));
             } catch (NoSuchMethodException e) {
                 throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
             }
@@ -417,7 +418,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
         }
         try {
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
-            FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, NbtMap.class), memberLoader, false));
+            FAST_NEW.put(key.id, FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false));
         } catch (NoSuchMethodException e) {
             throw new RegisterException("The entity class " + value.getSimpleName() + " must have a constructor with parameters (IChunk, CompoundTag)!", e);
         }
@@ -443,7 +444,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
                 throw new RegisterException("This entity has already been registered with the identifier: " + id);
             }
 
-            FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, NbtMap.class), memberLoader, false);
+            FastConstructor<? extends Entity> runtimeCtor = FastConstructor.create(value.getConstructor(IChunk.class, CompoundTag.class), memberLoader, false);
             FAST_NEW.put(id, runtimeCtor);
 
             int rid = RUNTIME_ID.getAndIncrement();
@@ -537,7 +538,7 @@ public class EntityRegistry implements EntityID, IRegistry<EntityRegistry.Entity
             }
 
         } catch (RegisterException e) {
-            log.error("{}", e.getCause().getMessage());
+            log.error("Error while registering entity", e);
         } catch (IllegalAccessException e) {
             log.error("Failed to access PROPERTIES for: {}", key.id(), e);
         }

@@ -1,7 +1,8 @@
 package cn.nukkit.block.customblock.data;
 
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +15,11 @@ import java.util.Locale;
  * face dimming, isotropic UV behavior and packed boolean flags used by the client.
  */
 public class Materials implements NBTData {
-    private NbtMap tag;
+
+    private final CompoundTag tag;
 
     private Materials() {
-        this.tag = NbtMap.EMPTY;
+        this.tag = new CompoundTag();
     }
 
     /**
@@ -146,7 +148,7 @@ public class Materials implements NBTData {
             return this;
         }
 
-        private void apply(@NotNull NbtMapBuilder tag) {
+        private void apply(@NotNull CompoundTag tag) {
             if (this.ambientOcclusion != null) {
                 tag.putFloat("ambient_occlusion", this.ambientOcclusion);
             }
@@ -797,14 +799,16 @@ public class Materials implements NBTData {
         return this;
     }
 
-    private NbtMapBuilder getOrCreateFaceTag(@NotNull String face) {
-        Object existing = this.tag.get(face);
+    private CompoundTag getOrCreateFaceTag(@NotNull String face) {
+        Tag existing = this.tag.get(face);
 
-        if (existing instanceof NbtMap compoundTag) {
-            return compoundTag.toBuilder();
+        if (existing instanceof CompoundTag compoundTag) {
+            return compoundTag;
         }
 
-        return NbtMap.builder();
+        CompoundTag faceTag = new CompoundTag();
+        this.tag.putCompound(face, faceTag);
+        return faceTag;
     }
 
     /**
@@ -839,12 +843,12 @@ public class Materials implements NBTData {
      * @param tintMethod optional tint method
      */
     public void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull String renderMethodName,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull String renderMethodName,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
         this.process(face, ambientOcclusion, packedBools, renderMethodName, texture, tintMethod, null);
     }
@@ -861,19 +865,19 @@ public class Materials implements NBTData {
      * @param settings optional material settings
      */
     public void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull String renderMethodName,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod,
-        @Nullable Settings settings
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull String renderMethodName,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod,
+            @Nullable Settings settings
     ) {
-        NbtMapBuilder faceTag = this.getOrCreateFaceTag(face)
-            .putFloat("ambient_occlusion", ambientOcclusion)
-            .putByte("packed_bools", packedBools.toByte())
-            .putString("render_method", renderMethodName)
-            .putString("texture", texture);
+        CompoundTag faceTag = this.getOrCreateFaceTag(face)
+                .putFloat("ambient_occlusion", ambientOcclusion)
+                .putByte("packed_bools", packedBools.toByte())
+                .putString("render_method", renderMethodName)
+                .putString("texture", texture);
 
         if (settings != null) {
             settings.apply(faceTag);
@@ -882,7 +886,8 @@ public class Materials implements NBTData {
         if (tintMethod != null && tintMethod != TintMethod.NONE) {
             faceTag.putString("tint_method", tintMethod.name().toLowerCase(Locale.ENGLISH));
         }
-        this.tag = this.tag.toBuilder().putCompound(face, faceTag.build()).build();
+
+        this.tag.putCompound(face, faceTag);
     }
 
     private void process(
@@ -897,41 +902,41 @@ public class Materials implements NBTData {
     }
 
     private void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod
     ) {
         this.process(face, ambientOcclusion, packedBools, renderMethod.name().toLowerCase(Locale.ENGLISH), texture, tintMethod);
     }
 
     private void process(
-        @NotNull String face,
-        boolean ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod,
-        @Nullable Settings settings
+            @NotNull String face,
+            boolean ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod,
+            @Nullable Settings settings
     ) {
         this.process(face, ambientOcclusion ? 1.0f : 0.0f, packedBools, renderMethod, texture, tintMethod, settings);
     }
 
     private void process(
-        @NotNull String face,
-        float ambientOcclusion,
-        @NotNull PackedBools packedBools,
-        @NotNull RenderMethod renderMethod,
-        @NotNull String texture,
-        @Nullable TintMethod tintMethod,
-        @Nullable Settings settings
+            @NotNull String face,
+            float ambientOcclusion,
+            @NotNull PackedBools packedBools,
+            @NotNull RenderMethod renderMethod,
+            @NotNull String texture,
+            @Nullable TintMethod tintMethod,
+            @Nullable Settings settings
     ) {
         this.process(face, ambientOcclusion, packedBools, renderMethod.name().toLowerCase(Locale.ENGLISH), texture, tintMethod, settings);
     }
 
-    public NbtMap toCompoundTag() {
+    public CompoundTag toCompoundTag() {
         return tag;
     }
 
@@ -946,7 +951,6 @@ public class Materials implements NBTData {
      * ALPHA_TEST_TO_OPAQUE,                >> Transparency Yes | Translucency No | Backface Culling No | Distant Culling Yes | will shift to "opaque" in the distance.
      * ALPHA_TEST_SINGLE_SIDED_TO_OPAQUE,   >> Transparency Yes | Translucency No | Backface Culling Yes | Distant Culling Yes | will shift to "opaque" in the distance.
      * BLEND_TO_OPAQUE                      >> Transparency No | Translucency No | Backface Culling Yes | Distant Culling No | will shift to "opaque" in the distance.
-     *
      * @see <a href="https://wiki.bedrock.dev/blocks/blocks-16.html#additional-notes">wiki.bedrock.dev</a><p>
      */
     public enum RenderMethod {
@@ -980,17 +984,20 @@ public class Materials implements NBTData {
             String key = s.trim()
                     .toUpperCase(Locale.ENGLISH)
                     .replaceAll("[\\s-]+", "_");
+
             return switch (key) {
+                case "NONE" -> NONE;
                 case "DEFAULT_FOLIAGE" -> DEFAULT_FOLIAGE;
                 case "BIRCH_FOLIAGE" -> BIRCH_FOLIAGE;
                 case "EVERGREEN_FOLIAGE" -> EVERGREEN_FOLIAGE;
                 case "DRY_FOLIAGE" -> DRY_FOLIAGE;
                 case "GRASS" -> GRASS;
                 case "WATER" -> WATER;
-                default -> NONE;
+                default -> null;
             };
         }
     }
+
 
 
     // Deprecated methods.

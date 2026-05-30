@@ -15,6 +15,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +27,7 @@ public class EntityWitherSkull extends EntityProjectile implements EntityExplosi
         return WITHER_SKULL;
     }
 
-    public EntityWitherSkull(IChunk chunk, NbtMap nbt) {
+    public EntityWitherSkull(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

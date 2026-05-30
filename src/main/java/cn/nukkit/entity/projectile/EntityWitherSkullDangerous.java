@@ -1,6 +1,7 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ public class EntityWitherSkullDangerous extends EntityWitherSkull {
         return WITHER_SKULL_DANGEROUS;
     }
 
-    public EntityWitherSkullDangerous(IChunk chunk, NbtMap nbt) {
+    public EntityWitherSkullDangerous(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

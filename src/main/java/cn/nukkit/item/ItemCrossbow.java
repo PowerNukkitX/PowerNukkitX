@@ -11,13 +11,12 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.NbtHelper;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -114,22 +113,18 @@ public class ItemCrossbow extends ItemTool {
             double mX;
             double mY;
             double mZ;
-            final NbtMap nbt = NbtMap.builder()
-                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                    player.x,
-                                    player.y + (double) player.getEyeHeight(),
-                                    player.z
-                            )
-                    ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
-                                    mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D),
-                                    mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D),
-                                    mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)
-                            )
-                    ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
-                                    (float) (player.yaw > 180.0D ? 360 : 0) - (float) player.yaw,
-                                    (float) (-player.pitch)
-                            )
-                    ).build();
+            final CompoundTag nbt = new CompoundTag()
+                    .putList("Pos", new ListTag<DoubleTag>()
+                            .add(new DoubleTag(player.x))
+                            .add(new DoubleTag(player.y + (double) player.getEyeHeight()))
+                            .add(new DoubleTag(player.z)))
+                    .putList("Motion", new ListTag<DoubleTag>()
+                            .add(new DoubleTag(mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))
+                            .add(new DoubleTag(mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D)))
+                            .add(new DoubleTag(mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))))
+                    .putList("Rotation", new ListTag<FloatTag>()
+                            .add(new FloatTag((float) (player.yaw > 180.0D ? 360 : 0) - (float) player.yaw))
+                            .add(new FloatTag((float) (-player.pitch))));
             Item item = Item.get(this.getNbt().getCompound("chargedItem").getString("Name"));
             if (Objects.equals(item.getId(), Item.FIREWORK_ROCKET)) {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
@@ -139,7 +134,7 @@ public class ItemCrossbow extends ItemTool {
                 removeChargedItem(player);
             } else {
                 EntityArrow entity = new EntityArrow(player.chunk, nbt, player, true);
-                NbtMap chargedItem = this.getNbt().getCompound("chargedItem");
+                CompoundTag chargedItem = this.getNbt().getCompound("chargedItem");
                 entity.setItem((ItemArrow) Item.get(chargedItem.getString("Name"), chargedItem.getShort("Damage"), chargedItem.getByte("Count")));
                 EntityShootCrossbowEvent entityShootBowEvent = new EntityShootCrossbowEvent(player, this, entity);
                 Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
@@ -167,7 +162,7 @@ public class ItemCrossbow extends ItemTool {
     }
 
     public void removeChargedItem(Player player) {
-        this.setCompoundTag(NbtHelper.remove(this.getNbt(), "chargedItem"));
+        this.setNbt(this.getNbt().remove("chargedItem"));
         player.getInventory().setItemInMainHand(this);
     }
 
@@ -182,15 +177,14 @@ public class ItemCrossbow extends ItemTool {
 
     public void loadArrow(Player player, Item arrow) {
         if (arrow != null) {
-            NbtMapBuilder tag = this.getNbt() == null ? NbtMap.builder() : this.getNbt().toBuilder();
-            tag.putCompound("chargedItem", NbtMap.builder()
+            CompoundTag tag = this.getNbt() == null ? new CompoundTag() : this.getNbt().copy();
+            tag.putCompound("chargedItem", new CompoundTag()
                     .putByte("Count", (byte) arrow.getCount())
                     .putShort("Damage", (short) arrow.getDamage())
                     .putString("Name", arrow.getId())
                     .putByte("WasPickedUp", (byte) 0)
-                    .build()
             );
-            this.setCompoundTag(tag.build());
+            this.setNbt(tag);
             player.getInventory().setItemInMainHand(this);
             player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
         }
@@ -201,7 +195,7 @@ public class ItemCrossbow extends ItemTool {
         if (itemInfo == null) {
             return false;
         } else {
-            NbtMap tag = (NbtMap) itemInfo;
+            CompoundTag tag = (CompoundTag) itemInfo;
             return tag.getByte("Count") > 0 && tag.getString("Name") != null;
         }
     }

@@ -6,15 +6,16 @@ import cn.nukkit.item.ItemFireworkRocket;
 import cn.nukkit.item.ItemFireworkRocket.FireworkExplosion.ExplosionType;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -31,19 +32,19 @@ import java.util.Random;
  */
 public class FireworkBuilder {
     private final ItemFireworkRocket itemFirework;
-    private NbtMap fireworkTag;
-    private List<NbtMap> explosions;
+    private CompoundTag fireworkTag;
+    private List<CompoundTag> explosions;
     private final Random fireworkRandom;
     private Entity rider;
 
     public FireworkBuilder() {
         this.itemFirework = new ItemFireworkRocket();
-        this.fireworkTag = NbtMap.EMPTY;
+        this.fireworkTag = new CompoundTag();
         this.explosions = new ArrayList<>();
         this.fireworkRandom = new Random();
     }
 
-    public FireworkBuilder addExplosion(NbtMap explosion) {
+    public FireworkBuilder addExplosion(CompoundTag explosion) {
         this.explosions.add(explosion);
         return this;
     }
@@ -58,7 +59,7 @@ public class FireworkBuilder {
      * @return FireworkBuilder
      */
     public FireworkBuilder setFlight(int flight) {
-        this.fireworkTag = this.fireworkTag.toBuilder().putByte("Flight", (byte) flight).build();
+        this.fireworkTag.putByte("Flight", (byte) flight);
         return this;
     }
 
@@ -128,19 +129,26 @@ public class FireworkBuilder {
      * @return EntityFireworksRocket
      */
     public EntityFireworksRocket build(Position pos, IChunk chunk) {
-        List<NbtMap> explosions = new ObjectArrayList<>();
+        ListTag<CompoundTag> explosions = new ListTag<>();
         this.explosions.forEach(explosions::add);
-        this.fireworkTag = this.fireworkTag.toBuilder().putList("Explosions", NbtType.COMPOUND, explosions).build();
-        NbtMap fireworks = NbtMap.builder().putCompound("Fireworks", this.fireworkTag).build();
+        this.fireworkTag.putList("Explosions", explosions);
+        CompoundTag fireworks = new CompoundTag().putCompound("Fireworks", this.fireworkTag);
         this.itemFirework.setNbt(fireworks);
 
-        final NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x, pos.y + 0.5, pos.z))
-                .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
+        final CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(pos.x))
+                        .add(new DoubleTag(pos.y + 0.5))
+                        .add(new DoubleTag(pos.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0.0))
+                        .add(new DoubleTag(0.0))
+                        .add(new DoubleTag(0.0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(0f))
+                        .add(new FloatTag(0f)))
                 .putBoolean("Riding", false)
-                .putCompound("FireworkItem", ItemHelper.write(this.itemFirework))
-                .build();
+                .putCompound("FireworkItem", ItemHelper.write(this.itemFirework));
         EntityFireworksRocket eFirework = new EntityFireworksRocket(chunk, nbt);
         if (this.rider != null) eFirework.mountEntity(this.rider, false);
         eFirework.setDataProperty(ActorDataTypes.DISPLAY_TILE_RUNTIME_ID, this.itemFirework.getNbt());

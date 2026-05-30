@@ -9,8 +9,8 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.structure.Structure;
 import cn.nukkit.level.structure.StructureAPI;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.base.Strings;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.structure.AnimationMode;
 import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
@@ -42,7 +42,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     private StructBlockInventory structBlockInventory;
 
 
-    public BlockEntityStructBlock(IChunk chunk, NbtMap nbt) {
+    public BlockEntityStructBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         structBlockInventory = new StructBlockInventory(this);
     }
@@ -50,88 +50,88 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     @Override
     public void loadNBT() {
         super.loadNBT();
-        final NbtMap nbtMap = getNbt();
-        if (this.nbt.containsKey(TAG_ANIMATION_MODE)) {
+        final CompoundTag nbtMap = getNbt();
+        if (this.nbt.contains(TAG_ANIMATION_MODE)) {
             this.animationMode = AnimationMode.from(nbtMap.getByte(TAG_ANIMATION_MODE));
         } else {
             this.animationMode = AnimationMode.from(0);
         }
-        if (this.nbt.containsKey(TAG_ANIMATION_SECONDS)) {
+        if (this.nbt.contains(TAG_ANIMATION_SECONDS)) {
             this.animationSeconds = nbtMap.getFloat(TAG_ANIMATION_SECONDS);
         } else {
             this.animationSeconds = 0f;
         }
-        if (this.nbt.containsKey(TAG_DATA)) {
+        if (this.nbt.contains(TAG_DATA)) {
             this.data = StructureBlockType.from(nbtMap.getByte(TAG_DATA));
         } else {
             this.data = StructureBlockType.from(1);
         }
-        if (this.nbt.containsKey(TAG_DATA_FIELD)) {
+        if (this.nbt.contains(TAG_DATA_FIELD)) {
             this.dataField = nbtMap.getString(TAG_DATA_FIELD);
         } else {
             this.dataField = "";
         }
-        if (this.nbt.containsKey(TAG_IGNORE_ENTITIES)) {
+        if (this.nbt.contains(TAG_IGNORE_ENTITIES)) {
             this.ignoreEntities = nbtMap.getBoolean(TAG_IGNORE_ENTITIES);
         } else {
             this.ignoreEntities = false;
         }
-        if (this.nbt.containsKey(TAG_INCLUDE_PLAYERS)) {
+        if (this.nbt.contains(TAG_INCLUDE_PLAYERS)) {
             this.includePlayers = nbtMap.getBoolean(TAG_INCLUDE_PLAYERS);
         } else {
             this.includePlayers = false;
         }
-        if (this.nbt.containsKey(TAG_INTEGRITY)) {
+        if (this.nbt.contains(TAG_INTEGRITY)) {
             this.integrity = nbtMap.getFloat(TAG_INTEGRITY);
         } else {
             this.integrity = 100f;
         }
-        if (this.nbt.containsKey(TAG_IS_POWERED)) {
+        if (this.nbt.contains(TAG_IS_POWERED)) {
             this.isPowered = nbtMap.getBoolean(TAG_IS_POWERED);
         } else {
             this.isPowered = false;
         }
-        if (this.nbt.containsKey(TAG_MIRROR)) {
+        if (this.nbt.contains(TAG_MIRROR)) {
             this.mirror = Mirror.from(nbtMap.getByte(TAG_MIRROR));
         } else {
             this.mirror = Mirror.from(0);
         }
-        if (this.nbt.containsKey(TAG_REDSTONE_SAVEMODE)) {
+        if (this.nbt.contains(TAG_REDSTONE_SAVEMODE)) {
             this.redstoneSaveMode = StructureRedstoneSaveMode.from(nbtMap.getByte(TAG_REDSTONE_SAVEMODE));
         } else {
             this.redstoneSaveMode = StructureRedstoneSaveMode.from(0);
         }
-        if (this.nbt.containsKey(TAG_REMOVE_BLOCKS)) {
+        if (this.nbt.contains(TAG_REMOVE_BLOCKS)) {
             this.removeBlocks = nbtMap.getBoolean(TAG_REMOVE_BLOCKS);
         } else {
             this.removeBlocks = false;
         }
-        if (this.nbt.containsKey(TAG_ROTATION)) {
+        if (this.nbt.contains(TAG_ROTATION)) {
             this.rotation = Rotation.from(nbtMap.getByte(TAG_ROTATION));
         } else {
             this.rotation = Rotation.from(0);
         }
-        if (this.nbt.containsKey(TAG_SEED)) {
+        if (this.nbt.contains(TAG_SEED)) {
             this.seed = nbtMap.getLong(TAG_SEED);
         } else {
             this.seed = 0L;
         }
-        if (this.nbt.containsKey(TAG_SHOW_BOUNDING_BOX)) {
+        if (this.nbt.contains(TAG_SHOW_BOUNDING_BOX)) {
             this.showBoundingBox = nbtMap.getBoolean(TAG_SHOW_BOUNDING_BOX);
         } else {
             this.showBoundingBox = true;
         }
-        if (this.nbt.containsKey(TAG_STRUCTURE_NAME)) {
+        if (this.nbt.contains(TAG_STRUCTURE_NAME)) {
             this.structureName = nbtMap.getString(TAG_STRUCTURE_NAME);
         } else {
             this.structureName = "";
         }
-        if (this.nbt.containsKey(TAG_X_STRUCTURE_OFFSET) && this.nbt.containsKey(TAG_Y_STRUCTURE_OFFSET) && this.nbt.containsKey(TAG_Z_STRUCTURE_OFFSET)) {
+        if (this.nbt.contains(TAG_X_STRUCTURE_OFFSET) && this.nbt.contains(TAG_Y_STRUCTURE_OFFSET) && this.nbt.contains(TAG_Z_STRUCTURE_OFFSET)) {
             this.offset = new BlockVector3(nbtMap.getInt(TAG_X_STRUCTURE_OFFSET), nbtMap.getInt(TAG_Y_STRUCTURE_OFFSET), nbtMap.getInt(TAG_Z_STRUCTURE_OFFSET));
         } else {
             this.offset = new BlockVector3(0, -1, 0);
         }
-        if (this.nbt.containsKey(TAG_X_STRUCTURE_SIZE) && this.nbt.containsKey(TAG_Y_STRUCTURE_SIZE) && this.nbt.containsKey(TAG_Z_STRUCTURE_SIZE)) {
+        if (this.nbt.contains(TAG_X_STRUCTURE_SIZE) && this.nbt.contains(TAG_Y_STRUCTURE_SIZE) && this.nbt.contains(TAG_Z_STRUCTURE_SIZE)) {
             this.size = new BlockVector3(nbtMap.getInt(TAG_X_STRUCTURE_SIZE), nbtMap.getInt(TAG_Y_STRUCTURE_SIZE), nbtMap.getInt(TAG_Z_STRUCTURE_SIZE));
         } else {
             this.size = new BlockVector3(5, 5, 5);
@@ -139,8 +139,8 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putByte(TAG_ANIMATION_MODE, (byte) this.animationMode.ordinal())
                 .putFloat(TAG_ANIMATION_SECONDS, this.animationSeconds)
                 .putInt(TAG_DATA, this.data.ordinal())
@@ -161,8 +161,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
                 .putInt(TAG_Z_STRUCTURE_OFFSET, offset.z)
                 .putInt(TAG_X_STRUCTURE_SIZE, size.x)
                 .putInt(TAG_Y_STRUCTURE_SIZE, size.y)
-                .putInt(TAG_Z_STRUCTURE_SIZE, size.z)
-                .build();
+                .putInt(TAG_Z_STRUCTURE_SIZE, size.z);
     }
 
     @Override
@@ -205,7 +204,7 @@ public class BlockEntityStructBlock extends BlockEntitySpawnable implements IStr
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey(TAG_CUSTOM_NAME);
+        return this.nbt.contains(TAG_CUSTOM_NAME);
     }
 
     @Override

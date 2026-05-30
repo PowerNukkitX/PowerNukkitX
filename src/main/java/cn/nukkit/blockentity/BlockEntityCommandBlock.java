@@ -24,14 +24,14 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Strings;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -60,7 +60,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected int currentTick;
     protected CommandBlockInventory inventory;
 
-    public BlockEntityCommandBlock(IChunk chunk, NbtMap nbt) {
+    public BlockEntityCommandBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         inventory = new CommandBlockInventory(this);
     }
@@ -79,93 +79,95 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         this.perm = new PermissibleBase(this);
         this.currentTick = 0;
 
-        if (this.nbt.containsKey(TAG_POWERED)) {
+        if (this.nbt.contains(TAG_POWERED)) {
             this.powered = this.getNbt().getBoolean(TAG_POWERED);
         } else {
             this.powered = false;
         }
 
-        if (this.nbt.containsKey(TAG_CONDITIONAL_MODE)) {
+        if (this.nbt.contains(TAG_CONDITIONAL_MODE)) {
             this.conditionalMode = this.getNbt().getBoolean(TAG_CONDITIONAL_MODE);
         } else {
             this.conditionalMode = false;
         }
 
-        final NbtMap nbtMap = getNbt();
+        final CompoundTag nbtMap = getNbt();
 
-        if (this.nbt.containsKey(TAG_AUTO)) {
+        if (this.nbt.contains(TAG_AUTO)) {
             this.auto = nbtMap.getBoolean(TAG_AUTO);
         } else {
             this.auto = false;
         }
 
-        if (this.nbt.containsKey(TAG_COMMAND)) {
+        if (this.nbt.contains(TAG_COMMAND)) {
             setCommand(nbtMap.getString(TAG_COMMAND));
         } else {
             setCommand("");
         }
 
-        if (this.nbt.containsKey(TAG_LAST_EXECUTION)) {
+        if (this.nbt.contains(TAG_LAST_EXECUTION)) {
             this.lastExecution = nbtMap.getLong(TAG_LAST_EXECUTION);
         } else {
             this.lastExecution = 0;
         }
 
-        if (this.nbt.containsKey(TAG_TRACK_OUTPUT)) {
+        if (this.nbt.contains(TAG_TRACK_OUTPUT)) {
             this.trackOutput = nbtMap.getBoolean(TAG_TRACK_OUTPUT);
         } else {
             this.trackOutput = true;
         }
 
-        if (this.nbt.containsKey(TAG_LAST_OUTPUT)) {
+        if (this.nbt.contains(TAG_LAST_OUTPUT)) {
             this.lastOutput = nbtMap.getString(TAG_LAST_OUTPUT);
         } else {
             this.lastOutput = null;
         }
 
-        if (this.nbt.containsKey(TAG_LAST_OUTPUT_PARAMS)) {
-            this.lastOutputParams = nbtMap.getList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING);
+        if (this.nbt.containsList(TAG_LAST_OUTPUT_PARAMS)) {
+            this.lastOutputParams = nbtMap.getList(TAG_LAST_OUTPUT_PARAMS, StringTag.class).getAll().stream()
+                    .map(StringTag::parseValue)
+                    .toList();
         } else {
             this.lastOutputParams = new ObjectArrayList<>();
         }
 
-        if (this.nbt.containsKey(TAG_LP_COMMAND_MODE)) {
+        if (this.nbt.contains(TAG_LP_COMMAND_MODE)) {
             this.lastOutputCommandMode = nbtMap.getInt(TAG_LP_COMMAND_MODE);
         } else {
             this.lastOutputCommandMode = 0;
         }
 
-        if (this.nbt.containsKey(TAG_LP_CONDIONAL_MODE)) {
+        if (this.nbt.contains(TAG_LP_CONDIONAL_MODE)) {
             this.lastOutputCondionalMode = nbtMap.getBoolean(TAG_LP_CONDIONAL_MODE);
         } else {
             this.lastOutputCondionalMode = true;
         }
 
-        if (this.nbt.containsKey(TAG_LP_REDSTONE_MODE)) {
+        if (this.nbt.contains(TAG_LP_REDSTONE_MODE)) {
             this.lastOutputRedstoneMode = nbtMap.getBoolean(TAG_LP_REDSTONE_MODE);
         } else {
             this.lastOutputRedstoneMode = true;
         }
 
-        if (this.nbt.containsKey(TAG_SUCCESS_COUNT)) {
+        if (this.nbt.contains(TAG_SUCCESS_COUNT)) {
             this.successCount = nbtMap.getInt(TAG_SUCCESS_COUNT);
         } else {
             this.successCount = 0;
         }
 
-        if (this.nbt.containsKey(TAG_CONDITION_MET)) {
+        if (this.nbt.contains(TAG_CONDITION_MET)) {
             this.conditionMet = nbtMap.getBoolean(TAG_CONDITION_MET);
         } else {
             this.conditionMet = false;
         }
 
-        if (this.nbt.containsKey(TAG_TICK_DELAY)) {
+        if (this.nbt.contains(TAG_TICK_DELAY)) {
             this.tickDelay = nbtMap.getInt(TAG_TICK_DELAY);
         } else {
             this.tickDelay = 0;
         }
 
-        if (this.nbt.containsKey(TAG_EXECUTE_ON_FIRST_TICK)) {
+        if (this.nbt.contains(TAG_EXECUTE_ON_FIRST_TICK)) {
             this.executingOnFirstTick = nbtMap.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
         } else {
             this.executingOnFirstTick = false;
@@ -187,7 +189,11 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             this.nbt.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            this.nbt.putList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING, this.lastOutputParams);
+            ListTag<StringTag> params = new ListTag<>();
+            for (String param : this.lastOutputParams) {
+                params.add(new StringTag(param));
+            }
+            this.nbt.putList(TAG_LAST_OUTPUT_PARAMS, params);
         }
         this.nbt.putInt(TAG_LP_COMMAND_MODE, this.lastOutputCommandMode)
                 .putBoolean(TAG_LP_CONDIONAL_MODE, this.lastOutputCondionalMode)
@@ -200,9 +206,8 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder nbt = super.getSpawnCompound()
-                .toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag nbt = super.getSpawnCompound()
                 .putBoolean(TAG_CONDITIONAL_MODE, this.conditionalMode)
                 .putBoolean(TAG_AUTO, this.auto)
                 .putLong(TAG_LAST_EXECUTION, this.lastExecution)
@@ -222,12 +227,16 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
             nbt.putString(TAG_LAST_OUTPUT, this.lastOutput);
         }
         if (this.lastOutputParams != null) {
-            nbt.putList(TAG_LAST_OUTPUT_PARAMS, NbtType.STRING, this.lastOutputParams);
+            ListTag<StringTag> params = new ListTag<>();
+            for (String param : this.lastOutputParams) {
+                params.add(new StringTag(param));
+            }
+            nbt.putList(TAG_LAST_OUTPUT_PARAMS, params);
         }
         if (this.hasName()) {
             nbt.putString(TAG_CUSTOM_NAME, this.getName());
         }
-        return nbt.build();
+        return nbt;
     }
 
     @Override
@@ -244,7 +253,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey(TAG_CUSTOM_NAME);
+        return this.nbt.contains(TAG_CUSTOM_NAME);
     }
 
     @Override

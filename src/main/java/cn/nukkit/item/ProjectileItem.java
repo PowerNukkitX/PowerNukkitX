@@ -5,11 +5,11 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
-
-import java.util.Arrays;
 
 /**
  * @author CreeperFace
@@ -26,19 +26,18 @@ public abstract class ProjectileItem extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                player.x,
-                                player.y + player.getEyeHeight() - 0.30000000149011612,
-                                player.z
-                        )
-                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
-                                directionVector.x,
-                                directionVector.y,
-                                directionVector.z
-                        )
-                ).putList("Rotation", NbtType.FLOAT, Arrays.asList((float) player.yaw, (float) player.pitch)
-                ).build();
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(player.x))
+                        .add(new DoubleTag(player.y + player.getEyeHeight() - 0.30000000149011612))
+                        .add(new DoubleTag(player.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(directionVector.x))
+                        .add(new DoubleTag(directionVector.y))
+                        .add(new DoubleTag(directionVector.z)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) player.yaw))
+                        .add(new FloatTag((float) player.pitch)));
 
         this.correctNBT(nbt);
 
@@ -79,7 +78,7 @@ public abstract class ProjectileItem extends Item {
         return projectile;
     }
 
-    protected void correctNBT(NbtMap nbt) {
+    protected void correctNBT(CompoundTag nbt) {
 
     }
 }

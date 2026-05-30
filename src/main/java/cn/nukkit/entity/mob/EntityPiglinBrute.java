@@ -28,7 +28,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +50,7 @@ public class EntityPiglinBrute extends EntityPiglin implements EntityWalkable {
         return PIGLIN_BRUTE;
     }
 
-    public EntityPiglinBrute(IChunk chunk, NbtMap nbt) {
+    public EntityPiglinBrute(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

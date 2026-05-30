@@ -15,16 +15,14 @@ import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.ItemLavaBucket;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.recipe.SmeltingRecipe;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -40,7 +38,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     protected float storedXP;
     private int crackledTime;
 
-    public BlockEntityFurnace(IChunk chunk, NbtMap nbt) {
+    public BlockEntityFurnace(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -61,47 +59,47 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         super.loadNBT();
         this.inventory = createInventory();
 
-        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List<?>)) {
-            this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!this.nbt.containsList("Items", Tag.TAG_Compound)) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
         for (int i = 0; i < this.getSize(); i++) {
             this.inventory.setItem(i, this.getItem(i));
         }
 
-        final NbtMap nbtMap = getNbt();
+        final CompoundTag nbtMap = getNbt();
 
-        if (!this.nbt.containsKey("BurnTime") || nbtMap.getShort("BurnTime") < 0) {
+        if (!this.nbt.contains("BurnTime") || nbtMap.getShort("BurnTime") < 0) {
             burnTime = 0;
         } else {
             burnTime = nbtMap.getShort("BurnTime");
         }
 
-        if (!this.nbt.containsKey("CookTime") || nbtMap.getShort("CookTime") < 0 || (nbtMap.getShort("BurnTime") == 0 && nbtMap.getShort("CookTime") > 0)) {
+        if (!this.nbt.contains("CookTime") || nbtMap.getShort("CookTime") < 0 || (nbtMap.getShort("BurnTime") == 0 && nbtMap.getShort("CookTime") > 0)) {
             cookTime = 0;
         } else {
             cookTime = nbtMap.getShort("CookTime");
         }
 
-        if (!this.nbt.containsKey("BurnDuration") || nbtMap.getShort("BurnDuration") < 0) {
+        if (!this.nbt.contains("BurnDuration") || nbtMap.getShort("BurnDuration") < 0) {
             burnDuration = 0;
         } else {
             burnDuration = nbtMap.getShort("BurnDuration");
         }
 
-        if (!this.nbt.containsKey("MaxTime")) {
+        if (!this.nbt.contains("MaxTime")) {
             maxTime = burnTime;
             burnDuration = 0;
         } else {
             maxTime = nbtMap.getShort("MaxTime");
         }
 
-        if (this.nbt.containsKey("BurnTicks")) {
+        if (this.nbt.contains("BurnTicks")) {
             burnDuration = nbtMap.getShort("BurnTicks");
             this.nbt.remove("BurnTicks");
         }
 
-        if (this.nbt.containsKey("StoredXpInt")) {
+        if (this.nbt.contains("StoredXpInt")) {
             storedXP = nbtMap.getShort("StoredXpInt");
         } else {
             storedXP = 0;
@@ -123,7 +121,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
@@ -162,7 +160,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound))
                 .putShort("CookTime", (short) cookTime)
                 .putShort("BurnTime", (short) burnTime)
                 .putShort("BurnDuration", (short) burnDuration)
@@ -176,7 +174,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     @Override
     public boolean isBlockEntityValid() {
         String blockID = getBlock().getId();
-        return blockID == getIdleBlockId() || blockID == getBurningBlockId();
+        return blockID.equals(getIdleBlockId()) || blockID.equals(getBurningBlockId());
     }
 
     public int getSize() {
@@ -184,7 +182,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -199,7 +197,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         if (i < 0) {
             return Item.AIR;
         } else {
-            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -207,9 +205,9 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        NbtMap d = ItemHelper.write(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.isNull()) {
             if (i >= 0) {
@@ -220,7 +218,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
         } else {
             items.add(i, d);
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, items);
+        this.nbt.putList("Items", items);
     }
 
     @Override
@@ -363,7 +361,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
 
                 pk = new ContainerSetDataPacket();
                 pk.setContainerID((byte) windowId);
-                pk.setId(ContainerSetDataPacket.FURNACE_LIT_DURATION);
+                pk.setId(ContainerSetDataPacket.FURNACE_LIT_TIME);
                 pk.setValue(burnDuration);
                 player.sendPacket(pk);
             }
@@ -373,16 +371,15 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements RecipeIn
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMap c = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putShort("BurnDuration", (short) burnDuration)
                 .putShort("BurnTime", (short) burnTime)
                 .putShort("CookTime", (short) cookTime)
-                .putShort("StoredXpInt", (short) this.storedXP)
-                .build();
+                .putShort("StoredXpInt", (short) this.storedXP);
         if (this.hasName()) {
-            c.put("CustomName", this.nbt.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName").copy());
         }
         return c;
     }

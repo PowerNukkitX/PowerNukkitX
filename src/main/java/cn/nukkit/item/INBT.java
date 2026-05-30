@@ -2,32 +2,29 @@ package cn.nukkit.item;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.inventory.Inventory;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 public interface INBT {
 
     String START_TIME_KEY = "StartTime";
 
-    NbtMap getNbt();
+    CompoundTag getNbt();
 
-    Item setNbt(NbtMapBuilder builder);
+    Item setNbt(@Nullable CompoundTag tag);
 
-    Item setNbt(@Nullable NbtMap tag);
-
-    boolean hasCompoundTag();
+    boolean hasNbt();
 
     default void onChange(Inventory inventory) {
-        NbtMapBuilder tag;
-        if (!this.hasCompoundTag()) {
-            tag = NbtMap.builder();
-            setNbt(tag.build());
+        CompoundTag tag;
+        if (!this.hasNbt()) {
+            tag = new CompoundTag();
+            setNbt(tag);
         } else {
-            tag = this.getNbt().toBuilder();
+            tag = this.getNbt();
         }
-        if (!tag.containsKey(START_TIME_KEY)) tag.putLong(START_TIME_KEY, -1);
-        if (Nukkit.START_TIME != tag.build().getLong(START_TIME_KEY)) {
+        if (!tag.contains(START_TIME_KEY)) tag.putLong(START_TIME_KEY, -1);
+        if (Nukkit.START_TIME != tag.getLong(START_TIME_KEY)) {
             tag.putLong(START_TIME_KEY, Nukkit.START_TIME);
         }
         this.setNbt(tag);

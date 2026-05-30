@@ -4,6 +4,7 @@ import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
@@ -33,7 +34,7 @@ public class EntityTropicalfish extends EntityFish {
     private int mark_variant;
     private int color2;
 
-    public EntityTropicalfish(IChunk chunk, NbtMap nbt) {
+    public EntityTropicalfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -70,22 +71,22 @@ public class EntityTropicalfish extends EntityFish {
     @Override
     public void initEntity() {
         super.initEntity();
-        if (this.nbt.containsKey("Variant")) {
+        if (this.nbt.contains("Variant")) {
             this.variant = this.getNbt().getInt("Variant");
         } else {
             this.variant = getRandomVariant();
         }
-        if (this.nbt.containsKey("Mark_Variant")) {
+        if (this.nbt.contains("Mark_Variant")) {
             this.mark_variant = this.getNbt().getInt("Mark_Variant");
         } else {
             this.mark_variant = getRandomMarkVariant();
         }
-        if (!this.nbt.containsKey("Color")) {
+        if (!this.nbt.contains("Color")) {
             this.setColor(getRandomColor());
         } else {
             this.setColor(this.getNbt().getByte("Color"));
         }
-        if (this.nbt.containsKey("Color2")) {
+        if (this.nbt.contains("Color2")) {
             this.color2 = this.getNbt().getInt("Color2");
         } else {
             this.color2 = getRandomColor2();

@@ -5,13 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossEventUpdateType;
 import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 
 public abstract class EntityBoss extends EntityMob {
 
-    public EntityBoss(IChunk chunk, NbtMap nbt) {
+    public EntityBoss(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

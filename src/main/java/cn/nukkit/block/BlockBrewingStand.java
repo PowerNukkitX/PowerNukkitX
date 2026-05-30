@@ -8,10 +8,10 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import org.cloudburstmc.protocol.bedrock.packet.ContainerSetDataPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,16 +71,18 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
 
-        NbtMapBuilder nbt = NbtMap.builder();
+        CompoundTag nbt = new CompoundTag();
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -101,9 +103,9 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
                 }
             }
 
-            if (brewing.getNbt().containsKey("Lock")
-                    && brewing.getNbt().get("Lock") instanceof String tag
-                    && !tag.equals(item.getCustomName())) {
+            if (brewing.getNbt().contains("Lock")
+                    && brewing.getNbt().get("Lock") instanceof StringTag
+                    && !brewing.getNbt().getString("Lock").equals(item.getCustomName())) {
                 return false;
             }
 
@@ -193,16 +195,14 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
         return this.createBrewingStand(null);
     }
 
-    protected BlockEntityBrewingStand createBrewingStand(NbtMap additions) {
-        NbtMap nbt = NbtMap.builder()
-                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
-                .putString("id", BlockEntity.BREWING_STAND)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .build();
-        nbt.putAll(additions);
+    protected BlockEntityBrewingStand createBrewingStand(CompoundTag additions) {
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
+        if (additions != null) {
+            for (var entry : additions.getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
+        }
 
-        return (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+        return createBlockEntity(nbt);
     }
 }

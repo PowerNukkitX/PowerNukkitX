@@ -6,6 +6,7 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.PotionSplashParticle;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
@@ -23,11 +24,11 @@ public class EntityXpBottle extends EntityProjectile {
     }
 
 
-    public EntityXpBottle(IChunk chunk, NbtMap nbt) {
+    public EntityXpBottle(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityXpBottle(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityXpBottle(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 

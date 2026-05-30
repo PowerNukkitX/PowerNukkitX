@@ -35,9 +35,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,11 +47,11 @@ import java.util.Set;
 
 import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 
-/**
- * @author PikyCZ
- */
+    /**
+     * @author PikyCZ
+     */
 public class EntityEvocationIllager extends EntityIllager implements EntityWalkable {
-    public EntityEvocationIllager(IChunk chunk, NbtMap nbt) {
+    public EntityEvocationIllager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

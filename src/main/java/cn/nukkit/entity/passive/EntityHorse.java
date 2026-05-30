@@ -45,9 +45,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,7 +67,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         return HORSE;
     }
 
-    public EntityHorse(IChunk chunk, NbtMap nbt) {
+    public EntityHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -320,8 +319,8 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
 
         // Load items
         ensureInventories();
-        if (nbt.containsKey("Inventory")) {
-            entityInventory.load(getNbt().getList("Inventory", NbtType.COMPOUND));
+        if (nbt.containsList("Inventory")) {
+            entityInventory.load(getNbt().getList("Inventory", CompoundTag.class).getAll());
         }
 
         if (!hasVariant()) {
@@ -343,7 +342,7 @@ public class EntityHorse extends EntityAnimal implements EntityWalkable, EntityV
         super.saveNBT();
 
         var inv = getInventory();
-        this.nbt.putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
+        this.nbt.putList("Inventory", inv.save(isChested()));
     }
 
     @Override

@@ -5,18 +5,15 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
-
-import java.util.List;
-
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected ContainerInventory inventory;
 
 
-    public BlockEntitySpawnableContainer(IChunk chunk, NbtMap nbt) {
+    public BlockEntitySpawnableContainer(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -24,12 +21,12 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     public void loadNBT() {
         super.loadNBT();
         this.inventory = requireContainerInventory();
-        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List<?>)) {
-            this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!this.nbt.containsList("Items")) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
-        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
-        for (NbtMap compound : list) {
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
+        for (CompoundTag compound : list.getAll()) {
             Item item = ItemHelper.read(compound);
             this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
@@ -54,14 +51,14 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.inventory.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> list = getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -76,7 +73,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         if (i < 0) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            NbtMap data = getNbt().getList("Items", NbtType.COMPOUND).get(i);
+            CompoundTag data = getNbt().getList("Items", CompoundTag.class).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -84,10 +81,10 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        NbtMap d = ItemHelper.write(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
 
         // If item is air or count less than 0, remove the item from the "Items" list
-        final List<NbtMap> items = new ObjectArrayList<>(getNbt().getList("Items", NbtType.COMPOUND));
+        final ListTag<CompoundTag> items = getNbt().getList("Items", CompoundTag.class);
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 items.remove(i);
@@ -99,7 +96,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
             // If it is more than i, then it is an update on a inventorySlot, so we are going to overwrite the item in the list
             items.add(i, d);
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, items);
+        this.nbt.putList("Items", items);
     }
 
     /**

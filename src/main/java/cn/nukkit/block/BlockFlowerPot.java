@@ -8,9 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.NbtHelper;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -74,9 +72,11 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             return false;
         }
 
-        final NbtMap nbt = NbtMap.EMPTY;
+        CompoundTag nbt = new CompoundTag();
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var e : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(e.getKey(), e.getValue());
+            }
         }
 
         return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
@@ -85,7 +85,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     @NotNull
     public Item getFlower() {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
-        if (blockEntity == null || !blockEntity.getNbt().containsKey("PlantBlock")) {
+        if (blockEntity == null || !blockEntity.getNbt().containsCompound("PlantBlock")) {
             return Item.AIR;
         }
         var plantBlockTag = blockEntity.getNbt().getCompound("PlantBlock");
@@ -102,7 +102,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
         if (item.getBlock() instanceof FlowerPotBlock potBlock && potBlock.isPotBlockState()) {
             BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-            blockEntity.setNbt(blockEntity.getNbt().toBuilder().putCompound("PlantBlock", potBlock.getPlantBlockTag()));
+            blockEntity.getNbt().putCompound("PlantBlock", potBlock.getPlantBlockTag());
 
             setPropertyValue(CommonBlockProperties.UPDATE_BIT, true);
             getLevel().setBlock(this, this, true);
@@ -115,9 +115,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
 
     public void removeFlower() {
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
-        final NbtMapBuilder nbtMap = blockEntity.getNbt().toBuilder();
-        nbtMap.remove("PlantBlock");
-        blockEntity.setNbt(nbtMap);
+        blockEntity.getNbt().remove("PlantBlock");
 
         setPropertyValue(CommonBlockProperties.UPDATE_BIT, false);
         getLevel().setBlock(this, this, true);
@@ -127,7 +125,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
     public boolean hasFlower() {
         var blockEntity = getBlockEntity();
         if (blockEntity == null) return false;
-        return blockEntity.getNbt().containsKey("PlantBlock");
+        return blockEntity.getNbt().containsCompound("PlantBlock");
     }
 
     @Override
@@ -254,13 +252,12 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
          * @return The tag of the block in the flowerpot's NBT file
          */
 
-        default NbtMap getPlantBlockTag() {
+        default CompoundTag getPlantBlockTag() {
             var block = (Block) this;
-            var tag = block.getBlockState().getBlockStateTag();
+            var tag = CompoundTag.fromNetwork(block.getBlockState().getBlockStateTag());
             var item = block.toItem();
-            return tag.toBuilder().putString("itemId", item.getId())
-                    .putInt("itemMeta", item.getDamage())
-                    .build(); // only exists in PNX
+            return tag.putString("itemId", item.getId())
+                    .putInt("itemMeta", item.getDamage()); // only exists in PNX
         }
 
         /**

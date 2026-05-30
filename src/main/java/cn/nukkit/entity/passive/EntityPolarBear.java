@@ -22,6 +22,7 @@ import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,7 @@ public class EntityPolarBear extends EntityAnimal implements EntityWalkable {
         return POLAR_BEAR;
     }
 
-    public EntityPolarBear(IChunk chunk, NbtMap nbt) {
+    public EntityPolarBear(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

@@ -5,13 +5,14 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
 
 public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
-    public BlockEntityDecoratedPot(IChunk chunk, NbtMap nbt) {
+    public BlockEntityDecoratedPot(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -23,16 +24,15 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsKey("Item")) {
+        if (!nbt.contains("Item")) {
             this.nbt.putCompound("Item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
-                .putList("sherds", NbtType.STRING, getNbt().getList("sherds", NbtType.STRING))
-                .build();
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
+                .putList("sherds", (ListTag<StringTag>) getNbt().getList("sherds", StringTag.class).copy());
     }
 
     public Item getItem() {

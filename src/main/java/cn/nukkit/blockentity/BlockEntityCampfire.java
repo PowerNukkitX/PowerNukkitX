@@ -10,11 +10,9 @@ import cn.nukkit.inventory.CampfireInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,7 +25,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
     private boolean[] keepItem;
 
 
-    public BlockEntityCampfire(IChunk chunk, NbtMap nbt) {
+    public BlockEntityCampfire(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -44,12 +42,12 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         this.burnTime = new int[4];
         this.recipes = new CampfireRecipe[4];
         this.keepItem = new boolean[4];
-        final NbtMap nbtMap = getNbt();
+        final CompoundTag nbtMap = getNbt();
         for (int i = 1; i <= burnTime.length; i++) {
             burnTime[i - 1] = nbtMap.getInt("ItemTime" + i);
             keepItem[i - 1] = nbtMap.getBoolean("KeepItem" + 1);
 
-            if (this.nbt.containsKey("Item" + i) && this.nbt.get("Item" + i) instanceof NbtMap itemNBT) {
+            if (this.nbt.contains("Item" + i) && this.nbt.get("Item" + i) instanceof CompoundTag itemNBT) {
                 inventory.setItem(i - 1, ItemHelper.read(itemNBT));
             }
         }
@@ -177,12 +175,12 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
 
     @Override
     public boolean hasName() {
-        return nbt.containsKey("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder builder = super.getSpawnCompound().toBuilder();
+    public CompoundTag getSpawnCompound() {
+        CompoundTag builder = super.getSpawnCompound();
 
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
@@ -193,7 +191,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             }
         }
 
-        return builder.build();
+        return builder;
     }
 
     @Override
@@ -209,7 +207,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
         if (index < 0 || index >= getSize()) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            NbtMap data = this.getNbt().getCompound("Item" + (index + 1));
+            CompoundTag data = this.getNbt().getCompound("Item" + (index + 1));
             return ItemHelper.read(data);
         }
     }
@@ -219,7 +217,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements BlockEn
             return;
         }
 
-        NbtMap nbt = ItemHelper.write(item, null);
+        CompoundTag nbt = ItemHelper.write(item, null);
         this.nbt.putCompound("Item" + (index + 1), nbt);
     }
 

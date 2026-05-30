@@ -44,8 +44,8 @@ import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.InternalPlugin;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.payload.boss.BossBarColor;
@@ -72,7 +72,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         return ENDER_DRAGON;
     }
 
-    public EntityEnderDragon(IChunk chunk, NbtMap nbt) {
+    public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -115,7 +115,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         pk.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(200).setValue(200).toNetwork()
         );
-        pk.setActorData(this.getEntityDataMap());
+        pk.setActorData(this.getActorDataMap());
         pk.setTargetActorID(this.getId());
         pk.setTargetRuntimeID(this.getId());
         pk.setActorType("minecraft:ender_dragon");
@@ -329,7 +329,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     }
 
     public boolean isRevived() {
-        if (this.nbt.containsKey("Revived")) {
+        if (this.nbt.contains("Revived")) {
             return this.getNbt().getBoolean("Revived");
         } else return false;
     }

@@ -7,12 +7,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
@@ -21,7 +20,6 @@ import org.cloudburstmc.protocol.bedrock.packet.AddActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Set;
 
 
@@ -34,7 +32,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     protected ChestBoatInventory inventory;
 
-    public EntityChestBoat(IChunk chunk, NbtMap nbt) {
+    public EntityChestBoat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -83,7 +81,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
         packet.setPosition(Vector3f.from(this.x, this.y + this.getBaseOffset(), this.z));
         packet.setVelocity(Vector3f.from(this.motionX, this.motionY, this.motionZ));
         packet.setRotation(Vector2f.from(this.pitch, this.yaw));
-        packet.setActorData(this.entityDataMap);
+        packet.setActorData(this.actorDataMap);
 
         for (int i = 0; i < this.passengers.size(); i++) {
             packet.getActorLinks().add(
@@ -114,24 +112,24 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
         this.inventory = new ChestBoatInventory(this);
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("Items") && nbtMap.get("Items") instanceof List<?>) {
-            List<NbtMap> inventoryList = nbtMap.getList("Items", NbtType.COMPOUND);
-            for (NbtMap item : inventoryList) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.containsList("Items")) {
+            ListTag<CompoundTag> inventoryList = nbtMap.getList("Items", CompoundTag.class);
+            for (CompoundTag item : inventoryList.getAll()) {
                 this.inventory.setItem(item.getByte("Slot"), ItemHelper.read(item));
             }
         }
 
-        this.entityDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CHEST_BOAT.ordinal());
-        entityDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
-        entityDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
+        this.actorDataMap.put(ActorDataTypes.CONTAINER_TYPE, (byte) ContainerType.CHEST_BOAT.ordinal());
+        actorDataMap.put(ActorDataTypes.CONTAINER_SIZE, this.inventory.getSize());
+        actorDataMap.put(ActorDataTypes.CONTAINER_STRENGTH_MODIFIER, 0);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
 
-        final List<NbtMap> serializedItems = new ObjectArrayList<>();
+        final ListTag<CompoundTag> serializedItems = new ListTag<>();
         if (this.inventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.inventory.getItem(slot);
@@ -140,7 +138,7 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
                 }
             }
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, serializedItems);
+        this.nbt.putList("Items", serializedItems);
     }
 
     @Override

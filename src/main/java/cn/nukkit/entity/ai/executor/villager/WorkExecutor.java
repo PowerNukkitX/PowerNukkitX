@@ -11,12 +11,9 @@ import cn.nukkit.entity.passive.EntityVillagerV2;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.List;
 
 
 public class WorkExecutor extends NearbyFlatRandomRoamExecutor {
@@ -103,7 +100,7 @@ public class WorkExecutor extends NearbyFlatRandomRoamExecutor {
             if (entity.getMemoryStorage().get(CoreMemoryTypes.LAST_REFILL_SHIFT) != shift) {
                 this.stayTick = 100;
                 this.walkTick = 200;
-                villager.getRecipes().forEach(tag -> tag.toBuilder().putInt("uses", 0).build());
+                villager.getRecipes().forEach(tag -> tag.putInt("uses", 0));
                 entity.getMemoryStorage().put(CoreMemoryTypes.LAST_REFILL_SHIFT, shift);
             }
             if (stayTick < 100) setTarget(entity);

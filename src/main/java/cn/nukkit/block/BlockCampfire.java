@@ -28,10 +28,10 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.recipe.CampfireRecipe;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -127,10 +127,12 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
         this.level.setBlock(block, this, true, true);
         try {
-            NbtMap nbt = NbtMap.EMPTY;
+            CompoundTag nbt = new CompoundTag();
 
             if (item.hasCustomBlockData()) {
-                nbt.putAll(item.getCustomBlockData());
+                for (var entry : item.getCustomBlockData().getEntrySet()) {
+                    nbt.put(entry.getKey(), entry.getValue().copy());
+                }
             }
 
             createBlockEntity(nbt);

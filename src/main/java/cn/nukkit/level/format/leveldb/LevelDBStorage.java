@@ -4,16 +4,15 @@ import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.util.LevelDBKeyUtil;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.apache.logging.log4j.util.InternalApi;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.iq80.leveldb.impl.Iq80DBFactory;
-import cn.nukkit.level.util.LevelDBKeyUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -85,23 +84,28 @@ public final class LevelDBStorage {
         this.db.write(writeBatch, writeOptions);
     }
 
-    public NbtMap readWorldDynamicProperties() {
+    public CompoundTag readWorldDynamicProperties() {
         try {
             byte[] bytes = this.db.get(LevelDBKeyUtil.WORLD_DYNAMIC_PROPERTIES.getGlobalKey());
             if (bytes == null) return null;
-            return (NbtMap) NbtUtils.createReaderLE(new ByteArrayInputStream(bytes)).readTag();
+            try (var inputStream = new ByteArrayInputStream(bytes);
+                 var nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
+            }
         } catch (Exception e) {
             return null;
         }
     }
 
-    public void writeWorldDynamicProperties(NbtMap tag) {
+    public void writeWorldDynamicProperties(CompoundTag tag) {
         try (WriteBatch writeBatch = this.db.createWriteBatch()) {
             byte[] key = LevelDBKeyUtil.WORLD_DYNAMIC_PROPERTIES.getGlobalKey();
-            NbtMap safe = (tag == null) ? NbtMap.EMPTY : tag;
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            NbtUtils.createWriterLE(outputStream).writeTag(safe);
-            writeBatch.put(key, outputStream.toByteArray());
+            NbtMap safe = (tag == null) ? NbtMap.EMPTY : tag.toNetwork();
+            try (var outputStream = new ByteArrayOutputStream();
+                 var nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+                nbtOutputStream.writeTag(safe);
+                writeBatch.put(key, outputStream.toByteArray());
+            }
 
             WriteOptions writeOptions = new WriteOptions().sync(false);
             this.db.write(writeBatch, writeOptions);

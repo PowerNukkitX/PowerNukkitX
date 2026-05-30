@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntityConduit;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -69,7 +69,7 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
         }
 
         BlockEntityConduit conduit = BlockEntityHolder.setBlockAndCreateEntity(this, false, true,
-                NbtMap.builder().putBoolean("IsMovable", true).build());
+                new CompoundTag().putBoolean("IsMovable", true));
         if (conduit != null) {
             conduit.scheduleUpdate();
             return true;

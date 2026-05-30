@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
 import lombok.extern.slf4j.Slf4j;
@@ -94,10 +95,10 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
         }
         int resultExperience = recalculateResultExperience(inventory);
         Item result = firstItem.clone();
-        NbtMapBuilder tagBuilder = result.getNbt() == null ? NbtMap.builder() : result.getNbt().toBuilder();
-        tagBuilder.remove("ench");
-        tagBuilder.remove("custom_ench");
-        result.setCompoundTag(tagBuilder.build());
+        CompoundTag compoundTag = result.getNbt() == null ? new CompoundTag() : result.getNbt();
+        compoundTag.remove("ench");
+        compoundTag.remove("custom_ench");
+        result.setNbt(compoundTag);
 
         if (!secondItem.isNull() && firstItem.getMaxDurability() > 0) {
             int first = firstItem.getMaxDurability() - firstItem.getDamage();

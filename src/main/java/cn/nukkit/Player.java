@@ -28,6 +28,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.components.NameableComponent;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.entity.data.warden.WardenWarningData;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.entity.item.EntityItem;
@@ -90,6 +91,12 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
+import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.process.auth.ClientChainData;
 import cn.nukkit.network.process.pack.InternalPackManager;
 import cn.nukkit.permission.PermissibleBase;
@@ -139,12 +146,8 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
-import org.cloudburstmc.protocol.bedrock.data.Dimension;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -380,7 +383,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
     @UsedByReflection
     public Player(@NotNull BedrockServerSession session, @NotNull PlayerInfo info) {
-        super(null, NbtMap.builder().build());
+        super(null, new CompoundTag());
         this.info = info;
         this.session = session;
         this.perm = new PermissibleBase(this);
@@ -407,7 +410,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         buffer.putLong(this.uuid.getMostSignificantBits());
         buffer.putLong(this.uuid.getLeastSignificantBits());
         this.rawUUID = buffer.array();
-        this.setSkin(info.getSkin());
+        this.setSkin(new Skin(info.getSkin(), info.clientChainData.isTrustedSkin()));
         this.locatorBarColor = new Color(Utils.rand(0, 255), Utils.rand(0, 255), Utils.rand(0, 255));
         this.rotationUpdateThreshold = this.server.getSettings().playerSettings().rotationUpdateThreshold();
         this.movementDistanceThreshold = this.server.getSettings().playerSettings().movementDistanceThreshold();
@@ -655,11 +658,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void initEntity() {
         super.initEntity();
         Level level = null;
-        final NbtMap nbtMap = this.getNbt();
-        if (this.nbt.containsKey("SpawnLevel")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (this.nbt.contains("SpawnLevel")) {
             level = this.server.getLevelByName(nbtMap.getString("SpawnLevel"));
         } else level = Server.getInstance().getDefaultLevel();
-        if (this.nbt.containsKey("SpawnX") && this.nbt.containsKey("SpawnY") && this.nbt.containsKey("SpawnZ")) {
+        if (this.nbt.contains("SpawnX") && this.nbt.contains("SpawnY") && this.nbt.contains("SpawnZ")) {
             this.spawnPoint = new Position(nbtMap.getInt("SpawnX"), nbtMap.getInt("SpawnY"), nbtMap.getInt("SpawnZ"), level);
         } else {
             this.spawnPoint = level.getSafeSpawn();
@@ -671,7 +674,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.loggedIn = true;
 
         this.nbt.remove("SpawnBlockLevel");
-        if (this.nbt.containsKey("SpawnBlockPositionX") && this.nbt.containsKey("SpawnBlockPositionY") && this.nbt.containsKey("SpawnBlockPositionZ")) {
+        if (this.nbt.contains("SpawnBlockPositionX") && this.nbt.contains("SpawnBlockPositionY") && this.nbt.contains("SpawnBlockPositionZ")) {
             this.nbt.remove("SpawnBlockPositionX");
             this.nbt.remove("SpawnBlockPositionY");
             this.nbt.remove("SpawnBlockPositionZ");
@@ -1154,7 +1157,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Processing execution in LoginPacket
      */
-    protected void processLogin() {
+    public void processLogin() {
 
         if (this.hasPermission(Server.BROADCAST_CHANNEL_USERS)) {
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_USERS, this);
@@ -1170,7 +1173,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 break;
             }
         }
-        NbtMap nbt;
+        CompoundTag nbt;
         if (oldPlayer != null) {
             oldPlayer.saveNBT();
             nbt = oldPlayer.getNbt();
@@ -1189,13 +1192,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             return;
         }
 
-        final NbtMapBuilder builder = nbt.toBuilder();
-
         server.updateName(this.info);
 
         this.playedBefore = (nbt.getLong("lastPlayed") - nbt.getLong("firstPlayed")) > 1;
 
-        builder.putString("NameTag", this.getName()).build();
+
+        nbt.putString("NameTag", this.getName());
 
         int exp = nbt.getInt("EXP");
         int expLevel = nbt.getInt("expLevel");
@@ -1204,7 +1206,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.gamemode = nbt.getInt("playerGameType") & 0x03;
         if (this.server.getForceGamemode()) {
             this.gamemode = this.server.getGamemode();
-            builder.putInt("playerGameType", this.gamemode);
+            nbt.putInt("playerGameType", this.gamemode);
         }
 
         this.adventureSettings = new AdventureSettings(this);
@@ -1213,79 +1215,82 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         Level level;
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
             this.setLevel(this.server.getDefaultLevel());
-            builder.putString("Level", this.level.getName());
+            nbt.putString("Level", this.level.getName());
             Position spawnLocation = this.level.getSafeSpawn();
-            builder.putList("Pos", NbtType.DOUBLE, List.of(spawnLocation.x, spawnLocation.y, spawnLocation.z));
+            nbt.getList("Pos", DoubleTag.class)
+                    .add(new DoubleTag(spawnLocation.x))
+                    .add(new DoubleTag(spawnLocation.y))
+                    .add(new DoubleTag(spawnLocation.z));
         } else {
             this.setLevel(level);
         }
 
-        for (var e : nbt.getCompound("Achievements").entrySet()) {
-            if (!(e.getValue() instanceof Byte)) {
+        for (var e : nbt.getCompound("Achievements").getEntrySet()) {
+            if (!(e.getValue() instanceof ByteTag)) {
                 continue;
             }
 
-            if ((Byte) e.getValue() > 0) {
+            if (((ByteTag) e.getValue()).getData() > 0) {
                 this.achievements.add(e.getKey());
             }
         }
 
-        builder.putLong("lastPlayed", System.currentTimeMillis() / 1000);
+        nbt.putLong("lastPlayed", System.currentTimeMillis() / 1000);
 
-        final UUID uuid = getUniqueId();
-        builder.putLong("UUIDLeast", uuid.getLeastSignificantBits());
-        builder.putLong("UUIDMost", uuid.getMostSignificantBits());
+        UUID uuid = getUniqueId();
+        nbt.putLong("UUIDLeast", uuid.getLeastSignificantBits());
+        nbt.putLong("UUIDMost", uuid.getMostSignificantBits());
 
         if (this.server.getAutoSave()) {
             this.server.saveOfflinePlayerData(this.uuid, nbt, true);
         }
 
-        final List<Double> posList = nbt.getList("Pos", NbtType.DOUBLE);
+        ListTag<DoubleTag> posList = nbt.getList("Pos", DoubleTag.class);
 
-        super.init(this.level.getChunk(posList.get(0).intValue() >> 4, posList.get(2).intValue() >> 4, true), nbt);
+        super.init(this.level.getChunk((int) posList.get(0).data >> 4, (int) posList.get(2).data >> 4, true), nbt);
 
-        if (!this.nbt.containsKey("foodLevel")) {
+        if (!this.nbt.contains("foodLevel")) {
             this.nbt.putInt("foodLevel", 20);
         }
-        final NbtMap nbtMap = this.getNbt();
-        int foodLevel = nbtMap.getInt("foodLevel");
-        if (!this.nbt.containsKey("foodSaturationLevel")) {
+        int foodLevel = this.nbt.getInt("foodLevel");
+        if (!this.nbt.contains("foodSaturationLevel")) {
             this.nbt.putFloat("foodSaturationLevel", 20);
         }
-        float foodSaturationLevel = nbtMap.getFloat("foodSaturationLevel");
+        float foodSaturationLevel = this.nbt.getFloat("foodSaturationLevel");
         this.foodData = new PlayerFood(this, foodLevel, foodSaturationLevel);
 
         if (this.isSpectator()) {
             this.onGround = false;
         }
 
-        if (this.nbt.containsKey("enchSeed")) {
-            this.enchSeed = nbtMap.getInt("enchSeed");
+        if (this.nbt.contains("enchSeed")) {
+            this.enchSeed = this.nbt.getInt("enchSeed");
         } else {
             this.regenerateEnchantmentSeed();
             this.nbt.putInt("enchSeed", this.enchSeed);
         }
 
-        if (!this.nbt.containsKey("TimeSinceRest")) {
+        if (!this.nbt.contains("TimeSinceRest")) {
             this.nbt.putInt("TimeSinceRest", 0);
         }
-        this.timeSinceRest = nbtMap.getInt("TimeSinceRest");
+        this.timeSinceRest = this.nbt.getInt("TimeSinceRest");
 
-        if (!this.nbt.containsKey("HasSeenCredits")) {
+        if (!this.nbt.contains("HasSeenCredits")) {
             this.nbt.putBoolean("HasSeenCredits", false);
         }
-        this.hasSeenCredits = nbtMap.getBoolean("HasSeenCredits");
+        this.hasSeenCredits = this.nbt.getBoolean("HasSeenCredits");
 
         // The elements in the following two lists correspond one-to-one.
-        if (!this.nbt.containsKey("fogIdentifiers")) {
-            this.nbt.putList("fogIdentifiers", NbtType.STRING, new ObjectArrayList<>());
+        if (!this.nbt.contains("fogIdentifiers")) {
+            this.nbt.putList("fogIdentifiers", new ListTag<StringTag>());
         }
-        if (!this.nbt.containsKey("userProvidedFogIds")) {
-            this.nbt.putList("userProvidedFogIds", NbtType.STRING, new ObjectArrayList<>());
+        if (!this.nbt.contains("userProvidedFogIds")) {
+            this.nbt.putList("userProvidedFogIds", new ListTag<StringTag>());
         }
-        var fogIdentifiers = nbtMap.getList("fogIdentifiers", NbtType.STRING);
+        var fogIdentifiers = this.nbt.getList("fogIdentifiers", StringTag.class);
+        var userProvidedFogIds = this.nbt.getList("userProvidedFogIds", StringTag.class);
         for (int i = 0; i < fogIdentifiers.size(); i++) {
-            this.fogStack.add(i, fogIdentifiers.get(i));
+            this.fogStack.add(i, fogIdentifiers.get(i).parseValue());
         }
 
         if (!this.server.getSettings().playerSettings().checkMovement()) {
@@ -1343,7 +1348,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
           mode update packet.
          */
         this.setGamemode(this.gamemode, false, null, true);
-        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), entityDataMap);
+        this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), actorDataMap);
         this.spawnToAll();
         Arrays.stream(this.level.getEntities()).filter(entity -> entity.getViewers().containsKey(this.getLoaderId()) && entity instanceof EntityBoss).forEach(entity -> ((EntityBoss) entity).addBossbar(this));
     }
@@ -1505,7 +1510,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.playerCursorInventory = new PlayerCursorInventory(this);
         this.creativeOutputInventory = new CreativeOutputInventory(this);
 
-        if (this.nbt.containsKey("CursorItem")) {
+        if (this.nbt.containsCompound("CursorItem")) {
             this.playerCursorInventory.setItem(0, ItemHelper.read(this.getNbt().getCompound("CursorItem")));
         }
 
@@ -1738,7 +1743,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (data == null) return;
 
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(this.getEntityDataMap());
+        packet.setActorData(this.getActorDataMap());
         packet.setTargetRuntimeID(this.getId());
         packet.setSyncedProperties(data);
 
@@ -1997,13 +2002,15 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
-    public void setSkin(SerializedSkin skin) {
+    public void setSkin(Skin skin) {
         super.setSkin(skin);
+        SerializedSkin serializedSkin = skin.getSkin();
         if (this.spawned) {
             var skinPacket = new PlayerSkinPacket();
             skinPacket.setUuid(this.getUniqueId());
-            skinPacket.setSerializedSkin(this.getSkin());
-            skinPacket.setNewSkinName(this.getSkin().getSkinId());
+            skinPacket.setSerializedSkin(serializedSkin);
+            skinPacket.setNewSkinName(serializedSkin.getSkinId());
+            skinPacket.setTrustedSkin(skin.isTrusted());
             skinPacket.setOldSkinName("");
             Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
         }
@@ -2283,6 +2290,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             final PlayerActionPacket playerActionPacket = new PlayerActionPacket();
             playerActionPacket.setPlayerRuntimeID(this.getId());
             playerActionPacket.setAction(PlayerActionType.CHANGE_DIMENSION_ACK);
+            playerActionPacket.setBlockPosition(this.toNetwork().toInt());
+            playerActionPacket.setResultPos(this.toNetwork().toInt());
             this.sendPacket(playerActionPacket);
         }
     }
@@ -2363,7 +2372,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
         this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3((int) pos.x, (int) pos.y, (int) pos.z));
-        this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.entityDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
+        this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
         this.setSpawn(Position.fromObject(pos, getLevel()), SpawnPointType.BLOCK);
         this.level.sleepTicks = 75;
 
@@ -2378,7 +2387,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.sleeping = null;
             this.setDataProperty(ActorDataTypes.BED_POSITION, new BlockVector3(0, 0, 0));
-            this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.entityDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
+            this.setDataProperty(ActorDataTypes.PLAYER_FLAGS, !this.actorDataMap.containsKey(ActorDataTypes.PLAYER_FLAGS) ? (byte) 0 : ((Integer) (this.getDataProperty(ActorDataTypes.PLAYER_FLAGS, (byte) 0) | 0x2)).byteValue());
 
 
             this.level.sleepTicks = 0;
@@ -3611,32 +3620,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.level != null && this.level.getProvider() != null) {
             this.nbt.putString("Level", this.level.getName());
 
-            final NbtMapBuilder achievementsBuilder = NbtMap.builder();
+            CompoundTag achievements = new CompoundTag();
             for (String achievement : this.achievements) {
-                achievementsBuilder.putByte(achievement, (byte) 1);
+                achievements.putByte(achievement, 1);
             }
 
-            this.nbt.putCompound("Achievements", achievementsBuilder.build())
-                    .putInt("playerGameType", this.gamemode)
-                    .putLong("lastPlayed", System.currentTimeMillis() / 1000)
-                    .putString("lastIP", this.getAddress())
-                    .putInt("EXP", this.getExperience())
-                    .putInt("expLevel", this.getExperienceLevel())
-                    .putInt("foodLevel", this.getFoodData().getFood())
-                    .putFloat("foodSaturationLevel", this.getFoodData().getSaturation())
-                    .putInt("enchSeed", this.enchSeed)
-                    .build();
+            this.nbt.putCompound("Achievements", achievements);
+            this.nbt.putInt("playerGameType", this.gamemode);
+            this.nbt.putLong("lastPlayed", System.currentTimeMillis() / 1000);
+            this.nbt.putString("lastIP", this.getAddress());
+            this.nbt.putInt("EXP", this.getExperience());
+            this.nbt.putInt("expLevel", this.getExperienceLevel());
+            this.nbt.putInt("foodLevel", this.getFoodData().getFood());
+            this.nbt.putFloat("foodSaturationLevel", this.getFoodData().getSaturation());
+            this.nbt.putInt("enchSeed", this.enchSeed);
 
-            final List<String> fogIdentifiers = new ObjectArrayList<>();
-            final List<String> userProvidedFogIds = new ObjectArrayList<>();
+            var fogIdentifiers = new ListTag<StringTag>();
+            var userProvidedFogIds = new ListTag<StringTag>();
             this.fogStack.forEach(fog -> {
-                fogIdentifiers.add(fog);
-                userProvidedFogIds.add(fog);
+                fogIdentifiers.add(new StringTag(fog));
+                userProvidedFogIds.add(new StringTag(fog));
             });
-            this.nbt.putList("fogIdentifiers", NbtType.STRING, fogIdentifiers)
-                    .putList("userProvidedFogIds", NbtType.STRING, userProvidedFogIds)
-                    .putInt("TimeSinceRest", this.timeSinceRest)
-                    .build();
+            this.nbt.putList("fogIdentifiers", fogIdentifiers);
+            this.nbt.putList("userProvidedFogIds", userProvidedFogIds);
+
+            this.nbt.putInt("TimeSinceRest", this.timeSinceRest);
 
             if (!this.getName().isBlank() && this.nbt != null) {
                 this.server.saveOfflinePlayerData(this.uuid, this.getNbt(), async);
@@ -4619,7 +4627,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         for (int index : inventory.getContents().keySet()) {
             Item item = inventory.getUnclonedItem(index);
             if (item instanceof ItemBundle bundle) {
-                if (bundle.hasCompoundTag()) {
+                if (bundle.hasNbt()) {
                     bundle.onChange(inventory);
                     inventory.sendSlot(index, this);
                 }
@@ -5183,34 +5191,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param fishingRod fishing rod item
      */
     public void startFishing(Item fishingRod) {
-        final NbtMap nbt = NbtMap.builder()
-                .putList(
-                        "Pos",
-                        NbtType.DOUBLE,
-                        Arrays.asList(
-                                this.x,
-                                this.y + this.getEyeHeight(),
-                                this.z
-                        )
-                )
-                .putList(
-                        "Motion",
-                        NbtType.DOUBLE,
-                        Arrays.asList(
-                                -Math.sin(yaw / 180 + Math.PI) * Math.cos(pitch / 180 * Math.PI),
-                                -Math.sin(pitch / 180 * Math.PI),
-                                Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI)
-                        )
-                )
-                .putList(
-                        "Rotation",
-                        NbtType.FLOAT,
-                        Arrays.asList(
-                                (float) this.yaw,
-                                (float) this.pitch
-                        )
-                )
-                .build();
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(x))
+                        .add(new DoubleTag(y + this.getEyeHeight()))
+                        .add(new DoubleTag(z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(yaw / 180 + Math.PI) * Math.cos(pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(yaw / 180 * Math.PI) * Math.cos(pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((float) yaw))
+                        .add(new FloatTag((float) pitch)));
         double f = 1.1;
         EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
         fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f,
@@ -5795,6 +5787,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         ChainValidationResult.IdentityClaims identityClaims;
         ClientChainData clientChainData;
         SerializedSkin skin;
+        boolean xboxAuth;
     }
 
     public enum SpawnPointType {
@@ -5887,7 +5880,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 for (int index : inventory.getContents().keySet()) {
                     Item item = inventory.getUnclonedItem(index);
                     if (item instanceof ItemBundle bundle) {
-                        if (bundle.hasCompoundTag()) {
+                        if (bundle.hasNbt()) {
                             bundle.onChange(inventory);
                             inventory.sendSlot(index, player);
                         }

@@ -10,9 +10,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -111,17 +111,19 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? BlockFace.fromHorizontalIndex(player.getDirection().getOpposite().getHorizontalIndex()) : BlockFace.SOUTH);
 
-        final NbtMapBuilder nbt = NbtMap.builder();
+        final CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -133,7 +135,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
         }
 
         BlockEntityEnderChest chest = getOrCreateBlockEntity();
-        if (chest.getNbt().containsKey("Lock") && chest.getNbt().get("Lock") instanceof String
+        if (chest.getNbt().contains("Lock") && chest.getNbt().get("Lock") instanceof StringTag
                 && !chest.getNbt().getString("Lock").equals(item.getCustomName())) {
             return false;
         }

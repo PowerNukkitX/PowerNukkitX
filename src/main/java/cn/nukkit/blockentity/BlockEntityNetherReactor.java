@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.property.enums.NetherReactorState;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.MathHelper;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * This entity allows to manipulate the save state of a nether reactor core, but changing it
@@ -20,7 +20,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     private NetherReactorState reactorState;
     private int progress;
 
-    public BlockEntityNetherReactor(IChunk chunk, NbtMap nbt) {
+    public BlockEntityNetherReactor(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -49,14 +49,14 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         reactorState = NetherReactorState.READY;
-        final NbtMap nbtMap = getNbt();
-        if (nbt.containsKey("Progress")) {
+        final CompoundTag nbtMap = getNbt();
+        if (nbt.contains("Progress")) {
             progress = (short) nbtMap.getShort("Progress");
         }
 
-        if (nbt.containsKey("HasFinished") && nbtMap.getBoolean("HasFinished")) {
+        if (nbt.contains("HasFinished") && nbtMap.getBoolean("HasFinished")) {
             reactorState = NetherReactorState.FINISHED;
-        } else if (nbt.containsKey("IsInitialized") && nbtMap.getBoolean("IsInitialized")) {
+        } else if (nbt.contains("IsInitialized") && nbtMap.getBoolean("IsInitialized")) {
             reactorState = NetherReactorState.INITIALIZED;
         } else {
             reactorState = NetherReactorState.READY;
@@ -73,12 +73,11 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
+    public CompoundTag getSpawnCompound() {
         NetherReactorState reactorState = getReactorState();
-        return super.getSpawnCompound().toBuilder()
+        return super.getSpawnCompound()
                 .putShort("Progress", (short) getProgress())
                 .putBoolean("HasFinished", reactorState == NetherReactorState.FINISHED)
-                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED)
-                .build();
+                .putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
     }
 }

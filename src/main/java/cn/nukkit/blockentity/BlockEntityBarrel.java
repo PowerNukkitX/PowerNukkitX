@@ -3,14 +3,13 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BarrelInventory;
 import cn.nukkit.level.format.IChunk;
-import cn.nukkit.utils.NbtHelper;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 
-public class BlockEntityBarrel extends BlockEntitySpawnableContainer {
+public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
 
 
-    public BlockEntityBarrel(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -21,11 +20,10 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
-                .putBoolean("Findable", false)
-                .build();
+                .putBoolean("Findable", false);
     }
 
     @Override
@@ -40,20 +38,21 @@ public class BlockEntityBarrel extends BlockEntitySpawnableContainer {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.getNbt().getString("CustomName") : "Barrel";
+        return this.hasName() ? this.nbt.getString("CustomName") : "Barrel";
     }
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
     public void setName(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.equals("")) {
             this.nbt.remove("CustomName");
             return;
         }
+
         this.nbt.putString("CustomName", name);
     }
 }

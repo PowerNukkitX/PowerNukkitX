@@ -4,12 +4,11 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
 
-import java.util.List;
 import java.util.Random;
 
 public class ProfessionFletcher extends Profession {
@@ -19,8 +18,8 @@ public class ProfessionFletcher extends Profession {
     }
 
     @Override
-    public List<NbtMap> buildTrades(int seed) {
-        List<NbtMap> recipes = new ObjectArrayList<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         Item bow = Item.get(Item.BOW);
@@ -60,54 +59,54 @@ public class ProfessionFletcher extends Profession {
                     .build());
         }
         recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.FLINT, 0, 26), Item.get(Item.EMERALD))
-                .setMaxUses(12)
-                .setRewardExp((byte) 1)
-                .setTier(2)
-                .setTraderExp(10)
-                .setPriceMultiplierA(0.05f)
-                .build());
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 2), Item.get(Item.BOW))
-                .setMaxUses(12)
-                .setRewardExp((byte) 1)
-                .setTier(2)
-                .setTraderExp(5)
-                .setPriceMultiplierA(0.05f)
-                .build());
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.STRING, 0, 14), Item.get(Item.EMERALD))
-                .setMaxUses(16)
-                .setRewardExp((byte) 1)
-                .setTier(3)
-                .setTraderExp(20)
-                .setPriceMultiplierA(0.05f)
-                .build());
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 3), Item.get(Item.CROSSBOW))
-                .setMaxUses(12)
-                .setRewardExp((byte) 1)
-                .setTier(3)
-                .setTraderExp(10)
-                .setPriceMultiplierA(0.05f)
-                .build());
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.FEATHER, 0, 24), Item.get(Item.EMERALD))
-                .setMaxUses(16)
-                .setRewardExp((byte) 1)
-                .setTier(4)
-                .setTraderExp(30)
-                .setPriceMultiplierA(0.05f)
-                .build());
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 7 + random.nextInt(15)), bow)
-                .setMaxUses(3)
-                .setRewardExp((byte) 1)
-                .setTier(4)
-                .setTraderExp(15)
-                .setPriceMultiplierA(0.05f)
-                .build());
-        recipes.add(TradeRecipeBuildUtils.of(Item.get(BlockID.TRIPWIRE_HOOK, 0, 8), Item.get(Item.EMERALD))
-                .setMaxUses(12)
-                .setRewardExp((byte) 1)
-                .setTier(5)
-                .setTraderExp(30)
-                .setPriceMultiplierA(0.05f)
-                .build());
+                        .setMaxUses(12)
+                        .setRewardExp((byte) 1)
+                        .setTier(2)
+                        .setTraderExp(10)
+                        .setPriceMultiplierA(0.05f)
+                        .build())
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 2), Item.get(Item.BOW))
+                        .setMaxUses(12)
+                        .setRewardExp((byte) 1)
+                        .setTier(2)
+                        .setTraderExp(5)
+                        .setPriceMultiplierA(0.05f)
+                        .build())
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.STRING, 0, 14), Item.get(Item.EMERALD))
+                        .setMaxUses(16)
+                        .setRewardExp((byte) 1)
+                        .setTier(3)
+                        .setTraderExp(20)
+                        .setPriceMultiplierA(0.05f)
+                        .build())
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 3), Item.get(Item.CROSSBOW))
+                        .setMaxUses(12)
+                        .setRewardExp((byte) 1)
+                        .setTier(3)
+                        .setTraderExp(10)
+                        .setPriceMultiplierA(0.05f)
+                        .build())
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.FEATHER, 0, 24), Item.get(Item.EMERALD))
+                        .setMaxUses(16)
+                        .setRewardExp((byte) 1)
+                        .setTier(4)
+                        .setTraderExp(30)
+                        .setPriceMultiplierA(0.05f)
+                        .build())
+                .add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 7 + random.nextInt(15)), bow)
+                        .setMaxUses(3)
+                        .setRewardExp((byte) 1)
+                        .setTier(4)
+                        .setTraderExp(15)
+                        .setPriceMultiplierA(0.05f)
+                        .build())
+                .add(TradeRecipeBuildUtils.of(Item.get(BlockID.TRIPWIRE_HOOK, 0, 8), Item.get(Item.EMERALD))
+                        .setMaxUses(12)
+                        .setRewardExp((byte) 1)
+                        .setTier(5)
+                        .setTraderExp(30)
+                        .setPriceMultiplierA(0.05f)
+                        .build());
         if (random.nextBoolean()) {
             recipes.add(TradeRecipeBuildUtils.of(Item.get(Item.EMERALD, 0, 8 + random.nextInt(15)), crossbow)
                     .setMaxUses(3)

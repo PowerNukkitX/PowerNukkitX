@@ -11,13 +11,12 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.Identifier;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.random.RandomSourceProvider;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +68,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
     private Set<String> connectedPlayers;
     private double connectedParticlesRange = DEFAULT_CONNECTED_PARTICLES_RANGE;
 
-    public BlockEntityVault(IChunk chunk, NbtMap nbt) {
+    public BlockEntityVault(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -83,15 +82,15 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         super.loadNBT();
         ensureCollections();
 
-        final NbtMap nbtMap = getNbt();
-        NbtMap config = nbtMap.getCompound(TAG_CONFIG);
-        lootTable = config.containsKey(TAG_LOOT_TABLE) ? config.getString(TAG_LOOT_TABLE) : DEFAULT_LOOT_TABLE;
+        final CompoundTag nbtMap = getNbt();
+        CompoundTag config = nbtMap.getCompound(TAG_CONFIG);
+        lootTable = config.contains(TAG_LOOT_TABLE) ? config.getString(TAG_LOOT_TABLE) : DEFAULT_LOOT_TABLE;
         overrideLootTableToDisplay = config.getString(TAG_OVERRIDE_LOOT_TABLE_TO_DISPLAY);
-        activationRange = config.containsKey(TAG_ACTIVATION_RANGE) ? config.getDouble(TAG_ACTIVATION_RANGE) : DEFAULT_ACTIVATION_RANGE;
-        deactivationRange = config.containsKey(TAG_DEACTIVATION_RANGE) ? config.getDouble(TAG_DEACTIVATION_RANGE) : DEFAULT_DEACTIVATION_RANGE;
-        keyItem = config.containsKey(TAG_KEY_ITEM) ? ItemHelper.read(config.getCompound(TAG_KEY_ITEM)) : Item.get(ItemID.TRIAL_KEY);
+        activationRange = config.contains(TAG_ACTIVATION_RANGE) ? config.getDouble(TAG_ACTIVATION_RANGE) : DEFAULT_ACTIVATION_RANGE;
+        deactivationRange = config.contains(TAG_DEACTIVATION_RANGE) ? config.getDouble(TAG_DEACTIVATION_RANGE) : DEFAULT_DEACTIVATION_RANGE;
+        keyItem = config.contains(TAG_KEY_ITEM) ? ItemHelper.read(config.getCompound(TAG_KEY_ITEM)) : Item.get(ItemID.TRIAL_KEY);
 
-        NbtMap serverData = nbtMap.getCompound(TAG_SERVER_DATA);
+        CompoundTag serverData = nbtMap.getCompound(TAG_SERVER_DATA);
         rewardedPlayers.clear();
         rewardedPlayers.addAll(readStringSet(serverData, TAG_REWARDED_PLAYERS));
         stateUpdatingResumesAt = serverData.getLong(TAG_STATE_UPDATING_RESUMES_AT);
@@ -99,11 +98,11 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         itemsToEject.addAll(readItemList(serverData, TAG_ITEMS_TO_EJECT));
         totalEjectionsNeeded = serverData.getInt(TAG_TOTAL_EJECTIONS_NEEDED);
 
-        NbtMap sharedData = nbtMap.getCompound(DATA);
-        displayItem = sharedData.containsKey(TAG_DISPLAY_ITEM) ? ItemHelper.read(sharedData.getCompound(TAG_DISPLAY_ITEM)) : Item.get(BlockID.AIR);
+        CompoundTag sharedData = nbtMap.getCompound(DATA);
+        displayItem = sharedData.contains(TAG_DISPLAY_ITEM) ? ItemHelper.read(sharedData.getCompound(TAG_DISPLAY_ITEM)) : Item.get(BlockID.AIR);
         connectedPlayers.clear();
         connectedPlayers.addAll(readStringSet(sharedData, TAG_CONNECTED_PLAYERS));
-        connectedParticlesRange = sharedData.containsKey(TAG_CONNECTED_PARTICLES_RANGE) ? sharedData.getDouble(TAG_CONNECTED_PARTICLES_RANGE) : DEFAULT_CONNECTED_PARTICLES_RANGE;
+        connectedParticlesRange = sharedData.contains(TAG_CONNECTED_PARTICLES_RANGE) ? sharedData.getDouble(TAG_CONNECTED_PARTICLES_RANGE) : DEFAULT_CONNECTED_PARTICLES_RANGE;
     }
 
     @Override
@@ -121,11 +120,10 @@ public class BlockEntityVault extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putCompound(TAG_CONFIG, createConfigTag())
-                .putCompound(DATA, createSharedDataTag())
-                .build();
+                .putCompound(DATA, createSharedDataTag());
     }
 
     @Override
@@ -363,8 +361,8 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         return keyItem.isNull() ? ItemID.TRIAL_KEY : keyItem.getId();
     }
 
-    private NbtMap createConfigTag() {
-        NbtMapBuilder config = NbtMap.builder()
+    private CompoundTag createConfigTag() {
+        CompoundTag config = new CompoundTag()
                 .putString(TAG_LOOT_TABLE, lootTable)
                 .putDouble(TAG_ACTIVATION_RANGE, activationRange)
                 .putDouble(TAG_DEACTIVATION_RANGE, deactivationRange)
@@ -372,48 +370,54 @@ public class BlockEntityVault extends BlockEntitySpawnable {
         if (!overrideLootTableToDisplay.isEmpty()) {
             config.putString(TAG_OVERRIDE_LOOT_TABLE_TO_DISPLAY, overrideLootTableToDisplay);
         }
-        return config.build();
+        return config;
     }
 
-    private NbtMap createServerDataTag() {
+    private CompoundTag createServerDataTag() {
         ensureCollections();
-        return NbtMap.builder()
-                .putList(TAG_REWARDED_PLAYERS, NbtType.STRING, new ObjectArrayList<>(rewardedPlayers))
+        return new CompoundTag()
+                .putList(TAG_REWARDED_PLAYERS, writeStringSet(rewardedPlayers))
                 .putLong(TAG_STATE_UPDATING_RESUMES_AT, stateUpdatingResumesAt)
-                .putList(TAG_ITEMS_TO_EJECT, NbtType.COMPOUND, writeItemList(itemsToEject))
-                .putInt(TAG_TOTAL_EJECTIONS_NEEDED, totalEjectionsNeeded)
-                .build();
+                .putList(TAG_ITEMS_TO_EJECT, writeItemList(itemsToEject))
+                .putInt(TAG_TOTAL_EJECTIONS_NEEDED, totalEjectionsNeeded);
     }
 
-    private NbtMap createSharedDataTag() {
+    private CompoundTag createSharedDataTag() {
         ensureCollections();
-        return NbtMap.builder()
+        return new CompoundTag()
                 .putCompound(TAG_DISPLAY_ITEM, ItemHelper.write(displayItem, null))
-                .putList(TAG_CONNECTED_PLAYERS, NbtType.STRING, new ObjectArrayList<>(connectedPlayers))
-                .putDouble(TAG_CONNECTED_PARTICLES_RANGE, connectedParticlesRange)
-                .build();
+                .putList(TAG_CONNECTED_PLAYERS, writeStringSet(connectedPlayers))
+                .putDouble(TAG_CONNECTED_PARTICLES_RANGE, connectedParticlesRange);
     }
 
-    private static Set<String> readStringSet(NbtMap source, String key) {
+    private static Set<String> readStringSet(CompoundTag source, String key) {
         LinkedHashSet<String> values = new LinkedHashSet<>();
-        for (String tag : source.getList(key, NbtType.STRING)) {
-            values.add(tag);
+        for (StringTag tag : source.getList(key, StringTag.class).getAll()) {
+            values.add(tag.data);
         }
         return values;
     }
 
-    private static List<Item> readItemList(NbtMap source, String key) {
+    private static List<Item> readItemList(CompoundTag source, String key) {
         ArrayList<Item> items = new ArrayList<>();
-        for (NbtMap tag : source.getList(key, NbtType.COMPOUND)) {
+        for (CompoundTag tag : source.getList(key, CompoundTag.class).getAll()) {
             items.add(ItemHelper.read(tag));
         }
         return items;
     }
 
-    private static List<NbtMap> writeItemList(List<Item> items) {
-        List<NbtMap> tags = new ObjectArrayList<>();
+    private static ListTag<CompoundTag> writeItemList(List<Item> items) {
+        ListTag<CompoundTag> tags = new ListTag<>();
         for (Item item : items) {
             tags.add(ItemHelper.write(item, null));
+        }
+        return tags;
+    }
+
+    private static ListTag<StringTag> writeStringSet(Set<String> values) {
+        ListTag<StringTag> tags = new ListTag<>();
+        for (String value : values) {
+            tags.add(new StringTag(value));
         }
         return tags;
     }
@@ -618,7 +622,7 @@ public class BlockEntityVault extends BlockEntitySpawnable {
 
         private static Item ominousBottle(int amplifier) {
             Item item = item(ItemID.OMINOUS_BOTTLE, amplifier, 1);
-            item.setNbt(NbtMap.builder().putInt("OminousBottleAmplifier", amplifier).build());
+            item.setNbt(new CompoundTag().putInt("OminousBottleAmplifier", amplifier));
             return item;
         }
 

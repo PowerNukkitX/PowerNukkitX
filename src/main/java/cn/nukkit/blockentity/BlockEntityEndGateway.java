@@ -11,13 +11,11 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.packet.BlockEventPacket;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author GoodLucky777
@@ -36,7 +34,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
     private static final BlockState STATE_BEDROCK = BlockBedrock.PROPERTIES.getDefaultState();
 
-    public BlockEntityEndGateway(IChunk chunk, NbtMap nbt) {
+    public BlockEntityEndGateway(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -49,15 +47,15 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.nbt.containsKey("Age")) {
+        if (this.nbt.contains("Age")) {
             this.age = this.getNbt().getInt("Age");
         } else {
             this.age = 0;
         }
 
-        if (this.nbt.containsKey("ExitPortal")) {
-            List<Integer> exitPortalList = this.getNbt().getList("ExitPortal", NbtType.INT);
-            this.exitPortal = new BlockVector3(exitPortalList.get(0), exitPortalList.get(1), exitPortalList.get(2));
+        if (this.nbt.containsList("ExitPortal")) {
+            ListTag<IntTag> exitPortalList = this.getNbt().getList("ExitPortal", IntTag.class);
+            this.exitPortal = new BlockVector3(exitPortalList.get(0).getData(), exitPortalList.get(1).getData(), exitPortalList.get(2).getData());
         } else {
             this.exitPortal = defaultExitPortal.clone();
             if (this.toHorizontal().distance(Vector2.ZERO) < 100) {
@@ -84,8 +82,12 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
+        ListTag<IntTag> exitPortal = new ListTag<>();
+        exitPortal.add(new IntTag(this.exitPortal.x))
+                .add(new IntTag(this.exitPortal.y))
+                .add(new IntTag(this.exitPortal.z));
         this.nbt.putInt("Age", this.age)
-                .putList("ExitPortal", NbtType.INT, Arrays.asList(this.exitPortal.x, this.exitPortal.y, this.exitPortal.z));
+                .putList("ExitPortal", exitPortal);
     }
 
     @Override

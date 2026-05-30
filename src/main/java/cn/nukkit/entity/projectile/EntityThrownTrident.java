@@ -19,6 +19,10 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BVector3;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
@@ -69,11 +73,11 @@ public class EntityThrownTrident extends SlenderProjectile {
     private int riptideLevel;
     private int impalingLevel;
 
-    public EntityThrownTrident(IChunk chunk, NbtMap nbt) {
+    public EntityThrownTrident(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityThrownTrident(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityThrownTrident(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -104,19 +108,19 @@ public class EntityThrownTrident extends SlenderProjectile {
 
         this.closeOnCollide = false;
 
-        final NbtMap nbtMap = this.getNbt();
-        this.pickupMode = nbt.containsKey(TAG_PICKUP) ? nbtMap.getByte(TAG_PICKUP) : PICKUP_ANY;
-        this.favoredSlot = nbt.containsKey(TAG_FAVORED_SLOT) ? nbtMap.getInt(TAG_FAVORED_SLOT) : -1;
-        this.player = !nbt.containsKey(TAG_PLAYER) || nbtMap.getBoolean(TAG_PLAYER);
+        final CompoundTag nbtMap = this.getNbt();
+        this.pickupMode = nbt.contains(TAG_PICKUP) ? nbtMap.getByte(TAG_PICKUP) : PICKUP_ANY;
+        this.favoredSlot = nbt.contains(TAG_FAVORED_SLOT) ? nbtMap.getInt(TAG_FAVORED_SLOT) : -1;
+        this.player = !nbt.contains(TAG_PLAYER) || nbtMap.getBoolean(TAG_PLAYER);
 
-        if (nbt.containsKey(TAG_CREATIVE)) {
+        if (nbt.contains(TAG_CREATIVE)) {
             if (pickupMode == PICKUP_ANY && nbtMap.getBoolean(TAG_CREATIVE)) {
                 pickupMode = PICKUP_CREATIVE;
             }
             nbt.remove(TAG_CREATIVE);
         }
 
-        if (nbt.containsKey(TAG_TRIDENT)) {
+        if (nbt.contains(TAG_TRIDENT)) {
             this.trident = ItemHelper.read(nbtMap.getCompound(TAG_TRIDENT));
             this.loyaltyLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_LOYALTY);
             this.hasChanneling = this.trident.hasEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
@@ -130,16 +134,17 @@ public class EntityThrownTrident extends SlenderProjectile {
             this.impalingLevel = 0;
         }
 
-        if (nbt.containsKey("CollisionPos")) {
-            List<Double> collisionPosList = nbtMap.getList("CollisionPos", NbtType.DOUBLE);
-            collisionPos = new Vector3(collisionPosList.get(0), collisionPosList.get(1), collisionPosList.get(2));
+
+        if (nbt.contains("CollisionPos")) {
+            ListTag<DoubleTag> collisionPosList = this.nbt.getList("CollisionPos", DoubleTag.class);
+            collisionPos = new Vector3(collisionPosList.get(0).data, collisionPosList.get(1).data, collisionPosList.get(2).data);
         } else {
             collisionPos = defaultCollisionPos.clone();
         }
 
-        if (nbt.containsKey("StuckToBlockPos")) {
-            List<Integer> stuckToBlockPosList = nbtMap.getList("StuckToBlockPos", NbtType.INT);
-            stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0), stuckToBlockPosList.get(1), stuckToBlockPosList.get(2));
+        if (nbt.contains("StuckToBlockPos")) {
+            ListTag<IntTag> stuckToBlockPosList = this.nbt.getList("StuckToBlockPos", IntTag.class);
+            stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0).data, stuckToBlockPosList.get(1).data, stuckToBlockPosList.get(2).data);
         } else {
             stuckToBlockPos = defaultStuckToBlockPos.clone();
         }
@@ -149,22 +154,20 @@ public class EntityThrownTrident extends SlenderProjectile {
     public void saveNBT() {
         super.saveNBT();
 
-       this.nbt.putCompound(TAG_TRIDENT, ItemHelper.write(this.trident, null))
-                .putByte(TAG_PICKUP, (byte) this.pickupMode)
-                .putList("CollisionPos", NbtType.DOUBLE, Arrays.asList(
-                                this.collisionPos.x,
-                                this.collisionPos.y,
-                                this.collisionPos.z
-                        )
-                )
-                .putList("StuckToBlockPos", NbtType.INT, Arrays.asList(
-                                this.stuckToBlockPos.x,
-                                this.stuckToBlockPos.y,
-                                this.stuckToBlockPos.z
-                        )
-                )
-                .putInt(TAG_FAVORED_SLOT, this.favoredSlot)
-                .putBoolean(TAG_PLAYER, this.player);
+        this.nbt.put(TAG_TRIDENT, ItemHelper.write(this.trident));
+        this.nbt.putByte(TAG_PICKUP, this.pickupMode);
+        this.nbt.putList("CollisionPos", new ListTag<DoubleTag>()
+                .add(new DoubleTag(this.collisionPos.x))
+                .add(new DoubleTag(this.collisionPos.y))
+                .add(new DoubleTag(this.collisionPos.z))
+        );
+        this.nbt.putList("StuckToBlockPos", new ListTag<IntTag>()
+                .add(new IntTag(this.stuckToBlockPos.x))
+                .add(new IntTag(this.stuckToBlockPos.y))
+                .add(new IntTag(this.stuckToBlockPos.z))
+        );
+        this.nbt.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
+        this.nbt.putBoolean(TAG_PLAYER, this.player);
     }
 
     public Item getItem() {

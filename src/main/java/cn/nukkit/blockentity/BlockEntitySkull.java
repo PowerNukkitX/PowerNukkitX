@@ -3,16 +3,14 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.BlockHead;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.NbtHelper;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author Snake1999
  * @since 2016/2/3
  */
 public class BlockEntitySkull extends BlockEntitySpawnable {
-    public BlockEntitySkull(IChunk chunk, NbtMap nbt) {
+    public BlockEntitySkull(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -24,18 +22,18 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsKey("SkullType")) {
+        if (!nbt.contains("SkullType")) {
             nbt.putByte("SkullType", (byte) 0);
         }
-        if (!nbt.containsKey("Rot")) {
+        if (!nbt.contains("Rot")) {
             nbt.putByte("Rot", (byte) 0);
         }
 
-        if (nbt.containsKey("MouthMoving")) {
+        if (nbt.contains("MouthMoving")) {
             mouthMoving = getNbt().getBoolean("MouthMoving");
         }
 
-        if (nbt.containsKey("MouthTickCount")) {
+        if (nbt.contains("MouthTickCount")) {
             mouthTickCount = NukkitMath.clamp(getNbt().getInt("MouthTickCount"), 0, 60);
         }
     }
@@ -105,12 +103,11 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
-                .putByte("SkullType", (Byte) this.nbt.get("SkullType"))
-                .putByte("Rot", (Byte) this.nbt.get("Rot"))
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
+                .putByte("SkullType", this.nbt.getByte("SkullType"))
+                .putByte("Rot", this.nbt.getByte("Rot"))
                 .putBoolean("MouthMoving", this.mouthMoving)
-                .putInt("MouthTickCount", mouthTickCount)
-                .build();
+                .putInt("MouthTickCount", mouthTickCount);
     }
 }

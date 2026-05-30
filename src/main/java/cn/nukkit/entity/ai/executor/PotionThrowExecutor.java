@@ -13,12 +13,12 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.plugin.InternalPlugin;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
@@ -158,23 +158,19 @@ public class PotionThrowExecutor implements EntityControl, IBehaviorExecutor {
         Location potionLocation = entity.getLocation();
         Vector3 directionVector = entity.getDirectionVector();
         potionLocation.setY(entity.y + entity.getEyeHeight() + directionVector.getY());
-        final NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                potionLocation.x,
-                                potionLocation.y,
-                                potionLocation.z
-                        )
-                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(
-                                -Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI),
-                                -Math.sin(entity.pitch / 180 * Math.PI),
-                                Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)
-                        )
-                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(
-                                (entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw,
-                                (float) -entity.pitch
-                        )
-                ).putInt("PotionId", getPotionEffect(entity))
-                .build();
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(potionLocation.x))
+                        .add(new DoubleTag(potionLocation.y))
+                        .add(new DoubleTag(potionLocation.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
+                        .add(new FloatTag((float) -entity.pitch)))
+                .putInt("PotionId", getPotionEffect(entity));
 
         Entity projectile = Entity.createEntity(EntityID.SPLASH_POTION, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 

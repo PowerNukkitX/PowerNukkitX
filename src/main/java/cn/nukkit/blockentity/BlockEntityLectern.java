@@ -5,11 +5,9 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.RedstoneComponent;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 
 
 public class BlockEntityLectern extends BlockEntitySpawnable {
@@ -17,7 +15,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     private int totalPages;
 
 
-    public BlockEntityLectern(IChunk chunk, NbtMap nbt) {
+    public BlockEntityLectern(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -30,18 +28,18 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!(this.nbt.get("book") instanceof NbtMap)) {
+        if (!this.nbt.containsCompound("book")) {
             this.nbt.remove("book");
         }
 
-        if (!(this.nbt.get("page") instanceof Integer)) {
+        if (!this.nbt.containsInt("page")) {
             this.nbt.remove("page");
         }
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder c = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = super.getSpawnCompound()
                 .putBoolean("isMovable", this.movable);
 
         Item book = getBook();
@@ -54,7 +52,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
             c.putBoolean("hasBook", false);
         }
 
-        return c.build();
+        return c;
     }
 
     @Override
@@ -68,7 +66,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     public boolean hasBook() {
-        return this.nbt.containsKey("book") && this.nbt.get("book") instanceof NbtMap;
+        return this.nbt.containsCompound("book");
     }
 
     public Item getBook() {
@@ -121,10 +119,10 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     private void updateTotalPages() {
         Item book = getBook();
-        if (book.isNull() || !book.hasCompoundTag()) {
+        if (book.isNull() || !book.hasNbt()) {
             totalPages = 0;
         } else {
-            totalPages = book.getNbt().getList("pages", NbtType.COMPOUND).size();
+            totalPages = book.getNbt().getList("pages", CompoundTag.class).size();
         }
         RedstoneComponent.updateAroundRedstone(this);
     }

@@ -32,6 +32,7 @@ import cn.nukkit.item.ItemShears;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
@@ -55,7 +56,7 @@ public class EntityZombieNautilus extends EntityNautilus {
         return ZOMBIE_NAUTILUS;
     }
 
-    public EntityZombieNautilus(IChunk chunk, NbtMap nbt) {
+    public EntityZombieNautilus(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -157,7 +158,7 @@ public class EntityZombieNautilus extends EntityNautilus {
     public void initEntity() {
         super.initEntity();
 
-        if (this.nbt != null && this.nbt.containsKey(NBT_RIDEABLE_TYPE)) {
+        if (this.nbt != null && this.nbt.contains(NBT_RIDEABLE_TYPE)) {
             this.jockeyType = SpawnRiderType.fromId(this.getNbt().getInt(NBT_RIDEABLE_TYPE));
         } else {
             this.jockeyType = rollInitialRideableType();
@@ -282,14 +283,14 @@ public class EntityZombieNautilus extends EntityNautilus {
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
+        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
 
         if (this.jockeyType == SpawnRiderType.DROWNED_JOCKEY) {
             Item trident = Item.get(Item.TRIDENT, 0, 1);
             nbt.putCompound("Mainhand", ItemHelper.write(trident));
         }
 
-        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt.build());
+        Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
         if (rider == null) return null;
         return rider;
     }

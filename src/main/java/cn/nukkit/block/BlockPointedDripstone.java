@@ -16,7 +16,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -143,10 +143,10 @@ public class BlockPointedDripstone extends BlockFallable {
                 return;
             }
             BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
-            block.drop(NbtMap.builder().putBoolean("BreakOnGround", true).build());
+            block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
             while (block.getSide(BlockFace.DOWN).getId().equals(POINTED_DRIPSTONE)) {
                 block = (BlockPointedDripstone) block.getSide(BlockFace.DOWN);
-                block.drop(NbtMap.builder().putBoolean("BreakOnGround", true).build());
+                block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
             }
         }
     }

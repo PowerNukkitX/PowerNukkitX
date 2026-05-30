@@ -4,6 +4,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import com.google.common.base.Strings;
+import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -157,6 +158,8 @@ public class FloatingTextParticle extends Particle {
         pk.setTargetRuntimeID(this.entityId);
         pk.setActorType("minecraft:armor_stand");
         pk.setPosition(Vector3f.from(this.x, this.y - 0.75f, this.z));
+        pk.setVelocity(Vector3f.ZERO);
+        pk.setRotation(Vector2f.ZERO);
         return pk;
     }
 

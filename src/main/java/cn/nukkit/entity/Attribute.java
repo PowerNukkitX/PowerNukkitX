@@ -1,8 +1,8 @@
 package cn.nukkit.entity;
 
 
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ServerException;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.payload.attribute.AttributeData;
 
 import java.util.Collection;
@@ -134,16 +134,14 @@ public class Attribute implements Cloneable {
      * @param attribute the attribute
      * @return the compound tag
      */
-    public static NbtMap toNBT(Attribute attribute) {
-        return NbtMap.builder()
-                .putString("Name", attribute.getName())
+    public static CompoundTag toNBT(Attribute attribute) {
+        return new CompoundTag().putString("Name", attribute.getName())
                 .putFloat("Base", attribute.getDefaultValue())
                 .putFloat("Current", attribute.getValue())
                 .putFloat("DefaultMax", attribute.getDefaultMaximum())
                 .putFloat("DefaultMin", attribute.getDefaultMinimum())
                 .putFloat("Max", attribute.getMaxValue())
-                .putFloat("Min", attribute.getMinValue())
-                .build();
+                .putFloat("Min", attribute.getMinValue());
     }
 
     /**
@@ -165,12 +163,12 @@ public class Attribute implements Cloneable {
      * @param NBT the nbt
      * @return the attribute
      */
-    public static Attribute fromNBT(NbtMap NBT) {
-        if (NBT.containsKey("Name")
-                && NBT.containsKey("Base")
-                && NBT.containsKey("Current")
-                && NBT.containsKey("Max")
-                && NBT.containsKey("Min")) {
+    public static Attribute fromNBT(CompoundTag NBT) {
+        if (NBT.containsString("Name")
+                && NBT.containsFloat("Base")
+                && NBT.containsFloat("Current")
+                && NBT.containsFloat("Max")
+                && NBT.containsFloat("Min")) {
             Attribute attr = Attribute.getAttributeByName(NBT.getString("Name"));
             if (attr == null) {
                 throw new IllegalArgumentException("Unknown attribute: " + NBT.getString("Name"));
@@ -184,8 +182,8 @@ public class Attribute implements Cloneable {
                 max = t;
             }
 
-            float defMin = NBT.containsKey("DefaultMin") ? NBT.getFloat("DefaultMin") : min;
-            float defMax = NBT.containsKey("DefaultMax") ? NBT.getFloat("DefaultMax") : max;
+            float defMin = NBT.containsFloat("DefaultMin") ? NBT.getFloat("DefaultMin") : min;
+            float defMax = NBT.containsFloat("DefaultMax") ? NBT.getFloat("DefaultMax") : max;
             if (defMin > defMax) {
                 float t = defMin;
                 defMin = defMax;

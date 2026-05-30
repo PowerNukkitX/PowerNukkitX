@@ -15,13 +15,15 @@ import cn.nukkit.entity.mob.EntityShulkerBullet;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 
-import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class ShulkerAttackExecutor implements IBehaviorExecutor {
@@ -39,15 +41,19 @@ public class ShulkerAttackExecutor implements IBehaviorExecutor {
             tick = 0;
             nextAttack = Utils.rand(20, 110);
             Location bulletLocation = entity.getLocation().clone().add(new Vector3(target.x - entity.x, target.y - entity.y, target.z - entity.z).normalize()).add(0, 0.5f, 0);
-            final NbtMap nbt = NbtMap.builder()
-                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                    bulletLocation.x,
-                                    bulletLocation.y,
-                                    bulletLocation.z
-                            )
-                    ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
-                    ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
-                    ).build();
+            CompoundTag nbt = new CompoundTag()
+                    .putList("Pos", new ListTag<DoubleTag>()
+                            .add(new DoubleTag(bulletLocation.x))
+                            .add(new DoubleTag(bulletLocation.y))
+                            .add(new DoubleTag(bulletLocation.z)))
+                    .putList("Motion", new ListTag<DoubleTag>()
+                            .add(new DoubleTag(0))
+                            .add(new DoubleTag(0))
+                            .add(new DoubleTag(0)))
+                    .putList("Rotation", new ListTag<FloatTag>()
+                            .add(new FloatTag(0))
+                            .add(new FloatTag(0)));
+
 
             Entity bulletEntity = Entity.createEntity(EntityID.SHULKER_BULLET, entity.level.getChunk(entity.getChunkX(), entity.getChunkZ()), nbt);
 

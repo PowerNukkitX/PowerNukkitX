@@ -20,13 +20,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 import org.cloudburstmc.protocol.bedrock.packet.LevelEventPacket;
 import org.jetbrains.annotations.NotNull;
@@ -153,17 +152,19 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
             }
         }
 
-        NbtMapBuilder nbt = NbtMap.builder().putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        CompoundTag nbt = new CompoundTag().putList("Items", new ListTag<>(Tag.TAG_Compound));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
         }
 
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override

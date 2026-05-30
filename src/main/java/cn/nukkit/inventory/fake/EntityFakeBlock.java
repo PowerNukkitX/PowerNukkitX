@@ -7,6 +7,7 @@ import cn.nukkit.entity.EntityFakeInventory;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import java.util.HashMap;
@@ -35,11 +36,11 @@ public class EntityFakeBlock implements FakeBlock {
 
         Location loc = player.getLocation();
 
-        NbtMapBuilder nbt = Entity.getDefaultNBT(loc).toBuilder()
+        CompoundTag nbt = Entity.getDefaultNBT(loc)
                 .putInt("ContainerSize", inventory.getSize())
                 .putString("displayName", titleName);
 
-        Entity raw = Entity.createEntity(EntityID.FAKE_INVENTORY, player.getChunk(), nbt.build());
+        Entity raw = Entity.createEntity(EntityID.FAKE_INVENTORY, player.getChunk(), nbt);
         if (!(raw instanceof EntityFakeInventory fake)) {
             Server.getInstance().getLogger().error("[FakeInventory] Failed to create EntityFakeInventory");
             return;

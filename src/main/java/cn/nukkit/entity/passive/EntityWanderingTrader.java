@@ -4,6 +4,7 @@ import cn.nukkit.entity.EntityCreature;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ public class EntityWanderingTrader extends EntityCreature implements IEntityNPC 
         return WANDERING_TRADER;
     }
 
-    public EntityWanderingTrader(IChunk chunk, NbtMap nbt) {
+    public EntityWanderingTrader(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

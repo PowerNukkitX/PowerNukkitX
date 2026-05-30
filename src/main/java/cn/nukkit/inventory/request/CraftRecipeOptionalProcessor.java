@@ -12,6 +12,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.nbt.tag.CompoundTag;
 import io.netty.util.internal.StringUtil;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
@@ -255,10 +256,10 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                 repairCost = repairCost * 2 + 1;
             }
 
-            NbtMapBuilder namedTagBuilder = result.getNbt() == null ? NbtMap.builder() : result.getNbt().toBuilder();
-            namedTagBuilder.putInt("RepairCost", repairCost);
-            namedTagBuilder.remove("ench");
-            result.setNbt(namedTagBuilder.build());
+            CompoundTag compoundTag = result.getNbt() == null ? new CompoundTag() : result.getNbt();
+            compoundTag.putInt("RepairCost", repairCost);
+            compoundTag.remove("ench");
+            result.setNbt(compoundTag);
             if (!enchantments.isEmpty()) {
                 result.addEnchantment(enchantments.toArray(Enchantment.EMPTY_ARRAY));
             }
@@ -326,7 +327,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
     }
 
     private static int getRepairCost(Item item) {
-        return item.hasCompoundTag() && item.getNbt().containsKey("RepairCost") ? item.getNbt().getInt("RepairCost") : 0;
+        return item.hasNbt() && item.getNbt().contains("RepairCost") ? item.getNbt().getInt("RepairCost") : 0;
     }
 
     private static String getRepairMaterial(Item target) {

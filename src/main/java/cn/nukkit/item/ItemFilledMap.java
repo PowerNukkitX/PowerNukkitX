@@ -4,13 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3i;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.packet.ClientboundMapItemDataPacket;
 
@@ -40,10 +39,8 @@ public class ItemFilledMap extends Item {
     public ItemFilledMap(Integer meta, int count) {
         super(FILLED_MAP, meta, count, "Map");
         updateName();
-        if (!hasCompoundTag() || !getNbt().containsKey("map_uuid")) {
-            NbtMapBuilder tag = NbtMap.builder();
-            tag.putLong("map_uuid", mapCount++);
-            this.setNbt(tag.build());
+        if (!hasNbt() || !getNbt().contains("map_uuid")) {
+            this.setNbt(getOrCreateNbt().putLong("map_uuid", mapCount++));
         }
     }
 
@@ -80,7 +77,7 @@ public class ItemFilledMap extends Item {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(this.image, "png", baos);
 
-            this.setNbt(this.getNbt().toBuilder().putByteArray("Colors", baos.toByteArray()).build());
+            this.setNbt(this.getOrCreateNbt().putByteArray("Colors", baos.toByteArray()));
         } catch (IOException e) {
             log.error("Error while adding an image to an ItemMap", e);
         }
@@ -171,14 +168,12 @@ public class ItemFilledMap extends Item {
             BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
             image.setRGB(0, 0, 128, 128, pixels, 0, 128);
 
-            this.setNbt(
-                    this.getNbt().toBuilder()
-                            .putInt("map_level", level.getId())
-                            .putInt("map_startX", startX)
-                            .putInt("map_startZ", startZ)
-                            .putInt("map_scale", zoom)
-                            .build()
-            );
+            CompoundTag tag = this.getOrCreateNbt()
+                    .putInt("map_level", level.getId())
+                    .putInt("map_startX", startX)
+                    .putInt("map_startZ", startZ)
+                    .putInt("map_scale", zoom);
+            this.setNbt(tag);
 
             setImage(image);
         } catch (Exception ex) {

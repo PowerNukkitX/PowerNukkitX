@@ -55,6 +55,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.ItemHelper;
@@ -120,7 +123,7 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
 
     protected float[] diffHandDamage = new float[]{3, 4, 6};
 
-    public EntityWolf(IChunk chunk, NbtMap nbt) {
+    public EntityWolf(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -281,14 +284,14 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
             this.setVariant(getBiomeVariant(getLevel().getBiomeId((int) x, (int) y, (int) z)));
         }
         // Update CollarColor to Color
-        if (nbt.containsKey("CollarColor")) {
+        if (nbt.contains("CollarColor")) {
             this.setColor(DyeColor.getByWoolData(getNbt().getByte("CollarColor")));
         }
         this.armorInventory = new EntityArmorInventory(this);
 
-        if (this.nbt.containsKey(TAG_ARMOR)) {
-            List<NbtMap> armorList = this.getNbt().getList(TAG_ARMOR, NbtType.COMPOUND);
-            for (NbtMap armorTag : armorList) {
+        if (this.nbt.contains(TAG_ARMOR)) {
+            ListTag<CompoundTag> armorList = this.getNbt().getList(TAG_ARMOR, CompoundTag.class);
+            for (CompoundTag armorTag : armorList.getAll()) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), ItemHelper.read(armorTag));
             }
         }
@@ -333,11 +336,11 @@ public class EntityWolf extends EntityAnimal implements EntityWalkable, EntityCa
     public void saveNBT() {
         super.saveNBT();
         if (this.armorInventory != null) {
-            final List<NbtMap> armorTag = new ObjectArrayList<>();
+            final ListTag<CompoundTag> armorTag = new ListTag<>(Tag.TAG_Compound);
             for (int i = 0; i < 4; i++) {
                 armorTag.add(ItemHelper.write(this.armorInventory.getItem(i), i));
             }
-            this.nbt.putList(TAG_ARMOR, NbtType.COMPOUND, armorTag);
+            this.nbt.putList(TAG_ARMOR, armorTag);
         }
     }
 

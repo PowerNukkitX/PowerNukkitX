@@ -7,9 +7,9 @@ import cn.nukkit.entity.effect.PotionApplicationMode;
 import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.IChunk;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+
 import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -43,7 +43,7 @@ public class EntityAreaEffectCloud extends Entity {
     protected int nextApply;
     private int lastAge;
 
-    public EntityAreaEffectCloud(IChunk chunk, NbtMap nbt) {
+    public EntityAreaEffectCloud(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -79,8 +79,8 @@ public class EntityAreaEffectCloud extends Entity {
         int[] color = new int[4];
         int count = 0;
 
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("ParticleColor")) {
+        final CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("ParticleColor")) {
             int effectColor = nbtMap.getInt("ParticleColor");
             color[0] = (effectColor & 0xFF000000) >> 24;
             color[1] = (effectColor & 0x00FF0000) >> 16;
@@ -227,9 +227,9 @@ public class EntityAreaEffectCloud extends Entity {
         this.setSpawnTime(this.level.getCurrentTick(), false);
         this.setPickupCount(0, false);
 
-        final NbtMap nbtMap = this.getNbt();
+        final CompoundTag nbtMap = this.getNbt();
         cloudEffects = new ArrayList<>(1);
-        for (NbtMap effectTag : nbtMap.getList("mobEffects", NbtType.COMPOUND)) {
+        for (CompoundTag effectTag : nbtMap.getList("mobEffects", CompoundTag.class).getAll()) {
             Effect effect = Effect.get(effectTag.getByte("Id"))
                     .setAmbient(effectTag.getBoolean("Ambient"))
                     .setAmplifier(effectTag.getByte("Amplifier"))
@@ -237,7 +237,7 @@ public class EntityAreaEffectCloud extends Entity {
                     .setDuration(effectTag.getInt("Duration"));
             cloudEffects.add(effect);
         }
-        if (nbtMap.containsKey("PotionId")) {
+        if (nbtMap.contains("PotionId")) {
             this.setParticleId(32, false);
             int displayedPotionId = nbtMap.getShort("PotionId");
             setPotionId(displayedPotionId, false);
@@ -246,52 +246,52 @@ public class EntityAreaEffectCloud extends Entity {
             setDragonBreath();
         }
 
-        if (nbtMap.containsKey("Duration")) {
+        if (nbtMap.contains("Duration")) {
             setDuration(nbtMap.getInt("Duration"), false);
         } else {
             setDuration(600, false);
         }
-        if (nbtMap.containsKey("DurationOnUse")) {
+        if (nbtMap.contains("DurationOnUse")) {
             durationOnUse = nbtMap.getInt("DurationOnUse");
         } else {
             durationOnUse = 0;
         }
-        if (nbtMap.containsKey("ReapplicationDelay")) {
+        if (nbtMap.contains("ReapplicationDelay")) {
             reapplicationDelay = nbtMap.getInt("ReapplicationDelay");
         } else {
             reapplicationDelay = 0;
         }
-        if (nbtMap.containsKey("InitialRadius")) {
+        if (nbtMap.contains("InitialRadius")) {
             initialRadius = nbtMap.getFloat("InitialRadius");
         } else {
             initialRadius = 3.0F;
         }
-        if (nbtMap.containsKey("Radius")) {
+        if (nbtMap.contains("Radius")) {
             setRadius(nbtMap.getFloat("Radius"), false);
         } else {
             setRadius(initialRadius, false);
         }
-        if (nbtMap.containsKey("RadiusChangeOnPickup")) {
+        if (nbtMap.contains("RadiusChangeOnPickup")) {
             setRadiusChangeOnPickup(nbtMap.getFloat("RadiusChangeOnPickup"), false);
         } else {
             setRadiusChangeOnPickup(-0.5F, false);
         }
-        if (nbtMap.containsKey("RadiusOnUse")) {
+        if (nbtMap.contains("RadiusOnUse")) {
             radiusOnUse = nbtMap.getFloat("RadiusOnUse");
         } else {
             radiusOnUse = -0.5F;
         }
-        if (nbtMap.containsKey("RadiusPerTick")) {
+        if (nbtMap.contains("RadiusPerTick")) {
             setRadiusPerTick(nbtMap.getFloat("RadiusPerTick"), false);
         } else {
             setRadiusPerTick(-0.005F, false);
         }
-        if (nbtMap.containsKey("WaitTime")) {
+        if (nbtMap.contains("WaitTime")) {
             setWaitTime(nbtMap.getInt("WaitTime"), false);
         } else {
             setWaitTime(10, false);
         }
-        if (nbtMap.containsKey("Height")) {
+        if (nbtMap.contains("Height")) {
             setHeight(nbtMap.getFloat("Height"));
         } else {
             setHeight(0.3F + (getRadius() / 2F));
@@ -309,28 +309,27 @@ public class EntityAreaEffectCloud extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        List<NbtMap> effectsTag = new ObjectArrayList<>();
+        ListTag<CompoundTag> effectsTag = new ListTag<>();
         for (Effect effect : cloudEffects) {
-            effectsTag.add(NbtMap.builder().putByte("Id", effect.getId().byteValue())
+            effectsTag.add(new CompoundTag().putByte("Id", effect.getId())
                     .putBoolean("Ambient", effect.isAmbient())
-                    .putByte("Amplifier", (byte) effect.getAmplifier())
+                    .putByte("Amplifier", effect.getAmplifier())
                     .putBoolean("DisplayOnScreenTextureAnimation", effect.isVisible())
                     .putInt("Duration", effect.getDuration())
-                    .build()
             );
         }
-        this.nbt.putList("mobEffects", NbtType.COMPOUND, effectsTag)
-                .putInt("ParticleColor", getPotionColor())
-                .putInt("Duration", getDuration())
-                .putInt("DurationOnUse", durationOnUse)
-                .putInt("ReapplicationDelay", reapplicationDelay)
-                .putFloat("Radius", getRadius())
-                .putFloat("RadiusChangeOnPickup", getRadiusChangeOnPickup())
-                .putFloat("RadiusOnUse", radiusOnUse)
-                .putFloat("RadiusPerTick", getRadiusPerTick())
-                .putInt("WaitTime", getWaitTime())
-                .putFloat("InitialRadius", initialRadius)
-                .putInt("PotionId", getPotionId());
+        nbt.putList("mobEffects", effectsTag);
+        nbt.putInt("ParticleColor", getPotionColor());
+        nbt.putInt("Duration", getDuration());
+        nbt.putInt("DurationOnUse", durationOnUse);
+        nbt.putInt("ReapplicationDelay", reapplicationDelay);
+        nbt.putFloat("Radius", getRadius());
+        nbt.putFloat("RadiusChangeOnPickup", getRadiusChangeOnPickup());
+        nbt.putFloat("RadiusOnUse", radiusOnUse);
+        nbt.putFloat("RadiusPerTick", getRadiusPerTick());
+        nbt.putInt("WaitTime", getWaitTime());
+        nbt.putFloat("InitialRadius", initialRadius);
+        nbt.putInt("PotionId", getPotionId());
     }
 
     @Override

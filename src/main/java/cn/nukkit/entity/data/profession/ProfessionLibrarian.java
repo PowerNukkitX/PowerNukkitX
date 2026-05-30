@@ -4,11 +4,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.TradeRecipeBuildUtils;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
 
-import java.util.List;
 import java.util.Random;
 
 public class ProfessionLibrarian extends Profession {
@@ -18,8 +17,8 @@ public class ProfessionLibrarian extends Profession {
     }
 
     @Override
-    public List<NbtMap> buildTrades(int seed) {
-        List<NbtMap> recipes = new ObjectArrayList<>();
+    public ListTag<CompoundTag> buildTrades(int seed) {
+        ListTag<CompoundTag> recipes = new ListTag<>();
         Random random = new Random(seed);
 
         Item book1 = Item.get(Item.ENCHANTED_BOOK);

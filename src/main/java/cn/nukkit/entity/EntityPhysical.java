@@ -19,9 +19,9 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
@@ -66,7 +66,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     private double slipperyEntrySpeed = 0.0d;
 
 
-    public EntityPhysical(IChunk chunk, NbtMap nbt) {
+    public EntityPhysical(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         this.tickSpread = globalCycleTickSpread.getAndIncrement() & 0xf;
         this.offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);

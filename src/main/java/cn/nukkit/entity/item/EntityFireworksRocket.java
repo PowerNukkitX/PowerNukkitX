@@ -8,15 +8,13 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFireworkRocket;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.ByteArrayTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
@@ -42,7 +40,7 @@ public class EntityFireworksRocket extends Entity {
     private Item firework;
     private boolean hadCollision;
 
-    public EntityFireworksRocket(IChunk chunk, NbtMap nbt) {
+    public EntityFireworksRocket(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         this.fireworkAge = 0;
@@ -53,16 +51,16 @@ public class EntityFireworksRocket extends Entity {
         this.motionZ = rand.nextGaussian() * 0.001D;
         this.motionY = 0.05D;
 
-        if (nbt.containsKey("FireworkItem")) {
+        if (nbt.contains("FireworkItem")) {
             firework = ItemHelper.read(nbt.getCompound("FireworkItem"));
         } else {
             firework = new ItemFireworkRocket();
         }
 
-        if (!firework.hasCompoundTag() || !firework.getNbt().containsKey("Fireworks")) {
-            NbtMap tag = firework.getNbt();
+        if (!firework.hasNbt() || !firework.getNbt().contains("Fireworks")) {
+            CompoundTag tag = firework.getNbt();
             if (tag == null) {
-                tag = NbtMap.EMPTY;
+                tag = new CompoundTag();
             }
 
             /**
@@ -82,25 +80,22 @@ public class EntityFireworksRocket extends Entity {
              * }, CHARGE_AMOUNT=0b, LEASH_HOLDER=0l, SCALE=1.0f, HAS_NPC=false, AIR_SUPPLY_MAX=300s, MARK_VARIANT=0i, CONTAINER_TYPE=0b, CONTAINER_SIZE=0i, CONTAINER_STRENGTH_MODIFIER=0i, WIDTH=0.25f, HEIGHT=0.25f, SEAT_OFFSET=(0.0, 0.0, 0.0), SEAT_LOCK_PASSENGER_ROTATION=false, SEAT_LOCK_PASSENGER_ROTATION_DEGREES=0.0f, SEAT_ROTATION_OFFSET=false, SEAT_ROTATION_OFFSET_DEGREES=0.0f, HAS_COMMAND_BLOCK=false, COMMAND_NAME="", LAST_COMMAND_OUTPUT="", TRACK_COMMAND_OUTPUT=true, CONTROLLING_RIDER_SEAT_INDEX=0b, STRENGTH=0i, STRENGTH_MAX=0i, DATA_SPELL_CASTING_COLOR=0i, DATA_LIFETIME_TICKS=-1i, NAMETAG_ALWAYS_SHOW=-1b, COLOR_2_INDEX=0b, TRADE_TIER=0i, MAX_TRADE_TIER=0i, TRADE_EXPERIENCE=0i, SKIN_ID=0i, COMMAND_BLOCK_TICK_DELAY=3i, COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK=true, AMBIENT_SOUND_INTERVAL=8.0f, AMBIENT_SOUND_INTERVAL_RANGE=16.0f, AMBIENT_SOUND_EVENT_NAME="ambient", FALL_DAMAGE_MULTIPLIER=1.0f, CAN_RIDE_TARGET=false, LOW_TIER_CURED_TRADE_DISCOUNT=0i, HIGH_TIER_CURED_TRADE_DISCOUNT=0i, NEARBY_CURED_TRADE_DISCOUNT=0i, NEARBY_CURED_DISCOUNT_TIME_STAMP=0i, HITBOX={}, IS_BUOYANT=false, FREEZING_EFFECT_STRENGTH=0.0f, MOVEMENT_SOUND_DISTANCE_OFFSET=1.0f, HEARTBEAT_INTERVAL_TICKS=20i, HEARTBEAT_SOUND_EVENT=UNDEFINED, FILTERED_NAME="", SEAT_THIRD_PERSON_CAMERA_RADIUS=0.0f, SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING=0.0f, AIM_ASSIST_PRIORITY_PRESET_ID=-1i, AIM_ASSIST_PRIORITY_CATEGORY_ID=-1i, AIM_ASSIST_PRIORITY_ACTOR_ID=-1i, RESERVED_139=0l, NAMEPLATE_RENDER_DISTANCE_MAX=64.0f}
              */
 
-            NbtMap ex = NbtMap.builder()
-                    .putByteArray("FireworkColor", new byte[]{(byte) DyeColor.BLACK.getDyeData()})
-                    .putByteArray("FireworkFade", new byte[]{})
+            CompoundTag ex = new CompoundTag()
+                    .put("FireworkColor", new ByteArrayTag(new byte[]{(byte) DyeColor.BLACK.getDyeData()}))
+                    .put("FireworkFade", new ByteArrayTag(new byte[]{}))
                     .putBoolean("FireworkFlicker", false)
                     .putBoolean("FireworkTrail", false)
-                    .putByte("FireworkType", (byte) ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal())
-                    .build();
+                    .putByte("FireworkType", (byte) ItemFireworkRocket.FireworkExplosion.ExplosionType.CREEPER_SHAPED.ordinal());
 
-            final List<NbtMap> explosions = new ObjectArrayList<>();
+            final ListTag<CompoundTag> explosions = new ListTag<>();
             explosions.add(ex);
-            tag = tag.toBuilder().putCompound("Fireworks", NbtMap.builder()
-                    .putList("Explosions", NbtType.COMPOUND, explosions)
-                    .putByte("Flight", (byte) 1)
-                    .build()
-            ).build();
+            tag.putCompound("Fireworks", new CompoundTag()
+                    .putList("Explosions", explosions)
+                    .putByte("Flight", (byte) 1));
 
             firework.setNbt(tag);
         }
-        this.setDataProperty(ActorDataTypes.DISPLAY_FIREWORK, this.firework.getNbt());
+        this.setDataProperty(ActorDataTypes.DISPLAY_FIREWORK, this.firework.getNbt().toNetwork());
     }
 
 

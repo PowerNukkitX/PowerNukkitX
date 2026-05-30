@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockState;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
@@ -303,12 +303,8 @@ public class UnsafeChunk {
         return chunk.getTile(x, y, z);
     }
 
-    public NbtMap getExtraData() {
+    public CompoundTag getExtraData() {
         return chunk.getExtraData();
-    }
-
-    public void updateExtraData(NbtMap extraData) {
-        this.chunk.extraData = extraData;
     }
 
     public boolean hasChanged() {

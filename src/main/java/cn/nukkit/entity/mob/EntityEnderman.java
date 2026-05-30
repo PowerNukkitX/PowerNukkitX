@@ -34,8 +34,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,7 @@ public class EntityEnderman extends EntityMob implements EntityWalkable {
         return ENDERMAN;
     }
 
-    public EntityEnderman(IChunk chunk, NbtMap nbt) {
+    public EntityEnderman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

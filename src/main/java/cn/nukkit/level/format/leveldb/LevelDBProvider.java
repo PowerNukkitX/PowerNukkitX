@@ -17,6 +17,7 @@ import cn.nukkit.level.format.LevelConfig;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.SemVersion;
@@ -72,7 +73,7 @@ public class LevelDBProvider implements LevelProvider {
     protected final LevelDBStorage storage;
     protected final Level level;
     protected final String path;
-    protected NbtMap worldDynamicProperties = NbtMap.EMPTY;
+    protected CompoundTag worldDynamicProperties;
     protected boolean worldDynamicPropertiesDirty = false;
 
     /**
@@ -111,8 +112,8 @@ public class LevelDBProvider implements LevelProvider {
             this.levelDat = levelDat;
         }
 
-        NbtMap dp = this.storage.readWorldDynamicProperties();
-        this.worldDynamicProperties = (dp == null) ? NbtMap.EMPTY : dp;
+        CompoundTag dp = this.storage.readWorldDynamicProperties();
+        this.worldDynamicProperties = (dp == null) ? new CompoundTag() : dp;
         this.worldDynamicPropertiesDirty = false;
     }
 
@@ -146,14 +147,15 @@ public class LevelDBProvider implements LevelProvider {
             levelDatName = "level_Dim%s.dat".formatted(dimensionData.getDimensionId());
         }
         var levelDatNow = path.resolve(levelDatName).toFile();
-        try (var output = new FileOutputStream(levelDatNow)) {
+        try (var output = new FileOutputStream(levelDatNow);
+             var nbtOutputStream = NbtUtils.createWriterLE(output)) {
             if (levelDatNow.exists()) {
                 Files.copy(path.resolve(levelDatName), path.resolve(levelDatName + "_old"), StandardCopyOption.REPLACE_EXISTING);
             } else {
                 levelDatNow.createNewFile();
             }
             output.write(levelDatMagic);//magic number
-            NbtUtils.createWriterLE(output).writeTag(createWorldDataNBT(levelDat));
+            nbtOutputStream.writeTag(createWorldDataNBT(levelDat));
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to write level dat: ", e);
         }
@@ -174,7 +176,7 @@ public class LevelDBProvider implements LevelProvider {
             }
         } else {
             if (Server.getInstance() != null && Server.getInstance().getSettings().chunkSettings().convertBDSChunks() && chunk.isPopulated()) {
-                NbtMap extra = chunk.getExtraData();
+                CompoundTag extra = chunk.getExtraData();
                 if (extra == null || extra.isEmpty()) {
                     chunk = ChunkConversion.convert(chunk);
                 }
@@ -351,7 +353,7 @@ public class LevelDBProvider implements LevelProvider {
                 }
 
                 // Block entities
-                final List<NbtMap> tagList = new ObjectArrayList<>();
+                final List<CompoundTag> tagList = new ObjectArrayList<>();
                 for (BlockEntity blockEntity : unsafeChunk.getBlockEntities().values()) {
                     if (blockEntity instanceof BlockEntitySpawnable blockEntitySpawnable) {
                         tagList.add(blockEntitySpawnable.getSpawnCompound());
@@ -364,8 +366,8 @@ public class LevelDBProvider implements LevelProvider {
                         stream.writeByte(0);
                         VarInts.writeUnsignedInt(byteBuf, 0);
                     } else {
-                        for (NbtMap nbtMap : tagList) {
-                            outputStream.writeTag(nbtMap);
+                        for (CompoundTag nbtMap : tagList) {
+                            outputStream.writeTag(nbtMap.toNetwork());
                         }
                     }
                 } catch (IOException e) {
@@ -655,12 +657,12 @@ public class LevelDBProvider implements LevelProvider {
         return true;
     }
 
-    public NbtMap getWorldDynamicProperties() {
+    public CompoundTag getWorldDynamicProperties() {
         return this.worldDynamicProperties;
     }
 
-    public void setWorldDynamicProperties(NbtMap tag) {
-        this.worldDynamicProperties = tag == null ? NbtMap.EMPTY : tag;
+    public void setWorldDynamicProperties(CompoundTag tag) {
+        this.worldDynamicProperties = tag == null ? new CompoundTag() : tag;
         this.worldDynamicPropertiesDirty = false;
     }
 
@@ -684,9 +686,11 @@ public class LevelDBProvider implements LevelProvider {
         try (var input = new FileInputStream(levelDat)) {
             //The first 8 bytes are magic number
             input.skip(8);
-            BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
-            final NbtMap d = (NbtMap) NbtUtils.createReaderLE(stream).readTag();
-            stream.close();
+            final NbtMap d;
+            try (var stream = new BufferedInputStream(new ByteArrayInputStream(input.readAllBytes()));
+                 var nbtInputStream = NbtUtils.createReaderLE(stream)) {
+                d = (NbtMap) nbtInputStream.readTag();
+            }
             NbtMap abilities = d.getCompound("abilities");
             NbtMap experiments = d.getCompound("experiments");
             GameRules gameRules = GameRules.getDefault();

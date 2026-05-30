@@ -9,6 +9,7 @@ import cn.nukkit.event.player.PlayerBlockPickEvent;
 import cn.nukkit.inventory.HumanInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.process.PacketHandler;
 import cn.nukkit.network.process.PlayerSessionHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
         if (packet.isWithData()) {
             BlockEntity blockEntity = player.getLevel().getBlockEntity(new Vector3(packet.getPosition().getX(), packet.getPosition().getY(), packet.getPosition().getZ()));
             if (blockEntity != null) {
-                NbtMap nbt = blockEntity.getCleanedNBT();
+                CompoundTag nbt = blockEntity.getCleanedNBT();
                 if (nbt != null) {
                     item.setCustomBlockData(nbt);
                     item.setLore("+(DATA)");

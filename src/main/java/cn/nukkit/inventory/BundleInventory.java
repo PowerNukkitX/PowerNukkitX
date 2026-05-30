@@ -4,13 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBundle;
 import cn.nukkit.math.AtomicIntIncrementSupplier;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.InternalApi;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
@@ -29,18 +27,14 @@ public class BundleInventory extends BaseInventory {
     public BundleInventory(ItemBundle holder) {
         super(holder, ContainerType.NONE, 64);
         this.holder = holder;
-        NbtMapBuilder tagBuilder = holder.getOrCreateNbt().toBuilder();
-        tagBuilder.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
-        if (!tagBuilder.containsKey("storage_item_component_content")) {
-            tagBuilder.putList("storage_item_component_content", NbtType.COMPOUND, new ObjectArrayList<>());
+        CompoundTag tag = holder.getOrCreateNbt();
+        tag.putInt("bundle_id", BUNDLE_ID_INCREMENT.getAsInt());
+        if (!tag.containsList("storage_item_component_content")) {
+            tag.putList("storage_item_component_content", new ListTag<CompoundTag>());
         }
 
-        final NbtMap tag = tagBuilder.build();
-
-        holder.setNbt(tag);
-
-        List<NbtMap> list = tag.getList("storage_item_component_content", NbtType.COMPOUND);
-        for (NbtMap compound : list) {
+        ListTag<CompoundTag> list = tag.getList("storage_item_component_content", CompoundTag.class);
+        for (CompoundTag compound : list.getAll()) {
             Item item = ItemHelper.read(compound);
             this.setItemInternal(compound.getByte("Slot"), item);
         }

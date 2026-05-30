@@ -15,10 +15,10 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.Lists;
-import org.cloudburstmc.nbt.NbtMap;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -255,7 +255,7 @@ public class StrongholdPieces {
             this.entryDoor = SmallDoorType.OPENING;
         }
 
-        public StrongholdPiece(NbtMap tag) {
+        public StrongholdPiece(CompoundTag tag) {
             super(tag);
             this.entryDoor = SmallDoorType.OPENING;
             this.entryDoor = SmallDoorType.valueOf(tag.getString("EntryDoor"));
@@ -271,8 +271,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
-            return tag.toBuilder().putString("EntryDoor", this.entryDoor.name()).build();
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return tag.putString("EntryDoor", this.entryDoor.name());
         }
 
         //\\ StrongholdPiece::generateSmallDoor(BlockSource *,Random &,BoundingBox const &,StrongholdPiece::SmallDoorType,int,int,int)
@@ -413,7 +413,7 @@ public class StrongholdPieces {
             this.steps = orientation != BlockFace.NORTH && orientation != BlockFace.SOUTH ? boundingBox.getXSpan() : boundingBox.getZSpan();
         }
 
-        public FillerCorridor(NbtMap tag) {
+        public FillerCorridor(CompoundTag tag) {
             super(tag);
             this.steps = tag.getInt("Steps");
         }
@@ -442,9 +442,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putInt("Steps", this.steps).build();
+            return tag.putInt("Steps", this.steps);
         }
 
         @Override
@@ -495,7 +495,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public StairsDown(NbtMap tag) {
+        public StairsDown(CompoundTag tag) {
             super(tag);
             this.isSource = tag.getBoolean("Source");
         }
@@ -512,9 +512,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Source", this.isSource).build();
+            return tag.putBoolean("Source", this.isSource);
         }
 
         @Override
@@ -580,7 +580,7 @@ public class StrongholdPieces {
             this.rightChild = random.nextInt(2) == 0;
         }
 
-        public Straight(NbtMap tag) {
+        public Straight(CompoundTag tag) {
             super(tag);
             this.leftChild = tag.getBoolean("Left");
             this.rightChild = tag.getBoolean("Right");
@@ -597,11 +597,11 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Left", this.leftChild)
+            return tag.putBoolean("Left", this.leftChild)
                     .putBoolean("Right", this.rightChild)
-                    .build();
+                    ;
         }
 
         @Override
@@ -649,7 +649,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public ChestCorridor(NbtMap tag) {
+        public ChestCorridor(CompoundTag tag) {
             super(tag);
             this.hasPlacedChest = tag.getBoolean("Chest");
         }
@@ -665,9 +665,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Chest", this.hasPlacedChest).build();
+            return tag.putBoolean("Chest", this.hasPlacedChest);
         }
 
         @Override
@@ -718,7 +718,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public StraightStairsDown(NbtMap tag) {
+        public StraightStairsDown(CompoundTag tag) {
             super(tag);
         }
 
@@ -766,7 +766,7 @@ public class StrongholdPieces {
             super(genDepth);
         }
 
-        public Turn(NbtMap tag) {
+        public Turn(CompoundTag tag) {
             super(tag);
         }
     }
@@ -780,7 +780,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public LeftTurn(NbtMap tag) {
+        public LeftTurn(CompoundTag tag) {
             super(tag);
         }
 
@@ -829,7 +829,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public RightTurn(NbtMap tag) {
+        public RightTurn(CompoundTag tag) {
             super(tag);
         }
 
@@ -881,7 +881,7 @@ public class StrongholdPieces {
             this.type = random.nextInt(5);
         }
 
-        public RoomCrossing(NbtMap tag) {
+        public RoomCrossing(CompoundTag tag) {
             super(tag);
             this.type = tag.getInt("Type");
         }
@@ -897,9 +897,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putInt("Type", this.type).build();
+            return tag.putInt("Type", this.type);
         }
 
         @Override
@@ -1038,7 +1038,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public PrisonHall(NbtMap tag) {
+        public PrisonHall(CompoundTag tag) {
             super(tag);
         }
 
@@ -1101,7 +1101,7 @@ public class StrongholdPieces {
             this.isTall = boundingBox.getYSpan() > 6;
         }
 
-        public Library(NbtMap tag) {
+        public Library(CompoundTag tag) {
             super(tag);
             this.isTall = tag.getBoolean("Tall");
         }
@@ -1124,9 +1124,9 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             tag = super.addAdditionalSaveData(tag);
-            return tag.toBuilder().putBoolean("Tall", this.isTall).build();
+            return tag.putBoolean("Tall", this.isTall);
         }
 
         @Override
@@ -1267,7 +1267,7 @@ public class StrongholdPieces {
             this.rightHigh = random.nextInt(3) > 0;
         }
 
-        public FiveCrossing(NbtMap tag) {
+        public FiveCrossing(CompoundTag tag) {
             super(tag);
             this.leftLow = tag.getBoolean("leftLow");
             this.leftHigh = tag.getBoolean("leftHigh");
@@ -1286,12 +1286,12 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
-            return super.addAdditionalSaveData(tag).toBuilder().putBoolean("leftLow", this.leftLow)
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return super.addAdditionalSaveData(tag).putBoolean("leftLow", this.leftLow)
                     .putBoolean("leftHigh", this.leftHigh)
                     .putBoolean("rightLow", this.rightLow)
                     .putBoolean("rightHigh", this.rightHigh)
-                    .build();
+                    ;
         }
 
         @Override
@@ -1371,7 +1371,7 @@ public class StrongholdPieces {
             this.boundingBox = boundingBox;
         }
 
-        public PortalRoom(NbtMap tag) {
+        public PortalRoom(CompoundTag tag) {
             super(tag);
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
@@ -1387,8 +1387,8 @@ public class StrongholdPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
-            return super.addAdditionalSaveData(tag).toBuilder().putBoolean("Mob", this.hasPlacedSpawner).build();
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
+            return super.addAdditionalSaveData(tag).putBoolean("Mob", this.hasPlacedSpawner);
         }
 
         @Override

@@ -42,8 +42,11 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.BlockFace;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
@@ -57,7 +60,6 @@ import org.cloudburstmc.protocol.bedrock.packet.BossEventPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +71,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         return WITHER;
     }
 
-    public EntityWither(IChunk chunk, NbtMap nbt) {
+    public EntityWither(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -232,7 +234,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         packet.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth()).toNetwork()
         );
-        packet.setActorData(this.getEntityDataMap());
+        packet.setActorData(this.getActorDataMap());
         packet.setTargetActorID(this.getId());
         packet.setTargetRuntimeID(this.getId());
         packet.setActorType("minecraft:wither");
@@ -407,15 +409,18 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
                         }
                         Block pos = check.getSide(blockFace, 2);
-                        final NbtMap nbt = NbtMap.builder()
-                                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                                pos.x + 0.5,
-                                                pos.y + 0.5,
-                                                pos.z + 0.5
-                                        )
-                                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
-                                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
-                                ).build();
+                        CompoundTag nbt = new CompoundTag()
+                                .putList("Pos", new ListTag<DoubleTag>()
+                                        .add(new DoubleTag(pos.x + 0.5))
+                                        .add(new DoubleTag(pos.y))
+                                        .add(new DoubleTag(pos.z + 0.5)))
+                                .putList("Motion", new ListTag<DoubleTag>()
+                                        .add(new DoubleTag(0))
+                                        .add(new DoubleTag(0))
+                                        .add(new DoubleTag(0)))
+                                .putList("Rotation", new ListTag<FloatTag>()
+                                        .add(new FloatTag(0f))
+                                        .add(new FloatTag(0f)));
 
                         Entity wither = Entity.createEntity(EntityID.WITHER, check.level.getChunk(check.getChunkX(), check.getChunkZ()), nbt);
                         wither.spawnToAll();

@@ -33,6 +33,11 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     }
 
     @Override
+    public void onStart(EntityIntelligent entity) {
+        entity.level.addSound(entity, Sound.RANDOM_FUSE);
+    }
+
+    @Override
     public boolean execute(EntityIntelligent entity) {
         //check flag
         if (flagMemory != null && entity.getMemoryStorage().compareDataTo(flagMemory, false)) {
@@ -41,7 +46,6 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
         currentTick++;
         if (explodeTime > currentTick) {
-            entity.level.addSound(entity, Sound.RANDOM_FUSE);
             entity.setDataProperty(ActorDataTypes.FUSE_TIME, currentTick);
             entity.setDataFlag(ActorFlags.IGNITED, true);
             return true;
@@ -53,14 +57,22 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        entity.setDataFlag(ActorFlags.IGNITED, false);
+        resetFuseState(entity);
         currentTick = 0;
     }
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        entity.setDataFlag(ActorFlags.IGNITED, false);
+        resetFuseState(entity);
         currentTick = 0;
+    }
+
+    private void resetFuseState(EntityIntelligent entity) {
+        entity.setDataFlag(ActorFlags.IGNITED, false);
+        entity.setDataProperty(ActorDataTypes.FUSE_TIME, 0);
+        if (entity instanceof EntityCreeper) {
+            entity.setDataProperty(ActorDataTypes.SWELL, (byte) 0);
+        }
     }
 
     protected void explode(EntityIntelligent entity) {

@@ -11,9 +11,10 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.registry.Registries;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,7 +41,7 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         super(id, 0, 1);
     }
 
-    protected NbtMap entityNBT;
+    protected CompoundTag entityNBT;
 
     @Override
     public void setDamage(int meta) {
@@ -74,17 +75,15 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         IChunk chunk = level.getChunk((int) Math.floor(loc.getX()) >> 4, (int) Math.floor(loc.getZ()) >> 4);
         if (chunk == null) return false;
 
-        NbtMap nbt = Entity.getDefaultNBT(loc);
+        CompoundTag nbt = Entity.getDefaultNBT(loc);
         if (this.hasCustomName()) {
-            nbt = nbt.toBuilder().putString("CustomName", this.getCustomName()).build();
+            nbt.putString("CustomName", this.getCustomName());
         }
 
         if (this.entityNBT != null) {
-            this.entityNBT.toBuilder()
-                    .putList("Pos", NbtType.DOUBLE, nbt.getList("Pos", NbtType.DOUBLE))
-                    .putList("Motion", NbtType.DOUBLE, nbt.getList("Motion", NbtType.DOUBLE))
-                    .putList("Rotation", NbtType.FLOAT, nbt.getList("Rotation", NbtType.FLOAT))
-                    .build();
+            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
             nbt = this.entityNBT;
         }
 
@@ -129,7 +128,6 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
     }
 
     @Override
-    public void setEntityNBT(NbtMap entityNBT) {
-
+    public void setEntityNBT(CompoundTag entityNBT) {
     }
 }

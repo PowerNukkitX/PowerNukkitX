@@ -10,11 +10,13 @@ import cn.nukkit.level.generator.object.structures.utils.NukkitCollections;
 import cn.nukkit.level.generator.object.structures.utils.StructurePiece;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -108,7 +110,7 @@ public class OceanMonumentPieces {
             }
         }
 
-        public OceanMonumentPiece(NbtMap tag) {
+        public OceanMonumentPiece(CompoundTag tag) {
             super(tag);
         }
 
@@ -117,7 +119,7 @@ public class OceanMonumentPieces {
         }
 
         @Override
-        protected NbtMap addAdditionalSaveData(NbtMap tag) {
+        protected CompoundTag addAdditionalSaveData(CompoundTag tag) {
             return tag;
         }
 
@@ -188,11 +190,18 @@ public class OceanMonumentPieces {
                 IChunk chunk = level.getChunk(worldX >> 4, worldZ >> 4);
                 if (chunk != null) {
                     EntityElderGuardian guardian = (EntityElderGuardian) Entity.createEntity(Entity.ELDER_GUARDIAN,
-                            chunk, NbtMap.builder()
-                                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(worldX + 0.5, (double) worldY, worldZ + 0.5))
-                                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                                    .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
-                                    .build()
+                            chunk, new CompoundTag()
+                                    .putList("Pos", new ListTag<>()
+                                            .add(new DoubleTag(worldX + 0.5))
+                                            .add(new DoubleTag(worldY))
+                                            .add(new DoubleTag(worldZ + 0.5)))
+                                    .putList("Motion", new ListTag<>()
+                                            .add(new DoubleTag(0))
+                                            .add(new DoubleTag(0))
+                                            .add(new DoubleTag(0)))
+                                    .putList("Rotation", new ListTag<>()
+                                            .add(new FloatTag(0))
+                                            .add(new FloatTag(0)))
                     );
                     if (guardian != null) {
                         guardian.setPersistent(true);
@@ -258,7 +267,7 @@ public class OceanMonumentPieces {
             this.childPieces.add(new OceanMonumentPenthouse(orientation, BoundingBox.createProper(this.getWorldX(22, 22), this.getWorldY(13), this.getWorldZ(22, 22), this.getWorldX(35, 35), this.getWorldY(17), this.getWorldZ(35, 35))));
         }
 
-        public MonumentBuilding(NbtMap tag) {
+        public MonumentBuilding(CompoundTag tag) {
             super(tag);
             this.childPieces = Lists.newArrayList();
         }
@@ -755,7 +764,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 1, 1, 1);
         }
 
-        public OceanMonumentEntryRoom(NbtMap tag) {
+        public OceanMonumentEntryRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -799,7 +808,7 @@ public class OceanMonumentPieces {
             this.mainDesign = random.nextBoundedInt(3);
         }
 
-        public OceanMonumentSimpleRoom(NbtMap tag) {
+        public OceanMonumentSimpleRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -967,7 +976,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 1, 1, 1);
         }
 
-        public OceanMonumentSimpleTopRoom(NbtMap tag) {
+        public OceanMonumentSimpleTopRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1025,7 +1034,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 1, 2, 1);
         }
 
-        public OceanMonumentDoubleYRoom(NbtMap tag) {
+        public OceanMonumentDoubleYRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1113,7 +1122,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 2, 1, 1);
         }
 
-        public OceanMonumentDoubleXRoom(NbtMap tag) {
+        public OceanMonumentDoubleXRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1189,7 +1198,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 1, 1, 2);
         }
 
-        public OceanMonumentDoubleZRoom(NbtMap tag) {
+        public OceanMonumentDoubleZRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1283,7 +1292,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 2, 2, 1);
         }
 
-        public OceanMonumentDoubleXYRoom(NbtMap tag) {
+        public OceanMonumentDoubleXYRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1398,7 +1407,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 1, 2, 2);
         }
 
-        public OceanMonumentDoubleYZRoom(NbtMap tag) {
+        public OceanMonumentDoubleYZRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1510,7 +1519,7 @@ public class OceanMonumentPieces {
             super(1, orientation, roomDefinition, 2, 2, 2);
         }
 
-        public OceanMonumentCoreRoom(NbtMap tag) {
+        public OceanMonumentCoreRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1597,7 +1606,7 @@ public class OceanMonumentPieces {
             this.mainDesign = (mainDesign & 0x1);
         }
 
-        public OceanMonumentWingRoom(NbtMap tag) {
+        public OceanMonumentWingRoom(CompoundTag tag) {
             super(tag);
         }
 
@@ -1703,7 +1712,7 @@ public class OceanMonumentPieces {
             super(orientation, boundingBox);
         }
 
-        public OceanMonumentPenthouse(NbtMap tag) {
+        public OceanMonumentPenthouse(CompoundTag tag) {
             super(tag);
         }
 

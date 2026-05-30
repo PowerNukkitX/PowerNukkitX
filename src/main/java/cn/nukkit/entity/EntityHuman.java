@@ -2,15 +2,17 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.EntityFreezeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemShield;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
+
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.ActorLinkType;
 import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
@@ -21,14 +23,12 @@ import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesData;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedAbilitiesDataSerializedLayer;
 import org.cloudburstmc.protocol.bedrock.data.payload.abilities.SerializedLayer;
-import org.cloudburstmc.protocol.bedrock.data.skin.SerializedSkin;
 import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.RemoveActorPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetActorLinkPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,9 +42,9 @@ import static org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes.RESERV
 public class EntityHuman extends EntityHumanType {
     protected UUID uuid;
     protected byte[] rawUUID;
-    protected SerializedSkin skin;
+    protected Skin skin;
 
-    public EntityHuman(IChunk chunk, NbtMap nbt) {
+    public EntityHuman(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -93,11 +93,11 @@ public class EntityHuman extends EntityHumanType {
         return 1.62f;
     }
 
-    public SerializedSkin getSkin() {
+    public Skin getSkin() {
         return skin;
     }
 
-    public void setSkin(SerializedSkin skin) {
+    public void setSkin(Skin skin) {
         this.skin = skin;
     }
 
@@ -182,7 +182,7 @@ public class EntityHuman extends EntityHumanType {
         if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
             this.hasSpawned.put(player.getLoaderId(), player);
 
-            if (!SkinUtils.isValid(this.skin)) {
+            if (!SkinUtils.isValid(this.skin.getSkin())) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
@@ -191,11 +191,11 @@ public class EntityHuman extends EntityHumanType {
             else
                 this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.skin, Color.WHITE, new Player[]{player});
 
-            this.entityDataMap.put(RESERVED_139, 0L);
-            this.entityDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 0L);
+            this.actorDataMap.put(RESERVED_139, 0L);
+            this.actorDataMap.put(NAMEPLATE_RENDER_DISTANCE_MAX, 0L);
 
             final AddPlayerPacket addPlayerPacket = new AddPlayerPacket();
-            addPlayerPacket.setActorData(this.entityDataMap);
+            addPlayerPacket.setActorData(this.actorDataMap);
             addPlayerPacket.setUuid(this.getUniqueId());
             addPlayerPacket.setPlayerName(this.getName());
             addPlayerPacket.setTargetActorID(this.getId());

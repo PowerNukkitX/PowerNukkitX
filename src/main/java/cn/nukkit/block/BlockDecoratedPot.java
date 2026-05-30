@@ -10,10 +10,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,13 +46,15 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        NbtMapBuilder nbt = NbtMap.builder();
+        CompoundTag nbt = new CompoundTag();
 
         nbt.putString("id", BlockEntity.DECORATED_POT);
         nbt.putByte("isMovable", (byte) 1);
 
         if (item.getNbt() != null) {
-            nbt.putAll(item.getNbt());
+            for (var entry : item.getNbt().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
         nbt.putInt("x", (int) this.x);
@@ -61,7 +62,7 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         nbt.putInt("z", (int) this.y);
 
         this.setBlockFace(player.getDirection().getOpposite());
-        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt.build()) != null;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt) != null;
     }
 
     @Override
@@ -112,10 +113,10 @@ public class BlockDecoratedPot extends BlockFlowable implements Faceable, BlockE
         }
 
         BlockEntityDecoratedPot blockEntity = getBlockEntity();
-        List<String> sherds = blockEntity == null ? null : blockEntity.getNbt().getList("sherds", NbtType.STRING);
+        List<StringTag> sherds = blockEntity == null ? null : blockEntity.getNbt().getList("sherds", StringTag.class).getAll();
         var drops = new ArrayList<Item>(4);
         for (int i = 0; i < 4; i++) {
-            String id = sherds != null && i < sherds.size() ? sherds.get(i) : ItemID.BRICK;
+            String id = sherds != null && i < sherds.size() ? sherds.get(i).data : ItemID.BRICK;
             drops.add(Item.get(id));
         }
         return drops.toArray(Item[]::new);

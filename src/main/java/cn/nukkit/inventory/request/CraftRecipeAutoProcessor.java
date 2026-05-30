@@ -81,8 +81,8 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                 Item output = recipe.getResults().getFirst().clone();
                 if (recipe instanceof UserDataShapelessRecipe) {
                     for (Item inputItem : eventItems) {
-                        if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
-                            output.setCompoundTag(inputItem.getCompoundTag());
+                        if (!inputItem.isNull() && inputItem.hasNbt()) {
+                            output.setNbtBytes(inputItem.getCompoundTag());
                             break;
                         }
                     }

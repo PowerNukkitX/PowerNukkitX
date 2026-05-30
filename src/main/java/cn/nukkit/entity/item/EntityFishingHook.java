@@ -21,8 +21,8 @@ import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterWakeParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.packet.ActorEventPacket;
@@ -58,11 +58,11 @@ public class EntityFishingHook extends SlenderProjectile {
 
     public Item rod = null;
 
-    public EntityFishingHook(IChunk chunk, NbtMap nbt) {
+    public EntityFishingHook(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityFishingHook(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityFishingHook(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
         // https://github.com/PowerNukkit/PowerNukkit/issues/267
         if (this.age > 0) {
@@ -257,10 +257,9 @@ public class EntityFishingHook extends SlenderProjectile {
                                         pos,
                                         event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
                                         0
-                                ).toBuilder().putCompound("Item", ItemHelper.write(event.getLoot(), null))
+                                ).putCompound("Item", ItemHelper.write(event.getLoot(), null))
                                 .putShort("Health", (short) 5)
-                                .putShort("PickupDelay", (short) 1)
-                                .build());
+                                .putShort("PickupDelay", (short) 1));
 
                 if (itemEntity != null) {
                     itemEntity.setOwner(player.getName());
@@ -292,8 +291,8 @@ public class EntityFishingHook extends SlenderProjectile {
         if (this.shootingEntity != null) {
             ownerId = this.shootingEntity.getId();
         }
-        this.entityDataMap.put(ActorDataTypes.OWNER, ownerId);
-        pk.setActorData(this.entityDataMap);
+        this.actorDataMap.put(ActorDataTypes.OWNER, ownerId);
+        pk.setActorData(this.actorDataMap);
         return pk;
     }
 

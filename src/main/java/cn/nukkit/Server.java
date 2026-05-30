@@ -15,6 +15,7 @@ import cn.nukkit.config.updater.ConfigUpdater;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.education.Education;
 import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.data.human.Skin;
 import cn.nukkit.entity.data.profession.Profession;
 import cn.nukkit.entity.data.property.EntityProperty;
 import cn.nukkit.event.HandlerList;
@@ -50,6 +51,10 @@ import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
 import cn.nukkit.metadata.PlayerMetadataStore;
 import cn.nukkit.metrics.NukkitMetrics;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.NetworkConstants;
 import cn.nukkit.network.NetworkInterface;
@@ -87,13 +92,11 @@ import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.cloudburstmc.nbt.NBTInputStream;
 import org.cloudburstmc.nbt.NBTOutputStream;
 import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.BuildPlatform;
 import org.cloudburstmc.protocol.bedrock.data.Experiment;
@@ -1589,35 +1592,35 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, this.playerList.values());
     }
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Color color) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, this.playerList.values());
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", Color.WHITE, players);
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, Color color, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Color color, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", color, players);
     }
 
@@ -1632,7 +1635,7 @@ public class Server {
      * @param xboxUserId xbox user id
      * @param players    players to send packet
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color, Player[] players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Player[] players) {
         final PlayerListPacket pk = new PlayerListPacket();
         pk.setAction(PlayerListPacketType.ADD);
 
@@ -1642,7 +1645,8 @@ public class Server {
         entry.setXblXUID(xboxUserId);
         entry.setPlatformChatId("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        entry.setSkin(skin);
+        entry.setSkin(skin.getSkin());
+        entry.setTrustedSkin(skin.isTrusted());
         entry.setPlayerColor(color);
 
         pk.getEntries().add(entry);
@@ -1650,9 +1654,9 @@ public class Server {
     }
 
     /**
-     * @see #updatePlayerListData(UUID, long, String, SerializedSkin, String, Color, Player[])
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Color, Player[])
      */
-    public void updatePlayerListData(UUID uuid, long entityId, String name, SerializedSkin skin, String xboxUserId, Color color, Collection<Player> players) {
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Color color, Collection<Player> players) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, color, players.toArray(Player.EMPTY_ARRAY));
     }
 
@@ -1704,7 +1708,8 @@ public class Server {
             entry.setXblXUID(value.getXUID());
             entry.setPlatformChatId("");
             entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-            entry.setSkin(value.getSkin());
+            entry.setSkin(value.getSkin().getSkin());
+            entry.setTrustedSkin(value.getSkin().isTrusted());
             entry.setPlayerColor(value.getLocatorBarColor());
         }
         player.sendPacket(pk);
@@ -1811,7 +1816,7 @@ public class Server {
      *
      * @see #getOfflinePlayerData(UUID, boolean)
      */
-    public NbtMap getOfflinePlayerData(UUID uuid) {
+    public CompoundTag getOfflinePlayerData(UUID uuid) {
         return getOfflinePlayerData(uuid, false);
     }
 
@@ -1820,17 +1825,17 @@ public class Server {
      *
      * @param uuid   UUID of the player to get data from
      * @param create If player data does not exist, whether to create.
-     * @return {@link NbtMap}
+     * @return {@link CompoundTag}
      */
-    public NbtMap getOfflinePlayerData(UUID uuid, boolean create) {
+    public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
         return getOfflinePlayerDataInternal(uuid, create);
     }
 
-    public NbtMap getOfflinePlayerData(String name) {
+    public CompoundTag getOfflinePlayerData(String name) {
         return getOfflinePlayerData(name, false);
     }
 
-    public NbtMap getOfflinePlayerData(String name, boolean create) {
+    public CompoundTag getOfflinePlayerData(String name, boolean create) {
         Optional<UUID> uuid = lookupName(name);
         if (uuid.isEmpty()) {
             log.debug("Invalid uuid in name lookup database detected! Removing");
@@ -1858,7 +1863,7 @@ public class Server {
         return bytes != null;
     }
 
-    private NbtMap getOfflinePlayerDataInternal(UUID uuid, boolean create) {
+    private CompoundTag getOfflinePlayerDataInternal(UUID uuid, boolean create) {
         if (uuid == null) {
             log.error("UUID is empty, cannot query player data");
             return null;
@@ -1871,15 +1876,15 @@ public class Server {
             if (bytes != null) {
                 try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
                      final NBTInputStream nbtInputStream = NbtUtils.createGZIPReader(inputStream)) {
-                    return (NbtMap) nbtInputStream.readTag();
+                    return CompoundTag.fromNetwork((NbtMap) nbtInputStream.readTag());
                 }
             }
 
             if (migrationService.hasBedrockData(uuid)) {
-                NbtMap migrated = migrationService.migrate(uuid);
+                CompoundTag migrated = migrationService.migrate(uuid);
 
                 if (migrated != null) {
-                    migrated = migrated.toBuilder().putBoolean("BedrockMigrated", true).build();
+                    migrated.putBoolean("BedrockMigrated", true);
                     saveOfflinePlayerData(uuid, migrated, true);
                     return migrated;
                 }
@@ -1887,7 +1892,7 @@ public class Server {
         } catch (IOException e) {
             log.warn(this.getLanguage().tr("nukkit.data.playerCorrupted", uuid), e);
         }
-        NbtMap migrated = migrationService.migrate(uuid);
+        CompoundTag migrated = migrationService.migrate(uuid);
 
         if (migrated != null) {
             saveOfflinePlayerData(uuid, migrated, true);
@@ -1898,22 +1903,29 @@ public class Server {
                 log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
             }
             Position spawn = this.getDefaultLevel().getSafeSpawn();
-            final NbtMap nbt = NbtMap.builder()
+            final CompoundTag nbt = new CompoundTag()
                     .putLong("firstPlayed", System.currentTimeMillis() / 1000)
                     .putLong("lastPlayed", System.currentTimeMillis() / 1000)
-                    .putList("Pos", NbtType.DOUBLE, Arrays.asList(spawn.x, spawn.y, spawn.z))
+                    .putList("Pos", new ListTag<DoubleTag>()
+                            .add(new DoubleTag(spawn.x))
+                            .add(new DoubleTag(spawn.y))
+                            .add(new DoubleTag(spawn.z)))
                     .putString("Level", this.getDefaultLevel().getName())
-                    .putList("Inventory", NbtType.COMPOUND, new ObjectArrayList<>())
-                    .putCompound("Achievements", NbtMap.EMPTY)
+                    .putList("Inventory", new ListTag<>())
+                    .putCompound("Achievements", new CompoundTag())
                     .putInt("playerGameType", this.getGamemode())
-                    .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                    .putList("Rotation", NbtType.FLOAT, Arrays.asList(0.0f, 0.0f))
+                    .putList("Motion", new ListTag<DoubleTag>()
+                            .add(new DoubleTag(0))
+                            .add(new DoubleTag(0))
+                            .add(new DoubleTag(0)))
+                    .putList("Rotation", new ListTag<FloatTag>()
+                            .add(new FloatTag(0))
+                            .add(new FloatTag(0)))
                     .putFloat("FallDistance", 0)
-                    .putShort("Fire", (short) 0)
-                    .putShort("Air", (short) 300)
+                    .putShort("Fire", 0)
+                    .putShort("Air", 300)
                     .putBoolean("OnGround", true)
-                    .putBoolean("Invulnerable", false)
-                    .build();
+                    .putBoolean("Invulnerable", false);
 
             this.saveOfflinePlayerData(uuid, nbt, true);
             return nbt;
@@ -1924,23 +1936,23 @@ public class Server {
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, NbtMap, boolean)
+     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
-    public void saveOfflinePlayerData(UUID uuid, NbtMap tag) {
+    public void saveOfflinePlayerData(UUID uuid, CompoundTag tag) {
         this.saveOfflinePlayerData(uuid, tag, false);
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, NbtMap, boolean)
+     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
-    public void saveOfflinePlayerData(UUID uuid, NbtMap tag, boolean async) {
+    public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
         this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
 
     /**
-     * @see #saveOfflinePlayerData(String, NbtMap, boolean)
+     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
      */
-    public void saveOfflinePlayerData(String name, NbtMap tag) {
+    public void saveOfflinePlayerData(String name, CompoundTag tag) {
         this.saveOfflinePlayerData(name, tag, false);
     }
 
@@ -1951,7 +1963,7 @@ public class Server {
      * @param tag        nbt data
      * @param async      Whether to save asynchronously
      */
-    public void saveOfflinePlayerData(String nameOrUUid, NbtMap tag, boolean async) {
+    public void saveOfflinePlayerData(String nameOrUUid, CompoundTag tag, boolean async) {
         UUID uuid = lookupName(nameOrUUid).orElse(UUID.fromString(nameOrUUid));
         if (this.getSettings().playerSettings().savePlayerData()) {
             this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
@@ -1974,12 +1986,12 @@ public class Server {
         }
     }
 
-    private void saveOfflinePlayerDataInternal(NbtMap tag, UUID uuid) {
+    private void saveOfflinePlayerDataInternal(CompoundTag tag, UUID uuid) {
         try {
-            tag = cleanupOfflinePlayerData(tag);
+            cleanupOfflinePlayerData(tag);
             try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                  final NBTOutputStream nbtOutputStream = NbtUtils.createGZIPWriter(outputStream)) {
-                nbtOutputStream.writeTag(tag);
+                nbtOutputStream.writeTag(tag.toNetwork());
                 nbtOutputStream.close();
                 byte[] bytes = outputStream.toByteArray();
                 ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
@@ -1992,8 +2004,8 @@ public class Server {
         }
     }
 
-    private NbtMap cleanupOfflinePlayerData(NbtMap tag) {
-        return NbtHelper.remove(tag, "Colors", "PieceTintColors", "Skin");
+    private void cleanupOfflinePlayerData(CompoundTag tag) {
+        tag.remove("Colors", "PieceTintColors", "Skin");
     }
 
     /**
@@ -2980,14 +2992,14 @@ public class Server {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
         if (provider == null) return this;
 
-        NbtMap root = provider.getWorldDynamicProperties();
+        CompoundTag root = provider.getWorldDynamicProperties();
         if (root == null) return this;
 
-        if (!root.containsKey(DP_ROOT)) return this;
-        NbtMap dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT)) return this;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
 
-        NbtMap group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
-        if (group == null || !group.containsKey(key)) return this;
+        CompoundTag group = dyn.getCompound(DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.contains(key)) return this;
 
         group.remove(key);
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, group);
@@ -3001,14 +3013,14 @@ public class Server {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
         if (provider == null) return this;
 
-        NbtMap root = provider.getWorldDynamicProperties();
-        if (root == null) root = NbtMap.EMPTY;
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
 
-        NbtMap dyn = root.getCompound(DP_ROOT);
-        if (dyn == null) dyn = NbtMap.EMPTY;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (dyn == null) dyn = new CompoundTag();
 
-        dyn = dyn.toBuilder().putCompound(DP_DEFAULT_GROUP_UUID, NbtMap.EMPTY).build();
-        root = root.toBuilder().putCompound(DP_ROOT, dyn).build();
+        dyn.putCompound(DP_DEFAULT_GROUP_UUID, new CompoundTag());
+        root.putCompound(DP_ROOT, dyn);
 
         provider.setWorldDynamicProperties(root);
         provider.setWorldDynamicPropertiesDirty(true);
@@ -3032,10 +3044,8 @@ public class Server {
         if (provider == null)
             return this;
 
-        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-                .toBuilder()
-                .putDouble(key, value)
-                .build();
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .putDouble(key, value);
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3073,10 +3083,8 @@ public class Server {
         if (provider == null)
             return this;
 
-        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-                .toBuilder()
-                .putBoolean(key, bool)
-                .build();
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .putBoolean(key, bool);
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3098,10 +3106,8 @@ public class Server {
         if (provider == null)
             return this;
 
-        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-                .toBuilder()
-                .putString(key, string)
-                .build();
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
+                .putString(key, string);
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3121,16 +3127,17 @@ public class Server {
                     key, vec3.x, vec3.y, vec3.z);
             return this;
         }
-        final List<Float> list = Arrays.asList((float) vec3.x, (float) vec3.y, (float) vec3.z);
+        ListTag<FloatTag> list = new ListTag<>();
+        list.add(new FloatTag((float) vec3.x));
+        list.add(new FloatTag((float) vec3.y));
+        list.add(new FloatTag((float) vec3.z));
 
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
         if (provider == null)
             return this;
 
-        NbtMap g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID)
-                .toBuilder()
-                .putList(key, NbtType.FLOAT, list)
-                .build();
+        CompoundTag g = ensureWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        g.putList(key, list);
         saveWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID, g);
         return this;
     }
@@ -3348,44 +3355,44 @@ public class Server {
         return ldb;
     }
 
-    private NbtMap ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
-        NbtMap root = provider.getWorldDynamicProperties();
-        if (root == null) root = NbtMap.EMPTY;
+    private CompoundTag ensureWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
 
-        NbtMap dyn = root.getCompound(DP_ROOT);
-        if (!root.containsKey(DP_ROOT) || dyn == null) {
-            dyn = NbtMap.EMPTY;
-            root = root.toBuilder().putCompound(DP_ROOT, dyn).build();
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT) || dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
         }
 
-        NbtMap group = dyn.getCompound(groupId);
-        if (group == null) group = NbtMap.EMPTY;
+        CompoundTag group = dyn.getCompound(groupId);
+        if (group == null) group = new CompoundTag();
 
-        dyn = dyn.toBuilder().putCompound(groupId, group).build();
+        dyn.putCompound(groupId, group);
         provider.setWorldDynamicProperties(root);
         return group;
     }
 
 
-    private NbtMap getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
-        NbtMap root = provider.getWorldDynamicProperties();
-        if (root == null || !root.containsKey(DP_ROOT)) return null;
-        NbtMap dyn = root.getCompound(DP_ROOT);
+    private CompoundTag getWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null || !root.contains(DP_ROOT)) return null;
+        CompoundTag dyn = root.getCompound(DP_ROOT);
         if (dyn == null) return null;
         return dyn.getCompound(groupId);
     }
 
-    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, NbtMap group) {
-        NbtMap root = provider.getWorldDynamicProperties();
-        if (root == null) root = NbtMap.EMPTY;
+    private void saveWorldDynamicPropertiesGroup(LevelDBProvider provider, String groupId, CompoundTag group) {
+        CompoundTag root = provider.getWorldDynamicProperties();
+        if (root == null) root = new CompoundTag();
 
-        NbtMap dyn = root.getCompound(DP_ROOT);
-        if (!root.containsKey(DP_ROOT) || dyn == null) {
-            dyn = NbtMap.EMPTY;
-            root = root.toBuilder().putCompound(DP_ROOT, dyn).build();
+        CompoundTag dyn = root.getCompound(DP_ROOT);
+        if (!root.contains(DP_ROOT) || dyn == null) {
+            dyn = new CompoundTag();
+            root.putCompound(DP_ROOT, dyn);
         }
 
-        dyn = dyn.toBuilder().putCompound(groupId, group).build();
+        dyn.putCompound(groupId, group);
         provider.setWorldDynamicProperties(root);
         provider.setWorldDynamicPropertiesDirty(true);
     }
@@ -3394,8 +3401,8 @@ public class Server {
         LevelDBProvider provider = getWorldDynamicPropertiesProvider();
         if (provider == null) return null;
 
-        NbtMap group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
-        if (group == null || !group.containsKey(key)) return null;
+        CompoundTag group = getWorldDynamicPropertiesGroup(provider, DP_DEFAULT_GROUP_UUID);
+        if (group == null || !group.contains(key)) return null;
         return group.get(key);
     }
     // Dynamic Properties Helpers end

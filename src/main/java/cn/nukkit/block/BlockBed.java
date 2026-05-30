@@ -16,11 +16,11 @@ import cn.nukkit.level.Location;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.TextFormat;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -220,9 +220,9 @@ public class BlockBed extends BlockTransparent implements Faceable, BlockEntityH
 
         BlockEntityBed thisBed = null;
         try {
-            thisBed = createBlockEntity(NbtMap.builder().putByte("color", (byte) item.getDamage()).build());
+            thisBed = createBlockEntity(new CompoundTag().putByte("color", (byte) item.getDamage()));
             BlockEntityHolder<?> nextBlock = (BlockEntityHolder<?>) next.getLevelBlock();
-            nextBlock.createBlockEntity(NbtMap.builder().putByte("color", (byte) item.getDamage()).build());
+            nextBlock.createBlockEntity(new CompoundTag().putByte("color", (byte) item.getDamage()));
         } catch (Exception e) {
             log.warn("Failed to create the block entity {} at {} and {}", getBlockEntityType(), getLocation(), next.getLocation(), e);
             if (thisBed != null) {

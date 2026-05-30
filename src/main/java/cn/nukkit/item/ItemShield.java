@@ -1,8 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -35,19 +34,20 @@ public class ItemShield extends ItemTool {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasBannerPattern() {
-        return this.hasCompoundTag() && (this.getNbt().containsKey("Base") ||
-                this.getNbt().containsKey("Type") || this.getNbt().containsKey("Patterns"));
+        return this.hasNbt() && (this.getNbt().containsInt("Base") ||
+                this.getNbt().containsInt("Type") || this.getNbt().containsList("Patterns"));
     }
 
     public @Nullable ItemBanner getBannerPattern() {
         if (!this.hasBannerPattern()) {
             return null;
         }
-        var tag = this.getNbt().toBuilder();
+        var tag = this.getNbt();
         var item = new ItemBanner();
-        tag.putAll(item.getNbt());
-        this.setNbt(tag.build());
-        if (this.getNbt().containsKey("Base")) {
+        for (var e : item.getNbt().getEntrySet()) {
+            tag.put(e.getKey(), e.getValue());
+        }
+        if (this.getNbt().containsInt("Base")) {
             item.setBaseColor(DyeColor.getByDyeData(this.getNbt().getInt("Base")));
         }
         return item;
@@ -55,19 +55,20 @@ public class ItemShield extends ItemTool {
 
     public void setBannerPattern(@Nullable ItemBanner banner) {
         if (banner == null) {
-            this.clearNbt();
+            this.clearNamedTag();
             return;
         }
-        NbtMap tag;
+        CompoundTag tag;
         if (!hasBannerPattern()) {
-            tag = NbtMap.EMPTY;
+            tag = new CompoundTag();
         } else {
             tag = this.getNbt();
         }
-        final NbtMapBuilder builder = tag.toBuilder();
-        builder.putAll(banner.getNbt());
-        builder.putInt("Base", banner.getBaseColor());
-        this.setNbt(builder.build());
+        for (var e : banner.getNbt().getEntrySet()) {
+            tag.put(e.getKey(), e.getValue());
+        }
+        tag.putInt("Base", banner.getBaseColor());
+        this.setNbt(tag);
     }
 
     @Override

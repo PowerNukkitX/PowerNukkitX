@@ -45,6 +45,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.cloudburstmc.nbt.NbtMap;
@@ -76,7 +77,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
     private static final int[] VARIANTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     protected float[] diffHandDamage = new float[]{4, 4, 4};
 
-    public EntityCat(IChunk chunk, NbtMap nbt) {
+    public EntityCat(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -149,7 +150,7 @@ public class EntityCat extends EntityAnimal implements EntityWalkable, EntityCan
             this.setVariant(randomVariant());
         }
         // Update collar color
-        if (this.nbt.containsKey("Color")) {
+        if (this.nbt.contains("Color")) {
             this.setColor(DyeColor.getByWoolData(this.getNbt().getByte("Color")));
         }
 

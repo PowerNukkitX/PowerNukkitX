@@ -15,6 +15,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.collect.Sets;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.nbt.NbtMap;
@@ -116,7 +117,7 @@ public class EntityPainting extends EntityHanging {
     private float length;
     private float height;
 
-    public EntityPainting(IChunk chunk, NbtMap nbt) {
+    public EntityPainting(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

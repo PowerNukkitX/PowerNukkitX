@@ -12,13 +12,14 @@ import cn.nukkit.entity.mob.EntityEvocationIllager;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
-
-import java.util.Arrays;
 
 import static cn.nukkit.entity.ai.memory.CoreMemoryTypes.LAST_MAGIC;
 
@@ -96,15 +97,18 @@ public class FangLineExecutor implements EntityControl, IBehaviorExecutor {
     }
 
     protected void spawn(EntityEvocationIllager illager, Location location) {
-        final NbtMap nbt = NbtMap.builder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                                location.x,
-                                location.y,
-                                location.z
-                        )
-                ).putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0)
-                ).putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f)
-                ).build();
+        CompoundTag nbt = new CompoundTag()
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(location.x))
+                        .add(new DoubleTag(location.y))
+                        .add(new DoubleTag(location.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag((location.yaw)))
+                        .add(new FloatTag(0f)));
 
         Entity fang = Entity.createEntity(EntityID.EVOCATION_FANG, location.level.getChunk(location.getChunkX(), location.getChunkZ()), nbt);
         if (fang instanceof EntityEvocationFang fangEntity) {

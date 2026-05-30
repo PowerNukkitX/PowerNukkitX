@@ -1,10 +1,10 @@
 package cn.nukkit;
 
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.Tag;
 import lombok.Getter;
 import lombok.Setter;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.AbilitiesIndex;
 import org.cloudburstmc.protocol.bedrock.data.PlayerPermissionLevel;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandPermissionLevel;
@@ -61,7 +61,7 @@ public class AdventureSettings implements Cloneable {
         this(player, null);
     }
 
-    public AdventureSettings(Player player, NbtMap nbt) {
+    public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         this.values = new EnumMap<>(Type.class);
 
@@ -73,8 +73,8 @@ public class AdventureSettings implements Cloneable {
         this.player.setOp(playerPermission == PlayerPermissionLevel.OPERATOR);
     }
 
-    public void init(@Nullable NbtMap nbt) {
-        if (nbt != null && nbt.containsKey(KEY_ABILITIES)) {
+    public void init(@Nullable CompoundTag nbt) {
+        if (nbt != null && nbt.contains(KEY_ABILITIES)) {
             this.readNBT(nbt);
             this.opCheck();
             return;
@@ -223,25 +223,23 @@ public class AdventureSettings implements Cloneable {
      * Save permissions to nbt
      */
     public void saveNBT() {
-        NbtMapBuilder abilityTag = NbtMap.builder();
-        this.values.forEach((type, bool) -> abilityTag.putInt(type.name(), (bool ? 1 : 0)));
-        this.player.setNbt(
-                this.player.getNbt().toBuilder()
-                        .putList(KEY_ABILITIES, NbtType.COMPOUND, abilityTag.build())
-                        .putString(KEY_PLAYER_PERMISSION, this.playerPermission.name())
-                        .putString(KEY_COMMAND_PERMISSION, this.commandPermission.name())
-        );
+        CompoundTag nbt = player.getNbt();
+        CompoundTag abilityTag = new CompoundTag();
+        this.values.forEach((type, bool) -> abilityTag.put(type.name(), new IntTag(bool ? 1 : 0)));
+        nbt.put(KEY_ABILITIES, abilityTag);
+        nbt.putString(KEY_PLAYER_PERMISSION, playerPermission.name());
+        nbt.putString(KEY_COMMAND_PERMISSION, commandPermission.name());
     }
 
     /**
      * Read permission data from nbt
      */
-    public void readNBT(NbtMap nbt) {
-        NbtMap abilityTag = nbt.getCompound(KEY_ABILITIES);
-        for (Map.Entry<String, Object> e : abilityTag.entrySet()) {
-            if (e.getValue() instanceof Integer tag) {
+    public void readNBT(CompoundTag nbt) {
+        CompoundTag abilityTag = nbt.getCompound(KEY_ABILITIES);
+        for (Map.Entry<String, Tag> e : abilityTag.getTags().entrySet()) {
+            if (e.getValue() instanceof IntTag tag) {
                 Type type = Type.valueOf(e.getKey());
-                this.set(type, tag == 1);
+                this.set(type, tag.parseValue() == 1);
             }
         }
         this.playerPermission = PlayerPermissionLevel.valueOf(nbt.getString(KEY_PLAYER_PERMISSION));
@@ -260,11 +258,11 @@ public class AdventureSettings implements Cloneable {
 
     public void updateAdventureSettings() {
         final UpdateAdventureSettingsPacket packet = new UpdateAdventureSettingsPacket();
+        packet.setAutoJump(this.get(Type.AUTO_JUMP));
         packet.setNoPvM(this.get(Type.NO_PVM));
         packet.setNoMvP(this.get(Type.NO_MVP));
         packet.setImmutableWorld(this.get(Type.WORLD_IMMUTABLE));
         packet.setShowNameTags(this.get(Type.SHOW_NAME_TAGS));
-        packet.setImmutableWorld(this.get(Type.AUTO_JUMP));
 
         this.player.sendPacket(packet);
         this.player.resetInAirTicks();

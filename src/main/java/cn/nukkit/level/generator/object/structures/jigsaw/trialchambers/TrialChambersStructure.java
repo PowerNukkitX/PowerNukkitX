@@ -24,6 +24,8 @@ import cn.nukkit.level.generator.object.structures.utils.BoundingBox;
 import cn.nukkit.level.structure.PNXStructure;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.utils.random.RandomSourceProvider;
 import cn.nukkit.utils.random.Xoroshiro128;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -751,7 +753,7 @@ public class TrialChambersStructure extends JigsawStructure {
                                 Item item = Item.get(entry.getId(), entry.getMeta(), NukkitMath.randomRange(random, entry.getMinCount(), entry.getMaxCount()));
                                 applyRandomEnchantment(item, entry.getEnchantments(), random);
                                 blockEntity.setItem(item);
-                                blockEntity.setNbt(blockEntity.getNbt().toBuilder().putList("sherds", NbtType.STRING, createSherds(random)));
+                                blockEntity.getNbt().putList("sherds", createSherds(random));
                                 blockEntity.spawnToAll();
                                 return;
                             }
@@ -762,10 +764,10 @@ public class TrialChambersStructure extends JigsawStructure {
             }
         }
 
-        private List<String> createSherds(RandomSourceProvider random) {
-            List<String> sherds = new ObjectArrayList<>();
+        private ListTag<StringTag> createSherds(RandomSourceProvider random) {
+            ListTag<StringTag> sherds = new ListTag<>();
             for (int i = 0; i < 4; i++) {
-                sherds.add(ItemID.BRICK);
+                sherds.add(new StringTag(ItemID.BRICK));
             }
 
             int roll = random.nextBoundedInt(13);
@@ -778,7 +780,7 @@ public class TrialChambersStructure extends JigsawStructure {
                 case 11 -> ItemID.GUSTER_POTTERY_SHERD;
                 default -> ItemID.SCRAPE_POTTERY_SHERD;
             };
-            sherds.add(random.nextBoundedInt(4), sherdId);
+            sherds.add(random.nextBoundedInt(4), new StringTag(sherdId));
             return sherds;
         }
     }

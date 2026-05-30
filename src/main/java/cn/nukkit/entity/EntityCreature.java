@@ -3,7 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * Creature Entities
@@ -11,7 +11,8 @@ import org.cloudburstmc.nbt.NbtMap;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityCreature extends EntityLiving implements EntityNameable, EntityAgeable {
-    public EntityCreature(IChunk chunk, NbtMap nbt) {
+
+    public EntityCreature(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

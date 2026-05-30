@@ -32,7 +32,8 @@ import cn.nukkit.item.ItemGoldenApple;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +47,7 @@ public class EntityZombieVillager extends EntityZombie implements EntityWalkable
         return ZOMBIE_VILLAGER;
     }
 
-    public EntityZombieVillager(IChunk chunk, NbtMap nbt) {
+    public EntityZombieVillager(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

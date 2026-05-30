@@ -19,7 +19,8 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.components.HealthComponent;
 import cn.nukkit.entity.components.MovementComponent;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,7 @@ public class EntitySilverfish extends EntityMob implements EntityWalkable, Entit
         return SILVERFISH;
     }
 
-    public EntitySilverfish(IChunk chunk, NbtMap nbt) {
+    public EntitySilverfish(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

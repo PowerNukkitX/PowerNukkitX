@@ -1,11 +1,11 @@
 package cn.nukkit.item;
 
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author Kaooot
  */
 public interface SpawnEggPickable {
 
-    void setEntityNBT(NbtMap entityNBT);
+    void setEntityNBT(CompoundTag entityNBT);
 }

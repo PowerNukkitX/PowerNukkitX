@@ -13,8 +13,8 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.PotionSplashParticle;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,11 +36,11 @@ public class EntitySplashPotion extends EntityProjectile {
 
     public int potionId;
 
-    public EntitySplashPotion(IChunk chunk, NbtMap nbt) {
+    public EntitySplashPotion(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public EntitySplashPotion(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntitySplashPotion(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
     }
 
@@ -50,7 +50,7 @@ public class EntitySplashPotion extends EntityProjectile {
 
         potionId = this.getNbt().getShort("PotionId");
 
-        this.entityDataMap.put(ActorDataTypes.AUX_VALUE_DATA, this.potionId);
+        this.actorDataMap.put(ActorDataTypes.AUX_VALUE_DATA, this.potionId);
 
         /*Effect effect = Potion.getEffect(potionId, true); TODO: potion color
 

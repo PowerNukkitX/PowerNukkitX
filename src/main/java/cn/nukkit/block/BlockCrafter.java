@@ -182,9 +182,9 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
             Inventory inv = blockEntity.getInventory();
             for (int i = 0; i < inv.getSize(); i++) {
                 Item inputItem = inv.getItem(i);
-                if (!inputItem.isNull() && inputItem.hasCompoundTag()) {
+                if (!inputItem.isNull() && inputItem.hasNbt()) {
                     for (Item result : recipe.getResults()) {
-                        result.setCompoundTag(inputItem.getCompoundTag());
+                        result.setNbtBytes(inputItem.getCompoundTag());
                     }
                     break;
                 }

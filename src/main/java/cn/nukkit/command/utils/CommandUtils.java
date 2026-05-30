@@ -2,7 +2,7 @@ package cn.nukkit.command.utils;
 
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.customitem.CustomItem;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * Utility class for command-related helper methods in PowerNukkitX.
@@ -35,21 +35,21 @@ import org.cloudburstmc.nbt.NbtMap;
  * @author PowerNukkitX Project Team
  * @see CustomBlock
  * @see CustomItem
- * @see org.cloudburstmc.nbt.NbtMap
+ * @see CompoundTag
  * @since PowerNukkitX 1.19.50
  */
 public final class CommandUtils {
     public static boolean isHiddenInCommands(CustomBlock block) {
-        NbtMap nbt = block.getDefinition().nbt();
-        NbtMap menuCategory = nbt.getCompound("menu_category");
+        CompoundTag nbt = block.getDefinition().nbt();
+        CompoundTag menuCategory = nbt.getCompound("menu_category");
         return menuCategory.getByte("is_hidden_in_commands") == 1;
     }
 
     public static boolean isHiddenInCommands(CustomItem item) {
-        NbtMap nbt = item.getDefinition().nbt();
-        NbtMap components = nbt.getCompound("components");
-        if (components.containsKey("item_properties")) {
-            NbtMap itemProps = components.getCompound("item_properties");
+        CompoundTag nbt = item.getDefinition().nbt();
+        CompoundTag components = nbt.getCompound("components");
+        if (components.contains("item_properties")) {
+            CompoundTag itemProps = components.getCompound("item_properties");
             return itemProps.getByte("is_hidden_in_commands") == 1;
         }
         return false;

@@ -22,6 +22,7 @@ import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
@@ -47,7 +48,7 @@ public class EntityFallingBlock extends Entity {
     protected boolean breakOnGround;
     protected int aliveTick = 0;
 
-    public EntityFallingBlock(IChunk chunk, NbtMap nbt) {
+    public EntityFallingBlock(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -101,8 +102,8 @@ public class EntityFallingBlock extends Entity {
         super.initEntity();
 
         if (nbt != null) {
-            final NbtMap nbtMap = this.getNbt();
-            if (nbt.containsKey("Block")) {
+            final CompoundTag nbtMap = this.getNbt();
+            if (nbt.contains("Block")) {
                 BlockState blockState = ItemHelper.getBlockStateHelper(nbtMap.getCompound("Block"));
                 if (blockState == null) {
                     close();
@@ -280,7 +281,7 @@ public class EntityFallingBlock extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putCompound("Block", blockState.getBlockStateTag());
+        this.nbt.putCompound("Block", CompoundTag.fromNetwork(blockState.getBlockStateTag()));
     }
 
     @Override

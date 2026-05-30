@@ -10,11 +10,12 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -89,13 +90,20 @@ public class ItemPainting extends Item {
         }
         position.y += offset(motive.height);
 
-        final NbtMap nbt = NbtMap.builder()
-                .putByte("Direction", (byte) direction)
+        CompoundTag nbt = new CompoundTag()
+                .putByte("Direction", direction)
                 .putString("Motive", motive.title)
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(position.x, position.y, position.z))
-                .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                .putList("Rotation", NbtType.FLOAT, Arrays.asList(direction * 90f, 0f))
-                .build();
+                .putList("Pos", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(position.x))
+                        .add(new DoubleTag(position.y))
+                        .add(new DoubleTag(position.z)))
+                .putList("Motion", new ListTag<DoubleTag>()
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0))
+                        .add(new DoubleTag(0)))
+                .putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(direction * 90))
+                        .add(new FloatTag(0)));
 
         EntityPainting entity = (EntityPainting) Entity.createEntity(Entity.PAINTING, chunk, nbt);
 

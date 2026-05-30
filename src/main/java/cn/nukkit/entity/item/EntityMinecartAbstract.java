@@ -25,11 +25,11 @@ import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
 import cn.nukkit.utils.Utils;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
@@ -70,7 +70,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private boolean hasUpdated = false;
     private boolean lastRailMountedState = false;
 
-    public EntityMinecartAbstract(IChunk chunk, NbtMap nbt) {
+    public EntityMinecartAbstract(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
 
         setHealthMax(40);
@@ -719,8 +719,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private void prepareDataProperty() {
         setRollingAmplitude(0);
         setRollingDirection(1);
-        NbtMap nbtMap = this.getNbt();
-        if (nbtMap.containsKey("CustomDisplayTile")) {
+        CompoundTag nbtMap = this.getNbt();
+        if (nbtMap.contains("CustomDisplayTile")) {
             if (nbtMap.getBoolean("CustomDisplayTile")) {
                 int display = nbtMap.getInt("DisplayTile");
                 int offSet = nbtMap.getInt("DisplayOffset");

@@ -3,15 +3,15 @@ package cn.nukkit.level.structure;
 import cn.nukkit.block.BlockState;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.generator.object.BlockManager;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.mappings.JeBlockState;
 import cn.nukkit.registry.mappings.MappingRegistries;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.structure.Rotation;
 
@@ -49,54 +49,55 @@ public class JeStructure extends AbstractStructure {
         this.blockInstances.addAll(blocks);
     }
 
-    public static JeStructure fromNbt(NbtMap nbt) {
-        List<Integer> sizeNbt = nbt.getList("size", NbtType.INT);
+    public static JeStructure fromNbt(CompoundTag nbt) {
+        ListTag<IntTag> sizeNbt = nbt.getList("size", IntTag.class);
         int sizeX = 0, sizeY = 0, sizeZ = 0;
-        if (sizeNbt != null && sizeNbt.size() == 3) {
-            sizeX = sizeNbt.get(0);
-            sizeY = sizeNbt.get(1);
-            sizeZ = sizeNbt.get(2);
+        if (sizeNbt.size() == 3) {
+            sizeX = sizeNbt.get(0).getData();
+            sizeY = sizeNbt.get(1).getData();
+            sizeZ = sizeNbt.get(2).getData();
         }
 
-        List<NbtMap> blocksNbt = nbt.getList("blocks", NbtType.COMPOUND);
-        List<StructureBlockInstance> blockInstances = new ArrayList<>(blocksNbt != null ? blocksNbt.size() : 0);
+        ListTag<CompoundTag> blocksNbt = nbt.getList("blocks", CompoundTag.class);
+        List<StructureBlockInstance> blockInstances = new ArrayList<>(blocksNbt.size());
 
         Map<String, StructureBlocks> blockCache = new HashMap<>();
         List<BlockState> palette = new ArrayList<>();
-        List<NbtMap> paletteNbt = nbt.getList("palette", NbtType.COMPOUND);
+        List<CompoundTag> paletteNbt = nbt.getList("palette", CompoundTag.class).getAll();
         if (paletteNbt.size() == 0) {
-            var palettesNbt = nbt.getList("palettes", NbtType.LIST);
-            if (!palettesNbt.isEmpty() && palettesNbt.get(0) instanceof NbtList listTag) {
+            ListTag<ListTag> palettesNbt = nbt.getList("palettes", ListTag.class);
+            if (palettesNbt.size() > 0) {
+                ListTag<?> listTag = palettesNbt.get(0);
                 boolean allCompound = true;
-                for (Object tag : listTag) {
-                    if (!(tag instanceof NbtMap)) {
+                for (Tag tag : listTag.getAll()) {
+                    if (!(tag instanceof CompoundTag)) {
                         allCompound = false;
                         break;
                     }
                 }
                 if (allCompound) {
-                    List<NbtMap> compounds = new ArrayList<>();
-                    for (Object tag : listTag) {
-                        compounds.add((NbtMap) tag);
+                    List<CompoundTag> compounds = new ArrayList<>();
+                    for (Tag tag : listTag.getAll()) {
+                        compounds.add((CompoundTag) tag);
                     }
                     if (!compounds.isEmpty()) {
-                        paletteNbt = new ObjectArrayList<>(compounds);
+                        paletteNbt = compounds;
                     }
                 }
             }
         }
         if (paletteNbt.size() != 0) {
-            for (NbtMap blockStateNbt : paletteNbt) {
+            for (CompoundTag blockStateNbt : paletteNbt) {
                 String jeName = blockStateNbt.getString("Name");
-                NbtMap properties = blockStateNbt.getCompound("Properties");
+                CompoundTag properties = blockStateNbt.getCompound("Properties");
 
                 StringBuilder sb = new StringBuilder();
-                if (properties != null) {
-                    List<String> keys = new ArrayList<>(properties.keySet());
+                if (!properties.isEmpty()) {
+                    List<String> keys = new ArrayList<>(properties.getTags().keySet());
                     sb.append("[");
                     for (int i = keys.size() - 1; i >= 0; i--) {
                         String key = keys.get(i);
-                        sb.append(key).append("=").append(properties.get(key));
+                        sb.append(key).append("=").append(properties.getString(key));
                         if (i != 0) sb.append(",");
                     }
                     sb.append("]");
@@ -112,25 +113,23 @@ public class JeStructure extends AbstractStructure {
             }
         }
 
-        if (blocksNbt != null) {
-            for (NbtMap blockNbt : blocksNbt) {
-                List<Integer> pos = blockNbt.getList("pos", NbtType.INT);
-                int x = pos.get(0);
-                int y = pos.get(1);
-                int z = pos.get(2);
-                int stateIndex = blockNbt.getInt("state");
-                NbtMap nbtData = blockNbt.getCompound("nbt");
-                BlockState state = stateIndex < palette.size() ? palette.get(stateIndex) : STATE_AIR;
+        for (CompoundTag blockNbt : blocksNbt.getAll()) {
+            ListTag<IntTag> pos = blockNbt.getList("pos", IntTag.class);
+            int x = pos.get(0).getData();
+            int y = pos.get(1).getData();
+            int z = pos.get(2).getData();
+            int stateIndex = blockNbt.getInt("state");
+            CompoundTag nbtData = blockNbt.getCompound("nbt");
+            BlockState state = stateIndex < palette.size() ? palette.get(stateIndex) : STATE_AIR;
 
-                StructureBlocks cached = blockCache.computeIfAbsent(state.toString() + nbtData, k -> new StructureBlocks(state, nbtData));
-                blockInstances.add(new StructureBlockInstance(x, y, z, cached));
-            }
+            StructureBlocks cached = blockCache.computeIfAbsent(state + nbtData.toSNBT(), k -> new StructureBlocks(state, nbtData));
+            blockInstances.add(new StructureBlockInstance(x, y, z, cached));
         }
 
         return new JeStructure(sizeX, sizeY, sizeZ, blockInstances);
     }
 
-    public static CompletableFuture<JeStructure> fromNbtAsync(NbtMap nbt) {
+    public static CompletableFuture<JeStructure> fromNbtAsync(CompoundTag nbt) {
         return CompletableFuture.supplyAsync(() -> fromNbt(nbt));
     }
 
@@ -201,7 +200,7 @@ public class JeStructure extends AbstractStructure {
     }
 
     @Override
-    public NbtMap toNBT() {
+    public CompoundTag toNBT() {
         return null;
     }
 
@@ -210,13 +209,13 @@ public class JeStructure extends AbstractStructure {
      */
     public static class StructureBlocks {
         public final BlockState state;
-        public final NbtMap compoundTag;
+        public final CompoundTag compoundTag;
 
         public StructureBlocks(BlockState state) {
             this(state, null);
         }
 
-        public StructureBlocks(BlockState state, NbtMap compoundTag) {
+        public StructureBlocks(BlockState state, CompoundTag compoundTag) {
             this.state = state;
             this.compoundTag = compoundTag;
         }

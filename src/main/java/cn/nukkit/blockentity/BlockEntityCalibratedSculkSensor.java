@@ -6,7 +6,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityCalibratedSculkSensor extends BlockEntity implements VibrationListener {
 
@@ -20,7 +20,7 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
     protected boolean waitForVibration = false;
 
 
-    public BlockEntityCalibratedSculkSensor(IChunk chunk, NbtMap nbt) {
+    public BlockEntityCalibratedSculkSensor(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -117,4 +117,3 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
         power = Math.max(1, 15 - (int) Math.floor(event.source().distance(this.add(0.5, 0.5, 0.5)) * 1.875));
     }
 }
-

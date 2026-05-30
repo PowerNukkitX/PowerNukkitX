@@ -5,22 +5,20 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.NbtHelper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.RequiredArgsConstructor;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author CreeperFace (Nukkit Project)
  */
 public class BlockEntityCauldron extends BlockEntitySpawnable {
-    public BlockEntityCauldron(IChunk chunk, NbtMap nbt) {
+    public BlockEntityCauldron(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -28,7 +26,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public void loadNBT() {
         super.loadNBT();
         int potionId;
-        if (!this.nbt.containsKey("PotionId")) {
+        if (!this.nbt.contains("PotionId")) {
             this.nbt.putShort("PotionId", (short) 0xffff);
         }
         potionId = getNbt().getShort("PotionId");
@@ -38,7 +36,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             this.nbt.remove("SplashPotion");
         }
 
-        if (!this.nbt.containsKey("PotionType")) {
+        if (!this.nbt.contains("PotionType")) {
             this.nbt.putShort("PotionType", (short) potionType);
         }
     }
@@ -100,7 +98,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public boolean isCustomColor() {
-        return nbt.containsKey("CustomColor");
+        return nbt.contains("CustomColor");
     }
 
     public void setCustomColor(BlockColor color) {
@@ -145,17 +143,17 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        final NbtMap nbtMap = getNbt();
-        NbtMapBuilder compoundTag = super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        final CompoundTag nbtMap = getNbt();
+        CompoundTag compoundTag = super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
-                .putList("Items", NbtType.COMPOUND, new ObjectArrayList<>())
+                .putList("Items", new ListTag<>(Tag.TAG_Compound))
                 .putShort("PotionId", nbtMap.getShort("PotionId"))
                 .putShort("PotionType", nbtMap.getShort("PotionType"));
-        if (nbt.containsKey("CustomColor")) {
+        if (nbt.contains("CustomColor")) {
             compoundTag.putInt("CustomColor", nbtMap.getInt("CustomColor") << 8 >> 8);
         }
-        return compoundTag.build();
+        return compoundTag;
     }
 
     @RequiredArgsConstructor

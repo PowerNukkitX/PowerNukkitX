@@ -39,10 +39,8 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +60,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
         return MULE;
     }
 
-    public EntityMule(IChunk chunk, NbtMap nbt) {
+    public EntityMule(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -262,9 +260,9 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
 
         // Load items
         ensureInventories();
-        if (nbt.containsKey("Inventory")) {
+        if (nbt.containsList("Inventory")) {
             var inv = isChested() ? invChested : invNoChest;
-            inv.load(new ObjectArrayList<>(getNbt().getList("Inventory", NbtType.COMPOUND)));
+            inv.load(getNbt().getList("Inventory", CompoundTag.class).getAll());
             syncEquippableInventories();
         }
     }
@@ -276,7 +274,7 @@ public class EntityMule extends EntityAnimal implements EntityWalkable, Inventor
         var inv = isChested() ? invChested : invNoChest;
         syncEquippableInventories();
         this.nbt.putBoolean("Chested", isChested())
-                .putList("Inventory", NbtType.COMPOUND, inv.save(isChested()));
+                .putList("Inventory", inv.save(isChested()));
     }
 
     @Override

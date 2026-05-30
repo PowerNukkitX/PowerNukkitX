@@ -5,21 +5,17 @@ import cn.nukkit.inventory.EjectableInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
-
-import java.util.List;
 
 public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
 
     protected EjectableInventory inventory;
 
 
-    public BlockEntityEjectable(IChunk chunk, NbtMap nbt) {
+    public BlockEntityEjectable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -32,8 +28,8 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         super.loadNBT();
         this.inventory = createInventory();
 
-        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List)) {
-            this.nbt.putList("Items", NbtType.LIST, new ObjectArrayList<>());
+        if (!this.nbt.containsList("Items", Tag.TAG_Compound)) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -46,7 +42,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -61,7 +57,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         if (i < 0) {
             return new ItemBlock(new BlockAir(), 0, 0);
         } else {
-            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -69,9 +65,9 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        NbtMap d = ItemHelper.write(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
                 items.remove(i);
@@ -81,7 +77,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
         } else {
             items.add(i, d);
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, items);
+        this.nbt.putList("Items", items);
     }
 
     @Override
@@ -90,20 +86,20 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder c = super.getSpawnCompound().toBuilder();
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = super.getSpawnCompound();
 
         if (this.hasName()) {
-            c.put("CustomName", this.nbt.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName").copy());
         }
 
-        return c.build();
+        return c;
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -116,7 +112,7 @@ public abstract class BlockEntityEjectable extends BlockEntitySpawnable implemen
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override

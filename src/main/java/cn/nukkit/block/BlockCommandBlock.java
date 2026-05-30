@@ -8,8 +8,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
-import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,10 +85,12 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
             this.setBlockFace(BlockFace.DOWN);
         }
 
-        NbtMap nbt = NbtMap.EMPTY;
+        CompoundTag nbt = new CompoundTag();
 
         if (item.hasCustomBlockData()) {
-            nbt.putAll(item.getCustomBlockData());
+            for (var entry : item.getCustomBlockData().getEntrySet()) {
+                nbt.put(entry.getKey(), entry.getValue().copy());
+            }
         }
 
         BlockEntityCommandBlock blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, false, true, nbt);

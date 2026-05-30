@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser source, BlockFace face, Item item) {
         Vector3 dispensePos = source.getDispensePosition();
 
-        NbtMap nbt = Entity.getDefaultNBT(dispensePos);
+        CompoundTag nbt = Entity.getDefaultNBT(dispensePos);
         nbt = this.correctNBT(nbt, item);
 
         Entity projectile = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
@@ -75,14 +75,14 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
      *
      * @param nbt tag
      */
-    protected NbtMap correctNBT(NbtMap nbt) {
+    protected CompoundTag correctNBT(CompoundTag nbt) {
         return this.correctNBT(nbt, null);
     }
 
-    protected NbtMap correctNBT(NbtMap nbt, Item item) {
+    protected CompoundTag correctNBT(CompoundTag nbt, Item item) {
         if (item != null) {
             if (Objects.equals(item.getId(), Item.SPLASH_POTION) || Objects.equals(item.getId(), Item.LINGERING_POTION)) {
-                return nbt.toBuilder().putInt("PotionId", item.getDamage()).build();
+                return nbt.putInt("PotionId", item.getDamage());
             }
         }
         return nbt;

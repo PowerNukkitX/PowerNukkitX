@@ -7,14 +7,14 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -54,23 +54,23 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
 
     @Override
     public Inventory getInventory() {
-        if (inventory == null) {
-            NbtMap tag;
+        if(inventory == null) {
+            CompoundTag tag;
             inventory = new BundleInventory(this);
             tag = this.getNbt();
             this.setNbt(tag);
         }
-        if (inventory.getHolder() != this) inventory.setHolder(this);
+        if(inventory.getHolder() != this) inventory.setHolder(this);
         return inventory;
     }
 
     public void saveNBT() {
-        NbtMap tag = this.getNbt();
-        List<NbtMap> items = new ObjectArrayList<>();
-        for (var entry : getInventory().getContents().entrySet()) {
+        CompoundTag tag = this.getNbt();
+        ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
+        for(var entry : getInventory().getContents().entrySet()) {
             items.add(entry.getKey(), ItemHelper.write(entry.getValue(), entry.getKey()));
         }
-        tag = tag.toBuilder().putList("storage_item_component_content", NbtType.COMPOUND, items).build();
+        tag.putList("storage_item_component_content", items);
         this.setNbt(tag);
     }
 

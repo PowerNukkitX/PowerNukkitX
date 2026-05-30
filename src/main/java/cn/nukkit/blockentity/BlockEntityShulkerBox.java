@@ -7,15 +7,12 @@ import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ItemHelper;
-import cn.nukkit.utils.NbtHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * @author PetteriM1
@@ -24,7 +21,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
     protected ShulkerBoxInventory inventory;
 
-    public BlockEntityShulkerBox(IChunk chunk, NbtMap nbt) {
+    public BlockEntityShulkerBox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         movable = true;
     }
@@ -34,17 +31,17 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         super.loadNBT();
         this.inventory = new ShulkerBoxInventory(this);
 
-        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List<?>)) {
-            this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!this.nbt.contains("Items") || !(this.nbt.get("Items") instanceof ListTag<?>)) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
-        final List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
-        for (NbtMap compound : list) {
+        final ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
+        for (CompoundTag compound : list.getAll()) {
             Item item = ItemHelper.read(compound);
             this.inventory.setItemInternal(compound.getByte("Slot"), item);
         }
 
-        if (!this.nbt.containsKey("facing")) {
+        if (!this.nbt.contains("facing")) {
             this.nbt.putByte("facing", (byte) 0);
         }
     }
@@ -62,7 +59,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>()).build();
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -79,7 +76,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -94,7 +91,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         if (i < 0) {
             return Item.AIR;
         } else {
-            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -102,9 +99,9 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        NbtMap d = ItemHelper.write(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
@@ -115,7 +112,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
         } else {
             items.add(i, d);
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, items);
+        this.nbt.putList("Items", items);
     }
 
     @Override
@@ -134,7 +131,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
@@ -148,17 +145,17 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Block
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder c = getDefaultCompound(this, SHULKER_BOX).toBuilder()
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Findable", false)
-                .putList("Items", NbtType.COMPOUND, this.getNbt().getList("Items", NbtType.COMPOUND))
+                .putList("Items", this.getNbt().getList("Items", CompoundTag.class))
                 .putByte("facing", this.getNbt().getByte("facing"));
 
         if (this.hasName()) {
-            c.put("CustomName", this.nbt.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName").copy());
         }
 
-        return c.build();
+        return c;
     }
 }

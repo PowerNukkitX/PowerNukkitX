@@ -5,15 +5,15 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMap;
 
 /**
  * @author Buddelbubi
  * @since 2026/03/31
  */
 public class BlockEntityBrushable extends BlockEntitySpawnable {
-    public BlockEntityBrushable(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBrushable(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -25,13 +25,13 @@ public class BlockEntityBrushable extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsKey("item")) {
+        if (!nbt.contains("item")) {
             this.nbt.putCompound("item", ItemHelper.write(new ItemBlock(Block.get(BlockID.AIR)), null));
         }
     }
 
     public Item getItem() {
-        NbtMap tag = this.getNbt().getCompound("item");
+        CompoundTag tag = this.getNbt().getCompound("item");
         return ItemHelper.read(tag);
     }
 
@@ -40,9 +40,8 @@ public class BlockEntityBrushable extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
-                .putCompound("item", this.getNbt().getCompound("item"))
-                .build();
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
+                .putCompound("item", this.getNbt().getCompound("item").copy());
     }
 }

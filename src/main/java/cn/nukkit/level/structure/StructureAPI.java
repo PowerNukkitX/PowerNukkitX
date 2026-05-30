@@ -1,6 +1,7 @@
 package cn.nukkit.level.structure;
 
 import cn.nukkit.Server;
+import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
@@ -41,7 +42,7 @@ public class StructureAPI {
              var nbtInputStream = NbtUtils.createReaderLE(stream)) {
             NbtMap root = (NbtMap) nbtInputStream.readTag();
 
-            Structure structure = Structure.fromNbtAsync(root).join();
+            Structure structure = Structure.fromNbtAsync(CompoundTag.fromNetwork(root)).join();
 
             if (Server.getInstance().getSettings().gameplaySettings().cacheStructures()) {
                 structureCache.put(name, structure);
@@ -61,7 +62,7 @@ public class StructureAPI {
 
             try (var stream = new FileOutputStream(file);
                  var nbtOutputStream = NbtUtils.createWriterLE(stream)) {
-                nbtOutputStream.writeTag(structure.toNBT());
+                nbtOutputStream.writeTag(structure.toNBT().toNetwork());
             }
 
             if (Server.getInstance().getSettings().gameplaySettings().cacheStructures()) {

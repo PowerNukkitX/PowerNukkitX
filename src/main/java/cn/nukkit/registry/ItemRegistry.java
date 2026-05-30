@@ -14,6 +14,7 @@ import cn.nukkit.item.tools.copper.ItemCopperHoe;
 import cn.nukkit.item.tools.copper.ItemCopperPickaxe;
 import cn.nukkit.item.tools.copper.ItemCopperShovel;
 import cn.nukkit.item.tools.copper.ItemCopperSword;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -712,7 +713,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             Item item = (Item) c.invoke();
 
             item.setCount(count);
-            item.setCompoundTag(tags);
+            item.setNbt(tags == null ? null : CompoundTag.fromNetwork(tags));
 
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
                 egg.resolveSpawnEgg(id);
@@ -733,7 +734,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
 
             item.setCount(count);
             if (tags != null) {
-                item.setCompoundTag(tags);
+                item.setNbtBytes(tags);
             }
 
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
@@ -809,7 +810,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             CUSTOM_ITEM_DEFINITIONS.put(key, def);
             Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
 
-            NbtMap nbt = def.nbt();
+            CompoundTag nbt = def.nbt();
             if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
                 Item ci = (Item) customItem;
                 ci.setNetId(null);
@@ -831,7 +832,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         int rid = CustomItemDefinition.ensureRuntimeIdAllocated(eggId);
         Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(eggId, rid, false));
 
-        NbtMap nbt = def.nbt();
+        CompoundTag nbt = def.nbt();
         if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
             Item ci = this.get(eggId, 0);
             if (ci != null) {

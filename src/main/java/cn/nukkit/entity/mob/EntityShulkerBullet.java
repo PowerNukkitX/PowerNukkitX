@@ -18,7 +18,8 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class EntityShulkerBullet extends EntityMob implements EntityFlyable {
         return SHULKER_BULLET;
     }
 
-    public EntityShulkerBullet(IChunk chunk, NbtMap nbt) {
+    public EntityShulkerBullet(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

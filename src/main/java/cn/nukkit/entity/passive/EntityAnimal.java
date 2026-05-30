@@ -6,7 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityAnimal extends EntityIntelligent {
-    public EntityAnimal(IChunk chunk, NbtMap nbt) {
+    public EntityAnimal(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

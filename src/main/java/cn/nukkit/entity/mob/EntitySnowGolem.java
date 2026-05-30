@@ -32,15 +32,17 @@ import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.registry.Registries;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
+
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -54,7 +56,7 @@ public class EntitySnowGolem extends EntityGolem {
 
     public int waterTicks = 0;
 
-    public EntitySnowGolem(IChunk chunk, NbtMap nbt) {
+    public EntitySnowGolem(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -209,11 +211,18 @@ public class EntitySnowGolem extends EntityGolem {
 
                     }
                     Block pos = block.getSide(blockFace, 2);
-                    final NbtMap nbt = NbtMap.builder()
-                            .putList("Pos", NbtType.DOUBLE, Arrays.asList(pos.x + 0.5, pos.y, pos.z + 0.5))
-                            .putList("Motion", NbtType.DOUBLE, Arrays.asList(0.0, 0.0, 0.0))
-                            .putList("Rotation", NbtType.FLOAT, Arrays.asList(0f, 0f))
-                            .build();
+                    CompoundTag nbt = new CompoundTag()
+                            .putList("Pos", new ListTag<DoubleTag>()
+                                    .add(new DoubleTag(pos.x + 0.5))
+                                    .add(new DoubleTag(pos.y))
+                                    .add(new DoubleTag(pos.z + 0.5)))
+                            .putList("Motion", new ListTag<DoubleTag>()
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0))
+                                    .add(new DoubleTag(0)))
+                            .putList("Rotation", new ListTag<FloatTag>()
+                                    .add(new FloatTag(0f))
+                                    .add(new FloatTag(0f)));
                     Entity snowgolem = Entity.createEntity(EntityID.SNOW_GOLEM, block.level.getChunk(block.getChunkX(), block.getChunkZ()), nbt);
                     snowgolem.spawnToAll();
                     return;

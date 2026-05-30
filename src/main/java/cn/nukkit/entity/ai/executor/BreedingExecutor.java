@@ -14,14 +14,13 @@ import cn.nukkit.entity.data.property.EnumEntityProperty;
 import cn.nukkit.entity.data.property.FloatEntityProperty;
 import cn.nukkit.entity.data.property.IntEntityProperty;
 import cn.nukkit.entity.passive.EntityAnimal;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.Nullable;
 
@@ -282,7 +281,7 @@ public class BreedingExecutor implements IBehaviorExecutor {
         int spawned = 0;
 
         for (int i = 0; i < babiesToSpawn; i++) {
-            NbtMap nbt = Entity.getDefaultNBT(parent1.getLocation());
+            CompoundTag nbt = Entity.getDefaultNBT(parent1.getLocation());
 
             if (shouldWriteGenetics(b1, b2, parent1, parent2)) {
                 writeBabyGeneticsNBT(nbt, b1, b2, parent1, parent2);
@@ -385,23 +384,23 @@ public class BreedingExecutor implements IBehaviorExecutor {
         return false;
     }
 
-    protected void writeBabyGeneticsNBT(NbtMap nbt, BreedableComponent b1, BreedableComponent b2, EntityIntelligent p1, EntityIntelligent p2) {
+    protected void writeBabyGeneticsNBT(CompoundTag nbt, BreedableComponent b1, BreedableComponent b2, EntityIntelligent p1, EntityIntelligent p2) {
         Set<String> common = new LinkedHashSet<>(b1.resolvedBlendAttributes());
         common.retainAll(b2.resolvedBlendAttributes());
 
         if (common.isEmpty()) return;
 
-        List<NbtMap> list = null;
+        ListTag<CompoundTag> list = null;
 
         for (String name : common) {
             Attribute attr = blendOneAttribute(name, p1, p2);
             if (attr == null) continue;
 
-            if (list == null) list = new ObjectArrayList<>();
+            if (list == null) list = new ListTag<>();
             list.add(Attribute.toNBT(attr));
         }
 
-        if (list != null) nbt = nbt.toBuilder().putList("Attributes", NbtType.COMPOUND, list).build();
+        if (list != null) nbt.putList("Attributes", list);
     }
 
     @Nullable

@@ -6,13 +6,11 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
-import cn.nukkit.utils.NbtHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -30,7 +28,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     public long id;
     public boolean movable;
     public boolean closed = false;
-    protected NbtMapBuilder nbt;
+    protected CompoundTag nbt;
     protected Server server;
 
     public static BlockEntity createBlockEntity(String type, Position position, Object... args) {
@@ -38,11 +36,11 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
 
-    public static BlockEntity createBlockEntity(String type, Position pos, NbtMap nbt, Object... args) {
+    public static BlockEntity createBlockEntity(String type, Position pos, CompoundTag nbt, Object... args) {
         return createBlockEntity(type, pos.getLevel().getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt, args);
     }
 
-    public static BlockEntity createBlockEntity(String type, IChunk chunk, NbtMap nbt, Object... args) {
+    public static BlockEntity createBlockEntity(String type, IChunk chunk, CompoundTag nbt, Object... args) {
         BlockEntity blockEntity = null;
 
         Class<? extends BlockEntity> clazz = Registries.BLOCKENTITY.get(type);
@@ -95,27 +93,26 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return blockEntity;
     }
 
-    public BlockEntity(IChunk chunk, NbtMap nbt) {
+    public BlockEntity(IChunk chunk, CompoundTag nbt) {
         if (chunk == null || chunk.getProvider() == null || chunk.getProvider().getLevel() == null) {
             throw new ChunkException("Invalid garbage Chunk given to Block Entity");
         }
 
         this.server = chunk.getProvider().getLevel().getServer();
         this.chunk = chunk;
+        this.nbt = nbt;
         this.setLevel(chunk.getProvider().getLevel());
-        this.setNbt(nbt.toBuilder());
-        final NbtMap nbtMap = this.getNbt();
-        if (nbtMap.getString("id") == null || nbtMap.getString("id").isEmpty()) {
+        if (nbt.getString("id") == null || nbt.getString("id").isEmpty()) {
             log.warn("Tried to create a block entity with an invalid id, {}", this.getClass().getSimpleName());
         }
-        this.name = nbtMap.getString("id");
+        this.name = nbt.getString("id");
         this.id = BlockEntity.count++;
-        this.x = nbtMap.getInt("x");
-        this.y = nbtMap.getInt("y");
-        this.z = nbtMap.getInt("z");
+        this.x = nbt.getInt("x");
+        this.y = nbt.getInt("y");
+        this.z = nbt.getInt("z");
 
-        if (this.nbt.containsKey("isMovable")) {
-            this.movable = nbtMap.getBoolean("isMovable");
+        if (this.nbt.contains("isMovable")) {
+            this.movable = nbt.getBoolean("isMovable");
         } else {
             this.movable = true;
             this.nbt.putBoolean("isMovable", true);
@@ -154,12 +151,9 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return id;
     }
 
-    public NbtMap getCleanedNBT() {
+    public CompoundTag getCleanedNBT() {
         this.saveNBT();
-        this.nbt.remove("id");
-        this.nbt.remove("x");
-        this.nbt.remove("y");
-        this.nbt.remove("z");
+        this.nbt.remove("id", "x", "y", "z");
         if (!this.nbt.isEmpty()) {
             return getNbt();
         } else {
@@ -234,13 +228,12 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return movable;
     }
 
-    public static NbtMap getDefaultCompound(Vector3 pos, String id) {
-        return NbtMap.builder()
+    public static CompoundTag getDefaultCompound(Vector3 pos, String id) {
+        return new CompoundTag()
                 .putString("id", id)
                 .putInt("x", pos.getFloorX())
                 .putInt("y", pos.getFloorY())
-                .putInt("z", pos.getFloorZ())
-                .build();
+                .putInt("z", pos.getFloorZ());
     }
 
     @Nullable
@@ -249,15 +242,8 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
         return super.getLevelBlockEntity();
     }
 
-    public void setNbt(NbtMapBuilder builder) {
-        this.nbt = builder;
-    }
-
-    public NbtMap getNbt() {
-        return this.nbt.build();
-    }
-
-    public NbtMapBuilder getNbtBuilder() {
+    public CompoundTag getNbt() {
         return this.nbt;
     }
+
 }

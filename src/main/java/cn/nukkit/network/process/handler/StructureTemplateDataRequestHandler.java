@@ -28,7 +28,7 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
             return;
         }
 
-        responsePacket.setStructureNBT(structure.toNBT());
+        responsePacket.setStructureNBT(structure.toNBT().toNetwork());
         responsePacket.setSave(true);
         responsePacket.setResponseType(switch (packet.getRequestedOperation()) {
             case QUERY_SAVED_STRUCTURE -> StructureTemplateResponseType.QUERY;

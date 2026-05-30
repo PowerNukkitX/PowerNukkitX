@@ -24,6 +24,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
@@ -56,11 +59,11 @@ public abstract class EntityProjectile extends Entity {
 
     protected Enchantment[] enchantments;
 
-    public EntityProjectile(IChunk chunk, NbtMap nbt) {
+    public EntityProjectile(IChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityProjectile(IChunk chunk, NbtMap nbt, Entity shootingEntity) {
+    public EntityProjectile(IChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
@@ -69,7 +72,7 @@ public abstract class EntityProjectile extends Entity {
     }
 
     protected double getDamage() {
-        return nbt.containsKey("damage") ? getNbt().getDouble("damage") : getBaseDamage();
+        return nbt.contains("damage") ? getNbt().getDouble("damage") : getBaseDamage();
     }
 
     protected double getBaseDamage() {
@@ -154,15 +157,15 @@ public abstract class EntityProjectile extends Entity {
 
         this.setHealthMax(1);
         this.setHealthCurrent(1);
-        if (this.nbt.containsKey("Age") && !this.noAge) {
+        if (this.nbt.contains("Age") && !this.noAge) {
             this.age = this.getNbt().getShort("Age");
         }
 
-        if (this.nbt.containsKey("ench")) {
-            List<NbtMap> enchs = this.getNbt().getList("ench", NbtType.COMPOUND);
+        if (this.nbt.contains("ench")) {
+            ListTag<CompoundTag> enchs = this.getNbt().getList("ench", CompoundTag.class);
             this.enchantments = new Enchantment[enchs.size()];
             for (int i = 0; i < enchs.size(); i++) {
-                NbtMap entry = enchs.get(i);
+                CompoundTag entry = enchs.get(i);
                 this.enchantments[i] = Enchantment.getEnchantment(entry.getShort("id")).setLevel(entry.getShort("lvl"));
             }
         }
@@ -177,19 +180,18 @@ public abstract class EntityProjectile extends Entity {
     public void saveNBT() {
         super.saveNBT();
         if (!this.noAge) {
-            this.nbt.putShort("Age", (short) this.age);
+            this.nbt.putShort("Age", this.age);
         }
 
         if (this.enchantments != null && this.enchantments.length > 0) {
-            List<NbtMap> enchs = new ArrayList<>();
+            ListTag<CompoundTag> enchs = new ListTag<>();
             for (Enchantment enchantment : this.enchantments) {
-                enchs.add(NbtMap.builder()
-                        .putShort("id", (short) enchantment.getId())
+                enchs.add(new CompoundTag()
+                        .putShort("id", enchantment.getId())
                         .putShort("lvl", (short) enchantment.getLevel())
-                        .build()
                 );
             }
-            this.nbt.putList("ench", NbtType.COMPOUND, enchs);
+            this.nbt.putList("ench", enchs);
         }
     }
 

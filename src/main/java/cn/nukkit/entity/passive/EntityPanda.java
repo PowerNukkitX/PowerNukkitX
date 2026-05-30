@@ -56,6 +56,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import org.cloudburstmc.nbt.NbtMap;
@@ -89,7 +90,7 @@ public class EntityPanda extends EntityAnimal implements EntityWalkable, EntityC
 
     private EntityEquipmentInventory inventory = new EntityEquipmentInventory(this);
 
-    public EntityPanda(IChunk chunk, NbtMap nbt) {
+    public EntityPanda(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

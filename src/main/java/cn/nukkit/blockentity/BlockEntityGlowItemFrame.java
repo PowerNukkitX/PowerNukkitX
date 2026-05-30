@@ -5,13 +5,12 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ItemHelper;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
 
 public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
-    public BlockEntityGlowItemFrame(IChunk chunk, NbtMap nbt) {
+    public BlockEntityGlowItemFrame(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -21,19 +20,19 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
     }
 
     public boolean hasName() {
-        return nbt.containsKey("CustomName");
+        return nbt.contains("CustomName");
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        if (!this.nbt.containsKey("Item")) {
+    public CompoundTag getSpawnCompound() {
+        if (!this.nbt.contains("Item")) {
             this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
         }
         Item item = getItem();
-        NbtMapBuilder tag = super.getSpawnCompound().toBuilder();
+        CompoundTag tag = super.getSpawnCompound();
 
         if (!item.isNull()) {
-            NbtMapBuilder builder = ItemHelper.write(item,null).toBuilder();
+            CompoundTag builder = ItemHelper.write(item,null);
             int networkDamage = item.getDamage();
             String namespacedId = item.getId();
             if (namespacedId != null) {
@@ -42,11 +41,11 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
                 builder.putString("Name", namespacedId);
             }
             if (item.isBlock()) {
-                builder.putCompound("Block", item.getBlockUnsafe().getBlockState().getBlockStateTag());
+                builder.putCompound("Block", CompoundTag.fromNetwork(item.getBlockUnsafe().getBlockState().getBlockStateTag()));
             }
-            tag.putCompound("Item", builder.build())
+            tag.putCompound("Item", builder)
                     .putByte("ItemRotation", (byte) this.getItemRotation());
         }
-        return tag.build();
+        return tag;
     }
 }

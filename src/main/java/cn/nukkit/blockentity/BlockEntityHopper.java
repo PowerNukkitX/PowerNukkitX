@@ -24,18 +24,16 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtMapBuilder;
-import org.cloudburstmc.nbt.NbtType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * @author CreeperFace
@@ -61,7 +59,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     @Setter
     private InventoryHolder minecartInvPushTo = null;
 
-    public BlockEntityHopper(IChunk chunk, NbtMap nbt) {
+    public BlockEntityHopper(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -74,7 +72,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (this.nbt.containsKey("TransferCooldown")) {
+        if (this.nbt.contains("TransferCooldown")) {
             this.transferCooldown = this.getNbt().getInt("TransferCooldown");
         } else {
             this.transferCooldown = 8;
@@ -82,8 +80,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
         this.inventory = new HopperInventory(this);
 
-        if (!this.nbt.containsKey("Items") || !(this.nbt.get("Items") instanceof List)) {
-            this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        if (!this.nbt.containsList("Items", Tag.TAG_Compound)) {
+            this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         }
 
         for (int i = 0; i < this.getSize(); i++) {
@@ -128,7 +126,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override
@@ -154,7 +152,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     }
 
     protected int getSlotIndex(int index) {
-        List<NbtMap> list = this.getNbt().getList("Items", NbtType.COMPOUND);
+        ListTag<CompoundTag> list = this.getNbt().getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getByte("Slot") == index) {
                 return i;
@@ -169,7 +167,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         if (i < 0) {
             return Item.AIR;
         } else {
-            NbtMap data = this.getNbt().getList("Items", NbtType.COMPOUND).get(i);
+            CompoundTag data = this.getNbt().getList("Items", CompoundTag.class).get(i);
             return ItemHelper.read(data);
         }
     }
@@ -177,9 +175,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     public void setItem(int index, Item item) {
         int i = this.getSlotIndex(index);
 
-        NbtMap d = ItemHelper.write(item, index);
+        CompoundTag d = ItemHelper.write(item, index);
 
-        final List<NbtMap> items = new ObjectArrayList<>(this.getNbt().getList("Items", NbtType.COMPOUND));
+        final ListTag<CompoundTag> items = this.getNbt().getList("Items", CompoundTag.class);
 
         if (item.isNull() || item.getCount() <= 0) {
             if (i >= 0) {
@@ -190,13 +188,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         } else {
             items.add(i, d);
         }
-        this.nbt.putList("Items", NbtType.COMPOUND, items);
+        this.nbt.putList("Items", items);
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putList("Items", NbtType.COMPOUND, new ObjectArrayList<>());
+        this.nbt.putList("Items", new ListTag<>(Tag.TAG_Compound));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
@@ -582,13 +580,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        NbtMapBuilder c = super.getSpawnCompound().toBuilder().putBoolean("isMovable", this.isMovable());
+    public CompoundTag getSpawnCompound() {
+        CompoundTag c = super.getSpawnCompound().putBoolean("isMovable", this.isMovable());
 
         if (this.hasName()) {
-            c.put("CustomName", this.nbt.get("CustomName"));
+            c.put("CustomName", this.nbt.get("CustomName").copy());
         }
 
-        return c.build();
+        return c;
     }
 }

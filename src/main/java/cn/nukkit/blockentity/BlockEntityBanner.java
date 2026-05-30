@@ -2,24 +2,22 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.BannerPattern;
 import cn.nukkit.utils.DyeColor;
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtType;
-
-import java.util.List;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
     public int color;
 
-    public BlockEntityBanner(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBanner(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!this.nbt.containsKey("color")) {
+        if (!this.nbt.contains("color")) {
             this.nbt.putByte("color", (byte) 0);
         }
 
@@ -59,29 +57,29 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     public void addPattern(BannerPattern pattern) {
-        List<NbtMap> patterns = this.getNbt().getList("Patterns", NbtType.COMPOUND);
-        patterns.add(NbtMap.builder().
-                putInt("Color", pattern.color().getDyeData() & 0x0f).
-                putString("Pattern", pattern.type().getCode())
-                .build());
-        this.nbt.putList("Patterns", NbtType.COMPOUND, patterns);
+        ListTag<CompoundTag> patterns = this.getNbt().getList("Patterns", CompoundTag.class);
+        patterns.add(new CompoundTag()
+                .putInt("Color", pattern.color().getDyeData() & 0x0f)
+                .putString("Pattern", pattern.type().getCode()));
+        this.nbt.putList("Patterns", patterns);
     }
 
     public BannerPattern getPattern(int index) {
-        return BannerPattern.fromCompoundTag(this.getNbt().getList("Patterns", NbtType.COMPOUND).size() > index && index >= 0 ?
-                this.getNbt().getList("Patterns", NbtType.COMPOUND).get(index) :
-                NbtMap.EMPTY);
+        ListTag<CompoundTag> patterns = this.getNbt().getList("Patterns", CompoundTag.class);
+        return BannerPattern.fromCompoundTag(patterns.size() > index && index >= 0 ?
+                patterns.get(index) :
+                new CompoundTag());
     }
 
     public void removePattern(int index) {
-        List<NbtMap> patterns = this.getNbt().getList("Patterns", NbtType.COMPOUND);
+        ListTag<CompoundTag> patterns = this.getNbt().getList("Patterns", CompoundTag.class);
         if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
     }
 
     public int getPatternsSize() {
-        return this.getNbt().getList("Patterns", NbtType.COMPOUND).size();
+        return this.getNbt().getList("Patterns", CompoundTag.class).size();
     }
 
     @Override
@@ -99,13 +97,12 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putInt("Base", getBaseColor())
-                .putList("Patterns", NbtType.COMPOUND, this.getNbt().getList("Patterns", NbtType.COMPOUND))
+                .putList("Patterns", (ListTag<CompoundTag>) this.getNbt().getList("Patterns", CompoundTag.class).copy())
                 .putInt("Type", getType())
-                .putByte("color", (byte) this.color)
-                .build();
+                .putByte("color", (byte) this.color);
     }
 
     public DyeColor getDyeColor() {

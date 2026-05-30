@@ -4,7 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
-import org.cloudburstmc.nbt.NbtMap;
+import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     public final List<Player> spawnExceptions = new ArrayList<>(2);
 
 
-    public BlockEntityBell(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBell(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -30,32 +32,31 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsKey("Ringing") || !(nbt.get("Ringing") instanceof Byte)) {
+        if (!nbt.contains("Ringing") || !(nbt.get("Ringing") instanceof ByteTag)) {
             ringing = false;
         } else {
-            ringing = getNbt().getBoolean("Ringing");
+            ringing = nbt.getBoolean("Ringing");
         }
 
-        if (!nbt.containsKey("Direction") || !(nbt.get("Direction") instanceof Integer)) {
+        if (!nbt.contains("Direction") || !(nbt.get("Direction") instanceof IntTag)) {
             direction = 255;
         } else {
-            direction = getNbt().getInt("Direction");
+            direction = nbt.getInt("Direction");
         }
 
-        if (!nbt.containsKey("Ticks") || !(nbt.get("Ticks") instanceof Integer)) {
+        if (!nbt.contains("Ticks") || !(nbt.get("Ticks") instanceof IntTag)) {
             ticks = 0;
         } else {
-            ticks = getNbt().getInt("Ticks");
+            ticks = nbt.getInt("Ticks");
         }
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putBoolean("Ringing", ringing)
-                .putInt("Direction", direction)
-                .putInt("Ticks", ticks)
-                .build();
+        nbt.putBoolean("Ringing", ringing);
+        nbt.putInt("Direction", direction);
+        nbt.putInt("Ticks", ticks);
     }
 
     @Override
@@ -124,13 +125,12 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
                 .putBoolean("isMovable", this.isMovable())
                 .putBoolean("Ringing", this.ringing)
                 .putInt("Direction", this.direction)
-                .putInt("Ticks", this.ticks)
-                .build();
+                .putInt("Ticks", this.ticks);
     }
 
     @Override

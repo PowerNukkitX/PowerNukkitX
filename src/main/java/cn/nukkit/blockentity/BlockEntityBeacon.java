@@ -8,6 +8,7 @@ import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.IChunk;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.NbtHelper;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEntityInventoryHolder {
     protected BeaconInventory inventory;
 
-    public BlockEntityBeacon(IChunk chunk, NbtMap nbt) {
+    public BlockEntityBeacon(IChunk chunk, CompoundTag  nbt) {
         super(chunk, nbt);
         inventory = new BeaconInventory(this);
     }
@@ -34,19 +35,19 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     @Override
     public void loadNBT() {
         super.loadNBT();
-        if (!nbt.containsKey("Lock")) {
+        if (!nbt.containsString("Lock")) {
             this.nbt.putString("Lock", "");
         }
 
-        if (!nbt.containsKey("Levels")) {
+        if (!nbt.containsInt("Levels")) {
             this.nbt.putInt("Levels", 0);
         }
 
-        if (!nbt.containsKey("Primary")) {
+        if (!nbt.containsInt("Primary")) {
             this.nbt.putInt("Primary", 0);
         }
 
-        if (!nbt.containsKey("Secondary")) {
+        if (!nbt.containsInt("Secondary")) {
             this.nbt.putInt("Secondary", 0);
         }
     }
@@ -58,13 +59,12 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
     }
 
     @Override
-    public NbtMap getSpawnCompound() {
-        return super.getSpawnCompound().toBuilder()
-                .putString("Lock", this.getNbt().getString("Lock"))
-                .putInt("Levels", this.getNbt().getInt("Levels"))
-                .putInt("primary", this.getNbt().getInt("Primary"))
-                .putInt("secondary", this.getNbt().getInt("Secondary"))
-                .build();
+    public CompoundTag getSpawnCompound() {
+        return super.getSpawnCompound()
+                .putString("Lock", this.nbt.getString("Lock"))
+                .putInt("Levels", this.nbt.getInt("Levels"))
+                .putInt("primary", this.nbt.getInt("Primary"))
+                .putInt("secondary", this.nbt.getInt("Secondary"));
     }
 
     private long currentTick = 0;
@@ -276,7 +276,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable implements BlockEnti
 
     @Override
     public boolean hasName() {
-        return this.nbt.containsKey("CustomName");
+        return this.nbt.contains("CustomName");
     }
 
     @Override

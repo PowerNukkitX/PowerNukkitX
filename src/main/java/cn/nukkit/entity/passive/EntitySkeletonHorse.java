@@ -38,6 +38,10 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.IChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.registry.Registries;
 import cn.nukkit.utils.ItemHelper;
 import cn.nukkit.utils.Utils;
@@ -65,7 +69,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         return SKELETON_HORSE;
     }
 
-    public EntitySkeletonHorse(IChunk chunk, NbtMap nbt) {
+    public EntitySkeletonHorse(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -195,7 +199,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         setInputControls(true);
 
         // EnableTrap
-        if (this.nbt.containsKey("EnableTrap")) {
+        if (this.nbt.contains("EnableTrap")) {
             this.enableTrap = this.getNbt().getBoolean("EnableTrap");
         } else {
             this.enableTrap = true;
@@ -203,7 +207,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         }
 
         // SpawnReason
-        String reason = this.nbt.containsKey("SpawnReason") ? this.getNbt().getString("SpawnReason") : null;
+        String reason = this.nbt.contains("SpawnReason") ? this.getNbt().getString("SpawnReason") : null;
         this.naturalSpawn = reason != null && reason.equalsIgnoreCase("NATURAL");
 
     }
@@ -287,7 +291,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     public void skeletonTrap() {
         Vector3 vector = this.getPosition();
 
-        NbtMap nbt = Entity.getDefaultNBT(vector, null, (float) this.yaw, (float) this.pitch);
+        CompoundTag nbt = Entity.getDefaultNBT(vector, null, (float) this.yaw, (float) this.pitch);
         EntityLightningBolt bolt = new EntityLightningBolt(this.chunk, nbt);
 
         bolt.spawnToAll();
@@ -297,26 +301,17 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
         this.level.addLevelSoundEvent(vector, SoundEvent.EXPLODE, -1, lightningRuntimeId);
 
         double spread = 1.5d;
-        final NbtMap nbt1 = nbt.toBuilder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                        vector.x + spread,
-                        nbt.getList("Pos", NbtType.DOUBLE).get(1),
-                        vector.z
-                )).build();
+        CompoundTag nbt1 = nbt.copy();
+        nbt1.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x + spread));
+        nbt1.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z));
 
-        final NbtMap nbt2 = nbt.toBuilder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                        vector.x - (spread * 0.5d),
-                        nbt.getList("Pos", NbtType.DOUBLE).get(1),
-                        vector.z + (spread * 0.866d)
-                )).build();
+        CompoundTag nbt2 = nbt.copy();
+        nbt2.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
+        nbt2.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z + (spread * 0.866d)));
 
-        final NbtMap nbt3 = nbt.toBuilder()
-                .putList("Pos", NbtType.DOUBLE, Arrays.asList(
-                        vector.x - (spread * 0.5d),
-                        nbt.getList("Pos", NbtType.DOUBLE).get(1),
-                        vector.z - (spread * 0.866d)
-                )).build();
+        CompoundTag nbt3 = nbt.copy();
+        nbt3.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
+        nbt3.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z - (spread * 0.866d)));
 
         Entity skeletonHorse1 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt1);
         Entity skeletonHorse2 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt2);
@@ -361,7 +356,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
     }
 
     private @Nullable Entity createRiderEntity(String entityId) {
-        NbtMapBuilder nbt = Entity.getDefaultNBT(this.getLocation()).toBuilder();
+        CompoundTag nbt = Entity.getDefaultNBT(this.getLocation());
 
         // Bow + enchants
         Item bow = Item.get(Item.BOW, 0, 1);
@@ -379,11 +374,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable 
                 1 + ThreadLocalRandom.current().nextInt(3),
                 false
         );
-        List<NbtMap> armor = new ObjectArrayList<>();
+        ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
         armor.add(ItemHelper.write(helmet, EntityArmorInventory.SLOT_HEAD));
-        nbt.putList("Armor", NbtType.COMPOUND, armor);
+        nbt.putList("Armor", armor);
 
-        return Entity.createEntity(entityId, this.getChunk(), nbt.build());
+        return Entity.createEntity(entityId, this.getChunk(), nbt);
     }
 
     @Override
