@@ -258,11 +258,11 @@ public class AdventureSettings implements Cloneable {
 
     public void updateAdventureSettings() {
         final UpdateAdventureSettingsPacket packet = new UpdateAdventureSettingsPacket();
+        packet.setAutoJump(this.get(Type.AUTO_JUMP));
         packet.setNoPvM(this.get(Type.NO_PVM));
         packet.setNoMvP(this.get(Type.NO_MVP));
         packet.setImmutableWorld(this.get(Type.WORLD_IMMUTABLE));
         packet.setShowNameTags(this.get(Type.SHOW_NAME_TAGS));
-        packet.setImmutableWorld(this.get(Type.AUTO_JUMP));
 
         this.player.sendPacket(packet);
         this.player.resetInAirTicks();
