@@ -5787,6 +5787,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         ChainValidationResult.IdentityClaims identityClaims;
         ClientChainData clientChainData;
         SerializedSkin skin;
+        boolean xboxAuth;
     }
 
     public enum SpawnPointType {

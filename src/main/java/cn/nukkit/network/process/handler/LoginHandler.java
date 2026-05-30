@@ -131,7 +131,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                     new Player.PlayerInfo(
                             identityClaims,
                             clientChainData,
-                            clientJwtValidationResult.getSkin()
+                            clientJwtValidationResult.getSkin(),
+                            result.signed()
                     )
             );
 
