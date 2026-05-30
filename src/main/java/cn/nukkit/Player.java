@@ -633,10 +633,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private void setTitle(String text) {
         final SetTitlePacket packet = new SetTitlePacket();
         packet.setTitleType(SetTitlePacket.TitleType.TITLE);
-        packet.setTitleText(text);
+        packet.setTitleText(Strings.nullToEmpty(text));
         packet.setFadeInTime(-1);
         packet.setStayTime(-1);
         packet.setFadeOutTime(-1);
+        packet.setXuid("");
+        packet.setPlatformOnlineId("");
+        packet.setFilteredTitleMessage("");
         this.sendPacket(packet);
     }
 
@@ -3248,6 +3251,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void clearTitle() {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.CLEAR);
+        pk.setTitleText("");
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3257,6 +3264,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void resetTitleSettings() {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.RESET);
+        pk.setTitleText("");
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3268,7 +3279,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setSubtitle(String subtitle) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.SUBTITLE);
-        pk.setTitleText(subtitle);
+        pk.setTitleText(Strings.nullToEmpty(subtitle));
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3281,7 +3295,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setRawTextSubTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.SUBTITLE_TEXT_OBJECT);
-        pk.setTitleText(text.toRawText());
+        pk.setTitleText(text == null ? "" : text.toRawText());
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3295,9 +3312,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setTitleAnimationTimes(int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.TIMES);
+        pk.setTitleText("");
         pk.setFadeInTime(fadein);
         pk.setStayTime(duration);
         pk.setFadeOutTime(fadeout);
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3310,7 +3331,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setRawTextTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.TITLE_TEXT_OBJECT);
-        pk.setTitleText(text.toRawText());
+        pk.setTitleText(text == null ? "" : text.toRawText());
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3372,10 +3396,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.ACTIONBAR);
-        pk.setTitleText(title);
+        pk.setTitleText(Strings.nullToEmpty(title));
         pk.setFadeInTime(fadein);
         pk.setStayTime(duration);
         pk.setFadeOutTime(fadeout);
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
@@ -3401,10 +3428,13 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.setTitleType(SetTitlePacket.TitleType.ACTIONBAR_TEXT_OBJECT);
-        pk.setTitleText(text.toRawText());
+        pk.setTitleText(text == null ? "" : text.toRawText());
         pk.setFadeInTime(fadein);
         pk.setStayTime(duration);
         pk.setFadeOutTime(fadeout);
+        pk.setXuid("");
+        pk.setPlatformOnlineId("");
+        pk.setFilteredTitleMessage("");
         this.sendPacket(pk);
     }
 
