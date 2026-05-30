@@ -1260,7 +1260,7 @@ public abstract class Item implements Cloneable, ItemID {
         return this;
     }
 
-    public byte[] getCompoundTag() {
+    public byte[] getNbtBytes() {
         return tags;
     }
 

@@ -148,6 +148,7 @@ import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
+import org.cloudburstmc.protocol.bedrock.data.Dimension;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
@@ -1502,6 +1503,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 final LevelChunkPacket packet = new LevelChunkPacket();
                 packet.setChunkX(chunkPositionX + x);
                 packet.setChunkZ(chunkPositionZ + z);
+                packet.setDimension(DimensionType.from(this.level.getDimension()));
                 packet.setSerializedChunkData(Unpooled.buffer());
                 this.sendPacket(packet);
             }
