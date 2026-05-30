@@ -88,7 +88,7 @@ public abstract class Item implements Cloneable, ItemID {
     protected String name;
     public int meta;
     public int count;
-    protected Integer netId;
+    protected Integer netId = null;
     protected Block block = null;
     protected boolean hasMeta = true;
     private byte[] tags = EmptyArrays.EMPTY_BYTES;
@@ -2694,7 +2694,7 @@ public abstract class Item implements Cloneable, ItemID {
 
     public ItemData toNetwork() {
         final boolean hasNbt = this.getNbt() != null;
-        if (this.getNetId() == 0 && !this.getIdentifier().equals(Item.AIR.getIdentifier())) {
+        if ((this.getNetId() == null || this.getNetId() == 0) && !this.getIdentifier().equals(Item.AIR.getIdentifier())) {
             this.autoAssignStackNetworkId();
         }
 
