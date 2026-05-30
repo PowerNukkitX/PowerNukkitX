@@ -543,7 +543,7 @@ public class PluginManager {
             if (previous != InternalPlugin.INSTANCE && previous.isEnabled()) {
                 try {
                     previous.beforeStop();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log.error("An error occurred while running beforeStop for plugin {}, {}, {}",
                             previous.getDescription().getName(), previous.getDescription().getVersion(), previous.getDescription().getMain(), e);
                 }

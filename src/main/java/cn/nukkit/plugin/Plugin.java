@@ -80,7 +80,9 @@ public interface Plugin extends CommandExecutor {
     /**
      * Called before the server starts stopping.
      */
-    void beforeStop();
+    default void beforeStop() {
+
+    }
 
     /**
      * 返回这个Nukkit插件是否已停用。<br>
