@@ -4789,6 +4789,8 @@ public class Level implements Metadatable {
         if (entity.riding != null) {
             packet.setRidingRuntimeID(entity.riding.getId());
             packet.setPositionMode(MovePlayerPacket.PositionMode.ONLY_HEAD_ROT);
+        } else {
+            packet.setPositionMode(MovePlayerPacket.PositionMode.NORMAL);
         }
         packet.setTeleportationCause(MovePlayerPacket.TeleportationCause.UNKNOWN);
 
