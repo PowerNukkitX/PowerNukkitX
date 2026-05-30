@@ -3862,8 +3862,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             this.timeSinceRest = 0;
 
+            TranslationContainer deathMessage = ev.getTranslationDeathMessage();
             DeathInfoPacket deathInfo = new DeathInfoPacket();
-            deathInfo.setDeathCauseAttackName(ev.getTranslationDeathMessage().getText());
+            deathInfo.setDeathCauseAttackName(deathMessage.getText());
+            deathInfo.getDeathCauseMessageList().addAll(Arrays.asList(deathMessage.getParameters()));
             this.sendPacket(deathInfo);
 
             if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
