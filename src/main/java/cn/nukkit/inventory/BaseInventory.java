@@ -189,7 +189,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean contains(Item item) {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Item i : this.getContents().values()) {
             if (item.equals(i, checkDamage, checkTag)) {
                 count -= i.getCount();
@@ -206,7 +206,7 @@ public abstract class BaseInventory implements Inventory {
     public Map<Integer, Item> all(Item item) {
         Map<Integer, Item> slots = new HashMap<>();
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {
                 slots.put(entry.getKey(), entry.getValue());
@@ -219,7 +219,7 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public void remove(Item item) {
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {
                 this.clear(entry.getKey());
@@ -231,7 +231,7 @@ public abstract class BaseInventory implements Inventory {
     public int first(Item item, boolean exact) {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag) && (entry.getValue().getCount() == count || (!exact && entry.getValue().getCount() > count))) {
                 return entry.getKey();
@@ -271,7 +271,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (int i = 0; i < this.getSize(); ++i) {
             Item slot = this.getUnclonedItem(i);
             if (item.equals(slot, checkDamage, checkTag)) {
@@ -370,7 +370,7 @@ public abstract class BaseInventory implements Inventory {
 
             for (Iterator<Item> iterator = itemSlots.iterator(); iterator.hasNext(); ) {
                 Item slot = iterator.next();
-                if (slot.equals(item, item.hasMeta(), item.getCompoundTag() != null)) {
+                if (slot.equals(item, item.hasMeta(), item.getNbtBytes() != null)) {
                     int amount = Math.min(item.getCount(), slot.getCount());
                     slot.setCount(slot.getCount() - amount);
                     item.setCount(item.getCount() - amount);

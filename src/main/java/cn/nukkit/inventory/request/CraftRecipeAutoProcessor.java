@@ -82,7 +82,7 @@ public class CraftRecipeAutoProcessor implements ItemStackRequestActionProcessor
                 if (recipe instanceof UserDataShapelessRecipe) {
                     for (Item inputItem : eventItems) {
                         if (!inputItem.isNull() && inputItem.hasNbt()) {
-                            output.setNbtBytes(inputItem.getCompoundTag());
+                            output.setNbtBytes(inputItem.getNbtBytes());
                             break;
                         }
                     }

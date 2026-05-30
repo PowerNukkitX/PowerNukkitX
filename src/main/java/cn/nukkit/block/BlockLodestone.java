@@ -60,7 +60,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
         ItemLodestoneCompass compass = (ItemLodestoneCompass) Item.get(ItemID.LODESTONE_COMPASS);
         if (item.hasNbt()) {
-            compass.setNbtBytes(item.getCompoundTag().clone());
+            compass.setNbtBytes(item.getNbtBytes().clone());
         }
         
         int trackingHandle;

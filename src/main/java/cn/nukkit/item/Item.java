@@ -1555,7 +1555,7 @@ public abstract class Item implements Cloneable, ItemID {
                 " (" + this.id
                 + ":" + (!this.hasMeta ? "?" : this.meta)
                 + ")x" + this.count
-                + (this.hasNbt() ? " tags:0x" + ByteBufUtil.hexDump(this.getCompoundTag()) : "");
+                + (this.hasNbt() ? " tags:0x" + ByteBufUtil.hexDump(this.getNbtBytes()) : "");
     }
 
     /**
@@ -1648,7 +1648,7 @@ public abstract class Item implements Cloneable, ItemID {
         if (!this.equals(item, checkDamage, false)) {
             return false;
         }
-        if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
+        if (Arrays.equals(this.getNbtBytes(), item.getNbtBytes())) {
             return true;
         }
 

@@ -107,7 +107,7 @@ public class CrafterInventory extends ContainerInventory implements CraftTypeInv
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (int i = 0; i < this.getSize(); ++i) {
             if(isLocked(i)) continue;
             Item slot = this.getUnclonedItem(i);

@@ -65,7 +65,7 @@ public class MobEquipmentHandler implements PacketHandler<MobEquipmentPacket> {
         Item item = inv.getItem(packet.getSelectedSlot());
 
         if (!item.equals(itemFromNetwork, false, true)) {
-            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getCompoundTag());
+            Item fixItem = Item.get(item.getId(), item.getDamage(), item.getCount(), item.getNbtBytes());
             if (fixItem.equals(itemFromNetwork, false, true)) {
                 inv.setItem(packet.getSelectedSlot(), fixItem);
             } else {

@@ -63,7 +63,7 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
                     log.debug("{}: Invalid BookEditPacket action SIGN_BOOK: title/author/xuid is too long", playerHandle.getUsername());
                     return;
                 }
-                newBook = Item.get(Item.WRITTEN_BOOK, 0, 1, oldBook.getCompoundTag());
+                newBook = Item.get(Item.WRITTEN_BOOK, 0, 1, oldBook.getNbtBytes());
                 success = ((ItemWrittenBook) newBook).signBook(finalize.getTitle(), finalize.getAuthor(), finalize.getXuid(), ItemWrittenBook.GENERATION_ORIGINAL);
                 break;
             default:

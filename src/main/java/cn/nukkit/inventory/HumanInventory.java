@@ -310,7 +310,7 @@ public class HumanInventory extends BaseInventory {
     public boolean canAddItem(Item item) {
         item = item.clone();
         boolean checkDamage = item.hasMeta();
-        boolean checkTag = item.getCompoundTag() != null;
+        boolean checkTag = item.getNbtBytes() != null;
         for (int i = 0; i < ARMORS_INDEX; ++i) {
             Item slot = this.getUnclonedItem(i);
             if (item.equals(slot, checkDamage, checkTag)) {

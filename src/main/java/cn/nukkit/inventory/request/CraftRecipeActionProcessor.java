@@ -219,7 +219,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     for (Item[] row : data) {
                         for (Item inputItem : row) {
                             if (!inputItem.isNull() && inputItem.hasNbt()) {
-                                output.setNbtBytes(inputItem.getCompoundTag());
+                                output.setNbtBytes(inputItem.getNbtBytes());
                                 break;
                             }
                         }

@@ -523,7 +523,7 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
             } else {
                 out.writeUTF(item.getId());
                 out.writeInt(item.getDamage());
-                byte[] nbt = item.getCompoundTag();
+                byte[] nbt = item.getNbtBytes();
                 out.writeInt(nbt.length);
                 if (nbt.length > 0) out.write(nbt);
                 // hasBlock = true when the item had block_state data (not in INTERNAL_DIFF_ITEM)

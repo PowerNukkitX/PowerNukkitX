@@ -184,7 +184,7 @@ public class BlockCrafter extends BlockSolid implements RedstoneComponent, Block
                 Item inputItem = inv.getItem(i);
                 if (!inputItem.isNull() && inputItem.hasNbt()) {
                     for (Item result : recipe.getResults()) {
-                        result.setNbtBytes(inputItem.getCompoundTag());
+                        result.setNbtBytes(inputItem.getNbtBytes());
                     }
                     break;
                 }

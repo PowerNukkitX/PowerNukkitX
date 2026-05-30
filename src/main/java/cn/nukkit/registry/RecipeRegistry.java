@@ -435,7 +435,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     public void register(String key, Recipe recipe) throws RegisterException {
         if (recipe instanceof CraftingRecipe craftingRecipe) {
             Item item = recipe.getResults().getFirst();
-            UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(item.getId()), String.valueOf(item.getDamage()), String.valueOf(item.getCount()), Arrays.toString(item.getCompoundTag()));
+            UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(item.getId()), String.valueOf(item.getDamage()), String.valueOf(item.getCount()), Arrays.toString(item.getNbtBytes()));
             if (craftingRecipe.getUUID() == null) craftingRecipe.setUUID(id);
         }
         if (allRecipeMaps.putIfAbsent(recipe.getRecipeId(), recipe) != null) {

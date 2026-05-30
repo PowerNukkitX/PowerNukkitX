@@ -155,7 +155,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     default -> ItemID.WATER_BUCKET;
                 };
 
-                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(newBucketID, 0, 1, bucket.getCompoundTag()));
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(newBucketID, 0, 1, bucket.getNbtBytes()));
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     replaceBucket(bucket, player, ev.getItem());
@@ -169,7 +169,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                     return false;
                 }
 
-                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
+                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getNbtBytes()));
                 this.level.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     if (player.isSurvival() || player.isAdventure()) {
@@ -425,7 +425,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getCompoundTag()));
+                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, this, item, Item.get(ItemID.LAVA_BUCKET, 0, 1, bucket.getNbtBytes()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
@@ -439,7 +439,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                         break;
                     }
 
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getCompoundTag()));
+                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, this, item, Item.get(ItemID.BUCKET, 0, 1, bucket.getNbtBytes()));
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
