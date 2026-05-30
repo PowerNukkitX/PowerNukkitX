@@ -33,7 +33,7 @@ import cn.nukkit.entity.ai.executor.villager.WillingnessExecutor;
 import cn.nukkit.entity.ai.executor.villager.WorkExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.DoorCapableWalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.BlockSensor;
 import cn.nukkit.entity.ai.sensor.NearestEntitySensor;
 import cn.nukkit.entity.components.HealthComponent;
@@ -330,7 +330,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
                 ),
                 Set.of(new WalkController(), new LookController(true, true), new FluctuateController()),
-                new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this),
+                new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this),
                 this
         );
     }
