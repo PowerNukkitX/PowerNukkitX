@@ -177,6 +177,7 @@ public class Server {
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private final LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
     private boolean hasStopped = false;
+    private boolean hasBeforeStopped = false;
     private PluginManager pluginManager;
     private ServerScheduler scheduler;
     /**
@@ -849,6 +850,8 @@ public class Server {
      * Shutdown the server
      */
     public void shutdown() {
+        this.beforeStop();
+
         network.setState(NetworkState.STOPPING);
         isRunning.compareAndSet(true, false);
     }
@@ -862,6 +865,8 @@ public class Server {
         }
 
         try {
+            this.beforeStop();
+
             network.setState(NetworkState.STOPPING);
             isRunning.compareAndSet(true, false);
 
@@ -923,6 +928,13 @@ public class Server {
         } catch (Exception e) {
             log.error("Exception happened while shutting down, exiting the process", e);
             System.exit(1);
+        }
+    }
+
+    private void beforeStop() {
+        if (!this.hasBeforeStopped) {
+            this.hasBeforeStopped = true;
+            this.pluginManager.beforeStopPlugins();
         }
     }
 

@@ -78,6 +78,11 @@ public interface Plugin extends CommandExecutor {
     void onDisable();
 
     /**
+     * Called before the server starts stopping.
+     */
+    void beforeStop();
+
+    /**
      * 返回这个Nukkit插件是否已停用。<br>
      * Whether this Nukkit plugin is disabled.
      *
